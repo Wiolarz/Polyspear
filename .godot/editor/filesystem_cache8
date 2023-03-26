@@ -1,0 +1,13 @@
+2a60927148abd1d33b818b535e306557
+::res://::1679855856
+icon.svg::CompressedTexture2D::7310841513458665480::1679614029::1679614033::1::::<><>::
+::res://Project_1 Basic Godot/::1679689789
+P1_Base.gd::GDScript::-1::1679689789::0::1::::<>Node<>::
+p_1_base_node.tscn::PackedScene::3135633222923430990::1679689789::0::1::::<><>::res://Project_1 Basic Godot/P1_Base.gd
+::res://Project_2 Presents Game v1/::1679785818
+P2_Base_Node.gd::GDScript::-1::1679785818::0::1::::<>Node<>::
+p_2_base_node.tscn::PackedScene::8638640210011568305::1679689789::0::1::::<><>::res://Project_2 Presents Game v1/P2_Base_Node.gd
+::res://Project_3 Smith Game v1/::1679689789
+P3_Base_Node.gd::GDScript::-1::1679689789::0::1::::<>Node<>::
+p_3_base_node.tscn::PackedScene::411473923857589037::1679689789::0::1::::<><>::res://Project_3 Smith Game v1/P3_Base_Node.gd
+::res://Project_4/::1679615855

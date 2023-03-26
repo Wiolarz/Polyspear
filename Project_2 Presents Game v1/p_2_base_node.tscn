@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://dvcve3kt2n666"]
+
+[ext_resource type="Script" path="res://Project_2 Presents Game v1/P2_Base_Node.gd" id="1_hdd01"]
+
+[node name="P2_Base_Node" type="Node"]
+script = ExtResource("1_hdd01")
