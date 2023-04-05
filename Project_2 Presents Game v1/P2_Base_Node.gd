@@ -63,7 +63,18 @@ middleschool_things_to_buy, highschool_things_to_buy]
 func gameplay_state_controller(input):
 	if input == 0:
 		print(age_groups[0])
-
+		print("Your funds: ", money)
+		return
+	if len(age_groups) == age:
+		return
+	
+	
+	money - age_groups[age][input]
+	print(age_groups[age][input], money)
+	age += 1
+	if len(age_groups) == age:
+		return
+	print(age_groups[age])
 
 
 func _process(delta):
