@@ -21,21 +21,52 @@ Cook - provides temporary buffs (they don’t stack like smith’s)
 
 
 """
+""" General design vision:
+Game should be easy - progression should be never slowed down below enjoyable levels
+
+"""
+
+""" Hero Parties: "Party"
+Player's should be able progression wise be able to attain more than 9 parties
+There should always be at least single party with the player. (they could have a 0 cost being "Militia")
+"""
+
+
+""" ECONOMY
+If player's gold drops below 0 he can still continue playing and getting deeper into deby,
+he will just be unable to afford anything new.
+It's an undisired state as the game aims to be easy
+"""
+
+
+
 
 func _ready():
 	print("Start Project Outpost-Alpha")
-
+	
+	# world generation
+	var list_of_all_regions = []
+	var starting_regions = []  # list of regions known to player at the start
+	
+	var starting_party = Party.new()
+	starting_party.test()
+	'''
+	
+	var player_town = Town.new()
+	player_town.known_region = starting_regions
+	player_town.add_party(starting_party)'''
 
 
 class Adventure:
 	var item_stats = {
 	"stone_sword": {"atk": 1},		
 	}
-
+	var party
+	var region
 	func _init(party, region):
-		self.party = party
-		self.party.create_score_pool()
-		self.region = region
+		party = party
+		party.create_score_pool()
+		region = region
 		
 	
 	func GNB_roll(score):
@@ -107,9 +138,12 @@ class Region:
 	Neutral event: Neutral force contact / neutral village / neutral house
 	Combat with large enemy / an enemy group / horde of enemies
 	"""
+	var name
 	func _init():
-		self.dice_pool = [6, 6, 6, 6]
-		self.score_pool = []
+		name = "test"
+	
+	func info():
+		return name
 
 class Faction:
 	"""
@@ -120,30 +154,149 @@ class Faction:
 	""" Simplification in ALPHA version:
 	Factions are not splitted between areas.
 	"""
+	var enemies
+	var power
 	func _init():
-		#self.Enemies = [[1, 6], [2, 4], [3, 3], [4, 2], [5, 1]]
-		self.power = 10
+		#enemies = [[1, 6], [2, 4], [3, 3], [4, 2], [5, 1]]
+		power = 10
 
 
 class Party:
 	"""
 	Party is a single entity object, representing different a group of heroes.
 	"""
+	var assigned_schedule
+	var dice_pool
+	var score_pool
+	var cost
+	var overpayment
 	func _init():
-		self.dice_pool = [6, 6, 6, 6]
-		self.score_pool = []
+
+		# management data:
+		assigned_schedule = {"day": null, "night": null}
+		
+		# Adventure data
+		dice_pool = [6, 6, 6, 6]
+		score_pool = []
+		var item_list: int:
+			get:
+				return item_list
+			set(value):
+				print("test")
+				item_list = value
+		
+		# Economy:
+		cost = 1
+		overpayment = 0
 	
 	func create_score_pool():
-		self.score_pool = []
-		for dice in self.dice_pool:
-			self.score_pool.append(randi_range(1, dice))
+		score_pool = []
+		for dice in dice_pool:
+			score_pool.append(randi_range(1, dice))
+	
+	func test():
+		print(assigned_schedule)
+	
+	
+	func schedule_info():
+		if assigned_schedule["day"] == null:
+			if assigned_schedule["night"] == null:
+				return "not-assigned"
+			else:
+				return "N: " + assigned_schedule["night"].info()
+		elif assigned_schedule["night"] == null:
+			return "D: " + assigned_schedule["day"].info()
+		return "D: " + assigned_schedule["day"].info() + " N: " + assigned_schedule["night"].info()
 
 
+class Item:
+	"""
+	Item is a simple object that can be either sold for gold or
+	given to a party which will boost them while also
+	satysfaing party gold demand for the 50% of the item's value
+	"""
+	var dice_pool
+	var score_pool
+	var gold
+	var income
+	var expenses
+	var cycles_count
+	func _init():
+		dice_pool = [6, 6, 6, 6]
+		score_pool = []
+		
+		gold = 10
+		income = 3
+		expenses = 0
+		
+		cycles_count = 0
 
 
+class Town:
+	"""
+	Town is a player entity that handles all players resources and actions
+	"""
+	var party_groups
+	var known_regions
+	var gold
+	var income
+	var expenses
+	var cycles_count
+	func _init():
+		"""Start of the game"""
+		
+		# management resourcers
+		party_groups = []
+		known_regions = []
+		
+		
+		# Economy
+		gold = 10
+		income = 3
+		expenses = {"next_day": 0, "overall": 0, "savings": 0}
+		'''next day represents what player will have to pay
+		overall what the player has to pay regardless of overpayment
+		savings shows accumulated overpayment in parties pockets'''
+		
+		
+		
+		
+		
+	func new_cycle():
+		"""Start of a new cycle either a day or a night"""
+		cycles_count += 1
+		var pay
+		if cycles_count % 2 == 0:  # new day
+			gold += income
+			for party in party_groups:
+				pay = clamp(party.cost - party.overpayment, 0, party.cost)
+				party.overpayment -= pay
+				gold -= pay
+		
+	
+	func check_expenses():
+		expenses = {"next_day": 0, "overall": 0, "savings": 0}  # reset values
+		for party in party_groups:
+			expenses["overall"] += party.cost
+			expenses["savings"] += party.overpayment
+			expenses["next_day"] += clamp(party.cost - party.overpayment, 0, party.cost)
+			
+	
+	
+	
+	
+			
+	func add_party(party):  # still not sure how import having a setter here is?
+		party_groups.append(party)
+
+
+	
 func gameplay_state_controller(input):
-	var output_text = str(input)
+	var output_text = str(input) + " "
 	pass
+
+
+
 
 
 
