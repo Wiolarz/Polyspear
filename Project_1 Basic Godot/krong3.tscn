@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://df3y842tb0k1x"]
+
+[ext_resource type="Script" path="res://Project_1 Basic Godot/krong3.gd" id="1_dlndb"]
+
+[node name="krong3" type="Node"]
+script = ExtResource("1_dlndb")

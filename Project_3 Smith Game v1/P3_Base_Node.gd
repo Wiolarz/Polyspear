@@ -14,6 +14,7 @@ if he had chosen a sword with 3 STR he could additionally take a 1 STR shield
 
 func _ready():
 	print("Start Project 3")
+	
 
 
 

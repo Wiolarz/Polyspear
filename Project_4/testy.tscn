@@ -1,0 +1,17 @@
+[gd_scene load_steps=2 format=3 uid="uid://cgg0p2v0o4ddc"]
+
+[sub_resource type="GDScript" id="GDScript_4t0tx"]
+script/source = "extends Node
+
+
+func _ready():
+	print(\"Start Project 4 - Tests\")
+	var a = [1, 2, 3]
+	print(a)
+	a.reverse()
+	
+	print(a)
+"
+
+[node name="testy" type="Node"]
+script = SubResource("GDScript_4t0tx")

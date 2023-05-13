@@ -1,4 +1,4 @@
-extends Node
+extends Object
 
 """
 Game about buying presents for your kid
@@ -14,10 +14,11 @@ increasing the need for saving up.
 """
 
 
-func _ready():
-	print("Start Project 2")
-	gameplay_state_controller(0)
+class_name Presents_Game
 
+
+func __init__():
+	pass
 
 
 var game_state = "main"
@@ -25,7 +26,8 @@ var game_state = "main"
 var pay = 10
 var money = 10
 
-
+static func start():
+	print("Start Presents_Game")
 
 var kindergarden_things_to_buy = {
 	"candy": 1,

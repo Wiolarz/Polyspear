@@ -2,7 +2,10 @@ extends Node
 
 
 """
-Game about managing a Fantasy outpost.
+Test of limits what systemic game design may offer to text based games
+Project focuses on managing a Fantasy Outpost.
+
+Inspirations: Darkest Dungeon, 
 
 You manage groups of heroes by providing them equipment, services and choosing which area should they operate in.
 
@@ -24,10 +27,13 @@ Cook - provides temporary buffs (they don’t stack like smith’s)
 """ General design vision:
 Game should be easy - progression should be never slowed down below enjoyable levels
 
+Ideas:
+	Allow player to assign dice scores for parrties during adventures
 """
 
-""" Hero Parties: "Party"
-Player's should be able progression wise be able to attain more than 9 parties
+""" PARTY
+Hero Parties
+Player's should be able progression wise to be capped at maximum 9 parties
 There should always be at least single party with the player. (they could have a 0 cost being "Militia")
 """
 
@@ -39,6 +45,72 @@ It's an undisired state as the game aims to be easy
 """
 
 
+""" ALIGNMENT
+You as the ruler set the rules for the citizens to follow.
+If those rules don't align with the king's orders he will reduce your income.
+(He won't fire you as he trust you that those changes are only temporary)
+
+Each rule may or may not allign with heroes party beliefs.
+Which will then determine if the party will execute your law.
+Even if the party doesn't agree with choice they still may have faith in you and follow anyway.
+Level of their faith is the sum of all of their's matching beliefs.
+Example:
+	Militia group has the same alligment as the king, who requires for the nature to be purged
+	Player deemed it neccesary to not anger local druids so he determined harming nature to be unlawful
+	Militia encounter a rare deer, which body would be very valueable.
+	But they decide not to kill it as their faith in the player's rule is strong enough as it was the only law that the player changed.
+	
+ALPHA VERSION:
+	Each alignment category is currently in TRUE/FALSE only, as to make the game more simply, further down the line:
+	Number of possible order may be lowered and more fluid, with outside factors being also taken into account:
+		such as pay, additional rewards (items), pleasures at the town, workload
+
+
+To stop conflict with faction some time has to pass for the war exhsaust to ammount
+
+Permanent moral choices:
+	killing townsfolk - BAD
+	 
+
+Example moral choices:
+	Protect_Nature - 
+	Legal_Theft - (robbing of means of survival = killing)
+	Legal_Necromancy -
+	Legal_Arcane Magic - 
+	
+	Imprisonment / Killing guilty -
+	 
+	
+"""
+
+
+""" FACTIONS
+Represents a force on a continent, for example: Goblins.
+When players damage a faction it gets weaker and appears less often. Factions regenarate over time.
+Currently players are not capable of winning the game. (eliminating all enemy factions)
+
+
+List of Factions:
+	Druids:
+		Nature - True, Necromancy - False
+	
+	Black order:
+		Necromancy - True, Theft - False, Nature - False
+	
+	Lodge of Seers:
+		Arcane - True, Theft - False, 
+	
+	Thieves Guild:
+		Theft - True
+	
+	
+
+
+
+
+Simplification in ALPHA version:
+	Factions are not splitted between areas.
+"""
 
 
 func _ready():
@@ -49,12 +121,10 @@ func _ready():
 	var starting_regions = []  # list of regions known to player at the start
 	
 	var starting_party = Party.new()
-	starting_party.test()
-	'''
 	
 	var player_town = Town.new()
-	player_town.known_region = starting_regions
-	player_town.add_party(starting_party)'''
+	player_town.known_regions = starting_regions
+	player_town.add_party(starting_party)
 
 
 class Adventure:
@@ -71,8 +141,8 @@ class Adventure:
 	
 	func GNB_roll(score):
 		"""Possible outcomes for each event are: Good / Neutral / Bad - GNB
-		To determine outcome of an event we substract from Challenge level an Assigned score,
-		to receive a value that determines a % chances for GNB ratio roll
+		To determine outcome of an event we subtract from Challenge level an Assigned score,
+		to receive a value that determines a % chances for GNB ratio roll % dice
 		-4 100 0 0
 		-3 80 20 0
 		-2 60 35 10
@@ -104,7 +174,6 @@ class Adventure:
 		elif gnb_values[score][1] + gnb_values[score][0] >= roll:
 			return 0  # neutral outcome
 		return -1 # negative outcome
-	
 	
 
 
@@ -170,12 +239,20 @@ class Party:
 	var score_pool
 	var cost
 	var overpayment
+	var alignment
+		
+			
+	
 	func _init():
 
 		# management data:
 		assigned_schedule = {"day": null, "night": null}
 		
 		# Adventure data
+		alignment = {"nature": true} # temporary setting to determine interactions between character,
+		#sole basis will be proetection of the nature - true wants to protect
+		#{"nature": 0, "murder": 0, "theft": 0} 
+		
 		dice_pool = [6, 6, 6, 6]
 		score_pool = []
 		var item_list: int:
@@ -189,15 +266,27 @@ class Party:
 		cost = 1
 		overpayment = 0
 	
+	
+	func generate_power(power_level=1):
+		""" Method for generting Party statistics based on their general power level
+		"""
+		cost = power_level
+		
+		var points = power_level * 10
+		
+		
+	
 	func create_score_pool():
 		score_pool = []
 		for dice in dice_pool:
 			score_pool.append(randi_range(1, dice))
 	
-	func test():
-		print(assigned_schedule)
-	
-	
+	func party_alignment_choice(problem: Dictionary):
+		var order_choice = true
+		
+		for key in problem.keys():
+			if alignment[key] == problem[key]:
+				pass
 	func schedule_info():
 		if assigned_schedule["day"] == null:
 			if assigned_schedule["night"] == null:

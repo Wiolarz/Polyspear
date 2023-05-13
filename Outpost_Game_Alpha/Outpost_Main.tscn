@@ -1,6 +1,6 @@
-[gd_scene load_steps=2 format=3 uid="uid://blbh52hyc2teg"]
+[gd_scene load_steps=2 format=3 uid="uid://dg8bx4wuncpym"]
 
-[ext_resource type="Script" path="res://Outpost_Game_Alpha/Outpost_Game_Main.gd" id="1_eriy7"]
+[ext_resource type="Script" path="res://Outpost_Game_Alpha/v2_dice_exploration.gd" id="1_4llx8"]
 
 [node name="Outpost_Main" type="Node"]
-script = ExtResource("1_eriy7")
+script = ExtResource("1_4llx8")
