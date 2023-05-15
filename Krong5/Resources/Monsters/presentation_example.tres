@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="monster_attacks" load_steps=5 format=3 uid="uid://dt2o3c70bbqp7"]
+
+[ext_resource type="Resource" path="res://Krong5/Resources/Monsters/Cyklop.tres" id="1_76iag"]
+[ext_resource type="Script" path="res://Krong5/Resource_Scripts/monster_attacks.gd" id="1_lbwje"]
+[ext_resource type="Resource" path="res://Krong5/Resources/Monsters/Swiezak.tres" id="1_tx2ub"]
+[ext_resource type="Resource" path="res://Krong5/Resources/Monsters/Trener.tres" id="3_2cjcy"]
+
+[resource]
+script = ExtResource("1_lbwje")
+monsters = [ExtResource("1_tx2ub"), ExtResource("1_76iag"), ExtResource("3_2cjcy")]

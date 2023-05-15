@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="scroll" load_steps=3 format=3 uid="uid://kh313nq6ijee"]
+
+[ext_resource type="Script" path="res://Krong5/Resource_Scripts/Scroll_resource.gd" id="1_0egu5"]
+[ext_resource type="Resource" uid="uid://do8iksejjvutr" path="res://Krong5/Resources/Powers/Punch.tres" id="1_l1rsf"]
+
+[resource]
+script = ExtResource("1_0egu5")
+attacks = Array[Resource("res://Krong5/Resource_Scripts/Power_Resource.gd")]([ExtResource("1_l1rsf")])
+name = "golem"

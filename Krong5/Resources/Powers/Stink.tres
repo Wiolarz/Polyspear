@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="power" load_steps=2 format=3 uid="uid://bv7mj6v7si3eu"]
+
+[ext_resource type="Script" path="res://Krong5/Resource_Scripts/Power_Resource.gd" id="1_y4kjj"]
+
+[resource]
+script = ExtResource("1_y4kjj")
+rolls = 4
+sides = 20
+bonus = 5
