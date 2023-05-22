@@ -9,11 +9,13 @@ Potwór wybiera jeden losowy atak ze swojej puli
 Ataki są wykonywane w kolejności ich prędkości.
 (Przy takiej samej mogą odbyć się “równocześnie”)
 
-Pula ataków potwora może zawierać takie same ataki. Każdy jego atak wykorzystuje ten atak z puli. Po ich wyczerpaniu pula się resetuje.
+Pula ataków potwora może zawierać takie same ataki. Każdy jego atak
+wykorzystuje ten atak z puli. Po ich wyczerpaniu pula się resetuje.
 {Pozwala to graczowi przewidywać ataki}
 
 Opcjonalna mechanika:
-(W oryginalnej planszówce jak gracz wykonał np. atak B, to musiał wykonać atak A i C zanim mógł ponownie wykonać atak B, to możesz też dodać)
+(W oryginalnej planszówce jak gracz wykonał np. atak B, to musiał wykonać atak
+A i C zanim mógł ponownie wykonać atak B, to możesz też dodać)
 
 
 Lista efektów:
@@ -21,7 +23,8 @@ Lista efektów:
 		Ogłuszenie: następny atak przeciwnika w tej turze jest anulowany.
 		Kradzież zdrowa: wylecz 1 punkt zdrowia utracony w tej turze
 	Przyszłe tury:
-		W następnej rundzie atak przeciwnika jest o 1 punkt obrażeń/prędkości słabszy
+		W następnej rundzie atak przeciwnika jest o 1 punkt
+		obrażeń/prędkości słabszy
 
 """
 

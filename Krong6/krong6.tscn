@@ -1,0 +1,13 @@
+[gd_scene load_steps=2 format=3 uid="uid://c74wd153tfofj"]
+
+[ext_resource type="Script" path="res://Krong6/krong6.gd" id="1_kdfh8"]
+
+[node name="main_node" type="Node" node_paths=PackedStringArray("output")]
+script = ExtResource("1_kdfh8")
+output = NodePath("RichTextLabel")
+
+[node name="RichTextLabel" type="RichTextLabel" parent="."]
+offset_left = 214.0
+offset_top = 91.0
+offset_right = 933.0
+offset_bottom = 518.0
