@@ -1,0 +1,59 @@
+[gd_scene load_steps=2 format=3 uid="uid://w472ptwc7udp"]
+
+[ext_resource type="Script" path="res://Krong7/krong7.gd" id="1_35apv"]
+
+[node name="main_node" type="Node" node_paths=PackedStringArray("output", "attack_button1", "attack_button2", "attack_button3")]
+script = ExtResource("1_35apv")
+output = NodePath("RichTextLabel")
+attack_button1 = NodePath("Button3")
+attack_button2 = NodePath("Button4")
+attack_button3 = NodePath("Button5")
+
+[node name="RichTextLabel" type="RichTextLabel" parent="."]
+offset_left = 214.0
+offset_top = 91.0
+offset_right = 933.0
+offset_bottom = 518.0
+
+[node name="Button1" type="Button" parent="."]
+offset_left = 12.0
+offset_top = 501.0
+offset_right = 208.0
+offset_bottom = 633.0
+text = "Mine"
+
+[node name="Button2" type="Button" parent="."]
+offset_left = 229.0
+offset_top = 502.0
+offset_right = 425.0
+offset_bottom = 634.0
+text = "Run"
+
+[node name="Button3" type="Button" parent="."]
+offset_left = 451.0
+offset_top = 502.0
+offset_right = 647.0
+offset_bottom = 634.0
+text = "Combat 1"
+
+[node name="Button4" type="Button" parent="."]
+offset_left = 690.0
+offset_top = 503.0
+offset_right = 886.0
+offset_bottom = 635.0
+text = "Combat 2"
+
+[node name="Button5" type="Button" parent="."]
+offset_left = 945.0
+offset_top = 505.0
+offset_right = 1141.0
+offset_bottom = 637.0
+text = "Combat 3"
+
+[node name="Camera2D" type="Camera2D" parent="."]
+
+[connection signal="pressed" from="Button1" to="." method="_on_button_1_pressed"]
+[connection signal="pressed" from="Button2" to="." method="_on_button_2_pressed"]
+[connection signal="pressed" from="Button3" to="." method="_on_button_3_pressed"]
+[connection signal="pressed" from="Button4" to="." method="_on_button_4_pressed"]
+[connection signal="pressed" from="Button5" to="." method="_on_button_5_pressed"]
