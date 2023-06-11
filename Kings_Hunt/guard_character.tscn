@@ -1,0 +1,26 @@
+[gd_scene load_steps=6 format=3 uid="uid://xto76m6hwdj4"]
+
+[ext_resource type="Script" path="res://Kings_Hunt/Health_System.gd" id="1_acwk6"]
+[ext_resource type="Script" path="res://Kings_Hunt/Card_System.gd" id="2_uwv6w"]
+[ext_resource type="Script" path="res://Kings_Hunt/EQ_System.gd" id="3_ek68c"]
+[ext_resource type="Script" path="res://Kings_Hunt/Controller_System.gd" id="4_o4oeq"]
+[ext_resource type="Script" path="res://Kings_Hunt/Guard_AI.gd" id="5_u4m7d"]
+
+[node name="Character" type="Node"]
+
+[node name="Health_System" type="Node" parent="."]
+script = ExtResource("1_acwk6")
+
+[node name="Card_System" type="Node" parent="."]
+script = ExtResource("2_uwv6w")
+
+[node name="EQ_System" type="Node" parent="."]
+script = ExtResource("3_ek68c")
+
+[node name="Controller_System" type="Node" parent="." node_paths=PackedStringArray("card_system", "input")]
+script = ExtResource("4_o4oeq")
+card_system = NodePath("../Card_System")
+input = NodePath("Guard_AI")
+
+[node name="Guard_AI" type="Node" parent="Controller_System"]
+script = ExtResource("5_u4m7d")
