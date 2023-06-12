@@ -1,10 +1,11 @@
-[gd_scene load_steps=3 format=3 uid="uid://bdfescm47qx0d"]
+[gd_scene load_steps=4 format=3 uid="uid://drip4v2rtec45"]
 
-[ext_resource type="Script" path="res://Kings_Hunt/krong8.gd" id="1_b3400"]
-[ext_resource type="PackedScene" uid="uid://rh87j386f5vn" path="res://Kings_Hunt/player_character.tscn" id="2_sa443"]
+[ext_resource type="Script" path="res://Kings_Hunt/Main_Node.gd" id="1_1152e"]
+[ext_resource type="PackedScene" uid="uid://rh87j386f5vn" path="res://Kings_Hunt/player_character.tscn" id="2_vnjw2"]
+[ext_resource type="Script" path="res://Kings_Hunt/City.gd" id="3_lwgwu"]
 
 [node name="main_node" type="Node" node_paths=PackedStringArray("output")]
-script = ExtResource("1_b3400")
+script = ExtResource("1_1152e")
 output = NodePath("RichTextLabel")
 
 [node name="RichTextLabel" type="RichTextLabel" parent="."]
@@ -48,7 +49,10 @@ offset_right = 785.0
 offset_bottom = 646.0
 text = "5"
 
-[node name="Character" parent="." instance=ExtResource("2_sa443")]
+[node name="Character" parent="." instance=ExtResource("2_vnjw2")]
+
+[node name="City" type="Node" parent="."]
+script = ExtResource("3_lwgwu")
 
 [connection signal="pressed" from="Button1" to="." method="_on_button_1_pressed"]
 [connection signal="pressed" from="Button2" to="." method="_on_button_2_pressed"]

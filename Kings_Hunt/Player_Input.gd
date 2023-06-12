@@ -25,22 +25,22 @@ func _physics_process(delta):
 	"""
 	var current_choice = null
 	var possible_action_inputs = \
-	{"KEY_Q": "hide", "KEY_W": "run_up", "KEY_E": "run_down"}
+	{"KEY_Q": "hide", "KEY_W": "run_up", "KEY_E": "run_down", "KEY_R": "search"}
 	var possible_card_inputs = \
-	{"KEY_1": 0, "KEY_2": 1, "KEY_3": 2, "KEY_4": 3,}
+	["KEY_1", "KEY_2", "KEY_3", "KEY_4",] #  "KEY_5", "KEY_6", "KEY_7", "KEY_8",
 		
 	# input
 	for key in possible_action_inputs.keys():
 		if Input.is_action_just_pressed(key):
 			current_choice = possible_action_inputs[key]
-	for key in possible_card_inputs.keys():
-		if Input.is_action_just_pressed(key):
-			current_choice = possible_card_inputs[key]
+	for i in range(possible_card_inputs.size()):
+		if Input.is_action_just_pressed(possible_card_inputs[i]):
+			chosen_card = i
 
 	
 		
 		if current_choice == "run":
-			level += 1
+			
 			location = generate_room()
 		elif next_attack != null:  # Fight
 			var combat_power = 0

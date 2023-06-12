@@ -3,28 +3,10 @@ extends Node
 
 @export var output : RichTextLabel
 
-# TODO research if ONREADY here is neccesary
-var scene = load("res://Krong8/player_character.tscn")  
 
 
-func _ready() -> void:
-	print("Start of the Krong 7")
-	test()
+
 	
-
-func test():
-	""" try to create fresh player character and enemy character
-	deal damage ot one of them randomly and then if someone dies 
-	a new character is spawned
-	"""
-	
-	var instance = scene.instantiate()
-	add_child(instance)
-	
-
-
-
-
 
 
 func generate_room(lvl=1):
@@ -104,9 +86,10 @@ func _physics_process(delta):
 	var time_for_action = 180  # 3 seconds
 	if Input.is_action_just_pressed("KEY_SPACE"):
 		time = time_for_action
-		
-	# adding rest of the information
-	if time >= time_for_action and (time / 60) != 0:
+	
+	
+	# End of time for choice
+	if time >= time_for_action: # and (time / 60) != 0
 		pass
 	
 	#state_print()

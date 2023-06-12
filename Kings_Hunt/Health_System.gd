@@ -6,7 +6,8 @@ extends Node
 var light_points = 0
 var heavy_points = 0
 
-
+func is_dead():  # returns true if character died
+	return heavy_durability <= heavy_points
 
 func light_damage(value=1):
 	light_points += value
@@ -17,8 +18,8 @@ func light_damage(value=1):
 
 func heavy_damage(value=1):
 	heavy_points += value
-	if heavy_points >= heavy_durability:
-		print("character is dead")
+#	if heavy_points >= heavy_durability:
+#		print("character is dead")
 
 func heal(value=1):
 	light_points -= value
