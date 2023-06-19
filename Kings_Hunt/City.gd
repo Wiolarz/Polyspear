@@ -1,54 +1,44 @@
 extends Node
+
+signal player_death
+
+
+# loading player, and enemy characters objects
 # TODO research if ONREADY here is neccesary
 var player_charater_scene = load("res://Kings_Hunt/player_character.tscn")  
 var guard_charater_scene = load("res://Kings_Hunt/guard_character.tscn") 
 
+var player_deaths = 2
+
+
 func _ready() -> void:
-	print("Start of the Krong 9")
-	test()
-
-
-"""
-max_hand_size = 3
-[1, 2, 3, 4]
-
-[1, 2]  [3, 4]
-
-[1] [2, 3, 4] []
-[] [2, 3, 4] [1]
-
-
-up, down, wait, search
-1, 2, 3, 4, [0]
+	print("Start of the Krong 10")
+	city_creation()
 
 
 
-"""
-
-
-
-func test():
-	""" try to create fresh player character and enemy character
-	deal damage ot one of them randomly and then if someone dies 
-	a new character is spawned
+func city_creation():
+	"""
+	Create a basic city and starting player character
 	"""
 	var city = []
-#	var number_of_locations = 3
-#	for i in range(number_of_locations):
-#		city.append([])
+	var number_of_locations = 3
+	for i in range(number_of_locations):
+		city.append([])
 	
-	var player_character = player_charater_scene.instantiate()
+	var player_character = generate_player()
 	
+	print(player_character.get_node("EQ_System").levels)
 	#add_child(player_character)
-	city.append(player_character)
+	city[0].append(player_character)
 	
 	
 	var guard_character = guard_charater_scene.instantiate()
 	#add_child(guard_character)
 	
 	#var city = get_children()
-	for i in range(4):
-		city.append(guard_character)  # .duplicate()
+	for i in range(number_of_locations - 1):
+		city[i + 1].append(guard_character.duplicate())
 	
 	print(city)
 #	print(player_character)
@@ -59,29 +49,44 @@ func test():
 #		removing_dead(city)
 #		print(city)
 
-	var random_target = 2
-	city[random_target].get_node("Health_System").light_damage(10)
+	var random_target = 0
+	city[0][random_target].get_node("Health_System").light_damage(10)
 	removing_dead(city)
-	#removing_dead(city)
-	#removing_dead(city)
+	player_character.die()
+	print(player_character.get_node("EQ_System").levels)
+	print(city[0][random_target].get_node("EQ_System").levels)
 	print(city)
 
 
-func removing_dead(location):
+func generate_player():
+	var player_character = player_charater_scene.instantiate()
+	add_child(player_character)
+	var random_rewards = ["food", "iron", "gold"]
+	for i in range(player_deaths):
+		var reward = random_rewards.pick_random()
+		player_character.get_node("EQ_System").level_up(reward)
+	return player_character
+
+
+
+func removing_dead(city):
 	"""
-	It's a placeholder function for testing character damage
+	Health check of all the characters inside the city
 	"""
-	var to_be_killed = []
-	for i in range(location.size()):
-		var obj = location[i]
-		print(obj.get_node("Health_System").heavy_points)
-		if obj.get_node("Health_System").is_dead():
-			if obj is player_character:
-				pass # TODO send signal that a new character has to be made
-			#print("dead")
-			to_be_killed.append(i)
-	var modifier = 0
-	for value in to_be_killed:
-		location.remove_at(value - modifier)
-		modifier += 1
+	for location in city:
+		var to_be_killed = []
+		for i in range(location.size()):
+			var obj = location[i]
+			if obj.get_node("Health_System").is_dead():
+				if obj is player_character:
+					emit_signal("player_death")  # testing if neccesary
+					player_deaths += 1
+					city[0].append(generate_player())
+					
+				to_be_killed.append(i)
+		
+		var modifier = 0
+		for value in to_be_killed:
+			location.remove_at(value - modifier)
+			modifier += 1
 			

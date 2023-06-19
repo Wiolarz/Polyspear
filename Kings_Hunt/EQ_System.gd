@@ -2,16 +2,16 @@ extends Node
 
 var resources = \
 {
-	"gold": 0,
+	"food": 0,
 	"iron": 0,
-	"food": 0
+	"gold": 0,
 }
 
 var levels = \
 {
-	"gold" = 1,
-	"iron" = 1,
-	"food" = 1
+	"food": 1,
+	"iron": 1,
+	"gold": 1,
 }
 var requirements = \
 {
@@ -21,16 +21,28 @@ var requirements = \
 }
 
 
-'''
-func level_up(loot_name):
-		levels[loot_name] += 1
-		if loot_name == "gold":
-			attacks[randi_range(0, 2)] += 3
-		elif loot_name == "iron":
-			mine_power += 1
-		elif loot_name == "food":
-			cooldown_reset = clamp(cooldown_reset - 1, 0, cooldown_reset)
 
+func level_up(loot_name):
+	var card_system = get_parent().get_node("Card_System")
+	levels[loot_name] += 1
+	if loot_name == "gold":
+		var strongest_power = card_system.full_deck.max()
+		card_system.full_deck.append(strongest_power + 4)
+	elif loot_name == "iron":
+		# buffing a weakest card
+		# that is an above or equal to an average power of the full_deck
+		var power_sum = 0
+		for card in card_system.full_deck:
+			power_sum += card
+		var power_average = power_sum / card_system.full_deck.size()
+		card_system.full_deck.sort()  # places the weakest card at the front
+		for i in range(card_system.full_deck.size()):
+			if card_system.full_deck[i] >= power_average:
+				card_system.full_deck[i] += 4
+	
+	elif loot_name == "food":
+		card_system.full_deck.sort()  # places the weakest card at the front
+		card_system.full_deck.remove_at(0) # removes the weakest card
 
 	
 func award_resource(loot_name, quantity=1):
@@ -42,14 +54,3 @@ func award_resource(loot_name, quantity=1):
 	
 
 
-
-
-'''
-# Called when the node enters the scene tree for the first time.
-func _ready() -> void:
-	pass # Replace with function body.
-
-
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta: float) -> void:
-	pass
