@@ -4,79 +4,43 @@ extends Node
 @export var output : RichTextLabel
 
 
+@onready var city = get_node("City")
 
 
-	
-
-
-func generate_room(lvl=1):
-	var room = {"gold": randi_range(0, 3),
-	"iron": randi_range(0, 3),
-	"food": randi_range(0, 3)}
-	for key in room.keys():
-		if room[key] == 0:
-			room.erase(key)
-	
-	return room
-
-
-
-func generate_attack():
-	if randi_range(1, 4) != 1:
-		next_attack = null
-		return
-	
-	next_attack = randi_range(1, 40)
-	next_attack_suggestion = clamp(next_attack + randi_range(-5, 5), 1, 40)
-	
-
-'''
 func state_print():
-	output.text = str(time / 60) + "    current choice: " + current_choice
-	if current_choice in ["combat_1", "combat_2", "combat_3"]:
-		output.text += " " + player.attack_info(current_choice)
+	output.text = str(time / 60)
+	
 	output.text += "\n"
 	
-	output.text += "next attack: "
-	if next_attack == null:
-		output.text += "___"
-	else:
-		output.text += str(next_attack_suggestion)
+	
+	
+	# level related info - resources/activities
+#	for key in location.keys():
+#		output.text += "[" + key + "_" + str(location[key]) + "]"
+	output.text += city.current_location
 	output.text += "\n"
 	
-	# level resources
-	for key in location.keys():
-		output.text += "[" + key + "_" + str(location[key]) + "]"
+	# Level related info - enemies
+	
+	output.text += "Guards: "
 	output.text += "\n"
+	
+	
+	# player related info:
 	
 	# possedes resources, required resources
-	for key in player.resources.keys():
-		output.text += "[" + key + "-" + str(player.levels[key]) + ": " + \
-		str(player.resources[key]) + "/" + str(player.requirements[key]) + "]"
+#	for key in player.resources.keys():
+#		output.text += "[" + key + "-" + str(player.levels[key]) + ": " + \
+#		str(player.resources[key]) + "/" + str(player.requirements[key]) + "]"
 	
 	# player attacks status
-	output.text += "HP: " + str(player.hp) + "  "
-	for i in range(player.cooldowns.size()):
-		output.text += "[" + str(player.attacks[i]) + ":" + str(player.cooldowns[i]) + "]"
-	output.text += "\n"
+#	output.text += "HP: " + str(player.hp) + "  "
+#	for i in range(player.cooldowns.size()):
+#		output.text += "[" + str(player.attacks[i]) + ":" + str(player.cooldowns[i]) + "]"
+#	output.text += "\n"
 	
-	# update attack buttons
-	var text_attack_buttons = "combat"
-	for i in range(player.attacks.size()):
-		attack_buttons[i].text = text_attack_buttons + str(i + 1) + " "  \
-			+ str(player.attacks[i])
-'''
-
 var time = 0
-var level = 1
 
-
-var next_attack = null
-var next_attack_suggestion = 1
-var location = generate_room()
-
-# var player = Player.new() TODO
-var current_choice = "mine"
 
 func _physics_process(delta):
 	#if player.hp == 0:
@@ -90,8 +54,9 @@ func _physics_process(delta):
 	
 	# End of time for choice
 	if time >= time_for_action: # and (time / 60) != 0
-		pass
+		time = 0
+		# game logic
 	
-	#state_print()
+	state_print()
 	
 	

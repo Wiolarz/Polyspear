@@ -8,7 +8,11 @@ signal player_death
 var player_charater_scene = load("res://Kings_Hunt/player_character.tscn")  
 var guard_charater_scene = load("res://Kings_Hunt/guard_character.tscn") 
 
+
 var player_deaths = 2
+
+var current_location = "test"
+
 
 
 func _ready() -> void:
