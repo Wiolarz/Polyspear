@@ -4,3 +4,9 @@
 
 [node name="Finished_Game" type="Node"]
 script = ExtResource("1_bsm64")
+
+[node name="RichTextLabel" type="RichTextLabel" parent="."]
+offset_left = 70.0
+offset_top = 57.0
+offset_right = 1061.0
+offset_bottom = 582.0
