@@ -1,7 +1,3 @@
-# Krong
+# Krong season 2
 Organised by Wiolarz a regular meeting with people interested in learning Godot.
-Each meeting starts with quick lecture after which
-we code together a simple game.
-From the 8th meeting onward we decided to start developing
-a more advanced project "King's Hunt" over the course of the next meetings.
-
+This time each meeting will have it's own separete branch
