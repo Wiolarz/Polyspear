@@ -1,0 +1,18 @@
+[gd_scene load_steps=5 format=3 uid="uid://c7tcnhp8tfqc0"]
+
+[ext_resource type="Script" path="res://levels/human.gd" id="1_kfl1x"]
+[ext_resource type="Resource" uid="uid://cikdyupg2p3qg" path="res://Resources/cheap.tres" id="2_ysxol"]
+[ext_resource type="Texture2D" uid="uid://4bortaldtdyd" path="res://ART/characters1.png" id="3_nl3km"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_c5r0o"]
+size = Vector2(8, 12)
+
+[node name="Human" type="Area2D" groups=["Humans"]]
+script = ExtResource("1_kfl1x")
+clothes = ExtResource("2_ysxol")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_c5r0o")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("3_nl3km")

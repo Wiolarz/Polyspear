@@ -1,0 +1,18 @@
+[gd_scene load_steps=5 format=3 uid="uid://cqv7vdta72yva"]
+
+[ext_resource type="Script" path="res://levels/human.gd" id="1_l6mc7"]
+[ext_resource type="Resource" uid="uid://ybsy7qpgxd0r" path="res://Resources/police.tres" id="2_aum7i"]
+[ext_resource type="Texture2D" uid="uid://bvqvadukj7p6g" path="res://ART/characters12.png" id="3_a5hw4"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_c5r0o"]
+size = Vector2(8, 12)
+
+[node name="Police" type="Area2D" groups=["Enemy"]]
+script = ExtResource("1_l6mc7")
+clothes = ExtResource("2_aum7i")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_c5r0o")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("3_a5hw4")

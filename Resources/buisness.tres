@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="clothes" load_steps=4 format=3 uid="uid://qkqi8wbdq4e0"]
+
+[ext_resource type="Script" path="res://Resources/clothes.gd" id="1_6v7kg"]
+[ext_resource type="Texture2D" uid="uid://c0dyj6wrsnrkn" path="res://ART/player_sprites/player16.png" id="1_uxovx"]
+[ext_resource type="Texture2D" uid="uid://qhgrgyxocosn" path="res://ART/characters14.png" id="3_0ngxb"]
+
+[resource]
+script = ExtResource("1_6v7kg")
+sprite = ExtResource("3_0ngxb")
+player_version = ExtResource("1_uxovx")
+value = 3
+name = ""

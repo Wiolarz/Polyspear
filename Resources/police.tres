@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="clothes" load_steps=3 format=3 uid="uid://ybsy7qpgxd0r"]
+
+[ext_resource type="Texture2D" uid="uid://bvqvadukj7p6g" path="res://ART/characters12.png" id="2_5dtst"]
+[ext_resource type="Script" path="res://Resources/clothes.gd" id="2_cyf7f"]
+
+[resource]
+script = ExtResource("2_cyf7f")
+sprite = ExtResource("2_5dtst")
+value = 0
+name = ""
