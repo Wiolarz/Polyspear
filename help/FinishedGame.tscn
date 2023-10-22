@@ -10,3 +10,4 @@ offset_left = 70.0
 offset_top = 57.0
 offset_right = 1061.0
 offset_bottom = 582.0
+scroll_following = true
