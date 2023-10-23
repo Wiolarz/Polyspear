@@ -1,11 +1,21 @@
-extends Node
+# Useful Links
+
+"""
+
+reference how to find default for Node2D simpler movemnet system
+it's: position
+ex.
+position.x += 5
+https://docs.godotengine.org/en/stable/classes/class_node2d.html#class-node2d-property-position
 
 
-# Called when the node enters the scene tree for the first time.
-func _ready():
-	pass # Replace with function body.
+more complex movement system
+https://docs.godotengine.org/en/stable/tutorials/2d/2d_movement.html
 
 
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta):
-	pass
+
+for bonus question
+https://www.w3schools.com/python/python_dictionaries.asp
+
+
+"""
