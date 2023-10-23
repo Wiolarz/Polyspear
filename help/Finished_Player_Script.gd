@@ -22,6 +22,34 @@ var detection_range = 80
 
 var cheat_codes = false
 
+func get_input():
+	if Input.is_action_just_pressed("CHEATS"):
+		if cheat_codes:
+			cheat_codes = false
+		else:
+			cheat_codes = true
+	
+	
+	
+	var input_direction = Input.get_vector("KEY_LEFT", "KEY_RIGHT", "KEY_UP", "KEY_DOWN")
+	if input_direction.x < 0:
+		rotation_degrees = 180
+	elif input_direction.x > 0:
+		rotation_degrees = 0
+	elif input_direction.y < 0:
+		rotation_degrees = 270
+	elif input_direction.y > 0:
+		rotation_degrees = 90
+	
+	
+	
+	var cur_speed = speed
+	if Input.is_action_pressed("SNEAK"):
+		cur_speed = sneak_speed
+	
+	velocity = input_direction * cur_speed
+
+
 func _ready():
 	ui.text = "0"
 	
@@ -54,10 +82,35 @@ func clothes_change(new_type):
 	clothes.texture = new_type.player_version
 	cover_type = new_type.value
 
+func attempt_to_change_clothes():
+	var not_worn_clothes = {}
+	var list_empty = true
+	for body in crowd:
+		if body.clothes.value != cover_type:
+			list_empty = false
+			not_worn_clothes[body.clothes.value] = body.clothes
+	if list_empty:
+		return
+
+	var random_clothing = randi_range(0, not_worn_clothes.keys().size() - 1)
+	clothes_change(not_worn_clothes[not_worn_clothes.keys()[random_clothing]])
+	
+	cover_score = 0
+	for body in crowd:
+		if body.clothes.value == cover_type:
+			cover_score += 1
+	
+	detection_change()
+
+	
 	
 
 func _physics_process(_delta):
+	get_input()
+	move_and_slide()
 	
+	if Input.is_action_just_pressed("CLOTHES_CHANGE"):
+		attempt_to_change_clothes()
 	
 	
 	if detection_range > $PoliceArea/CollisionShape2D.shape.radius:
@@ -100,3 +153,6 @@ func _on_police_area_area_entered(body):
 		
 	print("game over")
 	get_tree().reload_current_scene()
+	
+
+
