@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://clw5c1ce4sq3d"
-path="res://.godot/imported/tilesheet_transparent.png-397e6a7b7da7a42d50c044a8598aba92.ctex"
+uid="uid://i5w470qvclsi"
+path="res://.godot/imported/goal.png-686961cd5dd06712b4f338e0028d6a02.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://tilesheet_transparent.png"
-dest_files=["res://.godot/imported/tilesheet_transparent.png-397e6a7b7da7a42d50c044a8598aba92.ctex"]
+source_file="res://ART/goal.png"
+dest_files=["res://.godot/imported/goal.png-686961cd5dd06712b4f338e0028d6a02.ctex"]
 
 [params]
 

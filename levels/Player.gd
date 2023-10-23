@@ -23,7 +23,7 @@ var detection_range = 80
 
 
 
-# Called when the node enters the scene tree for the first time.
+
 func _ready():
 	ui.text = "0"
 	
@@ -54,36 +54,10 @@ func clothes_change(new_type):
 	cover_type = new_type.value
 
 
-func get_input():
-	var input_direction = Input.get_vector("KEY_LEFT", "KEY_RIGHT", "KEY_UP", "KEY_DOWN")
-	if input_direction.x < 0:
-		rotation_degrees = 180
-	elif input_direction.x > 0:
-		rotation_degrees = 0
-	elif input_direction.y < 0:
-		rotation_degrees = 270
-	elif input_direction.y > 0:
-		rotation_degrees = 90
-	
-	
-	
-	var cur_speed = speed
-	if Input.is_action_pressed("SNEAK"):
-		cur_speed = sneak_speed
-	
-	velocity = input_direction * cur_speed
 
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _physics_process(delta):
-	get_input()
-	move_and_slide()
+func _physics_process(_delta):
 	
 	
-	
-	
-	a += 1
-	if a == 100:
-		a = 0
 	
 	if detection_range > $PoliceArea/CollisionShape2D.shape.radius:
 		$PoliceArea/CollisionShape2D.shape.radius += 1
@@ -122,6 +96,7 @@ func _on_police_area_area_entered(body):
 		return
 		
 	print("game over")
+	get_tree().reload_current_scene()
 	
 
 
