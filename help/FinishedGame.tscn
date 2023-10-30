@@ -1,21 +1,12 @@
-[gd_scene load_steps=13 format=3 uid="uid://c4waxrdpt2s5u"]
+[gd_scene load_steps=8 format=3 uid="uid://c4waxrdpt2s5u"]
 
 [ext_resource type="Script" path="res://help/FinishedGame.gd" id="1_bsm64"]
 [ext_resource type="Texture2D" uid="uid://dbxvvbwku3y6w" path="res://ART/background2.png" id="2_81r1n"]
 [ext_resource type="Texture2D" uid="uid://dv2sn6vodp7lf" path="res://ART/corner.png" id="3_aiy8k"]
 [ext_resource type="Texture2D" uid="uid://sk8fb3xi31rx" path="res://ART/edge_of_the_map.png" id="4_mx5m8"]
-[ext_resource type="Script" path="res://help/PlayerMovement.gd" id="5_5syp0"]
-[ext_resource type="Texture2D" uid="uid://dsuyf10fsprg2" path="res://ART/blue.png" id="6_3fwpr"]
-[ext_resource type="Script" path="res://help/Player_Weapon.gd" id="7_8lilw"]
-[ext_resource type="Texture2D" uid="uid://swp7jgfkcgwh" path="res://ART/axe.png" id="8_gwsh8"]
-[ext_resource type="Texture2D" uid="uid://7xpv6p8ujb1" path="res://ART/red.png" id="9_l3o5s"]
-[ext_resource type="Texture2D" uid="uid://b1l4romg0h16r" path="res://ART/sword.png" id="10_i4t1x"]
-
-[sub_resource type="CircleShape2D" id="CircleShape2D_g3oni"]
-radius = 247.291
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_1ev5r"]
-size = Vector2(632, 20)
+[ext_resource type="PackedScene" uid="uid://daxr8sv6kdpxx" path="res://Scenes/player.tscn" id="5_j8n4m"]
+[ext_resource type="PackedScene" path="res://Scenes/enemy.tscn" id="6_6u5ac"]
+[ext_resource type="Script" path="res://Scripts/Menu.gd" id="8_ntbbl"]
 
 [node name="Finished_Game" type="Node"]
 script = ExtResource("1_bsm64")
@@ -38,78 +29,10 @@ position = Vector2(3119, 272)
 [node name="Sprite2D" type="Sprite2D" parent="MapEdge"]
 texture = ExtResource("4_mx5m8")
 
-[node name="Player" type="Node2D" parent="."]
+[node name="Player" parent="." instance=ExtResource("5_j8n4m")]
 
-[node name="PlayerMovement" type="RigidBody2D" parent="Player"]
-inertia = 1.0
-center_of_mass_mode = 1
-gravity_scale = 0.0
-lock_rotation = true
-linear_damp = 1.0
-angular_damp = 10.0
-script = ExtResource("5_5syp0")
-speed = 100
+[node name="Enemy" parent="." instance=ExtResource("6_6u5ac")]
+position = Vector2(1237, -1370)
 
-[node name="PinJoint2D" type="PinJoint2D" parent="Player/PlayerMovement"]
-node_a = NodePath("..")
-node_b = NodePath("../../Weapon")
-
-[node name="Camera2D" type="Camera2D" parent="Player/PlayerMovement"]
-zoom = Vector2(0.4, 0.4)
-
-[node name="Sprite2D" type="Sprite2D" parent="Player/PlayerMovement"]
-texture = ExtResource("6_3fwpr")
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Player/PlayerMovement"]
-shape = SubResource("CircleShape2D_g3oni")
-
-[node name="Weapon" type="RigidBody2D" parent="Player"]
-center_of_mass_mode = 1
-gravity_scale = 0.0
-angular_damp = 10.0
-script = ExtResource("7_8lilw")
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Player/Weapon"]
-position = Vector2(582, 0)
-scale = Vector2(1, 8.48)
-shape = SubResource("RectangleShape2D_1ev5r")
-
-[node name="Sprite2D" type="Sprite2D" parent="Player/Weapon"]
-position = Vector2(572, 0)
-texture = ExtResource("8_gwsh8")
-
-[node name="Enemy" type="Node2D" parent="."]
-position = Vector2(890, -1212)
-
-[node name="EnemyMovement" type="RigidBody2D" parent="Enemy"]
-inertia = 1.0
-center_of_mass_mode = 1
-gravity_scale = 0.0
-lock_rotation = true
-linear_damp = 1.0
-angular_damp = 10.0
-
-[node name="PinJoint2D" type="PinJoint2D" parent="Enemy/EnemyMovement"]
-node_a = NodePath("..")
-node_b = NodePath("../../Weapon")
-
-[node name="Sprite2D" type="Sprite2D" parent="Enemy/EnemyMovement"]
-texture = ExtResource("9_l3o5s")
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Enemy/EnemyMovement"]
-shape = SubResource("CircleShape2D_g3oni")
-
-[node name="Weapon" type="RigidBody2D" parent="Enemy"]
-center_of_mass_mode = 1
-gravity_scale = 0.0
-angular_damp = 10.0
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Enemy/Weapon"]
-position = Vector2(582, 0)
-scale = Vector2(1, 5.88)
-shape = SubResource("RectangleShape2D_1ev5r")
-
-[node name="Sprite2D" type="Sprite2D" parent="Enemy/Weapon"]
-position = Vector2(572, 0)
-rotation = 0.352556
-texture = ExtResource("10_i4t1x")
+[node name="Menu" type="Node" parent="."]
+script = ExtResource("8_ntbbl")
