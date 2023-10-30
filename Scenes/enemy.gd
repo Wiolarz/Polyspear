@@ -12,10 +12,13 @@ extends Node2D
 @export var speed = 8
 
 
-@export var player : Node2D
+var player : Node2D
+
+
 
 func _ready():
-	player = player.get_node("PlayerMovement")
+	player = $"../../Player/PlayerMovement"
+	
 
 
 func _physics_process(_delta):
@@ -23,15 +26,31 @@ func _physics_process(_delta):
 	var p_direction = fmod(rad_to_deg(move_tool.global_position.angle_to_point(player.global_position)) + 360, 360) # - 360
 	var current_rotation = fmod(rotate_tool.rotation_degrees + 360, 360)
 	var goal_direction = p_direction - current_rotation
-	goal_direction = fmod(goal_direction + 360, 360)
-	
-	if goal_direction > 180:
-		goal_direction -= 360
+
 
 	print(goal_direction, "  ", p_direction, "   ", current_rotation)
 
+	if abs(goal_direction) > 180:
+		goal_direction *= -1
 
-	rotate_tool.direction_change(clamp(goal_direction, -1, 1))
+
+	rotate_tool.direction_change(clamp(goal_direction, -3, 3))
+	
+	
+	
+	
+#	var p_direction = fmod(rad_to_deg(move_tool.global_position.angle_to_point(player.global_position)) + 360, 360) # - 360
+#	var current_rotation = fmod(rotate_tool.rotation_degrees + 360, 360)
+#	var goal_direction = p_direction - current_rotation
+#	goal_direction = fmod(goal_direction + 360, 360)
+#
+#	if goal_direction > 180:
+#		goal_direction -= 360
+#
+#	print(goal_direction, "  ", p_direction, "   ", current_rotation)
+#
+#
+#	rotate_tool.direction_change(clamp(goal_direction, -1, 1))
 	
 	
 	
