@@ -5,7 +5,7 @@
 [ext_resource type="Texture2D" uid="uid://dv2sn6vodp7lf" path="res://ART/corner.png" id="3_aiy8k"]
 [ext_resource type="Texture2D" uid="uid://sk8fb3xi31rx" path="res://ART/edge_of_the_map.png" id="4_mx5m8"]
 [ext_resource type="PackedScene" uid="uid://daxr8sv6kdpxx" path="res://Scenes/player.tscn" id="5_j8n4m"]
-[ext_resource type="PackedScene" path="res://Scenes/enemy.tscn" id="6_6u5ac"]
+[ext_resource type="PackedScene" uid="uid://wgfq10in4r43" path="res://Scenes/enemy.tscn" id="6_6u5ac"]
 [ext_resource type="Script" path="res://Scripts/Menu.gd" id="8_ntbbl"]
 
 [node name="Finished_Game" type="Node"]
@@ -31,8 +31,9 @@ texture = ExtResource("4_mx5m8")
 
 [node name="Player" parent="." instance=ExtResource("5_j8n4m")]
 
-[node name="Enemy" parent="." instance=ExtResource("6_6u5ac")]
+[node name="Enemy" parent="." node_paths=PackedStringArray("player") instance=ExtResource("6_6u5ac")]
 position = Vector2(1237, -1370)
+player = NodePath("../Player")
 
 [node name="Menu" type="Node" parent="."]
 script = ExtResource("8_ntbbl")

@@ -15,7 +15,7 @@ extends Node2D
 # List of all bodies that weapon has pierced
 var plunged_bodies = {}
 
-func _physics_process(delta):
+func _physics_process(_delta):
 	for body in plunged_bodies.keys():
 		var immune = clamp(0, plunged_bodies[body]["IMMUNE_TIMER"] - 1, immunity_frames)
 		plunged_bodies[body]["IMMUNE_TIMER"] = immune

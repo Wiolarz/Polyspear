@@ -1,11 +1,13 @@
 extends RigidBody2D
 
 
-# Called when the node enters the scene tree for the first time.
-func _ready():
-	pass # Replace with function body.
+@export var rotation_speed = 0.1
 
 
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta):
-	pass
+var rotation_direction = 0
+
+func direction_change(value):
+	rotation_direction = value
+
+func _physics_process(_delta):
+	angular_velocity += rotation_direction * rotation_speed
