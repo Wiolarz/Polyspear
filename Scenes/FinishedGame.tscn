@@ -1,0 +1,40 @@
+[gd_scene load_steps=8 format=3 uid="uid://c4waxrdpt2s5u"]
+
+[ext_resource type="Script" path="res://help/FinishedGame.gd" id="1_taepy"]
+[ext_resource type="Texture2D" uid="uid://dbxvvbwku3y6w" path="res://ART/background2.png" id="2_fxamn"]
+[ext_resource type="Texture2D" uid="uid://dv2sn6vodp7lf" path="res://ART/corner.png" id="3_tve7e"]
+[ext_resource type="Texture2D" uid="uid://sk8fb3xi31rx" path="res://ART/edge_of_the_map.png" id="4_y5tor"]
+[ext_resource type="PackedScene" uid="uid://daxr8sv6kdpxx" path="res://Scenes/player.tscn" id="5_hmr60"]
+[ext_resource type="Script" path="res://Scripts/Menu.gd" id="6_5155m"]
+[ext_resource type="Script" path="res://help/Spawner.gd" id="7_1d8hr"]
+
+[node name="Finished_Game" type="Node"]
+script = ExtResource("1_taepy")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="Background" type="Sprite2D" parent="."]
+texture = ExtResource("2_fxamn")
+
+[node name="MapCorner" type="Node2D" parent="."]
+position = Vector2(2943, -1988)
+scale = Vector2(1.2, 1.2)
+
+[node name="Sprite2D" type="Sprite2D" parent="MapCorner"]
+texture = ExtResource("3_tve7e")
+
+[node name="MapEdge" type="Node2D" parent="."]
+position = Vector2(3119, 272)
+
+[node name="Sprite2D" type="Sprite2D" parent="MapEdge"]
+texture = ExtResource("4_y5tor")
+
+[node name="Player" parent="." instance=ExtResource("5_hmr60")]
+
+[node name="Menu" type="Node" parent="."]
+script = ExtResource("6_5155m")
+
+[node name="Spawner" type="Node2D" parent="." node_paths=PackedStringArray("player")]
+position = Vector2(-1749, -1151)
+script = ExtResource("7_1d8hr")
+player = NodePath("../Player")

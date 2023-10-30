@@ -6,7 +6,7 @@
 [ext_resource type="Script" path="res://Scripts/Weapon.gd" id="4_265fq"]
 [ext_resource type="Script" path="res://Scripts/Player_Weapon.gd" id="5_opclm"]
 [ext_resource type="Texture2D" uid="uid://swp7jgfkcgwh" path="res://ART/axe.png" id="6_0jbv4"]
-[ext_resource type="Script" path="res://Scenes/CharacterHitbox.gd" id="7_l2la1"]
+[ext_resource type="Script" path="res://Scripts/CharacterHitbox.gd" id="7_7yx6g"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_g3oni"]
 radius = 247.291
@@ -80,7 +80,7 @@ position = Vector2(787.5, -4.5)
 shape = SubResource("RectangleShape2D_ps2rt")
 
 [node name="CharacterHitbox" type="Area2D" parent="."]
-script = ExtResource("7_l2la1")
+script = ExtResource("7_7yx6g")
 
 [node name="BodyHitboxShape" type="CollisionShape2D" parent="CharacterHitbox"]
 shape = SubResource("CircleShape2D_c22em")

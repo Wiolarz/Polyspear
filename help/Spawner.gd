@@ -3,7 +3,7 @@ extends Node2D
 @export var player : Node2D
 
 
-var enemy_scene = load("res://Scenes/enemy.tscn")
+var enemy_scene = load("res://Scenes/small_enemy.tscn")
 #@onready var enemy = enemy_scene.instantiate()
 var countdown = 0
 
