@@ -1,0 +1,19 @@
+[gd_scene load_steps=4 format=3 uid="uid://dp67ppyuvv8ob"]
+
+[ext_resource type="Script" path="res://Scripts/Pit.gd" id="1_c2kim"]
+[ext_resource type="Texture2D" uid="uid://sk8fb3xi31rx" path="res://ART/edge_of_the_map.png" id="1_fqyjd"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_jyda4"]
+size = Vector2(96, 4000)
+
+[node name="MapEdge" type="Area2D"]
+script = ExtResource("1_c2kim")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("1_fqyjd")
+
+[node name="PitShape" type="CollisionShape2D" parent="."]
+position = Vector2(120, 0)
+shape = SubResource("RectangleShape2D_jyda4")
+
+[connection signal="area_entered" from="." to="." method="_on_area_entered"]

@@ -28,7 +28,7 @@ func _physics_process(_delta):
 	var goal_direction = p_direction - current_rotation
 
 
-	print(goal_direction, "  ", p_direction, "   ", current_rotation)
+	#print(goal_direction, "  ", p_direction, "   ", current_rotation)
 
 	if abs(goal_direction) > 180:
 		goal_direction *= -1

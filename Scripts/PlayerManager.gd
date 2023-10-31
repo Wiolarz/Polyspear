@@ -19,3 +19,6 @@ func _on_character_hitbox_got_hit(value):
 	
 	if health <= 0:
 		get_tree().reload_current_scene()
+
+
+	

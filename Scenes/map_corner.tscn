@@ -1,0 +1,15 @@
+[gd_scene load_steps=3 format=3 uid="uid://darurk3tn4vxp"]
+
+[ext_resource type="Texture2D" uid="uid://dv2sn6vodp7lf" path="res://ART/corner.png" id="1_10gln"]
+[ext_resource type="Script" path="res://Scripts/Pit.gd" id="1_wiev4"]
+
+[node name="MapCorner" type="Area2D"]
+script = ExtResource("1_wiev4")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+scale = Vector2(1.2, 1.2)
+texture = ExtResource("1_10gln")
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="."]
+position = Vector2(8, -72)
+polygon = PackedVector2Array(-384, -120, 32, -120, 200, 32, 240, 328, 376, 328, 376, -256, -384, -256)
