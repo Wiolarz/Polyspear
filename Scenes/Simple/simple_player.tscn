@@ -1,12 +1,12 @@
-[gd_scene load_steps=12 format=3 uid="uid://daxr8sv6kdpxx"]
+[gd_scene load_steps=12 format=3 uid="uid://bb7fu6ckjieoc"]
 
-[ext_resource type="Script" path="res://Scripts/PlayerManager.gd" id="1_yowb6"]
-[ext_resource type="Script" path="res://Scripts/PlayerMovement.gd" id="2_72fvl"]
-[ext_resource type="Texture2D" uid="uid://dsuyf10fsprg2" path="res://ART/blue.png" id="3_u8cof"]
-[ext_resource type="Script" path="res://Scripts/Weapon.gd" id="4_265fq"]
-[ext_resource type="Script" path="res://Scripts/Player_Weapon.gd" id="5_opclm"]
-[ext_resource type="Texture2D" uid="uid://swp7jgfkcgwh" path="res://ART/axe.png" id="6_0jbv4"]
-[ext_resource type="Script" path="res://Scripts/CharacterHitbox.gd" id="7_7yx6g"]
+[ext_resource type="Script" path="res://Scripts/PlayerManager.gd" id="1_rbn8w"]
+[ext_resource type="Script" path="res://Scripts/Simple/SimplePlayerMovement.gd" id="2_im7i2"]
+[ext_resource type="Texture2D" uid="uid://dsuyf10fsprg2" path="res://ART/blue.png" id="3_1y3gc"]
+[ext_resource type="Script" path="res://Scripts/Weapon.gd" id="4_unhkc"]
+[ext_resource type="Script" path="res://Scripts/Simple/SimplePlayer_Weapon.gd" id="5_4cym0"]
+[ext_resource type="Texture2D" uid="uid://swp7jgfkcgwh" path="res://ART/axe.png" id="6_kmk8l"]
+[ext_resource type="Script" path="res://Scripts/CharacterHitbox.gd" id="7_ym3x6"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_g3oni"]
 radius = 247.291
@@ -21,16 +21,17 @@ size = Vector2(222, 189)
 radius = 258.0
 
 [node name="Player" type="Node2D"]
-script = ExtResource("1_yowb6")
+script = ExtResource("1_rbn8w")
 
 [node name="PlayerMovement" type="RigidBody2D" parent="."]
 inertia = 1.0
 center_of_mass_mode = 1
 gravity_scale = 0.0
 lock_rotation = true
-linear_damp = 5.0
+linear_damp = 1.0
 angular_damp = 10.0
-script = ExtResource("2_72fvl")
+script = ExtResource("2_im7i2")
+speed = 100
 
 [node name="RemoteTransform2D" type="RemoteTransform2D" parent="PlayerMovement"]
 remote_path = NodePath("../../CharacterHitbox")
@@ -45,23 +46,20 @@ node_b = NodePath("../../Weapon/WeaponBody")
 zoom = Vector2(0.4, 0.4)
 
 [node name="PlayerSprite" type="Sprite2D" parent="PlayerMovement"]
-texture = ExtResource("3_u8cof")
+texture = ExtResource("3_1y3gc")
 
 [node name="MovementShape" type="CollisionShape2D" parent="PlayerMovement"]
 shape = SubResource("CircleShape2D_g3oni")
 
 [node name="Weapon" type="Node2D" parent="."]
-script = ExtResource("4_265fq")
+script = ExtResource("4_unhkc")
 immunity_frames = 30
 
 [node name="WeaponBody" type="RigidBody2D" parent="Weapon"]
-mass = 20.0
-inertia = 1e+08
 center_of_mass_mode = 1
 gravity_scale = 0.0
-angular_damp = 1.0
-script = ExtResource("5_opclm")
-rotation_speed = 800000000
+angular_damp = 10.0
+script = ExtResource("5_4cym0")
 
 [node name="RemoteTransform2D" type="RemoteTransform2D" parent="Weapon/WeaponBody"]
 remote_path = NodePath("../../WeaponHitbox")
@@ -74,7 +72,7 @@ shape = SubResource("RectangleShape2D_1ev5r")
 
 [node name="WeaponSprite" type="Sprite2D" parent="Weapon/WeaponBody"]
 position = Vector2(572, 0)
-texture = ExtResource("6_0jbv4")
+texture = ExtResource("6_kmk8l")
 
 [node name="WeaponShape2" type="CollisionPolygon2D" parent="Weapon/WeaponBody"]
 polygon = PackedVector2Array(678, -63, 876, -91, 796, -9, 818, 83, 712, 35)
@@ -86,7 +84,7 @@ position = Vector2(772, -4.5)
 shape = SubResource("RectangleShape2D_ps2rt")
 
 [node name="CharacterHitbox" type="Area2D" parent="."]
-script = ExtResource("7_7yx6g")
+script = ExtResource("7_ym3x6")
 
 [node name="BodyHitboxShape" type="CollisionShape2D" parent="CharacterHitbox"]
 shape = SubResource("CircleShape2D_c22em")

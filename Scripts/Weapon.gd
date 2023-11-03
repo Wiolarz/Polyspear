@@ -8,7 +8,6 @@ extends Node2D
 
 
 #enum weapons_properties {IMMUNE_TIMER, PLUNGED} # doesnt work for some reason
-@export var rotation_speed = 1.5
 
 @export var damage_value = 50
 
@@ -40,7 +39,6 @@ func _on_weapon_hitbox_area_entered(area:Area2D):
 
 
 func _on_weapon_hitbox_area_exited(area:Area2D):
-	print(0)
 	if area.has_method("damage"):
 		plunged_bodies[area]["PLUNGED"] = false
 

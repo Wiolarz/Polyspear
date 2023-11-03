@@ -14,7 +14,7 @@ extends Node2D
 @onready var move_tool = $EnemyMovement
 @onready var body = $Weapon/WeaponBody
 
-@export var speed = 4000
+@export var speed = 40
 
 var player : RigidBody2D  # reference to Player position
 
@@ -37,8 +37,7 @@ func _physics_process(_delta):
 		goal_direction *= -1
 
 
-	#body.direction_change(clamp(goal_direction, -1, 1))
-	body.direction_change(-1)
+	body.direction_change(clamp(goal_direction, -1, 1))
 	
 	
 
@@ -46,13 +45,8 @@ func _physics_process(_delta):
 	# movment
 	var target_goal = Vector2(clamp(player.global_position.x - body.global_position.x, -1, 1), clamp(player.global_position.y - body.global_position.y, -1, 1))
 	
-	body.apply_force(target_goal * speed, body.global_position)
-	#body.linear_velocity += transform.y * speed * clamp(target_goal.y, -1, 1) 
-	#body.linear_velocity += transform.x * speed * clamp(target_goal.x, -1, 1) 
-
-
-	#var pdir = (player.global_position - move_tool.global_position).normalized() * speed
-	#move_tool.move_and_collide(pdir)
+	body.linear_velocity += transform.y * speed * clamp(target_goal.y, -1, 1) 
+	body.linear_velocity += transform.x * speed * clamp(target_goal.x, -1, 1) 
 
 
 

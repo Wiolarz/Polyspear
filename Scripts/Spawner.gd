@@ -28,7 +28,7 @@ func spawn():
 	#enemy.position = Vector2(side, randf_range(-4000, 4000))
 
 
-func _physics_process(delta):
+func _physics_process(_delta):
 	countdown += 1
 	# TODO something is broken with spawn system
 	# TODO make it so that a greater spawn system places dudes into specified spawn points (also make another code that places enemies randomly)

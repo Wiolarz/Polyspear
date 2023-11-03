@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://cf1cbn0ouimmo"]
+[gd_scene load_steps=11 format=3 uid="uid://c1rcrj0mcsh88"]
 
 [ext_resource type="Texture2D" uid="uid://dbxvvbwku3y6w" path="res://ART/background.png" id="1_nlbq7"]
 [ext_resource type="Script" path="res://Scripts/test_Spawner.gd" id="4_kit3r"]

@@ -1,16 +1,13 @@
 extends RigidBody2D
 
 
-@export var speed = 4
+@export var speed = 9000
 
 
 func get_input():
-	
-	
-	
-	linear_velocity += transform.y * Input.get_axis("KEY_UP", "KEY_DOWN") * speed
 
-	linear_velocity += transform.x * Input.get_axis("KEY_LEFT", "KEY_RIGHT") * speed
+	apply_force(Input.get_vector("KEY_LEFT", "KEY_RIGHT", "KEY_UP", "KEY_DOWN") * speed, global_position)
+
 
 
 

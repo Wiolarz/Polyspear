@@ -1,11 +1,11 @@
-[gd_scene load_steps=10 format=3 uid="uid://c4r0qto3olsqd"]
+[gd_scene load_steps=10 format=3 uid="uid://cm5pv4qsttvxa"]
 
-[ext_resource type="Script" path="res://Scripts/enemy.gd" id="1_asrto"]
-[ext_resource type="Texture2D" uid="uid://7xpv6p8ujb1" path="res://ART/red.png" id="2_eeojw"]
-[ext_resource type="Script" path="res://Scripts/Weapon.gd" id="3_gw1kb"]
-[ext_resource type="Script" path="res://Scripts/Enemy_Weapon.gd" id="4_fiq3d"]
-[ext_resource type="Texture2D" uid="uid://b1l4romg0h16r" path="res://ART/sword.png" id="5_lnu7m"]
-[ext_resource type="Script" path="res://Scripts/CharacterHitbox.gd" id="6_gtcrr"]
+[ext_resource type="Script" path="res://Scripts/Simple/SimpleEnemy.gd" id="1_1sblh"]
+[ext_resource type="Texture2D" uid="uid://7xpv6p8ujb1" path="res://ART/red.png" id="2_c3qr0"]
+[ext_resource type="Script" path="res://Scripts/Weapon.gd" id="3_2tsiv"]
+[ext_resource type="Script" path="res://Scripts/Simple/Simple_Enemy_Weapon.gd" id="4_1irm7"]
+[ext_resource type="Texture2D" uid="uid://b1l4romg0h16r" path="res://ART/sword.png" id="5_1wc6j"]
+[ext_resource type="Script" path="res://Scripts/CharacterHitbox.gd" id="6_1n8lb"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_g3oni"]
 radius = 247.291
@@ -17,8 +17,8 @@ size = Vector2(342.371, 8.62169)
 radius = 258.0
 
 [node name="Enemy" type="Node2D"]
-script = ExtResource("1_asrto")
-speed = 1000
+script = ExtResource("1_1sblh")
+speed = 20
 
 [node name="EnemyMovement" type="RigidBody2D" parent="."]
 inertia = 1.0
@@ -34,7 +34,7 @@ node_b = NodePath("../../Weapon/WeaponBody")
 
 [node name="Sprite2D" type="Sprite2D" parent="EnemyMovement"]
 scale = Vector2(0.5, 0.5)
-texture = ExtResource("2_eeojw")
+texture = ExtResource("2_c3qr0")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="EnemyMovement"]
 scale = Vector2(0.5, 0.5)
@@ -46,26 +46,24 @@ update_rotation = false
 update_scale = false
 
 [node name="Weapon" type="Node2D" parent="."]
-script = ExtResource("3_gw1kb")
+script = ExtResource("3_2tsiv")
 
 [node name="WeaponBody" type="RigidBody2D" parent="Weapon"]
-inertia = 100000.0
 center_of_mass_mode = 1
 gravity_scale = 0.0
-angular_damp = 1.0
-script = ExtResource("4_fiq3d")
-rotation_speed = 1.0
+angular_damp = 10.0
+script = ExtResource("4_1irm7")
+rotation_speed = 0.2
 
 [node name="WeaponSprite" type="Sprite2D" parent="Weapon/WeaponBody"]
 position = Vector2(292, 0)
 rotation = 0.349066
 scale = Vector2(0.5, 0.5)
-texture = ExtResource("5_lnu7m")
+texture = ExtResource("5_1wc6j")
 
 [node name="WeaponShape" type="CollisionShape2D" parent="Weapon/WeaponBody"]
 position = Vector2(307.819, -2.52001)
 rotation = -0.0513421
-scale = Vector2(1, 1)
 shape = SubResource("RectangleShape2D_1ev5r")
 
 [node name="RemoteTransform2D" type="RemoteTransform2D" parent="Weapon/WeaponBody"]
@@ -79,7 +77,7 @@ scale = Vector2(0.5, 0.5)
 polygon = PackedVector2Array(476, -45, 977, -37, 919, 2, 488, 64)
 
 [node name="CharacterHitbox" type="Area2D" parent="."]
-script = ExtResource("6_gtcrr")
+script = ExtResource("6_1n8lb")
 
 [node name="BodyHitboxShape" type="CollisionShape2D" parent="CharacterHitbox"]
 scale = Vector2(0.5, 0.5)

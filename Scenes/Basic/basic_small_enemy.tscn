@@ -1,0 +1,76 @@
+[gd_scene load_steps=9 format=3 uid="uid://bhtwerywf8kh6"]
+
+[ext_resource type="Script" path="res://Scripts/basic_small_enemy.gd" id="1_vtcag"]
+[ext_resource type="Texture2D" uid="uid://7xpv6p8ujb1" path="res://ART/red.png" id="2_jetgw"]
+[ext_resource type="Script" path="res://Scripts/Weapon.gd" id="3_vp4qp"]
+[ext_resource type="Texture2D" uid="uid://b1l4romg0h16r" path="res://ART/sword.png" id="4_nr1wr"]
+[ext_resource type="Script" path="res://Scripts/CharacterHitbox.gd" id="5_lx34j"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_g3oni"]
+radius = 247.291
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_1ev5r"]
+size = Vector2(630.204, 12.0399)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_nc6qa"]
+radius = 258.0
+
+[node name="Enemy" type="Node2D"]
+script = ExtResource("1_vtcag")
+
+[node name="EnemyMovement" type="CharacterBody2D" parent="."]
+
+[node name="PinJoint2D" type="PinJoint2D" parent="EnemyMovement"]
+node_a = NodePath("..")
+node_b = NodePath("../../Weapon/WeaponBody")
+
+[node name="Sprite2D" type="Sprite2D" parent="EnemyMovement"]
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("2_jetgw")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="EnemyMovement"]
+scale = Vector2(0.5, 0.5)
+shape = SubResource("CircleShape2D_g3oni")
+
+[node name="RemoteTransform2D" type="RemoteTransform2D" parent="EnemyMovement"]
+remote_path = NodePath("../../CharacterHitbox")
+update_rotation = false
+update_scale = false
+
+[node name="Weapon" type="Node2D" parent="."]
+script = ExtResource("3_vp4qp")
+
+[node name="WeaponBody" type="CharacterBody2D" parent="Weapon"]
+
+[node name="WeaponShape" type="CollisionShape2D" parent="Weapon/WeaponBody"]
+position = Vector2(302.222, -5.949)
+rotation = -0.0513421
+scale = Vector2(0.5, 1.38)
+shape = SubResource("RectangleShape2D_1ev5r")
+
+[node name="WeaponSprite" type="Sprite2D" parent="Weapon/WeaponBody"]
+position = Vector2(292, 0)
+rotation = 0.349066
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("4_nr1wr")
+
+[node name="RemoteTransform2D" type="RemoteTransform2D" parent="Weapon/WeaponBody"]
+remote_path = NodePath("../../WeaponHitbox")
+update_scale = false
+
+[node name="WeaponHitbox" type="Area2D" parent="Weapon"]
+
+[node name="DamageHitboxShape" type="CollisionPolygon2D" parent="Weapon/WeaponHitbox"]
+scale = Vector2(0.5, 0.5)
+polygon = PackedVector2Array(476, -45, 977, -37, 919, 2, 488, 64)
+
+[node name="CharacterHitbox" type="Area2D" parent="."]
+script = ExtResource("5_lx34j")
+
+[node name="BodyHitboxShape" type="CollisionShape2D" parent="CharacterHitbox"]
+scale = Vector2(0.5, 0.5)
+shape = SubResource("CircleShape2D_nc6qa")
+
+[connection signal="area_entered" from="Weapon/WeaponHitbox" to="Weapon" method="_on_weapon_hitbox_area_entered"]
+[connection signal="area_exited" from="Weapon/WeaponHitbox" to="Weapon" method="_on_weapon_hitbox_area_exited"]
+[connection signal="got_hit" from="CharacterHitbox" to="." method="_on_character_hitbox_got_hit"]

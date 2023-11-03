@@ -1,0 +1,95 @@
+[gd_scene load_steps=11 format=3 uid="uid://bihwfcnqrljfk"]
+
+[ext_resource type="Texture2D" uid="uid://dbxvvbwku3y6w" path="res://ART/background.png" id="1_i3k60"]
+[ext_resource type="PackedScene" uid="uid://b2ln8fu45j13f" path="res://Scenes/spikes.tscn" id="2_5oci3"]
+[ext_resource type="PackedScene" uid="uid://dp67ppyuvv8ob" path="res://Scenes/map_edge.tscn" id="5_f0p4j"]
+[ext_resource type="PackedScene" uid="uid://darurk3tn4vxp" path="res://Scenes/map_corner.tscn" id="6_woe55"]
+[ext_resource type="PackedScene" uid="uid://cdby23e1a3eeh" path="res://Scenes/menu.tscn" id="7_v10lo"]
+[ext_resource type="PackedScene" uid="uid://ce1v3ocbkdcfb" path="res://Scenes/rock_1.tscn" id="8_cl42y"]
+[ext_resource type="PackedScene" uid="uid://bb7fu6ckjieoc" path="res://Scenes/Simple/simple_player.tscn" id="8_ofaax"]
+[ext_resource type="PackedScene" uid="uid://brivq0jp25jxa" path="res://Scenes/spawner.tscn" id="9_qiyev"]
+[ext_resource type="PackedScene" uid="uid://ck4gb58gt0b7s" path="res://Scenes/rock_2.tscn" id="9_vksil"]
+[ext_resource type="PackedScene" uid="uid://cm5pv4qsttvxa" path="res://Scenes/Simple/simple_small_enemy.tscn" id="11_fyi83"]
+
+[node name="BasicMap" type="Node"]
+
+[node name="Background" type="Sprite2D" parent="."]
+position = Vector2(-1249, 259)
+scale = Vector2(1.45039, 1.25409)
+texture = ExtResource("1_i3k60")
+
+[node name="Spikes" parent="." instance=ExtResource("2_5oci3")]
+position = Vector2(1066, 1424)
+
+[node name="Spikes2" parent="." instance=ExtResource("2_5oci3")]
+position = Vector2(981, -1433)
+
+[node name="Spikes3" parent="." instance=ExtResource("2_5oci3")]
+position = Vector2(-2539, 1350)
+
+[node name="MapBorders" type="Node2D" parent="."]
+
+[node name="MapEdge" parent="MapBorders" instance=ExtResource("5_f0p4j")]
+position = Vector2(3147, 240)
+
+[node name="MapEdge2" parent="MapBorders" instance=ExtResource("5_f0p4j")]
+position = Vector2(613, -2179)
+rotation = -1.5708
+
+[node name="MapEdge5" parent="MapBorders" instance=ExtResource("5_f0p4j")]
+position = Vector2(-3221, 2767)
+rotation = 1.5708
+
+[node name="MapEdge6" parent="MapBorders" instance=ExtResource("5_f0p4j")]
+position = Vector2(-3378, -2208)
+rotation = -1.5708
+
+[node name="MapEdge3" parent="MapBorders" instance=ExtResource("5_f0p4j")]
+position = Vector2(737, 2774)
+rotation = 1.5708
+
+[node name="MapEdge4" parent="MapBorders" instance=ExtResource("5_f0p4j")]
+position = Vector2(-5642, 347)
+rotation = -3.14159
+
+[node name="MapCorner" parent="MapBorders" instance=ExtResource("6_woe55")]
+position = Vector2(2977, -2008)
+
+[node name="MapCorner2" parent="MapBorders" instance=ExtResource("6_woe55")]
+position = Vector2(2977, 2604)
+rotation = 1.5708
+
+[node name="MapCorner3" parent="MapBorders" instance=ExtResource("6_woe55")]
+position = Vector2(-5553, 2505)
+rotation = -3.14159
+
+[node name="MapCorner4" parent="MapBorders" instance=ExtResource("6_woe55")]
+position = Vector2(-5473, -2021)
+rotation = -1.5708
+
+[node name="Menu" parent="." instance=ExtResource("7_v10lo")]
+
+[node name="Rock1" parent="." instance=ExtResource("8_cl42y")]
+position = Vector2(-3820, 1161)
+
+[node name="Rock2" parent="." instance=ExtResource("9_vksil")]
+position = Vector2(-1255, -1080)
+
+[node name="Player" parent="." instance=ExtResource("8_ofaax")]
+position = Vector2(-1373, 279)
+
+[node name="Spawner_TopLeft" parent="." instance=ExtResource("9_qiyev")]
+position = Vector2(-5295, -1901)
+enemy_scene = ExtResource("11_fyi83")
+
+[node name="Spawner_DownRight" parent="." instance=ExtResource("9_qiyev")]
+position = Vector2(2788, 2489)
+enemy_scene = ExtResource("11_fyi83")
+
+[node name="Spawner_TopRight" parent="." instance=ExtResource("9_qiyev")]
+position = Vector2(2814, -1876)
+enemy_scene = ExtResource("11_fyi83")
+
+[node name="Spawner_DownLeft" parent="." instance=ExtResource("9_qiyev")]
+position = Vector2(-5306, 2277)
+enemy_scene = ExtResource("11_fyi83")
