@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://os75hnii4k0w"]
+
+[ext_resource type="Script" path="res://Scripts/Menu.gd" id="1_kp0kd"]
+
+[node name="BasicMap" type="Node"]
+
+[node name="Menu" type="Node" parent="."]
+script = ExtResource("1_kp0kd")

@@ -1,6 +1,0 @@
-[gd_scene load_steps=2 format=3 uid="uid://c4waxrdpt2s5u"]
-
-[ext_resource type="Script" path="res://help/FinishedGame.gd" id="1_bsm64"]
-
-[node name="Finished_Game" type="Node"]
-script = ExtResource("1_bsm64")
