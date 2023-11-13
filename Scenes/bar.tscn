@@ -1,8 +1,8 @@
 [gd_scene load_steps=4 format=3 uid="uid://bngg1wfqovtf8"]
 
 [ext_resource type="Script" path="res://Scripts/Bar.gd" id="1_qg0xx"]
-[ext_resource type="Texture2D" uid="uid://dmb6ufd5175ej" path="res://ART/Hpbar_background.png" id="2_j1byx"]
-[ext_resource type="Texture2D" uid="uid://c4pubk0j6sx6w" path="res://ART/Hpbar_bars.png" id="3_rpdhn"]
+[ext_resource type="Texture2D" uid="uid://dmb6ufd5175ej" path="res://ART/UI/Hpbar_background.png" id="2_j1byx"]
+[ext_resource type="Texture2D" uid="uid://c4pubk0j6sx6w" path="res://ART/UI/Hpbar_bars.png" id="3_rpdhn"]
 
 [node name="Bar" type="Control"]
 layout_mode = 3
