@@ -1,8 +1,15 @@
 extends Node2D
 
+signal HPchanged()
+
 @export var health = 100
 
 @export var cheats = false
+
+func _ready():
+	print("test")
+	#emit_signal("HPchanged", health)  # doesn't work
+
 
 
 func _process(_delta):
@@ -15,7 +22,9 @@ func _process(_delta):
 func _on_character_hitbox_got_hit(value):
 	if not cheats:
 		health -= value
-		print("player", health)
+		emit_signal("HPchanged", health, 100)
+		#print("player", health)
+
 	
 	if health <= 0:
 		get_tree().reload_current_scene()

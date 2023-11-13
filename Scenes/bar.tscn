@@ -1,0 +1,36 @@
+[gd_scene load_steps=4 format=3 uid="uid://bngg1wfqovtf8"]
+
+[ext_resource type="Script" path="res://Scripts/Bar.gd" id="1_qg0xx"]
+[ext_resource type="Texture2D" uid="uid://dmb6ufd5175ej" path="res://ART/Hpbar_background.png" id="2_j1byx"]
+[ext_resource type="Texture2D" uid="uid://c4pubk0j6sx6w" path="res://ART/Hpbar_bars.png" id="3_rpdhn"]
+
+[node name="Bar" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("1_qg0xx")
+
+[node name="BarBackround" type="TextureRect" parent="."]
+offset_right = 1526.0
+offset_bottom = 385.0
+texture = ExtResource("2_j1byx")
+
+[node name="ColorBackground" type="ColorRect" parent="."]
+offset_left = 39.0
+offset_top = 23.0
+offset_right = 1488.0
+offset_bottom = 362.0
+color = Color(0.101961, 0.101961, 0.101961, 1)
+
+[node name="Value" type="ColorRect" parent="."]
+offset_left = 39.0
+offset_top = 23.0
+offset_right = 1488.0
+offset_bottom = 362.0
+color = Color(0.615686, 0.12549, 0.113725, 1)
+
+[node name="BarGaps" type="TextureRect" parent="."]
+offset_right = 1526.0
+offset_bottom = 385.0
+texture = ExtResource("3_rpdhn")

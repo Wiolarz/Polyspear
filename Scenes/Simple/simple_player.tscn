@@ -43,7 +43,7 @@ node_a = NodePath("..")
 node_b = NodePath("../../Weapon/WeaponBody")
 
 [node name="Camera2D" type="Camera2D" parent="PlayerMovement"]
-zoom = Vector2(0.4, 0.4)
+zoom = Vector2(0.2, 0.2)
 
 [node name="PlayerSprite" type="Sprite2D" parent="PlayerMovement"]
 texture = ExtResource("3_1y3gc")

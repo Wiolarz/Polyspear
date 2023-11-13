@@ -1,0 +1,15 @@
+[gd_scene load_steps=3 format=3 uid="uid://d5ev2j4bvf01"]
+
+[ext_resource type="Script" path="res://Scripts/UI.gd" id="1_kxhc8"]
+[ext_resource type="PackedScene" uid="uid://bngg1wfqovtf8" path="res://Scenes/bar.tscn" id="2_6nptj"]
+
+[node name="UI" type="CanvasLayer"]
+script = ExtResource("1_kxhc8")
+
+[node name="HPBar" parent="." instance=ExtResource("2_6nptj")]
+scale = Vector2(0.15, 0.15)
+
+[node name="RichTextLabel" type="RichTextLabel" parent="."]
+offset_right = 302.0
+offset_bottom = 231.0
+text = "TESTTTTT"

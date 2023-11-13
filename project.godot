@@ -15,6 +15,10 @@ run/main_scene="res://Scenes/Simple/SimpleMap.tscn"
 config/features=PackedStringArray("4.1", "GL Compatibility")
 config/icon="res://icon.svg"
 
+[display]
+
+window/stretch/mode="canvas_items"
+
 [input]
 
 KEY_1={

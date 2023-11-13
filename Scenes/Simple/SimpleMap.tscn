@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://bihwfcnqrljfk"]
+[gd_scene load_steps=12 format=3 uid="uid://bihwfcnqrljfk"]
 
 [ext_resource type="Texture2D" uid="uid://dbxvvbwku3y6w" path="res://ART/background.png" id="1_i3k60"]
 [ext_resource type="PackedScene" uid="uid://b2ln8fu45j13f" path="res://Scenes/spikes.tscn" id="2_5oci3"]
@@ -10,6 +10,7 @@
 [ext_resource type="PackedScene" uid="uid://brivq0jp25jxa" path="res://Scenes/spawner.tscn" id="9_qiyev"]
 [ext_resource type="PackedScene" uid="uid://ck4gb58gt0b7s" path="res://Scenes/rock_2.tscn" id="9_vksil"]
 [ext_resource type="PackedScene" uid="uid://cm5pv4qsttvxa" path="res://Scenes/Simple/simple_small_enemy.tscn" id="11_fyi83"]
+[ext_resource type="PackedScene" uid="uid://d5ev2j4bvf01" path="res://Scenes/UI.tscn" id="11_rib8s"]
 
 [node name="BasicMap" type="Node"]
 
@@ -93,3 +94,6 @@ enemy_scene = ExtResource("11_fyi83")
 [node name="Spawner_DownLeft" parent="." instance=ExtResource("9_qiyev")]
 position = Vector2(-5306, 2277)
 enemy_scene = ExtResource("11_fyi83")
+
+[node name="CanvasLayer" parent="." node_paths=PackedStringArray("player") instance=ExtResource("11_rib8s")]
+player = NodePath("../Player")
