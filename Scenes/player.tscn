@@ -1,0 +1,28 @@
+[gd_scene load_steps=5 format=3 uid="uid://cbbkojgcsrdxg"]
+
+[ext_resource type="Texture2D" uid="uid://c6a1iwvfx3esv" path="res://Art/player.png" id="1_22d5t"]
+[ext_resource type="Script" path="res://Scripts/player.gd" id="1_gs88a"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_vpjnq"]
+size = Vector2(9, 12)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_s2uwh"]
+size = Vector2(13, 18)
+
+[node name="Player" type="CharacterBody2D"]
+script = ExtResource("1_gs88a")
+
+[node name="ShipSprite" type="Sprite2D" parent="."]
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("1_22d5t")
+offset = Vector2(0, 1)
+
+[node name="hitbox" type="Area2D" parent="."]
+
+[node name="HitboxShape" type="CollisionShape2D" parent="hitbox"]
+position = Vector2(-1.5, 0)
+shape = SubResource("RectangleShape2D_vpjnq")
+
+[node name="MovementCollision" type="CollisionShape2D" parent="."]
+position = Vector2(0.5, 0)
+shape = SubResource("RectangleShape2D_s2uwh")

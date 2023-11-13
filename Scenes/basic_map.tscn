@@ -1,8 +1,25 @@
-[gd_scene load_steps=2 format=3 uid="uid://os75hnii4k0w"]
+[gd_scene load_steps=5 format=3 uid="uid://os75hnii4k0w"]
 
 [ext_resource type="Script" path="res://Scripts/Menu.gd" id="1_kp0kd"]
+[ext_resource type="Texture2D" uid="uid://du03tgcf81l8c" path="res://Art/background.png" id="2_1cfpo"]
+[ext_resource type="Texture2D" uid="uid://dp5nkeidtt56i" path="res://Art/enemy_rocket.png" id="3_5u82o"]
+[ext_resource type="PackedScene" uid="uid://cbbkojgcsrdxg" path="res://Scenes/player.tscn" id="4_uicuu"]
 
 [node name="BasicMap" type="Node"]
 
 [node name="Menu" type="Node" parent="."]
 script = ExtResource("1_kp0kd")
+
+[node name="Background" type="Sprite2D" parent="."]
+texture_repeat = 2
+position = Vector2(240, 135)
+texture = ExtResource("2_1cfpo")
+region_enabled = true
+region_rect = Rect2(0, 0, 480, 270)
+
+[node name="EnemyRocket" type="Sprite2D" parent="."]
+position = Vector2(151, 167)
+texture = ExtResource("3_5u82o")
+
+[node name="Player" parent="." instance=ExtResource("4_uicuu")]
+position = Vector2(20, 129)
