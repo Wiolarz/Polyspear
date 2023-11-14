@@ -1,9 +1,28 @@
-[gd_scene load_steps=5 format=3 uid="uid://os75hnii4k0w"]
+[gd_scene load_steps=14 format=3 uid="uid://os75hnii4k0w"]
 
 [ext_resource type="Script" path="res://Scripts/Menu.gd" id="1_kp0kd"]
 [ext_resource type="Texture2D" uid="uid://du03tgcf81l8c" path="res://Art/background.png" id="2_1cfpo"]
 [ext_resource type="Texture2D" uid="uid://dp5nkeidtt56i" path="res://Art/enemy_rocket.png" id="3_5u82o"]
+[ext_resource type="Texture2D" uid="uid://bku2007a1rtlg" path="res://Art/stars.png" id="3_110ma"]
+[ext_resource type="Shader" path="res://Scripts/stars.gdshader" id="3_cwqn6"]
+[ext_resource type="Script" path="res://Scripts/Background_Stars.gd" id="4_bxsjd"]
+[ext_resource type="Texture2D" uid="uid://djv22d5tl3s24" path="res://Art/enemy1.png" id="4_naqsl"]
 [ext_resource type="PackedScene" uid="uid://cbbkojgcsrdxg" path="res://Scenes/player.tscn" id="4_uicuu"]
+
+[sub_resource type="CanvasTexture" id="CanvasTexture_6woqk"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_pbwts"]
+shader = ExtResource("3_cwqn6")
+shader_parameter/direction = Vector2(1, 0)
+shader_parameter/speed_scale = 0.05
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_ucm86"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_rc1t8"]
+size = Vector2(10, 290)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_37sjg"]
+size = Vector2(480, 10)
 
 [node name="BasicMap" type="Node"]
 
@@ -11,15 +30,60 @@
 script = ExtResource("1_kp0kd")
 
 [node name="Background" type="Sprite2D" parent="."]
+visible = false
 texture_repeat = 2
 position = Vector2(240, 135)
 texture = ExtResource("2_1cfpo")
 region_enabled = true
 region_rect = Rect2(0, 0, 480, 270)
 
+[node name="Background_Black" type="Sprite2D" parent="."]
+modulate = Color(0, 0, 0, 1)
+position = Vector2(240, 135)
+scale = Vector2(480, 270)
+texture = SubResource("CanvasTexture_6woqk")
+
+[node name="Background_Stars" type="Sprite2D" parent="."]
+texture_repeat = 2
+material = SubResource("ShaderMaterial_pbwts")
+position = Vector2(240, 135)
+texture = ExtResource("3_110ma")
+script = ExtResource("4_bxsjd")
+
 [node name="EnemyRocket" type="Sprite2D" parent="."]
 position = Vector2(151, 167)
 texture = ExtResource("3_5u82o")
 
+[node name="CharacterBody2D" type="CharacterBody2D" parent="."]
+position = Vector2(52, 72)
+
+[node name="Sprite2D" type="Sprite2D" parent="CharacterBody2D"]
+texture = ExtResource("4_naqsl")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="CharacterBody2D"]
+shape = SubResource("CircleShape2D_ucm86")
+
 [node name="Player" parent="." instance=ExtResource("4_uicuu")]
-position = Vector2(20, 129)
+position = Vector2(28, 128)
+
+[node name="StaticBody2D" type="StaticBody2D" parent="."]
+position = Vector2(-5, 134)
+
+[node name="mapborder_left" type="CollisionShape2D" parent="StaticBody2D"]
+position = Vector2(0, 1)
+shape = SubResource("RectangleShape2D_rc1t8")
+
+[node name="mapborder_right" type="CollisionShape2D" parent="StaticBody2D"]
+position = Vector2(490, 1)
+shape = SubResource("RectangleShape2D_rc1t8")
+
+[node name="mapborder_top" type="CollisionShape2D" parent="StaticBody2D"]
+position = Vector2(245, -139)
+shape = SubResource("RectangleShape2D_37sjg")
+
+[node name="mapborder_down" type="CollisionShape2D" parent="StaticBody2D"]
+position = Vector2(245, 141)
+shape = SubResource("RectangleShape2D_37sjg")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(240, 135)

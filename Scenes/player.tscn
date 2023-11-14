@@ -1,28 +1,39 @@
-[gd_scene load_steps=5 format=3 uid="uid://cbbkojgcsrdxg"]
+[gd_scene load_steps=7 format=3 uid="uid://cbbkojgcsrdxg"]
 
-[ext_resource type="Texture2D" uid="uid://c6a1iwvfx3esv" path="res://Art/player.png" id="1_22d5t"]
 [ext_resource type="Script" path="res://Scripts/player.gd" id="1_gs88a"]
+[ext_resource type="Texture2D" uid="uid://m447rugnefxf" path="res://Art/player_basic_ship.png" id="2_8r5rl"]
+[ext_resource type="Script" path="res://Scripts/GunTurret.gd" id="3_ufsmu"]
+[ext_resource type="Texture2D" uid="uid://oh2gmywg8ffg" path="res://Art/basic_turret.png" id="4_dwa0x"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_vpjnq"]
-size = Vector2(9, 12)
+size = Vector2(25, 11)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_s2uwh"]
-size = Vector2(13, 18)
+size = Vector2(30, 14)
 
 [node name="Player" type="CharacterBody2D"]
 script = ExtResource("1_gs88a")
 
 [node name="ShipSprite" type="Sprite2D" parent="."]
-scale = Vector2(0.5, 0.5)
-texture = ExtResource("1_22d5t")
+position = Vector2(-7.5, 2.5)
+texture = ExtResource("2_8r5rl")
 offset = Vector2(0, 1)
 
 [node name="hitbox" type="Area2D" parent="."]
+position = Vector2(-7.5, 2.5)
 
 [node name="HitboxShape" type="CollisionShape2D" parent="hitbox"]
-position = Vector2(-1.5, 0)
+position = Vector2(10.5, -0.5)
 shape = SubResource("RectangleShape2D_vpjnq")
 
 [node name="MovementCollision" type="CollisionShape2D" parent="."]
-position = Vector2(0.5, 0)
+position = Vector2(1.5, 1.5)
 shape = SubResource("RectangleShape2D_s2uwh")
+
+[node name="GunTurret" type="Node2D" parent="."]
+position = Vector2(0.5, 3.5)
+script = ExtResource("3_ufsmu")
+
+[node name="GunSprite" type="Sprite2D" parent="GunTurret"]
+position = Vector2(5.5, 0.5)
+texture = ExtResource("4_dwa0x")
