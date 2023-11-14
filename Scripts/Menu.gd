@@ -8,7 +8,9 @@ F3 - cheat codes (immortality)
 extends Node
 
 
-var maximize = false
+@export var maximize = false
+# TODO add check for global project settings in ready
+
 
 func _ready():
 	if maximize:

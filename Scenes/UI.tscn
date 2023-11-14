@@ -9,7 +9,32 @@ script = ExtResource("1_kxhc8")
 [node name="HPBar" parent="." instance=ExtResource("2_6nptj")]
 scale = Vector2(0.15, 0.15)
 
+[node name="StaminaBar" parent="." instance=ExtResource("2_6nptj")]
+visible = false
+offset_top = 86.0
+offset_bottom = 126.0
+scale = Vector2(0.15, 0.15)
+
 [node name="RichTextLabel" type="RichTextLabel" parent="."]
-offset_right = 302.0
-offset_bottom = 231.0
+offset_left = 5.0
+offset_top = 4.0
+offset_right = 307.0
+offset_bottom = 235.0
+theme_override_font_sizes/normal_font_size = 48
 text = "TESTTTTT"
+
+[node name="Label" type="Label" parent="."]
+offset_left = 14.0
+offset_top = 91.0
+offset_right = 76.0
+offset_bottom = 137.0
+theme_override_font_sizes/font_size = 40
+text = "Kills: 0"
+
+[node name="ProgressBar" type="ProgressBar" parent="."]
+offset_left = 2.0
+offset_top = 84.0
+offset_right = 229.0
+offset_bottom = 144.0
+step = 1.0
+show_percentage = false

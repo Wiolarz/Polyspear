@@ -1,0 +1,7 @@
+[gd_resource type="Theme" load_steps=2 format=3 uid="uid://11warvhynyuc"]
+
+[ext_resource type="FontFile" uid="uid://dsn5sjpe43pd5" path="res://ART/UI/Kurland.ttf" id="1_ajvco"]
+
+[resource]
+default_font = ExtResource("1_ajvco")
+/font_sizes/Player_Statistics = 48

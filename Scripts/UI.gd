@@ -4,6 +4,8 @@ extends CanvasLayer
 
 @onready var hp_text = $RichTextLabel
 @onready var hp_bar = $HPBar
+@onready var kills_bar = $ProgressBar
+@onready var kills_value = $Label
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -13,7 +15,10 @@ func _ready():
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _physics_process(_delta):
-	hp_text.text = "HP" + str(player.health)
+	hp_text.text = "HP-" + str(player.health)
+	#print(Score.value)
+	kills_value.text = "Kills-" + str(Score.value) + " Lvl-" + str(Score.level)
+	kills_bar.value = Score.value
 
 
 

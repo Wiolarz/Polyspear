@@ -19,6 +19,17 @@ position = Vector2(-1249, 259)
 scale = Vector2(1.45039, 1.25409)
 texture = ExtResource("1_i3k60")
 
+[node name="UI" parent="." node_paths=PackedStringArray("player") instance=ExtResource("11_rib8s")]
+player = NodePath("../Player")
+
+[node name="Label3" type="Label" parent="UI"]
+offset_left = -2368.0
+offset_top = -76.0
+offset_right = -2306.0
+offset_bottom = -30.0
+theme_override_font_sizes/font_size = 160
+text = "test"
+
 [node name="Spikes" parent="." instance=ExtResource("2_5oci3")]
 position = Vector2(1066, 1424)
 
@@ -94,6 +105,3 @@ enemy_scene = ExtResource("11_fyi83")
 [node name="Spawner_DownLeft" parent="." instance=ExtResource("9_qiyev")]
 position = Vector2(-5306, 2277)
 enemy_scene = ExtResource("11_fyi83")
-
-[node name="CanvasLayer" parent="." node_paths=PackedStringArray("player") instance=ExtResource("11_rib8s")]
-player = NodePath("../Player")

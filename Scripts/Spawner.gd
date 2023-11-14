@@ -29,6 +29,8 @@ func spawn():
 
 
 func _physics_process(_delta):
+	if Input.is_action_just_pressed("CHEAT_CODE_MORE_ENEMIES"):
+		spawn()
 	countdown += 1
 	# TODO something is broken with spawn system
 	# TODO make it so that a greater spawn system places dudes into specified spawn points (also make another code that places enemies randomly)

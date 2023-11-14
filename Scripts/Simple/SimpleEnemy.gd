@@ -56,4 +56,5 @@ func _on_character_hitbox_got_hit(value):
 	health -= value
 	#print("enemy", health)
 	if health <= 0:
+		Score.value += 1
 		queue_free()
