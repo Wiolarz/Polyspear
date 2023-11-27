@@ -12,6 +12,9 @@ Number of gun slots - quality tiers
 Movement type - rotation speed behavior
 
 
+
+various ammo types and system around those
+
 """
 
 
