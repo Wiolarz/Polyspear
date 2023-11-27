@@ -7,8 +7,3 @@ func _ready():
 	#material.set_shader("res://Scripts/stars.gdshader")
 	#material.set_shader_param("direction", Vector2(0.0,1.0))
 	#material.set_shader_param("speed_scale",0.02)
-
-
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta):
-	pass
