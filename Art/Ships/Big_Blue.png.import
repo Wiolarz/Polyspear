@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bqr8e0lt6vys"
-path="res://.godot/imported/enemy_purple.png-e4ada49a6608515e23eb33c8e652e27f.ctex"
+uid="uid://fim2627ycln5"
+path="res://.godot/imported/Big_Blue.png-810e5d7568804d0143810fc41b5ef6c8.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Art/enemy_purple.png"
-dest_files=["res://.godot/imported/enemy_purple.png-e4ada49a6608515e23eb33c8e652e27f.ctex"]
+source_file="res://Art/Ships/Big_Blue.png"
+dest_files=["res://.godot/imported/Big_Blue.png-810e5d7568804d0143810fc41b5ef6c8.ctex"]
 
 [params]
 

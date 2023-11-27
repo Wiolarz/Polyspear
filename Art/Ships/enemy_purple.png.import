@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://d0r68bqkr0csn"
-path="res://.godot/imported/enemy_bullet.png-47a1c644e69a31d0c05e832f4b8c2081.ctex"
+uid="uid://bqr8e0lt6vys"
+path="res://.godot/imported/enemy_purple.png-12a7d28ecdca71a0d2f3ecd3f220bf93.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Art/enemy_bullet.png"
-dest_files=["res://.godot/imported/enemy_bullet.png-47a1c644e69a31d0c05e832f4b8c2081.ctex"]
+source_file="res://Art/Ships/enemy_purple.png"
+dest_files=["res://.godot/imported/enemy_purple.png-12a7d28ecdca71a0d2f3ecd3f220bf93.ctex"]
 
 [params]
 

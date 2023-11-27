@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bku2007a1rtlg"
-path="res://.godot/imported/stars.png-c47b6ad518cd657da7f15cab8ffa8da5.ctex"
+uid="uid://oh2gmywg8ffg"
+path="res://.godot/imported/basic_turret.png-99e84c6e5c11c9534d1d4aa2d6376d28.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Art/stars.png"
-dest_files=["res://.godot/imported/stars.png-c47b6ad518cd657da7f15cab8ffa8da5.ctex"]
+source_file="res://Art/Bullets/basic_turret.png"
+dest_files=["res://.godot/imported/basic_turret.png-99e84c6e5c11c9534d1d4aa2d6376d28.ctex"]
 
 [params]
 

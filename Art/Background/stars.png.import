@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dp5nkeidtt56i"
-path="res://.godot/imported/enemy_rocket.png-545c866765e4b2cdb7da5f1d6792a55b.ctex"
+uid="uid://bku2007a1rtlg"
+path="res://.godot/imported/stars.png-4cf3544eec36c638e8a893cd52b7bdc8.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Art/enemy_rocket.png"
-dest_files=["res://.godot/imported/enemy_rocket.png-545c866765e4b2cdb7da5f1d6792a55b.ctex"]
+source_file="res://Art/Background/stars.png"
+dest_files=["res://.godot/imported/stars.png-4cf3544eec36c638e8a893cd52b7bdc8.ctex"]
 
 [params]
 

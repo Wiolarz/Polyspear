@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bsihasbfpsccr"
-path="res://.godot/imported/rocket.png-405a8012fbeabf4662206b4916b0db75.ctex"
+uid="uid://c8wvty50iwvkv"
+path="res://.godot/imported/orange_player.png-f44cbfa29a4f49bdd04f6d9904dd5fc3.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Art/rocket.png"
-dest_files=["res://.godot/imported/rocket.png-405a8012fbeabf4662206b4916b0db75.ctex"]
+source_file="res://Art/Ships/orange_player.png"
+dest_files=["res://.godot/imported/orange_player.png-f44cbfa29a4f49bdd04f6d9904dd5fc3.ctex"]
 
 [params]
 

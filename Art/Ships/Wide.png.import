@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://d4dcl8g1w2sma"
-path="res://.godot/imported/player_bullet.png-b8d2954cd2c8d3c07421777a04109ae8.ctex"
+uid="uid://crwnuskanj1nh"
+path="res://.godot/imported/Wide.png-44b5345f1a6d7bd56fdd48eb5f1f0ffd.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Art/player_bullet.png"
-dest_files=["res://.godot/imported/player_bullet.png-b8d2954cd2c8d3c07421777a04109ae8.ctex"]
+source_file="res://Art/Ships/Wide.png"
+dest_files=["res://.godot/imported/Wide.png-44b5345f1a6d7bd56fdd48eb5f1f0ffd.ctex"]
 
 [params]
 
