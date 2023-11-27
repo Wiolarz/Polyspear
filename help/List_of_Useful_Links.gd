@@ -70,7 +70,12 @@ class UserInterface:
     https://docs.godotengine.org/en/stable/tutorials/ui/gui_using_fonts.html
 
     """
-
+    
+    var Pausing
+    """
+    4min GAME PAUSE in Godot IN UNDER 4 MINUTES
+    https://youtu.be/mgDdjSXlVXM?si=dezG400hQaQpGcV4
+    """
 
     var Saving
     """
@@ -78,8 +83,4 @@ class UserInterface:
     https://youtu.be/jGpG58MQf_I?si=Gl6EdoHA8mUifer4
     """
 
-    var Pausing
-    """
-    4min GAME PAUSE in Godot IN UNDER 4 MINUTES
-    https://youtu.be/mgDdjSXlVXM?si=dezG400hQaQpGcV4
-    """
+    

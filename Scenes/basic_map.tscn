@@ -10,6 +10,12 @@
 [ext_resource type="Script" path="res://Scripts/BulletManager.gd" id="8_1x75j"]
 [ext_resource type="Script" path="res://Scripts/SaveSystem.gd" id="9_y4htr"]
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_rc1t8"]
+size = Vector2(10, 290)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_37sjg"]
+size = Vector2(480, 10)
+
 [sub_resource type="CanvasTexture" id="CanvasTexture_6woqk"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_pbwts"]
@@ -19,16 +25,29 @@ shader_parameter/speed_scale = 0.05
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_ucm86"]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_rc1t8"]
-size = Vector2(10, 290)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_37sjg"]
-size = Vector2(480, 10)
-
 [node name="BasicMap" type="Node"]
 
 [node name="Menu" type="Node" parent="."]
 script = ExtResource("1_kp0kd")
+
+[node name="MapBorders" type="StaticBody2D" parent="."]
+position = Vector2(-5, 134)
+
+[node name="mapborder_left" type="CollisionShape2D" parent="MapBorders"]
+position = Vector2(0, 1)
+shape = SubResource("RectangleShape2D_rc1t8")
+
+[node name="mapborder_right" type="CollisionShape2D" parent="MapBorders"]
+position = Vector2(490, 1)
+shape = SubResource("RectangleShape2D_rc1t8")
+
+[node name="mapborder_top" type="CollisionShape2D" parent="MapBorders"]
+position = Vector2(245, -139)
+shape = SubResource("RectangleShape2D_37sjg")
+
+[node name="mapborder_down" type="CollisionShape2D" parent="MapBorders"]
+position = Vector2(245, 141)
+shape = SubResource("RectangleShape2D_37sjg")
 
 [node name="Background" type="Node2D" parent="."]
 position = Vector2(240, 135)
@@ -62,21 +81,6 @@ shape = SubResource("CircleShape2D_ucm86")
 
 [node name="Player" parent="." instance=ExtResource("4_uicuu")]
 position = Vector2(28, 128)
-
-[node name="MapBorders" type="StaticBody2D" parent="."]
-position = Vector2(-5, 134)
-
-[node name="mapborder_left" type="CollisionShape2D" parent="MapBorders"]
-position = Vector2(0, 1)
-shape = SubResource("RectangleShape2D_rc1t8")
-
-[node name="mapborder_right" type="CollisionShape2D" parent="MapBorders"]
-position = Vector2(490, 1)
-shape = SubResource("RectangleShape2D_rc1t8")
-
-[node name="mapborder_top" type="CollisionShape2D" parent="MapBorders"]
-position = Vector2(245, -139)
-shape = SubResource("RectangleShape2D_37sjg")
 
 [node name="Camera2D" type="Camera2D" parent="."]
 position = Vector2(240, 135)

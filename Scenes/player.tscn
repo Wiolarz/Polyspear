@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://cbbkojgcsrdxg"]
+[gd_scene load_steps=10 format=3 uid="uid://cbbkojgcsrdxg"]
 
 [ext_resource type="Script" path="res://Scripts/player.gd" id="1_gs88a"]
 [ext_resource type="Texture2D" uid="uid://m447rugnefxf" path="res://Art/Ships/player_basic_ship.png" id="2_162m2"]
@@ -6,6 +6,7 @@
 [ext_resource type="Script" path="res://Scripts/GunTurret.gd" id="3_ufsmu"]
 [ext_resource type="Texture2D" uid="uid://oh2gmywg8ffg" path="res://Art/Bullets/basic_turret.png" id="4_sksxl"]
 [ext_resource type="Script" path="res://Scripts/Gun.gd" id="5_ssbrs"]
+[ext_resource type="Script" path="res://Scenes/Label.gd" id="7_waoy7"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_vpjnq"]
 size = Vector2(25, 11)
@@ -48,7 +49,13 @@ position = Vector2(18.5, 0.5)
 [node name="Guns" type="Node2D" parent="GunTurret"]
 
 [node name="Gun" type="Node2D" parent="GunTurret/Guns"]
-scale = Vector2(2.39197, 1.48504)
+scale = Vector2(3.1219, 1.57672)
 script = ExtResource("5_ssbrs")
+
+[node name="Label" type="Label" parent="." node_paths=PackedStringArray("gun")]
+offset_right = 40.0
+offset_bottom = 23.0
+script = ExtResource("7_waoy7")
+gun = NodePath("../GunTurret/Guns/Gun")
 
 [connection signal="turret_shoots" from="GunTurret" to="." method="_on_gun_turret_turret_shoots"]
