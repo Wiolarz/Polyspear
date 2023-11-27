@@ -80,5 +80,4 @@ func _physics_process(delta):
 
 
 func _on_gun_turret_turret_shoots(pos, dir, ammo):
-	print("test")
 	emit_signal("bullet", pos, dir, ammo)

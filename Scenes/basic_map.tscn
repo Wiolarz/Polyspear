@@ -51,35 +51,31 @@ material = SubResource("ShaderMaterial_pbwts")
 texture = ExtResource("4_c1o6t")
 script = ExtResource("4_bxsjd")
 
-[node name="CharacterBody2D" type="CharacterBody2D" parent="."]
-position = Vector2(52, 72)
+[node name="Enemy" type="Area2D" parent="."]
+position = Vector2(168, 149)
 
-[node name="Sprite2D" type="Sprite2D" parent="CharacterBody2D"]
+[node name="Sprite2D" type="Sprite2D" parent="Enemy"]
 texture = ExtResource("6_c0u07")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="CharacterBody2D"]
+[node name="hitbox" type="CollisionShape2D" parent="Enemy"]
 shape = SubResource("CircleShape2D_ucm86")
 
 [node name="Player" parent="." instance=ExtResource("4_uicuu")]
 position = Vector2(28, 128)
 
-[node name="StaticBody2D" type="StaticBody2D" parent="."]
+[node name="MapBorders" type="StaticBody2D" parent="."]
 position = Vector2(-5, 134)
 
-[node name="mapborder_left" type="CollisionShape2D" parent="StaticBody2D"]
+[node name="mapborder_left" type="CollisionShape2D" parent="MapBorders"]
 position = Vector2(0, 1)
 shape = SubResource("RectangleShape2D_rc1t8")
 
-[node name="mapborder_right" type="CollisionShape2D" parent="StaticBody2D"]
+[node name="mapborder_right" type="CollisionShape2D" parent="MapBorders"]
 position = Vector2(490, 1)
 shape = SubResource("RectangleShape2D_rc1t8")
 
-[node name="mapborder_top" type="CollisionShape2D" parent="StaticBody2D"]
+[node name="mapborder_top" type="CollisionShape2D" parent="MapBorders"]
 position = Vector2(245, -139)
-shape = SubResource("RectangleShape2D_37sjg")
-
-[node name="mapborder_down" type="CollisionShape2D" parent="StaticBody2D"]
-position = Vector2(245, 141)
 shape = SubResource("RectangleShape2D_37sjg")
 
 [node name="Camera2D" type="Camera2D" parent="."]

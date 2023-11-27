@@ -1,7 +1,8 @@
-[gd_scene load_steps=8 format=3 uid="uid://cbbkojgcsrdxg"]
+[gd_scene load_steps=9 format=3 uid="uid://cbbkojgcsrdxg"]
 
 [ext_resource type="Script" path="res://Scripts/player.gd" id="1_gs88a"]
 [ext_resource type="Texture2D" uid="uid://m447rugnefxf" path="res://Art/Ships/player_basic_ship.png" id="2_162m2"]
+[ext_resource type="Script" path="res://Scripts/hitbox.gd" id="3_rtlef"]
 [ext_resource type="Script" path="res://Scripts/GunTurret.gd" id="3_ufsmu"]
 [ext_resource type="Texture2D" uid="uid://oh2gmywg8ffg" path="res://Art/Bullets/basic_turret.png" id="4_sksxl"]
 [ext_resource type="Script" path="res://Scripts/Gun.gd" id="5_ssbrs"]
@@ -22,6 +23,7 @@ offset = Vector2(0, 1)
 
 [node name="hitbox" type="Area2D" parent="."]
 position = Vector2(-7.5, 2.5)
+script = ExtResource("3_rtlef")
 
 [node name="HitboxShape" type="CollisionShape2D" parent="hitbox"]
 position = Vector2(10.5, -0.5)
@@ -31,19 +33,22 @@ shape = SubResource("RectangleShape2D_vpjnq")
 position = Vector2(1.5, 1.5)
 shape = SubResource("RectangleShape2D_s2uwh")
 
-[node name="GunTurret" type="Node2D" parent="."]
+[node name="GunTurret" type="Node2D" parent="." node_paths=PackedStringArray("current_gun")]
 position = Vector2(0.5, 3.5)
 script = ExtResource("3_ufsmu")
+current_gun = NodePath("Guns/Gun")
 
 [node name="TurretSprite" type="Sprite2D" parent="GunTurret"]
 position = Vector2(5.5, 0.5)
 texture = ExtResource("4_sksxl")
 
-[node name="Gun" type="Node2D" parent="GunTurret"]
-script = ExtResource("5_ssbrs")
-
-[node name="Marker2D" type="Marker2D" parent="GunTurret/Gun"]
+[node name="Marker2D" type="Marker2D" parent="GunTurret"]
 position = Vector2(18.5, 0.5)
 
+[node name="Guns" type="Node2D" parent="GunTurret"]
+
+[node name="Gun" type="Node2D" parent="GunTurret/Guns"]
+scale = Vector2(2.39197, 1.48504)
+script = ExtResource("5_ssbrs")
+
 [connection signal="turret_shoots" from="GunTurret" to="." method="_on_gun_turret_turret_shoots"]
-[connection signal="gun_shoots" from="GunTurret/Gun" to="GunTurret" method="_on_gun_gun_shoots"]

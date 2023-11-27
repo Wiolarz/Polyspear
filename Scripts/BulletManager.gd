@@ -15,11 +15,9 @@ func _process(delta):
 
 
 func _on_player_bullet(pos, dir, ammo):
+	pass
 	var bullet = ammo.instantiate() as Area2D
-	#bullet.position = rifle_exit.global_position()
-	print("test")
-	print(pos, dir)
 
 	bullet.position = pos
-	bullet.rotation_degrees = dir # rotation_degrees#rad_to_deg(direction.angle())
-	add_child(bullet) # get_tree().get_node("BasicMap").
+	bullet.rotation_degrees = dir 
+	add_child(bullet)
