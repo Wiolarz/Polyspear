@@ -16,6 +16,12 @@ var ship_break_charges = ship_break_max_charges
 @export var ship_break_free_treshold = 10 # number we use to divide break power, to check if player can be awarded with free break
 
 
+
+signal bullet(pos, dir, ammo)
+
+
+
+
 func _ready():
 	pass 
 
@@ -72,3 +78,7 @@ func _physics_process(delta):
 	movement()
 	recharge()
 
+
+func _on_gun_turret_turret_shoots(pos, dir, ammo):
+	print("test")
+	emit_signal("bullet", pos, dir, ammo)

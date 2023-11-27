@@ -42,6 +42,14 @@ Jak dodawać input na mojej prezentacji
 """
 
 
+var Movement
+"""
+
+https://docs.godotengine.org/en/stable/tutorials/2d/2d_movement.html
+
+
+"""
+
 
 
 var AI

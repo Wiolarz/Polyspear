@@ -1,13 +1,14 @@
-[gd_scene load_steps=14 format=3 uid="uid://os75hnii4k0w"]
+[gd_scene load_steps=15 format=3 uid="uid://os75hnii4k0w"]
 
 [ext_resource type="Script" path="res://Scripts/Menu.gd" id="1_kp0kd"]
-[ext_resource type="Texture2D" uid="uid://du03tgcf81l8c" path="res://Art/background.png" id="2_1cfpo"]
-[ext_resource type="Texture2D" uid="uid://dp5nkeidtt56i" path="res://Art/enemy_rocket.png" id="3_5u82o"]
-[ext_resource type="Texture2D" uid="uid://bku2007a1rtlg" path="res://Art/stars.png" id="3_110ma"]
+[ext_resource type="Texture2D" uid="uid://du03tgcf81l8c" path="res://Art/Background/background.png" id="2_fq3eo"]
 [ext_resource type="Shader" path="res://Scripts/stars.gdshader" id="3_cwqn6"]
 [ext_resource type="Script" path="res://Scripts/Background_Stars.gd" id="4_bxsjd"]
-[ext_resource type="Texture2D" uid="uid://djv22d5tl3s24" path="res://Art/enemy1.png" id="4_naqsl"]
+[ext_resource type="Texture2D" uid="uid://bku2007a1rtlg" path="res://Art/Background/stars.png" id="4_c1o6t"]
 [ext_resource type="PackedScene" uid="uid://cbbkojgcsrdxg" path="res://Scenes/player.tscn" id="4_uicuu"]
+[ext_resource type="Texture2D" uid="uid://djv22d5tl3s24" path="res://Art/Ships/enemy1.png" id="6_c0u07"]
+[ext_resource type="Script" path="res://Scripts/BulletManager.gd" id="8_1x75j"]
+[ext_resource type="Script" path="res://Scripts/SaveSystem.gd" id="9_y4htr"]
 
 [sub_resource type="CanvasTexture" id="CanvasTexture_6woqk"]
 
@@ -29,36 +30,32 @@ size = Vector2(480, 10)
 [node name="Menu" type="Node" parent="."]
 script = ExtResource("1_kp0kd")
 
-[node name="Background" type="Sprite2D" parent="."]
+[node name="Background" type="Node2D" parent="."]
+position = Vector2(240, 135)
+
+[node name="oldBackground" type="Sprite2D" parent="Background"]
 visible = false
 texture_repeat = 2
-position = Vector2(240, 135)
-texture = ExtResource("2_1cfpo")
+texture = ExtResource("2_fq3eo")
 region_enabled = true
 region_rect = Rect2(0, 0, 480, 270)
 
-[node name="Background_Black" type="Sprite2D" parent="."]
+[node name="Background_Black" type="Sprite2D" parent="Background"]
 modulate = Color(0, 0, 0, 1)
-position = Vector2(240, 135)
 scale = Vector2(480, 270)
 texture = SubResource("CanvasTexture_6woqk")
 
-[node name="Background_Stars" type="Sprite2D" parent="."]
+[node name="Background_Stars" type="Sprite2D" parent="Background"]
 texture_repeat = 2
 material = SubResource("ShaderMaterial_pbwts")
-position = Vector2(240, 135)
-texture = ExtResource("3_110ma")
+texture = ExtResource("4_c1o6t")
 script = ExtResource("4_bxsjd")
-
-[node name="EnemyRocket" type="Sprite2D" parent="."]
-position = Vector2(151, 167)
-texture = ExtResource("3_5u82o")
 
 [node name="CharacterBody2D" type="CharacterBody2D" parent="."]
 position = Vector2(52, 72)
 
 [node name="Sprite2D" type="Sprite2D" parent="CharacterBody2D"]
-texture = ExtResource("4_naqsl")
+texture = ExtResource("6_c0u07")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="CharacterBody2D"]
 shape = SubResource("CircleShape2D_ucm86")
@@ -87,3 +84,11 @@ shape = SubResource("RectangleShape2D_37sjg")
 
 [node name="Camera2D" type="Camera2D" parent="."]
 position = Vector2(240, 135)
+
+[node name="BulletManager" type="Node" parent="."]
+script = ExtResource("8_1x75j")
+
+[node name="SaveSystem" type="Node" parent="."]
+script = ExtResource("9_y4htr")
+
+[connection signal="bullet" from="Player" to="BulletManager" method="_on_player_bullet"]
