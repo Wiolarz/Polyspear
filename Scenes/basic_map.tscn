@@ -1,6 +1,6 @@
 [gd_scene load_steps=15 format=3 uid="uid://os75hnii4k0w"]
 
-[ext_resource type="Script" path="res://Scripts/Menu.gd" id="1_kp0kd"]
+[ext_resource type="PackedScene" uid="uid://djb310dgsan7m" path="res://Scenes/ui.tscn" id="1_eikoj"]
 [ext_resource type="Texture2D" uid="uid://du03tgcf81l8c" path="res://Art/Background/background.png" id="2_fq3eo"]
 [ext_resource type="Shader" path="res://Scripts/stars.gdshader" id="3_cwqn6"]
 [ext_resource type="Script" path="res://Scripts/Background_Stars.gd" id="4_bxsjd"]
@@ -27,8 +27,8 @@ shader_parameter/speed_scale = 0.05
 
 [node name="BasicMap" type="Node"]
 
-[node name="Menu" type="Node" parent="."]
-script = ExtResource("1_kp0kd")
+[node name="UI" parent="." instance=ExtResource("1_eikoj")]
+visible = false
 
 [node name="MapBorders" type="StaticBody2D" parent="."]
 position = Vector2(-5, 134)
