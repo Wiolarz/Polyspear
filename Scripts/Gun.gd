@@ -14,7 +14,6 @@ var shooting_cooldown = 0
 var bullet_scene: PackedScene = preload("res://Scenes/bullet.tscn")
 
 
-
 func shoot():
 	if ammuniton == 0:
 		return "no_ammo"

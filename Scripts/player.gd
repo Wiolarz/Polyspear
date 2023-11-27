@@ -23,7 +23,17 @@ signal bullet(pos, dir, ammo)
 
 
 func _ready():
-	pass 
+	Bus.load_game.connect(load_self)
+	Bus.collect_save_data.connect(save_self)
+	
+func load_self(save: Save):
+	position = save.ship_position
+	$GunTurret/Guns/Gun.ammuniton = save.ship_ammunition
+		
+func save_self(save: Save):
+	save.ship_position = position
+	save.ship_ammunition = $GunTurret/Guns/Gun.ammuniton
+
 
 func cheats():
 	if Input.is_action_just_pressed("CHEAT_IMMORTALITY"):

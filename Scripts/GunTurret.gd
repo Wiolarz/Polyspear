@@ -15,6 +15,8 @@ signal turret_shoots(pos, dir, ammo)
 
 
 func shoot():
+	if not current_gun:
+		return
 	var bullet = current_gun.shoot()
 	if bullet is String:
 		if bullet == "cooldown":

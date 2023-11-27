@@ -7,9 +7,9 @@ var player_file = "user://save.dat"
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	pass # Replace with function body.
+	pass#Bus.save.connect(save)
 
 
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta):
-	pass
+func save():
+	var save = Save.new()
+	save.position = get_node("%Player").position
