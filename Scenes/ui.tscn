@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://djb310dgsan7m"]
 
-[ext_resource type="Script" path="res://Scripts/Menu.gd" id="1_bwhsq"]
+[ext_resource type="Script" path="res://Scripts/Debug_Manager.gd" id="1_bwhsq"]
 
 [node name="UI" type="CanvasLayer"]
 process_mode = 3

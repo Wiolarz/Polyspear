@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3 uid="uid://os75hnii4k0w"]
+[gd_scene load_steps=16 format=3 uid="uid://os75hnii4k0w"]
 
 [ext_resource type="PackedScene" uid="uid://djb310dgsan7m" path="res://Scenes/ui.tscn" id="1_eikoj"]
 [ext_resource type="Texture2D" uid="uid://du03tgcf81l8c" path="res://Art/Background/background.png" id="2_fq3eo"]
@@ -9,6 +9,7 @@
 [ext_resource type="Texture2D" uid="uid://djv22d5tl3s24" path="res://Art/Ships/enemy1.png" id="6_c0u07"]
 [ext_resource type="Script" path="res://Scripts/BulletManager.gd" id="8_1x75j"]
 [ext_resource type="Script" path="res://Scripts/SaveSystem.gd" id="9_y4htr"]
+[ext_resource type="PackedScene" uid="uid://c4rghqu4lca45" path="res://Scenes/DebugManager.tscn" id="10_8cic2"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_rc1t8"]
 size = Vector2(10, 290)
@@ -90,5 +91,7 @@ script = ExtResource("8_1x75j")
 
 [node name="SaveSystem" type="Node" parent="."]
 script = ExtResource("9_y4htr")
+
+[node name="DebugManager" parent="." instance=ExtResource("10_8cic2")]
 
 [connection signal="bullet" from="Player" to="BulletManager" method="_on_player_bullet"]
