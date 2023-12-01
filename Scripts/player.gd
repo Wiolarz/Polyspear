@@ -17,10 +17,15 @@ var ship_break_charges = ship_break_max_charges
 
 
 
-signal bullet(pos, dir, ammo)
+signal bullet(pos, dir, bullet)
 
 
+func save_ship():
+	var player_dict = {
+		"AMMO": $Guns/Gun.ammuniton,
+	}
 
+	return player_dict
 
 func _ready():
 	Bus.load_game.connect(load_self)
@@ -34,6 +39,11 @@ func save_self(save: Save):
 	save.ship_position = position
 	save.ship_ammunition = $GunTurret/Guns/Gun.ammuniton
 
+func load_ship(loaded_player_data):
+	$GunTurret/Guns/Gun.ammuniton = loaded_player_data.AMMO
+
+
+	
 
 func cheats():
 	if Input.is_action_just_pressed("CHEAT_IMMORTALITY"):
@@ -73,7 +83,7 @@ func movement():
 
 	move_and_slide()
 
-func recharge():
+func break_recharge():
 	#print(ship_break_charges)
 	if ship_break_charges < ship_break_max_charges:
 		ship_break_timer += 1
@@ -83,11 +93,11 @@ func recharge():
 
 
 
-func _physics_process(delta):
+func _physics_process(_delta):
 	cheats()
 	movement()
-	recharge()
+	break_recharge()
 
 
-func _on_gun_turret_turret_shoots(pos, dir, ammo):
-	emit_signal("bullet", pos, dir, ammo)
+func _on_gun_turret_turret_shoots(pos, dir, bullet):
+	emit_signal("bullet", pos, dir, bullet)

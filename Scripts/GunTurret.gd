@@ -22,14 +22,14 @@ func shoot():
 		if bullet == "cooldown":
 			return
 		elif bullet == "no_ammo":
-			current_gun.reload(ammuniton)
+			ammuniton -= current_gun.reload(ammuniton)
 			return
 	
 	emit_signal("turret_shoots", rifle_exit.global_position, rotation_degrees, bullet)
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
-func _physics_process(delta):
+func _physics_process(_delta):
 	look_at(get_global_mouse_position())
 
 
