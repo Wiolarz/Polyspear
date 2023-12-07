@@ -1,15 +1,13 @@
-[gd_scene load_steps=10 format=3 uid="uid://os75hnii4k0w"]
+[gd_scene load_steps=9 format=3 uid="uid://os75hnii4k0w"]
 
 [ext_resource type="PackedScene" uid="uid://djb310dgsan7m" path="res://Scenes/basic_map_elements/ui.tscn" id="1_eikoj"]
 [ext_resource type="PackedScene" uid="uid://daiokyywskwqg" path="res://Scenes/basic_map_elements/map_borders.tscn" id="3_5xh1q"]
 [ext_resource type="PackedScene" uid="uid://dfr0acka4fqbg" path="res://Scenes/basic_map_elements/background.tscn" id="4_rxc3u"]
 [ext_resource type="PackedScene" uid="uid://cbbkojgcsrdxg" path="res://Scenes/player.tscn" id="4_uicuu"]
-[ext_resource type="Texture2D" uid="uid://djv22d5tl3s24" path="res://Art/Ships/enemy1.png" id="6_c0u07"]
 [ext_resource type="PackedScene" uid="uid://cirjmdpeyj06d" path="res://Scenes/basic_map_elements/camera_2d.tscn" id="9_2lg2p"]
 [ext_resource type="Script" path="res://Scripts/Gameplay/BulletManager.gd" id="9_me1tn"]
+[ext_resource type="PackedScene" uid="uid://c4gk7hw7scja8" path="res://Scenes/basic_map_elements/enemy_waves.tscn" id="9_x2hfj"]
 [ext_resource type="Script" path="res://Scripts/UI/SaveSystem.gd" id="10_tjxah"]
-
-[sub_resource type="CircleShape2D" id="CircleShape2D_ucm86"]
 
 [node name="BasicMap" type="Node"]
 
@@ -19,15 +17,6 @@ visible = false
 [node name="MapBorders" parent="." instance=ExtResource("3_5xh1q")]
 
 [node name="Background" parent="." instance=ExtResource("4_rxc3u")]
-
-[node name="Enemy" type="Area2D" parent="."]
-position = Vector2(168, 149)
-
-[node name="Sprite2D" type="Sprite2D" parent="Enemy"]
-texture = ExtResource("6_c0u07")
-
-[node name="hitbox" type="CollisionShape2D" parent="Enemy"]
-shape = SubResource("CircleShape2D_ucm86")
 
 [node name="Player" parent="." instance=ExtResource("4_uicuu")]
 position = Vector2(28, 128)
@@ -39,5 +28,7 @@ script = ExtResource("9_me1tn")
 script = ExtResource("10_tjxah")
 
 [node name="Camera2D" parent="." instance=ExtResource("9_2lg2p")]
+
+[node name="Enemy_waves" parent="." instance=ExtResource("9_x2hfj")]
 
 [connection signal="bullet" from="Player" to="BulletManager" method="_on_player_bullet"]
