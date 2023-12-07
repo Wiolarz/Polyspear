@@ -17,9 +17,24 @@ var ship_break_charges = ship_break_max_charges
 
 
 
-signal bullet(pos, dir, bullet)
+signal bullet(pos, dir, bullet_scene)
 
 
+func _ready():
+	Bus.load_game.connect(load_self)
+	Bus.collect_save_data.connect(save_self)
+
+
+func load_self(save: Save):
+	position = save.ship_position
+	$GunTurret/Guns/Gun.ammuniton = save.ship_ammunition
+		
+func save_self(save: Save):
+	save.ship_position = position
+	save.ship_ammunition = $GunTurret/Guns/Gun.ammuniton
+
+
+"""
 func save_ship():
 	var player_dict = {
 		"AMMO": $Guns/Gun.ammuniton,
@@ -29,7 +44,7 @@ func save_ship():
 
 func load_ship(loaded_player_data):
 	$GunTurret/Guns/Gun.ammuniton = loaded_player_data.AMMO
-
+"""
 
 	
 
@@ -87,5 +102,5 @@ func _physics_process(_delta):
 	break_recharge()
 
 
-func _on_gun_turret_turret_shoots(pos, dir, bullet):
-	emit_signal("bullet", pos, dir, bullet)
+func _on_gun_turret_turret_shoots(pos, dir, bullet_sc):
+	emit_signal("bullet", pos, dir, bullet_sc)

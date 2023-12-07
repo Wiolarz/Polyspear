@@ -1,0 +1,26 @@
+[gd_scene load_steps=6 format=3 uid="uid://dfr0acka4fqbg"]
+
+[ext_resource type="Shader" path="res://Scripts/Visual/stars.gdshader" id="1_r5ehp"]
+[ext_resource type="Texture2D" uid="uid://bku2007a1rtlg" path="res://Art/Background/stars.png" id="2_6jqvf"]
+[ext_resource type="Script" path="res://Scripts/Visual/Background_Stars.gd" id="3_l2w0x"]
+
+[sub_resource type="CanvasTexture" id="CanvasTexture_6woqk"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_pbwts"]
+shader = ExtResource("1_r5ehp")
+shader_parameter/direction = Vector2(1, 0)
+shader_parameter/speed_scale = 0.05
+
+[node name="Background" type="Node2D"]
+position = Vector2(240, 135)
+
+[node name="Background_Black" type="Sprite2D" parent="."]
+modulate = Color(0, 0, 0, 1)
+scale = Vector2(480, 270)
+texture = SubResource("CanvasTexture_6woqk")
+
+[node name="Background_Stars" type="Sprite2D" parent="."]
+texture_repeat = 2
+material = SubResource("ShaderMaterial_pbwts")
+texture = ExtResource("2_6jqvf")
+script = ExtResource("3_l2w0x")

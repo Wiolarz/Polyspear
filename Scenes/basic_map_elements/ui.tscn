@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://djb310dgsan7m"]
+[gd_scene load_steps=3 format=3 uid="uid://djb310dgsan7m"]
 
-[ext_resource type="Script" path="res://Scripts/Debug_Manager.gd" id="1_bwhsq"]
+[ext_resource type="Script" path="res://Scripts/UI/Debug_Manager.gd" id="1_bwhsq"]
+[ext_resource type="Script" path="res://Scripts/UI/SaveSystem.gd" id="2_ep1vw"]
 
 [node name="UI" type="CanvasLayer"]
 process_mode = 3
@@ -38,6 +39,9 @@ text = "Turn on/off full screen"
 [node name="Quit" type="Button" parent="MenuContainer"]
 layout_mode = 2
 text = "Quit"
+
+[node name="save_system" type="Node" parent="."]
+script = ExtResource("2_ep1vw")
 
 [connection signal="pressed" from="MenuContainer/BackToGame" to="Menu" method="_on_back_to_game_pressed"]
 [connection signal="pressed" from="MenuContainer/Restart" to="Menu" method="_on_restart_pressed"]

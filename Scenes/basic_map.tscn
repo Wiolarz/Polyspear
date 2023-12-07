@@ -1,28 +1,13 @@
-[gd_scene load_steps=16 format=3 uid="uid://os75hnii4k0w"]
+[gd_scene load_steps=10 format=3 uid="uid://os75hnii4k0w"]
 
-[ext_resource type="PackedScene" uid="uid://djb310dgsan7m" path="res://Scenes/ui.tscn" id="1_eikoj"]
-[ext_resource type="Texture2D" uid="uid://du03tgcf81l8c" path="res://Art/Background/background.png" id="2_fq3eo"]
-[ext_resource type="Shader" path="res://Scripts/stars.gdshader" id="3_cwqn6"]
-[ext_resource type="Script" path="res://Scripts/Background_Stars.gd" id="4_bxsjd"]
-[ext_resource type="Texture2D" uid="uid://bku2007a1rtlg" path="res://Art/Background/stars.png" id="4_c1o6t"]
+[ext_resource type="PackedScene" uid="uid://djb310dgsan7m" path="res://Scenes/basic_map_elements/ui.tscn" id="1_eikoj"]
+[ext_resource type="PackedScene" uid="uid://daiokyywskwqg" path="res://Scenes/basic_map_elements/map_borders.tscn" id="3_5xh1q"]
+[ext_resource type="PackedScene" uid="uid://dfr0acka4fqbg" path="res://Scenes/basic_map_elements/background.tscn" id="4_rxc3u"]
 [ext_resource type="PackedScene" uid="uid://cbbkojgcsrdxg" path="res://Scenes/player.tscn" id="4_uicuu"]
 [ext_resource type="Texture2D" uid="uid://djv22d5tl3s24" path="res://Art/Ships/enemy1.png" id="6_c0u07"]
-[ext_resource type="Script" path="res://Scripts/BulletManager.gd" id="8_1x75j"]
-[ext_resource type="Script" path="res://Scripts/SaveSystem.gd" id="9_y4htr"]
-[ext_resource type="PackedScene" uid="uid://c4rghqu4lca45" path="res://Scenes/DebugManager.tscn" id="10_8cic2"]
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_rc1t8"]
-size = Vector2(10, 290)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_37sjg"]
-size = Vector2(480, 10)
-
-[sub_resource type="CanvasTexture" id="CanvasTexture_6woqk"]
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_pbwts"]
-shader = ExtResource("3_cwqn6")
-shader_parameter/direction = Vector2(1, 0)
-shader_parameter/speed_scale = 0.05
+[ext_resource type="PackedScene" uid="uid://cirjmdpeyj06d" path="res://Scenes/basic_map_elements/camera_2d.tscn" id="9_2lg2p"]
+[ext_resource type="Script" path="res://Scripts/Gameplay/BulletManager.gd" id="9_me1tn"]
+[ext_resource type="Script" path="res://Scripts/UI/SaveSystem.gd" id="10_tjxah"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_ucm86"]
 
@@ -31,45 +16,9 @@ shader_parameter/speed_scale = 0.05
 [node name="UI" parent="." instance=ExtResource("1_eikoj")]
 visible = false
 
-[node name="MapBorders" type="StaticBody2D" parent="."]
-position = Vector2(-5, 134)
+[node name="MapBorders" parent="." instance=ExtResource("3_5xh1q")]
 
-[node name="mapborder_left" type="CollisionShape2D" parent="MapBorders"]
-position = Vector2(0, 1)
-shape = SubResource("RectangleShape2D_rc1t8")
-
-[node name="mapborder_right" type="CollisionShape2D" parent="MapBorders"]
-position = Vector2(490, 1)
-shape = SubResource("RectangleShape2D_rc1t8")
-
-[node name="mapborder_top" type="CollisionShape2D" parent="MapBorders"]
-position = Vector2(245, -139)
-shape = SubResource("RectangleShape2D_37sjg")
-
-[node name="mapborder_down" type="CollisionShape2D" parent="MapBorders"]
-position = Vector2(245, 141)
-shape = SubResource("RectangleShape2D_37sjg")
-
-[node name="Background" type="Node2D" parent="."]
-position = Vector2(240, 135)
-
-[node name="oldBackground" type="Sprite2D" parent="Background"]
-visible = false
-texture_repeat = 2
-texture = ExtResource("2_fq3eo")
-region_enabled = true
-region_rect = Rect2(0, 0, 480, 270)
-
-[node name="Background_Black" type="Sprite2D" parent="Background"]
-modulate = Color(0, 0, 0, 1)
-scale = Vector2(480, 270)
-texture = SubResource("CanvasTexture_6woqk")
-
-[node name="Background_Stars" type="Sprite2D" parent="Background"]
-texture_repeat = 2
-material = SubResource("ShaderMaterial_pbwts")
-texture = ExtResource("4_c1o6t")
-script = ExtResource("4_bxsjd")
+[node name="Background" parent="." instance=ExtResource("4_rxc3u")]
 
 [node name="Enemy" type="Area2D" parent="."]
 position = Vector2(168, 149)
@@ -83,15 +32,12 @@ shape = SubResource("CircleShape2D_ucm86")
 [node name="Player" parent="." instance=ExtResource("4_uicuu")]
 position = Vector2(28, 128)
 
-[node name="Camera2D" type="Camera2D" parent="."]
-position = Vector2(240, 135)
-
 [node name="BulletManager" type="Node" parent="."]
-script = ExtResource("8_1x75j")
+script = ExtResource("9_me1tn")
 
 [node name="SaveSystem" type="Node" parent="."]
-script = ExtResource("9_y4htr")
+script = ExtResource("10_tjxah")
 
-[node name="DebugManager" parent="." instance=ExtResource("10_8cic2")]
+[node name="Camera2D" parent="." instance=ExtResource("9_2lg2p")]
 
 [connection signal="bullet" from="Player" to="BulletManager" method="_on_player_bullet"]

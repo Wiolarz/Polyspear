@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://bf5wlfoux684u"]
+
+[ext_resource type="Script" path="res://Scripts/Gameplay/BulletManager.gd" id="1_4t43p"]
+
+[node name="BulletManager" type="Node"]
+script = ExtResource("1_4t43p")
