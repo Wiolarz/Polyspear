@@ -23,6 +23,7 @@ signal bullet(pos, dir, bullet_scene, bullet_owner)
 func _ready():
 	Bus.load_game.connect(load_self)
 	Bus.collect_save_data.connect(save_self)
+	Bus.player_reference = self
 
 
 func load_self(save: Save):
@@ -107,4 +108,6 @@ func _on_gun_turret_turret_shoots(pos, dir, bullet_sc):
 
 
 func _on_hitbox_death():
+
+	Bus.player_reference = null
 	queue_free()

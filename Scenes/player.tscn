@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://Scripts/Gameplay/player.gd" id="1_o7m4v"]
 [ext_resource type="Texture2D" uid="uid://m447rugnefxf" path="res://Art/Ships/player_basic_ship.png" id="2_162m2"]
 [ext_resource type="Script" path="res://Scripts/Gameplay/hitbox.gd" id="3_ifw7w"]
-[ext_resource type="Script" path="res://Scripts/Gameplay/GunTurret.gd" id="4_dylqj"]
+[ext_resource type="Script" path="res://Scripts/Gameplay/PlayerTurret.gd" id="4_anyoq"]
 [ext_resource type="Texture2D" uid="uid://oh2gmywg8ffg" path="res://Art/Bullets/basic_turret.png" id="4_sksxl"]
 [ext_resource type="Script" path="res://Scripts/Gameplay/Gun.gd" id="6_678kp"]
 [ext_resource type="Script" path="res://Scripts/UI/AmmoCounter.gd" id="7_btfv1"]
@@ -36,7 +36,7 @@ shape = SubResource("RectangleShape2D_s2uwh")
 
 [node name="GunTurret" type="Node2D" parent="." node_paths=PackedStringArray("current_gun")]
 position = Vector2(0.5, 3.5)
-script = ExtResource("4_dylqj")
+script = ExtResource("4_anyoq")
 current_gun = NodePath("Guns/Gun")
 
 [node name="TurretSprite" type="Sprite2D" parent="GunTurret"]

@@ -1,23 +1,48 @@
-[gd_scene load_steps=5 format=3 uid="uid://cwide0xku3oan"]
+[gd_scene load_steps=8 format=3 uid="uid://cwide0xku3oan"]
 
 [ext_resource type="Script" path="res://Scripts/Gameplay/Enemy.gd" id="1_anf5l"]
 [ext_resource type="Texture2D" uid="uid://djv22d5tl3s24" path="res://Art/Ships/enemy1.png" id="1_dqoda"]
 [ext_resource type="Script" path="res://Scripts/Gameplay/hitbox.gd" id="3_v0fpb"]
+[ext_resource type="Script" path="res://Scripts/Gameplay/EnemyTurret.gd" id="4_a0ts6"]
+[ext_resource type="Texture2D" uid="uid://oh2gmywg8ffg" path="res://Art/Bullets/basic_turret.png" id="5_8sciu"]
+[ext_resource type="Script" path="res://Scripts/Gameplay/Gun.gd" id="6_0b3tn"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_3yne5"]
-size = Vector2(20, 16)
+size = Vector2(20, 17)
 
 [node name="Enemy" type="Node2D"]
 script = ExtResource("1_anf5l")
 
-[node name="Sprite2D" type="Sprite2D" parent="."]
+[node name="ShipSprite" type="Sprite2D" parent="."]
 texture = ExtResource("1_dqoda")
 
 [node name="hitbox" type="Area2D" parent="."]
 script = ExtResource("3_v0fpb")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="hitbox"]
-position = Vector2(0, -1)
+position = Vector2(0, -1.5)
 shape = SubResource("RectangleShape2D_3yne5")
 
+[node name="GunTurret" type="Node2D" parent="." node_paths=PackedStringArray("current_gun")]
+position = Vector2(0, -2)
+script = ExtResource("4_a0ts6")
+current_gun = NodePath("Guns/Gun")
+
+[node name="TurretSprite" type="Sprite2D" parent="GunTurret"]
+position = Vector2(5.5, 0.5)
+texture = ExtResource("5_8sciu")
+
+[node name="Marker2D" type="Marker2D" parent="GunTurret"]
+position = Vector2(18.5, 0.5)
+
+[node name="Guns" type="Node2D" parent="GunTurret"]
+
+[node name="Gun" type="Node2D" parent="GunTurret/Guns"]
+scale = Vector2(3.1219, 1.57672)
+script = ExtResource("6_0b3tn")
+shooting_speed = 80
+max_ammunition = 4
+ammuniton = 0
+
 [connection signal="death" from="hitbox" to="." method="_on_hitbox_death"]
+[connection signal="turret_shoots" from="GunTurret" to="." method="_on_gun_turret_turret_shoots"]

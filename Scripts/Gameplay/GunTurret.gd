@@ -1,12 +1,14 @@
 extends Node2D
 
+class_name gun_turret
 
 signal turret_shoots(pos, dir, ammo)
 
 @export var ammuniton = 1000
 
+@onready var rifle_exit: Marker2D  = $Marker2D
 
-@onready var rifle_exit: Marker2D = $Marker2D
+
 
 #@onready var guns : Node2D = $Guns
 
@@ -30,12 +32,5 @@ func shoot():
 	emit_signal("turret_shoots", rifle_exit.global_position, rotation_degrees, bullet)
 
 
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _physics_process(_delta):
-	look_at(get_global_mouse_position())
 
 
-	if Input.is_action_pressed("KEY_SHOOT"):
-		shoot()
-		
-	#rotation = get_global_mouse_position().angle_to_point(global_position)
