@@ -1,3 +1,17 @@
-[gd_scene format=3 uid="uid://c4gk7hw7scja8"]
+[gd_scene load_steps=2 format=3 uid="uid://c4gk7hw7scja8"]
 
-[node name="Enemy_waves" type="Node"]
+[ext_resource type="Script" path="res://Scripts/Gameplay/EnemyWaves.gd" id="1_flw2s"]
+
+[node name="Enemy_waves" type="Node2D"]
+script = ExtResource("1_flw2s")
+
+[node name="SpawnLocations" type="Node2D" parent="."]
+position = Vector2(496, 142)
+
+[node name="Marker2D" type="Marker2D" parent="SpawnLocations"]
+position = Vector2(1, -130)
+
+[node name="Marker2D2" type="Marker2D" parent="SpawnLocations"]
+
+[node name="Marker2D3" type="Marker2D" parent="SpawnLocations"]
+position = Vector2(0, 115)

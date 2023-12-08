@@ -58,4 +58,5 @@ offset_bottom = 23.0
 script = ExtResource("7_btfv1")
 gun = NodePath("../GunTurret/Guns/Gun")
 
+[connection signal="death" from="hitbox" to="." method="_on_hitbox_death"]
 [connection signal="turret_shoots" from="GunTurret" to="." method="_on_gun_turret_turret_shoots"]

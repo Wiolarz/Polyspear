@@ -17,7 +17,7 @@ var ship_break_charges = ship_break_max_charges
 
 
 
-signal bullet(pos, dir, bullet_scene)
+signal bullet(pos, dir, bullet_scene, bullet_owner)
 
 
 func _ready():
@@ -103,4 +103,8 @@ func _physics_process(_delta):
 
 
 func _on_gun_turret_turret_shoots(pos, dir, bullet_sc):
-	emit_signal("bullet", pos, dir, bullet_sc)
+	emit_signal("bullet", pos, dir, bullet_sc, $hitbox)
+
+
+func _on_hitbox_death():
+	queue_free()

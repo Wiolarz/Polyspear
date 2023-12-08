@@ -14,6 +14,7 @@ var velocity
 
 var death_timer = 10000
 
+var bullet_owner = null
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -32,6 +33,11 @@ func _physics_process(_delta):
 
 
 func _on_area_entered(area:Area2D):
-	return
-	if area.has_method("damage"):
+	if area.has_method("damage") and not area == bullet_owner:
 		area.damage(self)
+
+
+func scrape(plates_pierced):
+	armor_pierce -= plates_pierced
+	if armor_pierce <= 0:
+		queue_free()

@@ -27,6 +27,10 @@ func shoot():
 
 
 func reload(avalaible_ammo):
+	"""
+	Takes number of bullets turret has
+	
+	"""
 	shooting_cooldown = reload_time
 	ammuniton = min(max_ammunition, avalaible_ammo)
 	return ammuniton
