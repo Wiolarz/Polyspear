@@ -3,10 +3,21 @@ extends Node2D
 
 signal bullet(pos, dir, bullet_scene, bullet_owner)
 
+@export var hull : Resource
+@export var turret : Resource
+@export var guns : Resource
+
+
 @onready var bullet_manager = $"../../BulletManager"
 
+func _init(spd : int = 1):
+	speed = spd
+
+
+var speed = 1
+
 func movement():
-	position.x -= 1
+	position.x -= speed
 
 
 func _physics_process(delta):

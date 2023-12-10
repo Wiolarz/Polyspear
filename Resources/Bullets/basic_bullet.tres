@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="bullet_resource" load_steps=3 format=3 uid="uid://dp5x5p6dna11u"]
+
+[ext_resource type="Texture2D" uid="uid://d4dcl8g1w2sma" path="res://Art/Bullets/player_bullet.png" id="1_hhrcm"]
+[ext_resource type="Script" path="res://Resources/Resource_Scripts/bullet_resource.gd" id="1_ol4lr"]
+
+[resource]
+script = ExtResource("1_ol4lr")
+ammo_type = 0
+damage = 10
+armor_pierce = 2
+explosion_dmg = 10
+bullet_sprite = ExtResource("1_hhrcm")
+speed = 4
+death_timer = 6000

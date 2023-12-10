@@ -1,10 +1,10 @@
 [gd_scene load_steps=8 format=3 uid="uid://cwide0xku3oan"]
 
 [ext_resource type="Script" path="res://Scripts/Gameplay/Enemy.gd" id="1_anf5l"]
-[ext_resource type="Texture2D" uid="uid://djv22d5tl3s24" path="res://Art/Ships/enemy1.png" id="1_dqoda"]
-[ext_resource type="Script" path="res://Scripts/Gameplay/hitbox.gd" id="3_v0fpb"]
+[ext_resource type="Texture2D" uid="uid://djv22d5tl3s24" path="res://Art/Ship_hulls/enemy1.png" id="2_4kb6p"]
+[ext_resource type="Script" path="res://Scripts/Gameplay/Hitbox/HullHitbox.gd" id="3_wneyg"]
 [ext_resource type="Script" path="res://Scripts/Gameplay/EnemyTurret.gd" id="4_a0ts6"]
-[ext_resource type="Texture2D" uid="uid://oh2gmywg8ffg" path="res://Art/Bullets/basic_turret.png" id="5_8sciu"]
+[ext_resource type="Texture2D" uid="uid://oh2gmywg8ffg" path="res://Art/Gun_Turrets/basic_turret.png" id="5_euhbd"]
 [ext_resource type="Script" path="res://Scripts/Gameplay/Gun.gd" id="6_0b3tn"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_3yne5"]
@@ -14,10 +14,10 @@ size = Vector2(20, 17)
 script = ExtResource("1_anf5l")
 
 [node name="ShipSprite" type="Sprite2D" parent="."]
-texture = ExtResource("1_dqoda")
+texture = ExtResource("2_4kb6p")
 
 [node name="hitbox" type="Area2D" parent="."]
-script = ExtResource("3_v0fpb")
+script = ExtResource("3_wneyg")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="hitbox"]
 position = Vector2(0, -1.5)
@@ -30,7 +30,7 @@ current_gun = NodePath("Guns/Gun")
 
 [node name="TurretSprite" type="Sprite2D" parent="GunTurret"]
 position = Vector2(5.5, 0.5)
-texture = ExtResource("5_8sciu")
+texture = ExtResource("5_euhbd")
 
 [node name="Marker2D" type="Marker2D" parent="GunTurret"]
 position = Vector2(18.5, 0.5)

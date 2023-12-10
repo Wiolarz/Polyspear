@@ -18,6 +18,7 @@ config/icon="res://Art/UI/icon.svg"
 [autoload]
 
 Bus="*res://Scripts/Gameplay/Bus.gd"
+GlobalTypes="*res://Resources/Resource_Scripts/global_types.gd"
 
 [display]
 

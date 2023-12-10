@@ -1,9 +1,15 @@
 extends Area2D
 
-signal death()
+class_name hitbox
+
+
 
 @export var max_health = [10, 5, 2]
 var cur_health = max_health
+
+
+func destruction():
+	pass
 
 
 func damage(bullet):
@@ -20,8 +26,7 @@ func damage(bullet):
 	
 	print(cur_health)
 	if cur_health[-1] <= 0:
-		print("emitted death")
-		emit_signal("death")
+		destruction()
 		return
 	
 

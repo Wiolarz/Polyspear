@@ -104,7 +104,7 @@ func _physics_process(_delta):
 
 
 func _on_gun_turret_turret_shoots(pos, dir, bullet_sc):
-	emit_signal("bullet", pos, dir, bullet_sc, $hitbox)
+	emit_signal("bullet", pos, dir, bullet_sc, self)
 
 
 func _on_hitbox_death():

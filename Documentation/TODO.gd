@@ -38,11 +38,8 @@ Movement type - rotation speed behavior
 
 
 
-various ammo types and system around those
 
-
-ammo cannot hit your own ship
-
+one bullet type per weapon, in future it will be expanded to allow player to choose which ammo type apply to which gun
 """
 
 
