@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://fim2627ycln5"
-path="res://.godot/imported/Big_Blue.png-810e5d7568804d0143810fc41b5ef6c8.ctex"
+uid="uid://c8wvty50iwvkv"
+path="res://.godot/imported/orange_player.png-355b8c595b2bbd7030479c243de2dba5.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Art/Ships/Big_Blue.png"
-dest_files=["res://.godot/imported/Big_Blue.png-810e5d7568804d0143810fc41b5ef6c8.ctex"]
+source_file="res://Art/Ship_hulls/orange_player.png"
+dest_files=["res://.godot/imported/orange_player.png-355b8c595b2bbd7030479c243de2dba5.ctex"]
 
 [params]
 

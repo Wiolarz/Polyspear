@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://ddu8vgcytd5oj"
-path="res://.godot/imported/Minigun_Red.png-c2fc73b74f37b28cca74bfe886b69b47.ctex"
+uid="uid://yxtc607eexcw"
+path="res://.godot/imported/Big_Red.png-f988b5bbba41aa7bd5a67412ea9070ed.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Art/Ships/Minigun_Red.png"
-dest_files=["res://.godot/imported/Minigun_Red.png-c2fc73b74f37b28cca74bfe886b69b47.ctex"]
+source_file="res://Art/Ship_hulls/Big_Red.png"
+dest_files=["res://.godot/imported/Big_Red.png-f988b5bbba41aa7bd5a67412ea9070ed.ctex"]
 
 [params]
 

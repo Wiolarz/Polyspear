@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://oh2gmywg8ffg"
-path="res://.godot/imported/basic_turret.png-99e84c6e5c11c9534d1d4aa2d6376d28.ctex"
+uid="uid://m447rugnefxf"
+path="res://.godot/imported/player_basic_ship.png-03baabec50bf7e453c602ec648a5146c.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Art/Bullets/basic_turret.png"
-dest_files=["res://.godot/imported/basic_turret.png-99e84c6e5c11c9534d1d4aa2d6376d28.ctex"]
+source_file="res://Art/Ship_hulls/player_basic_ship.png"
+dest_files=["res://.godot/imported/player_basic_ship.png-03baabec50bf7e453c602ec648a5146c.ctex"]
 
 [params]
 

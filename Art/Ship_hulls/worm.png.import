@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://yxtc607eexcw"
-path="res://.godot/imported/Big_Red.png-4ce55fdb035a7cd7803bad418b9b0410.ctex"
+uid="uid://dqd0eu0xljjqq"
+path="res://.godot/imported/worm.png-c796f7866fa3da0e450f3a39b13a775b.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Art/Ships/Big_Red.png"
-dest_files=["res://.godot/imported/Big_Red.png-4ce55fdb035a7cd7803bad418b9b0410.ctex"]
+source_file="res://Art/Ship_hulls/worm.png"
+dest_files=["res://.godot/imported/worm.png-c796f7866fa3da0e450f3a39b13a775b.ctex"]
 
 [params]
 

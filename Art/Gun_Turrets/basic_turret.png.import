@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bqr8e0lt6vys"
-path="res://.godot/imported/enemy_purple.png-12a7d28ecdca71a0d2f3ecd3f220bf93.ctex"
+uid="uid://oh2gmywg8ffg"
+path="res://.godot/imported/basic_turret.png-4800c80f9778ac4a5c049624667f43c1.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Art/Ships/enemy_purple.png"
-dest_files=["res://.godot/imported/enemy_purple.png-12a7d28ecdca71a0d2f3ecd3f220bf93.ctex"]
+source_file="res://Art/Gun_Turrets/basic_turret.png"
+dest_files=["res://.godot/imported/basic_turret.png-4800c80f9778ac4a5c049624667f43c1.ctex"]
 
 [params]
 

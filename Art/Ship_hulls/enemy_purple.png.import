@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://c8wvty50iwvkv"
-path="res://.godot/imported/orange_player.png-f44cbfa29a4f49bdd04f6d9904dd5fc3.ctex"
+uid="uid://bqr8e0lt6vys"
+path="res://.godot/imported/enemy_purple.png-8cc58092613fdffef99caf14fd3247c8.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Art/Ships/orange_player.png"
-dest_files=["res://.godot/imported/orange_player.png-f44cbfa29a4f49bdd04f6d9904dd5fc3.ctex"]
+source_file="res://Art/Ship_hulls/enemy_purple.png"
+dest_files=["res://.godot/imported/enemy_purple.png-8cc58092613fdffef99caf14fd3247c8.ctex"]
 
 [params]
 
