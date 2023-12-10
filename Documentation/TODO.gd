@@ -25,7 +25,9 @@ I Progression system: money + rare upgrade drops
 var ADD
 """
 
+Change currently active weapon with mouse wheel
 
+Change shield status from active to not active
 
 
 

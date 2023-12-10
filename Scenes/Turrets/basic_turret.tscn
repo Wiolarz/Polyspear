@@ -1,0 +1,23 @@
+[gd_scene load_steps=4 format=3 uid="uid://du2jbnkn1t31p"]
+
+[ext_resource type="Script" path="res://Scripts/Gameplay/Damage_Scripts/GunTurret.gd" id="1_3mehx"]
+[ext_resource type="Texture2D" uid="uid://oh2gmywg8ffg" path="res://Art/Gun_Turrets/basic_turret.png" id="2_ldy30"]
+[ext_resource type="Script" path="res://Scripts/Gameplay/Damage_Scripts/Gun.gd" id="3_64or0"]
+
+[node name="BasicTurret" type="Node2D" node_paths=PackedStringArray("current_gun")]
+script = ExtResource("1_3mehx")
+gun_slots = Array[int]([1])
+current_gun = NodePath("gun")
+
+[node name="TurretSprite" type="Sprite2D" parent="."]
+position = Vector2(6.5, 0.5)
+texture = ExtResource("2_ldy30")
+
+[node name="Barrels" type="Node2D" parent="."]
+position = Vector2(0.5, 0.5)
+
+[node name="Marker2D" type="Marker2D" parent="Barrels"]
+position = Vector2(19, 0)
+
+[node name="gun" type="Node2D" parent="."]
+script = ExtResource("3_64or0")

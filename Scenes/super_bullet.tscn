@@ -1,0 +1,23 @@
+[gd_scene load_steps=4 format=3 uid="uid://ycw26yyihiqr"]
+
+[ext_resource type="Script" path="res://Scripts/Gameplay/Damage_Scripts/Bullet.gd" id="1_rwhbt"]
+[ext_resource type="Texture2D" uid="uid://bvoggy4j2ocov" path="res://Art/Bullets/laser.png" id="2_rg5nv"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_p82aq"]
+size = Vector2(10, 3)
+
+[node name="Bullet" type="Area2D"]
+script = ExtResource("1_rwhbt")
+damage = 100
+armor_pierce = 1
+death_timer = 10000
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(-1, 4)
+texture = ExtResource("2_rg5nv")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, 0.5)
+shape = SubResource("RectangleShape2D_p82aq")
+
+[connection signal="area_entered" from="." to="." method="_on_area_entered"]

@@ -11,9 +11,14 @@ var shooting_cooldown = 0
 
 #var acceptable_bullets = ["default"]
 
-var bullet_scene: PackedScene = preload("res://Scenes/bullet.tscn")
+@export var bullet_scene: PackedScene = preload("res://Scenes/bullet.tscn")
 
 
+func change_stats(res):
+	shooting_speed = res.shooting_speed
+	reload_time = res.reload_time
+	max_ammunition = res.max_ammunition
+	ammuniton = res.ammuniton
 
 func shoot():
 	if ammuniton == 0:

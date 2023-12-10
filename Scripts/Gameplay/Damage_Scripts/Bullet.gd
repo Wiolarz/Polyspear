@@ -2,18 +2,22 @@ extends Area2D
 
 class_name Bullet
 
-@export var resource : bullet_resource
+
+@export_category("Main Category")
 
 @export var ammo_type = "Default"
+#@export var ammo_type : GlobalTypes.Bullets = GlobalTypes.Bullets.DEFAULT
 
-@export var damage = 10
-@export var armor_pierce = 2
-@export var explosion_dmg = 10
+@export var damage : int = 10
+@export var armor_pierce : int = 2
+@export var explosion_dmg : int = 10
 
 
-@export var speed = 4
+@export_category("Properties Category")
+@export var speed : int = 4
 
-@export var death_timer = 10000
+@export var death_timer : int = 6000
+
 var velocity
 
 
@@ -22,7 +26,7 @@ var bullet_owner = null
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	#$Sprite2D.texture = resource.bullet_sprite
+	
 	velocity = Vector2.RIGHT.rotated(rotation) * speed
 	
 

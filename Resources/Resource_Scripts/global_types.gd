@@ -14,3 +14,10 @@ enum Turrets \
 		MEDIUM,
 		LARGE,
 	}
+
+enum Guns \
+	{
+		SMALL,
+		MEDIUM,
+		LARGE,
+	}

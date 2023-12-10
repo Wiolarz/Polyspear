@@ -20,14 +20,15 @@ func movement():
 	position.x -= speed
 
 
-func _physics_process(delta):
+func _physics_process(_delta):
 	movement()
 	
 
 
-func _on_gun_turret_turret_shoots(pos, dir, bullet_sc):
-	bullet_manager._on_player_bullet(pos, dir, bullet_sc, $hitbox)
-	#emit_signal("bullet", pos, dir, bullet_sc, $hitbox)
 
-func _on_hitbox_death():
+
+func _on_basic_turret_turret_shoots(pos:Variant, dir:Variant, ammo_scene:Variant):
+	bullet_manager._on_player_bullet(pos, dir, ammo_scene, owner)
+
+func _on_ship_hull_death():
 	queue_free()

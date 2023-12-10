@@ -3,9 +3,19 @@ extends Area2D
 class_name hitbox
 
 
+@export var max_health : Array[int] = [10, 5, 2]
 
-@export var max_health = [10, 5, 2]
+@export var testhp1 : int = 5
+@export var testhp2 : int = 5
+
+
 var cur_health = max_health
+
+func _ready():
+	print(testhp1)
+	print(testhp2)
+	max_health[0] = testhp1
+	max_health[1] = testhp2
 
 
 func destruction():

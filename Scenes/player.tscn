@@ -1,82 +1,40 @@
-[gd_scene load_steps=14 format=3 uid="uid://cbbkojgcsrdxg"]
+[gd_scene load_steps=9 format=3 uid="uid://s3e2tp4hahdw"]
 
-[ext_resource type="Script" path="res://Scripts/Gameplay/player.gd" id="1_o7m4v"]
-[ext_resource type="Texture2D" uid="uid://m447rugnefxf" path="res://Art/Ship_hulls/player_basic_ship.png" id="2_2p1x1"]
-[ext_resource type="Script" path="res://Scripts/Gameplay/Hitbox/HullHitbox.gd" id="3_jr701"]
-[ext_resource type="Script" path="res://Scripts/Gameplay/PlayerTurret.gd" id="4_anyoq"]
-[ext_resource type="Texture2D" uid="uid://oh2gmywg8ffg" path="res://Art/Gun_Turrets/basic_turret.png" id="5_anx2s"]
-[ext_resource type="Script" path="res://Scripts/Gameplay/Gun.gd" id="6_678kp"]
-[ext_resource type="Script" path="res://Scripts/UI/AmmoCounter.gd" id="7_btfv1"]
-[ext_resource type="Script" path="res://Scripts/Gameplay/ShieldGenerator.gd" id="8_gw3se"]
-[ext_resource type="Script" path="res://Scripts/Gameplay/Hitbox/ShieldHitbox.gd" id="9_ococp"]
-[ext_resource type="Texture2D" uid="uid://bdfmt1sw8lkuf" path="res://Art/Shields/basic_shield.png" id="9_tt401"]
+[ext_resource type="PackedScene" uid="uid://dkncu3umpsx02" path="res://Scenes/Ship_Hulls/basic_player_hull.tscn" id="1_7xpq5"]
+[ext_resource type="Script" path="res://Scripts/Gameplay/player.gd" id="1_ejfyf"]
+[ext_resource type="Script" path="res://Scripts/Gameplay/ShieldGenerator.gd" id="4_gt15b"]
+[ext_resource type="PackedScene" uid="uid://du2jbnkn1t31p" path="res://Scenes/Turrets/basic_turret.tscn" id="5_cs3fu"]
+[ext_resource type="PackedScene" uid="uid://bjrci7lu4nj0y" path="res://Scenes/Shields/basic_shield.tscn" id="5_p3s4d"]
+[ext_resource type="Script" path="res://Scripts/Gameplay/Damage_Scripts/PlayerTurret.gd" id="6_omm64"]
+[ext_resource type="Resource" uid="uid://bwxgglkhxorvy" path="res://Resources/Guns/player_basic_gun.tres" id="7_b7u21"]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_vpjnq"]
-size = Vector2(25, 11)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_s2uwh"]
-size = Vector2(30, 14)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_3s0vc"]
-size = Vector2(14, 16)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_v22up"]
+size = Vector2(31, 15)
 
 [node name="Player" type="CharacterBody2D"]
-script = ExtResource("1_o7m4v")
+script = ExtResource("1_ejfyf")
 
-[node name="ShipSprite" type="Sprite2D" parent="."]
-position = Vector2(-7.5, 2.5)
-texture = ExtResource("2_2p1x1")
-offset = Vector2(0, 1)
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(6.5, 0.5)
+shape = SubResource("RectangleShape2D_v22up")
 
-[node name="hitbox" type="Area2D" parent="."]
-position = Vector2(-7.5, 2.5)
-script = ExtResource("3_jr701")
-
-[node name="HitboxShape" type="CollisionShape2D" parent="hitbox"]
-position = Vector2(10.5, -0.5)
-shape = SubResource("RectangleShape2D_vpjnq")
-
-[node name="MovementCollision" type="CollisionShape2D" parent="."]
-position = Vector2(1.5, 1.5)
-shape = SubResource("RectangleShape2D_s2uwh")
-
-[node name="GunTurret" type="Node2D" parent="." node_paths=PackedStringArray("current_gun")]
-position = Vector2(0.5, 3.5)
-script = ExtResource("4_anyoq")
-current_gun = NodePath("Guns/Gun")
-
-[node name="TurretSprite" type="Sprite2D" parent="GunTurret"]
-position = Vector2(5.5, 0.5)
-texture = ExtResource("5_anx2s")
-
-[node name="Marker2D" type="Marker2D" parent="GunTurret"]
-position = Vector2(18.5, 0.5)
-
-[node name="Guns" type="Node2D" parent="GunTurret"]
-
-[node name="Gun" type="Node2D" parent="GunTurret/Guns"]
-scale = Vector2(3.1219, 1.57672)
-script = ExtResource("6_678kp")
-
-[node name="AmmoCounter" type="Label" parent="." node_paths=PackedStringArray("gun")]
-offset_right = 40.0
-offset_bottom = 23.0
-script = ExtResource("7_btfv1")
-gun = NodePath("../GunTurret/Guns/Gun")
+[node name="ShipHull" parent="." instance=ExtResource("1_7xpq5")]
+max_health = Array[int]([100, 100])
+testhp1 = 100
+testhp2 = 100
 
 [node name="ShieldGenerator" type="Node2D" parent="."]
-position = Vector2(11, 2)
-script = ExtResource("8_gw3se")
+position = Vector2(5, 1)
+script = ExtResource("4_gt15b")
 
-[node name="shield" type="Area2D" parent="ShieldGenerator"]
-position = Vector2(20, 1)
-script = ExtResource("9_ococp")
+[node name="Shield" parent="ShieldGenerator" instance=ExtResource("5_p3s4d")]
+position = Vector2(35, 1)
+max_health = Array[int]([10, 10, 10, 10, 10, 10, 10, 10, 10, 10])
 
-[node name="Sprite2D" type="Sprite2D" parent="ShieldGenerator/shield"]
-texture = ExtResource("9_tt401")
+[node name="BasicTurret" parent="." instance=ExtResource("5_cs3fu")]
+position = Vector2(6, 0)
+script = ExtResource("6_omm64")
+gun_res = Array[Resource("res://Resources/Resource_Scripts/gun_resource.gd")]([ExtResource("7_b7u21")])
 
-[node name="shieldHitboxShape" type="CollisionShape2D" parent="ShieldGenerator/shield"]
-shape = SubResource("RectangleShape2D_3s0vc")
-
-[connection signal="death" from="hitbox" to="." method="_on_hitbox_death"]
-[connection signal="turret_shoots" from="GunTurret" to="." method="_on_gun_turret_turret_shoots"]
+[connection signal="death" from="ShipHull" to="." method="_on_ship_hull_death"]
+[connection signal="turret_shoots" from="BasicTurret" to="." method="_on_basic_turret_turret_shoots"]

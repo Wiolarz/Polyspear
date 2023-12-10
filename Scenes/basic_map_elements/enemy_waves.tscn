@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://c4gk7hw7scja8"]
 
-[ext_resource type="Script" path="res://Scripts/Gameplay/EnemyWaves.gd" id="1_flw2s"]
+[ext_resource type="Script" path="res://Scripts/Gameplay/Enemy_Scripts/EnemyWaves.gd" id="1_flw2s"]
 
 [node name="Enemy_waves" type="Node2D"]
 script = ExtResource("1_flw2s")

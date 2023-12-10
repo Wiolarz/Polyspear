@@ -1,39 +1,34 @@
-[gd_scene load_steps=9 format=3 uid="uid://os75hnii4k0w"]
+[gd_scene load_steps=10 format=3 uid="uid://ycs8h80pu3mg"]
 
-[ext_resource type="PackedScene" uid="uid://djb310dgsan7m" path="res://Scenes/basic_map_elements/ui.tscn" id="1_eikoj"]
-[ext_resource type="PackedScene" uid="uid://daiokyywskwqg" path="res://Scenes/basic_map_elements/map_borders.tscn" id="3_5xh1q"]
-[ext_resource type="PackedScene" uid="uid://dfr0acka4fqbg" path="res://Scenes/basic_map_elements/background.tscn" id="4_rxc3u"]
-[ext_resource type="PackedScene" uid="uid://cbbkojgcsrdxg" path="res://Scenes/Player.tscn" id="4_uicuu"]
-[ext_resource type="PackedScene" uid="uid://cirjmdpeyj06d" path="res://Scenes/basic_map_elements/camera_2d.tscn" id="9_2lg2p"]
-[ext_resource type="Script" path="res://Scripts/Gameplay/BulletManager.gd" id="9_me1tn"]
-[ext_resource type="PackedScene" uid="uid://c4gk7hw7scja8" path="res://Scenes/basic_map_elements/enemy_waves.tscn" id="9_x2hfj"]
-[ext_resource type="Script" path="res://Scripts/UI/SaveSystem.gd" id="10_tjxah"]
+[ext_resource type="PackedScene" uid="uid://dfr0acka4fqbg" path="res://Scenes/basic_map_elements/background.tscn" id="1_t3532"]
+[ext_resource type="PackedScene" uid="uid://bf5wlfoux684u" path="res://Scenes/basic_map_elements/bullet_manager.tscn" id="2_b65p3"]
+[ext_resource type="PackedScene" uid="uid://cirjmdpeyj06d" path="res://Scenes/basic_map_elements/camera_2d.tscn" id="3_6wt65"]
+[ext_resource type="PackedScene" uid="uid://c4rghqu4lca45" path="res://Scenes/basic_map_elements/DebugManager.tscn" id="4_r7gr1"]
+[ext_resource type="PackedScene" uid="uid://c4gk7hw7scja8" path="res://Scenes/basic_map_elements/enemy_waves.tscn" id="5_avn75"]
+[ext_resource type="PackedScene" uid="uid://daiokyywskwqg" path="res://Scenes/basic_map_elements/map_borders.tscn" id="6_fx4c0"]
+[ext_resource type="PackedScene" uid="uid://de5tmo1eipiqg" path="res://Scenes/super_enemy.tscn" id="6_i1tke"]
+[ext_resource type="PackedScene" uid="uid://djb310dgsan7m" path="res://Scenes/basic_map_elements/ui.tscn" id="7_x5w8t"]
+[ext_resource type="PackedScene" uid="uid://s3e2tp4hahdw" path="res://Scenes/player.tscn" id="8_tkaqm"]
 
-[node name="BasicMap" type="Node"]
+[node name="basic_map" type="Node"]
 
-[node name="UI" parent="." instance=ExtResource("1_eikoj")]
+[node name="Background" parent="." instance=ExtResource("1_t3532")]
+
+[node name="BulletManager" parent="." instance=ExtResource("2_b65p3")]
+
+[node name="Camera2D" parent="." instance=ExtResource("3_6wt65")]
+
+[node name="DebugManager" parent="." instance=ExtResource("4_r7gr1")]
+
+[node name="Enemy_waves" parent="." instance=ExtResource("5_avn75")]
+super_enemy_scene = ExtResource("6_i1tke")
+
+[node name="MapBorders" parent="." instance=ExtResource("6_fx4c0")]
+
+[node name="UI" parent="." instance=ExtResource("7_x5w8t")]
 visible = false
 
-[node name="MapBorders" parent="." instance=ExtResource("3_5xh1q")]
-
-[node name="Background" parent="." instance=ExtResource("4_rxc3u")]
-
-[node name="Player" parent="." instance=ExtResource("4_uicuu")]
-position = Vector2(28, 128)
-
-[node name="BulletManager" type="Node" parent="."]
-script = ExtResource("9_me1tn")
-
-[node name="SaveSystem" type="Node" parent="."]
-script = ExtResource("10_tjxah")
-
-[node name="Camera2D" parent="." instance=ExtResource("9_2lg2p")]
-
-[node name="Enemy_waves" parent="." instance=ExtResource("9_x2hfj")]
-
-[node name="CharacterBody2D" type="Node" parent="."]
-process_thread_group = 1
-process_thread_group_order = 0
-process_thread_messages = 0
+[node name="Player" parent="." instance=ExtResource("8_tkaqm")]
+position = Vector2(30, 133)
 
 [connection signal="bullet" from="Player" to="BulletManager" method="_on_player_bullet"]

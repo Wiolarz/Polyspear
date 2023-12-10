@@ -3,6 +3,7 @@ extends gun_turret
 #@onready var target = $"../../../Player"
 @onready var target = Bus.player_reference
 
+
 func _physics_process(_delta):
 	if target == null:
 		return

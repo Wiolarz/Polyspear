@@ -1,0 +1,16 @@
+[gd_scene load_steps=4 format=3 uid="uid://bjrci7lu4nj0y"]
+
+[ext_resource type="Script" path="res://Scripts/Gameplay/Hitbox_Scripts/ShieldHitbox.gd" id="1_byu0m"]
+[ext_resource type="Texture2D" uid="uid://bdfmt1sw8lkuf" path="res://Art/Shields/basic_shield.png" id="2_8shj0"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_w1j47"]
+size = Vector2(12, 14)
+
+[node name="Shield" type="Area2D"]
+script = ExtResource("1_byu0m")
+
+[node name="ShieldHitbox" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_w1j47")
+
+[node name="ShieldSprite" type="Sprite2D" parent="."]
+texture = ExtResource("2_8shj0")

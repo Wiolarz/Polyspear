@@ -1,0 +1,23 @@
+[gd_scene load_steps=4 format=3 uid="uid://cesjyqjwy2ot3"]
+
+[ext_resource type="Script" path="res://Scripts/Gameplay/Hitbox_Scripts/HullHitbox.gd" id="1_oraku"]
+[ext_resource type="Texture2D" uid="uid://bqr8e0lt6vys" path="res://Art/Ship_hulls/enemy_purple.png" id="2_vj3jc"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_rwtce"]
+size = Vector2(15, 28)
+
+[node name="ShipHull" type="Area2D"]
+script = ExtResource("1_oraku")
+gun_turrets_sizes = Array[int]([1])
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(-2.5, -1)
+shape = SubResource("RectangleShape2D_rwtce")
+
+[node name="ShipSprite" type="Sprite2D" parent="."]
+texture = ExtResource("2_vj3jc")
+
+[node name="GunTurrets" type="Node2D" parent="."]
+
+[node name="Marker2D" type="Marker2D" parent="GunTurrets"]
+position = Vector2(-1, -2)

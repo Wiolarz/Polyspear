@@ -12,7 +12,7 @@ var shooting_cooldown = 0
 
 #var acceptable_bullets = ["default"]
 
-var bullet_scene: PackedScene = preload("res://Scenes/bullet.tscn")
+@export var place_holder_bullet_scene: PackedScene = preload("res://Scenes/bullet.tscn")
 
 
 
