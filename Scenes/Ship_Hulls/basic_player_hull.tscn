@@ -1,7 +1,8 @@
-[gd_scene load_steps=4 format=3 uid="uid://dkncu3umpsx02"]
+[gd_scene load_steps=5 format=3 uid="uid://dkncu3umpsx02"]
 
 [ext_resource type="Script" path="res://Scripts/Gameplay/Hitbox_Scripts/HullHitbox.gd" id="1_pyysv"]
 [ext_resource type="Texture2D" uid="uid://m447rugnefxf" path="res://Art/Ship_hulls/player_basic_ship.png" id="2_dr1b1"]
+[ext_resource type="Texture2D" uid="uid://oh2gmywg8ffg" path="res://Art/Gun_Turrets/basic_turret.png" id="2_r2pi5"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_rwtce"]
 size = Vector2(34, 13)
@@ -21,3 +22,6 @@ texture = ExtResource("2_dr1b1")
 
 [node name="Marker2D" type="Marker2D" parent="GunTurrets"]
 position = Vector2(6, 0)
+
+[node name="Sprite2D" type="Sprite2D" parent="GunTurrets/Marker2D"]
+texture = ExtResource("2_r2pi5")

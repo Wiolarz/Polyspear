@@ -5,6 +5,7 @@ extends gun_turret
 
 
 func _physics_process(_delta):
+	target = Bus.player_reference
 	if target == null:
 		return
 	look_at(target.global_position)

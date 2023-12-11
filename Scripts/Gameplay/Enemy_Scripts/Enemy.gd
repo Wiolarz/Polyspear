@@ -6,9 +6,14 @@ signal bullet(pos, dir, bullet_scene, bullet_owner)
 @export var hull : Resource
 @export var turret : Resource
 @export var guns : Resource
+var bullet_manager
+
+func _ready():
+	#print(get_node("/root").get_children())
+	bullet_manager = get_node("/root/basic_map/BulletManager")
 
 
-@onready var bullet_manager = $"../../BulletManager"
+#"../../BulletManager"
 
 func _init(spd : int = 1):
 	speed = spd

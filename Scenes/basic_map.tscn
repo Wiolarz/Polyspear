@@ -15,8 +15,6 @@
 
 [node name="Background" parent="." instance=ExtResource("1_t3532")]
 
-[node name="BulletManager" parent="." instance=ExtResource("2_b65p3")]
-
 [node name="Camera2D" parent="." instance=ExtResource("3_6wt65")]
 
 [node name="DebugManager" parent="." instance=ExtResource("4_r7gr1")]
@@ -34,5 +32,7 @@ position = Vector2(30, 133)
 
 [node name="Bullet" parent="." instance=ExtResource("10_bjhf0")]
 position = Vector2(-103, 24)
+
+[node name="BulletManager" parent="." instance=ExtResource("2_b65p3")]
 
 [connection signal="bullet" from="Player" to="BulletManager" method="_on_player_bullet"]

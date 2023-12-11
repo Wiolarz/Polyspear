@@ -14,13 +14,58 @@ extends Node2D
 
 var timer = enemy_spawn_rate - 1
 
+@export var bossfight : PackedScene = preload("res://Scenes/boss_fight.tscn")
+
+var enemies_to_be_spawned
+
+func _ready():
+	timer += 200
+	#spawn boss fight
+	enemies_to_be_spawned = bossfight.instantiate()
+	add_child(enemies_to_be_spawned)
+
+	for enemy in enemies_to_be_spawned.get_children():
+		enemy.global_position.x += 480
+		enemy.process_mode = 4
+		enemy.hide()
+		#enemy.set_process(false)
+		
+	
+	#enemies_to_be_spawned = bossfight.get_children()
+
+var a = 10
+var b = 10
+
+func _process(delta):
+	if a > 0:
+		a -= 1
+		print("a")
+
+
 func _physics_process(_delta):
+	if b > 0:
+		b -= 1
+		print("b")
 	if enemy_scene == null:
 		print("null enemy")
 		return
 
 
 	timer += 1
+	
+	for enemy in enemies_to_be_spawned.get_children():
+		#print(enemy.global_position.x)
+		#print("======")
+		if enemy.global_position.x == timer:
+			
+			enemy.global_position.x = position.x + 520
+			#print(enemy.global_position.x)
+			enemy.process_mode = 0
+			enemy.show()
+			#enemy.set_process(true)
+	
+
+	return
 	if timer == enemy_spawn_rate:
 		timer = 0
 		# print("spawn enemy")
