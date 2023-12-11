@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://ycs8h80pu3mg"]
+[gd_scene load_steps=11 format=3 uid="uid://ycs8h80pu3mg"]
 
 [ext_resource type="PackedScene" uid="uid://dfr0acka4fqbg" path="res://Scenes/basic_map_elements/background.tscn" id="1_t3532"]
 [ext_resource type="PackedScene" uid="uid://bf5wlfoux684u" path="res://Scenes/basic_map_elements/bullet_manager.tscn" id="2_b65p3"]
@@ -9,6 +9,7 @@
 [ext_resource type="PackedScene" uid="uid://de5tmo1eipiqg" path="res://Scenes/super_enemy.tscn" id="6_i1tke"]
 [ext_resource type="PackedScene" uid="uid://djb310dgsan7m" path="res://Scenes/basic_map_elements/ui.tscn" id="7_x5w8t"]
 [ext_resource type="PackedScene" uid="uid://s3e2tp4hahdw" path="res://Scenes/player.tscn" id="8_tkaqm"]
+[ext_resource type="PackedScene" uid="uid://dakrhj8tmmtvk" path="res://Scenes/turbo_xd_bullet.tscn" id="10_bjhf0"]
 
 [node name="basic_map" type="Node"]
 
@@ -30,5 +31,8 @@ visible = false
 
 [node name="Player" parent="." instance=ExtResource("8_tkaqm")]
 position = Vector2(30, 133)
+
+[node name="Bullet" parent="." instance=ExtResource("10_bjhf0")]
+position = Vector2(-103, 24)
 
 [connection signal="bullet" from="Player" to="BulletManager" method="_on_player_bullet"]

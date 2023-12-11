@@ -20,8 +20,6 @@ shape = SubResource("RectangleShape2D_v22up")
 
 [node name="ShipHull" parent="." instance=ExtResource("1_7xpq5")]
 max_health = Array[int]([100, 100])
-testhp1 = 100
-testhp2 = 100
 
 [node name="ShieldGenerator" type="Node2D" parent="."]
 position = Vector2(5, 1)
@@ -35,6 +33,11 @@ max_health = Array[int]([10, 10, 10, 10, 10, 10, 10, 10, 10, 10])
 position = Vector2(6, 0)
 script = ExtResource("6_omm64")
 gun_res = Array[Resource("res://Resources/Resource_Scripts/gun_resource.gd")]([ExtResource("7_b7u21")])
+
+[node name="Node" type="Node" parent="."]
+process_thread_group = 1
+process_thread_group_order = 0
+process_thread_messages = 0
 
 [connection signal="death" from="ShipHull" to="." method="_on_ship_hull_death"]
 [connection signal="turret_shoots" from="BasicTurret" to="." method="_on_basic_turret_turret_shoots"]

@@ -9,7 +9,6 @@ class_name hitbox
 @onready var cur_health = max_health
 
 
-
 func destruction():
 	pass
 
