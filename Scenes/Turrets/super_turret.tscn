@@ -1,0 +1,28 @@
+[gd_scene load_steps=6 format=3 uid="uid://dub22kxp5o42f"]
+
+[ext_resource type="Script" path="res://Scripts/Gameplay/Damage_Scripts/GunTurret.gd" id="1_lt5ek"]
+[ext_resource type="Texture2D" uid="uid://oh2gmywg8ffg" path="res://Art/Gun_Turrets/basic_turret.png" id="2_cl8yf"]
+[ext_resource type="Resource" uid="uid://do5p5870qwtup" path="res://Resources/Guns/enemy_super_gun.tres" id="2_d1p84"]
+[ext_resource type="Script" path="res://Scripts/Gameplay/Damage_Scripts/Gun.gd" id="3_ai0em"]
+[ext_resource type="PackedScene" uid="uid://ycw26yyihiqr" path="res://Scenes/super_bullet.tscn" id="5_o15su"]
+
+[node name="BasicTurret" type="Node2D" node_paths=PackedStringArray("current_gun")]
+script = ExtResource("1_lt5ek")
+gun_res = Array[Resource("res://Resources/Resource_Scripts/gun_resource.gd")]([ExtResource("2_d1p84")])
+gun_slots = Array[int]([1])
+current_gun = NodePath("gun")
+
+[node name="TurretSprite" type="Sprite2D" parent="."]
+modulate = Color(1, 0, 0, 1)
+position = Vector2(6.5, 0.5)
+texture = ExtResource("2_cl8yf")
+
+[node name="Barrels" type="Node2D" parent="."]
+position = Vector2(0.5, 0.5)
+
+[node name="Marker2D" type="Marker2D" parent="Barrels"]
+position = Vector2(19, 0)
+
+[node name="gun" type="Node2D" parent="."]
+script = ExtResource("3_ai0em")
+bullet_scene = ExtResource("5_o15su")

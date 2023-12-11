@@ -17,12 +17,13 @@ var ship_break_charges = ship_break_max_charges
 
 
 
-signal bullet(pos, dir, bullet_scene)
+signal bullet(pos, dir, bullet_scene, bullet_owner)
 
 
 func _ready():
 	Bus.load_game.connect(load_self)
 	Bus.collect_save_data.connect(save_self)
+	Bus.player_reference = self
 
 
 func load_self(save: Save):
@@ -102,5 +103,12 @@ func _physics_process(_delta):
 	break_recharge()
 
 
-func _on_gun_turret_turret_shoots(pos, dir, bullet_sc):
-	emit_signal("bullet", pos, dir, bullet_sc)
+
+
+func _on_basic_turret_turret_shoots(pos:Variant, dir:Variant, ammo_scene:Variant):
+	#print("player emit shoot")
+	emit_signal("bullet", pos, dir, ammo_scene, self)
+
+func _on_ship_hull_death():
+	Bus.player_reference = null
+	queue_free()

@@ -1,0 +1,18 @@
+[gd_scene load_steps=5 format=3 uid="uid://de5tmo1eipiqg"]
+
+[ext_resource type="Script" path="res://Scripts/Gameplay/Enemy_Scripts/Enemy.gd" id="1_4b0ad"]
+[ext_resource type="PackedScene" uid="uid://cesjyqjwy2ot3" path="res://Scenes/Ship_Hulls/super_enemy_hull.tscn" id="2_aar6w"]
+[ext_resource type="PackedScene" uid="uid://dub22kxp5o42f" path="res://Scenes/Turrets/super_turret.tscn" id="3_q3vr6"]
+[ext_resource type="Script" path="res://Scripts/Gameplay/Enemy_Scripts/EnemyTurret.gd" id="4_vixgj"]
+
+[node name="enemy" type="Node2D"]
+script = ExtResource("1_4b0ad")
+
+[node name="ShipHull" parent="." instance=ExtResource("2_aar6w")]
+
+[node name="BasicTurret" parent="." instance=ExtResource("3_q3vr6")]
+position = Vector2(1, -13)
+script = ExtResource("4_vixgj")
+
+[connection signal="death" from="ShipHull" to="." method="_on_ship_hull_death"]
+[connection signal="turret_shoots" from="BasicTurret" to="." method="_on_basic_turret_turret_shoots"]

@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="gun_resource" load_steps=2 format=3 uid="uid://ci6togbni0nma"]
+
+[ext_resource type="Script" path="res://Resources/Resource_Scripts/gun_resource.gd" id="1_wxg3n"]
+
+[resource]
+script = ExtResource("1_wxg3n")
+shooting_speed = 80
+reload_time = 200
+max_ammunition = 5
+ammuniton = 0
+ammo_type = 0
+damage = 10
+armor_pierce = 2
+explosion_dmg = 10
+speed = 4
+death_timer = 6000
