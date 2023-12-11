@@ -5,17 +5,9 @@ class_name hitbox
 
 @export var max_health : Array[int] = [10, 5, 2]
 
-@export var testhp1 : int = 5
-@export var testhp2 : int = 5
 
+@onready var cur_health = max_health
 
-var cur_health = max_health
-
-func _ready():
-	print(testhp1)
-	print(testhp2)
-	max_health[0] = testhp1
-	max_health[1] = testhp2
 
 
 func destruction():
@@ -24,7 +16,7 @@ func destruction():
 
 func damage(bullet):
 	#if bullet.is_class(Bullet):
-	print(cur_health)
+	#print(cur_health)
 	var pierced_plates = 0  # value by which bullet is weakened if it managed to pierce the ship
 	for plate in range(bullet.armor_pierce):  # depending on bullet piercing power, it damages more plates
 		if plate >= cur_health.size():
@@ -34,7 +26,7 @@ func damage(bullet):
 	
 	bullet.scrape(pierced_plates)
 	
-	print(cur_health)
+	#print(cur_health)
 	if cur_health[-1] <= 0:
 		destruction()
 		return
