@@ -27,6 +27,15 @@ window/size/viewport_height=270
 window/size/mode=3
 window/stretch/mode="viewport"
 
+[file_customization]
+
+folder_colors={
+"res://Art/": "pink",
+"res://Documentation/": "green",
+"res://Scenes/EnemyAI/": "red",
+"res://Scripts/Gameplay/Enemy_Scripts/": "red"
+}
+
 [input]
 
 KEY_EXIT_GAME={

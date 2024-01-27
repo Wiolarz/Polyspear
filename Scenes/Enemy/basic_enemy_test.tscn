@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://bn3bwnj4mkl16"]
+
+[ext_resource type="PackedScene" uid="uid://djtg40e6xaol3" path="res://Scenes/Enemy/enemy.tscn" id="2_dkmjs"]
+
+[node name="boss_fight" type="Node2D"]
+
+[node name="enemy2" parent="." instance=ExtResource("2_dkmjs")]
+position = Vector2(17, 91)

@@ -35,9 +35,6 @@ script = ExtResource("6_omm64")
 gun_res = Array[Resource("res://Resources/Resource_Scripts/gun_resource.gd")]([ExtResource("7_b7u21")])
 
 [node name="Node" type="Node" parent="."]
-process_thread_group = 1
-process_thread_group_order = 0
-process_thread_messages = 0
 
 [connection signal="death" from="ShipHull" to="." method="_on_ship_hull_death"]
 [connection signal="turret_shoots" from="BasicTurret" to="." method="_on_basic_turret_turret_shoots"]

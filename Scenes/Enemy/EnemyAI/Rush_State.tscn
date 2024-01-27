@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://c558qv1q3slmc"]
+
+[ext_resource type="Script" path="res://Scripts/Gameplay/Enemy_Scripts/States/Rush.gd" id="1_psntc"]
+
+[node name="RushState" type="Node"]
+script = ExtResource("1_psntc")
+tags = Array[int]([1])

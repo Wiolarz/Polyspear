@@ -1,15 +1,18 @@
-[gd_scene load_steps=11 format=3 uid="uid://ycs8h80pu3mg"]
+[gd_scene load_steps=14 format=3 uid="uid://ycs8h80pu3mg"]
 
 [ext_resource type="PackedScene" uid="uid://dfr0acka4fqbg" path="res://Scenes/basic_map_elements/background.tscn" id="1_t3532"]
 [ext_resource type="PackedScene" uid="uid://bf5wlfoux684u" path="res://Scenes/basic_map_elements/bullet_manager.tscn" id="2_b65p3"]
 [ext_resource type="PackedScene" uid="uid://cirjmdpeyj06d" path="res://Scenes/basic_map_elements/camera_2d.tscn" id="3_6wt65"]
 [ext_resource type="PackedScene" uid="uid://c4rghqu4lca45" path="res://Scenes/basic_map_elements/DebugManager.tscn" id="4_r7gr1"]
+[ext_resource type="PackedScene" uid="uid://djtg40e6xaol3" path="res://Scenes/Enemy/enemy.tscn" id="5_6ab7v"]
 [ext_resource type="PackedScene" uid="uid://c4gk7hw7scja8" path="res://Scenes/basic_map_elements/enemy_waves.tscn" id="5_avn75"]
 [ext_resource type="PackedScene" uid="uid://daiokyywskwqg" path="res://Scenes/basic_map_elements/map_borders.tscn" id="6_fx4c0"]
-[ext_resource type="PackedScene" uid="uid://de5tmo1eipiqg" path="res://Scenes/super_enemy.tscn" id="6_i1tke"]
+[ext_resource type="PackedScene" uid="uid://de5tmo1eipiqg" path="res://Scenes/Enemy/super_enemy.tscn" id="6_i1tke"]
+[ext_resource type="PackedScene" uid="uid://bn3bwnj4mkl16" path="res://Scenes/Enemy/basic_enemy_test.tscn" id="6_tulv6"]
 [ext_resource type="PackedScene" uid="uid://djb310dgsan7m" path="res://Scenes/basic_map_elements/ui.tscn" id="7_x5w8t"]
 [ext_resource type="PackedScene" uid="uid://s3e2tp4hahdw" path="res://Scenes/player.tscn" id="8_tkaqm"]
 [ext_resource type="PackedScene" uid="uid://dakrhj8tmmtvk" path="res://Scenes/turbo_xd_bullet.tscn" id="10_bjhf0"]
+[ext_resource type="Script" path="res://Scripts/UI/test.gd" id="11_7ghg6"]
 
 [node name="basic_map" type="Node"]
 
@@ -20,7 +23,9 @@
 [node name="DebugManager" parent="." instance=ExtResource("4_r7gr1")]
 
 [node name="Enemy_waves" parent="." instance=ExtResource("5_avn75")]
+enemy_scene = ExtResource("5_6ab7v")
 super_enemy_scene = ExtResource("6_i1tke")
+bossfight = ExtResource("6_tulv6")
 
 [node name="MapBorders" parent="." instance=ExtResource("6_fx4c0")]
 
@@ -34,5 +39,8 @@ position = Vector2(30, 133)
 position = Vector2(-103, 24)
 
 [node name="BulletManager" parent="." instance=ExtResource("2_b65p3")]
+
+[node name="Node" type="Node" parent="."]
+script = ExtResource("11_7ghg6")
 
 [connection signal="bullet" from="Player" to="BulletManager" method="_on_player_bullet"]

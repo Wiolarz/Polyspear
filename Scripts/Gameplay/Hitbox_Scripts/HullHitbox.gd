@@ -11,5 +11,5 @@ signal death()
 
 
 func destruction():
-	print("emit death")
+	#print("emit death")
 	emit_signal("death")

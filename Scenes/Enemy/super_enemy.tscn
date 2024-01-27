@@ -1,0 +1,24 @@
+[gd_scene load_steps=7 format=3 uid="uid://de5tmo1eipiqg"]
+
+[ext_resource type="Script" path="res://Scripts/Gameplay/Enemy_Scripts/Enemy.gd" id="1_cffcg"]
+[ext_resource type="PackedScene" uid="uid://cesjyqjwy2ot3" path="res://Scenes/Ship_Hulls/super_enemy_hull.tscn" id="2_xvqtr"]
+[ext_resource type="PackedScene" uid="uid://dub22kxp5o42f" path="res://Scenes/Turrets/super_turret.tscn" id="3_760xm"]
+[ext_resource type="Script" path="res://Scripts/Gameplay/Enemy_Scripts/EnemyTurret.gd" id="4_jruo0"]
+[ext_resource type="PackedScene" uid="uid://dsojjimi4gyo" path="res://Scenes/Enemy/EnemyAI/StateMachine.tscn" id="5_24ndv"]
+[ext_resource type="PackedScene" uid="uid://cgckeqwv6khyt" path="res://Scenes/Enemy/EnemyAI/RunAway_State.tscn" id="6_0akqj"]
+
+[node name="enemy" type="Node2D"]
+script = ExtResource("1_cffcg")
+
+[node name="ShipHull" parent="." instance=ExtResource("2_xvqtr")]
+
+[node name="BasicTurret" parent="." instance=ExtResource("3_760xm")]
+position = Vector2(1, -13)
+script = ExtResource("4_jruo0")
+
+[node name="StateMachine" parent="." instance=ExtResource("5_24ndv")]
+
+[node name="RunAwayState" parent="StateMachine" instance=ExtResource("6_0akqj")]
+
+[connection signal="death" from="ShipHull" to="." method="_on_ship_hull_death"]
+[connection signal="turret_shoots" from="BasicTurret" to="." method="_on_basic_turret_turret_shoots"]

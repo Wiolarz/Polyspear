@@ -1,8 +1,8 @@
 extends Node2D
 
 
-@export var enemy_scene: PackedScene = preload("res://Scenes/enemy.tscn")
-@export var super_enemy_scene: PackedScene = preload("res://Scenes/enemy.tscn")
+@export var enemy_scene: PackedScene# = preload("res://Scenes/enemy.tscn")
+@export var super_enemy_scene: PackedScene# = preload("res://Scenes/enemy.tscn")
 
 @onready var spawn_locations = $SpawnLocations.get_children()
 
@@ -14,7 +14,7 @@ extends Node2D
 
 var timer = enemy_spawn_rate - 1
 
-@export var bossfight : PackedScene = preload("res://Scenes/boss_fight.tscn")
+@export var bossfight : PackedScene# = preload("res://Scenes/boss_fight.tscn")
 
 var enemies_to_be_spawned
 
@@ -33,19 +33,8 @@ func _ready():
 	
 	#enemies_to_be_spawned = bossfight.get_children()
 
-var a = 10
-var b = 10
-
-func _process(delta):
-	if a > 0:
-		a -= 1
-		print("a")
-
 
 func _physics_process(_delta):
-	if b > 0:
-		b -= 1
-		print("b")
 	if enemy_scene == null:
 		print("null enemy")
 		return

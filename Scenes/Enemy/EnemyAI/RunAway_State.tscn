@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://cgckeqwv6khyt"]
+
+[ext_resource type="Script" path="res://Scripts/Gameplay/Enemy_Scripts/States/RunAway.gd" id="1_6dlfp"]
+
+[node name="RunAwayState" type="Node"]
+script = ExtResource("1_6dlfp")
+tags = Array[int]([2])
