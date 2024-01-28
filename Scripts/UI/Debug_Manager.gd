@@ -10,6 +10,7 @@ extends Node
 
 
 var maximize = false
+
 @onready var ui = $".."
 
 func _ready():
@@ -35,6 +36,23 @@ func _process(_delta):
 
 	if Input.is_action_just_pressed("KEY_MENU"):
 		_on_back_to_game_pressed()
+	
+	if Input.is_action_just_pressed("KEY_DEBUG_COLLISION_SHAPES"):
+		var tree := get_tree()
+		tree.debug_collisions_hint = not tree.debug_collisions_hint
+
+		# Traverse tree to call queue_redraw on instances of
+		# CollisionShape2D and CollisionPolygon2D.
+		var node_stack: Array[Node] = [tree.get_root()]
+		while not node_stack.is_empty():
+			var node: Node = node_stack.pop_back()
+			if is_instance_valid(node):
+				if node is CollisionShape2D or node is CollisionPolygon2D:
+					node.queue_redraw()
+				if node is TileMap:
+					node.collision_visibility_mode = TileMap.VISIBILITY_MODE_FORCE_HIDE
+					node.collision_visibility_mode = TileMap.VISIBILITY_MODE_DEFAULT
+				node_stack.append_array(node.get_children())
 	
 	
 
