@@ -22,6 +22,11 @@ It's problematic because I want to provide players with a nice ability to push a
 Rest - Previous working scripts act incorrectly for unknown reasons. To move anything I have to apply extreme forces (thousands of KG for most basic motion)
 
 
+## Colors used in UI
+background - 1A1A1A
+HP - 9D201D
+Stamina - 506638 
+
 ## Exercices:
 
 
