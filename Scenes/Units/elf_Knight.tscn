@@ -1,0 +1,31 @@
+[gd_scene load_steps=6 format=3 uid="uid://dcmetk5o0wtsp"]
+
+[ext_resource type="Script" path="res://Scripts/Gameplay/Unit.gd" id="1_yct3g"]
+[ext_resource type="Texture2D" uid="uid://d0dy38p601hn" path="res://Art/border.png" id="2_ks412"]
+[ext_resource type="Texture2D" uid="uid://cfhig820jx264" path="res://Art/elf3.png" id="3_be3xu"]
+[ext_resource type="Texture2D" uid="uid://bmyk0feyqq2w" path="res://Art/sword.png" id="4_ueem6"]
+[ext_resource type="Texture2D" uid="uid://dr117lum7dxea" path="res://Art/shield.png" id="5_p6lcx"]
+
+[node name="Unit" type="Node2D"]
+script = ExtResource("1_yct3g")
+Symbols = Array[int]([2, 3, 0, 0, 0, 3])
+
+[node name="sprite_border" type="Sprite2D" parent="."]
+texture = ExtResource("2_ks412")
+
+[node name="sprite_unit" type="Sprite2D" parent="."]
+texture = ExtResource("3_be3xu")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(-5, 271)
+texture = ExtResource("4_ueem6")
+
+[node name="Sprite2D2" type="Sprite2D" parent="."]
+position = Vector2(-257, 129)
+rotation = 1.0472
+texture = ExtResource("5_p6lcx")
+
+[node name="Sprite2D3" type="Sprite2D" parent="."]
+position = Vector2(252, 123)
+rotation = -1.0472
+texture = ExtResource("5_p6lcx")
