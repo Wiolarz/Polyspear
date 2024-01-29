@@ -19,6 +19,10 @@ config/icon="res://Art/icon.svg"
 
 BUS="*res://Scripts/BUS.gd"
 
+[display]
+
+window/stretch/mode="viewport"
+
 [file_customization]
 
 folder_colors={
