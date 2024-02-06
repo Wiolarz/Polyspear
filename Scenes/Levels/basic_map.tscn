@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3 uid="uid://os75hnii4k0w"]
+[gd_scene load_steps=18 format=3 uid="uid://os75hnii4k0w"]
 
 [ext_resource type="PackedScene" uid="uid://bi1yq2awm2kc0" path="res://Scenes/UI/ui.tscn" id="1_jo11t"]
 [ext_resource type="PackedScene" uid="uid://bko1xm80m1xmn" path="res://Scenes/Special_Objects/pause_test.tscn" id="2_hm08q"]
@@ -13,7 +13,10 @@
 [ext_resource type="PackedScene" uid="uid://cv2j86coxjwo4" path="res://Scenes/Units/elf_SpearMan.tscn" id="12_n6i60"]
 [ext_resource type="PackedScene" uid="uid://cahy2v8v3hcdu" path="res://Scenes/HexTiles/DirtHexTile.tscn" id="12_tvda5"]
 [ext_resource type="PackedScene" uid="uid://4b6jykndqke0" path="res://Scenes/Units/orc_Shield.tscn" id="14_ghnf2"]
+[ext_resource type="Script" path="res://Scripts/Gameplay/StateMachine.gd" id="15_71scx"]
 [ext_resource type="PackedScene" uid="uid://cv8ha0b2glyer" path="res://Scenes/Units/orc_SpearMan.tscn" id="15_agccg"]
+[ext_resource type="Script" path="res://Scripts/Gameplay/States/Defensive.gd" id="16_ewovl"]
+[ext_resource type="Script" path="res://Scripts/Gameplay/States/State.gd" id="17_v7euu"]
 
 [node name="BasicMap" type="Node"]
 
@@ -37,9 +40,33 @@ TileHorizontalOffset = 700.0
 TileVerticalOffset = 606.2
 OddRowHorizontalOffset = 350.0
 
-[node name="GameplayManager" type="Node" parent="." node_paths=PackedStringArray("GridManager")]
+[node name="GameplayManager" type="Node" parent="." node_paths=PackedStringArray("GridManager", "AttackerBot", "DefenderBot")]
 script = ExtResource("7_q31w2")
 AutomaticTest = 2
 GridManager = NodePath("../GridManager")
 AttackerUnitsTypes = Array[PackedScene]([ExtResource("5_r5wxa"), ExtResource("11_v0duk"), ExtResource("12_n6i60")])
 DefenderUnitsTypes = Array[PackedScene]([ExtResource("8_bb38g"), ExtResource("14_ghnf2"), ExtResource("15_agccg")])
+AttackerBot = NodePath("../BotAttacker")
+DefenderBot = NodePath("../BotDefender")
+
+[node name="BotAttacker" type="Node" parent="." node_paths=PackedStringArray("GridManager", "GM")]
+script = ExtResource("15_71scx")
+GridManager = NodePath("../GridManager")
+GM = NodePath("../GameplayManager")
+
+[node name="Defensive_State" type="Node" parent="BotAttacker" node_paths=PackedStringArray("GridManager", "GM")]
+script = ExtResource("16_ewovl")
+GridManager = NodePath("../../GridManager")
+GM = NodePath("../../GameplayManager")
+StartingState = true
+
+[node name="BotDefender" type="Node" parent="." node_paths=PackedStringArray("GridManager", "GM")]
+script = ExtResource("15_71scx")
+GridManager = NodePath("../GridManager")
+GM = NodePath("../GameplayManager")
+
+[node name="State" type="Node" parent="BotDefender" node_paths=PackedStringArray("GridManager", "GM")]
+script = ExtResource("17_v7euu")
+GridManager = NodePath("../../GridManager")
+GM = NodePath("../../GameplayManager")
+StartingState = true

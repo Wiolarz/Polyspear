@@ -11,12 +11,14 @@ var Controller : E.Player
 	E.Symbols.INVALID, E.Symbols.INVALID, E.Symbols.INVALID]
 
 
+func CanDefend(side : int) -> bool:
+	return GetSymbol(side) == E.Symbols.SHIELD
+		
 
-
-func GetSymbol(side) -> E.Symbols:
+func GetSymbol(side : int) -> E.Symbols:
 	return Symbols[(side - CurrentRotation) % 6]
 
-func Rotate(side):
+func Rotate(side : int):
 	"""
 	  360 / 6 = 60  degrees needed to rotate unit
 	  

@@ -102,9 +102,19 @@ func  GetDistantCord(StartCord : Vector2i, Side : int, Distance : int) -> Vector
 	var NewCord = StartCord
 	for i in range(Distance):
 		NewCord += Directions[Side]
-
+	
 	return NewCord
 
+func GetMeleeDamageTargets(StartCord : Vector2i, direction, SymbolSide : int) -> Array[AUnit]:
+	"""TODO
+	
+	direction : int / Vector2i
+
+	"""
+	var Units : Array[AUnit] = []
+	
+	
+	return Units
 
 
 func IsAdjacent(Cord1 : Vector2i, Cord2 : Vector2i) -> bool:

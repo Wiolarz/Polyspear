@@ -1,10 +1,13 @@
 extends Node
 
+class_name GameplayManager
+
 #region Variables
 
 @export var AutomaticTest : E.AutomaticTestsList = E.AutomaticTestsList.EMPTY
 
 @export var GridManager : HexGridManager
+
 
 
 @export var AttackerUnitsTypes : Array[PackedScene]
@@ -18,7 +21,10 @@ var SelectedUnit
 
 var UnitsLeftToBeSummoned
 
+@export var AttackerBot : StateMachine
+@export var DefenderBot : StateMachine
 
+var timer = 0
 
 func _ready():
 	BUS.Tile_Selected.connect(InputListener)
@@ -43,7 +49,7 @@ func SwitchPlayerTurn():
 		CurrentPlayer = E.Player.ATTACKER
 
 
-func IsLegalMove(Cord : Vector2i) -> int:
+func IsLegalMove(Cord : Vector2i, BotUnit : AUnit = null) -> int:
 	"""
 	 Function checks 2 things:
 	 * 1 Target Cord is a Neighbour of a SelectedUnit
@@ -54,13 +60,15 @@ func IsLegalMove(Cord : Vector2i) -> int:
 	 * @param ResultSide
 	 * @return True if selected Unit can move on a given Cord
 	 """
+	if BotUnit != null:
+		SelectedUnit = BotUnit  # Locally replacs Unit for Bot legal move search
 
 	# 1
 	var ResultSide = GridManager.AdjacentSide(SelectedUnit.CurrentCord, Cord)  
 	if ResultSide == null:
 		return -1
 
-	print(ResultSide)
+	#print(ResultSide)
 	# 2
 	var EnemyUnit = GridManager.GetUnit(Cord)
 	if EnemyUnit == null:  # Is there a Unit in this spot?
@@ -137,9 +145,14 @@ func KillUnit(Target) -> void:
 	GridManager.RemoveUnit(Target)
 
 	if DefenderUnits.size() == 0:
-		print("Attacker won")
+		BUS.Attacker_wins += 1
+		print("Attacker won" + "D:" + str(BUS.Defender_wins) + " A:" + str(BUS.Attacker_wins))
+		get_tree().reload_current_scene()
 	elif AttackerUnits.size() == 0:
-		print("Defender won")
+		BUS.Defender_wins += 1
+		print("Defender won_" + "D:" + str(BUS.Defender_wins) + " A:" + str(BUS.Attacker_wins))
+		
+		get_tree().reload_current_scene()
 	
 
 
@@ -220,7 +233,7 @@ func SelectUnit(Cord : Vector2i) -> bool:
 	var NewSelection : AUnit = GridManager.GetUnit(Cord)
 	if (NewSelection != null && NewSelection.Controller == CurrentPlayer):
 		SelectedUnit = NewSelection
-		print("You have selected a Unit")
+		#print("You have selected a Unit")
 
 		return true
 
@@ -233,7 +246,7 @@ func SelectUnit(Cord : Vector2i) -> bool:
 
 
 func InputListener(Cord : Vector2i) -> void:
-	print(Cord)
+	#print(Cord)
 
 	if SelectUnit(Cord) or SelectedUnit == null:
 		return # selected a new unit or wrong input which didn't select any ally unit
@@ -257,7 +270,7 @@ func InputListener(Cord : Vector2i) -> void:
 
 
 func Gameplay(Cord : Vector2i) -> void:
-	print("Gameplay is working")
+	#print("Gameplay is working")
 
 	var side = IsLegalMove(Cord) # Gets Updated with IsLegalMove()
 	if side != -1: # spot is empty + we aren't hitting a shield
@@ -297,7 +310,7 @@ func SummonUnit(Cord : Vector2i) -> void:
 	var SelectedUnitTileType = GridManager.GetTileType(SelectedUnit.CurrentCord)
 
 	if SelectedUnitTileType != E.HexTileType.SENTINEL:
-		print("This Unit has been already summoned")
+		#print("This Unit has been already summoned")
 		return
 	
 
@@ -308,10 +321,10 @@ func SummonUnit(Cord : Vector2i) -> void:
 		(SelectedHexType == E.HexTileType.DEFENDER_SPAWN && CurrentPlayer == E.Player.DEFENDER)
 
 	if not bSelectedCurrentPlayerSpawn:
-		print("Thats a wrong summon location")  # TODO: Don't reset SelectedUnit
+		#print("Thats a wrong summon location")  # TODO: Don't reset SelectedUnit
 		return
 
-	print("You summoned a Unit")
+	#print("You summoned a Unit")
 
 	# TeleportUnit(Cord)
 	GridManager.ChangeUnitPosition(SelectedUnit, Cord)
@@ -421,17 +434,33 @@ func SetupGame():
 	SimpleAutomaticTests()
 
 
-"""
-func TimerFunction()
-{
-	CallTracker--
-	if (CallTracker == 0)
-	{
-		GetWorldTimerManager().ClearTimer(TimerHandle)
-		SimpleAutomaticTests()
-	}
-}
-"""
+func _physics_process(delta):
+	#func _process(_delta):
+	timer += 1
+	
+	if Input.is_action_just_pressed("KEY_BOT_SPEED_SLOW"):
+		BUS.BotSpeed = 120 # 2 sec
+	elif Input.is_action_just_pressed("KEY_BOT_SPEED_MEDIUM"):
+		BUS.BotSpeed = 30 # 0.5 sec
+	elif Input.is_action_just_pressed("KEY_BOT_SPEED_FAST"):
+		BUS.BotSpeed = 1 # 1/60 sec
+	
+	# 60FPS -> timer=60 1 sec
+	for i in range(1):
+		if timer % BUS.BotSpeed == 0:
+			var actions = []
+			if CurrentPlayer == E.Player.ATTACKER and AttackerBot != null:
+				timer = 0
+				actions = AttackerBot.PlayMove(AttackerUnits)
+			elif CurrentPlayer == E.Player.DEFENDER and DefenderBot != null:
+				timer = 0
+				actions = DefenderBot.PlayMove(DefenderUnits)
+			
+			if actions.size() == 2:
+				InputListener(actions[0])
+				InputListener(actions[1])
+
+
 
 
 

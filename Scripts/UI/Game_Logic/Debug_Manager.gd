@@ -14,7 +14,7 @@ extends Node
 
 
 
-var maximize = false
+var maximize = true
 
 @onready var ui = $".."
 
