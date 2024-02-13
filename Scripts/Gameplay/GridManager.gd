@@ -105,6 +105,8 @@ func  GetDistantCord(StartCord : Vector2i, Side : int, Distance : int) -> Vector
 	
 	return NewCord
 
+
+
 func GetMeleeDamageTargets(StartCord : Vector2i, direction, SymbolSide : int) -> Array[AUnit]:
 	"""TODO
 	
@@ -112,7 +114,6 @@ func GetMeleeDamageTargets(StartCord : Vector2i, direction, SymbolSide : int) ->
 
 	"""
 	var Units : Array[AUnit] = []
-	
 	
 	return Units
 
