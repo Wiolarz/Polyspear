@@ -80,3 +80,19 @@ func test_GenerateGrid():
 			level + " Different number of starting tiles: A:" + str(manager.AttackerTiles.size()) + " D:" + str(manager.DefenderTiles.size())
 		)
 
+
+func test_BASIC_UNIT_SETUP() -> void:
+    """
+    for i in range(AttackerUnits.size()):
+    
+        if i < AttackerUnits.size():
+
+            InputListener(AttackerUnits[i].CurrentCord)
+            InputListener(AttackerUnits[i].CurrentCord + GRID.Directions[0])
+
+        if i < DefenderUnits.size():
+
+            InputListener(DefenderUnits[i].CurrentCord)
+            InputListener(DefenderUnits[i].CurrentCord + GRID.Directions[3])
+
+    """

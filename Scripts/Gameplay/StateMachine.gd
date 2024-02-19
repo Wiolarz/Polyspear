@@ -1,10 +1,8 @@
-extends Node
-
 class_name StateMachine
 
-@export var GridManager : HexGridManager
 
-@export var GM : GameplayManager
+extends Node
+
 
 var Controller : E.Player
 
@@ -31,12 +29,12 @@ func GetAllLegalMoves(myUnits : Array): # -> Array[Array[Vector2i]]
 	for myUnit in myUnits:
 		
 		for side in range(6):
-			var new_move = myUnit.CurrentCord + GridManager.Directions[side]
-			var neighbour : AUnit = GridManager.GetUnit(new_move)
+			var new_move = myUnit.CurrentCord + GRID.Directions[side]
+			var neighbour : AUnit = GRID.GetUnit(new_move)
 			if (neighbour != null and neighbour.Controller == Controller): # 1
 				continue
 			
-			if GridManager.GetTileType(new_move) == E.HexTileType.SENTINEL: # 2
+			if GRID.GetTileType(new_move) == E.HexTileType.SENTINEL: # 2
 				continue
 			
 			if GM.IsLegalMove(new_move, myUnit) == -1:
@@ -55,12 +53,12 @@ func GetAllKillMoves(AllMoves):  # Array[Array[Vector2i]]
 	for Move in AllMoves:
 		
 		# BOW
-		if GridManager.GetUnit(Move[0]).GetSymbol(0) == E.Symbols.BOW:
-			if GridManager.GetShotTarget(Move[0], GridManager.AdjacentSide(Move[0], Move[1])):
+		if GRID.GetUnit(Move[0]).GetSymbol(0) == E.Symbols.BOW:
+			if GRID.GetShotTarget(Move[0], GRID.AdjacentSide(Move[0], Move[1])):
 				AllKillMoves.append(Move)
 			continue
 		
-		if GridManager.GetUnit(Move[1]) != null:
+		if GRID.GetUnit(Move[1]) != null:
 			AllKillMoves.append(Move)
 	
 	return AllKillMoves

@@ -1,23 +1,38 @@
-extends Node2D
-
 class_name HexGridManager
 
-@export var SentineltHexTile : PackedScene
-@export var DefaultHexTile : PackedScene
-@export var AttackerHexTile : PackedScene
-@export var DefenderHexTile : PackedScene
+extends Node
+
+
+const TileHorizontalOffset : float = 700.0
+const TileVerticalOffset : float = 606.2
+const OddRowHorizontalOffset : float = 350.0
+
+
+#var map_data : MapData  # currently no need to store this info duo to simple nature of this resource
+
+# Hard coding of art files is a temporary solution until a decision how to approach treating background art will be made
+@onready var SentineltHexTile : PackedScene = load("res://Scenes/HexTiles/BlackHexTile.tscn")
+@onready var DefaultHexTile : PackedScene = load("res://Scenes/HexTiles/StoneHexTile.tscn")
+@onready var AttackerHexTile : PackedScene = load("res://Scenes/HexTiles/GrassHexTile.tscn")
+@onready var DefenderHexTile : PackedScene = load("res://Scenes/HexTiles/DirtHexTile.tscn")
+
+
+var GridWidth : int = 5
+var	GridHeight : int = 5
 
 
 
 
-@export var TileHorizontalOffset : float = 100.0
-@export var TileVerticalOffset : float = 86.599998
-@export var OddRowHorizontalOffset : float = 50.0
+"""
+Thickness of a Sentinel perimiter around the gameplay area.
 
-@export var GridWidth : int = 5
-@export var	GridHeight : int = 5
+If size is even it shifts the map. (used by simple map shift system from map_data resource)
+May be increased to allow for ease of development
+"""
+var BorderSize : int = 1   
 
-@export var BorderSize : int = 1
+
+
 
 var AttackerTiles = []
 var DefenderTiles = []
@@ -25,7 +40,7 @@ var DefenderTiles = []
 var HexGrid = []
 var UnitGrid = []
 
-@export var current_spawn : E.HexTileType = E.HexTileType.SENTINEL
+var current_spawn : E.HexTileType = E.HexTileType.SENTINEL
 
 static var Directions = [ \
 	Vector2i(1, 0),
@@ -178,7 +193,7 @@ func AdjustGridSize() -> void:
 	# sentinels appear on both sides
 	GridWidth += (BorderSize * 2)
 	GridHeight += (BorderSize * 2)
-	GridWidth += floor(GridHeight / 2) # adjustment for Axial grid system
+	GridWidth += (GridHeight / 2) # adjustment for Axial grid system
 
 
 ##include <typeinfo>
@@ -282,7 +297,18 @@ func GetTileToSpawn(x : int, y : int, bOddRow : bool) -> PackedScene:
 
 
 
-func GenerateGrid() -> void:
+func GenerateGrid(new_map_data : MapData = null) -> void:
+	if new_map_data != null:
+		GridWidth = new_map_data.GridWidth
+		GridHeight = new_map_data.GridHeight
+		match new_map_data.map_shape:
+			E.MapShape.CLASSIC:
+				if BorderSize % 2 == 0:
+					BorderSize += 1
+			E.MapShape.SHIFTED:
+				if BorderSize % 2 != 0:
+					BorderSize += 1
+				
 
 	# "+2" is to reserve space for sentinel tiles on each side of the board
 	AdjustGridSize()

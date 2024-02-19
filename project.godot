@@ -18,6 +18,12 @@ config/icon="res://Art/icon.svg"
 [autoload]
 
 BUS="*res://Scripts/BUS.gd"
+GRID="*res://Scripts/Gameplay/GridManager.gd"
+GM="*res://Scripts/Gameplay/GameplayManager.gd"
+
+[debug]
+
+gdscript/warnings/integer_division=0
 
 [display]
 

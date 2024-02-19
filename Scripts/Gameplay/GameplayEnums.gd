@@ -1,8 +1,9 @@
-extends Node
-
 class_name E
 
-enum HexTileType {
+extends Node
+
+enum HexTileType 
+{
 	INVALID,
 	SENTINEL,
 	ATTACKER_SPAWN,
@@ -13,14 +14,16 @@ enum HexTileType {
 
 
 
-enum Player {
+enum Player
+{
 	INVALID,
 	ATTACKER,
 	DEFENDER,
 }
 
 
-enum Symbols {
+enum Symbols
+{
 	INVALID,
 	SPEAR,
 	SWORD,
@@ -30,8 +33,8 @@ enum Symbols {
 }
 
 
-enum AutomaticTestsList {
-	INVALID,
-	EMPTY,
-	BASIC_UNIT_SETUP,
+enum MapShape
+{
+	CLASSIC,
+	SHIFTED,
 }
