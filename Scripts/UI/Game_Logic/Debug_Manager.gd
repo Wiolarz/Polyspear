@@ -14,17 +14,7 @@ extends Node
 
 
 
-var maximize = true
-
 @onready var ui = $".."
-
-func _ready():
-	if maximize:
-		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
-
-
-
-
 
 
 
@@ -76,14 +66,12 @@ func _on_restart_pressed():
 
 
 func _on_full_screen_pressed():
-		if not maximize:
-			maximize = true
-			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_EXCLUSIVE_FULLSCREEN)
-			#DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)  # there is a grey border around the screen 
-			# https://github.com/godotengine/godot/issues/63500
-		else:
-			maximize = false
-			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
+	if DisplayServer.window_get_mode() == DisplayServer.WINDOW_MODE_WINDOWED:
+		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_EXCLUSIVE_FULLSCREEN)
+		#DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)  # there is a grey border around the screen 
+		# https://github.com/godotengine/godot/issues/63500
+	else:
+		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
 
 
 func _on_quit_pressed():

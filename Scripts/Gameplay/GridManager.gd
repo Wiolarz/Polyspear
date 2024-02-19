@@ -59,6 +59,7 @@ func GetUnit(Cord : Vector2i):
 	return UnitGrid[Cord.x][Cord.y]
 
 func ChangeUnitPosition(Unit, Cord : Vector2i):
+
 	UnitGrid[Unit.CurrentCord.x][Unit.CurrentCord.y] = null# clean your previous location
 	UnitGrid[Cord.x][Cord.y] = Unit# UnitGrid Update
 
@@ -296,8 +297,15 @@ func GetTileToSpawn(x : int, y : int, bOddRow : bool) -> PackedScene:
 	return TileToSpawn
 
 
+func ResetData():
+	AttackerTiles = []
+	DefenderTiles = []
+	HexGrid = []
+	UnitGrid = []
 
 func GenerateGrid(new_map_data : MapData = null) -> void:
+	ResetData()
+	
 	if new_map_data != null:
 		GridWidth = new_map_data.GridWidth
 		GridHeight = new_map_data.GridHeight

@@ -22,24 +22,24 @@ position = Vector2(553, 340)
 position = Vector2(4741, 1779)
 zoom = Vector2(0.3, 0.3)
 
-[node name="GameSetup" type="Node" parent="."]
+[node name="GameSetup" type="Node" parent="." node_paths=PackedStringArray("AttackerBot", "DefenderBot")]
 script = ExtResource("3_7bpr6")
 AttackerUnits = ExtResource("4_0ehbq")
 DefenderUnits = ExtResource("5_hehrh")
 map_data = ExtResource("6_wjl86")
+AttackerBot = NodePath("../BotAttacker")
+DefenderBot = NodePath("../BotDefender")
 
 [node name="BotAttacker" type="Node" parent="."]
 script = ExtResource("15_gnc6g")
 
-[node name="Defensive_State" type="Node" parent="BotAttacker" node_paths=PackedStringArray("GM")]
+[node name="Defensive_State" type="Node" parent="BotAttacker"]
 script = ExtResource("16_lwtlq")
-GM = NodePath("../../GameSetup")
 StartingState = true
 
 [node name="BotDefender" type="Node" parent="."]
 script = ExtResource("15_gnc6g")
 
-[node name="State" type="Node" parent="BotDefender" node_paths=PackedStringArray("GM")]
+[node name="State" type="Node" parent="BotDefender"]
 script = ExtResource("17_ofduk")
-GM = NodePath("../../GameSetup")
 StartingState = true

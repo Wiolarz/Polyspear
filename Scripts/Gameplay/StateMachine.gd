@@ -63,6 +63,33 @@ func GetAllKillMoves(AllMoves):  # Array[Array[Vector2i]]
 	
 	return AllKillMoves
 
+
+
+
+func GetAllSpawnMoves(my_units : Array):
+	"""
+	Compares every possible directions for all units using:
+	1 Check for friendly units placements
+	2 Sentinel Tiles
+	3 GameplayManager -> LegalMove()
+	"""
+	var legal_moves = []
+	var spawn_tiles = []
+
+	if my_units[0].Controller == E.Player.ATTACKER:
+		spawn_tiles = GRID.AttackerTiles
+	else:
+		spawn_tiles = GRID.DefenderTiles
+
+	for unit in my_units:
+		if GRID.GetTileType(unit.CurrentCord) != E.HexTileType.SENTINEL:
+			continue
+		for tile in spawn_tiles:
+			if GRID.GetUnit(tile.TileIndex) == null:
+				legal_moves.append([unit.CurrentCord, tile.TileIndex])
+	
+	return legal_moves
+
 #endregion
 
 
@@ -123,6 +150,10 @@ func change_state(new_states):
 
 
 func PlayMove(myUnits : Array):
+	if GM.UnitsLeftToBeSummoned != 0:
+		var opening_moves = GetAllSpawnMoves(myUnits)
+		return current_state.make_move(opening_moves)
+	
 	var legal_moves = GetAllLegalMoves(myUnits)
 	var kill_moves = GetAllKillMoves(legal_moves)
 	if kill_moves.size() > 0:

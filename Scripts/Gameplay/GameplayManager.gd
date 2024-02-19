@@ -1,11 +1,11 @@
-class_name GameplayManager
+class_name GameManager
 
 extends Node
 
 
 #region Variables
 
-
+var GameSetupNode
 
 var AttackerUnitsTypes : Array[PackedScene]
 var DefenderUnitsTypes : Array[PackedScene]
@@ -20,13 +20,12 @@ var SelectedUnit
 
 var UnitsLeftToBeSummoned
 
-@export var AttackerBot : StateMachine
-@export var DefenderBot : StateMachine
+
+
+var AttackerBot : StateMachine
+var DefenderBot : StateMachine
 
 var timer = 0
-
-func _ready():
-	BUS.Tile_Selected.connect(InputListener)
 
 
 
@@ -145,12 +144,17 @@ func KillUnit(Target) -> void:
 	if DefenderUnits.size() == 0:
 		BUS.Attacker_wins += 1
 		print("Attacker won" + "D:" + str(BUS.Defender_wins) + " A:" + str(BUS.Attacker_wins))
-		get_tree().reload_current_scene()
 	elif AttackerUnits.size() == 0:
 		BUS.Defender_wins += 1
 		print("Defender won_" + "D:" + str(BUS.Defender_wins) + " A:" + str(BUS.Attacker_wins))
-		
-		get_tree().reload_current_scene()
+
+	
+	if AttackerUnits.size() == 0 or DefenderUnits.size() == 0:
+		for unit in get_children():
+			unit.queue_free()
+		for tile in GRID.get_children():
+			tile.queue_free()
+		GameSetupNode.restart_level()
 	
 
 
@@ -339,16 +343,6 @@ func SummonUnit(Cord : Vector2i) -> void:
 
 #endregion
 
-#region Tests
-
-
-
-
-
-#endregion
-
-
-
 #region GameSetup
 
 
@@ -358,6 +352,11 @@ func SpawnUnits() -> void:
 	"""
 
 	UnitsLeftToBeSummoned = AttackerUnitsTypes.size() + DefenderUnitsTypes.size()  # Flag that manages the state of the game
+	
+	# RESET DATA
+	AttackerUnits = []
+	DefenderUnits = []
+	SelectedUnit = null
 	
 	var SpawnCord
 
@@ -371,7 +370,7 @@ func SpawnUnits() -> void:
 		new_unit.Controller = E.Player.ATTACKER
 
 		SpawnCord = GRID.AttackerTiles[i].TileIndex # Get spawn location
-		SpawnCord += HexGridManager.Directions[3]  # Move to a spot outside of the map near spawn point
+		SpawnCord += GRID.Directions[3]  # Move to a spot outside of the map near spawn point
 
 		GRID.ChangeUnitPosition(new_unit, SpawnCord) # Adding Unit to the Gameplay Array
 		
@@ -386,7 +385,7 @@ func SpawnUnits() -> void:
 		new_unit.Controller = E.Player.DEFENDER
 
 		SpawnCord = GRID.DefenderTiles[i].TileIndex # Get spawn location
-		SpawnCord += HexGridManager.Directions[0] # Move to a spot outside of the map near spawn point
+		SpawnCord += GRID.Directions[0] # Move to a spot outside of the map near spawn point
 
 		GRID.ChangeUnitPosition(new_unit, SpawnCord) # Adding Unit to the Gameplay Array
 
@@ -394,21 +393,16 @@ func SpawnUnits() -> void:
 
 
 
-func SetupUnits(Attacker : UnitSet, Defender : UnitSet):
+func SetupUnits(GameSetup, Attacker : UnitSet, Defender : UnitSet):
+	GameSetupNode = GameSetup
 
 	AttackerUnitsTypes = Attacker.Units
 	DefenderUnitsTypes = Defender.Units
 
-
-	CurrentPlayer = E.Player.ATTACKER
-	
-	
 	SpawnUnits()
-
-	#GetWorldTimerManager().SetTimer(TimerHandle, this, &TimerFunction, 1.0f, true, 0.5f)
 	
 	
-
+#endregion
 
 func _physics_process(_delta):
 	#func _process(_delta):

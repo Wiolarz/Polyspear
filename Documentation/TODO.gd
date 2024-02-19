@@ -10,9 +10,15 @@ var FIX # Stuff that needs to be fixed, for the game to work properly
 """
 In gameplay manager setting up units if one player has already placed all of their units
 
+GRID Bordersize would increase constantly if the map type changes after each restart
 """
 
+var THINK_About
+"""
+is simple clearing of unit grid at the end state sufficient?
 
+
+"""
 
 
 

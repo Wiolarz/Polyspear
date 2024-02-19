@@ -1,17 +1,15 @@
 """
-All childs have to implement:
+Parent class of AI States
 
+All childs have to implement:
+make_move(legal_moves)
 
 """
-
+class_name State
 
 extends Node
 
-class_name State
 
-@export var GridManager : HexGridManager
-
-@export var GM : GameplayManager
 
 
 enum TAG \

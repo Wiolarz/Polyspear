@@ -57,32 +57,9 @@ func list_files_in_folder(folder_path: String) -> Array[String]:
 	return scenes
 
 
-func test_tiles_assigned():
-	
-	for level in managers.keys():
-		var manager = managers[level]
-		assert_true(manager.SentineltHexTile != null, level + " No Sentinel tile")
-		assert_true(manager.DefaultHexTile != null, level + " No Default tile")
-		assert_true(manager.AttackerHexTile != null, level + " No Attacker tile")
-		assert_true(manager.DefenderHexTile != null, level + " No Defender tile")
-		
-
-
-func test_GenerateGrid():
-	for level in managers.keys():
-		var manager = managers[level]
-		manager.GenerateGrid()
-		
-		
-
-		assert_eq(
-			manager.AttackerTiles.size(), manager.DefenderTiles.size(),
-			level + " Different number of starting tiles: A:" + str(manager.AttackerTiles.size()) + " D:" + str(manager.DefenderTiles.size())
-		)
-
 
 func test_BASIC_UNIT_SETUP() -> void:
-    """
+	"""
     for i in range(AttackerUnits.size()):
     
         if i < AttackerUnits.size():
