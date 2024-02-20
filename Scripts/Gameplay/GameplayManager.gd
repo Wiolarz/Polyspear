@@ -409,15 +409,19 @@ func _physics_process(_delta):
 	timer += 1
 	
 	if Input.is_action_just_pressed("KEY_BOT_SPEED_SLOW"):
-		BUS.BotSpeed = 120 # 2 sec
+		BUS.animation_speed = BUS.animation_speed_values.NORMAL
+		BUS.BotSpeed = BUS.bot_speed_values.FREEZE # 0 sec
 	elif Input.is_action_just_pressed("KEY_BOT_SPEED_MEDIUM"):
-		BUS.BotSpeed = 30 # 0.5 sec
+		BUS.animation_speed = BUS.animation_speed_values.NORMAL
+		BUS.BotSpeed = BUS.bot_speed_values.NORMAL # 0.5 sec
 	elif Input.is_action_just_pressed("KEY_BOT_SPEED_FAST"):
-		BUS.BotSpeed = 1 # 1/60 sec
+		BUS.animation_speed = BUS.animation_speed_values.INSTANT
+		
+		BUS.BotSpeed = BUS.bot_speed_values.FAST # 1/60 sec
 	
 	# 60FPS -> timer=60 1 sec
 	for i in range(1):
-		if timer % BUS.BotSpeed == 0:
+		if BUS.BotSpeed != 0 and timer % BUS.BotSpeed == 0:
 			var actions = []
 			if CurrentPlayer == E.Player.ATTACKER and AttackerBot != null:
 				timer = 0

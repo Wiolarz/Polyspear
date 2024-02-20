@@ -3,8 +3,8 @@
 [ext_resource type="Script" path="res://Scripts/Gameplay/Unit.gd" id="1_nyt7h"]
 [ext_resource type="Texture2D" uid="uid://d0dy38p601hn" path="res://Art/border.png" id="2_ma2n6"]
 [ext_resource type="Texture2D" uid="uid://dsftkau5qwpk" path="res://Art/ork3.png" id="3_1n1d4"]
-[ext_resource type="Texture2D" uid="uid://bmyk0feyqq2w" path="res://Art/sword.png" id="4_ki6ka"]
-[ext_resource type="Texture2D" uid="uid://0lpxbb0xhfsn" path="res://Art/spear.png" id="5_i4d8t"]
+[ext_resource type="PackedScene" uid="uid://ue4s18kk7kpt" path="res://Scenes/Symbols/Sword.tscn" id="4_gyhod"]
+[ext_resource type="PackedScene" uid="uid://bg4s8mxbvytkf" path="res://Scenes/Symbols/Spear.tscn" id="5_blg3f"]
 
 [node name="Unit" type="Node2D"]
 script = ExtResource("1_nyt7h")
@@ -16,16 +16,30 @@ texture = ExtResource("2_ma2n6")
 [node name="sprite_unit" type="Sprite2D" parent="."]
 texture = ExtResource("3_1n1d4")
 
-[node name="Sprite2D" type="Sprite2D" parent="."]
-position = Vector2(-5, 271)
-texture = ExtResource("4_ki6ka")
+[node name="Symbols" type="Node2D" parent="."]
 
-[node name="Sprite2D2" type="Sprite2D" parent="."]
-position = Vector2(-257, 129)
-rotation = 1.0472
-texture = ExtResource("5_i4d8t")
+[node name="FrontSymbol" type="Marker2D" parent="Symbols"]
+position = Vector2(0, 263)
 
-[node name="Sprite2D3" type="Sprite2D" parent="."]
-position = Vector2(252, 123)
-rotation = -1.0472
-texture = ExtResource("5_i4d8t")
+[node name="Sword" parent="Symbols/FrontSymbol" instance=ExtResource("4_gyhod")]
+
+[node name="FrontRightSymbol" type="Marker2D" parent="Symbols"]
+position = Vector2(-271, 135)
+
+[node name="Spear" parent="Symbols/FrontRightSymbol" instance=ExtResource("5_blg3f")]
+rotation = -2.13734
+
+[node name="BackRightSymbol" type="Marker2D" parent="Symbols"]
+position = Vector2(-257, -160)
+
+[node name="BackSymbol" type="Marker2D" parent="Symbols"]
+position = Vector2(0, -309)
+
+[node name="BackLeftSymbol" type="Marker2D" parent="Symbols"]
+position = Vector2(271, -160)
+
+[node name="FrontLeftSymbol" type="Marker2D" parent="Symbols"]
+position = Vector2(271, 135)
+
+[node name="Spear" parent="Symbols/FrontLeftSymbol" instance=ExtResource("5_blg3f")]
+rotation = 2.15152

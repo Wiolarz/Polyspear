@@ -3,11 +3,13 @@
 
 var FIX_ASAP  # game breaking BUGS
 """
-
+Tests are not working at all
 """
 
 var FIX # Stuff that needs to be fixed, for the game to work properly
 """
+Make camera center on the map
+
 In gameplay manager setting up units if one player has already placed all of their units
 
 GRID Bordersize would increase constantly if the map type changes after each restart
@@ -15,7 +17,7 @@ GRID Bordersize would increase constantly if the map type changes after each res
 
 var THINK_About
 """
-is simple clearing of unit grid at the end state sufficient?
+how to properly reset Singeleton objects
 
 
 """
@@ -33,6 +35,18 @@ var GOAL
 var ADD
 """
 
+moving the camera on larger map + zoom option
+#google camera tutorials + addons
+
+
+
+add rotation animation (copy code from Brawler branch)
+particles on death animation (+hit shields)
+add highlight last move (made by the other player)
+
+add overworld map
+
+add save system for battles + overworld map
 """
 
 
@@ -63,3 +77,8 @@ Graphics/Technical -> Spacing_of_the_Grid
 #endregion
 
 
+#region Different maps
+
+
+
+#endregion

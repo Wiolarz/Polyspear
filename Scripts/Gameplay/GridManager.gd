@@ -65,8 +65,12 @@ func ChangeUnitPosition(Unit, Cord : Vector2i):
 
 	Unit.CurrentCord = Cord# update Unit Index
 	
-	Unit.global_position = HexGrid[Cord.x][Cord.y].global_position # Move visuals of the unit
-
+	# Move visuals of the unit
+	if GM.UnitsLeftToBeSummoned > 0:
+		Unit.global_position = HexGrid[Cord.x][Cord.y].global_position
+	else:
+		Unit.Move(HexGrid[Cord.x][Cord.y])
+	
 
 
 

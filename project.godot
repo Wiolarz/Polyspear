@@ -13,7 +13,7 @@ config_version=5
 config/name="Krong"
 run/main_scene="res://Scenes/Levels/basic_map.tscn"
 config/features=PackedStringArray("4.2", "GL Compatibility")
-config/icon="res://Art/icon.svg"
+config/icon="res://Art/elf3.png"
 
 [autoload]
 
@@ -39,7 +39,9 @@ enabled=PackedStringArray("res://addons/gut/plugin.cfg")
 [file_customization]
 
 folder_colors={
-"res://Documentation/": "green"
+"res://Documentation/": "green",
+"res://Scenes/": "teal",
+"res://test/": "pink"
 }
 
 [input]

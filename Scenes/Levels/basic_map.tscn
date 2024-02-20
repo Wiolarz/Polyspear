@@ -1,7 +1,6 @@
-[gd_scene load_steps=10 format=3 uid="uid://os75hnii4k0w"]
+[gd_scene load_steps=9 format=3 uid="uid://os75hnii4k0w"]
 
 [ext_resource type="PackedScene" uid="uid://bi1yq2awm2kc0" path="res://Scenes/UI/ui.tscn" id="1_jo11t"]
-[ext_resource type="PackedScene" uid="uid://bko1xm80m1xmn" path="res://Scenes/Special_Objects/pause_test.tscn" id="2_hm08q"]
 [ext_resource type="Script" path="res://Scripts/Gameplay/game_setup.gd" id="6_brbsf"]
 [ext_resource type="Resource" uid="uid://bghvw5ldgu31f" path="res://Resources/Unit_Sets/Elves_starter.tres" id="7_2mlsl"]
 [ext_resource type="Resource" uid="uid://cfeg62fmg3m43" path="res://Resources/Unit_Sets/Orcs_starter.tres" id="8_fo0qx"]
@@ -14,9 +13,6 @@
 
 [node name="UI" parent="." instance=ExtResource("1_jo11t")]
 visible = false
-
-[node name="pause_test" parent="." instance=ExtResource("2_hm08q")]
-position = Vector2(553, 340)
 
 [node name="Camera2D" type="Camera2D" parent="."]
 position = Vector2(4741, 1779)
@@ -38,8 +34,8 @@ StartingState = true
 
 [node name="GameSetup" type="Node" parent="." node_paths=PackedStringArray("AttackerBot", "DefenderBot")]
 script = ExtResource("6_brbsf")
-AttackerUnits = ExtResource("7_2mlsl")
-DefenderUnits = ExtResource("8_fo0qx")
+AttackerUnits = ExtResource("8_fo0qx")
+DefenderUnits = ExtResource("7_2mlsl")
 map_data = ExtResource("9_2ct1c")
 AttackerBot = NodePath("../BotAttacker")
 DefenderBot = NodePath("../BotDefender")
