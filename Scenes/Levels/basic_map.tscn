@@ -32,10 +32,8 @@ script = ExtResource("15_71scx")
 script = ExtResource("17_v7euu")
 StartingState = true
 
-[node name="GameSetup" type="Node" parent="." node_paths=PackedStringArray("AttackerBot", "DefenderBot")]
+[node name="GameSetup" type="Node" parent="."]
 script = ExtResource("6_brbsf")
-AttackerUnits = ExtResource("8_fo0qx")
-DefenderUnits = ExtResource("7_2mlsl")
+attacker_units = ExtResource("7_2mlsl")
+defender_units = ExtResource("8_fo0qx")
 map_data = ExtResource("9_2ct1c")
-AttackerBot = NodePath("../BotAttacker")
-DefenderBot = NodePath("../BotDefender")

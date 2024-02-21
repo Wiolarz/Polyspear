@@ -1,26 +1,25 @@
 extends Node
 
 @export_category("Units")
-@export var AttackerUnits : UnitSet
-@export var DefenderUnits : UnitSet
+@export var attacker_units : UnitSet
+@export var defender_units : UnitSet
 
 
 @export_category("Map")
 @export var map_data : MapData
 
 @export_category("AI")
-@export var AttackerBot : StateMachine
-@export var DefenderBot : StateMachine
+@export var attacker_bot : StateMachine
+@export var defender_bot : StateMachine
 
 
 func _ready():
-
 	GRID.GenerateGrid(map_data)
 
-	GM.SetupUnits(self, AttackerUnits, DefenderUnits)
+	GM.SetupUnits(self, attacker_units, defender_units)
 
-	GM.AttackerBot = AttackerBot
-	GM.DefenderBot = DefenderBot
+	GM.AttackerBot = attacker_bot
+	GM.DefenderBot = defender_bot
 
 
 func restart_level():

@@ -47,6 +47,7 @@ add highlight last move (made by the other player)
 add overworld map
 
 add save system for battles + overworld map
+
 """
 
 
@@ -79,6 +80,11 @@ Graphics/Technical -> Spacing_of_the_Grid
 
 #region Different maps
 
+# Think_about
+"""
+How to handle different art assets for different regions in the game?
+- They could be an additional resource (map_art) for GameSetup alongside gameplay map_data
+"""
 
 
 #endregion

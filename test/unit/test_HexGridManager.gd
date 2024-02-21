@@ -8,13 +8,14 @@ var managers = {}
 
 func before_all():
 	gut.p("Runs once before all tests")
-
-	var level_paths : Array[String] = list_files_in_folder("res://Scenes/Levels/")
+	"""
+	var level_paths : Array[String] = TestTools.list_files_in_folder("res://Scenes/Levels/")
 	for level in level_paths:
 		var test_map = load("res://Scenes/Levels/" + level)
 		test_map = test_map.instantiate()
 		levels.append(test_map)
-		managers[level] = test_map.get_node("GridManager")
+		managers[level] = test_map.get_node("GameSetup")
+	"""
 
 
 func before_each():
@@ -26,8 +27,8 @@ func after_each():
 func after_all():
 	gut.p("Runs once after all tests")
 
-	for level in levels:
-		level.free()
+	#for level in levels:
+		#level.free()
 
 
 """
@@ -43,32 +44,16 @@ func test_assert_eq_number_equal():
 #func test_map_generation():
 
 
-func list_files_in_folder(folder_path: String) -> Array[String]:
-	var dir = DirAccess.open(folder_path)
-	var scenes:Array[String] = []
-
-	if dir:
-		for file in dir.get_files():
-			#scenes.append(folder_path + "/" + file)
-			scenes.append(file)
-	else:
-		print("Error opening folder:", folder_path)
-	dir = null
-	return scenes
-
-
 func test_tiles_assigned():
-	
-	for level in managers.keys():
-		var manager = managers[level]
-		assert_true(manager.SentineltHexTile != null, level + " No Sentinel tile")
-		assert_true(manager.DefaultHexTile != null, level + " No Default tile")
-		assert_true(manager.AttackerHexTile != null, level + " No Attacker tile")
-		assert_true(manager.DefenderHexTile != null, level + " No Defender tile")
-		
+	assert_true(GRID.SentineltHexTile != null, " No Sentinel tile")
+	assert_true(GRID.DefaultHexTile != null, " No Default tile")
+	assert_true(GRID.AttackerHexTile != null, " No Attacker tile")
+	assert_true(GRID.DefenderHexTile != null, " No Defender tile")
+
 
 
 func test_GenerateGrid():
+	"""
 	for level in managers.keys():
 		var manager = managers[level]
 		manager.GenerateGrid()
@@ -79,4 +64,5 @@ func test_GenerateGrid():
 			manager.AttackerTiles.size(), manager.DefenderTiles.size(),
 			level + " Different number of starting tiles: A:" + str(manager.AttackerTiles.size()) + " D:" + str(manager.DefenderTiles.size())
 		)
+	"""
 

@@ -1,9 +1,9 @@
-# Tests_Code_Snippets
+"""
+STUB
+"""
 
+extends GutTest
 
-
-
-var _StateMachine
 """
 if not child is State:
 	print("ERROR, wrong node in state machine")
@@ -22,7 +22,5 @@ elif is_there_starting_state > 1:
 	print("ERROR, >1 starting states")
 
 get_tree().quit()
-
-
-
 """
+
