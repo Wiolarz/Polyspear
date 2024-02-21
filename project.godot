@@ -11,8 +11,8 @@ config_version=5
 [application]
 
 config/name="Krong"
-run/main_scene="res://Kings_Hunt/Main_Node.tscn"
-config/features=PackedStringArray("4.0", "GL Compatibility")
+run/main_scene="res://Scenes/Main_Node.tscn"
+config/features=PackedStringArray("4.2", "GL Compatibility")
 config/icon="res://icon.svg"
 
 [input]

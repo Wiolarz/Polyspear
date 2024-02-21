@@ -1,6 +1,0 @@
-[gd_scene load_steps=2 format=3]
-
-[ext_resource type="Script" path="res://Experiments/Outpost_Game_Alpha/v2_dice_exploration.gd" id="1_4llx8"]
-
-[node name="Outpost_Main" type="Node"]
-script = ExtResource("1_4llx8")

@@ -1,8 +1,8 @@
 [gd_scene load_steps=4 format=3 uid="uid://drip4v2rtec45"]
 
-[ext_resource type="Script" path="res://Kings_Hunt/Main_Node.gd" id="1_1152e"]
-[ext_resource type="PackedScene" uid="uid://rh87j386f5vn" path="res://Kings_Hunt/player_character.tscn" id="3_4bnlk"]
-[ext_resource type="Script" path="res://Kings_Hunt/City.gd" id="3_lwgwu"]
+[ext_resource type="Script" path="res://Scripts/Main_Node.gd" id="1_1152e"]
+[ext_resource type="PackedScene" uid="uid://rh87j386f5vn" path="res://Scenes/player_character.tscn" id="3_4bnlk"]
+[ext_resource type="Script" path="res://Scripts/City.gd" id="3_lwgwu"]
 
 [node name="main_node" type="Node" node_paths=PackedStringArray("output")]
 script = ExtResource("1_1152e")
