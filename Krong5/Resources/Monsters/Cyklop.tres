@@ -1,8 +1,0 @@
-[gd_resource type="Resource" script_class="monster" load_steps=2 format=3]
-
-[ext_resource type="Script" path="res://Krong5/Resource_Scripts/Monster_Resource.gd" id="1_s5owq"]
-
-[resource]
-script = ExtResource("1_s5owq")
-power = 12
-name = "Cyklop"

@@ -1,0 +1,41 @@
+[gd_scene load_steps=9 format=3 uid="uid://os75hnii4k0w"]
+
+[ext_resource type="PackedScene" uid="uid://bi1yq2awm2kc0" path="res://Scenes/UI/ui.tscn" id="1_jo11t"]
+[ext_resource type="Script" path="res://Scripts/Gameplay/game_setup.gd" id="6_brbsf"]
+[ext_resource type="Resource" uid="uid://bghvw5ldgu31f" path="res://Resources/Unit_Sets/Elves_starter.tres" id="7_2mlsl"]
+[ext_resource type="Resource" uid="uid://cfeg62fmg3m43" path="res://Resources/Unit_Sets/Orcs_starter.tres" id="8_fo0qx"]
+[ext_resource type="Resource" uid="uid://b2ffhynpdmlve" path="res://Resources/Maps/Classic_map.tres" id="9_2ct1c"]
+[ext_resource type="Script" path="res://Scripts/Gameplay/StateMachine.gd" id="15_71scx"]
+[ext_resource type="Script" path="res://Scripts/Gameplay/States/Defensive.gd" id="16_ewovl"]
+[ext_resource type="Script" path="res://Scripts/Gameplay/States/State.gd" id="17_v7euu"]
+
+[node name="BasicMap" type="Node"]
+
+[node name="UI" parent="." instance=ExtResource("1_jo11t")]
+visible = false
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(4741, 1779)
+zoom = Vector2(0.3, 0.3)
+
+[node name="BotAttacker" type="Node" parent="."]
+script = ExtResource("15_71scx")
+
+[node name="Defensive_State" type="Node" parent="BotAttacker"]
+script = ExtResource("16_ewovl")
+StartingState = true
+
+[node name="BotDefender" type="Node" parent="."]
+script = ExtResource("15_71scx")
+
+[node name="State" type="Node" parent="BotDefender"]
+script = ExtResource("17_v7euu")
+StartingState = true
+
+[node name="GameSetup" type="Node" parent="." node_paths=PackedStringArray("AttackerBot", "DefenderBot")]
+script = ExtResource("6_brbsf")
+AttackerUnits = ExtResource("8_fo0qx")
+DefenderUnits = ExtResource("7_2mlsl")
+map_data = ExtResource("9_2ct1c")
+AttackerBot = NodePath("../BotAttacker")
+DefenderBot = NodePath("../BotDefender")

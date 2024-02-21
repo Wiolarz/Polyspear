@@ -1,0 +1,11 @@
+[gd_scene load_steps=3 format=3 uid="uid://bc4yv21yc35fw"]
+
+[ext_resource type="Script" path="res://Scripts/Gameplay/Symbols/symbol.gd" id="1_36pv7"]
+[ext_resource type="Texture2D" uid="uid://dr117lum7dxea" path="res://Art/shield.png" id="2_dhwvq"]
+
+[node name="Shield" type="Node2D"]
+script = ExtResource("1_36pv7")
+type = 3
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("2_dhwvq")

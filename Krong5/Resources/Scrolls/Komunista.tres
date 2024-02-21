@@ -1,9 +1,0 @@
-[gd_resource type="Resource" script_class="scroll" load_steps=3 format=3 uid="uid://cfyhpgwroty32"]
-
-[ext_resource type="Script" path="res://Krong5/Resource_Scripts/Scroll_resource.gd" id="1_as4u5"]
-[ext_resource type="Resource" uid="uid://bv7mj6v7si3eu" path="res://Krong5/Resources/Powers/Stink.tres" id="1_qmlnc"]
-
-[resource]
-script = ExtResource("1_as4u5")
-attacks = Array[Resource("res://Krong5/Resource_Scripts/Power_Resource.gd")]([ExtResource("1_qmlnc")])
-name = "komunista"
