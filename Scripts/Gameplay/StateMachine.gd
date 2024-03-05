@@ -4,7 +4,7 @@ class_name StateMachine
 extends Node
 
 
-var Controller : E.Player
+var Controller : E.Participant
 
 
 
@@ -29,15 +29,15 @@ func GetAllLegalMoves(myUnits : Array): # -> Array[Array[Vector2i]]
 	for myUnit in myUnits:
 		
 		for side in range(6):
-			var new_move = myUnit.CurrentCord + GRID.Directions[side]
-			var neighbour : AUnit = GRID.GetUnit(new_move)
+			var new_move = myUnit.CurrentCord + B_GRID.Directions[side]
+			var neighbour : AUnit = B_GRID.GetUnit(new_move)
 			if (neighbour != null and neighbour.Controller == Controller): # 1
 				continue
 			
-			if GRID.GetTileType(new_move) == E.HexTileType.SENTINEL: # 2
+			if B_GRID.GetTileType(new_move) == E.HexTileType.SENTINEL: # 2
 				continue
 			
-			if GM.IsLegalMove(new_move, myUnit) == -1:
+			if BM.IsLegalMove(new_move, myUnit) == -1:
 				continue
 			
 			legalMoves.append([myUnit.CurrentCord, new_move])
@@ -53,12 +53,12 @@ func GetAllKillMoves(AllMoves):  # Array[Array[Vector2i]]
 	for Move in AllMoves:
 		
 		# BOW
-		if GRID.GetUnit(Move[0]).GetSymbol(0) == E.Symbols.BOW:
-			if GRID.GetShotTarget(Move[0], GRID.AdjacentSide(Move[0], Move[1])):
+		if B_GRID.GetUnit(Move[0]).GetSymbol(0) == E.Symbols.BOW:
+			if B_GRID.GetShotTarget(Move[0], B_GRID.AdjacentSide(Move[0], Move[1])):
 				AllKillMoves.append(Move)
 			continue
 		
-		if GRID.GetUnit(Move[1]) != null:
+		if B_GRID.GetUnit(Move[1]) != null:
 			AllKillMoves.append(Move)
 	
 	return AllKillMoves
@@ -76,16 +76,16 @@ func GetAllSpawnMoves(my_units : Array):
 	var legal_moves = []
 	var spawn_tiles = []
 
-	if my_units[0].Controller == E.Player.ATTACKER:
-		spawn_tiles = GRID.AttackerTiles
+	if my_units[0].Controller == E.Participant.ATTACKER:
+		spawn_tiles = B_GRID.AttackerTiles
 	else:
-		spawn_tiles = GRID.DefenderTiles
+		spawn_tiles = B_GRID.DefenderTiles
 
 	for unit in my_units:
-		if GRID.GetTileType(unit.CurrentCord) != E.HexTileType.SENTINEL:
+		if B_GRID.GetTileType(unit.CurrentCord) != E.HexTileType.SENTINEL:
 			continue
 		for tile in spawn_tiles:
-			if GRID.GetUnit(tile.TileIndex) == null:
+			if B_GRID.GetUnit(tile.TileIndex) == null:
 				legal_moves.append([unit.CurrentCord, tile.TileIndex])
 	
 	return legal_moves
@@ -150,7 +150,7 @@ func change_state(new_states):
 
 
 func PlayMove(myUnits : Array):
-	if GM.UnitsLeftToBeSummoned != 0:
+	if BM.UnitsLeftToBeSummoned != 0:
 		var opening_moves = GetAllSpawnMoves(myUnits)
 		return current_state.make_move(opening_moves)
 	

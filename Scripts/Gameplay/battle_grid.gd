@@ -1,6 +1,7 @@
-class_name HexGridManager
-
 extends Node
+
+
+#@onready var grid_draw : GridDraw = GridDraw.new()
 
 
 const TileHorizontalOffset : float = 700.0
@@ -17,11 +18,12 @@ const OddRowHorizontalOffset : float = 350.0
 @onready var DefenderHexTile : PackedScene = load("res://Scenes/HexTiles/DirtHexTile.tscn")
 
 
+
+
+
+
 var GridWidth : int = 5
 var	GridHeight : int = 5
-
-
-
 
 """
 Thickness of a Sentinel perimiter around the gameplay area.
@@ -52,12 +54,6 @@ static var Directions = [ \
 
 
 
-func GetTileType(Cord : Vector2i) -> E.HexTileType:
-	return HexGrid[Cord.x][Cord.y].TileType
-
-func GetUnit(Cord : Vector2i):
-	return UnitGrid[Cord.x][Cord.y]
-
 func ChangeUnitPosition(Unit, Cord : Vector2i):
 
 	UnitGrid[Unit.CurrentCord.x][Unit.CurrentCord.y] = null# clean your previous location
@@ -66,7 +62,7 @@ func ChangeUnitPosition(Unit, Cord : Vector2i):
 	Unit.CurrentCord = Cord# update Unit Index
 	
 	# Move visuals of the unit
-	if GM.UnitsLeftToBeSummoned > 0:
+	if BM.UnitsLeftToBeSummoned > 0:
 		Unit.global_position = HexGrid[Cord.x][Cord.y].global_position
 	else:
 		Unit.Move(HexGrid[Cord.x][Cord.y])
@@ -83,6 +79,15 @@ func RemoveUnit(Unit):
 	Unit.Destroy()
 
 #region Coordinates tools
+
+
+func GetTileType(Cord : Vector2i) -> E.HexTileType:
+	return HexGrid[Cord.x][Cord.y].TileType
+
+func GetUnit(Cord : Vector2i):
+	return UnitGrid[Cord.x][Cord.y]
+
+
 
 func AdjacentUnits(BaseCord : Vector2i):
 	# Returns 6 elements Array, elements can be null
@@ -127,7 +132,7 @@ func  GetDistantCord(StartCord : Vector2i, Side : int, Distance : int) -> Vector
 
 
 
-func GetMeleeDamageTargets(StartCord : Vector2i, direction, SymbolSide : int) -> Array[AUnit]:
+func get_melee_targets(StartCord : Vector2i, direction, SymbolSide : int) -> Array[AUnit]:
 	"""TODO
 	
 	direction : int / Vector2i
@@ -165,33 +170,9 @@ func AdjacentCord(BaseCord : Vector2i, Side : int) -> Vector2i:
 	  """
 	return BaseCord + Directions[Side]
 
-"""
-/ Maybe TODO
-Vector2i AdjacentCord(Vector2i BaseCord, Vector2i Direction)
-{
-	/
-	  Return cord adjacent to BaseCord at given Direction
-	 
-	  @param BaseCord
-	  @param Side {0, 1, ..., 5}
-	  @return Vector2i Cord adjacent to BaseCord
-	 /
-	# TODO: Normalize dircetion first to match one of the Directions
-	#return BaseCord + Directions[Side]
-#}
-"""
 #endregion
 
 #region GenerateGrid
-
-
-#func BlueprintsCheck() -> void
-#{
-	#checkf(AttackerHexTile != NULL, TEXT("no AttackerHexTile"))
-	#checkf(DefaultHexTile != NULL, TEXT("no DefaultHexTile"))
-	#checkf(DefenderHexTile != NULL, TEXT("no DefenderHexTile"))
-	#checkf(SentinelHexTile != NULL, TEXT("no SentinelHexTile"))	
-#}
 
 
 func AdjustGridSize() -> void:
@@ -201,7 +182,6 @@ func AdjustGridSize() -> void:
 	GridWidth += (GridHeight / 2) # adjustment for Axial grid system
 
 
-##include <typeinfo>
 
 func InitHexGridArray() -> void:
 	for i in range(GridWidth):
@@ -231,20 +211,20 @@ func SpawnTiles() -> void:
 			newTile.global_position.y = YTilePos
 
 			newTile.TileIndex = Vector2i(x, y)
-			
-			if current_spawn == E.HexTileType.SENTINEL:
-				pass#newTile.SetActorLabel(FString::Printf(TEXT("Tile_Sentinel_%d-%d"), x, y))
+			match current_spawn:
+				E.HexTileType.SENTINEL:
+					newTile.name = "Sentinel_HexTile"
 
-			elif current_spawn == E.HexTileType.DEFAULT:
-				pass#newTile.SetActorLabel(FString::Printf(TEXT("Tile_Default_%d-%d"), x, y))
+				E.HexTileType.DEFAULT:
+					newTile.name = "Default_HexTile"
 			
-			elif current_spawn == E.HexTileType.ATTACKER_SPAWN:
-				pass#newTile.SetActorLabel(FString::Printf(TEXT("Tile_Attacker_Spawn_%d-%d"), x, y))
-				AttackerTiles.append(newTile)
+				E.HexTileType.ATTACKER_SPAWN:
+					newTile.name = "Attacker_HexTile"
+					AttackerTiles.append(newTile)
 
-			elif current_spawn == E.HexTileType.DEFENDER_SPAWN:
-				pass#newTile.SetActorLabel(FString::Printf(TEXT("Tile_Defender_Spawn_%d-%d"), x, y))
-				DefenderTiles.append(newTile)
+				E.HexTileType.DEFENDER_SPAWN:
+					newTile.name = "Defender_HexTile"
+					DefenderTiles.append(newTile)
 
 			newTile.TileType = current_spawn
 

@@ -45,10 +45,10 @@ func test_assert_eq_number_equal():
 
 
 func test_tiles_assigned():
-	assert_true(GRID.SentineltHexTile != null, " No Sentinel tile")
-	assert_true(GRID.DefaultHexTile != null, " No Default tile")
-	assert_true(GRID.AttackerHexTile != null, " No Attacker tile")
-	assert_true(GRID.DefenderHexTile != null, " No Defender tile")
+	assert_true(B_GRID.SentineltHexTile != null, " No Sentinel tile")
+	assert_true(B_GRID.DefaultHexTile != null, " No Default tile")
+	assert_true(B_GRID.AttackerHexTile != null, " No Attacker tile")
+	assert_true(B_GRID.DefenderHexTile != null, " No Defender tile")
 
 
 

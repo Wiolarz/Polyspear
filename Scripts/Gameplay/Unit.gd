@@ -5,14 +5,14 @@ class_name AUnit
 
 var CurrentRotation : int
 var CurrentCord : Vector2i
-var Controller : E.Player
+var Controller : E.Participant
 
 var target_tile : HexTile
 var target_rotation = rotation
 
-var Symbols : Array[E.Symbols] = [ \
-	E.Symbols.INVALID, E.Symbols.INVALID, E.Symbols.INVALID,
-	E.Symbols.INVALID, E.Symbols.INVALID, E.Symbols.INVALID]
+var Symbols : Array[E.Symbols] = [  # based on specific Unit scene in _ready() symbols get placed into their spots
+	E.Symbols.EMPTY, E.Symbols.EMPTY, E.Symbols.EMPTY, 
+	E.Symbols.EMPTY, E.Symbols.EMPTY, E.Symbols.EMPTY]
 
 func _ready():
 	var idx = -1

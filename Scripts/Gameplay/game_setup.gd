@@ -14,12 +14,12 @@ extends Node
 
 
 func _ready():
-	GRID.GenerateGrid(map_data)
+	B_GRID.GenerateGrid(map_data)
 
-	GM.SetupUnits(self, attacker_units, defender_units)
+	BM.SetupUnits(self, attacker_units, defender_units)
 
-	GM.AttackerBot = attacker_bot
-	GM.DefenderBot = defender_bot
+	BM.AttackerBot = attacker_bot
+	BM.DefenderBot = defender_bot
 
 
 func restart_level():

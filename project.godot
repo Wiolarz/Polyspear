@@ -18,8 +18,10 @@ config/icon="res://Art/elf3.png"
 [autoload]
 
 BUS="*res://Scripts/BUS.gd"
-GRID="*res://Scripts/Gameplay/GridManager.gd"
-GM="*res://Scripts/Gameplay/GameplayManager.gd"
+W_GRID="*res://Scripts/World/world_grid.gd"
+WM="*res://Scripts/World/world_manager.gd"
+B_GRID="*res://Scripts/Gameplay/battle_grid.gd"
+BM="*res://Scripts/Gameplay/battle_manager.gd"
 
 [debug]
 

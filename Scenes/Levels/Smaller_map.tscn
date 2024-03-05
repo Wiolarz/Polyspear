@@ -22,11 +22,13 @@ position = Vector2(553, 340)
 position = Vector2(4741, 1779)
 zoom = Vector2(0.3, 0.3)
 
-[node name="GameSetup" type="Node" parent="."]
+[node name="GameSetup" type="Node" parent="." node_paths=PackedStringArray("attacker_bot", "defender_bot")]
 script = ExtResource("3_7bpr6")
 attacker_units = ExtResource("4_0ehbq")
 defender_units = ExtResource("5_hehrh")
 map_data = ExtResource("6_wjl86")
+attacker_bot = NodePath("../BotDefender")
+defender_bot = NodePath("../BotDefender")
 
 [node name="BotAttacker" type="Node" parent="."]
 script = ExtResource("15_gnc6g")

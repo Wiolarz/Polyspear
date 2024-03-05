@@ -27,11 +27,11 @@ func test_BASIC_UNIT_SETUP() -> void:
 		if i < AttackerUnits.size():
 
 			InputListener(AttackerUnits[i].CurrentCord)
-			InputListener(AttackerUnits[i].CurrentCord + GRID.Directions[0])
+			InputListener(AttackerUnits[i].CurrentCord + B_GRID.Directions[0])
 
 		if i < DefenderUnits.size():
 
 			InputListener(DefenderUnits[i].CurrentCord)
-			InputListener(DefenderUnits[i].CurrentCord + GRID.Directions[3])
+			InputListener(DefenderUnits[i].CurrentCord + B_GRID.Directions[3])
 
 	"""

@@ -2,21 +2,21 @@ class_name E
 
 extends Node
 
+
+
+
 enum HexTileType 
 {
-	INVALID,
 	SENTINEL,
 	ATTACKER_SPAWN,
 	DEFENDER_SPAWN,
 	DEFAULT,
-
 }
 
 
-
-enum Player
+#region Battle
+enum Participant
 {
-	INVALID,
 	ATTACKER,
 	DEFENDER,
 }
@@ -24,7 +24,7 @@ enum Player
 
 enum Symbols
 {
-	INVALID,
+	EMPTY,
 	SPEAR,
 	SWORD,
 	SHIELD,
@@ -32,9 +32,34 @@ enum Symbols
 	PUSH,
 }
 
+#endregion
 
 enum MapShape
 {
 	CLASSIC,
 	SHIFTED,
 }
+
+
+#region World
+
+enum Player
+{
+	NEUTRAL,
+	ONE,
+	TWO,
+	THREE,
+	FOUR,
+}
+
+
+enum WorldMapTiles
+{
+	SENTINEL,
+	EMPTY,
+	WALL,
+	CITY,
+	PLACE,
+}
+
+#endregion

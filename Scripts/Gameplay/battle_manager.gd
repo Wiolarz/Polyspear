@@ -14,7 +14,7 @@ var DefenderUnitsTypes : Array[PackedScene]
 var AttackerUnits = []
 var DefenderUnits = []
 
-var CurrentPlayer : E.Player = E.Player.ATTACKER
+var current_participant : E.Participant = E.Participant.ATTACKER
 
 var SelectedUnit
 
@@ -38,12 +38,12 @@ var timer = 0
 
 #region Tools
 
-func SwitchPlayerTurn():
+func SwitchParticipantTurn():
 	# Currently works only for 2 players
-	if CurrentPlayer == E.Player.ATTACKER:
-		CurrentPlayer = E.Player.DEFENDER
+	if current_participant == E.Participant.ATTACKER:
+		current_participant = E.Participant.DEFENDER
 	else:
-		CurrentPlayer = E.Player.ATTACKER
+		current_participant = E.Participant.ATTACKER
 
 
 func IsLegalMove(Cord : Vector2i, BotUnit : AUnit = null) -> int:
@@ -61,18 +61,18 @@ func IsLegalMove(Cord : Vector2i, BotUnit : AUnit = null) -> int:
 		SelectedUnit = BotUnit  # Locally replacs Unit for Bot legal move search
 
 	# 1
-	var ResultSide = GRID.AdjacentSide(SelectedUnit.CurrentCord, Cord)  
+	var ResultSide = B_GRID.AdjacentSide(SelectedUnit.CurrentCord, Cord)  
 	if ResultSide == null:
 		return -1
 
 	#print(ResultSide)
 	# 2
-	var EnemyUnit = GRID.GetUnit(Cord)
+	var EnemyUnit = B_GRID.GetUnit(Cord)
 	if EnemyUnit == null:  # Is there a Unit in this spot?
 		return ResultSide
 	
 	match SelectedUnit.Symbols[0]:
-		E.Symbols.INVALID:
+		E.Symbols.EMPTY:
 			return -1
 		E.Symbols.SHIELD:
 			return -1 # SelectedUnit can't deal with EnemyUnit
@@ -107,7 +107,7 @@ func MoveUnit(Unit, EndCord : Vector2i, side: int) -> void:
 	#TODO wait half a second
 
 
-	GRID.ChangeUnitPosition(Unit, EndCord)
+	B_GRID.ChangeUnitPosition(Unit, EndCord)
 
 	if EnemyDamage(Unit):
 		KillUnit(Unit)
@@ -119,7 +119,7 @@ func MoveUnit(Unit, EndCord : Vector2i, side: int) -> void:
 
 func EnemyDamage(Target : AUnit) -> bool:
 	# Returns true is Enemy spear can kill the Target
-	var Units = GRID.AdjacentUnits(Target.CurrentCord)
+	var Units = B_GRID.AdjacentUnits(Target.CurrentCord)
 
 	for side in range(6):
 		if (Units[side] != null && Units[side].Controller != Target.Controller):
@@ -134,12 +134,12 @@ func EnemyDamage(Target : AUnit) -> bool:
 
 
 func KillUnit(Target) -> void:
-	if (Target.Controller == E.Player.DEFENDER):
+	if (Target.Controller == E.Participant.DEFENDER):
 		DefenderUnits.erase(Target)
 	else:
 		AttackerUnits.erase(Target)
 	
-	GRID.RemoveUnit(Target)
+	B_GRID.RemoveUnit(Target)
 
 	if DefenderUnits.size() == 0:
 		BUS.Attacker_wins += 1
@@ -150,28 +150,25 @@ func KillUnit(Target) -> void:
 
 	
 	if AttackerUnits.size() == 0 or DefenderUnits.size() == 0:
-		for unit in get_children():
-			unit.queue_free()
-		for tile in GRID.get_children():
-			tile.queue_free()
+		clear_level()
 		GameSetupNode.restart_level()
 	
 
 
 func UnitAction(Unit) -> void:
-	var Units = GRID.AdjacentUnits(Unit.CurrentCord)
+	var Units = B_GRID.AdjacentUnits(Unit.CurrentCord)
 
 	for side in range(6):
 		var UnitWeapon = Unit.GetSymbol(side)
 
 		match UnitWeapon:
-			E.Symbols.INVALID:
+			E.Symbols.EMPTY:
 				continue #####################################################################################TODO check if we could fix it
 			E.Symbols.SHIELD:
 				continue # We don't have a weapon
 
 			E.Symbols.BOW:
-				var Target = GRID.GetShotTarget(Unit.CurrentCord, side)
+				var Target = B_GRID.GetShotTarget(Unit.CurrentCord, side)
 				if Target == null:
 					continue
 
@@ -194,7 +191,7 @@ func UnitAction(Unit) -> void:
 		if UnitWeapon == E.Symbols.PUSH:
 
 			# PUSH LOGIC
-			var TargetTileType = GRID.GetDistantTileType(Unit.CurrentCord, side, 2)
+			var TargetTileType = B_GRID.GetDistantTileType(Unit.CurrentCord, side, 2)
 
 			if TargetTileType == E.HexTileType.SENTINEL:  # Pushing outside the map
 				# Kill
@@ -202,13 +199,13 @@ func UnitAction(Unit) -> void:
 				continue
 
 
-			var Target = GRID.GetDistantUnit(Unit.CurrentCord, side, 2)
+			var Target = B_GRID.GetDistantUnit(Unit.CurrentCord, side, 2)
 
 			if Target != null: # Spot isn't empty
 				KillUnit(EnemyUnit)
 				continue
 
-			GRID.ChangeUnitPosition(EnemyUnit, GRID.GetDistantCord(Unit.CurrentCord, side, 2))
+			B_GRID.ChangeUnitPosition(EnemyUnit, B_GRID.GetDistantCord(Unit.CurrentCord, side, 2))
 			if EnemyDamage(EnemyUnit): # Simple push	
 				KillUnit(EnemyUnit)
 			continue
@@ -232,8 +229,8 @@ func SelectUnit(Cord : Vector2i) -> bool:
 	 * @return true if unit has been selected in this operation
 	 """
 
-	var NewSelection : AUnit = GRID.GetUnit(Cord)
-	if (NewSelection != null && NewSelection.Controller == CurrentPlayer):
+	var NewSelection : AUnit = B_GRID.GetUnit(Cord)
+	if (NewSelection != null && NewSelection.Controller == current_participant):
 		SelectedUnit = NewSelection
 		#print("You have selected a Unit")
 
@@ -245,6 +242,14 @@ func SelectUnit(Cord : Vector2i) -> bool:
 
 
 #region Main Functions
+
+func clear_level():
+	current_participant = E.Participant.ATTACKER
+	for unit in get_children():
+		unit.queue_free()
+	for tile in B_GRID.get_children():
+		tile.queue_free()
+
 
 
 func InputListener(Cord : Vector2i) -> void:
@@ -291,11 +296,11 @@ func Gameplay(Cord : Vector2i) -> void:
 		#print(FString::Printf(TEXT("DIRECTION_%d"), side))
 		#testKillUnit(Cord)
 		
-		#GRID.ChangeUnitPosition(SelectedUnit, Cord)
+		#B_GRID.ChangeUnitPosition(SelectedUnit, Cord)
 		#print(FString::Printf(TEXT("_%d"), side))
 		#.RotateUnit(SelectedUnit, side)
 
-		SwitchPlayerTurn()
+		SwitchParticipantTurn()
 	
 
 
@@ -309,35 +314,35 @@ func SummonUnit(Cord : Vector2i) -> void:
 	
 
 	# check if unit is already summoned
-	var SelectedUnitTileType = GRID.GetTileType(SelectedUnit.CurrentCord)
+	var SelectedUnitTileType = B_GRID.GetTileType(SelectedUnit.CurrentCord)
 
 	if SelectedUnitTileType != E.HexTileType.SENTINEL:
 		#print("This Unit has been already summoned")
 		return
 	
 
-	var SelectedHexType = GRID.GetTileType(Cord)
+	var SelectedHexType = B_GRID.GetTileType(Cord)
 
-	var bSelectedCurrentPlayerSpawn = \
-		(SelectedHexType == E.HexTileType.ATTACKER_SPAWN && CurrentPlayer == E.Player.ATTACKER) or \
-		(SelectedHexType == E.HexTileType.DEFENDER_SPAWN && CurrentPlayer == E.Player.DEFENDER)
+	var bSelectedcurrent_participantSpawn = \
+		(SelectedHexType == E.HexTileType.ATTACKER_SPAWN && current_participant == E.Participant.ATTACKER) or \
+		(SelectedHexType == E.HexTileType.DEFENDER_SPAWN && current_participant == E.Participant.DEFENDER)
 
-	if not bSelectedCurrentPlayerSpawn:
+	if not bSelectedcurrent_participantSpawn:
 		#print("Thats a wrong summon location")  # TODO: Don't reset SelectedUnit
 		return
 
 	#print("You summoned a Unit")
 
 	# TeleportUnit(Cord)
-	GRID.ChangeUnitPosition(SelectedUnit, Cord)
+	B_GRID.ChangeUnitPosition(SelectedUnit, Cord)
 
-	if CurrentPlayer == E.Player.ATTACKER:
+	if current_participant == E.Participant.ATTACKER:
 		SelectedUnit.Rotate(0)
 	else:
 		SelectedUnit.Rotate(3)
 
 
-	SwitchPlayerTurn()
+	SwitchParticipantTurn()
 
 	UnitsLeftToBeSummoned -= 1
 
@@ -367,12 +372,12 @@ func SpawnUnits() -> void:
 		add_child(new_unit) # jako element sceny
 		AttackerUnits.append(new_unit)
 
-		new_unit.Controller = E.Player.ATTACKER
+		new_unit.Controller = E.Participant.ATTACKER
 
-		SpawnCord = GRID.AttackerTiles[i].TileIndex # Get spawn location
-		SpawnCord += GRID.Directions[3]  # Move to a spot outside of the map near spawn point
+		SpawnCord = B_GRID.AttackerTiles[i].TileIndex # Get spawn location
+		SpawnCord += B_GRID.Directions[3]  # Move to a spot outside of the map near spawn point
 
-		GRID.ChangeUnitPosition(new_unit, SpawnCord) # Adding Unit to the Gameplay Array
+		B_GRID.ChangeUnitPosition(new_unit, SpawnCord) # Adding Unit to the Gameplay Array
 		
 
 	# spawning defender units
@@ -382,12 +387,12 @@ func SpawnUnits() -> void:
 		add_child(new_unit) # jako element sceny
 		DefenderUnits.append(new_unit)
 
-		new_unit.Controller = E.Player.DEFENDER
+		new_unit.Controller = E.Participant.DEFENDER
 
-		SpawnCord = GRID.DefenderTiles[i].TileIndex # Get spawn location
-		SpawnCord += GRID.Directions[0] # Move to a spot outside of the map near spawn point
+		SpawnCord = B_GRID.DefenderTiles[i].TileIndex # Get spawn location
+		SpawnCord += B_GRID.Directions[0] # Move to a spot outside of the map near spawn point
 
-		GRID.ChangeUnitPosition(new_unit, SpawnCord) # Adding Unit to the Gameplay Array
+		B_GRID.ChangeUnitPosition(new_unit, SpawnCord) # Adding Unit to the Gameplay Array
 
 	SelectedUnit = null
 
@@ -423,10 +428,10 @@ func _physics_process(_delta):
 	for i in range(1):
 		if BUS.BotSpeed != 0 and timer % BUS.BotSpeed == 0:
 			var actions = []
-			if CurrentPlayer == E.Player.ATTACKER and AttackerBot != null:
+			if current_participant == E.Participant.ATTACKER and AttackerBot != null:
 				timer = 0
 				actions = AttackerBot.PlayMove(AttackerUnits)
-			elif CurrentPlayer == E.Player.DEFENDER and DefenderBot != null:
+			elif current_participant == E.Participant.DEFENDER and DefenderBot != null:
 				timer = 0
 				actions = DefenderBot.PlayMove(DefenderUnits)
 			
