@@ -1,8 +1,8 @@
 extends Node
 
-@export_category("Units")
-@export var attacker_units : UnitSet
-@export var defender_units : UnitSet
+@export_category("Heroes")
+@export var attacker_hero : Hero
+@export var defender_hero : Hero
 
 
 @export_category("Map")
@@ -16,7 +16,7 @@ extends Node
 func _ready():
 	B_GRID.GenerateGrid(map_data)
 
-	BM.SetupUnits(self, attacker_units, defender_units)
+	BM.start_battle(self, [attacker_hero, defender_hero])
 
 	BM.AttackerBot = attacker_bot
 	BM.DefenderBot = defender_bot

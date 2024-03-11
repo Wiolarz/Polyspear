@@ -27,7 +27,7 @@ Gameplay Manager
     World Manager
         World Grid Manager
 
-    Gameplay Manager -> Battle Manager
+    Battle Manager
         Battle Grid Manager
 
 

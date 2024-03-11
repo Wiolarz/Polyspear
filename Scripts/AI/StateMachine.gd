@@ -1,10 +1,9 @@
 class_name StateMachine
 
+extends AIInteface
 
-extends Node
 
-
-var Controller : E.Participant
+var Controller : Player
 
 
 
@@ -76,7 +75,7 @@ func GetAllSpawnMoves(my_units : Array):
 	var legal_moves = []
 	var spawn_tiles = []
 
-	if my_units[0].Controller == E.Participant.ATTACKER:
+	if my_units[0].Controller == BM.commanders[0]:
 		spawn_tiles = B_GRID.AttackerTiles
 	else:
 		spawn_tiles = B_GRID.DefenderTiles
@@ -145,7 +144,8 @@ func change_state(new_states):
 
 
 
-
+func play_move(player : Player):
+	pass
 
 
 

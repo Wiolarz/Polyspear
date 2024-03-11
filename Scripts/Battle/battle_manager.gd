@@ -3,7 +3,11 @@ class_name GameManager
 extends Node
 
 
+const ATTACKER = 0
+const DEFENDER = 1
+
 #region Variables
+var commanders = []  # Hero objects that take part in battle (based on them we get players who control the battle)
 
 var GameSetupNode
 
@@ -14,7 +18,8 @@ var DefenderUnitsTypes : Array[PackedScene]
 var AttackerUnits = []
 var DefenderUnits = []
 
-var current_participant : E.Participant = E.Participant.ATTACKER
+var current_participant : Player
+var participant_idx : int = ATTACKER
 
 var SelectedUnit
 
@@ -37,14 +42,6 @@ var timer = 0
 
 
 #region Tools
-
-func SwitchParticipantTurn():
-	# Currently works only for 2 players
-	if current_participant == E.Participant.ATTACKER:
-		current_participant = E.Participant.DEFENDER
-	else:
-		current_participant = E.Participant.ATTACKER
-
 
 func IsLegalMove(Cord : Vector2i, BotUnit : AUnit = null) -> int:
 	"""
@@ -134,7 +131,7 @@ func EnemyDamage(Target : AUnit) -> bool:
 
 
 func KillUnit(Target) -> void:
-	if (Target.Controller == E.Participant.DEFENDER):
+	if (Target.Controller == commanders[DEFENDER]):
 		DefenderUnits.erase(Target)
 	else:
 		AttackerUnits.erase(Target)
@@ -244,11 +241,24 @@ func SelectUnit(Cord : Vector2i) -> bool:
 #region Main Functions
 
 func clear_level():
-	current_participant = E.Participant.ATTACKER
+	current_participant = null
 	for unit in get_children():
 		unit.queue_free()
 	for tile in B_GRID.get_children():
 		tile.queue_free()
+
+
+
+
+func switch_participant_turn():
+	if participant_idx + 1 == commanders.size():
+		participant_idx = ATTACKER
+	else:
+		participant_idx += 1
+	
+	current_participant = commanders[participant_idx].controller
+		
+
 
 
 
@@ -300,7 +310,7 @@ func Gameplay(Cord : Vector2i) -> void:
 		#print(FString::Printf(TEXT("_%d"), side))
 		#.RotateUnit(SelectedUnit, side)
 
-		SwitchParticipantTurn()
+		switch_participant_turn()
 	
 
 
@@ -324,8 +334,8 @@ func SummonUnit(Cord : Vector2i) -> void:
 	var SelectedHexType = B_GRID.GetTileType(Cord)
 
 	var bSelectedcurrent_participantSpawn = \
-		(SelectedHexType == E.HexTileType.ATTACKER_SPAWN && current_participant == E.Participant.ATTACKER) or \
-		(SelectedHexType == E.HexTileType.DEFENDER_SPAWN && current_participant == E.Participant.DEFENDER)
+		(SelectedHexType == E.HexTileType.ATTACKER_SPAWN && participant_idx == 0) or \
+		(SelectedHexType == E.HexTileType.DEFENDER_SPAWN && participant_idx == 1)
 
 	if not bSelectedcurrent_participantSpawn:
 		#print("Thats a wrong summon location")  # TODO: Don't reset SelectedUnit
@@ -336,13 +346,13 @@ func SummonUnit(Cord : Vector2i) -> void:
 	# TeleportUnit(Cord)
 	B_GRID.ChangeUnitPosition(SelectedUnit, Cord)
 
-	if current_participant == E.Participant.ATTACKER:
+	if participant_idx == ATTACKER:
 		SelectedUnit.Rotate(0)
 	else:
 		SelectedUnit.Rotate(3)
 
 
-	SwitchParticipantTurn()
+	switch_participant_turn()
 
 	UnitsLeftToBeSummoned -= 1
 
@@ -372,7 +382,7 @@ func SpawnUnits() -> void:
 		add_child(new_unit) # jako element sceny
 		AttackerUnits.append(new_unit)
 
-		new_unit.Controller = E.Participant.ATTACKER
+		new_unit.Controller = commanders[ATTACKER].controller
 
 		SpawnCord = B_GRID.AttackerTiles[i].TileIndex # Get spawn location
 		SpawnCord += B_GRID.Directions[3]  # Move to a spot outside of the map near spawn point
@@ -387,7 +397,7 @@ func SpawnUnits() -> void:
 		add_child(new_unit) # jako element sceny
 		DefenderUnits.append(new_unit)
 
-		new_unit.Controller = E.Participant.DEFENDER
+		new_unit.Controller = commanders[DEFENDER].controller
 
 		SpawnCord = B_GRID.DefenderTiles[i].TileIndex # Get spawn location
 		SpawnCord += B_GRID.Directions[0] # Move to a spot outside of the map near spawn point
@@ -398,11 +408,13 @@ func SpawnUnits() -> void:
 
 
 
-func SetupUnits(GameSetup, Attacker : UnitSet, Defender : UnitSet):
+func start_battle(GameSetup, new_commanders : Array[Hero]):
 	GameSetupNode = GameSetup
+	commanders = new_commanders
+	current_participant = commanders[ATTACKER].controller
 
-	AttackerUnitsTypes = Attacker.Units
-	DefenderUnitsTypes = Defender.Units
+	AttackerUnitsTypes = commanders[ATTACKER].army.Units
+	DefenderUnitsTypes = commanders[DEFENDER].army.Units
 
 	SpawnUnits()
 	
@@ -425,21 +437,3 @@ func _physics_process(_delta):
 		BUS.BotSpeed = BUS.bot_speed_values.FAST # 1/60 sec
 	
 	# 60FPS -> timer=60 1 sec
-	for i in range(1):
-		if BUS.BotSpeed != 0 and timer % BUS.BotSpeed == 0:
-			var actions = []
-			if current_participant == E.Participant.ATTACKER and AttackerBot != null:
-				timer = 0
-				actions = AttackerBot.PlayMove(AttackerUnits)
-			elif current_participant == E.Participant.DEFENDER and DefenderBot != null:
-				timer = 0
-				actions = DefenderBot.PlayMove(DefenderUnits)
-			
-			if actions.size() == 2:
-				InputListener(actions[0])
-				InputListener(actions[1])
-
-
-
-
-

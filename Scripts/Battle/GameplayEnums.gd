@@ -15,11 +15,7 @@ enum HexTileType
 
 
 #region Battle
-enum Participant
-{
-	ATTACKER,
-	DEFENDER,
-}
+
 
 
 enum Symbols
@@ -42,16 +38,6 @@ enum MapShape
 
 
 #region World
-
-enum Player
-{
-	NEUTRAL,
-	ONE,
-	TWO,
-	THREE,
-	FOUR,
-}
-
 
 enum WorldMapTiles
 {

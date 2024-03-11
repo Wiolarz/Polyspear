@@ -2,13 +2,13 @@
 
 [ext_resource type="PackedScene" uid="uid://bi1yq2awm2kc0" path="res://Scenes/UI/ui.tscn" id="1_voqyw"]
 [ext_resource type="PackedScene" uid="uid://bko1xm80m1xmn" path="res://Scenes/Special_Objects/pause_test.tscn" id="2_8slu8"]
-[ext_resource type="Script" path="res://Scripts/Gameplay/game_setup.gd" id="3_7bpr6"]
+[ext_resource type="Script" path="res://Scripts/Battle/game_setup.gd" id="3_7bpr6"]
 [ext_resource type="Resource" uid="uid://bghvw5ldgu31f" path="res://Resources/Unit_Sets/Elves_starter.tres" id="4_0ehbq"]
 [ext_resource type="Resource" uid="uid://cfeg62fmg3m43" path="res://Resources/Unit_Sets/Orcs_starter.tres" id="5_hehrh"]
 [ext_resource type="Resource" uid="uid://c31tntd5paqny" path="res://Resources/Maps/smaller_map.tres" id="6_wjl86"]
-[ext_resource type="Script" path="res://Scripts/Gameplay/StateMachine.gd" id="15_gnc6g"]
-[ext_resource type="Script" path="res://Scripts/Gameplay/States/Defensive.gd" id="16_lwtlq"]
-[ext_resource type="Script" path="res://Scripts/Gameplay/States/State.gd" id="17_ofduk"]
+[ext_resource type="Script" path="res://Scripts/AI/StateMachine.gd" id="15_gnc6g"]
+[ext_resource type="Script" path="res://Scripts/AI/States/Defensive.gd" id="16_lwtlq"]
+[ext_resource type="Script" path="res://Scripts/AI/States/State.gd" id="17_ofduk"]
 
 [node name="SmallerMap" type="Node"]
 

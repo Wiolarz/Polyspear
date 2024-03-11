@@ -5,7 +5,7 @@ class_name AUnit
 
 var CurrentRotation : int
 var CurrentCord : Vector2i
-var Controller : E.Participant
+var Controller : Player
 
 var target_tile : HexTile
 var target_rotation = rotation

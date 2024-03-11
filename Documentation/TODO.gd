@@ -1,9 +1,20 @@
 # TODO
 
+var now
+"""
+change the unit controller system from enum to player object
+
+input manager that knows if its a battle or global gameplay + restricts movement on turns
+
+
+
+"""
+
+
 
 var FIX_ASAP  # game breaking BUGS
 """
-
+AI is once again broken completely needs a full rewrite
 """
 
 var FIX # Stuff that needs to be fixed, for the game to work properly
@@ -24,8 +35,7 @@ var THINK_About
 """
 how to properly reset Singeleton objects
 
-Change GM short to simply GAME to be in style of GRID singleton --> OR BATTLE (battle manager)
-
+How to approach spliting code into abstract and visual part
 """
 
 
@@ -33,7 +43,6 @@ Change GM short to simply GAME to be in style of GRID singleton --> OR BATTLE (b
 
 var GOAL
 """
-Change GM (Game Manager) to BM (Battle Manager)
 Create MM (Multiplayer Manager)
 Create WM (World Manager)
 
@@ -65,8 +74,15 @@ add save system for battles + overworld map
 var CHANGE
 """
 
-
 """
+
+var REFACTOR
+"""
+consider removing E.WorldMapTiles
+
+is_adjacent in grid managers could be moved to static grid manager class
+"""
+
 
 
 #region Bigger Units

@@ -20,8 +20,8 @@ config/icon="res://Art/elf3.png"
 BUS="*res://Scripts/BUS.gd"
 W_GRID="*res://Scripts/World/world_grid.gd"
 WM="*res://Scripts/World/world_manager.gd"
-B_GRID="*res://Scripts/Gameplay/battle_grid.gd"
-BM="*res://Scripts/Gameplay/battle_manager.gd"
+B_GRID="*res://Scripts/Battle/battle_grid.gd"
+BM="*res://Scripts/Battle/battle_manager.gd"
 
 [debug]
 

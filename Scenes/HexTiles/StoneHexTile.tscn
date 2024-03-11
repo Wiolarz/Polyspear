@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://doawer4764cf7"]
 
 [ext_resource type="Texture2D" uid="uid://cgmjmsm0jfyuv" path="res://Art/Stone_Hex.png" id="1_fi1rd"]
-[ext_resource type="Script" path="res://Scripts/Gameplay/HexTile.gd" id="1_s64jq"]
+[ext_resource type="Script" path="res://Scripts/Battle/HexTile.gd" id="1_s64jq"]
 
 [node name="HexTile" type="Area2D"]
 rotation = 0.523599
