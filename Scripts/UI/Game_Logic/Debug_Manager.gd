@@ -76,3 +76,20 @@ func _on_full_screen_pressed():
 
 func _on_quit_pressed():
 	get_tree().quit()
+
+
+
+func _on_win_battle_pressed():
+	for hero in BM.commanders:
+		if hero.controller != BM.current_participant:
+			
+			pass#BM.kill_unit(
+
+func _on_surrender_pressed():
+	if BM.current_participant == BM.commanders[0].controller:
+
+		for unit_idx in [BM.attacker_units.size() - 1, -1, -1]:
+			BM.kill_unit(BM.attacker_units[unit_idx])
+	else:
+		for unit_idx in [BM.defender_units.size() - 1, -1, -1]:
+			BM.kill_unit(BM.defender_units[unit_idx])

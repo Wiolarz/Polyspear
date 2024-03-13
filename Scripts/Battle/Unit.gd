@@ -1,11 +1,12 @@
-extends Node2D
-
 class_name AUnit
 
+extends Node2D
 
-var CurrentRotation : int
-var CurrentCord : Vector2i
-var Controller : Player
+
+var unit_rotation : int
+var cord : Vector2i
+var controller : Player
+
 
 var target_tile : HexTile
 var target_rotation = rotation
@@ -23,12 +24,12 @@ func _ready():
 			Symbols[idx] = symbol[0].type
 
 
-func CanDefend(side : int) -> bool:
-	return GetSymbol(side) == E.Symbols.SHIELD
+func can_defend(side : int) -> bool:
+	return get_symbol(side) == E.Symbols.SHIELD
 		
 
-func GetSymbol(side : int) -> E.Symbols:
-	return Symbols[(side - CurrentRotation) % 6]
+func get_symbol(side : int) -> E.Symbols:
+	return Symbols[(side - unit_rotation) % 6]
 
 func Rotate(side : int):
 	"""
@@ -37,14 +38,14 @@ func Rotate(side : int):
 	  param Unit - Reference to the object we are rotating
 	  param Direction
 	"""
-	CurrentRotation = side
+	unit_rotation = side
 	
 	# 360 / 6 = 60 -> degrees needed to rotate unit
 	# "Direction + 4" Accounts for global rotation setting for objects in the level
 	rotation = deg_to_rad((60 * (side - 2)) + 30)  # TODO: -2 is "magic number" -- ?grid rotation
 	#print(rotation, "   ", target_rotation)
 
-func Move(target : HexTile):
+func move(target : HexTile):
 	target_tile = target
 
 
@@ -63,5 +64,5 @@ func _physics_process(_delta):
 		if position.x == target_tile.position.x and position.y == target_tile.position.y:
 			target_tile = null
 
-func Destroy():
+func destroy():
 	queue_free()

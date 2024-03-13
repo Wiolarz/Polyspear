@@ -1,12 +1,14 @@
+class_name Player
+
 extends Node
 
-class_name Player
 
 var alive = true
 
 var player_name
 
 var bot_engine : AIInteface
+
 
 func your_turn():
 	#UI stuff to let player know its his turn,

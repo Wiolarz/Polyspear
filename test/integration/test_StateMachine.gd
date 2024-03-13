@@ -12,7 +12,7 @@ if not child is State:
 
 var is_there_starting_state = 0
 
-if child.StartingState:
+if child.starting_state:
 	is_there_starting_state += 1
 
 # There is AN ERROR end the game!

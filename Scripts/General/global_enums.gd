@@ -16,8 +16,6 @@ enum HexTileType
 
 #region Battle
 
-
-
 enum Symbols
 {
 	EMPTY,

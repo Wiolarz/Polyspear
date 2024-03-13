@@ -16,11 +16,13 @@ extends Node
 func _ready():
 	B_GRID.GenerateGrid(map_data)
 
-	BM.start_battle(self, [attacker_hero, defender_hero])
-
 	BM.AttackerBot = attacker_bot
 	BM.DefenderBot = defender_bot
 
+
+	BM.start_battle(self, [attacker_hero, defender_hero])
+
+	
 
 func restart_level():
 	get_tree().reload_current_scene()

@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://dxb3tl0jxkj4l"]
 
-[ext_resource type="Script" path="res://Scripts/Battle/HexTile.gd" id="1_6pobt"]
+[ext_resource type="Script" path="res://Scripts/Battle/hex_tile.gd" id="1_6pobt"]
 [ext_resource type="Texture2D" uid="uid://da6ubkmi36xyq" path="res://Art/Black_Hex.png" id="2_xthv1"]
 
 [node name="HexTile" type="Area2D"]

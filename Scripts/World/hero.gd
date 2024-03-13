@@ -1,22 +1,29 @@
+class_name Hero
+
 extends Node
 
 
-class_name Hero
-
-
 @export var controller : Player
+@export var army : UnitSet
+#@export var army : Array[PackedScene]
+
 
 var cord : Vector2i
-
-#@export var army : Array[PackedScene]
-@export var army : UnitSet
 
 var max_movement_points = 3
 var movement_points = 3
 
-func _init():
-    controller = Player.new()
+
+var target_tile : HexTile
 
 
 func trade(another_hero : Hero):
     print("trade menu")
+
+
+func move(target : HexTile):
+    target_tile = target
+
+
+func destroy():
+    queue_free()

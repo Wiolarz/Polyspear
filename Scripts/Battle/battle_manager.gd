@@ -1,4 +1,4 @@
-class_name GameManager
+# Singleton - BM
 
 extends Node
 
@@ -6,31 +6,30 @@ extends Node
 const ATTACKER = 0
 const DEFENDER = 1
 
-#region Variables
-var commanders = []  # Hero objects that take part in battle (based on them we get players who control the battle)
-
+#region Setup variables
 var GameSetupNode
+
+var commanders = []  # Hero objects that take part in battle (based on them we get players who control the battle)
+var participants : Array[Player] = []
+
+var AttackerBot : StateMachine
+var DefenderBot : StateMachine
 
 var AttackerUnitsTypes : Array[PackedScene]
 var DefenderUnitsTypes : Array[PackedScene]
 
+#endregion
 
-var AttackerUnits = []
-var DefenderUnits = []
-
+#region Variables
 var current_participant : Player
 var participant_idx : int = ATTACKER
 
 var SelectedUnit
 
+var attacker_units = []
+var defender_units = []
+
 var UnitsLeftToBeSummoned
-
-
-
-var AttackerBot : StateMachine
-var DefenderBot : StateMachine
-
-var timer = 0
 
 
 
@@ -43,197 +42,197 @@ var timer = 0
 
 #region Tools
 
-func IsLegalMove(Cord : Vector2i, BotUnit : AUnit = null) -> int:
-	"""
-	 Function checks 2 things:
-	 * 1 Target Cord is a Neighbour of a SelectedUnit
-	 * 2 if SelectedUnit doesn't have push symbol on it's front (none currently have it yet)
-	 *	 Target Cord doesn't contatin an Enemy Unit with a shield pointing at our SelectedUnit
-	 * 
-	 * @param Cord
-	 * @param ResultSide
-	 * @return True if selected Unit can move on a given Cord
-	 """
-	if BotUnit != null:
-		SelectedUnit = BotUnit  # Locally replacs Unit for Bot legal move search
+func is_legal_move(cord : Vector2i, BotUnit : AUnit = null) -> int:
+    """
+     Function checks 2 things:
+     * 1 Target cord is a Neighbour of a SelectedUnit
+     * 2 if SelectedUnit doesn't have push symbol on it's front (none currently have it yet)
+     *	 Target cord doesn't contatin an Enemy Unit with a shield pointing at our SelectedUnit
+     * 
+     * @param cord
+     * @param ResultSide
+     * @return True if selected Unit can move on a given cord
+     """
+    if BotUnit != null:
+        SelectedUnit = BotUnit  # Locally replacs Unit for Bot legal move search
 
-	# 1
-	var ResultSide = B_GRID.AdjacentSide(SelectedUnit.CurrentCord, Cord)  
-	if ResultSide == null:
-		return -1
+    # 1
+    var ResultSide = B_GRID.AdjacentSide(SelectedUnit.cord, cord)  
+    if ResultSide == null:
+        return -1
 
-	#print(ResultSide)
-	# 2
-	var EnemyUnit = B_GRID.GetUnit(Cord)
-	if EnemyUnit == null:  # Is there a Unit in this spot?
-		return ResultSide
-	
-	match SelectedUnit.Symbols[0]:
-		E.Symbols.EMPTY:
-			return -1
-		E.Symbols.SHIELD:
-			return -1 # SelectedUnit can't deal with EnemyUnit
-		E.Symbols.PUSH:
-			return ResultSide # SelectedUnit ignores EnemyUnit Shield
-		_:
-			pass
-	# Does EnemyUnit has a shield?
-	if EnemyUnit.GetSymbol(ResultSide + 3) == E.Symbols.SHIELD:
-		return -1
+    #print(ResultSide)
+    # 2
+    var EnemyUnit = B_GRID.get_unit(cord)
+    if EnemyUnit == null:  # Is there a Unit in this spot?
+        return ResultSide
+    
+    match SelectedUnit.Symbols[0]:
+        E.Symbols.EMPTY:
+            return -1
+        E.Symbols.SHIELD:
+            return -1 # SelectedUnit can't deal with EnemyUnit
+        E.Symbols.PUSH:
+            return ResultSide # SelectedUnit ignores EnemyUnit Shield
+        _:
+            pass
+    # Does EnemyUnit has a shield?
+    if EnemyUnit.get_symbol(ResultSide + 3) == E.Symbols.SHIELD:
+        return -1
 
-	return ResultSide
-
-
-func MoveUnit(Unit, EndCord : Vector2i, side: int) -> void:
-	# Move General function
-	"""
-	 * Move this unit to EndCord
-	 *
-	 * @param EndCord Position at which unit will be placed
-	 """
-
-	Unit.Rotate(side) # 1
-
-	#TODO: if shields: # maybe check for every unit
-	if EnemyDamage(Unit):
-		KillUnit(Unit)
-		return
+    return ResultSide
 
 
-	UnitAction(SelectedUnit)
-	#TODO wait half a second
+func move_unit(Unit, EndCord : Vector2i, side: int) -> void:
+    # Move General function
+    """
+     * Move this unit to EndCord
+     *
+     * @param EndCord Position at which unit will be placed
+     """
+
+    Unit.Rotate(side) # 1
+
+    #TODO: if shields: # maybe check for every unit
+    if counter_attack_damage(Unit):
+        kill_unit(Unit)
+        return
 
 
-	B_GRID.ChangeUnitPosition(Unit, EndCord)
-
-	if EnemyDamage(Unit):
-		KillUnit(Unit)
-		return
-		
-		
-	UnitAction(SelectedUnit)
+    unit_action(SelectedUnit)
+    #TODO wait half a second
 
 
-func EnemyDamage(Target : AUnit) -> bool:
-	# Returns true is Enemy spear can kill the Target
-	var Units = B_GRID.AdjacentUnits(Target.CurrentCord)
+    B_GRID.ChangeUnitPosition(Unit, EndCord)
 
-	for side in range(6):
-		if (Units[side] != null && Units[side].Controller != Target.Controller):
-
-			if (Target.GetSymbol(side) == E.Symbols.SHIELD):  # Do we have a shield?
-				continue
-
-			if (Units[side].GetSymbol(side + 3) == E.Symbols.SPEAR): # Does enemy has a spear?
-				return true
-	return false
+    if counter_attack_damage(Unit):
+        kill_unit(Unit)
+        return
+        
+        
+    unit_action(SelectedUnit)
 
 
+func counter_attack_damage(Target : AUnit) -> bool:
+    # Returns true is Enemy spear can kill the Target
+    var Units = B_GRID.AdjacentUnits(Target.cord)
 
-func KillUnit(Target) -> void:
-	if (Target.Controller == commanders[DEFENDER]):
-		DefenderUnits.erase(Target)
-	else:
-		AttackerUnits.erase(Target)
-	
-	B_GRID.RemoveUnit(Target)
+    for side in range(6):
+        if (Units[side] != null && Units[side].controller != Target.controller):
 
-	if DefenderUnits.size() == 0:
-		BUS.Attacker_wins += 1
-		print("Attacker won" + "D:" + str(BUS.Defender_wins) + " A:" + str(BUS.Attacker_wins))
-	elif AttackerUnits.size() == 0:
-		BUS.Defender_wins += 1
-		print("Defender won_" + "D:" + str(BUS.Defender_wins) + " A:" + str(BUS.Attacker_wins))
+            if (Target.get_symbol(side) == E.Symbols.SHIELD):  # Do we have a shield?
+                continue
 
-	
-	if AttackerUnits.size() == 0 or DefenderUnits.size() == 0:
-		clear_level()
-		GameSetupNode.restart_level()
-	
-
-
-func UnitAction(Unit) -> void:
-	var Units = B_GRID.AdjacentUnits(Unit.CurrentCord)
-
-	for side in range(6):
-		var UnitWeapon = Unit.GetSymbol(side)
-
-		match UnitWeapon:
-			E.Symbols.EMPTY:
-				continue #####################################################################################TODO check if we could fix it
-			E.Symbols.SHIELD:
-				continue # We don't have a weapon
-
-			E.Symbols.BOW:
-				var Target = B_GRID.GetShotTarget(Unit.CurrentCord, side)
-				if Target == null:
-					continue
-
-				if Target.Controller == Unit.Controller:
-					continue
-
-				if (Target.GetSymbol(side + 3) != E.Symbols.SHIELD): # Does Enemy has a shield?
-					KillUnit(Target)
-				continue
-			_:
-				pass
-			
-
-		if (Units[side] == null or Units[side].Controller == Unit.Controller):
-			# no one to hit
-			continue
-
-		var EnemyUnit = Units[side]
-
-		if UnitWeapon == E.Symbols.PUSH:
-
-			# PUSH LOGIC
-			var TargetTileType = B_GRID.GetDistantTileType(Unit.CurrentCord, side, 2)
-
-			if TargetTileType == E.HexTileType.SENTINEL:  # Pushing outside the map
-				# Kill
-				KillUnit(EnemyUnit)
-				continue
-
-
-			var Target = B_GRID.GetDistantUnit(Unit.CurrentCord, side, 2)
-
-			if Target != null: # Spot isn't empty
-				KillUnit(EnemyUnit)
-				continue
-
-			B_GRID.ChangeUnitPosition(EnemyUnit, B_GRID.GetDistantCord(Unit.CurrentCord, side, 2))
-			if EnemyDamage(EnemyUnit): # Simple push	
-				KillUnit(EnemyUnit)
-			continue
-		
-
-
-		# Rotation is based on where the unit is pointing toward
-
-
-		if EnemyUnit.GetSymbol(side + 3) != E.Symbols.SHIELD:# Does Enemy has a shield?
-			KillUnit(Units[side])
-		
-				
+            if (Units[side].get_symbol(side + 3) == E.Symbols.SPEAR): # Does enemy has a spear?
+                return true
+    return false
 
 
 
-func SelectUnit(Cord : Vector2i) -> bool:
-	"""
-	 * Select friendly Unit on a given Cord
-	 *
-	 * @return true if unit has been selected in this operation
-	 """
+func kill_unit(Target) -> void:
+    if (Target.controller == commanders[DEFENDER].controller):
+        defender_units.erase(Target)
+    else:
+        attacker_units.erase(Target)
+    
+    B_GRID.RemoveUnit(Target)
 
-	var NewSelection : AUnit = B_GRID.GetUnit(Cord)
-	if (NewSelection != null && NewSelection.Controller == current_participant):
-		SelectedUnit = NewSelection
-		#print("You have selected a Unit")
+    if defender_units.size() == 0:
+        BUS.Attacker_wins += 1
+        print("Attacker won" + "D:" + str(BUS.Defender_wins) + " A:" + str(BUS.Attacker_wins))
+    elif attacker_units.size() == 0:
+        BUS.Defender_wins += 1
+        print("Defender won_" + "D:" + str(BUS.Defender_wins) + " A:" + str(BUS.Attacker_wins))
 
-		return true
+    
+    if attacker_units.size() == 0 or defender_units.size() == 0:
+        clear_level()
+        GameSetupNode.restart_level()
+    
 
-	return false
+
+func unit_action(Unit) -> void:
+    var Units = B_GRID.AdjacentUnits(Unit.cord)
+
+    for side in range(6):
+        var UnitWeapon = Unit.get_symbol(side)
+
+        match UnitWeapon:
+            E.Symbols.EMPTY:
+                continue #####################################################################################TODO check if we could fix it
+            E.Symbols.SHIELD:
+                continue # We don't have a weapon
+
+            E.Symbols.BOW:
+                var Target = B_GRID.GetShotTarget(Unit.cord, side)
+                if Target == null:
+                    continue
+
+                if Target.controller == Unit.controller:
+                    continue
+
+                if (Target.get_symbol(side + 3) != E.Symbols.SHIELD): # Does Enemy has a shield?
+                    kill_unit(Target)
+                continue
+            _:
+                pass
+            
+
+        if (Units[side] == null or Units[side].controller == Unit.controller):
+            # no one to hit
+            continue
+
+        var EnemyUnit = Units[side]
+
+        if UnitWeapon == E.Symbols.PUSH:
+
+            # PUSH LOGIC
+            var TargetTileType = B_GRID.GetDistantTileType(Unit.cord, side, 2)
+
+            if TargetTileType == E.HexTileType.SENTINEL:  # Pushing outside the map
+                # Kill
+                kill_unit(EnemyUnit)
+                continue
+
+
+            var Target = B_GRID.GetDistantUnit(Unit.cord, side, 2)
+
+            if Target != null: # Spot isn't empty
+                kill_unit(EnemyUnit)
+                continue
+
+            B_GRID.ChangeUnitPosition(EnemyUnit, B_GRID.GetDistantCord(Unit.cord, side, 2))
+            if counter_attack_damage(EnemyUnit): # Simple push	
+                kill_unit(EnemyUnit)
+            continue
+        
+
+
+        # Rotation is based on where the unit is pointing toward
+
+
+        if EnemyUnit.get_symbol(side + 3) != E.Symbols.SHIELD:# Does Enemy has a shield?
+            kill_unit(Units[side])
+        
+                
+
+
+
+func select_unit(cord : Vector2i) -> bool:
+    """
+     * Select friendly Unit on a given cord
+     *
+     * @return true if unit has been selected in this operation
+     """
+
+    var NewSelection : AUnit = B_GRID.get_unit(cord)
+    if (NewSelection != null && NewSelection.controller == current_participant):
+        SelectedUnit = NewSelection
+        #print("You have selected a Unit")
+
+        return true
+
+    return false
 
 #endregion
 
@@ -241,199 +240,182 @@ func SelectUnit(Cord : Vector2i) -> bool:
 #region Main Functions
 
 func clear_level():
-	current_participant = null
-	for unit in get_children():
-		unit.queue_free()
-	for tile in B_GRID.get_children():
-		tile.queue_free()
+    current_participant = null
+    for unit in get_children():
+        unit.queue_free()
+    for tile in B_GRID.get_children():
+        tile.queue_free()
 
 
 
 
 func switch_participant_turn():
-	if participant_idx + 1 == commanders.size():
-		participant_idx = ATTACKER
-	else:
-		participant_idx += 1
-	
-	current_participant = commanders[participant_idx].controller
-		
+    if participant_idx + 1 == commanders.size():
+        participant_idx = ATTACKER
+    else:
+        participant_idx += 1
+    
+    current_participant = participants[participant_idx]
+        
 
 
 
 
-func InputListener(Cord : Vector2i) -> void:
-	#print(Cord)
+func input_listener(cord : Vector2i) -> void:
 
-	if SelectUnit(Cord) or SelectedUnit == null:
-		return # selected a new unit or wrong input which didn't select any ally unit
-
+    if select_unit(cord) or SelectedUnit == null:
+        return # selected a new unit or wrong input which didn't select any ally unit
 
 
-	if UnitsLeftToBeSummoned > 0: # Summon phase
-		"""
-		* Units are placed by the players in subsequent order on their chosen "Starting Locations"
-		* inside the area of the gameplay board.
-		"""
-		SummonUnit(Cord)
-	else:  # Gameplay phase
-		Gameplay(Cord)
+    if UnitsLeftToBeSummoned > 0: # Summon phase
+        """
+        * Units are placed by the players in subsequent order on their chosen "Starting Locations"
+        * inside the area of the gameplay board.
+        """
+        summon_unit(cord)
+    else:  # Gameplay phase
+        gameplay(cord)
 
-	SelectedUnit = null  # IMPORTANT
-
+    SelectedUnit = null  # IMPORTANT
 
 
 
 
 
-func Gameplay(Cord : Vector2i) -> void:
-	#print("Gameplay is working")
 
-	var side = IsLegalMove(Cord) # Gets Updated with IsLegalMove()
-	if side != -1: # spot is empty + we aren't hitting a shield
-		# 1 Rotate
+func gameplay(cord : Vector2i) -> void:
+    #print("Gameplay is working")
 
-		# 2 Check for Spear
+    var side = is_legal_move(cord) # is_legal_move() returns false as -1 0-5 direction for unit to move
+    if side != -1: # spot is empty + we aren't hitting a shield
+        # 1 Rotate
 
-		# 3 Actions
+        # 2 Check for Spear
 
-		# 4 Move
+        # 3 Actions
 
-		# 5 Check for Spear
+        # 4 Move
 
-		# 6 Actions
-		MoveUnit(SelectedUnit, Cord, side)
-		#print(FString::Printf(TEXT("DIRECTION_%d"), side))
-		#testKillUnit(Cord)
-		
-		#B_GRID.ChangeUnitPosition(SelectedUnit, Cord)
-		#print(FString::Printf(TEXT("_%d"), side))
-		#.RotateUnit(SelectedUnit, side)
+        # 5 Check for Spear
 
-		switch_participant_turn()
-	
+        # 6 Actions
+        move_unit(SelectedUnit, cord, side)
+        #print(FString::Printf(TEXT("DIRECTION_%d"), side))
+        #testKillUnit(cord)
+        
+        #B_GRID.ChangeUnitPosition(SelectedUnit, cord)
+        #print(FString::Printf(TEXT("_%d"), side))
+        #.RotateUnit(SelectedUnit, side)
 
-
-func SummonUnit(Cord : Vector2i) -> void:
-	"""
-	 * Summon currently selected unit to a Gameplay Board
-	 *
-	 *
-	 * @param Cord cordinate, on which Unit will be summoned
-	 """
-	
-
-	# check if unit is already summoned
-	var SelectedUnitTileType = B_GRID.GetTileType(SelectedUnit.CurrentCord)
-
-	if SelectedUnitTileType != E.HexTileType.SENTINEL:
-		#print("This Unit has been already summoned")
-		return
-	
-
-	var SelectedHexType = B_GRID.GetTileType(Cord)
-
-	var bSelectedcurrent_participantSpawn = \
-		(SelectedHexType == E.HexTileType.ATTACKER_SPAWN && participant_idx == 0) or \
-		(SelectedHexType == E.HexTileType.DEFENDER_SPAWN && participant_idx == 1)
-
-	if not bSelectedcurrent_participantSpawn:
-		#print("Thats a wrong summon location")  # TODO: Don't reset SelectedUnit
-		return
-
-	#print("You summoned a Unit")
-
-	# TeleportUnit(Cord)
-	B_GRID.ChangeUnitPosition(SelectedUnit, Cord)
-
-	if participant_idx == ATTACKER:
-		SelectedUnit.Rotate(0)
-	else:
-		SelectedUnit.Rotate(3)
+        switch_participant_turn()
+    
 
 
-	switch_participant_turn()
+func summon_unit(cord : Vector2i) -> void:
+    """
+     * Summon currently selected unit to a Gameplay Board
+     *
+     *
+     * @param cord cordinate, on which Unit will be summoned
+     """
+    
 
-	UnitsLeftToBeSummoned -= 1
+    # check if unit is already summoned
+    var SelectedUnitTileType = B_GRID.get_tile_type(SelectedUnit.cord)
+
+    if SelectedUnitTileType != E.HexTileType.SENTINEL:
+        #print("This Unit has been already summoned")
+        return
+    
+
+    var SelectedHexType = B_GRID.get_tile_type(cord)
+
+    var bSelectedcurrent_participantSpawn = \
+        (SelectedHexType == E.HexTileType.ATTACKER_SPAWN && participant_idx == 0) or \
+        (SelectedHexType == E.HexTileType.DEFENDER_SPAWN && participant_idx == 1)
+
+    if not bSelectedcurrent_participantSpawn:
+        #print("Thats a wrong summon location")  # TODO: Don't reset SelectedUnit
+        return
+
+    #print("You summoned a Unit")
+
+    # TeleportUnit(cord)
+    B_GRID.ChangeUnitPosition(SelectedUnit, cord)
+
+    if participant_idx == ATTACKER:
+        SelectedUnit.Rotate(0)
+    else:
+        SelectedUnit.Rotate(3)
+
+
+    switch_participant_turn()
+
+    UnitsLeftToBeSummoned -= 1
 
 #endregion
 
 #region GameSetup
 
 
-func SpawnUnits() -> void:
-	"""
-	* Placing Units used in combat on their "Spawn Points" near the area of the gameplay board where they are visible to the players.
-	"""
+func spawn_units() -> void:
+    """
+    * Placing Units used in combat on their "Spawn Points" near the area of the gameplay board where they are visible to the players.
+    """
 
-	UnitsLeftToBeSummoned = AttackerUnitsTypes.size() + DefenderUnitsTypes.size()  # Flag that manages the state of the game
-	
-	# RESET DATA
-	AttackerUnits = []
-	DefenderUnits = []
-	SelectedUnit = null
-	
-	var SpawnCord
+    UnitsLeftToBeSummoned = AttackerUnitsTypes.size() + DefenderUnitsTypes.size()  # Flag that manages the state of the game
+    
+    # RESET DATA
+    attacker_units = []
+    defender_units = []
+    SelectedUnit = null
+    
+    var SpawnCord
 
-	# spawning attacker units
-	for i in range(AttackerUnitsTypes.size()):
-		var newUnitScene = AttackerUnitsTypes[i]
-		var new_unit = newUnitScene.instantiate()
-		add_child(new_unit) # jako element sceny
-		AttackerUnits.append(new_unit)
+    # spawning attacker units
+    for i in range(AttackerUnitsTypes.size()):
+        var newUnitScene = AttackerUnitsTypes[i]
+        var new_unit = newUnitScene.instantiate()
+        add_child(new_unit) # jako element sceny
+        attacker_units.append(new_unit)
 
-		new_unit.Controller = commanders[ATTACKER].controller
+        new_unit.controller = commanders[ATTACKER].controller
 
-		SpawnCord = B_GRID.AttackerTiles[i].TileIndex # Get spawn location
-		SpawnCord += B_GRID.Directions[3]  # Move to a spot outside of the map near spawn point
+        SpawnCord = B_GRID.AttackerTiles[i].cord # Get spawn location
+        SpawnCord += B_GRID.DIRECTIONS[3]  # Move to a spot outside of the map near spawn point
 
-		B_GRID.ChangeUnitPosition(new_unit, SpawnCord) # Adding Unit to the Gameplay Array
-		
+        B_GRID.ChangeUnitPosition(new_unit, SpawnCord) # Adding Unit to the Gameplay Array
+        
 
-	# spawning defender units
-	for i in range(DefenderUnitsTypes.size()):
-		var newUnitScene = DefenderUnitsTypes[i]
-		var new_unit = newUnitScene.instantiate()
-		add_child(new_unit) # jako element sceny
-		DefenderUnits.append(new_unit)
+    # spawning defender units
+    for i in range(DefenderUnitsTypes.size()):
+        var newUnitScene = DefenderUnitsTypes[i]
+        var new_unit = newUnitScene.instantiate()
+        add_child(new_unit) # jako element sceny
+        defender_units.append(new_unit)
 
-		new_unit.Controller = commanders[DEFENDER].controller
+        new_unit.controller = commanders[DEFENDER].controller
 
-		SpawnCord = B_GRID.DefenderTiles[i].TileIndex # Get spawn location
-		SpawnCord += B_GRID.Directions[0] # Move to a spot outside of the map near spawn point
+        SpawnCord = B_GRID.DefenderTiles[i].cord # Get spawn location
+        SpawnCord += B_GRID.DIRECTIONS[0] # Move to a spot outside of the map near spawn point
 
-		B_GRID.ChangeUnitPosition(new_unit, SpawnCord) # Adding Unit to the Gameplay Array
+        B_GRID.ChangeUnitPosition(new_unit, SpawnCord) # Adding Unit to the Gameplay Array
 
-	SelectedUnit = null
-
+    SelectedUnit = null
 
 
 func start_battle(GameSetup, new_commanders : Array[Hero]):
-	GameSetupNode = GameSetup
-	commanders = new_commanders
-	current_participant = commanders[ATTACKER].controller
+    GameSetupNode = GameSetup
+    commanders = new_commanders
+    for commander in commanders:
+        participants.append(commander.controller)
+    current_participant = commanders[ATTACKER].controller
+    participant_idx = ATTACKER
 
-	AttackerUnitsTypes = commanders[ATTACKER].army.Units
-	DefenderUnitsTypes = commanders[DEFENDER].army.Units
+    AttackerUnitsTypes = commanders[ATTACKER].army.Units
+    DefenderUnitsTypes = commanders[DEFENDER].army.Units
 
-	SpawnUnits()
-	
-	
+    spawn_units()
+    
+    
 #endregion
-
-func _physics_process(_delta):
-	#func _process(_delta):
-	timer += 1
-	
-	if Input.is_action_just_pressed("KEY_BOT_SPEED_SLOW"):
-		BUS.animation_speed = BUS.animation_speed_values.NORMAL
-		BUS.BotSpeed = BUS.bot_speed_values.FREEZE # 0 sec
-	elif Input.is_action_just_pressed("KEY_BOT_SPEED_MEDIUM"):
-		BUS.animation_speed = BUS.animation_speed_values.NORMAL
-		BUS.BotSpeed = BUS.bot_speed_values.NORMAL # 0.5 sec
-	elif Input.is_action_just_pressed("KEY_BOT_SPEED_FAST"):
-		BUS.animation_speed = BUS.animation_speed_values.INSTANT
-		
-		BUS.BotSpeed = BUS.bot_speed_values.FAST # 1/60 sec
-	
-	# 60FPS -> timer=60 1 sec

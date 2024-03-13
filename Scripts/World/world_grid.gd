@@ -1,3 +1,5 @@
+# Singleton - W_GRID
+
 extends Node
 
 
@@ -35,7 +37,7 @@ var hero_grid = [] # [[Hero]]
 
 var current_spawn : E.WorldMapTiles = E.WorldMapTiles.SENTINEL
 
-static var Directions = [ \
+static var DIRECTIONS = [ \
 	Vector2i(1, 0),
 	Vector2i(0, 1),
 	Vector2i(-1, 1),
@@ -53,7 +55,7 @@ func change_hero_position(hero, cord : Vector2i):
 	hero.cord = cord
 	
 	# Move visuals of the unit
-	hero.Move(hero_grid[cord.x][cord.y])
+	hero.move(hero_grid[cord.x][cord.y])
 	
 
 
@@ -63,14 +65,10 @@ func remove_hero(hero):
 	var cord : Vector2i = hero.cord
 	hero_grid[cord.x][cord.y] = null # Remove unit from gameplay grid
 
-	hero.Destroy()
+	hero.destroy()
 
 #region Coordinates tools
 
-'''
-func GetTileType(cord : Vector2i):
-	return hex_grid[cord.x][cord.y].TileType
-'''
 
 func is_moveable(cord : Vector2i):
 	if hex_grid[cord.x][cord.y].type in \
@@ -105,7 +103,7 @@ func get_hero(cord : Vector2i):
 
 
 func is_adjacent(Cord1 : Vector2i, Cord2 : Vector2i) -> bool:
-	return (Cord2 - Cord1) in Directions
+	return (Cord2 - Cord1) in DIRECTIONS
 
 func AdjacentSide(Cord1 : Vector2i, Cord2 : Vector2i) -> int:
 	"""
@@ -116,8 +114,8 @@ func AdjacentSide(Cord1 : Vector2i, Cord2 : Vector2i) -> int:
 	@return int32 Side
 	@note -1 is return, when Cord1 and Cord2 don't have shared side
 	"""
-	if (Cord2 - Cord1) in Directions:
-		return Directions.find(Cord2 - Cord1)
+	if (Cord2 - Cord1) in DIRECTIONS:
+		return DIRECTIONS.find(Cord2 - Cord1)
 	return -1
 
 
@@ -129,7 +127,7 @@ func AdjacentCord(BaseCord : Vector2i, Side : int) -> Vector2i:
     @param Side {0, 1, ..., 5}
     @return Vector2i cord adjacent to BaseCord
     """
-	return BaseCord + Directions[Side]
+	return BaseCord + DIRECTIONS[Side]
 
 
 #endregion
@@ -171,7 +169,7 @@ func SpawnTiles() -> void:
 			newTile.global_position.x = XTilePos
 			newTile.global_position.y = YTilePos
 
-			newTile.TileIndex = Vector2i(x, y)
+			newTile.cord = Vector2i(x, y)
 			match current_spawn:
 				E.WorldMapTiles.SENTINEL:
 					newTile.name = "Sentinel_HexTile"
@@ -183,7 +181,7 @@ func SpawnTiles() -> void:
 					newTile.name = "Wall_HexTile"
 
 
-			newTile.TileType = current_spawn
+			newTile.tile_type = current_spawn
 
 			hex_grid[x][y] = newTile
 

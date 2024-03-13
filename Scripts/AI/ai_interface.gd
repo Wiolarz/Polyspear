@@ -5,4 +5,4 @@ extends Node
 
 
 func play_move(player : Player):
-    pass
+	pass

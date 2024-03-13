@@ -1,7 +1,11 @@
+# Singleton - BUS
+
 extends Node
 
 var Attacker_wins = 0
 var Defender_wins = 0
+
+var connected_players = {}  # Multiplayer code
 
 
 enum bot_speed_values
@@ -22,8 +26,8 @@ var animation_speed : animation_speed_values = animation_speed_values.NORMAL
 
 
 
-signal collect_save_data(save: Save)
-signal load_game(save: Save)
+signal collect_save_data(save : Save)
+signal load_game(save : Save)
 
 
 #var player_reference : CharacterBody2D

@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=3 uid="uid://cc3tyuds6ey1w"]
 
-[ext_resource type="Script" path="res://Scripts/Battle/Unit.gd" id="1_sgv4q"]
+[ext_resource type="Script" path="res://Scripts/Battle/unit.gd" id="1_sgv4q"]
 [ext_resource type="Texture2D" uid="uid://d0dy38p601hn" path="res://Art/border.png" id="2_7v0nj"]
 [ext_resource type="Texture2D" uid="uid://cb5rvem05e7df" path="res://Art/elf2.png" id="3_edhb3"]
 [ext_resource type="PackedScene" uid="uid://b08mp0ax51p1x" path="res://Scenes/Symbols/Bow.tscn" id="5_a2fbp"]

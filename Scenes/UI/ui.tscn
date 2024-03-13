@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://bi1yq2awm2kc0"]
 
-[ext_resource type="Script" path="res://Scripts/UI/Game_Logic/Debug_Manager.gd" id="1_py7q0"]
-[ext_resource type="Script" path="res://Scripts/UI/Game_Logic/SaveSystem.gd" id="2_hnyc1"]
+[ext_resource type="Script" path="res://Scripts/UI/Game_Logic/debug_manager.gd" id="1_py7q0"]
+[ext_resource type="Script" path="res://Scripts/UI/Game_Logic/save_system.gd" id="2_hnyc1"]
 
 [node name="UI" type="CanvasLayer"]
 process_mode = 3
@@ -28,6 +28,15 @@ grow_vertical = 2
 layout_mode = 2
 text = "Back to game"
 
+[node name="WinBattle" type="Button" parent="MenuContainer"]
+layout_mode = 2
+text = "Win battle"
+
+[node name="Surrender" type="Button" parent="MenuContainer"]
+layout_mode = 2
+text = "Surrender
+"
+
 [node name="Restart" type="Button" parent="MenuContainer"]
 layout_mode = 2
 text = "Restart"
@@ -44,6 +53,8 @@ text = "Quit"
 script = ExtResource("2_hnyc1")
 
 [connection signal="pressed" from="MenuContainer/BackToGame" to="Menu" method="_on_back_to_game_pressed"]
+[connection signal="pressed" from="MenuContainer/WinBattle" to="Menu" method="_on_win_battle_pressed"]
+[connection signal="pressed" from="MenuContainer/Surrender" to="Menu" method="_on_surrender_pressed"]
 [connection signal="pressed" from="MenuContainer/Restart" to="Menu" method="_on_restart_pressed"]
 [connection signal="pressed" from="MenuContainer/FullScreen" to="Menu" method="_on_full_screen_pressed"]
 [connection signal="pressed" from="MenuContainer/Quit" to="Menu" method="_on_quit_pressed"]

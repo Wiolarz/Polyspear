@@ -22,16 +22,16 @@ func after_all():
 
 func test_BASIC_UNIT_SETUP() -> void:
 	"""
-	for i in range(AttackerUnits.size()):
+	for i in range(attacker_units.size()):
 	
-		if i < AttackerUnits.size():
+		if i < attacker_units.size():
 
-			InputListener(AttackerUnits[i].CurrentCord)
-			InputListener(AttackerUnits[i].CurrentCord + B_GRID.Directions[0])
+			input_listener(attacker_units[i].cord)
+			input_listener(attacker_units[i].cord + B_GRID.DIRECTIONS[0])
 
-		if i < DefenderUnits.size():
+		if i < defender_units.size():
 
-			InputListener(DefenderUnits[i].CurrentCord)
-			InputListener(DefenderUnits[i].CurrentCord + B_GRID.Directions[3])
+			input_listener(defender_units[i].cord)
+			input_listener(defender_units[i].cord + B_GRID.DIRECTIONS[3])
 
 	"""

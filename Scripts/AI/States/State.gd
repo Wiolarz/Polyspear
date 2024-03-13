@@ -21,7 +21,7 @@ enum TAG \
 	
 @export var tags : Array[TAG] = []
 
-@export var StartingState : bool = false
+@export var starting_state : bool = false
 	
 
 

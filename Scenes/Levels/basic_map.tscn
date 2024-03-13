@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://os75hnii4k0w"]
+[gd_scene load_steps=8 format=3 uid="uid://os75hnii4k0w"]
 
 [ext_resource type="PackedScene" uid="uid://bi1yq2awm2kc0" path="res://Scenes/UI/ui.tscn" id="1_jo11t"]
 [ext_resource type="Script" path="res://Scripts/Battle/game_setup.gd" id="6_brbsf"]
@@ -6,9 +6,7 @@
 [ext_resource type="Resource" uid="uid://cfeg62fmg3m43" path="res://Resources/Unit_Sets/Orcs_starter.tres" id="8_fo0qx"]
 [ext_resource type="Resource" uid="uid://b2ffhynpdmlve" path="res://Resources/Maps/Classic_map.tres" id="9_2ct1c"]
 [ext_resource type="Script" path="res://Scripts/World/hero.gd" id="9_xkfbb"]
-[ext_resource type="Script" path="res://Scripts/AI/StateMachine.gd" id="15_71scx"]
-[ext_resource type="Script" path="res://Scripts/AI/States/Defensive.gd" id="16_ewovl"]
-[ext_resource type="Script" path="res://Scripts/AI/States/State.gd" id="17_v7euu"]
+[ext_resource type="Script" path="res://Scripts/World/player.gd" id="10_ctosp"]
 
 [node name="BasicMap" type="Node"]
 
@@ -19,32 +17,24 @@ visible = false
 position = Vector2(4741, 1779)
 zoom = Vector2(0.3, 0.3)
 
-[node name="BotAttacker" type="Node" parent="."]
-script = ExtResource("15_71scx")
-
-[node name="Defensive_State" type="Node" parent="BotAttacker"]
-script = ExtResource("16_ewovl")
-StartingState = true
-
-[node name="BotDefender" type="Node" parent="."]
-script = ExtResource("15_71scx")
-
-[node name="State" type="Node" parent="BotDefender"]
-script = ExtResource("17_v7euu")
-StartingState = true
-
-[node name="GameSetup" type="Node" parent="." node_paths=PackedStringArray("attacker_hero", "defender_hero", "attacker_bot", "defender_bot")]
+[node name="GameSetup" type="Node" parent="." node_paths=PackedStringArray("attacker_hero", "defender_hero")]
 script = ExtResource("6_brbsf")
-attacker_hero = NodePath("../elf_hero")
-defender_hero = NodePath("../orc_hero")
+attacker_hero = NodePath("../ElfHero")
+defender_hero = NodePath("../OrcHero")
 map_data = ExtResource("9_2ct1c")
-attacker_bot = NodePath("../BotDefender")
-defender_bot = NodePath("../BotDefender")
 
-[node name="elf_hero" type="Node" parent="."]
+[node name="ElfHero" type="Node" parent="." node_paths=PackedStringArray("controller")]
 script = ExtResource("9_xkfbb")
+controller = NodePath("../Player")
 army = ExtResource("7_2mlsl")
 
-[node name="orc_hero" type="Node" parent="."]
+[node name="OrcHero" type="Node" parent="." node_paths=PackedStringArray("controller")]
 script = ExtResource("9_xkfbb")
+controller = NodePath("../Player2")
 army = ExtResource("8_fo0qx")
+
+[node name="Player" type="Node" parent="."]
+script = ExtResource("10_ctosp")
+
+[node name="Player2" type="Node" parent="."]
+script = ExtResource("10_ctosp")
