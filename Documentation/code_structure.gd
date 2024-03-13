@@ -19,7 +19,7 @@ Grid Manager GRID
 """
 Main Menu
 
-Lobby Manager
+Lobby Manager - holds all player objects
     *Multiplayer Manager
 
 Gameplay Manager

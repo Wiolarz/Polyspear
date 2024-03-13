@@ -1,4 +1,4 @@
-class_name MapData
+class_name WorldMap
 
 extends Resource
 

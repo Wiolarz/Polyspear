@@ -1,11 +1,9 @@
-[gd_scene load_steps=8 format=3 uid="uid://os75hnii4k0w"]
+[gd_scene load_steps=6 format=3 uid="uid://os75hnii4k0w"]
 
 [ext_resource type="PackedScene" uid="uid://bi1yq2awm2kc0" path="res://Scenes/UI/ui.tscn" id="1_jo11t"]
-[ext_resource type="Script" path="res://Scripts/Battle/game_setup.gd" id="6_brbsf"]
-[ext_resource type="Resource" uid="uid://bghvw5ldgu31f" path="res://Resources/Unit_Sets/Elves_starter.tres" id="7_2mlsl"]
-[ext_resource type="Resource" uid="uid://cfeg62fmg3m43" path="res://Resources/Unit_Sets/Orcs_starter.tres" id="8_fo0qx"]
-[ext_resource type="Resource" uid="uid://b2ffhynpdmlve" path="res://Resources/Maps/Classic_map.tres" id="9_2ct1c"]
-[ext_resource type="Script" path="res://Scripts/World/hero.gd" id="9_xkfbb"]
+[ext_resource type="Resource" uid="uid://c0xnyv5cb6g8h" path="res://Resources/Tests/Game_Setups/2H_OvE_basic.tres" id="5_unoaq"]
+[ext_resource type="Script" path="res://Scripts/World/army.gd" id="5_xw4mk"]
+[ext_resource type="PackedScene" uid="uid://b4ndp6v0ts1on" path="res://Scenes/UI/MainMenu.tscn" id="6_yyega"]
 [ext_resource type="Script" path="res://Scripts/World/player.gd" id="10_ctosp"]
 
 [node name="BasicMap" type="Node"]
@@ -17,24 +15,17 @@ visible = false
 position = Vector2(4741, 1779)
 zoom = Vector2(0.3, 0.3)
 
-[node name="GameSetup" type="Node" parent="." node_paths=PackedStringArray("attacker_hero", "defender_hero")]
-script = ExtResource("6_brbsf")
-attacker_hero = NodePath("../ElfHero")
-defender_hero = NodePath("../OrcHero")
-map_data = ExtResource("9_2ct1c")
-
-[node name="ElfHero" type="Node" parent="." node_paths=PackedStringArray("controller")]
-script = ExtResource("9_xkfbb")
-controller = NodePath("../Player")
-army = ExtResource("7_2mlsl")
-
-[node name="OrcHero" type="Node" parent="." node_paths=PackedStringArray("controller")]
-script = ExtResource("9_xkfbb")
-controller = NodePath("../Player2")
-army = ExtResource("8_fo0qx")
-
 [node name="Player" type="Node" parent="."]
 script = ExtResource("10_ctosp")
 
 [node name="Player2" type="Node" parent="."]
 script = ExtResource("10_ctosp")
+
+[node name="Army" type="Node" parent="."]
+script = ExtResource("5_xw4mk")
+
+[node name="Army2" type="Node" parent="."]
+script = ExtResource("5_xw4mk")
+
+[node name="MainMenu" parent="." instance=ExtResource("6_yyega")]
+game_setup = ExtResource("5_unoaq")

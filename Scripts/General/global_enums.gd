@@ -2,37 +2,16 @@ class_name E
 
 extends Node
 
+#region General
 
-
-
-enum HexTileType 
+enum player_type
 {
-	SENTINEL,
-	ATTACKER_SPAWN,
-	DEFENDER_SPAWN,
-	DEFAULT,
+	OBSERVER,
+	HUMAN,
+	BOT,
 }
 
 
-#region Battle
-
-enum Symbols
-{
-	EMPTY,
-	SPEAR,
-	SWORD,
-	SHIELD,
-	BOW,
-	PUSH,
-}
-
-#endregion
-
-enum MapShape
-{
-	CLASSIC,
-	SHIFTED,
-}
 
 
 #region World
@@ -47,3 +26,34 @@ enum WorldMapTiles
 }
 
 #endregion
+
+
+#region Battle
+
+enum MapShape
+{
+	CLASSIC,
+	SHIFTED,
+}
+
+enum HexTileType 
+{
+	SENTINEL,
+	ATTACKER_SPAWN,
+	DEFENDER_SPAWN,
+	DEFAULT,
+}
+
+enum Symbols
+{
+	EMPTY,
+	SPEAR,
+	SWORD,
+	SHIELD,
+	BOW,
+	PUSH,
+}
+
+#endregion
+
+

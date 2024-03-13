@@ -35,16 +35,12 @@ var hero_grid : Array = [] # Array[Array[Hero]]
 
 var selected_hero : Hero
 
+var combat_tile : Vector2i
+
 #endregion
 
 
 #region Main functions
-
-func setup_world(): #(players, map, settings)
-	"""
-	Currently empty as all test settings are set already
-	"""
-	current_player = players[0]
 
 func clear_world_map():
 	for hero in get_children():
@@ -60,6 +56,10 @@ func next_player_turn():
 	else:
 		current_player = players[player_idx + 1]
 
+
+func kill_hero(hero : Hero):
+	hero_grid[hero.cord.x][hero.cord.y] = null
+	hero.queue_free()
 
 #endregion
 
@@ -196,6 +196,54 @@ func combat(cord : Vector2i):
 	Starts a battle using Battle Manager (BM)
 	"""
 	print("combat")
+
+	combat_tile = cord
 	
+	clear_world_map()
+
+	B_GRID.GenerateGrid(W_GRID.grid[combat_tile.x][combat_tile.y].battle_map)
+
+	BM.start_battle([selected_hero.army, W_GRID.get_army(combat_tile)])
+	
+func end_of_battle():
+	if selected_hero.army.alive == false:
+		selected_hero.army.destroy_army()
+		selected_hero = null
+	
+	var defender_army : Army = W_GRID.get_army(combat_tile)
+	if defender_army.alive == false:
+		defender_army.destroy_army()
+		move_hero(combat_tile)
+
+
+
+	draw_world()
+
+
+#endregion
+
+#region World Setup
+
+func draw_world():
+	pass
+	#W_GRID.GenerateGrid()
+	#spawn_heroes()
+
+func spawn_heroes():
+	pass
+
+
+func change_heroes_visibility():
+	pass
+
+func start_world(player_list : Array[Player], world_map : WorldMap):
+	players = player_list
+	current_player = players[0]
+
+	W_GRID.GenerateGrid(world_map)
+	
+
+func spawn_starting_heroes():
+	pass
 
 #endregion

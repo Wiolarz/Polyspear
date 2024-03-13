@@ -8,7 +8,7 @@ const TileVerticalOffset : float = 606.2
 const OddRowHorizontalOffset : float = 350.0
 
 
-#var map_data : MapData  # currently no need to store this info duo to simple nature of this resource
+#var map_data : BattleMap  # currently no need to store this info duo to simple nature of this resource
 
 # Hard coding of art files is a temporary solution until a decision how to approach treating background art will be made
 @onready var SentineltHexTile : PackedScene = load("res://Scenes/HexTiles/BlackHexTile.tscn")
@@ -286,7 +286,7 @@ func ResetData():
     HexGrid = []
     UnitGrid = []
 
-func GenerateGrid(new_map_data : MapData = null) -> void:
+func GenerateGrid(new_map_data : BattleMap = null) -> void:
     ResetData()
     
     if new_map_data != null:

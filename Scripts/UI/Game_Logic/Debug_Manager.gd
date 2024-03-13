@@ -93,3 +93,9 @@ func _on_surrender_pressed():
 	else:
 		for unit_idx in [BM.defender_units.size() - 1, -1, -1]:
 			BM.kill_unit(BM.defender_units[unit_idx])
+
+
+func _on_return_to_main_menu_pressed():
+	_on_back_to_game_pressed()
+	IM.go_to_main_menu()
+

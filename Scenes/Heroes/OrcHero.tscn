@@ -1,0 +1,12 @@
+[gd_scene load_steps=3 format=3 uid="uid://ck5q8s1q7qpeb"]
+
+[ext_resource type="Texture2D" uid="uid://d0dy38p601hn" path="res://Art/border.png" id="1_60v6i"]
+[ext_resource type="Texture2D" uid="uid://dsftkau5qwpk" path="res://Art/ork3.png" id="2_ws0uk"]
+
+[node name="ElfHero" type="Node2D"]
+
+[node name="sprite_border" type="Sprite2D" parent="."]
+texture = ExtResource("1_60v6i")
+
+[node name="sprite_unit" type="Sprite2D" parent="."]
+texture = ExtResource("2_ws0uk")

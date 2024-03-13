@@ -2,10 +2,10 @@ class_name Hero
 
 extends Node
 
+@export var army : Army
 
-@export var controller : Player
-@export var army : UnitSet
-#@export var army : Array[PackedScene]
+var controller : Player
+
 
 
 var cord : Vector2i
@@ -24,6 +24,3 @@ func trade(another_hero : Hero):
 func move(target : HexTile):
     target_tile = target
 
-
-func destroy():
-    queue_free()

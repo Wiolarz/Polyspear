@@ -88,7 +88,7 @@ func get_army(cord : Vector2i):
 	var hero = get_hero(cord)
 	if hero != null:
 		return hero.army
-	return hex_grid[cord.x][cord.y].defender_units
+	return hex_grid[cord.x][cord.y].defender_army
 
 
 func get_city(cord : Vector2i) -> City:
@@ -239,19 +239,18 @@ func ResetData():
 	hex_grid = []
 	hero_grid = []
 
-func GenerateGrid(new_map_data : MapData = null) -> void:
+func GenerateGrid(new_map_data : WorldMap) -> void:
 	ResetData()
 	
-	if new_map_data != null:
-		GridWidth = new_map_data.GridWidth
-		GridHeight = new_map_data.GridHeight
-		match new_map_data.map_shape:
-			E.MapShape.CLASSIC:
-				if BorderSize % 2 == 0:
-					BorderSize += 1
-			E.MapShape.SHIFTED:
-				if BorderSize % 2 != 0:
-					BorderSize += 1
+	GridWidth = new_map_data.GridWidth
+	GridHeight = new_map_data.GridHeight
+	match new_map_data.map_shape:
+		E.MapShape.CLASSIC:
+			if BorderSize % 2 == 0:
+				BorderSize += 1
+		E.MapShape.SHIFTED:
+			if BorderSize % 2 != 0:
+				BorderSize += 1
 				
 
 	# "+2" is to reserve space for sentinel tiles on each side of the board

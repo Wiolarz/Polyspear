@@ -2,7 +2,10 @@
 
 var now
 """
-change the unit controller system from enum to player object
+change Army unit data to simple Array -> modify all scripts that still treat it as UnitSet
+create army generator out of ArmyData resource
+finish test battle
+
 
 input manager that knows if its a battle or global gameplay + restricts movement on turns
 
@@ -73,7 +76,7 @@ add save system for battles + overworld map
 
 var CHANGE
 """
-
+Replace some of the enum variables with proper class 
 """
 
 var REFACTOR
@@ -81,6 +84,9 @@ var REFACTOR
 consider removing E.WorldMapTiles
 
 is_adjacent in grid managers could be moved to static grid manager class
+
+Change variable names in resources to match coding style
+
 """
 
 

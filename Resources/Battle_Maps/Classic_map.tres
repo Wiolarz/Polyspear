@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="BattleMap" load_steps=2 format=3 uid="uid://b2ffhynpdmlve"]
+
+[ext_resource type="Script" path="res://Resources/battle_map.gd" id="1_ibbrj"]
+
+[resource]
+script = ExtResource("1_ibbrj")
+GridWidth = 5
+GridHeight = 5
+map_shape = 0

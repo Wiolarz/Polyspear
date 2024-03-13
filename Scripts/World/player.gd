@@ -7,7 +7,11 @@ var alive = true
 
 var player_name
 
+var player_type : E.player_type = E.player_type.OBSERVER
+
 var bot_engine : AIInteface
+
+var faction : Faction
 
 
 func your_turn():

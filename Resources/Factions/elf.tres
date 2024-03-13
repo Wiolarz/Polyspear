@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="Faction" load_steps=6 format=3 uid="uid://3ni121kxkl5l"]
+
+[ext_resource type="PackedScene" uid="uid://bocumqq7xrnpk" path="res://Scenes/Heroes/ElfHero.tscn" id="1_2nv82"]
+[ext_resource type="Script" path="res://Resources/faction.gd" id="1_itfyn"]
+[ext_resource type="PackedScene" uid="uid://cc3tyuds6ey1w" path="res://Scenes/Units/elf/Archer.tscn" id="3_dw64d"]
+[ext_resource type="PackedScene" uid="uid://dcmetk5o0wtsp" path="res://Scenes/Units/elf/Knight.tscn" id="4_0i1qj"]
+[ext_resource type="PackedScene" uid="uid://cv2j86coxjwo4" path="res://Scenes/Units/elf/SpearMan.tscn" id="5_b4o5p"]
+
+[resource]
+script = ExtResource("1_itfyn")
+units = Array[PackedScene]([ExtResource("3_dw64d"), ExtResource("4_0i1qj"), ExtResource("5_b4o5p")])
+heroes = Array[PackedScene]([ExtResource("1_2nv82")])

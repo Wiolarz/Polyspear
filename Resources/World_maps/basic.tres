@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="WorldMap" load_steps=2 format=3 uid="uid://dnyhjboril3px"]
+
+[ext_resource type="Script" path="res://Resources/world_map.gd" id="1_wiigf"]
+
+[resource]
+script = ExtResource("1_wiigf")
+GridWidth = 5
+GridHeight = 5
+map_shape = 0

@@ -1,9 +1,0 @@
-[gd_resource type="Resource" script_class="MapData" load_steps=2 format=3 uid="uid://c31tntd5paqny"]
-
-[ext_resource type="Script" path="res://Resources/map_data.gd" id="1_oxpee"]
-
-[resource]
-script = ExtResource("1_oxpee")
-GridWidth = 3
-GridHeight = 3
-map_shape = 0
