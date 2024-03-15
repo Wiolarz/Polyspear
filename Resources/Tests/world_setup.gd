@@ -1,4 +1,4 @@
-class_name GameSetup
+class_name WorldSetup
 
 extends Resource
 

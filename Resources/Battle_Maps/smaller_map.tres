@@ -4,6 +4,6 @@
 
 [resource]
 script = ExtResource("1_oxpee")
-GridWidth = 3
-GridHeight = 3
+grid_width = 3
+grid_height = 3
 map_shape = 0

@@ -56,7 +56,7 @@ func is_legal_move(cord : Vector2i, BotUnit : AUnit = null) -> int:
 		selected_unit = BotUnit  # Locally replacs Unit for Bot legal move search
 
 	# 1
-	var ResultSide = B_GRID.AdjacentSide(selected_unit.cord, cord)  
+	var ResultSide = GridManager.adjacent_side(selected_unit.cord, cord)  
 	if ResultSide == null:
 		return -1
 
@@ -401,7 +401,7 @@ func start_battle(new_armies : Array[Army], battle_map : BattleMap):
 	WM.raging_battle = true
 	battling_armies = new_armies
 
-	B_GRID.GenerateGrid(battle_map)
+	B_GRID.generate_grid(battle_map)
 
 	for army in battling_armies:
 		participants.append(army.controller)

@@ -52,7 +52,7 @@ func get_all_kill_moves(all_moves):  # Array[Array[Vector2i]]
 		
 		# BOW
 		if B_GRID.get_unit(move[0]).get_symbol(0) == E.Symbols.BOW:
-			if B_GRID.GetShotTarget(move[0], B_GRID.AdjacentSide(move[0], move[1])):
+			if B_GRID.GetShotTarget(move[0], GridManager.adjacent_side(move[0], move[1])):
 				all_kill_moves.append(move)
 			continue
 		

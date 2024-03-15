@@ -1,5 +1,5 @@
 """
-Tests if all GameSetup Node in all levels have their properties set
+Tests if all WorldSetup Node in all levels have their properties set
 """
 
 extends GutTest
@@ -18,7 +18,7 @@ func before_all():
 		var test_map = load("res://Scenes/Levels/" + level)
 		test_map = test_map.instantiate()
 		levels.append(test_map)
-		managers[level] = test_map.get_node("GameSetup")
+		managers[level] = test_map.get_node("WorldSetup")
 
 
 func before_each():

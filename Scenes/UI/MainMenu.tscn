@@ -1,14 +1,10 @@
-[gd_scene load_steps=5 format=3 uid="uid://b4ndp6v0ts1on"]
+[gd_scene load_steps=3 format=3 uid="uid://b4ndp6v0ts1on"]
 
 [ext_resource type="PackedScene" uid="uid://ctlff4pba0kk3" path="res://Scenes/Multiplayer/MultiplayerConnection.tscn" id="1_d8wwc"]
 [ext_resource type="Script" path="res://Scripts/UI/Game_Logic/main_menu.gd" id="1_iln2i"]
-[ext_resource type="Resource" uid="uid://c0xnyv5cb6g8h" path="res://Resources/Tests/Game_Setups/2H_OvE_basic.tres" id="2_b0vv4"]
-[ext_resource type="Resource" uid="uid://byhcrnn41k1aa" path="res://Resources/Tests/Battle_setups/pvp_EvsO_basic.tres" id="3_plarx"]
 
 [node name="MainMenu" type="CanvasLayer"]
 script = ExtResource("1_iln2i")
-game_setup = ExtResource("2_b0vv4")
-test_battle_setup = ExtResource("3_plarx")
 
 [node name="MultiplayerConnection" parent="." instance=ExtResource("1_d8wwc")]
 

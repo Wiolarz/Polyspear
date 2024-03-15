@@ -4,6 +4,6 @@
 
 [resource]
 script = ExtResource("1_ibbrj")
-GridWidth = 5
-GridHeight = 5
+grid_width = 5
+grid_height = 5
 map_shape = 0

@@ -1,12 +1,8 @@
 class_name BattleMap
 
-extends Resource
+extends GridBoard
 
 
-@export var GridWidth : int = 5
-@export var	GridHeight : int = 5
-
-
-
-
-@export var map_shape : E.MapShape = E.MapShape.CLASSIC
+func apply_data():
+	B_GRID.grid_width = grid_width
+	B_GRID.grid_height = grid_height

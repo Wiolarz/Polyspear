@@ -14,7 +14,7 @@ func before_all():
 		var test_map = load("res://Scenes/Levels/" + level)
 		test_map = test_map.instantiate()
 		levels.append(test_map)
-		managers[level] = test_map.get_node("GameSetup")
+		managers[level] = test_map.get_node("WorldSetup")
 	"""
 
 
@@ -52,11 +52,11 @@ func test_tiles_assigned():
 
 
 
-func test_GenerateGrid():
+func test_generate_grid():
 	"""
 	for level in managers.keys():
 		var manager = managers[level]
-		manager.GenerateGrid()
+		manager.generate_grid()
 		
 		
 

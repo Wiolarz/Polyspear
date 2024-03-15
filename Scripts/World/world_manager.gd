@@ -165,7 +165,7 @@ func move_hero(cord : Vector2i):
 	if not W_GRID.is_moveable(cord):
 		return
 	
-	if not W_GRID.is_adjacent(selected_hero.cord, cord):
+	if not GridManager.is_adjacent(selected_hero.cord, cord):
 		return
 
 	var new_hero = W_GRID.get_hero(cord)
@@ -233,7 +233,7 @@ func end_of_battle():
 
 func draw_world():
 	pass
-	#W_GRID.GenerateGrid()
+	#W_GRID.generate_grid()
 	#spawn_heroes()
 
 func spawn_heroes():
@@ -248,7 +248,7 @@ func start_world(player_list : Array[Player], world_map : WorldMap):
 	players = player_list
 	current_player = players[0]
 
-	W_GRID.GenerateGrid(world_map)
+	W_GRID.generate_grid(world_map)
 	
 
 func spawn_starting_heroes():

@@ -81,8 +81,6 @@ Replace some of the enum variables with a proper class
 
 consider removing E.WorldMapTiles
 
-is_adjacent in grid managers could be moved to static grid manager class
-
 Change variable names in resources to match coding style
 
 
@@ -114,7 +112,7 @@ Graphics/Technical -> Spacing_of_the_Grid
 ## Think_about
 
 How to handle different art assets for different regions in the game?
-- They could be an additional resource (map_art) for GameSetup alongside gameplay map_data
+- They could be an additional resource (map_art) for WorldSetup alongside gameplay map_data
 
 
 ## FEATURE: Saving data files

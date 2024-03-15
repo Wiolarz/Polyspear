@@ -1,6 +1,6 @@
 class_name WorldMap
 
-extends Resource
+extends GridBoard
 
 """
 Placeholder variables.
@@ -11,10 +11,8 @@ Complete world map data:
 """
 
 
-@export var GridWidth : int = 5
-@export var	GridHeight : int = 5
 
 
-
-
-@export var map_shape : E.MapShape = E.MapShape.CLASSIC
+func apply_data():
+	W_GRID.grid_width = grid_width
+	W_GRID.grid_height = grid_height

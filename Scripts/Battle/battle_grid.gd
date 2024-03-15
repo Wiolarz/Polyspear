@@ -1,14 +1,7 @@
 # Singleton B-GRID
 
-extends Node
+extends GridManager
 
-
-const TileHorizontalOffset : float = 700.0
-const TileVerticalOffset : float = 606.2
-const OddRowHorizontalOffset : float = 350.0
-
-
-#var map_data : BattleMap  # currently no need to store this info duo to simple nature of this resource
 
 # Hard coding of art files is a temporary solution until a decision how to approach treating background art will be made
 @onready var SentineltHexTile : PackedScene = load("res://Scenes/HexTiles/BlackHexTile.tscn")
@@ -17,42 +10,15 @@ const OddRowHorizontalOffset : float = 350.0
 @onready var DefenderHexTile : PackedScene = load("res://Scenes/HexTiles/DirtHexTile.tscn")
 
 
-
-
-
-
-var GridWidth : int = 5
-var	GridHeight : int = 5
-
-"""
-Thickness of a Sentinel perimiter around the gameplay area.
-
-If size is even it shifts the map. (used by simple map shift system from map_data resource)
-May be increased to allow for ease of development
-"""
-var BorderSize : int = 1   
-var map_shift : bool = false
-
-
-
-
 var AttackerTiles = []
 var DefenderTiles = []
 
-var HexGrid = [] # !
-var UnitGrid = [] # ! 
+var HexGrid : Array = [] # Array[Array[HexTile]]
+var UnitGrid : Array = [] # Array[Array[AUnit]]
 
 var current_spawn : E.HexTileType = E.HexTileType.SENTINEL
 
-static var DIRECTIONS = [ \
-	Vector2i(1, 0),
-	Vector2i(0, 1),
-	Vector2i(-1, 1),
-	Vector2i(-1, 0),
-	Vector2i(0, -1),
-	Vector2i(1, -1)]
-
-
+#region Tools
 
 func ChangeUnitPosition(Unit, Cord : Vector2i):
 
@@ -78,6 +44,9 @@ func RemoveUnit(Unit):
 	#Unit.SetActorLocation(HexGrid[0][0].GetActorLocation())
 	Unit.destroy()
 
+#endregion
+
+
 #region Coordinates tools
 
 
@@ -93,7 +62,7 @@ func AdjacentUnits(BaseCord : Vector2i):
 	# Returns 6 elements Array, elements can be null
 	var Units = []
 	for side in range(6):
-		var Cord = AdjacentCord(BaseCord, side)
+		var Cord = adjacent_cord(BaseCord, side)
 		var Neighbour = UnitGrid[Cord.x][Cord.y]
 		#if (Neighbour != null)
 		Units.append(Neighbour)
@@ -142,62 +111,23 @@ func get_melee_targets(StartCord : Vector2i, direction, SymbolSide : int) -> Arr
 	
 	return Units
 
-
-func is_adjacent(Cord1 : Vector2i, Cord2 : Vector2i) -> bool:
-	return (Cord2 - Cord1) in DIRECTIONS
-
-func AdjacentSide(Cord1 : Vector2i, Cord2 : Vector2i) -> int:
-	"""
-	Return shared side between Cord1 and Cord2, if the Cords are adjacent
-
-	@param Cord1 
-	@param Cord2 
-	@return int32 Side
-	@note -1 is return, when Cord1 and Cord2 don't have shared side
-	"""
-	if (Cord2 - Cord1) in DIRECTIONS:
-		return DIRECTIONS.find(Cord2 - Cord1)
-	return -1
-
-
-func AdjacentCord(BaseCord : Vector2i, Side : int) -> Vector2i:
-	"""
-	  Return cord adjacent to BaseCord at given Side
-	 
-	  @param BaseCord
-	  @param Side {0, 1, ..., 5}
-	  @return Vector2i Cord adjacent to BaseCord
-	  """
-	return BaseCord + DIRECTIONS[Side]
-
 #endregion
 
-#region GenerateGrid
 
+#region Generate Grid
 
-func AdjustGridSize() -> void:
-	# sentinels appear on both sides
-	if map_shift:
-		GridWidth += 1
-		GridHeight += 1
-	GridWidth += (BorderSize * 2)
-	GridHeight += (BorderSize * 2)
-	GridWidth += (GridHeight / 2) # adjustment for Axial grid system
-
-
-
-func InitHexGridArray() -> void:
-	for i in range(GridWidth):
+func init_hex_grid() -> void:
+	for i in range(grid_width):
 		HexGrid.append([])
 		UnitGrid.append([])
-		for j in range(GridHeight):
+		for j in range(grid_height):
 			UnitGrid[i].append(null)
 			HexGrid[i].append(null)
 
 
-func SpawnTiles() -> void:
-	for y in range(GridHeight):
-		for x in range(GridWidth):
+func spawn_tiles() -> void:
+	for y in range(grid_height):
+		for x in range(grid_width):
 			var oddRow = y % 2 == 0 # Sentinel Rows add aditional row
 			
 			var XTilePos = x * TileHorizontalOffset + y * OddRowHorizontalOffset
@@ -234,30 +164,6 @@ func SpawnTiles() -> void:
 			HexGrid[x][y] = newTile
 
 
-func isGameplayTile(x : int, y : int, bOddRow : bool) -> bool:
-	"""
-	3:1 - 7:1 even 5
-	3:2 - 6:2 odd 4
-	2:3 - 6:3 even 5
-	2:4 - 5:4 odd 4
-	1:5 - 6:5 even 5
-
-	"""
-
-	var start : int = floor(GridHeight / 2)# axial start position
-	var gameplay_width_start = start + BorderSize - floor(y / 2)
-	var gameplay_height_start = BorderSize
-
-	var gameplay_height_end = GridHeight - BorderSize
-	var gameplay_width_odd_end = GridWidth - BorderSize - floor(y / 2)
-	var gameplay_width_even_end = GridWidth - BorderSize - floor(y / 2)
-	################################################################################################################################### clean
-	# Height
-	# even row width
-	var bHeight = gameplay_height_start <= y and y < gameplay_height_end
-	var bEven_Row_Width = gameplay_width_start	 <= x and x < gameplay_width_even_end and not bOddRow
-	var bOdd_Row_Width = gameplay_width_start + 1 <= x and x < gameplay_width_odd_end and bOddRow
-	return bHeight and (bEven_Row_Width or bOdd_Row_Width)
 
 
 func GetTileToSpawn(x : int, y : int, bOddRow : bool) -> PackedScene:
@@ -267,16 +173,16 @@ func GetTileToSpawn(x : int, y : int, bOddRow : bool) -> PackedScene:
 
 	current_spawn = E.HexTileType.SENTINEL
 
-	if isGameplayTile(x, y, bOddRow):
+	if is_gameplay_tile(x, y, bOddRow):
 		TileToSpawn = DefaultHexTile
 		current_spawn = E.HexTileType.DEFAULT
 
-		var FirstColumnStart : int = (GridHeight / 2) + BorderSize - (y / 2)
+		var FirstColumnStart : int = (grid_height / 2) + border_size - (y / 2)
 
 		if (bOddRow and x == FirstColumnStart + 1) or (not bOddRow and x == FirstColumnStart): # first column
 			TileToSpawn = AttackerHexTile
 			current_spawn = E.HexTileType.ATTACKER_SPAWN
-		elif (x == GridWidth - BorderSize - 1  - (y / 2)): # last column
+		elif (x == grid_width - border_size - 1  - (y / 2)): # last column
 		
 			TileToSpawn = DefenderHexTile
 			current_spawn = E.HexTileType.DEFENDER_SPAWN
@@ -284,31 +190,10 @@ func GetTileToSpawn(x : int, y : int, bOddRow : bool) -> PackedScene:
 	return TileToSpawn
 
 
-func ResetData():
+func reset_data():
 	AttackerTiles = []
 	DefenderTiles = []
 	HexGrid = []
 	UnitGrid = []
-
-
-func GenerateGrid(new_map_data : BattleMap) -> void:
-	ResetData()
-	
-	GridWidth = new_map_data.GridWidth
-	GridHeight = new_map_data.GridHeight
-	match new_map_data.map_shape:
-		E.MapShape.CLASSIC:
-			map_shift = false
-		E.MapShape.SHIFTED:
-			map_shift = true
-				
-
-	# "+2" is to reserve space for sentinel tiles on each side of the board
-	AdjustGridSize()
-
-	InitHexGridArray()
-	SpawnTiles()
-
-
 
 #endregion
