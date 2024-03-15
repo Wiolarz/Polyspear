@@ -142,10 +142,10 @@ func change_state(new_states):
 
 func play_move(player : Player):
 	var my_units : Array[AUnit]
-	if BM.attacker_units[0].controller == player:
-		my_units = BM.attacker_units
-	else:
-		my_units = BM.defender_units
+	for units in BM.fighting_units:
+		if units[0].controller == player:
+			my_units = units
+			break
 
 	
 	if BM.UnitsLeftToBeSummoned != 0:

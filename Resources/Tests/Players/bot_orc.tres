@@ -7,3 +7,4 @@
 script = ExtResource("2_o1p5p")
 faction = ExtResource("1_lnihc")
 player_type = 2
+player_name = "bot_orc"

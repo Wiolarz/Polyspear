@@ -26,12 +26,12 @@ func test_BASIC_UNIT_SETUP() -> void:
 	
 		if i < attacker_units.size():
 
-			input_listener(attacker_units[i].cord)
-			input_listener(attacker_units[i].cord + B_GRID.DIRECTIONS[0])
+			grid_input(attacker_units[i].cord)
+			grid_input(attacker_units[i].cord + B_GRID.DIRECTIONS[0])
 
 		if i < defender_units.size():
 
-			input_listener(defender_units[i].cord)
-			input_listener(defender_units[i].cord + B_GRID.DIRECTIONS[3])
+			grid_input(defender_units[i].cord)
+			grid_input(defender_units[i].cord + B_GRID.DIRECTIONS[3])
 
 	"""

@@ -4,7 +4,9 @@ extends Node
 
 @export var hero : Hero
 
-@export var unit_set : UnitSet
+@export var unit_set : ArmySet
+
+var units : Array[AUnit]
 
 var controller : Player
 

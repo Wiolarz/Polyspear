@@ -10,12 +10,13 @@ const DEFENDER = 1
 
 var commanders = []  # Hero objects that take part in battle (based on them we get players who control the battle)
 var participants : Array[Player] = []
+var battling_armies : Array[Army]
 
-var AttackerBot : StateMachine
-var DefenderBot : StateMachine
 
-var AttackerUnitsTypes : Array[PackedScene]
-var DefenderUnitsTypes : Array[PackedScene]
+# TODO to be changed to approach suitable for more battle participants than 2
+var armies_unit_scenes : Array = [] # Array[Array[PackedScene]]
+var attacker_unit_scenes : Array[PackedScene]
+var defender_unit_scenes : Array[PackedScene]
 
 #endregion
 
@@ -23,14 +24,13 @@ var DefenderUnitsTypes : Array[PackedScene]
 var current_participant : Player
 var participant_idx : int = ATTACKER
 
-var SelectedUnit
+var selected_unit : AUnit
 
+var fighting_units : Array = [] # Array[Array[AUnit]]
 var attacker_units = []
 var defender_units = []
 
-var UnitsLeftToBeSummoned
-
-
+var UnitsLeftToBeSummoned : int # set at the start of the during placement "summon" stage -> battle start after this number reaches 0
 
 #endregion
 
@@ -44,19 +44,19 @@ var UnitsLeftToBeSummoned
 func is_legal_move(cord : Vector2i, BotUnit : AUnit = null) -> int:
 	"""
 	 Function checks 2 things:
-	 * 1 Target cord is a Neighbour of a SelectedUnit
-	 * 2 if SelectedUnit doesn't have push symbol on it's front (none currently have it yet)
-	 *	 Target cord doesn't contatin an Enemy Unit with a shield pointing at our SelectedUnit
+	 * 1 Target cord is a Neighbour of a selected_unit
+	 * 2 if selected_unit doesn't have push symbol on it's front (none currently have it yet)
+	 *	 Target cord doesn't contatin an Enemy Unit with a shield pointing at our selected_unit
 	 * 
 	 * @param cord
 	 * @param ResultSide
 	 * @return True if selected Unit can move on a given cord
 	 """
 	if BotUnit != null:
-		SelectedUnit = BotUnit  # Locally replacs Unit for Bot legal move search
+		selected_unit = BotUnit  # Locally replacs Unit for Bot legal move search
 
 	# 1
-	var ResultSide = B_GRID.AdjacentSide(SelectedUnit.cord, cord)  
+	var ResultSide = B_GRID.AdjacentSide(selected_unit.cord, cord)  
 	if ResultSide == null:
 		return -1
 
@@ -66,13 +66,13 @@ func is_legal_move(cord : Vector2i, BotUnit : AUnit = null) -> int:
 	if EnemyUnit == null:  # Is there a Unit in this spot?
 		return ResultSide
 	
-	match SelectedUnit.Symbols[0]:
+	match selected_unit.Symbols[0]:
 		E.Symbols.EMPTY:
 			return -1
 		E.Symbols.SHIELD:
-			return -1 # SelectedUnit can't deal with EnemyUnit
+			return -1 # selected_unit can't deal with EnemyUnit
 		E.Symbols.PUSH:
-			return ResultSide # SelectedUnit ignores EnemyUnit Shield
+			return ResultSide # selected_unit ignores EnemyUnit Shield
 		_:
 			pass
 	# Does EnemyUnit has a shield?
@@ -98,7 +98,7 @@ func move_unit(Unit, EndCord : Vector2i, side: int) -> void:
 		return
 
 
-	unit_action(SelectedUnit)
+	unit_action(selected_unit)
 	#TODO wait half a second
 
 
@@ -109,7 +109,7 @@ func move_unit(Unit, EndCord : Vector2i, side: int) -> void:
 		return
 		
 		
-	unit_action(SelectedUnit)
+	unit_action(selected_unit)
 
 
 func counter_attack_damage(Target : AUnit) -> bool:
@@ -129,28 +129,30 @@ func counter_attack_damage(Target : AUnit) -> bool:
 
 
 func kill_unit(Target) -> void:
-	if (Target.controller == participants[DEFENDER]):
-		defender_units.erase(Target)
-	else:
-		attacker_units.erase(Target)
+	for units in fighting_units:
+		if units[0].controller == Target.controller:
+			units.erase(Target)
+			break
 	
 	B_GRID.RemoveUnit(Target)
 
-	if defender_units.size() == 0:
-		BUS.Attacker_wins += 1
-		print("Attacker won" + "D:" + str(BUS.Defender_wins) + " A:" + str(BUS.Attacker_wins))
-	elif attacker_units.size() == 0:
-		BUS.Defender_wins += 1
-		print("Defender won_" + "D:" + str(BUS.Defender_wins) + " A:" + str(BUS.Attacker_wins))
+	var armies_left_alive : Array[int] = []
+	for army_idx in range(fighting_units.size()):
+		if fighting_units[army_idx].size() > 0:
+			armies_left_alive.append(army_idx)
+		else:
+			battling_armies[army_idx].alive = false
 
-	
-	if attacker_units.size() == 0 or defender_units.size() == 0:
+
+	if armies_left_alive.size() < 2:
+		var winner_army = battling_armies[armies_left_alive[0]]
+		print(winner_army.controller.player_name + " won")
 		end_of_battle()
+	
+		
 
 	
-func end_of_battle():
-	clear_battle()
-	WM.end_of_battle()
+
 
 func unit_action(Unit) -> void:
 	var Units = B_GRID.AdjacentUnits(Unit.cord)
@@ -228,7 +230,7 @@ func select_unit(cord : Vector2i) -> bool:
 
 	var NewSelection : AUnit = B_GRID.get_unit(cord)
 	if (NewSelection != null && NewSelection.controller == current_participant):
-		SelectedUnit = NewSelection
+		selected_unit = NewSelection
 		#print("You have selected a Unit")
 
 		return true
@@ -247,7 +249,13 @@ func clear_battle():
 	for tile in B_GRID.get_children():
 		tile.queue_free()
 
-
+func end_of_battle():
+	clear_battle()
+	if WM.selected_hero == null:
+		print("end of test battle")
+		IM.go_to_main_menu()
+		return
+	WM.end_of_battle()
 
 
 func switch_participant_turn():
@@ -262,9 +270,9 @@ func switch_participant_turn():
 
 
 
-func input_listener(cord : Vector2i) -> void:
+func grid_input(cord : Vector2i) -> void:
 
-	if select_unit(cord) or SelectedUnit == null:
+	if select_unit(cord) or selected_unit == null:
 		return # selected a new unit or wrong input which didn't select any ally unit
 
 
@@ -277,7 +285,7 @@ func input_listener(cord : Vector2i) -> void:
 	else:  # Gameplay phase
 		gameplay(cord)
 
-	SelectedUnit = null  # IMPORTANT
+	selected_unit = null  # IMPORTANT
 
 
 
@@ -300,13 +308,8 @@ func gameplay(cord : Vector2i) -> void:
 		# 5 Check for Spear
 
 		# 6 Actions
-		move_unit(SelectedUnit, cord, side)
-		#print(FString::Printf(TEXT("DIRECTION_%d"), side))
-		#testKillUnit(cord)
-		
-		#B_GRID.ChangeUnitPosition(SelectedUnit, cord)
-		#print(FString::Printf(TEXT("_%d"), side))
-		#.RotateUnit(SelectedUnit, side)
+		move_unit(selected_unit, cord, side)
+
 
 		switch_participant_turn()
 	
@@ -322,7 +325,7 @@ func summon_unit(cord : Vector2i) -> void:
 	
 
 	# check if unit is already summoned
-	var SelectedUnitTileType = B_GRID.get_tile_type(SelectedUnit.cord)
+	var SelectedUnitTileType = B_GRID.get_tile_type(selected_unit.cord)
 
 	if SelectedUnitTileType != E.HexTileType.SENTINEL:
 		#print("This Unit has been already summoned")
@@ -336,18 +339,18 @@ func summon_unit(cord : Vector2i) -> void:
 		(SelectedHexType == E.HexTileType.DEFENDER_SPAWN && participant_idx == 1)
 
 	if not bSelectedcurrent_participantSpawn:
-		#print("Thats a wrong summon location")  # TODO: Don't reset SelectedUnit
+		#print("Thats a wrong summon location")  # TODO: Don't reset selected_unit
 		return
 
 	#print("You summoned a Unit")
 
 	# TeleportUnit(cord)
-	B_GRID.ChangeUnitPosition(SelectedUnit, cord)
+	B_GRID.ChangeUnitPosition(selected_unit, cord)
 
 	if participant_idx == ATTACKER:
-		SelectedUnit.Rotate(0)
+		selected_unit.Rotate(0)
 	else:
-		SelectedUnit.Rotate(3)
+		selected_unit.Rotate(3)
 
 
 	switch_participant_turn()
@@ -364,55 +367,48 @@ func spawn_units() -> void:
 	* Placing Units used in combat on their "Spawn Points" near the area of the gameplay board where they are visible to the players.
 	"""
 
-	UnitsLeftToBeSummoned = AttackerUnitsTypes.size() + DefenderUnitsTypes.size()  # Flag that manages the state of the game
+	UnitsLeftToBeSummoned = 0 
+	for army in armies_unit_scenes:
+		UnitsLeftToBeSummoned += army.size()
 	
-	# RESET DATA
-	attacker_units = []
-	defender_units = []
-	SelectedUnit = null
-	
-	var SpawnCord
+	var spawn_cord
 
-	# spawning attacker units
-	for i in range(AttackerUnitsTypes.size()):
-		var newUnitScene = AttackerUnitsTypes[i]
-		var new_unit = newUnitScene.instantiate()
-		add_child(new_unit) # jako element sceny
-		attacker_units.append(new_unit)
+	# spawn armies units
+	for army_idx in range(armies_unit_scenes.size()):
+		var army = armies_unit_scenes[army_idx]
+		fighting_units.append([])
+		for unit_idx in range(army.size()):
+			var newUnitScene = army[unit_idx]
+			var new_unit = newUnitScene.instantiate()
+			add_child(new_unit) # jako element sceny
+			
+			fighting_units[army_idx].append(new_unit)
 
-		new_unit.controller = participants[ATTACKER]
+			new_unit.controller = participants[army_idx]
 
-		SpawnCord = B_GRID.AttackerTiles[i].cord # Get spawn location
-		SpawnCord += B_GRID.DIRECTIONS[3]  # Move to a spot outside of the map near spawn point
+			if army_idx == ATTACKER:
+				spawn_cord = B_GRID.AttackerTiles[unit_idx].cord # Get spawn location
+				spawn_cord += B_GRID.DIRECTIONS[3]  # Move to a spot outside of the map near spawn point
+			elif army_idx == DEFENDER:
+				spawn_cord = B_GRID.DefenderTiles[unit_idx].cord
+				spawn_cord += B_GRID.DIRECTIONS[0]
 
-		B_GRID.ChangeUnitPosition(new_unit, SpawnCord) # Adding Unit to the Gameplay Array
-		
-
-	# spawning defender units
-	for i in range(DefenderUnitsTypes.size()):
-		var newUnitScene = DefenderUnitsTypes[i]
-		var new_unit = newUnitScene.instantiate()
-		add_child(new_unit) # jako element sceny
-		defender_units.append(new_unit)
-
-		new_unit.controller = participants[DEFENDER]
-
-		SpawnCord = B_GRID.DefenderTiles[i].cord # Get spawn location
-		SpawnCord += B_GRID.DIRECTIONS[0] # Move to a spot outside of the map near spawn point
-
-		B_GRID.ChangeUnitPosition(new_unit, SpawnCord) # Adding Unit to the Gameplay Array
-
-	SelectedUnit = null
+			B_GRID.ChangeUnitPosition(new_unit, spawn_cord) # Adding Unit to the Gameplay Array
 
 
-func start_battle(new_armies : Array[Army]):
-	for army in new_armies:
+
+func start_battle(new_armies : Array[Army], battle_map : BattleMap):
+	WM.raging_battle = true
+	battling_armies = new_armies
+
+	B_GRID.GenerateGrid(battle_map)
+
+	for army in battling_armies:
 		participants.append(army.controller)
+		armies_unit_scenes.append(army.unit_set.Units)
+
 	current_participant = participants[ATTACKER]
 	participant_idx = ATTACKER
-
-	AttackerUnitsTypes = new_armies[ATTACKER].unit_set.Units
-	DefenderUnitsTypes = new_armies[DEFENDER].unit_set.Units
 
 	spawn_units()
 	

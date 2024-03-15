@@ -51,17 +51,15 @@ func _process(_delta):
 	
 	
 
-
+#region Buttons
 
 func _on_back_to_game_pressed():
-	ui.visible = not ui.visible
+	_toggle_menu_status()
 	
-	get_tree().paused = not get_tree().paused
-	# get_tree().set_deferred("paused", ui.visible)  # TODO research the difference
 
 
 func _on_restart_pressed():
-	_on_back_to_game_pressed()
+	_toggle_menu_status()
 	get_tree().reload_current_scene()
 
 
@@ -80,22 +78,34 @@ func _on_quit_pressed():
 
 
 func _on_win_battle_pressed():
-	for hero in BM.commanders:
-		if hero.controller != BM.current_participant:
-			
-			pass#BM.kill_unit(
+	for army_idx in range(BM.fighting_units.size()):
+		if army_idx == BM.participant_idx:
+			continue
+		
+		for unit_idx in range(BM.fighting_units[army_idx].size() - 1, -1, -1):
+			BM.kill_unit(BM.fighting_units[army_idx][unit_idx])
+	
+	_toggle_menu_status()
+
 
 func _on_surrender_pressed():
-	if BM.current_participant == BM.commanders[0].controller:
-
-		for unit_idx in [BM.attacker_units.size() - 1, -1, -1]:
-			BM.kill_unit(BM.attacker_units[unit_idx])
-	else:
-		for unit_idx in [BM.defender_units.size() - 1, -1, -1]:
-			BM.kill_unit(BM.defender_units[unit_idx])
+	for unit_idx in range(BM.fighting_units[BM.participant_idx].size() - 1, -1, -1):
+		BM.kill_unit(BM.fighting_units[BM.participant_idx][unit_idx])
+	
+	_toggle_menu_status()
 
 
 func _on_return_to_main_menu_pressed():
-	_on_back_to_game_pressed()
+	_toggle_menu_status()
 	IM.go_to_main_menu()
 
+#endregion
+
+#region Tools
+
+func _toggle_menu_status():
+	ui.visible = not ui.visible
+	
+	get_tree().paused = not get_tree().paused
+	# get_tree().set_deferred("paused", ui.visible)  # TODO research the difference
+#endregion

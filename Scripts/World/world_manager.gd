@@ -18,6 +18,8 @@ var players : Array[Player] = []
 
 #region Variables
 
+var raging_battle : bool = false  # redirects grid_input to Battle Manager
+
 var current_player : Player
 
 """ grid
@@ -97,6 +99,9 @@ func grid_input(cord : Vector2i):
 		4 if a hero is inside a city, a special interface will apear (either it simply selects the hero inside the city, then you can close the interaface and move freely)
 		5 player selected trade interface between heroes
 	"""
+	if raging_battle:
+		BM.grid_input(cord)
+		return
 
 	if select_city(cord) or select_hero(cord) or selected_hero == null:
 		return
@@ -196,14 +201,16 @@ func combat(cord : Vector2i):
 	Starts a battle using Battle Manager (BM)
 	"""
 	print("combat")
+	raging_battle = true
 
 	combat_tile = cord
 	
 	clear_world_map()
 
-	B_GRID.GenerateGrid(W_GRID.grid[combat_tile.x][combat_tile.y].battle_map)
+	var armies : Array[Army] = [selected_hero.army, W_GRID.get_army(combat_tile)]
+	var battle_map : BattleMap = W_GRID.grid[combat_tile.x][combat_tile.y].battle_map
 
-	BM.start_battle([selected_hero.army, W_GRID.get_army(combat_tile)])
+	BM.start_battle(armies, battle_map)
 	
 func end_of_battle():
 	if selected_hero.army.alive == false:
@@ -237,6 +244,7 @@ func change_heroes_visibility():
 	pass
 
 func start_world(player_list : Array[Player], world_map : WorldMap):
+	raging_battle = false
 	players = player_list
 	current_player = players[0]
 

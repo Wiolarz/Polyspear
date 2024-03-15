@@ -31,22 +31,22 @@ there is an end turn function "switch player" it could call the input manager to
 """
 var timer = 0
 
+var players : Array[Player] = []
+
 
 func grid_input_listener(cord : Vector2i):
-    if BM.commanders.size() == 0: # global map input
-        if WM.current_player.bot_engine != null:
-            return # its a bot turn
+    
+    #if WM.current_player.bot_engine != null:
+    #    return # its a bot turn
         
-        
-        
-        WM.grid_input(cord)
-        return
+    WM.grid_input(cord)
     
 
 func go_to_main_menu():
     WM.clear_world_map()
     BM.clear_battle()
     get_node("/root/BasicMap/MainMenu").toggle_menu_visibility()
+
 
 func _physics_process(_delta):
     #func _process(_delta):

@@ -7,5 +7,5 @@
 
 [resource]
 script = ExtResource("3_144ni")
-player_settings = Array[Resource("res://Resources/player_setting.gd")]([ExtResource("1_uf2b6"), ExtResource("2_1pwd0")])
+player_settings = Array[Resource("res://Resources/Tests/player_setting.gd")]([ExtResource("1_uf2b6"), ExtResource("2_1pwd0")])
 world_map = ExtResource("4_su8yn")

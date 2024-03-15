@@ -2,8 +2,6 @@
 
 extends Node
 
-var Attacker_wins = 0
-var Defender_wins = 0
 
 var connected_players = {}  # Multiplayer code
 
