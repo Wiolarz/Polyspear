@@ -385,7 +385,7 @@ func start_battle(new_armies : Array[Army], battle_map : BattleMap) -> void:
 
 	for army in battling_armies:
 		participants.append(army.controller)
-		armies_unit_scenes.append(army.unit_set.units)
+		armies_unit_scenes.append(army.unit_scenes)
 
 	current_participant = participants[ATTACKER]
 	participant_idx = ATTACKER

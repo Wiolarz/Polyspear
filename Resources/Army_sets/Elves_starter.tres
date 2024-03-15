@@ -7,4 +7,4 @@
 
 [resource]
 script = ExtResource("1_rk0hv")
-unit_scenes = Array[PackedScene]([ExtResource("1_24g2g"), ExtResource("2_8rarm"), ExtResource("3_mta0a")])
+units = Array[PackedScene]([ExtResource("1_24g2g"), ExtResource("2_8rarm"), ExtResource("3_mta0a")])
