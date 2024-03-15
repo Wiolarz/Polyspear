@@ -13,36 +13,34 @@ extends GridManager
 var AttackerTiles = []
 var DefenderTiles = []
 
-var HexGrid : Array = [] # Array[Array[HexTile]]
-var UnitGrid : Array = [] # Array[Array[AUnit]]
+var tile_grid : Array = [] # Array[Array[HexTile]]
+var unit_grid : Array = [] # Array[Array[AUnit]]
 
 var current_spawn : E.HexTileType = E.HexTileType.SENTINEL
 
 #region Tools
 
-func ChangeUnitPosition(Unit, Cord : Vector2i):
+func change_unit_cord(unit, cord : Vector2i):
 
-	UnitGrid[Unit.cord.x][Unit.cord.y] = null# clean your previous location
-	UnitGrid[Cord.x][Cord.y] = Unit# UnitGrid Update
+	unit_grid[unit.cord.x][unit.cord.y] = null# clean your previous location
+	unit_grid[cord.x][cord.y] = unit# unit_grid Update
 
-	Unit.cord = Cord# update Unit Index
+	unit.cord = cord# update unit Index
 	
 	# Move visuals of the unit
-	if BM.UnitsLeftToBeSummoned > 0:
-		Unit.global_position = HexGrid[Cord.x][Cord.y].global_position
+	if BM.unsummoned_units_counter > 0:
+		unit.global_position = tile_grid[cord.x][cord.y].global_position
 	else:
-		Unit.move(HexGrid[Cord.x][Cord.y])
+		unit.move(tile_grid[cord.x][cord.y])
 	
 
 
 
-func RemoveUnit(Unit):
+func remove_unit(unit):
 
-	var Cord : Vector2i = Unit.cord
-	UnitGrid[Cord.x][Cord.y] = null # Remove unit from gameplay grid
-
-	#Unit.SetActorLocation(HexGrid[0][0].GetActorLocation())
-	Unit.destroy()
+	var cord : Vector2i = unit.cord
+	unit_grid[cord.x][cord.y] = null # Remove unit from gameplay grid
+	unit.destroy()
 
 #endregion
 
@@ -50,66 +48,67 @@ func RemoveUnit(Unit):
 #region Coordinates tools
 
 
-func get_tile_type(Cord : Vector2i) -> E.HexTileType:
-	return HexGrid[Cord.x][Cord.y].tile_type
+func get_tile_type(cord : Vector2i) -> E.HexTileType:
+	return tile_grid[cord.x][cord.y].tile_type
 
-func get_unit(Cord : Vector2i):
-	return UnitGrid[Cord.x][Cord.y]
+func get_unit(cord : Vector2i):
+	return unit_grid[cord.x][cord.y]
 
 
 
-func AdjacentUnits(BaseCord : Vector2i):
+func adjacent_units(start_cord : Vector2i):
 	# Returns 6 elements Array, elements can be null
-	var Units = []
+	var units = []
 	for side in range(6):
-		var Cord = adjacent_cord(BaseCord, side)
-		var Neighbour = UnitGrid[Cord.x][Cord.y]
-		#if (Neighbour != null)
-		Units.append(Neighbour)
-	return Units
+		var cord = adjacent_cord(start_cord, side)
+		var neighbour = unit_grid[cord.x][cord.y]
+		#if (neighbour != null):
+		units.append(neighbour)
+	return units
 
 
-func GetShotTarget(StartCord : Vector2i, Side : int):
-	while HexGrid[StartCord.x][StartCord.y].tile_type != E.HexTileType.SENTINEL:
-		StartCord += DIRECTIONS[Side]
-		var Target = UnitGrid[StartCord.x][StartCord.y]
-		if Target != null:
-			return Target
+func get_shot_target(start_cord : Vector2i, side : int):
+	while tile_grid[start_cord.x][start_cord.y].tile_type != E.HexTileType.SENTINEL:
+		start_cord += DIRECTIONS[side]
+		var target = unit_grid[start_cord.x][start_cord.y]
+		if target != null:
+			return target
 	return null
 
 
-func GetDistantUnit(StartCord : Vector2i, Side : int, Distance : int) -> AUnit:
-	for i in range(Distance):
-		StartCord += DIRECTIONS[Side]
+func get_distant_unit(start_cord : Vector2i, side : int, distance : int) -> AUnit:
+	for i in range(distance):
+		start_cord += DIRECTIONS[side]
 	
-	return UnitGrid[StartCord.x][StartCord.y]
+	return unit_grid[start_cord.x][start_cord.y]
 
 
-func GetDistantTileType(StartCord : Vector2i, Side : int, Distance : int) -> E.HexTileType:
-	for i in range(Distance):
-		StartCord += DIRECTIONS[Side]
+func get_distant_tile_type(start_cord : Vector2i, side : int, distance : int) -> E.HexTileType:
+	for i in range(distance):
+		start_cord += DIRECTIONS[side]
 
-	return HexGrid[StartCord.x][StartCord.y].tile_type
+	return tile_grid[start_cord.x][start_cord.y].tile_type
 
 
-func  GetDistantCord(StartCord : Vector2i, Side : int, Distance : int) -> Vector2i:
-	var NewCord = StartCord
-	for i in range(Distance):
-		NewCord += DIRECTIONS[Side]
+func get_distant_cord(start_cord : Vector2i, side : int, distance : int) -> Vector2i:
+	for i in range(distance):
+		start_cord += DIRECTIONS[side]
 	
-	return NewCord
+	return start_cord
 
 
-
-func get_melee_targets(StartCord : Vector2i, direction, SymbolSide : int) -> Array[AUnit]:
-	"""TODO
+func get_melee_targets(start_Cord : Vector2i, direction, symbol_side : int) -> Array[AUnit]:
+	"""
+	AI/UI tool
+	take a side on which a weapon symbol is present -> simulate movement -> return list of damaged targets
+	(can return friednly units)
 	
 	direction : int / Vector2i
 
 	"""
-	var Units : Array[AUnit] = []
+	var units : Array[AUnit] = []
 	
-	return Units
+	return units
 
 #endregion
 
@@ -118,11 +117,11 @@ func get_melee_targets(StartCord : Vector2i, direction, SymbolSide : int) -> Arr
 
 func init_hex_grid() -> void:
 	for i in range(grid_width):
-		HexGrid.append([])
-		UnitGrid.append([])
+		tile_grid.append([])
+		unit_grid.append([])
 		for j in range(grid_height):
-			UnitGrid[i].append(null)
-			HexGrid[i].append(null)
+			unit_grid[i].append(null)
+			tile_grid[i].append(null)
 
 
 func spawn_tiles() -> void:
@@ -133,7 +132,7 @@ func spawn_tiles() -> void:
 			var XTilePos = x * TileHorizontalOffset + y * OddRowHorizontalOffset
 			var YTilePos = y * TileVerticalOffset
 
-			var newTileScene : PackedScene = GetTileToSpawn(x, y, oddRow)
+			var newTileScene : PackedScene = get_tile_to_spawn(x, y, oddRow)
 			var newTile = newTileScene.instantiate()
 
 			add_child(newTile)
@@ -161,12 +160,12 @@ func spawn_tiles() -> void:
 
 			newTile.tile_type = current_spawn
 
-			HexGrid[x][y] = newTile
+			tile_grid[x][y] = newTile
 
 
 
 
-func GetTileToSpawn(x : int, y : int, bOddRow : bool) -> PackedScene:
+func get_tile_to_spawn(x : int, y : int, bOddRow : bool) -> PackedScene:
 
 	var TileToSpawn = SentineltHexTile # Default value for hex tile is Sentinel Tile
 
@@ -193,7 +192,7 @@ func GetTileToSpawn(x : int, y : int, bOddRow : bool) -> PackedScene:
 func reset_data():
 	AttackerTiles = []
 	DefenderTiles = []
-	HexGrid = []
-	UnitGrid = []
+	tile_grid = []
+	unit_grid = []
 
 #endregion

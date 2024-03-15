@@ -8,5 +8,5 @@
 
 [resource]
 script = ExtResource("1_iksfp")
-units = Array[PackedScene]([ExtResource("3_bqgu4"), ExtResource("4_rc0i7"), ExtResource("5_dliqr")])
+unit_scenes = Array[PackedScene]([ExtResource("3_bqgu4"), ExtResource("4_rc0i7"), ExtResource("5_dliqr")])
 heroes = Array[PackedScene]([ExtResource("1_2aqtt")])

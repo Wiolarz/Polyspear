@@ -31,7 +31,7 @@ func can_defend(side : int) -> bool:
 func get_symbol(side : int) -> E.Symbols:
 	return Symbols[(side - unit_rotation) % 6]
 
-func Rotate(side : int):
+func turn(side : int):
 	"""
 	  360 / 6 = 60  degrees needed to rotate unit
 	  

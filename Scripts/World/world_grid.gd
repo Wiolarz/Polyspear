@@ -95,7 +95,7 @@ func spawn_tiles() -> void:
 			var XTilePos = x * TileHorizontalOffset + y * OddRowHorizontalOffset
 			var YTilePos = y * TileVerticalOffset
 
-			var newTileScene : PackedScene = GetTileToSpawn(x, y, oddRow)
+			var newTileScene : PackedScene = get_tile_to_spawn(x, y, oddRow)
 			var newTile = newTileScene.instantiate()
 
 			add_child(newTile)
@@ -122,7 +122,7 @@ func spawn_tiles() -> void:
 			hex_grid[x][y] = newTile
 
 
-func GetTileToSpawn(x : int, y : int, bOddRow : bool) -> PackedScene:
+func get_tile_to_spawn(x : int, y : int, bOddRow : bool) -> PackedScene:
 
 	var TileToSpawn = SentineltHexTile # Default value for hex tile is Sentinel Tile
 

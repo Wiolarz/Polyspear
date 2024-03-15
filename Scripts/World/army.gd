@@ -2,9 +2,9 @@ class_name Army
 
 extends Node
 
-@export var hero : Hero
+var hero : Hero
 
-@export var unit_set : ArmySet
+var unit_scenes : Array[PackedScene]
 
 var units : Array[AUnit]
 
