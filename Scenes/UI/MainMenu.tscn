@@ -33,5 +33,27 @@ scale = Vector2(6.2, 5.88)
 text = "Test Battle
 "
 
+[node name="BattleMapCreator" type="Button" parent="Control"]
+layout_mode = 0
+offset_left = -354.0
+offset_top = 669.0
+offset_right = -199.0
+offset_bottom = 700.0
+scale = Vector2(6.2, 5.88)
+text = "Battle Map Creator
+"
+
+[node name="WorldMapCreator" type="Button" parent="Control"]
+layout_mode = 0
+offset_left = -360.0
+offset_top = 873.0
+offset_right = -204.0
+offset_bottom = 904.0
+scale = Vector2(6.2, 5.88)
+text = "World Map Creator
+"
+
 [connection signal="pressed" from="Control/TestGame" to="." method="_on_test_game_pressed"]
 [connection signal="pressed" from="Control/TestBattle" to="." method="_on_test_battle_pressed"]
+[connection signal="pressed" from="Control/BattleMapCreator" to="." method="_on_battle_map_creator_pressed"]
+[connection signal="pressed" from="Control/WorldMapCreator" to="." method="_on_world_map_creator_pressed"]

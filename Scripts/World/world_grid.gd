@@ -8,6 +8,7 @@ extends GridManager
 @onready var WallHexTile : PackedScene = load("res://Scenes/HexTiles/StoneHexTile.tscn")
 @onready var DefaultHexTile : PackedScene = load("res://Scenes/HexTiles/GrassHexTile.tscn")
 
+var max_player_number : int
 
 var hex_grid : Array = []  # Array[Array[Place]]
 var hero_grid : Array = [] # Array[Array[Hero]]

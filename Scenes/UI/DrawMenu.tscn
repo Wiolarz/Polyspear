@@ -1,0 +1,75 @@
+[gd_scene load_steps=7 format=3 uid="uid://l0kojvcxbfky"]
+
+[ext_resource type="Script" path="res://Scripts/Development/map_creator.gd" id="1_y7q6u"]
+[ext_resource type="Script" path="res://Scripts/UI/Game_Logic/save_system.gd" id="2_ehahi"]
+[ext_resource type="Texture2D" uid="uid://da6ubkmi36xyq" path="res://Art/Black_Hex.png" id="3_lf3vs"]
+[ext_resource type="Texture2D" uid="uid://cgmjmsm0jfyuv" path="res://Art/Stone_Hex.png" id="4_ddlav"]
+[ext_resource type="Texture2D" uid="uid://bt4x7bws16kg8" path="res://Art/Grass_Hex.png" id="5_g8oo0"]
+[ext_resource type="Texture2D" uid="uid://bu74luqlsb8df" path="res://Art/Dirt_Hex.png" id="6_l12at"]
+
+[node name="DrawMenu" type="CanvasLayer"]
+process_mode = 3
+script = ExtResource("1_y7q6u")
+
+[node name="MenuContainer" type="VBoxContainer" parent="."]
+light_mask = 2
+visibility_layer = 2
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -940.0
+offset_top = -524.0
+offset_right = -759.0
+offset_bottom = -283.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(1.5, 1.5)
+
+[node name="NewMap" type="Button" parent="MenuContainer"]
+layout_mode = 2
+text = "New Map"
+
+[node name="LoadMap" type="Button" parent="MenuContainer"]
+layout_mode = 2
+text = "Load Map"
+
+[node name="SaveMap" type="Button" parent="MenuContainer"]
+layout_mode = 2
+text = "Save Map
+"
+
+[node name="save_system" type="Node" parent="."]
+script = ExtResource("2_ehahi")
+
+[node name="VBoxContainer" type="HBoxContainer" parent="."]
+offset_left = 337.0
+offset_top = 23.0
+offset_right = 3413.0
+offset_bottom = 692.0
+scale = Vector2(0.2, 0.2)
+
+[node name="SentinelButton" type="TextureButton" parent="VBoxContainer"]
+layout_mode = 2
+texture_normal = ExtResource("3_lf3vs")
+
+[node name="DefaultButton" type="TextureButton" parent="VBoxContainer"]
+layout_mode = 2
+texture_normal = ExtResource("4_ddlav")
+
+[node name="Spawn1Button" type="TextureButton" parent="VBoxContainer"]
+layout_mode = 2
+texture_normal = ExtResource("5_g8oo0")
+
+[node name="Spawn2Button" type="TextureButton" parent="VBoxContainer"]
+layout_mode = 2
+texture_normal = ExtResource("6_l12at")
+
+[connection signal="pressed" from="MenuContainer/NewMap" to="." method="_on_new_map_pressed"]
+[connection signal="pressed" from="MenuContainer/LoadMap" to="." method="_on_load_map_pressed"]
+[connection signal="pressed" from="MenuContainer/SaveMap" to="." method="_on_save_map_pressed"]
+[connection signal="pressed" from="VBoxContainer/SentinelButton" to="." method="_on_sentinel_button_pressed"]
+[connection signal="pressed" from="VBoxContainer/DefaultButton" to="." method="_on_default_button_pressed"]
+[connection signal="pressed" from="VBoxContainer/Spawn1Button" to="." method="_on_spawn_1_button_pressed"]
+[connection signal="pressed" from="VBoxContainer/Spawn2Button" to="." method="_on_spawn_2_button_pressed"]

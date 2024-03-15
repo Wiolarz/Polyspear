@@ -2,10 +2,7 @@
 
 ## now
 
-change Army unit data to simple Array -> modify all scripts that still treat it as ArmySet
-create army generator out of ArmyData resource
-finish test battle
-
+finish map creator
 
 input manager that knows if its a battle or global gameplay + restricts movement on turns
 

@@ -38,8 +38,6 @@ func test_tiles_assigned():
 	
 	for level in managers.keys():
 		var manager = managers[level]
-		assert_true(manager.attacker_units != null, level + " No Attacker units")
-		assert_true(manager.defender_units != null, level + " No Defender units")
 		assert_true(manager.map_data != null, level + " No map data")
 
 

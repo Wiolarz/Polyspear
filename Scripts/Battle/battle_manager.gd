@@ -13,10 +13,8 @@ var participants : Array[Player] = []
 var battling_armies : Array[Army]
 
 
-# TODO to be changed to approach suitable for more battle participants than 2
 var armies_unit_scenes : Array = [] # Array[Array[PackedScene]]
-var attacker_unit_scenes : Array[PackedScene]
-var defender_unit_scenes : Array[PackedScene]
+
 
 #endregion
 
@@ -27,8 +25,6 @@ var participant_idx : int = ATTACKER
 var selected_unit : AUnit
 
 var fighting_units : Array = [] # Array[Array[AUnit]]
-var attacker_units = []
-var defender_units = []
 
 var unsummoned_units_counter : int # set at the start of the during placement "summon" stage -> battle start after this number reaches 0
 
@@ -367,10 +363,10 @@ func spawn_units() -> void:
 			new_unit.controller = participants[army_idx]
 
 			if army_idx == ATTACKER:
-				spawn_cord = B_GRID.AttackerTiles[unit_idx].cord # Get spawn location
+				spawn_cord = B_GRID.summon_tiles[0][unit_idx].cord # Get spawn location
 				spawn_cord += B_GRID.DIRECTIONS[3]  # Move to a spot outside of the map near spawn point
 			elif army_idx == DEFENDER:
-				spawn_cord = B_GRID.DefenderTiles[unit_idx].cord
+				spawn_cord = B_GRID.summon_tiles[1][unit_idx].cord
 				spawn_cord += B_GRID.DIRECTIONS[0]
 
 			B_GRID.change_unit_cord(new_unit, spawn_cord) # Adding Unit to the Gameplay Array

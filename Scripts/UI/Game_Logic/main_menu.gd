@@ -2,6 +2,8 @@ extends CanvasLayer
 
 @export var maunual_tester : GeneralTest
 
+@export var map_creator : CanvasLayer
+
 @export var world_setup : WorldSetup  # temporary solution
 
 
@@ -40,3 +42,13 @@ func _on_test_battle_pressed():
 	if maunual_tester.test_battle():
 		toggle_menu_visibility()
 
+
+
+func _on_battle_map_creator_pressed():
+	IM.draw_mode = true
+	map_creator.open_draw_menu()
+	toggle_menu_visibility()
+
+
+func _on_world_map_creator_pressed():
+	pass # Replace with function body.

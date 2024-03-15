@@ -10,7 +10,10 @@ extends GridManager
 @onready var DefenderHexTile : PackedScene = load("res://Scenes/HexTiles/DirtHexTile.tscn")
 
 
-var AttackerTiles = []
+var max_player_number : int
+
+var summon_tiles : Array = []  # Array[Array[HexTile]] seperated by player lists all possible tiles units can be summoned to
+
 var DefenderTiles = []
 
 var tile_grid : Array = [] # Array[Array[HexTile]]
@@ -116,6 +119,9 @@ func get_melee_targets(start_Cord : Vector2i, direction, symbol_side : int) -> A
 #region Generate Grid
 
 func init_hex_grid() -> void:
+	for i in range(max_player_number):
+		summon_tiles.append([])
+
 	for i in range(grid_width):
 		tile_grid.append([])
 		unit_grid.append([])
@@ -152,11 +158,11 @@ func spawn_tiles() -> void:
 			
 				E.HexTileType.ATTACKER_SPAWN:
 					newTile.name = "Attacker_HexTile"
-					AttackerTiles.append(newTile)
+					summon_tiles[0].append(newTile)
 
 				E.HexTileType.DEFENDER_SPAWN:
 					newTile.name = "Defender_HexTile"
-					DefenderTiles.append(newTile)
+					summon_tiles[1].append(newTile)
 
 			newTile.tile_type = current_spawn
 
@@ -190,8 +196,7 @@ func get_tile_to_spawn(x : int, y : int, bOddRow : bool) -> PackedScene:
 
 
 func reset_data():
-	AttackerTiles = []
-	DefenderTiles = []
+	summon_tiles = []
 	tile_grid = []
 	unit_grid = []
 

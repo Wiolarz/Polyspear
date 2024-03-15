@@ -74,10 +74,8 @@ func get_all_spawn_moves(my_units : Array):
 	var legal_moves = []
 	var spawn_tiles = []
 
-	if my_units[0].controller == BM.commanders[0].controller:
-		spawn_tiles = B_GRID.AttackerTiles
-	else:
-		spawn_tiles = B_GRID.DefenderTiles
+	spawn_tiles = B_GRID.summon_tiles[BM.participant_idx]
+
 
 	for unit in my_units:
 		if B_GRID.get_tile_type(unit.cord) != E.HexTileType.SENTINEL:
