@@ -19,8 +19,12 @@ enum player_type
 enum WorldMapTiles
 {
 	SENTINEL,
+
+	# logika gry bazowa
 	EMPTY,
 	WALL,
+	
+	# menusy
 	CITY,
 	PLACE,
 }

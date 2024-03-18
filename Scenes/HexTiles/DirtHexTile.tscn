@@ -4,7 +4,6 @@
 [ext_resource type="Texture2D" uid="uid://bu74luqlsb8df" path="res://Art/Dirt_Hex.png" id="2_pdu1l"]
 
 [node name="HexTile" type="Area2D"]
-rotation = 0.523599
 script = ExtResource("1_4uf6a")
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="."]

@@ -3,21 +3,25 @@
 # Army
 
 Player has a list of armies, but not all of them have to contain a hero.
-Those armies are garrisons in towns and the cannot move on their own.
-So not all armies are displayed in "heroes" tab at the bottom of the screen.
+Those armies are garrisons in towns and they cannot move on their own.
 
-But when there is a battle we send an army class data instead of hero data
+Only armies containing hero can move -> are displayed in "heroes" tab at the bottom of the screen.
+
+Battle still take place between Army class objects where hero is only another unit
 While to determine if the selected army can be moved we use -> does army contain a hero?
 
 
 
 ## Heroes
+As army leader they have limited maximum army size. When recruiting units at the city over the army limit, they will be placed inside a garrsion.
 
+In a battle hero take place he gets added to the unit roster,
+but if hero were to fall in a battle instead of being removed he becomes "wounded" and returns to health once he visits a friendly city.
 
+Player is limited to a max of 3 heroes in a game (each of a different class)
 
 ### CITY
-When Hero army enters the city which has more units than the hero can command, the units go into "reserve" space
-(they can be swapped back in, but in a case of an attack they don't appear)
+During a city defense a present hero Army can be supported by additional present garrison troops equal to the city defense level.
 
 ### Another Ally Hero
 when we selecet a hero then press on another one, instead of swapping we begin the trade
@@ -26,8 +30,8 @@ when we selecet a hero then press on another one, instead of swapping we begin t
 
 
 
-var UI
-"""
+# UI
+
 show list of cities and heroes at the bottom for quick selection option
 
 

@@ -4,7 +4,6 @@
 [ext_resource type="Script" path="res://Scripts/Battle/hex_tile.gd" id="1_s64jq"]
 
 [node name="HexTile" type="Area2D"]
-rotation = 0.523599
 script = ExtResource("1_s64jq")
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="."]

@@ -2,10 +2,37 @@
 
 ## now
 
-finish map creator
+Refactor project file names or something
+
+
+serialization and deserialization for HexTile put code in the same place
+
+move manpipulation of hextile sprite2D  to hextile script
+
+
+
+Each tile has to have specified:
+
+Battle scenes have a seperate data layer
+
+WM and BM:
+texture
+rotation
+flip_v
+flip_h
+type (string for game logic)
+
+
+Krong todo:
+1 move logic of creating sentinel broder outside of map rules, something like that
+
+
 
 input manager that knows if its a battle or global gameplay + restricts movement on turns
 
+
+
+Remove map_shape from project
 
 
 ## MONSTER BUGS -> game breaking stuff
@@ -103,6 +130,14 @@ Graphics/Technical -> Spacing_of_the_Grid
 
 # FEATURE: Different maps
 
+## TODO
+special type tiles like spawn points/cities:
+have a basic "spawn" sprite (or specific faction city sprite) (for choice based cities (start of the game) create a different question mark city tile)
+All specific player tiles will have assigned color in player order (when players later on decide to change their color, it simply gets swapped in manager)
+
+For color based tiles to work, opacity of special regions has to be 0 in sprite, and receive a full tile sprite underneath to swap color in
+
+
 ## Map generator
 
 
@@ -112,7 +147,7 @@ How to handle different art assets for different regions in the game?
 - They could be an additional resource (map_art) for WorldSetup alongside gameplay map_data
 
 
-## FEATURE: Saving data files
+# FEATURE: Saving data files
 
 Player Data (nick, ETA, match history, statistics) - resource
 Game Settings (resolution, audio settings, etc.) - txt

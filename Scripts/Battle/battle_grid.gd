@@ -10,6 +10,30 @@ extends GridManager
 @onready var DefenderHexTile : PackedScene = load("res://Scenes/HexTiles/DirtHexTile.tscn")
 
 
+@onready var tile_names = \
+{
+	# Sentinel edge tiles
+	"sentinel": load("res://Scenes/HexTiles/BlackHexTile.tscn"),
+
+	# Normal terrain
+	"grass": load("res://Scenes/HexTiles/GrassHexTile.tscn"),
+
+	# Special terrain tiles
+	"mud" : load("res://Scenes/HexTiles/DirtHexTile.tscn"),
+
+	"hole": load("res://Scenes/HexTiles/DirtHexTile.tscn"),
+
+	"hill": load("res://Scenes/HexTiles/DirtHexTile.tscn"),
+
+	# Colored player summon locations
+	"player-red": load("res://Scenes/HexTiles/GrassHexTile.tscn"),
+	"player-blue": load("res://Scenes/HexTiles/GrassHexTile.tscn"),
+	"player-purple": load("res://Scenes/HexTiles/GrassHexTile.tscn"),
+	"player-teal": load("res://Scenes/HexTiles/GrassHexTile.tscn"),
+
+}
+
+
 var max_player_number : int
 
 var summon_tiles : Array = []  # Array[Array[HexTile]] seperated by player lists all possible tiles units can be summoned to

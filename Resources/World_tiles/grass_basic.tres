@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="DataTile" load_steps=2 format=3 uid="uid://cys6v1qnhjiph"]
+
+[ext_resource type="Script" path="res://Resources/data_tile.gd" id="1_t66vt"]
+
+[resource]
+script = ExtResource("1_t66vt")
+texture_path = "res://Art/world_map/grass_basic.png"
+flip_horizontal = false
+gameplay_function = "empty"

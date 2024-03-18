@@ -1,0 +1,643 @@
+[gd_resource type="Resource" script_class="WorldMap" load_steps=108 format=3 uid="uid://b3fli1dnnerfw"]
+
+[ext_resource type="Script" path="res://Resources/data_tile.gd" id="1_gmvuy"]
+[ext_resource type="Script" path="res://Resources/world_map.gd" id="2_vva0n"]
+
+[sub_resource type="Resource" id="Resource_8nnuo"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_hyohc"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_flcmq"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_3ci6c"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_ra0t4"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_o0eer"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_mu724"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_adcld"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_h57al"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_qo6cu"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_07n48"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_oyuul"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/world_map/mountains.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_00lwb"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/world_map/mountains.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_a5lti"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/world_map/mountains.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_04b7c"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_s7qdw"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_q1h0s"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_wrp6o"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/world_map/mountains.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_50431"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/world_map/road_three_endings.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_blam6"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/world_map/mountains.png"
+flip_horizontal = false
+gameplay_function = "1"
+
+[sub_resource type="Resource" id="Resource_k8bc8"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/world_map/mountains.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_jow2c"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_6wxur"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_ict5n"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/world_map/mountains.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_8a5tj"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/world_map/road_straight.png"
+flip_horizontal = false
+gameplay_function = "1"
+
+[sub_resource type="Resource" id="Resource_le247"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/world_map/road_curved.png"
+flip_horizontal = false
+gameplay_function = "1"
+
+[sub_resource type="Resource" id="Resource_qaqxe"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/world_map/road_three_endings.png"
+flip_horizontal = false
+gameplay_function = "3"
+
+[sub_resource type="Resource" id="Resource_05bss"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/world_map/mountains.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_auhas"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_fruyb"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/Grass_Hex.png"
+flip_horizontal = false
+gameplay_function = "1"
+
+[sub_resource type="Resource" id="Resource_g1jla"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/world_map/elven_city.png"
+flip_horizontal = false
+gameplay_function = "1"
+
+[sub_resource type="Resource" id="Resource_artq8"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/world_map/grass_basic.png"
+flip_horizontal = false
+gameplay_function = "3"
+
+[sub_resource type="Resource" id="Resource_n3amf"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/world_map/grass_basic.png"
+flip_horizontal = false
+gameplay_function = "3"
+
+[sub_resource type="Resource" id="Resource_c0cp6"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/world_map/road_curved.png"
+flip_horizontal = false
+gameplay_function = "3"
+
+[sub_resource type="Resource" id="Resource_1gxsq"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/world_map/mountains.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_3j3r8"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_ak3v8"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/world_map/mountains.png"
+flip_horizontal = false
+gameplay_function = "3"
+
+[sub_resource type="Resource" id="Resource_bs1qf"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/world_map/sawmill.png"
+flip_horizontal = false
+gameplay_function = "3"
+
+[sub_resource type="Resource" id="Resource_bgclx"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/world_map/grass_basic.png"
+flip_horizontal = false
+gameplay_function = "3"
+
+[sub_resource type="Resource" id="Resource_l67gj"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/world_map/grass_basic.png"
+flip_horizontal = false
+gameplay_function = "3"
+
+[sub_resource type="Resource" id="Resource_8es7t"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/world_map/road_straight.png"
+flip_horizontal = false
+gameplay_function = "3"
+
+[sub_resource type="Resource" id="Resource_pvjtd"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/world_map/mountains.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_n48oo"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_ql4fj"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/world_map/mountains.png"
+flip_horizontal = false
+gameplay_function = "3"
+
+[sub_resource type="Resource" id="Resource_j403p"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/world_map/grass_basic.png"
+flip_horizontal = false
+gameplay_function = "3"
+
+[sub_resource type="Resource" id="Resource_qo6bd"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/world_map/iron_mine.png"
+flip_horizontal = false
+gameplay_function = "3"
+
+[sub_resource type="Resource" id="Resource_n2vdm"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/world_map/mountains.png"
+flip_horizontal = false
+gameplay_function = "3"
+
+[sub_resource type="Resource" id="Resource_h1w2b"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/world_map/road_curved.png"
+flip_horizontal = false
+gameplay_function = "3"
+
+[sub_resource type="Resource" id="Resource_w6qj4"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/world_map/mountains.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_xaeqw"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_q62nh"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/world_map/mountains.png"
+flip_horizontal = false
+gameplay_function = "3"
+
+[sub_resource type="Resource" id="Resource_wf0we"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/world_map/grass_basic.png"
+flip_horizontal = false
+gameplay_function = "3"
+
+[sub_resource type="Resource" id="Resource_j26ip"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/world_map/mountains.png"
+flip_horizontal = false
+gameplay_function = "3"
+
+[sub_resource type="Resource" id="Resource_r6xek"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/world_map/road_straight.png"
+flip_horizontal = false
+gameplay_function = "3"
+
+[sub_resource type="Resource" id="Resource_vbd32"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/world_map/grass_basic.png"
+flip_horizontal = false
+gameplay_function = "3"
+
+[sub_resource type="Resource" id="Resource_c2vxj"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/world_map/mountains.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_pji1w"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_0lvk1"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/world_map/mountains.png"
+flip_horizontal = false
+gameplay_function = "3"
+
+[sub_resource type="Resource" id="Resource_0hfbn"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/world_map/mountains.png"
+flip_horizontal = false
+gameplay_function = "3"
+
+[sub_resource type="Resource" id="Resource_b2bqm"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/world_map/road_curved.png"
+flip_horizontal = false
+gameplay_function = "3"
+
+[sub_resource type="Resource" id="Resource_llty0"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/world_map/ruby_cave.png"
+flip_horizontal = false
+gameplay_function = "3"
+
+[sub_resource type="Resource" id="Resource_mi2nj"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/world_map/grass_basic.png"
+flip_horizontal = false
+gameplay_function = "3"
+
+[sub_resource type="Resource" id="Resource_yxkii"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/world_map/mountains.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_xlkx0"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_efipw"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/world_map/mountains.png"
+flip_horizontal = false
+gameplay_function = "3"
+
+[sub_resource type="Resource" id="Resource_6c6ec"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/world_map/grass_basic.png"
+flip_horizontal = false
+gameplay_function = "3"
+
+[sub_resource type="Resource" id="Resource_6wh2q"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/world_map/road_straight.png"
+flip_horizontal = false
+gameplay_function = "3"
+
+[sub_resource type="Resource" id="Resource_5ic61"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/world_map/grass_basic.png"
+flip_horizontal = false
+gameplay_function = "3"
+
+[sub_resource type="Resource" id="Resource_pumla"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/world_map/grass_basic.png"
+flip_horizontal = false
+gameplay_function = "3"
+
+[sub_resource type="Resource" id="Resource_mk24s"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/world_map/mountains.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_ubqbk"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_0v28r"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/world_map/mountains.png"
+flip_horizontal = false
+gameplay_function = "3"
+
+[sub_resource type="Resource" id="Resource_4snqi"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/world_map/iron_mine.png"
+flip_horizontal = false
+gameplay_function = "3"
+
+[sub_resource type="Resource" id="Resource_0uy5q"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/world_map/road_curved.png"
+flip_horizontal = false
+gameplay_function = "3"
+
+[sub_resource type="Resource" id="Resource_jxdu8"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/world_map/road_straight.png"
+flip_horizontal = false
+gameplay_function = "3"
+
+[sub_resource type="Resource" id="Resource_u1k4i"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/world_map/road_curved.png"
+flip_horizontal = false
+gameplay_function = "3"
+
+[sub_resource type="Resource" id="Resource_asj82"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/world_map/mountains.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_7etjr"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_8pst6"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/world_map/mountains.png"
+flip_horizontal = false
+gameplay_function = "3"
+
+[sub_resource type="Resource" id="Resource_4sflk"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/world_map/grass_basic.png"
+flip_horizontal = false
+gameplay_function = "3"
+
+[sub_resource type="Resource" id="Resource_wqny5"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/world_map/grass_basic.png"
+flip_horizontal = false
+gameplay_function = "3"
+
+[sub_resource type="Resource" id="Resource_twnxp"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/world_map/orc_city.png"
+flip_horizontal = false
+gameplay_function = "2"
+
+[sub_resource type="Resource" id="Resource_24k06"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/world_map/mountains.png"
+flip_horizontal = false
+gameplay_function = "2"
+
+[sub_resource type="Resource" id="Resource_oaj6f"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/world_map/mountains.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_xdxvw"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_ns8tn"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/world_map/mountains.png"
+flip_horizontal = false
+gameplay_function = "3"
+
+[sub_resource type="Resource" id="Resource_pougr"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/world_map/sawmill.png"
+flip_horizontal = false
+gameplay_function = "2"
+
+[sub_resource type="Resource" id="Resource_lv70f"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/world_map/grass_basic.png"
+flip_horizontal = false
+gameplay_function = "2"
+
+[sub_resource type="Resource" id="Resource_gok0d"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/world_map/mountains.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_es4fo"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/world_map/mountains.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_ln6ee"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/world_map/mountains.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_wybi7"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_hrwn5"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/world_map/mountains.png"
+flip_horizontal = false
+gameplay_function = "2"
+
+[sub_resource type="Resource" id="Resource_46vg3"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/world_map/mountains.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_hngq8"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/world_map/mountains.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_jj75v"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/world_map/mountains.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_ydyyq"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/world_map/mountains.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_ax2uk"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_w1kgh"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_g3np5"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_6suj2"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_wd7to"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_ghe23"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_brkoj"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_rc4it"]
+script = ExtResource("1_gmvuy")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[resource]
+script = ExtResource("2_vva0n")
+max_player_number = 2
+grid_width = 5
+grid_height = 5
+grid_data = [[SubResource("Resource_8nnuo"), SubResource("Resource_hyohc"), SubResource("Resource_flcmq"), SubResource("Resource_3ci6c"), SubResource("Resource_ra0t4"), SubResource("Resource_o0eer"), SubResource("Resource_mu724")], [SubResource("Resource_adcld"), SubResource("Resource_h57al"), SubResource("Resource_qo6cu"), SubResource("Resource_07n48"), SubResource("Resource_oyuul"), SubResource("Resource_00lwb"), SubResource("Resource_a5lti")], [SubResource("Resource_04b7c"), SubResource("Resource_s7qdw"), SubResource("Resource_q1h0s"), SubResource("Resource_wrp6o"), SubResource("Resource_50431"), SubResource("Resource_blam6"), SubResource("Resource_k8bc8")], [SubResource("Resource_jow2c"), SubResource("Resource_6wxur"), SubResource("Resource_ict5n"), SubResource("Resource_8a5tj"), SubResource("Resource_le247"), SubResource("Resource_qaqxe"), SubResource("Resource_05bss")], [SubResource("Resource_auhas"), SubResource("Resource_fruyb"), SubResource("Resource_g1jla"), SubResource("Resource_artq8"), SubResource("Resource_n3amf"), SubResource("Resource_c0cp6"), SubResource("Resource_1gxsq")], [SubResource("Resource_3j3r8"), SubResource("Resource_ak3v8"), SubResource("Resource_bs1qf"), SubResource("Resource_bgclx"), SubResource("Resource_l67gj"), SubResource("Resource_8es7t"), SubResource("Resource_pvjtd")], [SubResource("Resource_n48oo"), SubResource("Resource_ql4fj"), SubResource("Resource_j403p"), SubResource("Resource_qo6bd"), SubResource("Resource_n2vdm"), SubResource("Resource_h1w2b"), SubResource("Resource_w6qj4")], [SubResource("Resource_xaeqw"), SubResource("Resource_q62nh"), SubResource("Resource_wf0we"), SubResource("Resource_j26ip"), SubResource("Resource_r6xek"), SubResource("Resource_vbd32"), SubResource("Resource_c2vxj")], [SubResource("Resource_pji1w"), SubResource("Resource_0lvk1"), SubResource("Resource_0hfbn"), SubResource("Resource_b2bqm"), SubResource("Resource_llty0"), SubResource("Resource_mi2nj"), SubResource("Resource_yxkii")], [SubResource("Resource_xlkx0"), SubResource("Resource_efipw"), SubResource("Resource_6c6ec"), SubResource("Resource_6wh2q"), SubResource("Resource_5ic61"), SubResource("Resource_pumla"), SubResource("Resource_mk24s")], [SubResource("Resource_ubqbk"), SubResource("Resource_0v28r"), SubResource("Resource_4snqi"), SubResource("Resource_0uy5q"), SubResource("Resource_jxdu8"), SubResource("Resource_u1k4i"), SubResource("Resource_asj82")], [SubResource("Resource_7etjr"), SubResource("Resource_8pst6"), SubResource("Resource_4sflk"), SubResource("Resource_wqny5"), SubResource("Resource_twnxp"), SubResource("Resource_24k06"), SubResource("Resource_oaj6f")], [SubResource("Resource_xdxvw"), SubResource("Resource_ns8tn"), SubResource("Resource_pougr"), SubResource("Resource_lv70f"), SubResource("Resource_gok0d"), SubResource("Resource_es4fo"), SubResource("Resource_ln6ee")], [SubResource("Resource_wybi7"), SubResource("Resource_hrwn5"), SubResource("Resource_46vg3"), SubResource("Resource_hngq8"), SubResource("Resource_jj75v"), SubResource("Resource_ydyyq"), SubResource("Resource_ax2uk")], [SubResource("Resource_w1kgh"), SubResource("Resource_g3np5"), SubResource("Resource_6suj2"), SubResource("Resource_wd7to"), SubResource("Resource_ghe23"), SubResource("Resource_brkoj"), SubResource("Resource_rc4it")]]
+test_a = "a"
+map_shape = 0

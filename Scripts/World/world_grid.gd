@@ -89,6 +89,10 @@ func init_hex_grid() -> void:
 
 
 func spawn_tiles() -> void:
+
+	#for row in map_information.grid_data:
+	#	for tile in row:
+
 	for y in range(grid_height):
 		for x in range(grid_width):
 			var oddRow = y % 2 == 0 # Sentinel Rows add aditional row
@@ -101,6 +105,10 @@ func spawn_tiles() -> void:
 
 			add_child(newTile)
 			
+			var GRID = map_information.grid_data # TODOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+
+
+			newTile.get_node("Sprite2D").texture = ResourceLoader.load(GRID[x][y].texture_path)
 
 
 			newTile.global_position.x = XTilePos
@@ -125,7 +133,14 @@ func spawn_tiles() -> void:
 
 func get_tile_to_spawn(x : int, y : int, bOddRow : bool) -> PackedScene:
 
+
+	
+
+
 	var TileToSpawn = SentineltHexTile # Default value for hex tile is Sentinel Tile
+
+
+
 
 
 	current_spawn = E.WorldMapTiles.SENTINEL

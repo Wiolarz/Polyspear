@@ -44,11 +44,8 @@ func _on_test_battle_pressed():
 
 
 
-func _on_battle_map_creator_pressed():
+
+func _on_map_creator_pressed():
 	IM.draw_mode = true
 	map_creator.open_draw_menu()
 	toggle_menu_visibility()
-
-
-func _on_world_map_creator_pressed():
-	pass # Replace with function body.

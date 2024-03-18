@@ -2,10 +2,19 @@ class_name GridManager
 
 extends Node
 
+
+
+var map_information : GridBoard
+
+
 # Hex Sprite draw gaps
-const TileHorizontalOffset : float = 700.0
-const TileVerticalOffset : float = 606.2
-const OddRowHorizontalOffset : float = 350.0
+const TileHorizontalOffset : float = 510.0
+const TileVerticalOffset : float = 470.1
+const OddRowHorizontalOffset : float = 250.0
+
+# const TileHorizontalOffset : float = 700.0
+# const TileVerticalOffset : float = 606.2
+# const OddRowHorizontalOffset : float = 350.0
 
 
 var grid_width : int = 5

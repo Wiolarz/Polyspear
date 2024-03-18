@@ -1,0 +1,643 @@
+[gd_resource type="Resource" script_class="WorldMap" load_steps=108 format=3 uid="uid://k5pp1lpk7wxc"]
+
+[ext_resource type="Script" path="res://Resources/data_tile.gd" id="1_twjth"]
+[ext_resource type="Script" path="res://Resources/world_map.gd" id="2_ap311"]
+
+[sub_resource type="Resource" id="Resource_i5sxo"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_ppc5x"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_p3uyw"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_0bxm8"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_wrlfg"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_vja20"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_o3dtr"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_uflrc"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_vn862"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_80n1c"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_17u2k"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_i3iw8"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_g5dbu"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_o2sko"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_kqmbc"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_8mym4"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_k37fk"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_obv68"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_ou6yj"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_drmas"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Grass_Hex.png"
+flip_horizontal = false
+gameplay_function = "1"
+
+[sub_resource type="Resource" id="Resource_13qkd"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_oatil"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_p2f8n"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_8f3gw"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_0rfca"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Grass_Hex.png"
+flip_horizontal = false
+gameplay_function = "1"
+
+[sub_resource type="Resource" id="Resource_w6a3a"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Grass_Hex.png"
+flip_horizontal = false
+gameplay_function = "1"
+
+[sub_resource type="Resource" id="Resource_ptx3h"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Stone_Hex.png"
+flip_horizontal = false
+gameplay_function = "3"
+
+[sub_resource type="Resource" id="Resource_fta6u"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_iynd4"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_ctbuq"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Grass_Hex.png"
+flip_horizontal = false
+gameplay_function = "1"
+
+[sub_resource type="Resource" id="Resource_010i6"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Grass_Hex.png"
+flip_horizontal = false
+gameplay_function = "1"
+
+[sub_resource type="Resource" id="Resource_ct8jy"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Stone_Hex.png"
+flip_horizontal = false
+gameplay_function = "3"
+
+[sub_resource type="Resource" id="Resource_nrrvo"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Stone_Hex.png"
+flip_horizontal = false
+gameplay_function = "3"
+
+[sub_resource type="Resource" id="Resource_bqvnn"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Stone_Hex.png"
+flip_horizontal = false
+gameplay_function = "3"
+
+[sub_resource type="Resource" id="Resource_qc0lu"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_v3kjy"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_b4wuy"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Stone_Hex.png"
+flip_horizontal = false
+gameplay_function = "3"
+
+[sub_resource type="Resource" id="Resource_ms05l"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Stone_Hex.png"
+flip_horizontal = false
+gameplay_function = "3"
+
+[sub_resource type="Resource" id="Resource_6vthr"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Grass_Hex.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_rdghs"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Stone_Hex.png"
+flip_horizontal = false
+gameplay_function = "3"
+
+[sub_resource type="Resource" id="Resource_e25pv"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Stone_Hex.png"
+flip_horizontal = false
+gameplay_function = "3"
+
+[sub_resource type="Resource" id="Resource_6chsn"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_klfan"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_0mahq"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Stone_Hex.png"
+flip_horizontal = false
+gameplay_function = "3"
+
+[sub_resource type="Resource" id="Resource_n5et5"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Stone_Hex.png"
+flip_horizontal = false
+gameplay_function = "3"
+
+[sub_resource type="Resource" id="Resource_k8ol8"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Stone_Hex.png"
+flip_horizontal = false
+gameplay_function = "3"
+
+[sub_resource type="Resource" id="Resource_wjv4l"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Stone_Hex.png"
+flip_horizontal = false
+gameplay_function = "3"
+
+[sub_resource type="Resource" id="Resource_7ybk6"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Stone_Hex.png"
+flip_horizontal = false
+gameplay_function = "3"
+
+[sub_resource type="Resource" id="Resource_kthwm"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_oi1uw"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_1prr0"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Stone_Hex.png"
+flip_horizontal = false
+gameplay_function = "3"
+
+[sub_resource type="Resource" id="Resource_hqmyq"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Stone_Hex.png"
+flip_horizontal = false
+gameplay_function = "3"
+
+[sub_resource type="Resource" id="Resource_lgd03"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Grass_Hex.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_fx81i"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Stone_Hex.png"
+flip_horizontal = false
+gameplay_function = "3"
+
+[sub_resource type="Resource" id="Resource_ip8yb"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Stone_Hex.png"
+flip_horizontal = false
+gameplay_function = "3"
+
+[sub_resource type="Resource" id="Resource_cco3p"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_cyq7e"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_b4wxu"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Stone_Hex.png"
+flip_horizontal = false
+gameplay_function = "3"
+
+[sub_resource type="Resource" id="Resource_tedio"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Stone_Hex.png"
+flip_horizontal = false
+gameplay_function = "3"
+
+[sub_resource type="Resource" id="Resource_83077"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Stone_Hex.png"
+flip_horizontal = false
+gameplay_function = "3"
+
+[sub_resource type="Resource" id="Resource_ddune"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Stone_Hex.png"
+flip_horizontal = false
+gameplay_function = "3"
+
+[sub_resource type="Resource" id="Resource_51s8s"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Stone_Hex.png"
+flip_horizontal = false
+gameplay_function = "3"
+
+[sub_resource type="Resource" id="Resource_jfg0o"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_w6xqk"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_84utv"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Stone_Hex.png"
+flip_horizontal = false
+gameplay_function = "3"
+
+[sub_resource type="Resource" id="Resource_iuyry"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Stone_Hex.png"
+flip_horizontal = false
+gameplay_function = "3"
+
+[sub_resource type="Resource" id="Resource_gjo1b"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Stone_Hex.png"
+flip_horizontal = false
+gameplay_function = "3"
+
+[sub_resource type="Resource" id="Resource_h6c1p"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Stone_Hex.png"
+flip_horizontal = false
+gameplay_function = "3"
+
+[sub_resource type="Resource" id="Resource_wru2x"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Stone_Hex.png"
+flip_horizontal = false
+gameplay_function = "3"
+
+[sub_resource type="Resource" id="Resource_4dbe1"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_3ql5m"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_bppkm"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Stone_Hex.png"
+flip_horizontal = false
+gameplay_function = "3"
+
+[sub_resource type="Resource" id="Resource_8ws6l"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Stone_Hex.png"
+flip_horizontal = false
+gameplay_function = "3"
+
+[sub_resource type="Resource" id="Resource_8lty0"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Stone_Hex.png"
+flip_horizontal = false
+gameplay_function = "3"
+
+[sub_resource type="Resource" id="Resource_e2kyq"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Stone_Hex.png"
+flip_horizontal = false
+gameplay_function = "3"
+
+[sub_resource type="Resource" id="Resource_jafne"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Stone_Hex.png"
+flip_horizontal = false
+gameplay_function = "3"
+
+[sub_resource type="Resource" id="Resource_bpx7w"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_vdndm"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_4uvkk"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Stone_Hex.png"
+flip_horizontal = false
+gameplay_function = "3"
+
+[sub_resource type="Resource" id="Resource_iieev"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Stone_Hex.png"
+flip_horizontal = false
+gameplay_function = "3"
+
+[sub_resource type="Resource" id="Resource_v218u"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Stone_Hex.png"
+flip_horizontal = false
+gameplay_function = "3"
+
+[sub_resource type="Resource" id="Resource_mstct"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Dirt_Hex.png"
+flip_horizontal = false
+gameplay_function = "2"
+
+[sub_resource type="Resource" id="Resource_phjko"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Dirt_Hex.png"
+flip_horizontal = false
+gameplay_function = "2"
+
+[sub_resource type="Resource" id="Resource_gts10"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_6hgux"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_ahhpl"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Stone_Hex.png"
+flip_horizontal = false
+gameplay_function = "3"
+
+[sub_resource type="Resource" id="Resource_7q56r"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Dirt_Hex.png"
+flip_horizontal = false
+gameplay_function = "2"
+
+[sub_resource type="Resource" id="Resource_1ic0n"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Dirt_Hex.png"
+flip_horizontal = false
+gameplay_function = "2"
+
+[sub_resource type="Resource" id="Resource_6sikg"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_a0bsp"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_y458o"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_yathl"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_vbslo"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Dirt_Hex.png"
+flip_horizontal = false
+gameplay_function = "2"
+
+[sub_resource type="Resource" id="Resource_xoj0m"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_ktj8k"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_x154b"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_rbyo4"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_sbb0i"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_bfpsh"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_wgubk"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_eq60x"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_3orgn"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_4nv5f"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_odoip"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[sub_resource type="Resource" id="Resource_isn6s"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+gameplay_function = "0"
+
+[resource]
+script = ExtResource("2_ap311")
+max_player_number = 2
+grid_width = 5
+grid_height = 5
+grid_data = [[SubResource("Resource_i5sxo"), SubResource("Resource_ppc5x"), SubResource("Resource_p3uyw"), SubResource("Resource_0bxm8"), SubResource("Resource_wrlfg"), SubResource("Resource_vja20"), SubResource("Resource_o3dtr")], [SubResource("Resource_uflrc"), SubResource("Resource_vn862"), SubResource("Resource_80n1c"), SubResource("Resource_17u2k"), SubResource("Resource_i3iw8"), SubResource("Resource_g5dbu"), SubResource("Resource_o2sko")], [SubResource("Resource_kqmbc"), SubResource("Resource_8mym4"), SubResource("Resource_k37fk"), SubResource("Resource_obv68"), SubResource("Resource_ou6yj"), SubResource("Resource_drmas"), SubResource("Resource_13qkd")], [SubResource("Resource_oatil"), SubResource("Resource_p2f8n"), SubResource("Resource_8f3gw"), SubResource("Resource_0rfca"), SubResource("Resource_w6a3a"), SubResource("Resource_ptx3h"), SubResource("Resource_fta6u")], [SubResource("Resource_iynd4"), SubResource("Resource_ctbuq"), SubResource("Resource_010i6"), SubResource("Resource_ct8jy"), SubResource("Resource_nrrvo"), SubResource("Resource_bqvnn"), SubResource("Resource_qc0lu")], [SubResource("Resource_v3kjy"), SubResource("Resource_b4wuy"), SubResource("Resource_ms05l"), SubResource("Resource_6vthr"), SubResource("Resource_rdghs"), SubResource("Resource_e25pv"), SubResource("Resource_6chsn")], [SubResource("Resource_klfan"), SubResource("Resource_0mahq"), SubResource("Resource_n5et5"), SubResource("Resource_k8ol8"), SubResource("Resource_wjv4l"), SubResource("Resource_7ybk6"), SubResource("Resource_kthwm")], [SubResource("Resource_oi1uw"), SubResource("Resource_1prr0"), SubResource("Resource_hqmyq"), SubResource("Resource_lgd03"), SubResource("Resource_fx81i"), SubResource("Resource_ip8yb"), SubResource("Resource_cco3p")], [SubResource("Resource_cyq7e"), SubResource("Resource_b4wxu"), SubResource("Resource_tedio"), SubResource("Resource_83077"), SubResource("Resource_ddune"), SubResource("Resource_51s8s"), SubResource("Resource_jfg0o")], [SubResource("Resource_w6xqk"), SubResource("Resource_84utv"), SubResource("Resource_iuyry"), SubResource("Resource_gjo1b"), SubResource("Resource_h6c1p"), SubResource("Resource_wru2x"), SubResource("Resource_4dbe1")], [SubResource("Resource_3ql5m"), SubResource("Resource_bppkm"), SubResource("Resource_8ws6l"), SubResource("Resource_8lty0"), SubResource("Resource_e2kyq"), SubResource("Resource_jafne"), SubResource("Resource_bpx7w")], [SubResource("Resource_vdndm"), SubResource("Resource_4uvkk"), SubResource("Resource_iieev"), SubResource("Resource_v218u"), SubResource("Resource_mstct"), SubResource("Resource_phjko"), SubResource("Resource_gts10")], [SubResource("Resource_6hgux"), SubResource("Resource_ahhpl"), SubResource("Resource_7q56r"), SubResource("Resource_1ic0n"), SubResource("Resource_6sikg"), SubResource("Resource_a0bsp"), SubResource("Resource_y458o")], [SubResource("Resource_yathl"), SubResource("Resource_vbslo"), SubResource("Resource_xoj0m"), SubResource("Resource_ktj8k"), SubResource("Resource_x154b"), SubResource("Resource_rbyo4"), SubResource("Resource_sbb0i")], [SubResource("Resource_bfpsh"), SubResource("Resource_wgubk"), SubResource("Resource_eq60x"), SubResource("Resource_3orgn"), SubResource("Resource_4nv5f"), SubResource("Resource_odoip"), SubResource("Resource_isn6s")]]
+test_a = "a"
+map_shape = 0

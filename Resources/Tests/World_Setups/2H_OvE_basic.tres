@@ -3,9 +3,9 @@
 [ext_resource type="Resource" uid="uid://dm2jeuv4bo4lw" path="res://Resources/Tests/Players/human_elf.tres" id="1_uf2b6"]
 [ext_resource type="Resource" uid="uid://dkgrcmar25cmi" path="res://Resources/Tests/Players/human_orc.tres" id="2_1pwd0"]
 [ext_resource type="Script" path="res://Resources/Tests/world_setup.gd" id="3_144ni"]
-[ext_resource type="Resource" uid="uid://dnyhjboril3px" path="res://Resources/World_maps/basic.tres" id="4_su8yn"]
+[ext_resource type="Resource" path="res://Resources/Battle_Maps/empty2.tres" id="4_ydljn"]
 
 [resource]
 script = ExtResource("3_144ni")
 player_settings = Array[Resource("res://Resources/Tests/player_setting.gd")]([ExtResource("1_uf2b6"), ExtResource("2_1pwd0")])
-world_map = ExtResource("4_su8yn")
+world_map = ExtResource("4_ydljn")

@@ -27,9 +27,13 @@ grow_horizontal = 2
 grow_vertical = 2
 scale = Vector2(1.5, 1.5)
 
-[node name="NewMap" type="Button" parent="MenuContainer"]
+[node name="NewWorldMap" type="Button" parent="MenuContainer"]
 layout_mode = 2
-text = "New Map"
+text = "New World Map"
+
+[node name="NewBattleMap" type="Button" parent="MenuContainer"]
+layout_mode = 2
+text = "New Battle Map"
 
 [node name="LoadMap" type="Button" parent="MenuContainer"]
 layout_mode = 2
@@ -43,33 +47,42 @@ text = "Save Map
 [node name="save_system" type="Node" parent="."]
 script = ExtResource("2_ehahi")
 
-[node name="VBoxContainer" type="HBoxContainer" parent="."]
+[node name="VBattleBox" type="HBoxContainer" parent="."]
+visible = false
 offset_left = 337.0
 offset_top = 23.0
 offset_right = 3413.0
 offset_bottom = 692.0
 scale = Vector2(0.2, 0.2)
 
-[node name="SentinelButton" type="TextureButton" parent="VBoxContainer"]
+[node name="SentinelButton" type="TextureButton" parent="VBattleBox"]
 layout_mode = 2
 texture_normal = ExtResource("3_lf3vs")
 
-[node name="DefaultButton" type="TextureButton" parent="VBoxContainer"]
+[node name="DefaultButton" type="TextureButton" parent="VBattleBox"]
 layout_mode = 2
 texture_normal = ExtResource("4_ddlav")
 
-[node name="Spawn1Button" type="TextureButton" parent="VBoxContainer"]
+[node name="Spawn1Button" type="TextureButton" parent="VBattleBox"]
 layout_mode = 2
 texture_normal = ExtResource("5_g8oo0")
 
-[node name="Spawn2Button" type="TextureButton" parent="VBoxContainer"]
+[node name="Spawn2Button" type="TextureButton" parent="VBattleBox"]
 layout_mode = 2
 texture_normal = ExtResource("6_l12at")
 
-[connection signal="pressed" from="MenuContainer/NewMap" to="." method="_on_new_map_pressed"]
+[node name="VWorldBox" type="HBoxContainer" parent="."]
+offset_left = 337.0
+offset_top = 23.0
+offset_right = 3413.0
+offset_bottom = 692.0
+scale = Vector2(0.2, 0.2)
+
+[connection signal="pressed" from="MenuContainer/NewWorldMap" to="." method="_on_new_map_pressed"]
+[connection signal="pressed" from="MenuContainer/NewBattleMap" to="." method="_on_new_map_pressed"]
 [connection signal="pressed" from="MenuContainer/LoadMap" to="." method="_on_load_map_pressed"]
 [connection signal="pressed" from="MenuContainer/SaveMap" to="." method="_on_save_map_pressed"]
-[connection signal="pressed" from="VBoxContainer/SentinelButton" to="." method="_on_sentinel_button_pressed"]
-[connection signal="pressed" from="VBoxContainer/DefaultButton" to="." method="_on_default_button_pressed"]
-[connection signal="pressed" from="VBoxContainer/Spawn1Button" to="." method="_on_spawn_1_button_pressed"]
-[connection signal="pressed" from="VBoxContainer/Spawn2Button" to="." method="_on_spawn_2_button_pressed"]
+[connection signal="pressed" from="VBattleBox/SentinelButton" to="." method="_on_sentinel_button_pressed"]
+[connection signal="pressed" from="VBattleBox/DefaultButton" to="." method="_on_default_button_pressed"]
+[connection signal="pressed" from="VBattleBox/Spawn1Button" to="." method="_on_spawn_1_button_pressed"]
+[connection signal="pressed" from="VBattleBox/Spawn2Button" to="." method="_on_spawn_2_button_pressed"]
