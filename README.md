@@ -44,3 +44,11 @@ Same Game made in Unreal with C++
 [https://github.com/y3snt/Hegzy/tree/gameplay-refactor](https://github.com/y3snt/Hegzy/tree/gameplay-refactor)
 
 Godot 4.2
+
+
+# Authors:
+
+Wiolarz
+Zephyr - NamespaceV
+Carcinizer
+Trupen - MrTrupen
