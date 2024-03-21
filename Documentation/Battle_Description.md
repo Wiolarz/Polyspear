@@ -2,18 +2,18 @@
 
 
 var Short_Summary
-"""
+
 PolySpear is a chesslike turn based strategy game
 
 
-"""
+
 
 
 
 
 
 var Extended_Description
-"""
+
 Turn based game, set on hexagonal board. The goal of two opposing players is to eliminate the opponents units.
 
 
@@ -47,16 +47,16 @@ CROSS - 'Spear' Kills any enemy unit that enters this tile. Spear acts before an
 
 TRIANGLE - 'Shield' nullifies sources of damage (doesn't work against push)
 
-"""
+
 
 
 
 var gameplay_rework
 
-"""
 
 
 
 
 
-"""
+
+

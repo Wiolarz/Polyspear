@@ -1,16 +1,30 @@
-# Krong 2 - PolySpear
+# Krong 3 
 Organised by Wiolarz a regular meeting with people interested in learning Godot.
 
+## branches
 
-KEY_SELECT - Left mouse button
+List of game projects:
 
-KEY_BOT_SPEED_SLOW - 3
+Brawler
 
-KEY_BOT_SPEED_MEDIUM - 2
+Schmup
 
-KEY_BOT_SPEED_FAST - 1
+Polyspear - current main project
 
-KEY_EXIT_GAME= ESC
+
+# PolySpear project
+
+## Key bindings
+
+KEY_SELECT = Left mouse button
+
+KEY_BOT_SPEED_SLOW = 3
+
+KEY_BOT_SPEED_MEDIUM = 2
+
+KEY_BOT_SPEED_FAST = 1
+
+KEY_EXIT_GAME = ESC
 
 KEY_MENU = ~
 
@@ -26,6 +40,8 @@ KEY_SAVE_GAME = F5
 
 KEY_LOAD_GAME = F6
 
+
+KEYS WSAD + Arrow keys = camera movement
 
 
 
@@ -44,6 +60,12 @@ Same Game made in Unreal with C++
 [https://github.com/y3snt/Hegzy/tree/gameplay-refactor](https://github.com/y3snt/Hegzy/tree/gameplay-refactor)
 
 Godot 4.2
+
+
+# Git structure
+Main - "Production" playable and presentable new release featuring new fun content
+Polyspear - "Develop" working main doesn't have to include new features but shouldn't contain major bugs
+polyspear_X - branch focused on X feature
 
 
 # Authors:

@@ -46,6 +46,9 @@ folder_colors={
 "res://Documentation/": "green",
 "res://Resources/": "orange",
 "res://Scenes/": "teal",
+"res://Scripts/Battle/": "red",
+"res://Scripts/General/": "red",
+"res://Scripts/World/": "red",
 "res://test/": "pink"
 }
 

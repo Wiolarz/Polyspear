@@ -2,6 +2,11 @@
 
 ## now
 
+create a factory for World_setup.gd resource
+create a factory for data_tile to create a HexTile node
+
+Add alliances somewhere to determine teams for players
+
 Refactor project file names or something
 
 
@@ -41,6 +46,8 @@ Remove map_shape from project
 ## FIX 
 	Stuff that needs to be fixed, for the game to work properly
 
+change unit scenes into resources
+
 Make camera center on the map
 -on grid manager, remember playable map cornes, and based on them generate border for the camera, + set starting camera in the middle of those corners
 - or on larger map (set camera on player starter units)
@@ -52,13 +59,16 @@ Add tests in place of those place holders
 
 AI is once again broken completely needs a full rewrite
 
+in BM name unit scenes for debugger
+
 ## THINK_About
+rename basic_map to polyspear_main_project
 
 how to properly reset Singeleton objects
 
 How to approach spliting code into abstract and visual part
 
-
+model MVC model - view - controller -> add gameplay manager to input manager
 
 
 
@@ -69,6 +79,8 @@ Create WM (World Manager)
 
 How to load premade maps into Grid Manager
 Make a map generator (battle maps + global maps)
+
+add colors for players
 
 ### More Armies in a single battle:
 un-summoned units have to be placed in UI
@@ -124,8 +136,9 @@ Its still worthwile to document stuff needed to be changed once the work on this
 Graphics/Technical -> Spacing_of_the_Grid
 
 
-
-
+# FEATURE: Alliances
+Team - determines units and heroes within a single player
+Alliance - group of teams
 
 
 # FEATURE: Different maps
