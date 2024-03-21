@@ -17,14 +17,14 @@ func test_battle() -> bool:
 
 	var players : Array[Player] = []
 	for player_set in test_battle_setup.player_settings:
-		var player = player_set.generate_player()
+		var player = player_set.create_player()
 		players.append(player)
 	IM.players = players
 
 	
 	var new_armies : Array[Army] = []
 	for i in range(test_battle_setup.armies.size()):
-		var new_army = test_battle_setup.armies[i].generate_army()
+		var new_army = test_battle_setup.armies[i].create_army()
 		new_army.controller = players[i]
 		new_armies.append(new_army)
 

@@ -8,7 +8,7 @@ extends Resource
 @export var hero : PackedScene = null
 
 
-func generate_army() -> Army:
+func create_army() -> Army:
 	var new_army = Army.new()
 	new_army.unit_scenes = units
 	new_army.hero = hero

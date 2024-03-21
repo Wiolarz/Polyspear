@@ -18,7 +18,7 @@ func _on_test_game_pressed():
 	
 	players = []
 	for player_set in world_setup.player_settings:
-		var player = player_set.generate_player()
+		var player = player_set.create_player()
 		players.append(player)
 
 	world_map = world_setup.world_map

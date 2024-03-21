@@ -99,9 +99,6 @@ func grid_input(cord : Vector2i):
 		4 if a hero is inside a city, a special interface will apear (either it simply selects the hero inside the city, then you can close the interaface and move freely)
 		5 player selected trade interface between heroes
 	"""
-	if raging_battle:
-		BM.grid_input(cord)
-		return
 
 	if select_city(cord) or select_hero(cord) or selected_hero == null:
 		return

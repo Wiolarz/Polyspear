@@ -13,7 +13,7 @@ Complete world map data:
 
 
 
-func apply_data():
+func apply_data() -> void:
 
 	W_GRID.map_information = self
 

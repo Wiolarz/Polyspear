@@ -15,3 +15,4 @@ Complete Faction data:
 
 @export var city : PackedScene
 
+# no factory needed

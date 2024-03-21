@@ -16,7 +16,7 @@ extends Resource
 @export var gameplay_function : String
 
 
-static func generate_data_tile(hex_tile : HexTile) -> DataTile:
+static func create_data_tile(hex_tile : HexTile) -> DataTile:
 	var new_data_tile = DataTile.new()
 
 	var sprite_node : Sprite2D = hex_tile.get_node("Sprite2D")

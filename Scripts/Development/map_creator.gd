@@ -91,7 +91,7 @@ func _on_save_map_pressed():
 		var current_row = []
 		grid_data.append(current_row)
 		for tile in tile_row:
-			var new_data_tile = DataTile.generate_data_tile(tile)
+			var new_data_tile = DataTile.create_data_tile(tile)
 
 			current_row.append(new_data_tile)
 

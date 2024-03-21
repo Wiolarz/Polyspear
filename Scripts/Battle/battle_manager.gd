@@ -6,17 +6,17 @@ extends Node
 const ATTACKER = 0
 const DEFENDER = 1
 
+
 #region Setup variables
 
-var commanders = []  # Hero objects that take part in battle (based on them we get players who control the battle)
 var participants : Array[Player] = []
 var battling_armies : Array[Army]
-
 
 var armies_unit_scenes : Array = [] # Array[Array[PackedScene]]
 
 
 #endregion
+
 
 #region Variables
 var current_participant : Player
@@ -29,10 +29,6 @@ var fighting_units : Array = [] # Array[Array[AUnit]]
 var unsummoned_units_counter : int # set at the start of the during placement "summon" stage -> battle start after this number reaches 0
 
 #endregion
-
-
-
-
 
 
 #region Tools
@@ -130,7 +126,6 @@ func counter_attack_damage(target : AUnit) -> bool:
 	return false
 
 
-
 func kill_unit(target) -> void:
 	for units in fighting_units:
 		if units[0].controller == target.controller:
@@ -153,10 +148,6 @@ func kill_unit(target) -> void:
 		end_of_battle()
 	
 		
-
-	
-
-
 func unit_action(unit : AUnit) -> void:
 	var units = B_GRID.adjacent_units(unit.cord)
 
@@ -337,7 +328,6 @@ func summon_unit(cord : Vector2i) -> void:
 
 #region Battle Setup
 
-
 func spawn_units() -> void:
 	"""
 	* Placing Units used in combat on their "Spawn Points" near the area of the gameplay board where they are visible to the players.
@@ -372,7 +362,6 @@ func spawn_units() -> void:
 			B_GRID.change_unit_cord(new_unit, spawn_cord) # Adding Unit to the Gameplay Array
 
 
-
 func start_battle(new_armies : Array[Army], battle_map : BattleMap) -> void:
 	WM.raging_battle = true
 	battling_armies = new_armies
@@ -387,6 +376,5 @@ func start_battle(new_armies : Array[Army], battle_map : BattleMap) -> void:
 	participant_idx = ATTACKER
 
 	spawn_units()
-	
-	
+
 #endregion

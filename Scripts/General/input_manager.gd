@@ -44,8 +44,11 @@ func grid_input_listener(cord : Vector2i):
 	if draw_mode:
 		get_node("/root/BasicMap/DrawMenu").grid_input(cord)
 		return
-
-	WM.grid_input(cord)
+	
+	if WM.raging_battle:
+		BM.grid_input(cord)
+	else:
+		WM.grid_input(cord)
 	
 
 func go_to_main_menu():

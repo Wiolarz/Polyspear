@@ -20,11 +20,11 @@ enum WorldMapTiles
 {
 	SENTINEL,
 
-	# logika gry bazowa
+	# fundemantal game logic
 	EMPTY,
 	WALL,
 	
-	# menusy
+	# UI based menu interfaces
 	CITY,
 	PLACE,
 }
