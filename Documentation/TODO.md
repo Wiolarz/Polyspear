@@ -1,8 +1,16 @@
 # TODO
 
 ## now
+merge hex_tile tile_type into type variable (use Strings instead of enums)
 
-create a factory for World_setup.gd resource
+Camera movement between battle area and world map area. Destroy childs on clear data function
+
+Document how players have to be set in Input manager before other managers can start working
+
+remove old unused scenes
+
+document why factory functions for battle_setup and world_setup shouldnt be made
+
 create a factory for data_tile to create a HexTile node
 
 Add alliances somewhere to determine teams for players
@@ -140,6 +148,26 @@ Graphics/Technical -> Spacing_of_the_Grid
 Team - determines units and heroes within a single player
 Alliance - group of teams
 
+# FEATURE Better Map creator
+
+## Nice to have
+
+create: func optimize_map_size()
+that will check for the first and last non-sentinel tile placement in each grid row and column.
+Then it will remove all empty columns at map edges
+this function should be called during saving of a scene
+
+create 2 functions: extend/reduce map_size
+User will be able to press a button change canvas size -> at the map borders a line? (or just last edge hex rows/columns will highlight)
+it will be then dragable by the player:
+- Reducing map size will simply grey out existing tiles, 
+- Extending map size will show new empty sentinel tiles forming
+and once mouse button is released map will be resized
+(previous map would be saved and loaded into new canvas)
+
+create ctrl_z and ctrl_r? function that will revert changes or recover reverted state
+
+
 
 # FEATURE: Different maps
 
@@ -150,8 +178,6 @@ All specific player tiles will have assigned color in player order (when players
 
 For color based tiles to work, opacity of special regions has to be 0 in sprite, and receive a full tile sprite underneath to swap color in
 
-
-## Map generator
 
 
 ## Think_about
