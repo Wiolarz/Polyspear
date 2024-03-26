@@ -183,7 +183,7 @@ func unit_action(unit : AUnit) -> void:
 			# PUSH LOGIC
 			var distant_tile_type = B_GRID.get_distant_tile_type(unit.cord, side, 2)
 
-			if distant_tile_type == E.HexTileType.SENTINEL:  # Pushing outside the map
+			if distant_tile_type == "sentinel":  # Pushing outside the map
 				# Kill
 				kill_unit(enemy_unit)
 				continue
@@ -290,7 +290,7 @@ func is_legal_summon_cord(cord : Vector2i) -> bool:
 	# check if unit is already summoned
 	var selected_unit_tile_type = B_GRID.get_tile_type(selected_unit.cord)
 
-	if selected_unit_tile_type != E.HexTileType.SENTINEL:
+	if selected_unit_tile_type != "sentinel":
 		#print("This Unit has been already summoned")
 		return false
 	
@@ -298,8 +298,8 @@ func is_legal_summon_cord(cord : Vector2i) -> bool:
 	var cord_tile_type = B_GRID.get_tile_type(cord)
 
 	var correct_spawn_tile_destination : bool = \
-		(cord_tile_type == E.HexTileType.ATTACKER_SPAWN && participant_idx == 0) or \
-		(cord_tile_type == E.HexTileType.DEFENDER_SPAWN && participant_idx == 1)
+		(cord_tile_type == "player_0_spawn" && participant_idx == 0) or \
+		(cord_tile_type == "player_1_spawn"&& participant_idx == 1)
 
 	if not correct_spawn_tile_destination:
 		#print("Thats a wrong summon location")  # TODO: Don't reset selected_unit

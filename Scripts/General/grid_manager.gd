@@ -17,10 +17,9 @@ const OddRowHorizontalOffset : float = 250.0
 # const OddRowHorizontalOffset : float = 350.0
 
 
-var grid_width : int = 5
-var	grid_height : int = 5
+var grid_width : int
+var	grid_height : int
 
-var map_shift : bool = false
 
 """
 Thickness of a Sentinel perimiter around the gameplay area.
@@ -62,12 +61,12 @@ static func adjacent_side(Cord1 : Vector2i, Cord2 : Vector2i) -> int:
 
 static func adjacent_cord(BaseCord : Vector2i, Side : int) -> Vector2i:
 	"""
-    Return cord adjacent to BaseCord at given Side
-    
-    @param BaseCord
-    @param Side {0, 1, ..., 5}
-    @return Vector2i cord adjacent to BaseCord
-    """
+	Return cord adjacent to BaseCord at given Side
+	
+	@param BaseCord
+	@param Side {0, 1, ..., 5}
+	@return Vector2i cord adjacent to BaseCord
+	"""
 	return BaseCord + DIRECTIONS[Side]
 
 
@@ -81,14 +80,10 @@ func reset_data() -> void:
 
 
 func adjust_grid_size() -> void:
-	if map_shift:
-		grid_width += 1
-		grid_height += 1
-
 	# sentinels appear on both sides
 	grid_width += (border_size * 2)
 	grid_height += (border_size * 2)
-	grid_width += (grid_height / 2) # adjustment for Axial grid system
+	#grid_width += (grid_height / 2) # adjustment for Axial grid system
 
 
 func init_hex_grid() -> void:
@@ -108,7 +103,7 @@ func is_gameplay_tile(x : int, y : int, bOddRow : bool) -> bool:
 
 	"""
 
-	var start : int = floor(grid_height / 2)# axial start position
+	var start : int = floor(grid_height / 2) # axial start position
 	var gameplay_width_start = start + border_size - floor(y / 2)
 	var gameplay_height_start = border_size
 
@@ -131,17 +126,11 @@ func generate_grid(new_map_data : GridBoard) -> void:
 	"""
 	Main grid map generation function
 	"""
-	assert(is_clear, "Grid is already loaded")
+	assert(is_clear(), "Grid is already loaded")
 	reset_data()
 	
 	new_map_data.apply_data()
 	
-	match new_map_data.map_shape:
-		E.MapShape.CLASSIC:
-			map_shift = false
-		E.MapShape.SHIFTED:
-			map_shift = true
-				
 
 	# "+2" is to reserve space for sentinel tiles on each side of the board
 	adjust_grid_size()

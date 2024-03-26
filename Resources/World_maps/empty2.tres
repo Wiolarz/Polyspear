@@ -1,643 +1,1147 @@
-[gd_resource type="Resource" script_class="WorldMap" load_steps=108 format=3 uid="uid://b3fli1dnnerfw"]
+[gd_resource type="Resource" script_class="WorldMap" load_steps=192 format=3 uid="uid://b3fli1dnnerfw"]
 
 [ext_resource type="Script" path="res://Resources/data_tile.gd" id="1_twjth"]
 [ext_resource type="Script" path="res://Resources/world_map.gd" id="2_ap311"]
 
-[sub_resource type="Resource" id="Resource_8nnuo"]
+[sub_resource type="Resource" id="Resource_lu21x"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_r72ml"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_q54qa"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_cox7x"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_m6njn"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_cw66i"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_npuli"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_r33g3"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_1bqdk"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_ggpi3"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_5h4up"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_65vd6"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_u0fhl"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_i7qi5"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_s6pg2"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_kkvpn"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_ph6pp"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_otvti"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_4ifpb"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_kq1qh"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_ssxip"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_7mnxj"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_x0724"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_ch2eq"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_t2hjd"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_o17fb"]
 script = ExtResource("1_twjth")
 texture_path = "res://Art/Black_Hex.png"
 flip_horizontal = false
 type = "0"
 
-[sub_resource type="Resource" id="Resource_hyohc"]
+[sub_resource type="Resource" id="Resource_5jx5n"]
 script = ExtResource("1_twjth")
-texture_path = "res://Art/Black_Hex.png"
+texture_path = "res://Art/sentinel.png"
 flip_horizontal = false
 type = "0"
 
-[sub_resource type="Resource" id="Resource_flcmq"]
+[sub_resource type="Resource" id="Resource_kddhc"]
 script = ExtResource("1_twjth")
-texture_path = "res://Art/Black_Hex.png"
+texture_path = "res://Art/sentinel.png"
 flip_horizontal = false
 type = "0"
 
-[sub_resource type="Resource" id="Resource_3ci6c"]
+[sub_resource type="Resource" id="Resource_ebqrx"]
 script = ExtResource("1_twjth")
-texture_path = "res://Art/Black_Hex.png"
+texture_path = "res://Art/sentinel.png"
 flip_horizontal = false
 type = "0"
 
-[sub_resource type="Resource" id="Resource_ra0t4"]
+[sub_resource type="Resource" id="Resource_axthb"]
 script = ExtResource("1_twjth")
-texture_path = "res://Art/Black_Hex.png"
+texture_path = "res://Art/sentinel.png"
 flip_horizontal = false
 type = "0"
 
-[sub_resource type="Resource" id="Resource_o0eer"]
+[sub_resource type="Resource" id="Resource_w2cg7"]
 script = ExtResource("1_twjth")
-texture_path = "res://Art/Black_Hex.png"
+texture_path = "res://Art/sentinel.png"
 flip_horizontal = false
 type = "0"
 
-[sub_resource type="Resource" id="Resource_mu724"]
+[sub_resource type="Resource" id="Resource_h11ed"]
 script = ExtResource("1_twjth")
-texture_path = "res://Art/Black_Hex.png"
+texture_path = "res://Art/sentinel.png"
 flip_horizontal = false
 type = "0"
 
-[sub_resource type="Resource" id="Resource_adcld"]
+[sub_resource type="Resource" id="Resource_os2vy"]
 script = ExtResource("1_twjth")
-texture_path = "res://Art/Black_Hex.png"
+texture_path = "res://Art/sentinel.png"
 flip_horizontal = false
 type = "0"
 
-[sub_resource type="Resource" id="Resource_h57al"]
-script = ExtResource("1_twjth")
-texture_path = "res://Art/Black_Hex.png"
-flip_horizontal = false
-type = "0"
-
-[sub_resource type="Resource" id="Resource_qo6cu"]
-script = ExtResource("1_twjth")
-texture_path = "res://Art/Black_Hex.png"
-flip_horizontal = false
-type = "0"
-
-[sub_resource type="Resource" id="Resource_07n48"]
-script = ExtResource("1_twjth")
-texture_path = "res://Art/Black_Hex.png"
-flip_horizontal = false
-type = "0"
-
-[sub_resource type="Resource" id="Resource_oyuul"]
+[sub_resource type="Resource" id="Resource_e20kh"]
 script = ExtResource("1_twjth")
 texture_path = "res://Art/world_map/mountains.png"
 flip_horizontal = false
 type = "0"
 
-[sub_resource type="Resource" id="Resource_00lwb"]
+[sub_resource type="Resource" id="Resource_f6ipy"]
 script = ExtResource("1_twjth")
 texture_path = "res://Art/world_map/mountains.png"
 flip_horizontal = false
 type = "0"
 
-[sub_resource type="Resource" id="Resource_a5lti"]
+[sub_resource type="Resource" id="Resource_p7kf1"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_gc088"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_chhap"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_av8lt"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_imx8e"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_mujen"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_ad034"]
 script = ExtResource("1_twjth")
 texture_path = "res://Art/world_map/mountains.png"
 flip_horizontal = false
 type = "0"
 
-[sub_resource type="Resource" id="Resource_04b7c"]
-script = ExtResource("1_twjth")
-texture_path = "res://Art/Black_Hex.png"
-flip_horizontal = false
-type = "0"
-
-[sub_resource type="Resource" id="Resource_s7qdw"]
-script = ExtResource("1_twjth")
-texture_path = "res://Art/Black_Hex.png"
-flip_horizontal = false
-type = "0"
-
-[sub_resource type="Resource" id="Resource_q1h0s"]
-script = ExtResource("1_twjth")
-texture_path = "res://Art/Black_Hex.png"
-flip_horizontal = false
-type = "0"
-
-[sub_resource type="Resource" id="Resource_wrp6o"]
+[sub_resource type="Resource" id="Resource_ecnaf"]
 script = ExtResource("1_twjth")
 texture_path = "res://Art/world_map/mountains.png"
 flip_horizontal = false
 type = "0"
 
-[sub_resource type="Resource" id="Resource_50431"]
+[sub_resource type="Resource" id="Resource_rlv0l"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/world_map/mountains.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_oxp4n"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_db1hp"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_0ku6e"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_y4of8"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_2274l"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_kgggy"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/world_map/mountains.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_cibkj"]
 script = ExtResource("1_twjth")
 texture_path = "res://Art/world_map/road_three_endings.png"
 flip_horizontal = false
 type = "0"
 
-[sub_resource type="Resource" id="Resource_blam6"]
+[sub_resource type="Resource" id="Resource_clwie"]
 script = ExtResource("1_twjth")
-texture_path = "res://Art/world_map/mountains.png"
+texture_path = "res://Art/world_map/road_three_endings.png"
 flip_horizontal = false
-type = "1"
+type = "0"
 
-[sub_resource type="Resource" id="Resource_k8bc8"]
+[sub_resource type="Resource" id="Resource_k4ov5"]
 script = ExtResource("1_twjth")
 texture_path = "res://Art/world_map/mountains.png"
 flip_horizontal = false
 type = "0"
 
-[sub_resource type="Resource" id="Resource_jow2c"]
+[sub_resource type="Resource" id="Resource_bf15m"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_856e2"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_hk7q0"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_k7lem"]
 script = ExtResource("1_twjth")
 texture_path = "res://Art/Black_Hex.png"
 flip_horizontal = false
 type = "0"
 
-[sub_resource type="Resource" id="Resource_6wxur"]
+[sub_resource type="Resource" id="Resource_m61oo"]
 script = ExtResource("1_twjth")
 texture_path = "res://Art/Black_Hex.png"
 flip_horizontal = false
 type = "0"
 
-[sub_resource type="Resource" id="Resource_ict5n"]
-script = ExtResource("1_twjth")
-texture_path = "res://Art/world_map/mountains.png"
-flip_horizontal = false
-type = "0"
-
-[sub_resource type="Resource" id="Resource_8a5tj"]
+[sub_resource type="Resource" id="Resource_lk6kh"]
 script = ExtResource("1_twjth")
 texture_path = "res://Art/world_map/road_straight.png"
 flip_horizontal = false
-type = "1"
+type = "0"
 
-[sub_resource type="Resource" id="Resource_le247"]
+[sub_resource type="Resource" id="Resource_p2hcd"]
 script = ExtResource("1_twjth")
 texture_path = "res://Art/world_map/road_curved.png"
 flip_horizontal = false
-type = "1"
+type = "0"
 
-[sub_resource type="Resource" id="Resource_qaqxe"]
+[sub_resource type="Resource" id="Resource_wvjdh"]
 script = ExtResource("1_twjth")
-texture_path = "res://Art/world_map/road_three_endings.png"
+texture_path = "res://Art/world_map/road_curved.png"
 flip_horizontal = false
-type = "3"
+type = "0"
 
-[sub_resource type="Resource" id="Resource_05bss"]
+[sub_resource type="Resource" id="Resource_cr3vd"]
 script = ExtResource("1_twjth")
 texture_path = "res://Art/world_map/mountains.png"
 flip_horizontal = false
 type = "0"
 
-[sub_resource type="Resource" id="Resource_auhas"]
+[sub_resource type="Resource" id="Resource_8q5f0"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_hhwnl"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_5tn0m"]
 script = ExtResource("1_twjth")
 texture_path = "res://Art/Black_Hex.png"
 flip_horizontal = false
 type = "0"
 
-[sub_resource type="Resource" id="Resource_fruyb"]
+[sub_resource type="Resource" id="Resource_2j8n0"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_vltt8"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/world_map/mountains.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_b2cxc"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/world_map/grass_basic.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_cjch8"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/world_map/grass_basic.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_esvk4"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/world_map/road_straight.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_227u6"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/world_map/mountains.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_38gdh"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_a346a"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_myg3i"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_6m0a0"]
 script = ExtResource("1_twjth")
 texture_path = "res://Art/Grass_Hex.png"
 flip_horizontal = false
-type = "1"
+type = "0"
 
-[sub_resource type="Resource" id="Resource_g1jla"]
+[sub_resource type="Resource" id="Resource_kniye"]
 script = ExtResource("1_twjth")
 texture_path = "res://Art/world_map/elven_city.png"
 flip_horizontal = false
-type = "1"
+type = "0"
 
-[sub_resource type="Resource" id="Resource_artq8"]
+[sub_resource type="Resource" id="Resource_xerbh"]
 script = ExtResource("1_twjth")
 texture_path = "res://Art/world_map/grass_basic.png"
 flip_horizontal = false
-type = "3"
+type = "0"
 
-[sub_resource type="Resource" id="Resource_n3amf"]
+[sub_resource type="Resource" id="Resource_5prs8"]
 script = ExtResource("1_twjth")
 texture_path = "res://Art/world_map/grass_basic.png"
 flip_horizontal = false
-type = "3"
+type = "0"
 
-[sub_resource type="Resource" id="Resource_c0cp6"]
+[sub_resource type="Resource" id="Resource_a1tar"]
 script = ExtResource("1_twjth")
 texture_path = "res://Art/world_map/road_curved.png"
 flip_horizontal = false
-type = "3"
+type = "0"
 
-[sub_resource type="Resource" id="Resource_1gxsq"]
+[sub_resource type="Resource" id="Resource_8tghf"]
 script = ExtResource("1_twjth")
 texture_path = "res://Art/world_map/mountains.png"
 flip_horizontal = false
 type = "0"
 
-[sub_resource type="Resource" id="Resource_3j3r8"]
+[sub_resource type="Resource" id="Resource_mvrtu"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_g4ca8"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_fp814"]
 script = ExtResource("1_twjth")
 texture_path = "res://Art/Black_Hex.png"
 flip_horizontal = false
 type = "0"
 
-[sub_resource type="Resource" id="Resource_ak3v8"]
+[sub_resource type="Resource" id="Resource_q1prl"]
 script = ExtResource("1_twjth")
 texture_path = "res://Art/world_map/mountains.png"
 flip_horizontal = false
-type = "3"
+type = "0"
 
-[sub_resource type="Resource" id="Resource_bs1qf"]
+[sub_resource type="Resource" id="Resource_66ef5"]
 script = ExtResource("1_twjth")
 texture_path = "res://Art/world_map/sawmill.png"
 flip_horizontal = false
-type = "3"
-
-[sub_resource type="Resource" id="Resource_bgclx"]
-script = ExtResource("1_twjth")
-texture_path = "res://Art/world_map/grass_basic.png"
-flip_horizontal = false
-type = "3"
-
-[sub_resource type="Resource" id="Resource_l67gj"]
-script = ExtResource("1_twjth")
-texture_path = "res://Art/world_map/grass_basic.png"
-flip_horizontal = false
-type = "3"
-
-[sub_resource type="Resource" id="Resource_8es7t"]
-script = ExtResource("1_twjth")
-texture_path = "res://Art/world_map/road_straight.png"
-flip_horizontal = false
-type = "3"
-
-[sub_resource type="Resource" id="Resource_pvjtd"]
-script = ExtResource("1_twjth")
-texture_path = "res://Art/world_map/mountains.png"
-flip_horizontal = false
 type = "0"
 
-[sub_resource type="Resource" id="Resource_n48oo"]
-script = ExtResource("1_twjth")
-texture_path = "res://Art/Black_Hex.png"
-flip_horizontal = false
-type = "0"
-
-[sub_resource type="Resource" id="Resource_ql4fj"]
-script = ExtResource("1_twjth")
-texture_path = "res://Art/world_map/mountains.png"
-flip_horizontal = false
-type = "3"
-
-[sub_resource type="Resource" id="Resource_j403p"]
-script = ExtResource("1_twjth")
-texture_path = "res://Art/world_map/grass_basic.png"
-flip_horizontal = false
-type = "3"
-
-[sub_resource type="Resource" id="Resource_qo6bd"]
+[sub_resource type="Resource" id="Resource_3uk6i"]
 script = ExtResource("1_twjth")
 texture_path = "res://Art/world_map/iron_mine.png"
 flip_horizontal = false
-type = "3"
+type = "0"
 
-[sub_resource type="Resource" id="Resource_n2vdm"]
-script = ExtResource("1_twjth")
-texture_path = "res://Art/world_map/mountains.png"
-flip_horizontal = false
-type = "3"
-
-[sub_resource type="Resource" id="Resource_h1w2b"]
-script = ExtResource("1_twjth")
-texture_path = "res://Art/world_map/road_curved.png"
-flip_horizontal = false
-type = "3"
-
-[sub_resource type="Resource" id="Resource_w6qj4"]
+[sub_resource type="Resource" id="Resource_dp4fl"]
 script = ExtResource("1_twjth")
 texture_path = "res://Art/world_map/mountains.png"
 flip_horizontal = false
 type = "0"
 
-[sub_resource type="Resource" id="Resource_xaeqw"]
+[sub_resource type="Resource" id="Resource_hmrtx"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/world_map/grass_basic.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_hdg1k"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/world_map/mountains.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_v8kxx"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_3mjc1"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_hop8c"]
 script = ExtResource("1_twjth")
 texture_path = "res://Art/Black_Hex.png"
 flip_horizontal = false
 type = "0"
 
-[sub_resource type="Resource" id="Resource_q62nh"]
+[sub_resource type="Resource" id="Resource_n2o1n"]
 script = ExtResource("1_twjth")
 texture_path = "res://Art/world_map/mountains.png"
 flip_horizontal = false
-type = "3"
+type = "0"
 
-[sub_resource type="Resource" id="Resource_wf0we"]
+[sub_resource type="Resource" id="Resource_qjhjy"]
 script = ExtResource("1_twjth")
 texture_path = "res://Art/world_map/grass_basic.png"
 flip_horizontal = false
-type = "3"
+type = "0"
 
-[sub_resource type="Resource" id="Resource_j26ip"]
+[sub_resource type="Resource" id="Resource_33ts8"]
 script = ExtResource("1_twjth")
 texture_path = "res://Art/world_map/mountains.png"
 flip_horizontal = false
-type = "3"
+type = "0"
 
-[sub_resource type="Resource" id="Resource_r6xek"]
+[sub_resource type="Resource" id="Resource_edg57"]
 script = ExtResource("1_twjth")
 texture_path = "res://Art/world_map/road_straight.png"
 flip_horizontal = false
-type = "3"
+type = "0"
 
-[sub_resource type="Resource" id="Resource_vbd32"]
+[sub_resource type="Resource" id="Resource_yjy8e"]
 script = ExtResource("1_twjth")
 texture_path = "res://Art/world_map/grass_basic.png"
 flip_horizontal = false
-type = "3"
+type = "0"
 
-[sub_resource type="Resource" id="Resource_c2vxj"]
+[sub_resource type="Resource" id="Resource_2tjvf"]
 script = ExtResource("1_twjth")
 texture_path = "res://Art/world_map/mountains.png"
 flip_horizontal = false
 type = "0"
 
-[sub_resource type="Resource" id="Resource_pji1w"]
+[sub_resource type="Resource" id="Resource_lxx3b"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_yleay"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_bv013"]
 script = ExtResource("1_twjth")
 texture_path = "res://Art/Black_Hex.png"
 flip_horizontal = false
 type = "0"
 
-[sub_resource type="Resource" id="Resource_0lvk1"]
+[sub_resource type="Resource" id="Resource_x07cj"]
 script = ExtResource("1_twjth")
 texture_path = "res://Art/world_map/mountains.png"
 flip_horizontal = false
-type = "3"
+type = "0"
 
-[sub_resource type="Resource" id="Resource_0hfbn"]
+[sub_resource type="Resource" id="Resource_eevuw"]
 script = ExtResource("1_twjth")
-texture_path = "res://Art/world_map/mountains.png"
+texture_path = "res://Art/world_map/grass_basic.png"
 flip_horizontal = false
-type = "3"
+type = "0"
 
-[sub_resource type="Resource" id="Resource_b2bqm"]
+[sub_resource type="Resource" id="Resource_tm6ix"]
 script = ExtResource("1_twjth")
 texture_path = "res://Art/world_map/road_curved.png"
 flip_horizontal = false
-type = "3"
+type = "0"
 
-[sub_resource type="Resource" id="Resource_llty0"]
+[sub_resource type="Resource" id="Resource_cb02f"]
 script = ExtResource("1_twjth")
 texture_path = "res://Art/world_map/ruby_cave.png"
 flip_horizontal = false
-type = "3"
+type = "0"
 
-[sub_resource type="Resource" id="Resource_mi2nj"]
+[sub_resource type="Resource" id="Resource_gxs2l"]
 script = ExtResource("1_twjth")
 texture_path = "res://Art/world_map/grass_basic.png"
 flip_horizontal = false
-type = "3"
+type = "0"
 
-[sub_resource type="Resource" id="Resource_yxkii"]
+[sub_resource type="Resource" id="Resource_ui4im"]
 script = ExtResource("1_twjth")
 texture_path = "res://Art/world_map/mountains.png"
 flip_horizontal = false
 type = "0"
 
-[sub_resource type="Resource" id="Resource_xlkx0"]
+[sub_resource type="Resource" id="Resource_5i20s"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_ywn2k"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_s5xox"]
 script = ExtResource("1_twjth")
 texture_path = "res://Art/Black_Hex.png"
 flip_horizontal = false
 type = "0"
 
-[sub_resource type="Resource" id="Resource_efipw"]
+[sub_resource type="Resource" id="Resource_xq0ft"]
 script = ExtResource("1_twjth")
 texture_path = "res://Art/world_map/mountains.png"
 flip_horizontal = false
-type = "3"
+type = "0"
 
-[sub_resource type="Resource" id="Resource_6c6ec"]
+[sub_resource type="Resource" id="Resource_urnqk"]
 script = ExtResource("1_twjth")
-texture_path = "res://Art/world_map/grass_basic.png"
+texture_path = "res://Art/world_map/mountains.png"
 flip_horizontal = false
-type = "3"
+type = "0"
 
-[sub_resource type="Resource" id="Resource_6wh2q"]
+[sub_resource type="Resource" id="Resource_l4w76"]
 script = ExtResource("1_twjth")
 texture_path = "res://Art/world_map/road_straight.png"
 flip_horizontal = false
-type = "3"
+type = "0"
 
-[sub_resource type="Resource" id="Resource_5ic61"]
+[sub_resource type="Resource" id="Resource_wuxf7"]
 script = ExtResource("1_twjth")
 texture_path = "res://Art/world_map/grass_basic.png"
 flip_horizontal = false
-type = "3"
+type = "0"
 
-[sub_resource type="Resource" id="Resource_pumla"]
+[sub_resource type="Resource" id="Resource_agtmi"]
 script = ExtResource("1_twjth")
-texture_path = "res://Art/world_map/grass_basic.png"
+texture_path = "res://Art/world_map/road_curved.png"
 flip_horizontal = false
-type = "3"
+type = "0"
 
-[sub_resource type="Resource" id="Resource_mk24s"]
+[sub_resource type="Resource" id="Resource_7bcfq"]
 script = ExtResource("1_twjth")
 texture_path = "res://Art/world_map/mountains.png"
 flip_horizontal = false
 type = "0"
 
-[sub_resource type="Resource" id="Resource_ubqbk"]
+[sub_resource type="Resource" id="Resource_4o3tb"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_kl7ug"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_hqs3v"]
 script = ExtResource("1_twjth")
 texture_path = "res://Art/Black_Hex.png"
 flip_horizontal = false
 type = "0"
 
-[sub_resource type="Resource" id="Resource_0v28r"]
+[sub_resource type="Resource" id="Resource_nmckk"]
 script = ExtResource("1_twjth")
 texture_path = "res://Art/world_map/mountains.png"
 flip_horizontal = false
-type = "3"
+type = "0"
 
-[sub_resource type="Resource" id="Resource_4snqi"]
+[sub_resource type="Resource" id="Resource_to2h7"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/world_map/grass_basic.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_d21a7"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/world_map/road_curved.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_7rc07"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/world_map/road_straight.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_0hjev"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/world_map/mountains.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_14dhg"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/world_map/mountains.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_ny2d6"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_kpmgx"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_luw3t"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_u3g2w"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/world_map/mountains.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_erdlo"]
 script = ExtResource("1_twjth")
 texture_path = "res://Art/world_map/iron_mine.png"
 flip_horizontal = false
-type = "3"
-
-[sub_resource type="Resource" id="Resource_0uy5q"]
-script = ExtResource("1_twjth")
-texture_path = "res://Art/world_map/road_curved.png"
-flip_horizontal = false
-type = "3"
-
-[sub_resource type="Resource" id="Resource_jxdu8"]
-script = ExtResource("1_twjth")
-texture_path = "res://Art/world_map/road_straight.png"
-flip_horizontal = false
-type = "3"
-
-[sub_resource type="Resource" id="Resource_u1k4i"]
-script = ExtResource("1_twjth")
-texture_path = "res://Art/world_map/road_curved.png"
-flip_horizontal = false
-type = "3"
-
-[sub_resource type="Resource" id="Resource_asj82"]
-script = ExtResource("1_twjth")
-texture_path = "res://Art/world_map/mountains.png"
-flip_horizontal = false
 type = "0"
 
-[sub_resource type="Resource" id="Resource_7etjr"]
-script = ExtResource("1_twjth")
-texture_path = "res://Art/Black_Hex.png"
-flip_horizontal = false
-type = "0"
-
-[sub_resource type="Resource" id="Resource_8pst6"]
-script = ExtResource("1_twjth")
-texture_path = "res://Art/world_map/mountains.png"
-flip_horizontal = false
-type = "3"
-
-[sub_resource type="Resource" id="Resource_4sflk"]
+[sub_resource type="Resource" id="Resource_miipu"]
 script = ExtResource("1_twjth")
 texture_path = "res://Art/world_map/grass_basic.png"
 flip_horizontal = false
-type = "3"
+type = "0"
 
-[sub_resource type="Resource" id="Resource_wqny5"]
-script = ExtResource("1_twjth")
-texture_path = "res://Art/world_map/grass_basic.png"
-flip_horizontal = false
-type = "3"
-
-[sub_resource type="Resource" id="Resource_twnxp"]
+[sub_resource type="Resource" id="Resource_d5ucr"]
 script = ExtResource("1_twjth")
 texture_path = "res://Art/world_map/orc_city.png"
 flip_horizontal = false
-type = "2"
+type = "0"
 
-[sub_resource type="Resource" id="Resource_24k06"]
-script = ExtResource("1_twjth")
-texture_path = "res://Art/world_map/mountains.png"
-flip_horizontal = false
-type = "2"
-
-[sub_resource type="Resource" id="Resource_oaj6f"]
+[sub_resource type="Resource" id="Resource_uf1iy"]
 script = ExtResource("1_twjth")
 texture_path = "res://Art/world_map/mountains.png"
 flip_horizontal = false
 type = "0"
 
-[sub_resource type="Resource" id="Resource_xdxvw"]
+[sub_resource type="Resource" id="Resource_bxgh2"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/world_map/mountains.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_smjih"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_gs3hb"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_ql7bj"]
 script = ExtResource("1_twjth")
 texture_path = "res://Art/Black_Hex.png"
 flip_horizontal = false
 type = "0"
 
-[sub_resource type="Resource" id="Resource_ns8tn"]
+[sub_resource type="Resource" id="Resource_o0lc3"]
 script = ExtResource("1_twjth")
 texture_path = "res://Art/world_map/mountains.png"
 flip_horizontal = false
-type = "3"
+type = "0"
 
-[sub_resource type="Resource" id="Resource_pougr"]
-script = ExtResource("1_twjth")
-texture_path = "res://Art/world_map/sawmill.png"
-flip_horizontal = false
-type = "2"
-
-[sub_resource type="Resource" id="Resource_lv70f"]
+[sub_resource type="Resource" id="Resource_qryff"]
 script = ExtResource("1_twjth")
 texture_path = "res://Art/world_map/grass_basic.png"
 flip_horizontal = false
-type = "2"
+type = "0"
 
-[sub_resource type="Resource" id="Resource_gok0d"]
+[sub_resource type="Resource" id="Resource_6gxbd"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/world_map/grass_basic.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_h82ry"]
 script = ExtResource("1_twjth")
 texture_path = "res://Art/world_map/mountains.png"
 flip_horizontal = false
 type = "0"
 
-[sub_resource type="Resource" id="Resource_es4fo"]
+[sub_resource type="Resource" id="Resource_q2jf6"]
 script = ExtResource("1_twjth")
 texture_path = "res://Art/world_map/mountains.png"
 flip_horizontal = false
 type = "0"
 
-[sub_resource type="Resource" id="Resource_ln6ee"]
+[sub_resource type="Resource" id="Resource_2iwbx"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_thdam"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_254d3"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_opqse"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_ntowx"]
 script = ExtResource("1_twjth")
 texture_path = "res://Art/world_map/mountains.png"
 flip_horizontal = false
 type = "0"
 
-[sub_resource type="Resource" id="Resource_wybi7"]
+[sub_resource type="Resource" id="Resource_mimpu"]
 script = ExtResource("1_twjth")
-texture_path = "res://Art/Black_Hex.png"
+texture_path = "res://Art/world_map/sawmill.png"
 flip_horizontal = false
 type = "0"
 
-[sub_resource type="Resource" id="Resource_hrwn5"]
-script = ExtResource("1_twjth")
-texture_path = "res://Art/world_map/mountains.png"
-flip_horizontal = false
-type = "2"
-
-[sub_resource type="Resource" id="Resource_46vg3"]
+[sub_resource type="Resource" id="Resource_vbsna"]
 script = ExtResource("1_twjth")
 texture_path = "res://Art/world_map/mountains.png"
 flip_horizontal = false
 type = "0"
 
-[sub_resource type="Resource" id="Resource_hngq8"]
+[sub_resource type="Resource" id="Resource_6ejmq"]
 script = ExtResource("1_twjth")
 texture_path = "res://Art/world_map/mountains.png"
 flip_horizontal = false
 type = "0"
 
-[sub_resource type="Resource" id="Resource_jj75v"]
+[sub_resource type="Resource" id="Resource_kg4y2"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_lbe2f"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_4kyvi"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_prfsb"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_2v1yv"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/Black_Hex.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_prw2c"]
 script = ExtResource("1_twjth")
 texture_path = "res://Art/world_map/mountains.png"
 flip_horizontal = false
 type = "0"
 
-[sub_resource type="Resource" id="Resource_ydyyq"]
+[sub_resource type="Resource" id="Resource_lvupd"]
 script = ExtResource("1_twjth")
 texture_path = "res://Art/world_map/mountains.png"
 flip_horizontal = false
 type = "0"
 
-[sub_resource type="Resource" id="Resource_ax2uk"]
+[sub_resource type="Resource" id="Resource_4x8sv"]
 script = ExtResource("1_twjth")
 texture_path = "res://Art/Black_Hex.png"
 flip_horizontal = false
 type = "0"
 
-[sub_resource type="Resource" id="Resource_w1kgh"]
+[sub_resource type="Resource" id="Resource_8blce"]
 script = ExtResource("1_twjth")
 texture_path = "res://Art/Black_Hex.png"
 flip_horizontal = false
 type = "0"
 
-[sub_resource type="Resource" id="Resource_g3np5"]
+[sub_resource type="Resource" id="Resource_vf2ve"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_hreax"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_bkxa0"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_7g58n"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_vpw62"]
 script = ExtResource("1_twjth")
 texture_path = "res://Art/Black_Hex.png"
 flip_horizontal = false
 type = "0"
 
-[sub_resource type="Resource" id="Resource_6suj2"]
+[sub_resource type="Resource" id="Resource_u4bfr"]
 script = ExtResource("1_twjth")
 texture_path = "res://Art/Black_Hex.png"
 flip_horizontal = false
 type = "0"
 
-[sub_resource type="Resource" id="Resource_wd7to"]
+[sub_resource type="Resource" id="Resource_8sryq"]
 script = ExtResource("1_twjth")
 texture_path = "res://Art/Black_Hex.png"
 flip_horizontal = false
 type = "0"
 
-[sub_resource type="Resource" id="Resource_ghe23"]
+[sub_resource type="Resource" id="Resource_wyknc"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_la1mc"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_7m5st"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_l2ngr"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_vwkgr"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_opy68"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_tdda4"]
 script = ExtResource("1_twjth")
 texture_path = "res://Art/Black_Hex.png"
 flip_horizontal = false
 type = "0"
 
-[sub_resource type="Resource" id="Resource_brkoj"]
+[sub_resource type="Resource" id="Resource_5jcok"]
 script = ExtResource("1_twjth")
-texture_path = "res://Art/Black_Hex.png"
+texture_path = "res://Art/sentinel.png"
 flip_horizontal = false
 type = "0"
 
-[sub_resource type="Resource" id="Resource_rc4it"]
+[sub_resource type="Resource" id="Resource_mapn1"]
 script = ExtResource("1_twjth")
-texture_path = "res://Art/Black_Hex.png"
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_o6qlp"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_yx8oy"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_oq3bt"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_mj4kp"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_c7y71"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_bejat"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_tiq0y"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_l582p"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_2800t"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_ncyxt"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_3kfav"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_vloq5"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_y0u2x"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_jk7x1"]
+script = ExtResource("1_twjth")
+texture_path = "res://Art/sentinel.png"
 flip_horizontal = false
 type = "0"
 
 [resource]
 script = ExtResource("2_ap311")
 max_player_number = 2
-grid_width = 15
-grid_height = 7
-grid_data = [[SubResource("Resource_8nnuo"), SubResource("Resource_hyohc"), SubResource("Resource_flcmq"), SubResource("Resource_3ci6c"), SubResource("Resource_ra0t4"), SubResource("Resource_o0eer"), SubResource("Resource_mu724")], [SubResource("Resource_adcld"), SubResource("Resource_h57al"), SubResource("Resource_qo6cu"), SubResource("Resource_07n48"), SubResource("Resource_oyuul"), SubResource("Resource_00lwb"), SubResource("Resource_a5lti")], [SubResource("Resource_04b7c"), SubResource("Resource_s7qdw"), SubResource("Resource_q1h0s"), SubResource("Resource_wrp6o"), SubResource("Resource_50431"), SubResource("Resource_blam6"), SubResource("Resource_k8bc8")], [SubResource("Resource_jow2c"), SubResource("Resource_6wxur"), SubResource("Resource_ict5n"), SubResource("Resource_8a5tj"), SubResource("Resource_le247"), SubResource("Resource_qaqxe"), SubResource("Resource_05bss")], [SubResource("Resource_auhas"), SubResource("Resource_fruyb"), SubResource("Resource_g1jla"), SubResource("Resource_artq8"), SubResource("Resource_n3amf"), SubResource("Resource_c0cp6"), SubResource("Resource_1gxsq")], [SubResource("Resource_3j3r8"), SubResource("Resource_ak3v8"), SubResource("Resource_bs1qf"), SubResource("Resource_bgclx"), SubResource("Resource_l67gj"), SubResource("Resource_8es7t"), SubResource("Resource_pvjtd")], [SubResource("Resource_n48oo"), SubResource("Resource_ql4fj"), SubResource("Resource_j403p"), SubResource("Resource_qo6bd"), SubResource("Resource_n2vdm"), SubResource("Resource_h1w2b"), SubResource("Resource_w6qj4")], [SubResource("Resource_xaeqw"), SubResource("Resource_q62nh"), SubResource("Resource_wf0we"), SubResource("Resource_j26ip"), SubResource("Resource_r6xek"), SubResource("Resource_vbd32"), SubResource("Resource_c2vxj")], [SubResource("Resource_pji1w"), SubResource("Resource_0lvk1"), SubResource("Resource_0hfbn"), SubResource("Resource_b2bqm"), SubResource("Resource_llty0"), SubResource("Resource_mi2nj"), SubResource("Resource_yxkii")], [SubResource("Resource_xlkx0"), SubResource("Resource_efipw"), SubResource("Resource_6c6ec"), SubResource("Resource_6wh2q"), SubResource("Resource_5ic61"), SubResource("Resource_pumla"), SubResource("Resource_mk24s")], [SubResource("Resource_ubqbk"), SubResource("Resource_0v28r"), SubResource("Resource_4snqi"), SubResource("Resource_0uy5q"), SubResource("Resource_jxdu8"), SubResource("Resource_u1k4i"), SubResource("Resource_asj82")], [SubResource("Resource_7etjr"), SubResource("Resource_8pst6"), SubResource("Resource_4sflk"), SubResource("Resource_wqny5"), SubResource("Resource_twnxp"), SubResource("Resource_24k06"), SubResource("Resource_oaj6f")], [SubResource("Resource_xdxvw"), SubResource("Resource_ns8tn"), SubResource("Resource_pougr"), SubResource("Resource_lv70f"), SubResource("Resource_gok0d"), SubResource("Resource_es4fo"), SubResource("Resource_ln6ee")], [SubResource("Resource_wybi7"), SubResource("Resource_hrwn5"), SubResource("Resource_46vg3"), SubResource("Resource_hngq8"), SubResource("Resource_jj75v"), SubResource("Resource_ydyyq"), SubResource("Resource_ax2uk")], [SubResource("Resource_w1kgh"), SubResource("Resource_g3np5"), SubResource("Resource_6suj2"), SubResource("Resource_wd7to"), SubResource("Resource_ghe23"), SubResource("Resource_brkoj"), SubResource("Resource_rc4it")]]
+grid_width = 9
+grid_height = 21
+grid_data = [[SubResource("Resource_lu21x"), SubResource("Resource_r72ml"), SubResource("Resource_q54qa"), SubResource("Resource_cox7x"), SubResource("Resource_m6njn"), SubResource("Resource_cw66i"), SubResource("Resource_npuli"), SubResource("Resource_r33g3"), SubResource("Resource_1bqdk")], [SubResource("Resource_ggpi3"), SubResource("Resource_5h4up"), SubResource("Resource_65vd6"), SubResource("Resource_u0fhl"), SubResource("Resource_i7qi5"), SubResource("Resource_s6pg2"), SubResource("Resource_kkvpn"), SubResource("Resource_ph6pp"), SubResource("Resource_otvti")], [SubResource("Resource_4ifpb"), SubResource("Resource_kq1qh"), SubResource("Resource_ssxip"), SubResource("Resource_7mnxj"), SubResource("Resource_x0724"), SubResource("Resource_ch2eq"), SubResource("Resource_t2hjd"), SubResource("Resource_o17fb"), SubResource("Resource_5jx5n")], [SubResource("Resource_kddhc"), SubResource("Resource_ebqrx"), SubResource("Resource_axthb"), SubResource("Resource_w2cg7"), SubResource("Resource_h11ed"), SubResource("Resource_os2vy"), SubResource("Resource_e20kh"), SubResource("Resource_f6ipy"), SubResource("Resource_p7kf1")], [SubResource("Resource_gc088"), SubResource("Resource_chhap"), SubResource("Resource_av8lt"), SubResource("Resource_imx8e"), SubResource("Resource_mujen"), SubResource("Resource_ad034"), SubResource("Resource_ecnaf"), SubResource("Resource_rlv0l"), SubResource("Resource_oxp4n")], [SubResource("Resource_db1hp"), SubResource("Resource_0ku6e"), SubResource("Resource_y4of8"), SubResource("Resource_2274l"), SubResource("Resource_kgggy"), SubResource("Resource_cibkj"), SubResource("Resource_clwie"), SubResource("Resource_k4ov5"), SubResource("Resource_bf15m")], [SubResource("Resource_856e2"), SubResource("Resource_hk7q0"), SubResource("Resource_k7lem"), SubResource("Resource_m61oo"), SubResource("Resource_lk6kh"), SubResource("Resource_p2hcd"), SubResource("Resource_wvjdh"), SubResource("Resource_cr3vd"), SubResource("Resource_8q5f0")], [SubResource("Resource_hhwnl"), SubResource("Resource_5tn0m"), SubResource("Resource_2j8n0"), SubResource("Resource_vltt8"), SubResource("Resource_b2cxc"), SubResource("Resource_cjch8"), SubResource("Resource_esvk4"), SubResource("Resource_227u6"), SubResource("Resource_38gdh")], [SubResource("Resource_a346a"), SubResource("Resource_myg3i"), SubResource("Resource_6m0a0"), SubResource("Resource_kniye"), SubResource("Resource_xerbh"), SubResource("Resource_5prs8"), SubResource("Resource_a1tar"), SubResource("Resource_8tghf"), SubResource("Resource_mvrtu")], [SubResource("Resource_g4ca8"), SubResource("Resource_fp814"), SubResource("Resource_q1prl"), SubResource("Resource_66ef5"), SubResource("Resource_3uk6i"), SubResource("Resource_dp4fl"), SubResource("Resource_hmrtx"), SubResource("Resource_hdg1k"), SubResource("Resource_v8kxx")], [SubResource("Resource_3mjc1"), SubResource("Resource_hop8c"), SubResource("Resource_n2o1n"), SubResource("Resource_qjhjy"), SubResource("Resource_33ts8"), SubResource("Resource_edg57"), SubResource("Resource_yjy8e"), SubResource("Resource_2tjvf"), SubResource("Resource_lxx3b")], [SubResource("Resource_yleay"), SubResource("Resource_bv013"), SubResource("Resource_x07cj"), SubResource("Resource_eevuw"), SubResource("Resource_tm6ix"), SubResource("Resource_cb02f"), SubResource("Resource_gxs2l"), SubResource("Resource_ui4im"), SubResource("Resource_5i20s")], [SubResource("Resource_ywn2k"), SubResource("Resource_s5xox"), SubResource("Resource_xq0ft"), SubResource("Resource_urnqk"), SubResource("Resource_l4w76"), SubResource("Resource_wuxf7"), SubResource("Resource_agtmi"), SubResource("Resource_7bcfq"), SubResource("Resource_4o3tb")], [SubResource("Resource_kl7ug"), SubResource("Resource_hqs3v"), SubResource("Resource_nmckk"), SubResource("Resource_to2h7"), SubResource("Resource_d21a7"), SubResource("Resource_7rc07"), SubResource("Resource_0hjev"), SubResource("Resource_14dhg"), SubResource("Resource_ny2d6")], [SubResource("Resource_kpmgx"), SubResource("Resource_luw3t"), SubResource("Resource_u3g2w"), SubResource("Resource_erdlo"), SubResource("Resource_miipu"), SubResource("Resource_d5ucr"), SubResource("Resource_uf1iy"), SubResource("Resource_bxgh2"), SubResource("Resource_smjih")], [SubResource("Resource_gs3hb"), SubResource("Resource_ql7bj"), SubResource("Resource_o0lc3"), SubResource("Resource_qryff"), SubResource("Resource_6gxbd"), SubResource("Resource_h82ry"), SubResource("Resource_q2jf6"), SubResource("Resource_2iwbx"), SubResource("Resource_thdam")], [SubResource("Resource_254d3"), SubResource("Resource_opqse"), SubResource("Resource_ntowx"), SubResource("Resource_mimpu"), SubResource("Resource_vbsna"), SubResource("Resource_6ejmq"), SubResource("Resource_kg4y2"), SubResource("Resource_lbe2f"), SubResource("Resource_4kyvi")], [SubResource("Resource_prfsb"), SubResource("Resource_2v1yv"), SubResource("Resource_prw2c"), SubResource("Resource_lvupd"), SubResource("Resource_4x8sv"), SubResource("Resource_8blce"), SubResource("Resource_vf2ve"), SubResource("Resource_hreax"), SubResource("Resource_bkxa0")], [SubResource("Resource_7g58n"), SubResource("Resource_vpw62"), SubResource("Resource_u4bfr"), SubResource("Resource_8sryq"), SubResource("Resource_wyknc"), SubResource("Resource_la1mc"), SubResource("Resource_7m5st"), SubResource("Resource_l2ngr"), SubResource("Resource_vwkgr")], [SubResource("Resource_opy68"), SubResource("Resource_tdda4"), SubResource("Resource_5jcok"), SubResource("Resource_mapn1"), SubResource("Resource_o6qlp"), SubResource("Resource_yx8oy"), SubResource("Resource_oq3bt"), SubResource("Resource_mj4kp"), SubResource("Resource_c7y71")], [SubResource("Resource_bejat"), SubResource("Resource_tiq0y"), SubResource("Resource_l582p"), SubResource("Resource_2800t"), SubResource("Resource_ncyxt"), SubResource("Resource_3kfav"), SubResource("Resource_vloq5"), SubResource("Resource_y0u2x"), SubResource("Resource_jk7x1")]]
 test_a = "a"
 map_shape = 0

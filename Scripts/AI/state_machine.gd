@@ -32,7 +32,7 @@ func get_all_legal_moves(my_units : Array): # -> Array[Array[Vector2i]]
 			if (neighbour != null and neighbour.controller == controller): # 1
 				continue
 			
-			if B_GRID.get_tile_type(new_move) == E.HexTileType.SENTINEL: # 2
+			if B_GRID.get_tile_type(new_move) == "sentinel": # 2
 				continue
 			
 			if BM.is_legal_move(new_move, my_unit) == -1:
@@ -78,7 +78,7 @@ func get_all_spawn_moves(my_units : Array):
 
 
 	for unit in my_units:
-		if B_GRID.get_tile_type(unit.cord) != E.HexTileType.SENTINEL:
+		if B_GRID.get_tile_type(unit.cord) != "sentinel":
 			continue
 		for tile in spawn_tiles:
 			if B_GRID.get_unit(tile.cord) == null:

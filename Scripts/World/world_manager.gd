@@ -44,6 +44,10 @@ var combat_tile : Vector2i
 
 #region Main functions
 
+func close_world():
+	W_GRID.reset_data()
+	hide_world_map()
+
 func hide_world_map():
 	for hero in get_children():
 		hero.queue_free()

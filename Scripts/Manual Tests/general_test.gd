@@ -14,14 +14,13 @@ func set_players(players : Array[PlayerSetting]):
 	IM.players = new_players
 
 
-func test_battle() -> bool:
+func test_battle() -> void:
 	"""
 	Returns true if the test started succesfully
 	"""
+	assert(test_battle_setup != null, "No battle setup")
 
-	if test_battle_setup == null:
-		print("No battle setup")
-		return false
+
 
 
 	set_players(test_battle_setup.player_settings)
@@ -35,21 +34,15 @@ func test_battle() -> bool:
 
 	BM.start_battle(new_armies, test_battle_setup.battle_map)
 
-	return true
 
 
-func test_world() -> bool:
+func test_world() -> void:
 	"""
 	Returns true if the test started succesfully
 	"""
-
-	if world_setup == null:
-		print("No world setup")
-		return false
+	assert(world_setup != null, "No world setup")
 
 	set_players(world_setup.player_settings)
 
 	WM.start_world(world_setup.world_map)
 	
-
-	return true

@@ -12,10 +12,8 @@ extends CanvasLayer
 
 
 func _on_test_game_pressed():
-	if world_setup == null:
-		print("No game setup")
-		return
-	
+	assert(world_setup != null, "No game setup")
+
 	players = []
 	for player_set in world_setup.player_settings:
 		var player = player_set.create_player()
@@ -44,23 +42,19 @@ func _on_map_creator_pressed():
 #region Tests
 
 func _on_test_battle_pressed():
+	assert(maunual_tester != null, "No manual tester setup")
+
 	
-	if maunual_tester == null:
-		print("No manual tester setup")
-		return
-	
-	if maunual_tester.test_battle():
-		toggle_menu_visibility()
+	maunual_tester.test_battle()
+	toggle_menu_visibility()
 
 
 
 func _on_test_world_pressed():
-	if maunual_tester == null:
-		print("No manual tester setup")
-		return
-	
-	if maunual_tester.test_world():
-		toggle_menu_visibility()
+	assert(maunual_tester != null, "No manual tester setup")
+
+	maunual_tester.test_world()
+	toggle_menu_visibility()
 
 
 

@@ -43,7 +43,7 @@ var DefenderTiles = []
 var tile_grid : Array = [] # Array[Array[HexTile]]
 var unit_grid : Array = [] # Array[Array[AUnit]]
 
-var current_spawn : E.HexTileType = E.HexTileType.SENTINEL
+var current_spawn : String = "sentinel"
 
 #region Tools
 
@@ -75,15 +75,15 @@ func remove_unit(unit):
 #region Coordinates tools
 
 
-func get_tile_type(cord : Vector2i) -> E.HexTileType:
-	return tile_grid[cord.x][cord.y].tile_type
+func get_tile_type(cord : Vector2i) -> String:
+	return tile_grid[cord.x][cord.y].type
 
 func get_unit(cord : Vector2i):
 	return unit_grid[cord.x][cord.y]
 
 
 
-func adjacent_units(start_cord : Vector2i):
+func adjacent_units(start_cord : Vector2i) -> Array:
 	# Returns 6 elements Array, elements can be null
 	var units = []
 	for side in range(6):
@@ -94,8 +94,8 @@ func adjacent_units(start_cord : Vector2i):
 	return units
 
 
-func get_shot_target(start_cord : Vector2i, side : int):
-	while tile_grid[start_cord.x][start_cord.y].tile_type != E.HexTileType.SENTINEL:
+func get_shot_target(start_cord : Vector2i, side : int) -> AUnit:
+	while tile_grid[start_cord.x][start_cord.y].type != "sentinel":
 		start_cord += DIRECTIONS[side]
 		var target = unit_grid[start_cord.x][start_cord.y]
 		if target != null:
@@ -110,11 +110,11 @@ func get_distant_unit(start_cord : Vector2i, side : int, distance : int) -> AUni
 	return unit_grid[start_cord.x][start_cord.y]
 
 
-func get_distant_tile_type(start_cord : Vector2i, side : int, distance : int) -> E.HexTileType:
+func get_distant_tile_type(start_cord : Vector2i, side : int, distance : int) -> String:
 	for i in range(distance):
 		start_cord += DIRECTIONS[side]
 
-	return tile_grid[start_cord.x][start_cord.y].tile_type
+	return tile_grid[start_cord.x][start_cord.y].type
 
 
 func get_distant_cord(start_cord : Vector2i, side : int, distance : int) -> Vector2i:
@@ -182,21 +182,21 @@ func spawn_tiles() -> void:
 
 			newTile.cord = Vector2i(x, y)
 			match current_spawn:
-				E.HexTileType.SENTINEL:
+				"sentinel":
 					newTile.name = "Sentinel_HexTile"
 
-				E.HexTileType.DEFAULT:
+				"default":
 					newTile.name = "Default_HexTile"
 			
-				E.HexTileType.ATTACKER_SPAWN:
+				"player_0_spawn":
 					newTile.name = "Attacker_HexTile"
 					summon_tiles[0].append(newTile)
 
-				E.HexTileType.DEFENDER_SPAWN:
+				"player_1_spawn":
 					newTile.name = "Defender_HexTile"
 					summon_tiles[1].append(newTile)
 
-			newTile.tile_type = current_spawn
+			newTile.type = current_spawn
 
 			tile_grid[x][y] = newTile
 
@@ -208,21 +208,21 @@ func get_tile_to_spawn(x : int, y : int, bOddRow : bool) -> PackedScene:
 	var TileToSpawn = SentineltHexTile # Default value for hex tile is Sentinel Tile
 
 
-	current_spawn = E.HexTileType.SENTINEL
+	current_spawn = "sentinel"
 
 	if is_gameplay_tile(x, y, bOddRow):
 		TileToSpawn = DefaultHexTile
-		current_spawn = E.HexTileType.DEFAULT
+		current_spawn = "default"
 
 		var FirstColumnStart : int = (grid_height / 2) + border_size - (y / 2)
 
 		if (bOddRow and x == FirstColumnStart + 1) or (not bOddRow and x == FirstColumnStart): # first column
 			TileToSpawn = AttackerHexTile
-			current_spawn = E.HexTileType.ATTACKER_SPAWN
+			current_spawn = "player_0_spawn"
 		elif (x == grid_width - border_size - 1  - (y / 2)): # last column
 		
 			TileToSpawn = DefenderHexTile
-			current_spawn = E.HexTileType.DEFENDER_SPAWN
+			current_spawn = "player_1_spawn"
 			
 	return TileToSpawn
 

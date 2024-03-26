@@ -1,0 +1,643 @@
+[gd_resource type="Resource" script_class="BattleMap" load_steps=108 format=3]
+
+[ext_resource type="Script" path="res://Resources/data_tile.gd" id="1_fcf0a"]
+[ext_resource type="Script" path="res://Resources/battle_map.gd" id="2_av11x"]
+
+[sub_resource type="Resource" id="Resource_v1o20"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_63bkk"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_i3tt2"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_pwt3e"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_1lt8q"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_3k5ji"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_657t1"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_ury52"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_nrbkh"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_to1x5"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_llyst"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_22o5o"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_5xgd8"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_ihjk6"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_bq2nu"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_mww03"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_sl0ij"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_oyjnt"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_1kuav"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_pwvis"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "1"
+
+[sub_resource type="Resource" id="Resource_034a7"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_yl6l8"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_dlj2w"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_6icsw"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_cr2x4"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "1"
+
+[sub_resource type="Resource" id="Resource_5a0mr"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "1"
+
+[sub_resource type="Resource" id="Resource_0u6i8"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "3"
+
+[sub_resource type="Resource" id="Resource_gmr51"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_hv76y"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_csv84"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "1"
+
+[sub_resource type="Resource" id="Resource_wu83e"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "1"
+
+[sub_resource type="Resource" id="Resource_mk5if"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "3"
+
+[sub_resource type="Resource" id="Resource_w3130"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "3"
+
+[sub_resource type="Resource" id="Resource_prv76"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "3"
+
+[sub_resource type="Resource" id="Resource_7gvlk"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_wcble"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_2ilvn"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "3"
+
+[sub_resource type="Resource" id="Resource_03aj1"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "3"
+
+[sub_resource type="Resource" id="Resource_3ovu5"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "3"
+
+[sub_resource type="Resource" id="Resource_sdwho"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "3"
+
+[sub_resource type="Resource" id="Resource_g5vew"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "3"
+
+[sub_resource type="Resource" id="Resource_12lpg"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_nbb4t"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_s43jo"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "3"
+
+[sub_resource type="Resource" id="Resource_4jiha"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "3"
+
+[sub_resource type="Resource" id="Resource_e1upj"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "3"
+
+[sub_resource type="Resource" id="Resource_4ia2u"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "3"
+
+[sub_resource type="Resource" id="Resource_7bbhe"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "3"
+
+[sub_resource type="Resource" id="Resource_tap2a"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_5sexf"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_svncg"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "3"
+
+[sub_resource type="Resource" id="Resource_tsfaj"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "3"
+
+[sub_resource type="Resource" id="Resource_485l2"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "3"
+
+[sub_resource type="Resource" id="Resource_vnhcb"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "3"
+
+[sub_resource type="Resource" id="Resource_4o748"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "3"
+
+[sub_resource type="Resource" id="Resource_t2cts"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_cp328"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_tbwj7"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "3"
+
+[sub_resource type="Resource" id="Resource_yyygj"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "3"
+
+[sub_resource type="Resource" id="Resource_jsbhw"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "3"
+
+[sub_resource type="Resource" id="Resource_nh6e4"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "3"
+
+[sub_resource type="Resource" id="Resource_bg7wi"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "3"
+
+[sub_resource type="Resource" id="Resource_7j0l0"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_4nrlv"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_85wco"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "3"
+
+[sub_resource type="Resource" id="Resource_17d2u"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "3"
+
+[sub_resource type="Resource" id="Resource_b26gv"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "3"
+
+[sub_resource type="Resource" id="Resource_egcqo"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "3"
+
+[sub_resource type="Resource" id="Resource_83esj"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "3"
+
+[sub_resource type="Resource" id="Resource_hdj6e"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_cw82t"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_ihthm"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "3"
+
+[sub_resource type="Resource" id="Resource_5iwan"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "3"
+
+[sub_resource type="Resource" id="Resource_0bbhg"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "3"
+
+[sub_resource type="Resource" id="Resource_jool0"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "3"
+
+[sub_resource type="Resource" id="Resource_pcdxo"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "3"
+
+[sub_resource type="Resource" id="Resource_cudjn"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_jjjds"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_wsck7"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "3"
+
+[sub_resource type="Resource" id="Resource_ya3s0"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "3"
+
+[sub_resource type="Resource" id="Resource_ynvjs"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "3"
+
+[sub_resource type="Resource" id="Resource_8d6ao"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "2"
+
+[sub_resource type="Resource" id="Resource_2o0xf"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "2"
+
+[sub_resource type="Resource" id="Resource_ju836"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_pj6tn"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_t4mla"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "3"
+
+[sub_resource type="Resource" id="Resource_yergr"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "2"
+
+[sub_resource type="Resource" id="Resource_v7wm0"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "2"
+
+[sub_resource type="Resource" id="Resource_ek33l"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_g1rpx"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_jte0q"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_k5617"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_h0qyd"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "2"
+
+[sub_resource type="Resource" id="Resource_ei2aa"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_1y0wf"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_cgs37"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_qlaej"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_xewu6"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_71r8w"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_q1u3w"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_r2bos"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_cw4hc"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_4yfwr"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_qqacy"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[sub_resource type="Resource" id="Resource_87ptb"]
+script = ExtResource("1_fcf0a")
+texture_path = "res://Art/sentinel.png"
+flip_horizontal = false
+type = "0"
+
+[resource]
+script = ExtResource("2_av11x")
+max_player_number = 2
+grid_width = 7
+grid_height = 15
+grid_data = [[SubResource("Resource_v1o20"), SubResource("Resource_63bkk"), SubResource("Resource_i3tt2"), SubResource("Resource_pwt3e"), SubResource("Resource_1lt8q"), SubResource("Resource_3k5ji"), SubResource("Resource_657t1")], [SubResource("Resource_ury52"), SubResource("Resource_nrbkh"), SubResource("Resource_to1x5"), SubResource("Resource_llyst"), SubResource("Resource_22o5o"), SubResource("Resource_5xgd8"), SubResource("Resource_ihjk6")], [SubResource("Resource_bq2nu"), SubResource("Resource_mww03"), SubResource("Resource_sl0ij"), SubResource("Resource_oyjnt"), SubResource("Resource_1kuav"), SubResource("Resource_pwvis"), SubResource("Resource_034a7")], [SubResource("Resource_yl6l8"), SubResource("Resource_dlj2w"), SubResource("Resource_6icsw"), SubResource("Resource_cr2x4"), SubResource("Resource_5a0mr"), SubResource("Resource_0u6i8"), SubResource("Resource_gmr51")], [SubResource("Resource_hv76y"), SubResource("Resource_csv84"), SubResource("Resource_wu83e"), SubResource("Resource_mk5if"), SubResource("Resource_w3130"), SubResource("Resource_prv76"), SubResource("Resource_7gvlk")], [SubResource("Resource_wcble"), SubResource("Resource_2ilvn"), SubResource("Resource_03aj1"), SubResource("Resource_3ovu5"), SubResource("Resource_sdwho"), SubResource("Resource_g5vew"), SubResource("Resource_12lpg")], [SubResource("Resource_nbb4t"), SubResource("Resource_s43jo"), SubResource("Resource_4jiha"), SubResource("Resource_e1upj"), SubResource("Resource_4ia2u"), SubResource("Resource_7bbhe"), SubResource("Resource_tap2a")], [SubResource("Resource_5sexf"), SubResource("Resource_svncg"), SubResource("Resource_tsfaj"), SubResource("Resource_485l2"), SubResource("Resource_vnhcb"), SubResource("Resource_4o748"), SubResource("Resource_t2cts")], [SubResource("Resource_cp328"), SubResource("Resource_tbwj7"), SubResource("Resource_yyygj"), SubResource("Resource_jsbhw"), SubResource("Resource_nh6e4"), SubResource("Resource_bg7wi"), SubResource("Resource_7j0l0")], [SubResource("Resource_4nrlv"), SubResource("Resource_85wco"), SubResource("Resource_17d2u"), SubResource("Resource_b26gv"), SubResource("Resource_egcqo"), SubResource("Resource_83esj"), SubResource("Resource_hdj6e")], [SubResource("Resource_cw82t"), SubResource("Resource_ihthm"), SubResource("Resource_5iwan"), SubResource("Resource_0bbhg"), SubResource("Resource_jool0"), SubResource("Resource_pcdxo"), SubResource("Resource_cudjn")], [SubResource("Resource_jjjds"), SubResource("Resource_wsck7"), SubResource("Resource_ya3s0"), SubResource("Resource_ynvjs"), SubResource("Resource_8d6ao"), SubResource("Resource_2o0xf"), SubResource("Resource_ju836")], [SubResource("Resource_pj6tn"), SubResource("Resource_t4mla"), SubResource("Resource_yergr"), SubResource("Resource_v7wm0"), SubResource("Resource_ek33l"), SubResource("Resource_g1rpx"), SubResource("Resource_jte0q")], [SubResource("Resource_k5617"), SubResource("Resource_h0qyd"), SubResource("Resource_ei2aa"), SubResource("Resource_1y0wf"), SubResource("Resource_cgs37"), SubResource("Resource_qlaej"), SubResource("Resource_xewu6")], [SubResource("Resource_71r8w"), SubResource("Resource_q1u3w"), SubResource("Resource_r2bos"), SubResource("Resource_cw4hc"), SubResource("Resource_4yfwr"), SubResource("Resource_qqacy"), SubResource("Resource_87ptb")]]
+test_a = "a"
+map_shape = 0

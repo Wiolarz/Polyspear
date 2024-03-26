@@ -13,8 +13,6 @@ var hex_grid : Array = []  # Array[Array[Place]]
 var hero_grid : Array = [] # Array[Array[Hero]]
 
 
-var current_spawn : E.WorldMapTiles = E.WorldMapTiles.SENTINEL
-
 
 #region Tools
 
@@ -96,33 +94,43 @@ func spawn_tiles() -> void:
 	
 	var grid = map_information.grid_data
 
-	for y in range(grid_height):
-		for x in range(grid_width):
-			var odd_row = y % 2 == 0 # Sentinel Rows add aditional row
-
-			var x_tile_pos = x * TileHorizontalOffset + y * OddRowHorizontalOffset
-			var y_tile_pos = y * TileVerticalOffset
-
+	for x in range(grid_width):
+		for y in range(grid_height):
+			if x == 4 and y == 8:
+				print("test")
+				#return
+			# creating a node
 			var new_tile_scene : PackedScene = BASIC_HEX_TILE
 			var new_tile = new_tile_scene.instantiate()
 			add_child(new_tile)
-			if is_gameplay_tile(x, y, odd_row):
-				var start : int = floor(grid_height / 2)# axial start position
-				var gameplay_width_start : int = start + border_size - floor(y / 2)
-				var gameplay_height_start : int = border_size
-
-				var data_x = x - gameplay_width_start
-				var data_y = y - gameplay_height_start
-
-				new_tile.get_node("Sprite2D").texture = ResourceLoader.load(grid[data_x][data_y].texture_path)
-				new_tile.type = grid[data_x][data_y].type
-
-
+			
+			hex_grid[x][y] = new_tile
+			
+			# setting a new tile node visual location
+			var x_tile_pos = x * TileHorizontalOffset + y * OddRowHorizontalOffset
+			var y_tile_pos = y * TileVerticalOffset
 			new_tile.global_position.x = x_tile_pos
 			new_tile.global_position.y = y_tile_pos
+			
+			# # if tile isn't a sentinel, apply a data from a map save
+			# var odd_row = y % 2 == 0 # Sentinel Rows adds aditional row
+			
+			# # applying correction to axial grid system
+			# var start : int = floor(grid_height / 2)# axial start position
+			# var gameplay_width_start : int = start + border_size - floor(y / 2)
+			# var gameplay_height_start : int = border_size
+
+			var data_x = x - 1
+			var data_y = y - 1
+			if data_x >= 0 and data_y >= 0 and data_x < grid.size() and data_y < grid[0].size():
+				# if data_x == 10:
+				#     return
+				grid[data_x][data_y].apply_data(new_tile)  # texture + game logic applied
+
 
 			new_tile.cord = Vector2i(x, y)
-			match new_tile.type:
+
+			match new_tile.type:  # Debug
 				"sentinel":
 					new_tile.name = "Sentinel_HexTile"
 
@@ -131,11 +139,11 @@ func spawn_tiles() -> void:
 			
 				"wall":
 					new_tile.name = "Wall_HexTile"
+				"city":
+					new_tile.name = "City_HexTile"
 
 
-			new_tile.tile_type = current_spawn
-
-			hex_grid[x][y] = new_tile
+			
 
 
 func reset_data():

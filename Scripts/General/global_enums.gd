@@ -40,14 +40,6 @@ enum MapShape
 	SHIFTED,
 }
 
-enum HexTileType 
-{
-	SENTINEL,
-	ATTACKER_SPAWN,
-	DEFENDER_SPAWN,
-	DEFAULT,
-}
-
 enum Symbols
 {
 	EMPTY,

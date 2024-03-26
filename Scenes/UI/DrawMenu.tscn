@@ -1,17 +1,17 @@
-[gd_scene load_steps=8 format=3 uid="uid://l0kojvcxbfky"]
+[gd_scene load_steps=7 format=3 uid="uid://l0kojvcxbfky"]
 
 [ext_resource type="Script" path="res://Scripts/Development/map_creator.gd" id="1_y7q6u"]
-[ext_resource type="Resource" uid="uid://b3fli1dnnerfw" path="res://Resources/World_maps/empty2.tres" id="2_8u2a4"]
 [ext_resource type="Script" path="res://Scripts/UI/Game_Logic/save_system.gd" id="2_ehahi"]
 [ext_resource type="Texture2D" uid="uid://da6ubkmi36xyq" path="res://Art/Black_Hex.png" id="3_lf3vs"]
 [ext_resource type="Texture2D" uid="uid://cgmjmsm0jfyuv" path="res://Art/Stone_Hex.png" id="4_ddlav"]
 [ext_resource type="Texture2D" uid="uid://bt4x7bws16kg8" path="res://Art/Grass_Hex.png" id="5_g8oo0"]
 [ext_resource type="Texture2D" uid="uid://bu74luqlsb8df" path="res://Art/Dirt_Hex.png" id="6_l12at"]
 
-[node name="DrawMenu" type="CanvasLayer"]
+[node name="DrawMenu" type="CanvasLayer" node_paths=PackedStringArray("save_box_input", "load_box_input")]
 process_mode = 3
 script = ExtResource("1_y7q6u")
-map_to_load = ExtResource("2_8u2a4")
+save_box_input = NodePath("SaveName")
+load_box_input = NodePath("LoadName")
 
 [node name="MenuContainer" type="VBoxContainer" parent="."]
 light_mask = 2
@@ -79,6 +79,20 @@ offset_top = 23.0
 offset_right = 3413.0
 offset_bottom = 692.0
 scale = Vector2(0.2, 0.2)
+
+[node name="LoadName" type="TextEdit" parent="."]
+offset_left = 10.0
+offset_top = 257.0
+offset_right = 237.0
+offset_bottom = 308.0
+text = "World_Maps/new_map"
+
+[node name="SaveName" type="TextEdit" parent="."]
+offset_left = 10.0
+offset_top = 369.0
+offset_right = 237.0
+offset_bottom = 420.0
+text = "new_map"
 
 [connection signal="pressed" from="MenuContainer/NewWorldMap" to="." method="_on_new_world_map_pressed"]
 [connection signal="pressed" from="MenuContainer/NewBattleMap" to="." method="_on_new_battle_map_pressed"]

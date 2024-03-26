@@ -1,7 +1,6 @@
 # TODO
 
 ## now
-merge hex_tile tile_type into type variable (use Strings instead of enums)
 
 Camera movement between battle area and world map area. Destroy childs on clear data function
 
@@ -34,10 +33,6 @@ rotation
 flip_v
 flip_h
 type (string for game logic)
-
-
-Krong todo:
-1 move logic of creating sentinel broder outside of map rules, something like that
 
 
 
@@ -98,6 +93,8 @@ kill_unit() has to account for more sides:
 
 
 ## Nice to have goals
+implement functionality to flip hex tile sprites (map creator, and data_tile func)
+
 
 moving the camera on larger map + zoom option
 #google camera tutorials + addons
@@ -152,10 +149,7 @@ Alliance - group of teams
 
 ## Nice to have
 
-create: func optimize_map_size()
-that will check for the first and last non-sentinel tile placement in each grid row and column.
-Then it will remove all empty columns at map edges
-this function should be called during saving of a scene
+
 
 create 2 functions: extend/reduce map_size
 User will be able to press a button change canvas size -> at the map borders a line? (or just last edge hex rows/columns will highlight)
