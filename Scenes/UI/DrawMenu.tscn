@@ -1,6 +1,7 @@
-[gd_scene load_steps=7 format=3 uid="uid://l0kojvcxbfky"]
+[gd_scene load_steps=8 format=3 uid="uid://l0kojvcxbfky"]
 
 [ext_resource type="Script" path="res://Scripts/Development/map_creator.gd" id="1_y7q6u"]
+[ext_resource type="Resource" uid="uid://b3fli1dnnerfw" path="res://Resources/World_maps/empty2.tres" id="2_8u2a4"]
 [ext_resource type="Script" path="res://Scripts/UI/Game_Logic/save_system.gd" id="2_ehahi"]
 [ext_resource type="Texture2D" uid="uid://da6ubkmi36xyq" path="res://Art/Black_Hex.png" id="3_lf3vs"]
 [ext_resource type="Texture2D" uid="uid://cgmjmsm0jfyuv" path="res://Art/Stone_Hex.png" id="4_ddlav"]
@@ -10,6 +11,7 @@
 [node name="DrawMenu" type="CanvasLayer"]
 process_mode = 3
 script = ExtResource("1_y7q6u")
+map_to_load = ExtResource("2_8u2a4")
 
 [node name="MenuContainer" type="VBoxContainer" parent="."]
 light_mask = 2
@@ -78,8 +80,8 @@ offset_right = 3413.0
 offset_bottom = 692.0
 scale = Vector2(0.2, 0.2)
 
-[connection signal="pressed" from="MenuContainer/NewWorldMap" to="." method="_on_new_map_pressed"]
-[connection signal="pressed" from="MenuContainer/NewBattleMap" to="." method="_on_new_map_pressed"]
+[connection signal="pressed" from="MenuContainer/NewWorldMap" to="." method="_on_new_world_map_pressed"]
+[connection signal="pressed" from="MenuContainer/NewBattleMap" to="." method="_on_new_battle_map_pressed"]
 [connection signal="pressed" from="MenuContainer/LoadMap" to="." method="_on_load_map_pressed"]
 [connection signal="pressed" from="MenuContainer/SaveMap" to="." method="_on_save_map_pressed"]
 [connection signal="pressed" from="VBattleBox/SentinelButton" to="." method="_on_sentinel_button_pressed"]

@@ -27,11 +27,21 @@ func _on_test_game_pressed():
 
 func start_game():
 	toggle_menu_visibility()
-	WM.start_world(players, world_setup.world_map)
+	IM.players = players
+	WM.start_world(world_setup.world_map)
 
 func toggle_menu_visibility():
 	visible = not visible
 
+
+
+func _on_map_creator_pressed():
+	IM.draw_mode = true
+	map_creator.open_draw_menu()
+	toggle_menu_visibility()
+
+
+#region Tests
 
 func _on_test_battle_pressed():
 	
@@ -44,8 +54,14 @@ func _on_test_battle_pressed():
 
 
 
+func _on_test_world_pressed():
+	if maunual_tester == null:
+		print("No manual tester setup")
+		return
+	
+	if maunual_tester.test_world():
+		toggle_menu_visibility()
 
-func _on_map_creator_pressed():
-	IM.draw_mode = true
-	map_creator.open_draw_menu()
-	toggle_menu_visibility()
+
+
+#endregion

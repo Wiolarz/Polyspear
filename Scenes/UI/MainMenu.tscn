@@ -1,12 +1,9 @@
-[gd_scene load_steps=3 format=3 uid="uid://b4ndp6v0ts1on"]
+[gd_scene load_steps=2 format=3 uid="uid://b4ndp6v0ts1on"]
 
-[ext_resource type="PackedScene" uid="uid://ctlff4pba0kk3" path="res://Scenes/Multiplayer/MultiplayerConnection.tscn" id="1_d8wwc"]
 [ext_resource type="Script" path="res://Scripts/UI/Game_Logic/main_menu.gd" id="1_iln2i"]
 
 [node name="MainMenu" type="CanvasLayer"]
 script = ExtResource("1_iln2i")
-
-[node name="MultiplayerConnection" parent="." instance=ExtResource("1_d8wwc")]
 
 [node name="Control" type="Control" parent="."]
 layout_mode = 3
@@ -15,13 +12,15 @@ offset_left = 1287.0
 offset_right = 1850.0
 offset_bottom = 1071.0
 
-[node name="TestGame" type="Button" parent="Control"]
+[node name="StartGame" type="Button" parent="Control"]
 layout_mode = 0
-offset_top = 54.0
-offset_right = 96.0
-offset_bottom = 85.0
+offset_left = -746.0
+offset_top = 58.0
+offset_right = -636.0
+offset_bottom = 112.0
 scale = Vector2(6.2, 5.88)
-text = "Test World
+text = "(placeholder)
+Start Game
 "
 
 [node name="TestBattle" type="Button" parent="Control"]
@@ -33,6 +32,15 @@ scale = Vector2(6.2, 5.88)
 text = "Test Battle
 "
 
+[node name="TestWorld" type="Button" parent="Control"]
+layout_mode = 0
+offset_left = 4.0
+offset_top = 38.0
+offset_right = 100.0
+offset_bottom = 69.0
+scale = Vector2(6.2, 5.88)
+text = "Test World"
+
 [node name="MapCreator" type="Button" parent="Control"]
 layout_mode = 0
 offset_left = -354.0
@@ -43,6 +51,7 @@ scale = Vector2(6.2, 5.88)
 text = "Map Creator
 "
 
-[connection signal="pressed" from="Control/TestGame" to="." method="_on_test_game_pressed"]
+[connection signal="pressed" from="Control/StartGame" to="." method="_on_test_game_pressed"]
 [connection signal="pressed" from="Control/TestBattle" to="." method="_on_test_battle_pressed"]
+[connection signal="pressed" from="Control/TestWorld" to="." method="_on_test_world_pressed"]
 [connection signal="pressed" from="Control/MapCreator" to="." method="_on_map_creator_pressed"]

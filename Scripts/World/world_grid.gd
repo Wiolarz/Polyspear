@@ -3,10 +3,9 @@
 extends GridManager
 
 
-# Hard coding of art files is a temporary solution until a decision how to approach treating background art will be made
-@onready var SentineltHexTile : PackedScene = load("res://Scenes/HexTiles/BlackHexTile.tscn")
-@onready var WallHexTile : PackedScene = load("res://Scenes/HexTiles/StoneHexTile.tscn")
-@onready var DefaultHexTile : PackedScene = load("res://Scenes/HexTiles/GrassHexTile.tscn")
+# Collision scene
+@onready var BASIC_HEX_TILE : PackedScene = load("res://Scenes/HexTiles/BasicHexTile.tscn")
+
 
 var max_player_number : int
 
@@ -78,6 +77,8 @@ func get_hero(cord : Vector2i):
 
 
 #region Generate Grid
+func is_clear() -> bool:
+	return hex_grid.size() == 0 and hero_grid.size() == 0
 
 func init_hex_grid() -> void:
 	for i in range(grid_width):
@@ -92,73 +93,49 @@ func spawn_tiles() -> void:
 
 	#for row in map_information.grid_data:
 	#	for tile in row:
+	
+	var grid = map_information.grid_data
 
 	for y in range(grid_height):
 		for x in range(grid_width):
-			var oddRow = y % 2 == 0 # Sentinel Rows add aditional row
+			var odd_row = y % 2 == 0 # Sentinel Rows add aditional row
+
+			var x_tile_pos = x * TileHorizontalOffset + y * OddRowHorizontalOffset
+			var y_tile_pos = y * TileVerticalOffset
+
+			var new_tile_scene : PackedScene = BASIC_HEX_TILE
+			var new_tile = new_tile_scene.instantiate()
+			add_child(new_tile)
+			if is_gameplay_tile(x, y, odd_row):
+				var start : int = floor(grid_height / 2)# axial start position
+				var gameplay_width_start : int = start + border_size - floor(y / 2)
+				var gameplay_height_start : int = border_size
+
+				var data_x = x - gameplay_width_start
+				var data_y = y - gameplay_height_start
+
+				new_tile.get_node("Sprite2D").texture = ResourceLoader.load(grid[data_x][data_y].texture_path)
+				new_tile.type = grid[data_x][data_y].type
+
+
+			new_tile.global_position.x = x_tile_pos
+			new_tile.global_position.y = y_tile_pos
+
+			new_tile.cord = Vector2i(x, y)
+			match new_tile.type:
+				"sentinel":
+					new_tile.name = "Sentinel_HexTile"
+
+				"empty":
+					new_tile.name = "Empty_HexTile"
 			
-			var XTilePos = x * TileHorizontalOffset + y * OddRowHorizontalOffset
-			var YTilePos = y * TileVerticalOffset
-
-			var newTileScene : PackedScene = get_tile_to_spawn(x, y, oddRow)
-			var newTile = newTileScene.instantiate()
-
-			add_child(newTile)
-			
-			var GRID = map_information.grid_data # TODOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+				"wall":
+					new_tile.name = "Wall_HexTile"
 
 
-			newTile.get_node("Sprite2D").texture = ResourceLoader.load(GRID[x][y].texture_path)
+			new_tile.tile_type = current_spawn
 
-
-			newTile.global_position.x = XTilePos
-			newTile.global_position.y = YTilePos
-
-			newTile.cord = Vector2i(x, y)
-			match current_spawn:
-				E.WorldMapTiles.SENTINEL:
-					newTile.name = "Sentinel_HexTile"
-
-				E.WorldMapTiles.EMPTY:
-					newTile.name = "Empty_HexTile"
-			
-				E.WorldMapTiles.WALL:
-					newTile.name = "Wall_HexTile"
-
-
-			newTile.tile_type = current_spawn
-
-			hex_grid[x][y] = newTile
-
-
-func get_tile_to_spawn(x : int, y : int, bOddRow : bool) -> PackedScene:
-
-
-	
-
-
-	var TileToSpawn = SentineltHexTile # Default value for hex tile is Sentinel Tile
-
-
-
-
-
-	current_spawn = E.WorldMapTiles.SENTINEL
-
-	if is_gameplay_tile(x, y, bOddRow):
-		TileToSpawn = DefaultHexTile
-		current_spawn = E.WorldMapTiles.EMPTY
-
-		var FirstColumnStart : int = (grid_height / 2) + border_size - (y / 2)
-
-		if (bOddRow and x == FirstColumnStart + 1) or (not bOddRow and x == FirstColumnStart): # first column
-			TileToSpawn = WallHexTile
-			current_spawn = E.WorldMapTiles.WALL
-		elif (x == grid_width - border_size - 1  - (y / 2)): # last column
-			TileToSpawn = WallHexTile
-			current_spawn = E.WorldMapTiles.WALL
-			
-	return TileToSpawn
+			hex_grid[x][y] = new_tile
 
 
 func reset_data():

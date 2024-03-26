@@ -229,7 +229,7 @@ func select_unit(cord : Vector2i) -> bool:
 
 #region Main Functions
 
-func clear_battle():
+func hide_battle():
 	current_participant = null
 	for unit in get_children():
 		unit.queue_free()
@@ -238,7 +238,7 @@ func clear_battle():
 
 
 func end_of_battle():
-	clear_battle()
+	hide_battle()
 	if WM.selected_hero == null:
 		print("end of test battle")
 		IM.go_to_main_menu()

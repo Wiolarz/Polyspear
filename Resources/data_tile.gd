@@ -13,7 +13,7 @@ extends Resource
 
 """
 
-@export var gameplay_function : String
+@export var type : String
 
 
 static func create_data_tile(hex_tile : HexTile) -> DataTile:
@@ -23,6 +23,6 @@ static func create_data_tile(hex_tile : HexTile) -> DataTile:
 	var new_path = sprite_node.texture.resource_path
 	new_data_tile.texture_path = new_path
 
-	new_data_tile.gameplay_function = str(hex_tile.tile_type)
+	new_data_tile.type = str(hex_tile.tile_type)
 
 	return new_data_tile

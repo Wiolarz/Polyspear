@@ -36,13 +36,32 @@ var players : Array[Player] = []
 var draw_mode : bool = false
 
 
+#region Game setup
+
+func get_active_players() -> Array[Player]:
+
+	var active_players : Array[Player] = []
+
+	for player in players:
+		if player.player_type != E.player_type.OBSERVER:
+			active_players.append(player)
+	print(active_players)
+	return active_players
+
+
+#endregion
+
+
+
+
+
 func grid_input_listener(cord : Vector2i):
 	
 	#if WM.current_player.bot_engine != null:
 	#    return # its a bot turn
 	
 	if draw_mode:
-		get_node("/root/BasicMap/DrawMenu").grid_input(cord)
+		get_node("/root/MainScene/DrawMenu").grid_input(cord)
 		return
 	
 	if WM.raging_battle:
@@ -54,11 +73,11 @@ func grid_input_listener(cord : Vector2i):
 func go_to_main_menu():
 	draw_mode = false
 
-	get_node("/root/BasicMap/DrawMenu").hide_draw_menu()
+	get_node("/root/MainScene/DrawMenu").hide_draw_menu()
 
-	WM.clear_world_map()
-	BM.clear_battle()
-	get_node("/root/BasicMap/MainMenu").toggle_menu_visibility()
+	WM.hide_world_map()
+	BM.hide_battle()
+	get_node("/root/MainScene/MainMenu").toggle_menu_visibility()
 
 
 func _physics_process(_delta):

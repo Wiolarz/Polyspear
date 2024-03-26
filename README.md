@@ -59,10 +59,19 @@ Same Game made in Unreal with C++
 
 [https://github.com/y3snt/Hegzy/tree/gameplay-refactor](https://github.com/y3snt/Hegzy/tree/gameplay-refactor)
 
-Godot 4.2
+
+## Important documentation files
+
+/Documentation:
+
+coding_guidelines.md
+
+TODO.md
+
+code_structure.md
 
 
-# Git structure
+## Git structure
 Main - "Production" playable and presentable new release featuring new fun content
 Polyspear - "Develop" working main doesn't have to include new features but shouldn't contain major bugs
 polyspear_X - branch focused on X feature
@@ -71,6 +80,11 @@ polyspear_X - branch focused on X feature
 # Authors:
 
 Wiolarz
+
 Zephyr - NamespaceV
+
 Carcinizer
+
 Trupen - MrTrupen
+
+Pierożek - PieroganoReggiano

@@ -87,7 +87,7 @@ func adjacent_units(start_cord : Vector2i):
 	# Returns 6 elements Array, elements can be null
 	var units = []
 	for side in range(6):
-		var cord = adjacent_cord(start_cord, side)
+		var cord = GridManager.adjacent_cord(start_cord, side)
 		var neighbour = unit_grid[cord.x][cord.y]
 		#if (neighbour != null):
 		units.append(neighbour)
@@ -124,23 +124,31 @@ func get_distant_cord(start_cord : Vector2i, side : int, distance : int) -> Vect
 	return start_cord
 
 
-func get_melee_targets(start_Cord : Vector2i, direction, symbol_side : int) -> Array[AUnit]:
-	"""
-	AI/UI tool
-	take a side on which a weapon symbol is present -> simulate movement -> return list of damaged targets
-	(can return friednly units)
+# func get_melee_targets(start_Cord : Vector2i, direction, symbol_side : int) -> Array[AUnit]:
+# 	"""
+# 	AI/UI tool
+# 	take a side on which a weapon symbol is present -> simulate movement -> return list of damaged targets
+# 	(can return friednly units)
 	
-	direction : int / Vector2i
+# 	direction : int / Vector2i
 
-	"""
-	var units : Array[AUnit] = []
+# 	"""
+# 	var units : Array[AUnit] = []
 	
-	return units
+# 	return units
 
 #endregion
 
 
 #region Generate Grid
+func is_clear() -> bool:
+	return tile_grid.size() == 0 and unit_grid.size() == 0 and summon_tiles.size() == 0
+
+func reset_data():
+	summon_tiles = []
+	tile_grid = []
+	unit_grid = []
+
 
 func init_hex_grid() -> void:
 	for i in range(max_player_number):
@@ -219,9 +227,6 @@ func get_tile_to_spawn(x : int, y : int, bOddRow : bool) -> PackedScene:
 	return TileToSpawn
 
 
-func reset_data():
-	summon_tiles = []
-	tile_grid = []
-	unit_grid = []
+
 
 #endregion

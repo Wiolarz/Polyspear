@@ -6,4 +6,4 @@
 script = ExtResource("1_7nhkj")
 texture_path = "res://Art/world_map/elven_city.png"
 flip_horizontal = false
-gameplay_function = "empty"
+type = "empty"

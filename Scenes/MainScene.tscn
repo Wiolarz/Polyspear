@@ -7,7 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://l0kojvcxbfky" path="res://Scenes/UI/DrawMenu.tscn" id="6_6kfr8"]
 [ext_resource type="PackedScene" uid="uid://b4ndp6v0ts1on" path="res://Scenes/UI/MainMenu.tscn" id="6_yyega"]
 
-[node name="BasicMap" type="Node"]
+[node name="MainScene" type="Node"]
 
 [node name="GameMenu" parent="." instance=ExtResource("1_jo11t")]
 visible = false

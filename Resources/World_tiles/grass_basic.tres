@@ -6,4 +6,4 @@
 script = ExtResource("1_t66vt")
 texture_path = "res://Art/world_map/grass_basic.png"
 flip_horizontal = false
-gameplay_function = "empty"
+type = "empty"

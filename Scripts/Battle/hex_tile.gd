@@ -4,8 +4,9 @@ extends Area2D
 
 var cord : Vector2i
 
-var tile_type : E.HexTileType
+var tile_type : E.HexTileType #DEPRECATED use type below instead
 
+var type : String = "sentinel"
 
 func _on_input_event(_viewport:Node, event:InputEvent, _shape_idx:int):
 	if event.is_action_pressed("KEY_SELECT"):

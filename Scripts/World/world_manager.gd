@@ -44,7 +44,7 @@ var combat_tile : Vector2i
 
 #region Main functions
 
-func clear_world_map():
+func hide_world_map():
 	for hero in get_children():
 		hero.queue_free()
 	for tile in W_GRID.get_children():
@@ -202,7 +202,7 @@ func combat(cord : Vector2i):
 
 	combat_tile = cord
 	
-	clear_world_map()
+	hide_world_map()
 
 	var armies : Array[Army] = [selected_hero.army, W_GRID.get_army(combat_tile)]
 	var battle_map : BattleMap = W_GRID.grid[combat_tile.x][combat_tile.y].battle_map
@@ -240,10 +240,16 @@ func spawn_heroes():
 func change_heroes_visibility():
 	pass
 
-func start_world(player_list : Array[Player], world_map : WorldMap):
-	raging_battle = false
-	players = player_list
+func start_world(world_map : WorldMap) -> void:
+
+	players = IM.get_active_players()
+
+	assert(players.size() != 0, "ERROR WM.players is empty")
+	
 	current_player = players[0]
+
+
+	raging_battle = false
 
 	W_GRID.generate_grid(world_map)
 	

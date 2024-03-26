@@ -76,6 +76,7 @@ static func adjacent_cord(BaseCord : Vector2i, Side : int) -> Vector2i:
 #region Generate Grid
 
 func reset_data() -> void:
+	# Remove the content of map from memory
 	pass
 
 
@@ -123,12 +124,14 @@ func is_gameplay_tile(x : int, y : int, bOddRow : bool) -> bool:
 	return bHeight and (bEven_Row_Width or bOdd_Row_Width)
 
 
-
+func is_clear() -> bool:
+	return true
 
 func generate_grid(new_map_data : GridBoard) -> void:
 	"""
 	Main grid map generation function
 	"""
+	assert(is_clear, "Grid is already loaded")
 	reset_data()
 	
 	new_map_data.apply_data()
