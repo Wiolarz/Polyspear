@@ -26,7 +26,6 @@ extends Resource
 
 #region remove
 @export var test_a : String = "a"
-@export var map_shape : E.MapShape = E.MapShape.CLASSIC # remove
 #endregion
 func apply_data() -> void:
 	pass

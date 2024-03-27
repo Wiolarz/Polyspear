@@ -2,19 +2,25 @@
 
 ## now
 
-Camera movement between battle area and world map area. Destroy childs on clear data function
+### documentation
+document why keeping Sentinel protection reserved to loading data code not saving maps is better as it makes sure that no matter how bad we break map creator game still works
+move map sizes from board data to simply getting info from code as array dimension carry those values anyway
 
 Document how players have to be set in Input manager before other managers can start working
 
-remove old unused scenes
-
 document why factory functions for battle_setup and world_setup shouldnt be made
 
-create a factory for data_tile to create a HexTile node
+Refactor project file names or something
+
+### code
+
+
+Camera movement between battle area and world map area. Destroy childs on clear data function
+
+remove old unused scenes
+
 
 Add alliances somewhere to determine teams for players
-
-Refactor project file names or something
 
 
 serialization and deserialization for HexTile put code in the same place
@@ -22,25 +28,10 @@ serialization and deserialization for HexTile put code in the same place
 move manpipulation of hextile sprite2D  to hextile script
 
 
-
-Each tile has to have specified:
-
-Battle scenes have a seperate data layer
-
-WM and BM:
-texture
-rotation
-flip_v
-flip_h
-type (string for game logic)
+input manager restricts movement on turns
 
 
-
-input manager that knows if its a battle or global gameplay + restricts movement on turns
-
-
-
-Remove map_shape from project
+creat basic battle map, add it to tests
 
 
 ## MONSTER BUGS -> game breaking stuff

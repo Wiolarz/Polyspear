@@ -1,9 +1,0 @@
-[gd_resource type="Resource" script_class="BattleMap" load_steps=2 format=3 uid="uid://c31tntd5paqny"]
-
-[ext_resource type="Script" path="res://Resources/battle_map.gd" id="1_oxpee"]
-
-[resource]
-script = ExtResource("1_oxpee")
-grid_width = 3
-grid_height = 3
-map_shape = 0
