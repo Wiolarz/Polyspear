@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="DataUnit" load_steps=2 format=3 uid="uid://beydauke55uh0"]
+
+[ext_resource type="Script" path="res://Resources/Warfare/data_unit.gd" id="1_nig1g"]
+
+[resource]
+script = ExtResource("1_nig1g")
+unit_name = ""
+texture_path = ""
+symbols = Array[Resource("res://Resources/Warfare/data_symbol.gd")]([null, null, null, null, null, null])

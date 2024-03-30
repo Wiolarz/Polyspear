@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="DataSymbol" load_steps=2 format=3 uid="uid://cngonnqsgsd6e"]
+
+[ext_resource type="Script" path="res://Resources/Warfare/data_symbol.gd" id="1_86jdy"]
+
+[resource]
+script = ExtResource("1_86jdy")
+type = 0
+texture_path = ""

@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="DataUnit" load_steps=3 format=3 uid="uid://bg3lrv4tj3ufo"]
+
+[ext_resource type="Script" path="res://Resources/Warfare/data_unit.gd" id="1_g5mkx"]
+[ext_resource type="Resource" uid="uid://o4rlmfc33rsh" path="res://Resources/Warfare/Symbols/empty.tres" id="2_e1x8y"]
+
+[resource]
+script = ExtResource("1_g5mkx")
+unit_name = "elf1"
+texture_path = "res://Art/old/elf1.png"
+symbols = Array[Resource("res://Resources/Warfare/data_symbol.gd")]([ExtResource("2_e1x8y"), ExtResource("2_e1x8y"), ExtResource("2_e1x8y"), ExtResource("2_e1x8y"), ExtResource("2_e1x8y"), ExtResource("2_e1x8y")])

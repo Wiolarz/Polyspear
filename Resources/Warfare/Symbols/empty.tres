@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="DataSymbol" load_steps=2 format=3 uid="uid://o4rlmfc33rsh"]
+
+[ext_resource type="Script" path="res://Resources/Warfare/data_symbol.gd" id="1_cblen"]
+
+[resource]
+script = ExtResource("1_cblen")
+type = 0
+texture_path = ""
