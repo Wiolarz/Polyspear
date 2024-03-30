@@ -16,11 +16,11 @@ enum map_type
 
 var current_map_type : map_type
 
-var world_map_tiles : Array[DataTile] = []
-
-@onready var empty_battle_map : BattleMap = load("res://Resources/Battle_Maps/empty_map.tres")
 
 @onready var current_brush : DataTile
+
+@onready var world_box : BoxContainer = $HWorldBox
+@onready var battle_box : BoxContainer = $HBattleBox
 
 #region Setup
 
@@ -40,26 +40,33 @@ var world_map_tiles : Array[DataTile] = []
 # 	return scenes
 
 
+func _create_button(box : BoxContainer, map_tile : String):
+	var tile = load(map_tile)
+
+	var new_button = TextureButton.new()
+
+	new_button.texture_normal = ResourceLoader.load(tile.texture_path)
+
+	box.add_child(new_button)
+	var lambda = func on_click():
+		current_brush = tile
+	
+	new_button.pressed.connect(lambda)  # self._button_pressed
+
+
+func _load_tiles(box : BoxContainer, path : String):
+
+	var map_tiles_paths : Array[String] = TestTools.list_files_in_folder(path, true)
+	for map_tile : String in map_tiles_paths:
+		_create_button(box, map_tile)
+
 
 func _ready():
-	var world_map_tiles_paths : Array[String] = TestTools.list_files_in_folder("res://Resources/World_tiles/", true)
-	for world_map_tile in world_map_tiles_paths:
-		world_map_tiles.append(load(world_map_tile))
-	
-	var box = get_node("VWorldBox")
 
-	current_brush = world_map_tiles[0]
+	_load_tiles(battle_box, "res://Resources/Battle_tiles/")
+	_load_tiles(world_box, "res://Resources/World_tiles/")
 
-	for button in world_map_tiles:
-		var new_button = TextureButton.new()
-
-		new_button.texture_normal = ResourceLoader.load(button.texture_path)
-
-		box.add_child(new_button)
-		var lambda = func on_click():
-			current_brush = button
-		
-		new_button.pressed.connect(lambda)  # self._button_pressed
+	#world_box.get_children()[0].on_click()  # default choice
 
 #endregion
 
@@ -78,10 +85,14 @@ func grid_input(cord : Vector2i) -> void:
 func _set_grid_type(new_type : map_type) -> void:
 	if new_type == map_type.WORLD:
 		current_map_type = map_type.WORLD
-
+		world_box.visible = true
+		battle_box.visible = false
 
 	else:
 		current_map_type = map_type.BATTLE
+		world_box.visible = false
+		battle_box.visible = true
+
 
 func _optimize_grid_size(local_tile_grid : Array) -> Array:
 	"""
@@ -120,12 +131,9 @@ func _optimize_grid_size(local_tile_grid : Array) -> Array:
 		for top in range(max(top_pos, 0)):
 			column.pop_front()
 	
-	print(left_pos, " ", right_pos, " ", top_pos, " ", bot_pos)
+	#print(left_pos, " ", right_pos, " ", top_pos, " ", bot_pos)
 	return local_tile_grid
 	
-
-
-
 
 func open_draw_menu():
 	visible = true
@@ -225,7 +233,7 @@ func _on_new_world_map_pressed():
 
 	new_map.grid_height = grid_data.size()
 	new_map.grid_width = grid_data[0].size()
-	print(new_map.grid_height, " ", new_map.grid_width)
+	#print(new_map.grid_height, " ", new_map.grid_width)
 
 	W_GRID.generate_grid(new_map)
 
@@ -245,10 +253,10 @@ func _on_new_battle_map_pressed():
 
 	new_map.grid_height = grid_data.size()
 	new_map.grid_width = grid_data[0].size()
-	print(new_map.grid_height, " ", new_map.grid_width)
+	#print(new_map.grid_height, " ", new_map.grid_width)
 
 
-	B_GRID.generate_grid(empty_battle_map)
+	B_GRID.generate_grid(new_map)
 
 
 #endregion

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bs8ca7gdt2k18"
-path="res://.godot/imported/ork2.png-9868ec21f7a527bc77e40c561ea1b50b.ctex"
+uid="uid://cfhig820jx264"
+path="res://.godot/imported/elf3.png-12381bd80526ea18594c30904e0f18e9.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Art/ork2.png"
-dest_files=["res://.godot/imported/ork2.png-9868ec21f7a527bc77e40c561ea1b50b.ctex"]
+source_file="res://Art/old/elf3.png"
+dest_files=["res://.godot/imported/elf3.png-12381bd80526ea18594c30904e0f18e9.ctex"]
 
 [params]
 

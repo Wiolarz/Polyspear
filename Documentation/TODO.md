@@ -3,6 +3,9 @@
 ## now
 fix battle map render, dont spawn units yet, prepare unit buttons the way you made map creator
 
+add clear data, map / map reset for battle grid/manager same like in world
+
+
 ### documentation
 document why keeping Sentinel protection reserved to loading data code not saving maps is better as it makes sure that no matter how bad we break map creator game still works
 move map sizes from board data to simply getting info from code as array dimension carry those values anyway
@@ -34,6 +37,8 @@ input manager restricts movement on turns
 
 creat basic battle map, add it to tests
 
+after summoning phase during battle ends, replace summon tiles with basic grass tiles
+
 
 ## MONSTER BUGS -> game breaking stuff
 
@@ -57,6 +62,8 @@ AI is once again broken completely needs a full rewrite
 in BM name unit scenes for debugger
 
 ## THINK_About
+creating enum for displaying directions as words (create addon to allow displaying enum values as strings)
+
 rename basic_map to polyspear_main_project
 
 how to properly reset Singeleton objects
@@ -141,6 +148,7 @@ Alliance - group of teams
 
 ## Nice to have
 
+make it so that spawn positions are modifier instead of a different tile type, so that once summoning phase ends something else may be there isntead of simple basic grass tile
 
 
 create 2 functions: extend/reduce map_size

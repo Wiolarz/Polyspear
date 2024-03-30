@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bt4x7bws16kg8"
-path="res://.godot/imported/Grass_Hex.png-3d584ca169b9cdcfd36090a5898caa21.ctex"
+uid="uid://bmyk0feyqq2w"
+path="res://.godot/imported/sword.png-2fc3303a2dd3f96d5e3a648b01fbaf93.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Art/Grass_Hex.png"
-dest_files=["res://.godot/imported/Grass_Hex.png-3d584ca169b9cdcfd36090a5898caa21.ctex"]
+source_file="res://Art/old/sword.png"
+dest_files=["res://.godot/imported/sword.png-2fc3303a2dd3f96d5e3a648b01fbaf93.ctex"]
 
 [params]
 

@@ -345,7 +345,7 @@ func spawn_units() -> void:
 			var new_unit : AUnit = unit_scene.instantiate()
 			add_child(new_unit)
 			
-			new_unit.visibility = false
+			new_unit.visible = false
 			new_unit.controller = army.controller
 
 			new_army_unit_nodes.append(new_unit)

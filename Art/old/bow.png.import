@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bu74luqlsb8df"
-path="res://.godot/imported/Dirt_Hex.png-27fa46ad1b41f78a245142da5d72ba81.ctex"
+uid="uid://dc1acpv0rlbbp"
+path="res://.godot/imported/bow.png-cfc634401ffa647c11ef2f80f04989a9.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Art/Dirt_Hex.png"
-dest_files=["res://.godot/imported/Dirt_Hex.png-27fa46ad1b41f78a245142da5d72ba81.ctex"]
+source_file="res://Art/old/bow.png"
+dest_files=["res://.godot/imported/bow.png-cfc634401ffa647c11ef2f80f04989a9.ctex"]
 
 [params]
 

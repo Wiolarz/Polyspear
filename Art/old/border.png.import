@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dc1acpv0rlbbp"
-path="res://.godot/imported/bow.png-6e48a49a6df38f9b181086a43af34f6a.ctex"
+uid="uid://d0dy38p601hn"
+path="res://.godot/imported/border.png-a18bc35142686db6ebc13d9651d185a1.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Art/bow.png"
-dest_files=["res://.godot/imported/bow.png-6e48a49a6df38f9b181086a43af34f6a.ctex"]
+source_file="res://Art/old/border.png"
+dest_files=["res://.godot/imported/border.png-a18bc35142686db6ebc13d9651d185a1.ctex"]
 
 [params]
 

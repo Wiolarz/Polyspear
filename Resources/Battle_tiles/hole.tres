@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="DataTile" load_steps=2 format=3 uid="uid://c1hwqv10fr376"]
+
+[ext_resource type="Script" path="res://Resources/data_tile.gd" id="1_cyjn2"]
+
+[resource]
+script = ExtResource("1_cyjn2")
+texture_path = "res://Art/battle_map/red_player_spawn.png"
+flip_horizontal = false
+type = "red_spawn"

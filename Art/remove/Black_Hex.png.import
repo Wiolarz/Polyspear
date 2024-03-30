@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dnrwcdtgk6k42"
-path="res://.godot/imported/elf1.png-b53a53789dc1c63f19b3f1a2f1060616.ctex"
+uid="uid://da6ubkmi36xyq"
+path="res://.godot/imported/Black_Hex.png-e9f50c0b33a447af730d153c1fc55e41.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Art/elf1.png"
-dest_files=["res://.godot/imported/elf1.png-b53a53789dc1c63f19b3f1a2f1060616.ctex"]
+source_file="res://Art/remove/Black_Hex.png"
+dest_files=["res://.godot/imported/Black_Hex.png-e9f50c0b33a447af730d153c1fc55e41.ctex"]
 
 [params]
 

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dffoe1yqgsgjm"
-path="res://.godot/imported/sentinel.png-f59bf022b4c372ee645b3ed1764a7e9b.ctex"
+uid="uid://bu74luqlsb8df"
+path="res://.godot/imported/Dirt_Hex.png-54faf6159e2c4e6c24eddc0e02a39122.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Art/sentinel.png"
-dest_files=["res://.godot/imported/sentinel.png-f59bf022b4c372ee645b3ed1764a7e9b.ctex"]
+source_file="res://Art/remove/Dirt_Hex.png"
+dest_files=["res://.godot/imported/Dirt_Hex.png-54faf6159e2c4e6c24eddc0e02a39122.ctex"]
 
 [params]
 

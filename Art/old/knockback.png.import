@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cb5rvem05e7df"
-path="res://.godot/imported/elf2.png-05c9c735ed7711b14e80e13820330115.ctex"
+uid="uid://cjs0so3hrlym6"
+path="res://.godot/imported/knockback.png-4f5dcb2db33823bfcaa74d54314c74f1.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Art/elf2.png"
-dest_files=["res://.godot/imported/elf2.png-05c9c735ed7711b14e80e13820330115.ctex"]
+source_file="res://Art/old/knockback.png"
+dest_files=["res://.godot/imported/knockback.png-4f5dcb2db33823bfcaa74d54314c74f1.ctex"]
 
 [params]
 

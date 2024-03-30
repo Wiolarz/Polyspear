@@ -7,7 +7,7 @@ extends Node
 var map_information : GridBoard
 
 # Basic scene to get Collision area for player input
-@onready var BASIC_HEX_TILE : PackedScene = load("res://Scenes/HexTiles/BasicHexTile.tscn")
+@onready var BASIC_HEX_TILE : PackedScene = load("res://Scenes/Form/TileForm.tscn")
 
 
 # Hex Sprite draw gaps
@@ -26,7 +26,6 @@ var	grid_height : int
 
 
 var border_size : int = 1  # Thickness of a Sentinel perimiter around the gameplay area.
-
 
 
 static var DIRECTIONS = [ \

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cgmjmsm0jfyuv"
-path="res://.godot/imported/Stone_Hex.png-03e54553cf88bc9c9d434435027fb5e8.ctex"
+uid="uid://0lpxbb0xhfsn"
+path="res://.godot/imported/spear.png-ab5175a39d106fa1b0531a9228d81a7e.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Art/Stone_Hex.png"
-dest_files=["res://.godot/imported/Stone_Hex.png-03e54553cf88bc9c9d434435027fb5e8.ctex"]
+source_file="res://Art/old/spear.png"
+dest_files=["res://.godot/imported/spear.png-ab5175a39d106fa1b0531a9228d81a7e.ctex"]
 
 [params]
 
