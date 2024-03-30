@@ -32,8 +32,6 @@ contains:
 # stores all location objects with common parent class "Place" as coordinates
 var grid : Array = [] #Array[Array[Place]]
 
-# stores all heroes as coordinates
-var hero_grid : Array = [] # Array[Array[Hero]]
 
 var selected_hero : Hero
 
@@ -64,7 +62,7 @@ func next_player_turn():
 
 
 func kill_hero(hero : Hero):
-	hero_grid[hero.cord.x][hero.cord.y] = null
+	W_GRID.unit_grid[hero.cord.x][hero.cord.y] = null
 	hero.queue_free()
 
 #endregion
@@ -92,7 +90,7 @@ func grid_input(cord : Vector2i):
 		3 Select ally city -> show interface then return
 	II Scenario - player has a hero selected
 		1 Selects empty/enemy/ally city/ally hero spot -> move_hero()
-		2 Selects the same hero -> unselect current hero
+		2 Selects the same hero -> deselect current hero
 
 
 
@@ -129,7 +127,7 @@ func select_hero(cord : Vector2i) -> bool:
 		1 Selects empty/enemy spot -> return false
 		2 Selects ally hero -> set hero then return true
 	II Scenario - player has a hero selected
-		1 Selects the same hero  -> unselect current hero return true/false(no difference)
+		1 Selects the same hero  -> deselect current hero return true/false(no difference)
 		2 Selects another ally hero -> return false
 
 		

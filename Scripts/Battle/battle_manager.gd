@@ -330,36 +330,32 @@ func summon_unit(cord : Vector2i) -> void:
 
 func spawn_units() -> void:
 	"""
-	* Placing Units used in combat on their "Spawn Points" near the area of the gameplay board where they are visible to the players.
+	Create unit "cards" which players will use later to summon their units on the battlefield
 	"""
-
+	fighting_units = [] # TODO MOVE TO CHECK CLEAR
 	unsummoned_units_counter = 0 
 	for army in armies_unit_scenes:
 		unsummoned_units_counter += army.size()
 	
-	var spawn_cord
-
 	# spawn armies units
-	for army_idx in range(armies_unit_scenes.size()):
-		var army = armies_unit_scenes[army_idx]
-		fighting_units.append([])
-		for unit_idx in range(army.size()):
-			var newUnitScene = army[unit_idx]
-			var new_unit = newUnitScene.instantiate()
-			add_child(new_unit) # jako element sceny
+	for army in battling_armies:
+		var new_army_unit_nodes = []
+		fighting_units.append(new_army_unit_nodes)
+		for unit_scene : PackedScene in army.unit_scenes:
+			var new_unit : AUnit = unit_scene.instantiate()
+			add_child(new_unit)
 			
-			fighting_units[army_idx].append(new_unit)
+			new_unit.visibility = false
+			new_unit.controller = army.controller
 
-			new_unit.controller = participants[army_idx]
+			new_army_unit_nodes.append(new_unit)
 
-			if army_idx == ATTACKER:
-				spawn_cord = B_GRID.summon_tiles[0][unit_idx].cord # Get spawn location
-				spawn_cord += B_GRID.DIRECTIONS[3]  # Move to a spot outside of the map near spawn point
-			elif army_idx == DEFENDER:
-				spawn_cord = B_GRID.summon_tiles[1][unit_idx].cord
-				spawn_cord += B_GRID.DIRECTIONS[0]
+			
+func display_unit_summon_cards(participant_idx = current_participant):
+	# lists all selected participant units at the bottom of the screen
+	var world_map_tiles : Array[DataUnit] = []
 
-			B_GRID.change_unit_cord(new_unit, spawn_cord) # Adding Unit to the Gameplay Array
+
 
 
 func start_battle(new_armies : Array[Army], battle_map : BattleMap) -> void:

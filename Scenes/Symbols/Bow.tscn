@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://b08mp0ax51p1x"]
 
-[ext_resource type="Script" path="res://Scripts/Battle/Symbols/symbol.gd" id="1_6mal7"]
+[ext_resource type="Script" path="res://Scripts/Battle/symbol.gd" id="1_6mal7"]
 [ext_resource type="Texture2D" uid="uid://dc1acpv0rlbbp" path="res://Art/bow.png" id="2_yn348"]
 
 [node name="Bow" type="Node2D"]

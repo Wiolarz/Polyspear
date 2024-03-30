@@ -3,45 +3,11 @@
 extends GridManager
 
 
-# Hard coding of art files is a temporary solution until a decision how to approach treating background art will be made
-@onready var SentineltHexTile : PackedScene = load("res://Scenes/HexTiles/BlackHexTile.tscn")
-@onready var DefaultHexTile : PackedScene = load("res://Scenes/HexTiles/StoneHexTile.tscn")
-@onready var AttackerHexTile : PackedScene = load("res://Scenes/HexTiles/GrassHexTile.tscn")
-@onready var DefenderHexTile : PackedScene = load("res://Scenes/HexTiles/DirtHexTile.tscn")
-
-
-@onready var tile_names = \
-{
-	# Sentinel edge tiles
-	"sentinel": load("res://Scenes/HexTiles/BlackHexTile.tscn"),
-
-	# Normal terrain
-	"grass": load("res://Scenes/HexTiles/GrassHexTile.tscn"),
-
-	# Special terrain tiles
-	"mud" : load("res://Scenes/HexTiles/DirtHexTile.tscn"),
-
-	"hole": load("res://Scenes/HexTiles/DirtHexTile.tscn"),
-
-	"hill": load("res://Scenes/HexTiles/DirtHexTile.tscn"),
-
-	# Colored player summon locations
-	"player-red": load("res://Scenes/HexTiles/GrassHexTile.tscn"),
-	"player-blue": load("res://Scenes/HexTiles/GrassHexTile.tscn"),
-	"player-purple": load("res://Scenes/HexTiles/GrassHexTile.tscn"),
-	"player-teal": load("res://Scenes/HexTiles/GrassHexTile.tscn"),
-
-}
-
-
 var max_player_number : int
 
 var summon_tiles : Array = []  # Array[Array[HexTile]] seperated by player lists all possible tiles units can be summoned to
 
-var DefenderTiles = []
 
-var tile_grid : Array = [] # Array[Array[HexTile]]
-var unit_grid : Array = [] # Array[Array[AUnit]]
 
 var current_spawn : String = "sentinel"
 
@@ -145,86 +111,15 @@ func is_clear() -> bool:
 	return tile_grid.size() == 0 and unit_grid.size() == 0 and summon_tiles.size() == 0
 
 func reset_data():
+	super.reset_data()
 	summon_tiles = []
-	tile_grid = []
-	unit_grid = []
 
 
-func init_hex_grid() -> void:
+func init_tile_grid() -> void:
+	super.init_tile_grid()
 	for i in range(max_player_number):
 		summon_tiles.append([])
 
-	for i in range(grid_width):
-		tile_grid.append([])
-		unit_grid.append([])
-		for j in range(grid_height):
-			unit_grid[i].append(null)
-			tile_grid[i].append(null)
-
-
-func spawn_tiles() -> void:
-	for y in range(grid_height):
-		for x in range(grid_width):
-			var oddRow = y % 2 == 0 # Sentinel Rows add aditional row
-			
-			var XTilePos = x * TileHorizontalOffset + y * OddRowHorizontalOffset
-			var YTilePos = y * TileVerticalOffset
-
-			var newTileScene : PackedScene = get_tile_to_spawn(x, y, oddRow)
-			var newTile = newTileScene.instantiate()
-
-			add_child(newTile)
-			
-
-
-			newTile.global_position.x = XTilePos
-			newTile.global_position.y = YTilePos
-
-			newTile.cord = Vector2i(x, y)
-			match current_spawn:
-				"sentinel":
-					newTile.name = "Sentinel_HexTile"
-
-				"default":
-					newTile.name = "Default_HexTile"
-			
-				"player_0_spawn":
-					newTile.name = "Attacker_HexTile"
-					summon_tiles[0].append(newTile)
-
-				"player_1_spawn":
-					newTile.name = "Defender_HexTile"
-					summon_tiles[1].append(newTile)
-
-			newTile.type = current_spawn
-
-			tile_grid[x][y] = newTile
-
-
-
-
-func get_tile_to_spawn(x : int, y : int, bOddRow : bool) -> PackedScene:
-
-	var TileToSpawn = SentineltHexTile # Default value for hex tile is Sentinel Tile
-
-
-	current_spawn = "sentinel"
-
-	if is_gameplay_tile(x, y, bOddRow):
-		TileToSpawn = DefaultHexTile
-		current_spawn = "default"
-
-		var FirstColumnStart : int = (grid_height / 2) + border_size - (y / 2)
-
-		if (bOddRow and x == FirstColumnStart + 1) or (not bOddRow and x == FirstColumnStart): # first column
-			TileToSpawn = AttackerHexTile
-			current_spawn = "player_0_spawn"
-		elif (x == grid_width - border_size - 1  - (y / 2)): # last column
-		
-			TileToSpawn = DefenderHexTile
-			current_spawn = "player_1_spawn"
-			
-	return TileToSpawn
 
 
 

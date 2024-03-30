@@ -17,7 +17,6 @@ func before_all():
 		managers[level] = test_map.get_node("WorldSetup")
 	"""
 
-
 func before_each():
 	gut.p("start")
 
@@ -58,11 +57,8 @@ func test_generate_grid():
 		var manager = managers[level]
 		manager.generate_grid()
 		
-		
-
-		assert_eq(
-			manager.AttackerTiles.size(), manager.DefenderTiles.size(),
-			level + " Different number of starting tiles: A:" + str(manager.AttackerTiles.size()) + " D:" + str(manager.DefenderTiles.size())
+		assert_eq(level + " Different number of starting tiles: A:"
+		+ str(manager.AttackerTiles.size()) + " D:" + str(manager..size())
 		)
 	"""
 

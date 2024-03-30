@@ -1,6 +1,7 @@
 # TODO
 
 ## now
+fix battle map render, dont spawn units yet, prepare unit buttons the way you made map creator
 
 ### documentation
 document why keeping Sentinel protection reserved to loading data code not saving maps is better as it makes sure that no matter how bad we break map creator game still works

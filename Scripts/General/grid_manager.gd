@@ -6,6 +6,9 @@ extends Node
 
 var map_information : GridBoard
 
+# Basic scene to get Collision area for player input
+@onready var BASIC_HEX_TILE : PackedScene = load("res://Scenes/HexTiles/BasicHexTile.tscn")
+
 
 # Hex Sprite draw gaps
 const TileHorizontalOffset : float = 510.0
@@ -21,13 +24,8 @@ var grid_width : int
 var	grid_height : int
 
 
-"""
-Thickness of a Sentinel perimiter around the gameplay area.
 
-If size is even it shifts the map. (used by simple map shift system from map_data resource)
-May be increased to allow for ease of development
-"""
-var border_size : int = 1   
+var border_size : int = 1  # Thickness of a Sentinel perimiter around the gameplay area.
 
 
 
@@ -39,6 +37,10 @@ static var DIRECTIONS = [ \
 	Vector2i(0, -1),
 	Vector2i(1, -1)]
 
+
+
+var tile_grid : Array = []  # Array[Array[Place]]
+var unit_grid : Array = [] # Array[Array[AUnit/Army]]
 
 #region Coordinate Tools
 
@@ -76,7 +78,8 @@ static func adjacent_cord(BaseCord : Vector2i, Side : int) -> Vector2i:
 
 func reset_data() -> void:
 	# Remove the content of map from memory
-	pass
+	tile_grid = []
+	unit_grid = []
 
 
 func adjust_grid_size() -> void:
@@ -86,11 +89,58 @@ func adjust_grid_size() -> void:
 	#grid_width += (grid_height / 2) # adjustment for Axial grid system
 
 
-func init_hex_grid() -> void:
-	pass
+func init_tile_grid() -> void:
+	for i in range(grid_width):
+		tile_grid.append([])
+		unit_grid.append([])
+		for j in range(grid_height):
+			unit_grid[i].append(null)
+			tile_grid[i].append(null)
+
 
 func spawn_tiles() -> void:
-	pass
+	var grid = map_information.grid_data
+
+	for x in range(grid_width):
+		for y in range(grid_height):
+			# creating a node
+			var new_tile_scene : PackedScene = BASIC_HEX_TILE
+			var new_tile : HexTile = new_tile_scene.instantiate()
+			add_child(new_tile)
+			
+			# Set tile cord
+			tile_grid[x][y] = new_tile
+			new_tile.cord = Vector2i(x, y)
+			
+			# setting a new tile node visual location
+			var x_tile_pos = x * TileHorizontalOffset + y * OddRowHorizontalOffset
+			var y_tile_pos = y * TileVerticalOffset
+			new_tile.global_position.x = x_tile_pos
+			new_tile.global_position.y = y_tile_pos
+			
+			# apllying sentinel border correction to data files cords
+			var data_x = x - border_size
+			var data_y = y - border_size
+			if data_x >= 0 and data_y >= 0 and data_x < grid.size() and data_y < grid[0].size(): 
+				grid[data_x][data_y].apply_data(new_tile)  # texture + game logic applied
+
+			# Debug information
+			match new_tile.type:  
+				#region World Grid
+				"sentinel":
+					new_tile.name = "Sentinel_HexTile"
+
+				"empty":
+					new_tile.name = "Empty_HexTile"
+			
+				"wall":
+					new_tile.name = "Wall_HexTile"
+				"city":
+					new_tile.name = "City_HexTile"
+				#endregion
+				#region Battle Grid
+
+				#endregion
 
 
 func is_gameplay_tile(x : int, y : int, bOddRow : bool) -> bool:
@@ -135,7 +185,9 @@ func generate_grid(new_map_data : GridBoard) -> void:
 	# "+2" is to reserve space for sentinel tiles on each side of the board
 	adjust_grid_size()
 
-	init_hex_grid()
+	init_tile_grid()
 	spawn_tiles()
+
+	
 
 #endregion

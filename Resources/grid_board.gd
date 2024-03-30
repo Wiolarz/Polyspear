@@ -9,23 +9,8 @@ extends Resource
 
 
 
-
-
-
-
-
-
-
-
-
 @export var grid_data : Array  # Array[Array[tile]]
 
 
-
-
-
-#region remove
-@export var test_a : String = "a"
-#endregion
 func apply_data() -> void:
 	pass

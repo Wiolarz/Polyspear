@@ -19,7 +19,6 @@ var current_map_type : map_type
 var world_map_tiles : Array[DataTile] = []
 
 @onready var empty_battle_map : BattleMap = load("res://Resources/Battle_Maps/empty_map.tres")
-@onready var empty_world_map : WorldMap = load("res://Resources/World_Maps/empty_map.tres")
 
 @onready var current_brush : DataTile
 
@@ -69,8 +68,8 @@ func _ready():
 
 func grid_input(cord : Vector2i) -> void:
 	if current_map_type == map_type.WORLD:
-		W_GRID.hex_grid[cord.x][cord.y].type = current_brush.type
-		W_GRID.hex_grid[cord.x][cord.y].get_node("Sprite2D").texture = ResourceLoader.load(current_brush.texture_path)
+		W_GRID.tile_grid[cord.x][cord.y].type = current_brush.type
+		W_GRID.tile_grid[cord.x][cord.y].get_node("Sprite2D").texture = ResourceLoader.load(current_brush.texture_path)
 	else:
 		B_GRID.tile_grid[cord.x][cord.y].type = current_brush.type
 		B_GRID.tile_grid[cord.x][cord.y].get_node("Sprite2D").texture = ResourceLoader.load(current_brush.texture_path)
@@ -168,7 +167,7 @@ func _on_save_map_pressed():
 	var save_path
 	if current_map_type == map_type.WORLD:
 		new_map = WorldMap.new()
-		local_tile_grid = W_GRID.hex_grid
+		local_tile_grid = W_GRID.tile_grid
 		save_path = "res://Resources/World_Maps/" + map_save_name + ".tres"
 	else:
 		new_map = BattleMap.new()
@@ -199,26 +198,29 @@ func _on_save_map_pressed():
 	ResourceSaver.save(new_map, save_path)
 
 	print("end save map")
+
+
+func _generate_empty_map(size_x : int = 5, size_y : int = 5) -> Array: # -> Array[Array[DataTile]]
+	var grid_data = []
+
+	for tile_column in range(size_x):
+		var current_column = []
+		grid_data.append(current_column)
+		for tile in range(size_y):
+			var new_data_tile = load("res://Resources/World_tiles/sentinel.tres")
+
+			current_column.append(new_data_tile)
 	
+	return grid_data
+
 
 
 func _on_new_world_map_pressed():
 	_set_grid_type(map_type.WORLD)
 	WM.close_world()
 
-
-	var grid_data = []
-
-	for tile_column in range(5):
-		var current_column = []
-		grid_data.append(current_column)
-		for tile in range(5):
-			var new_data_tile = load("res://Resources/World_tiles/sentinel.tres")
-
-			current_column.append(new_data_tile)
-
 	var new_map = WorldMap.new()
-		
+	var grid_data = _generate_empty_map()
 	new_map.grid_data = grid_data
 
 	new_map.grid_height = grid_data.size()
@@ -230,6 +232,21 @@ func _on_new_world_map_pressed():
 
 func _on_new_battle_map_pressed():
 	_set_grid_type(map_type.BATTLE)
+
+
+	#TODO!!!!!!!!!!BM.close_world()
+
+
+	var grid_data = _generate_empty_map()
+
+	var new_map = BattleMap.new()
+		
+	new_map.grid_data = grid_data
+
+	new_map.grid_height = grid_data.size()
+	new_map.grid_width = grid_data[0].size()
+	print(new_map.grid_height, " ", new_map.grid_width)
+
 
 	B_GRID.generate_grid(empty_battle_map)
 
