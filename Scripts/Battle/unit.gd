@@ -2,6 +2,7 @@ class_name AUnit
 
 extends Node2D
 
+@export var unitStats : DataUnit
 
 var unit_rotation : int
 var cord : Vector2i

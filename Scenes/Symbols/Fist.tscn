@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://b1hkbc0bipaiu"]
 
 [ext_resource type="Script" path="res://Scripts/Battle/symbol.gd" id="1_m8x43"]
-[ext_resource type="Texture2D" uid="uid://cjs0so3hrlym6" path="res://Art/old/knockback.png" id="2_gep1f"]
+[ext_resource type="Texture2D" uid="uid://cjs0so3hrlym6" path="res://Art/old/push.png" id="2_gep1f"]
 
 [node name="Fist" type="Node2D"]
 script = ExtResource("1_m8x43")
