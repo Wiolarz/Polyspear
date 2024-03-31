@@ -1,0 +1,88 @@
+[gd_scene load_steps=4 format=3 uid="uid://dy1m42bfkq2wv"]
+
+[ext_resource type="Script" path="res://Scenes/Editors/UnitEditor.gd" id="1_77kxj"]
+[ext_resource type="Resource" uid="uid://beydauke55uh0" path="res://Resources/Warfare/Units/Elves/elf1.tres" id="2_8i56d"]
+[ext_resource type="PackedScene" uid="uid://sh62rfw7ulr8" path="res://Scenes/Form/UnitForm.tscn" id="3_yftbb"]
+
+[node name="UnitEditor" type="Node2D"]
+script = ExtResource("1_77kxj")
+unitToTest = ExtResource("2_8i56d")
+
+[node name="Unit" parent="." instance=ExtResource("3_yftbb")]
+position = Vector2(604, 472)
+
+[node name="Tree" type="Tree" parent="."]
+offset_left = 1232.0
+offset_top = 9.0
+offset_right = 1914.0
+offset_bottom = 1073.0
+
+[node name="UnitName" type="RichTextLabel" parent="."]
+offset_right = 1209.0
+offset_bottom = 126.0
+theme_override_font_sizes/normal_font_size = 40
+text = "Unit Name"
+
+[node name="PickArt" type="Button" parent="."]
+offset_left = 505.0
+offset_top = 925.0
+offset_right = 666.0
+offset_bottom = 1015.0
+text = "pick art"
+
+[node name="PickArtDialog" type="FileDialog" parent="."]
+title = "Open a File"
+position = Vector2i(10, 10)
+size = Vector2i(312, 300)
+ok_button_text = "Open"
+file_mode = 0
+root_subfolder = "res://Art"
+filters = PackedStringArray("*.png ; PNG Images")
+use_native_dialog = true
+
+[node name="ChangeNW" type="OptionButton" parent="."]
+offset_left = 278.0
+offset_top = 107.0
+offset_right = 439.0
+offset_bottom = 197.0
+
+[node name="ChangeNE" type="OptionButton" parent="."]
+offset_left = 767.0
+offset_top = 85.0
+offset_right = 928.0
+offset_bottom = 175.0
+
+[node name="ChangeE" type="OptionButton" parent="."]
+offset_left = 942.0
+offset_top = 402.0
+offset_right = 1103.0
+offset_bottom = 492.0
+
+[node name="ChangeW" type="OptionButton" parent="."]
+offset_left = 109.0
+offset_top = 402.0
+offset_right = 270.0
+offset_bottom = 492.0
+
+[node name="ChangeSW" type="OptionButton" parent="."]
+offset_left = 282.0
+offset_top = 757.0
+offset_right = 443.0
+offset_bottom = 847.0
+
+[node name="ChangeSE" type="OptionButton" parent="."]
+offset_left = 763.0
+offset_top = 769.0
+offset_right = 924.0
+offset_bottom = 859.0
+
+[node name="Save" type="Button" parent="."]
+offset_left = 986.0
+offset_top = 906.0
+offset_right = 1147.0
+offset_bottom = 996.0
+text = "Save"
+
+[connection signal="pressed" from="PickArt" to="." method="_on_pick_art_button_pressed"]
+[connection signal="file_selected" from="PickArtDialog" to="." method="_on_pick_art_dialog_file_selected"]
+[connection signal="pressed" from="Save" to="." method="_on_save_pressed"]

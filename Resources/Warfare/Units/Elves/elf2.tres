@@ -1,10 +1,14 @@
-[gd_resource type="Resource" script_class="DataUnit" load_steps=3 format=3 uid="uid://bg3lrv4tj3ufo"]
+[gd_resource type="Resource" script_class="DataUnit" load_steps=7 format=3]
 
 [ext_resource type="Script" path="res://Resources/Warfare/data_unit.gd" id="1_g5mkx"]
-[ext_resource type="Resource" uid="uid://o4rlmfc33rsh" path="res://Resources/Warfare/Symbols/empty.tres" id="2_e1x8y"]
+[ext_resource type="Resource" path="res://Resources/Warfare/Symbols/sword.tres" id="2_qcks5"]
+[ext_resource type="Resource" path="res://Resources/Warfare/Symbols/push.tres" id="3_j7jbd"]
+[ext_resource type="Resource" path="res://Resources/Warfare/Symbols/bow.tres" id="4_fssgl"]
+[ext_resource type="Resource" path="res://Resources/Warfare/Symbols/spear.tres" id="5_82fdy"]
+[ext_resource type="Resource" path="res://Resources/Warfare/Symbols/shield.tres" id="6_kgsmu"]
 
 [resource]
 script = ExtResource("1_g5mkx")
 unit_name = "elf1"
-texture_path = "res://Art/old/elf1.png"
-symbols = Array[Resource("res://Resources/Warfare/data_symbol.gd")]([ExtResource("2_e1x8y"), ExtResource("2_e1x8y"), ExtResource("2_e1x8y"), ExtResource("2_e1x8y"), ExtResource("2_e1x8y"), ExtResource("2_e1x8y")])
+texture_path = "res://Art/old/elf2.png"
+symbols = Array[Resource("res://Resources/Warfare/data_symbol.gd")]([ExtResource("2_qcks5"), ExtResource("3_j7jbd"), ExtResource("4_fssgl"), ExtResource("5_82fdy"), ExtResource("4_fssgl"), ExtResource("6_kgsmu")])
