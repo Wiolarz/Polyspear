@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="DataUnit" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://Resources/Warfare/data_unit.gd" id="1_fdqsc"]
+[ext_resource type="Resource" path="res://Resources/Warfare/Symbols/empty.tres" id="2_84fw4"]
+[ext_resource type="Resource" path="res://Resources/Warfare/Symbols/bow.tres" id="3_apldb"]
+
+[resource]
+script = ExtResource("1_fdqsc")
+unit_name = ""
+texture_path = "res://Art/old/ork1.png"
+symbols = Array[Resource("res://Resources/Warfare/data_symbol.gd")]([ExtResource("2_84fw4"), ExtResource("2_84fw4"), ExtResource("2_84fw4"), ExtResource("3_apldb"), ExtResource("2_84fw4"), ExtResource("2_84fw4")])
