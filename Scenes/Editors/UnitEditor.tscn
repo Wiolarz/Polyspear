@@ -1,8 +1,9 @@
-[gd_scene load_steps=4 format=3 uid="uid://dy1m42bfkq2wv"]
+[gd_scene load_steps=5 format=3 uid="uid://dy1m42bfkq2wv"]
 
 [ext_resource type="Script" path="res://Scripts/Development/unit_editor.gd" id="1_77kxj"]
 [ext_resource type="Resource" uid="uid://beydauke55uh0" path="res://Resources/Battle/Units/Elves/elf1.tres" id="2_8i56d"]
 [ext_resource type="PackedScene" uid="uid://sh62rfw7ulr8" path="res://Scenes/Form/UnitForm.tscn" id="3_yftbb"]
+[ext_resource type="Theme" uid="uid://yaegb8uursi6" path="res://Scenes/Editors/ui_theme.tres" id="4_jq8jk"]
 
 [node name="UnitEditor" type="Node2D"]
 script = ExtResource("1_77kxj")
@@ -32,8 +33,8 @@ text = "pick art"
 
 [node name="PickArtDialog" type="FileDialog" parent="."]
 title = "Open a File"
-position = Vector2i(10, 10)
-size = Vector2i(312, 300)
+initial_position = 1
+size = Vector2i(600, 600)
 ok_button_text = "Open"
 file_mode = 0
 root_subfolder = "res://Art"
@@ -81,6 +82,7 @@ offset_left = 986.0
 offset_top = 906.0
 offset_right = 1147.0
 offset_bottom = 996.0
+theme = ExtResource("4_jq8jk")
 text = "Save"
 
 [connection signal="pressed" from="PickArt" to="." method="_on_pick_art_button_pressed"]
