@@ -40,6 +40,7 @@ var current_map_type : map_type
 # 	return scenes
 
 
+
 func _create_button(box : BoxContainer, map_tile : String):
 	var tile = load(map_tile)
 
@@ -59,7 +60,6 @@ func _load_tiles(box : BoxContainer, path : String):
 	var map_tiles_paths : Array[String] = TestTools.list_files_in_folder(path, true)
 	for map_tile : String in map_tiles_paths:
 		_create_button(box, map_tile)
-
 
 func _ready():
 
@@ -255,5 +255,3 @@ func _on_new_battle_map_pressed():
 
 
 #endregion
-
-

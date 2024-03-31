@@ -1,7 +1,5 @@
 class_name GridManager
-
 extends Node
-
 
 
 var map_information : GridBoard

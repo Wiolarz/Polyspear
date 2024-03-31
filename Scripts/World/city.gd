@@ -1,5 +1,4 @@
 class_name City
-
 extends Place
 
 

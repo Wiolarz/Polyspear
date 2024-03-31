@@ -11,6 +11,7 @@
 [node name="MainScene" type="Node"]
 
 [node name="GameMenu" parent="." instance=ExtResource("1_jo11t")]
+editor_description = "popup menu under ~ KEY"
 visible = false
 
 [node name="Camera2D" type="Camera2D" parent="."]
@@ -19,6 +20,7 @@ zoom = Vector2(0.3, 0.3)
 script = ExtResource("2_svb1r")
 
 [node name="MainMenu" parent="." node_paths=PackedStringArray("maunual_tester", "map_creator") instance=ExtResource("6_yyega")]
+editor_description = "Main interface"
 maunual_tester = NodePath("../GeneralTest")
 map_creator = NodePath("../DrawMenu")
 world_setup = ExtResource("3_yxa6s")

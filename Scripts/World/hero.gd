@@ -1,5 +1,4 @@
 class_name Hero
-
 extends Node
 
 @export var army : Army

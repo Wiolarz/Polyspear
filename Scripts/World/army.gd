@@ -1,5 +1,4 @@
 class_name Army
-
 extends Node
 
 var hero : Hero

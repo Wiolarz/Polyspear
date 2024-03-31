@@ -1,5 +1,4 @@
 # Singleton - WM
-
 extends Node
 
 #region Setup Parameters

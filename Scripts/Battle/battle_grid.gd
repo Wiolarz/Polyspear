@@ -1,5 +1,4 @@
 # Singleton B-GRID
-
 extends GridManager
 
 
