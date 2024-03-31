@@ -153,14 +153,13 @@ func _on_load_map_pressed():
 
 	var map_to_load = load("res://Resources/" + load_box_input.text + ".tres")
 	assert(map_to_load != null, "there is no selected map to be loaded")
-
+	WM.close_world()
+	BM.close_battle()
 	if map_to_load is WorldMap:
-		WM.close_world()
-		current_map_type = map_type.WORLD
+		_set_grid_type(map_type.WORLD)
 		W_GRID.generate_grid(map_to_load)
 	else:
-		BM.close_battle()
-		current_map_type = map_type.BATTLE
+		_set_grid_type(map_type.BATTLE)
 		B_GRID.generate_grid(map_to_load)
 
 
@@ -209,6 +208,8 @@ func _on_save_map_pressed():
 
 
 func _generate_empty_map(size_x : int = 5, size_y : int = 5) -> Array: # -> Array[Array[DataTile]]
+	WM.close_world()
+	BM.close_battle()
 	var grid_data = []
 
 	for tile_column in range(size_x):
@@ -225,7 +226,6 @@ func _generate_empty_map(size_x : int = 5, size_y : int = 5) -> Array: # -> Arra
 
 func _on_new_world_map_pressed():
 	_set_grid_type(map_type.WORLD)
-	WM.close_world()
 
 	var new_map = WorldMap.new()
 	var grid_data = _generate_empty_map()
@@ -241,10 +241,6 @@ func _on_new_world_map_pressed():
 func _on_new_battle_map_pressed():
 	_set_grid_type(map_type.BATTLE)
 
-
-	BM.close_battle()
-
-
 	var grid_data = _generate_empty_map()
 
 	var new_map = BattleMap.new()
@@ -254,7 +250,6 @@ func _on_new_battle_map_pressed():
 	new_map.grid_height = grid_data.size()
 	new_map.grid_width = grid_data[0].size()
 	#print(new_map.grid_height, " ", new_map.grid_width)
-
 
 	B_GRID.generate_grid(new_map)
 
