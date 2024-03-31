@@ -159,7 +159,7 @@ func _on_load_map_pressed():
 		current_map_type = map_type.WORLD
 		W_GRID.generate_grid(map_to_load)
 	else:
-		BM.end_of_battle()
+		BM.close_battle()
 		current_map_type = map_type.BATTLE
 		B_GRID.generate_grid(map_to_load)
 
@@ -242,7 +242,7 @@ func _on_new_battle_map_pressed():
 	_set_grid_type(map_type.BATTLE)
 
 
-	#TODO!!!!!!!!!!BM.close_world()
+	BM.close_battle()
 
 
 	var grid_data = _generate_empty_map()

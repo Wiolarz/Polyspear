@@ -2,6 +2,7 @@
 
 ## now
 fix battle map render, dont spawn units yet, prepare unit buttons the way you made map creator
+make hide manager functions move camera instead, and move removal of components to close map instead
 
 add clear data, map / map reset for battle grid/manager same like in world
 
@@ -40,7 +41,9 @@ creat basic battle map, add it to tests
 after summoning phase during battle ends, replace summon tiles with basic grass tiles
 
 
-## MONSTER BUGS -> game breaking stuff
+
+
+## BUGS
 
 
 ## FIX 
@@ -62,6 +65,8 @@ AI is once again broken completely needs a full rewrite
 in BM name unit scenes for debugger
 
 ## THINK_About
+removal of grid_height and grid_width variables from map saves
+
 creating enum for displaying directions as words (create addon to allow displaying enum values as strings)
 
 rename basic_map to polyspear_main_project
@@ -109,6 +114,7 @@ add highlight last move (made by the other player)
 add save system for battles + overworld map
 
 
+disable change camera button for battle UI in case of test_battle
 
 
 ## CHANGE

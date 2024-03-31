@@ -43,15 +43,11 @@ var combat_tile : Vector2i
 #region Main functions
 
 func close_world():
-	W_GRID.reset_data()
-	hide_world_map()
-
-func hide_world_map():
 	for hero in get_children():
 		hero.queue_free()
-	for tile in W_GRID.get_children():
-		tile.queue_free()
 
+	W_GRID.reset_data()
+	
 
 func next_player_turn():
 	var player_idx = players.find(current_player)
@@ -67,6 +63,7 @@ func kill_hero(hero : Hero):
 
 #endregion
 
+
 #region Tools
 
 func is_enemy_present(cord : Vector2i):
@@ -76,8 +73,8 @@ func is_enemy_present(cord : Vector2i):
 		return false 
 	return true
 
-
 #endregion
+
 
 #region Player Actions
 
@@ -130,8 +127,6 @@ func select_hero(cord : Vector2i) -> bool:
 		1 Selects the same hero  -> deselect current hero return true/false(no difference)
 		2 Selects another ally hero -> return false
 
-		
-	
 	"""
 	# TODO test unselect/no unselect on double click and determine which is more intuitive for most playersc
 
@@ -204,7 +199,7 @@ func combat(cord : Vector2i):
 
 	combat_tile = cord
 	
-	hide_world_map()
+	IM.switch_camera()
 
 	var armies : Array[Army] = [selected_hero.army, W_GRID.get_army(combat_tile)]
 	var battle_map : BattleMap = W_GRID.grid[combat_tile.x][combat_tile.y].battle_map
@@ -223,24 +218,15 @@ func end_of_battle():
 
 
 
-	draw_world()
-
-
 #endregion
+
 
 #region World Setup
 
-func draw_world():
-	pass
-	#W_GRID.generate_grid()
-	#spawn_heroes()
 
 func spawn_heroes():
 	pass
 
-
-func change_heroes_visibility():
-	pass
 
 func start_world(world_map : WorldMap) -> void:
 

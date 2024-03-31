@@ -6,7 +6,7 @@ extends Node
 
 var map_information : GridBoard
 
-# Basic scene to get Collision area for player input
+# const Basic scene to get Collision area for player input
 @onready var BASIC_HEX_TILE : PackedScene = load("res://Scenes/Form/TileForm.tscn")
 
 
@@ -23,9 +23,7 @@ const OddRowHorizontalOffset : float = 250.0
 var grid_width : int
 var	grid_height : int
 
-
-
-var border_size : int = 1  # Thickness of a Sentinel perimiter around the gameplay area.
+const border_size : int = 1  # Thickness of a Sentinel perimiter around the gameplay area.
 
 
 static var DIRECTIONS = [ \
@@ -79,6 +77,10 @@ func reset_data() -> void:
 	# Remove the content of map from memory
 	tile_grid = []
 	unit_grid = []
+	map_information = null
+
+	for tile in get_children():
+		tile.queue_free()
 
 
 func adjust_grid_size() -> void:

@@ -1,4 +1,4 @@
-[gd_scene load_steps=3 format=3 uid="uid://c7g4kkwctxcn0"]
+[gd_scene load_steps=3 format=3 uid="uid://bawliiem6bw0u"]
 
 [ext_resource type="Script" path="res://Scripts/UI/BattleUi.gd" id="1_0rgae"]
 [ext_resource type="Texture2D" uid="uid://dnrwcdtgk6k42" path="res://Art/old/elf1.png" id="1_ye0mg"]
@@ -11,6 +11,15 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_0rgae")
+
+[node name="SwitchCamera" type="Button" parent="."]
+layout_mode = 0
+offset_left = 27.0
+offset_top = 38.0
+offset_right = 150.0
+offset_bottom = 69.0
+scale = Vector2(2.04, 2.04)
+text = "Switch Camera"
 
 [node name="Players" type="VBoxContainer" parent="."]
 layout_mode = 1
@@ -55,3 +64,5 @@ texture_normal = ExtResource("1_ye0mg")
 [node name="TextureButton2" type="TextureButton" parent="Units"]
 layout_mode = 2
 texture_normal = ExtResource("1_ye0mg")
+
+[connection signal="pressed" from="SwitchCamera" to="." method="_on_switch_camera_pressed"]

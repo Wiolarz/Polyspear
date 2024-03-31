@@ -108,11 +108,15 @@ func get_distant_cord(start_cord : Vector2i, side : int, distance : int) -> Vect
 
 #region Generate Grid
 func is_clear() -> bool:
-	return tile_grid.size() == 0 and unit_grid.size() == 0 and summon_tiles.size() == 0
+	var clearness = tile_grid.size() == 0 and unit_grid.size() == 0 and summon_tiles.size() == 0
+	if not clearness:
+		print("ERROR battle_grid is_clear()  tile_grid ", tile_grid.size(), "  unit_grid", unit_grid.size(), "  summon_tiles ", summon_tiles.size())
+	return clearness
 
 func reset_data():
 	super.reset_data()
 	summon_tiles = []
+
 
 
 func init_tile_grid() -> void:

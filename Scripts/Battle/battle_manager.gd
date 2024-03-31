@@ -229,23 +229,6 @@ func select_unit(cord : Vector2i) -> bool:
 
 #region Main Functions
 
-func hide_battle():
-	current_participant = null
-	for unit in get_children():
-		unit.queue_free()
-	for tile in B_GRID.get_children():
-		tile.queue_free()
-
-
-func end_of_battle():
-	hide_battle()
-	if WM.selected_hero == null:
-		print("end of test battle")
-		IM.go_to_main_menu()
-		return
-	WM.end_of_battle()
-
-
 func switch_participant_turn():
 	if participant_idx + 1 == participants.size():
 		participant_idx = ATTACKER
@@ -284,7 +267,6 @@ func grid_input(cord : Vector2i) -> void:
 			switch_participant_turn()
 
 	
-
 func is_legal_summon_cord(cord : Vector2i) -> bool:
 	
 	# check if unit is already summoned
@@ -322,6 +304,30 @@ func summon_unit(cord : Vector2i) -> void:
 		selected_unit.turn(3)
 
 	unsummoned_units_counter -= 1
+
+#endregion
+
+
+#region End Battle
+
+func close_battle() -> void:
+	# delete all data related to battle
+	IM.switch_camera()
+
+	B_GRID.reset_data()
+	
+	current_participant = null
+	for unit in get_children():
+		unit.queue_free()
+
+
+func end_of_battle() -> void:
+	close_battle()
+	if WM.selected_hero == null:
+		print("end of test battle")
+		IM.go_to_main_menu()
+		return
+	WM.end_of_battle()
 
 #endregion
 

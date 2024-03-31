@@ -36,6 +36,10 @@ var players : Array[Player] = []
 var draw_mode : bool = false
 
 
+enum camera_position {WORLD, BATTLE}
+var current_camera_position = camera_position.WORLD
+
+
 #region Game setup
 
 func get_active_players() -> Array[Player]:
@@ -45,13 +49,20 @@ func get_active_players() -> Array[Player]:
 	for player in players:
 		if player.player_type != E.player_type.OBSERVER:
 			active_players.append(player)
-	print(active_players)
+	#print(active_players)
 	return active_players
 
 
 #endregion
 
 
+func switch_camera():
+	if current_camera_position == camera_position.WORLD:
+		current_camera_position = camera_position.BATTLE
+		pass
+	else:
+		current_camera_position = camera_position.WORLD
+		pass
 
 
 
@@ -75,8 +86,8 @@ func go_to_main_menu():
 
 	get_node("/root/MainScene/DrawMenu").hide_draw_menu()
 
-	WM.hide_world_map()
-	BM.hide_battle()
+	WM.close_world()
+	BM.close_battle()
 	get_node("/root/MainScene/MainMenu").toggle_menu_visibility()
 
 
