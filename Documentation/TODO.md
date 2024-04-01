@@ -1,13 +1,20 @@
 # TODO
 
 ## now
+
+move WM.raging_battle to IM
+
 fix battle map render, dont spawn units yet, prepare unit buttons the way you made map creator
 make hide manager functions move camera instead, and move removal of components to close map instead
 
 add clear data, map / map reset for battle grid/manager same like in world
 
+move init of map creator to a func called from main menu, not on _ready
+
 
 ### documentation
+army sets are neutral camps + tests
+
 document why keeping Sentinel protection reserved to loading data code not saving maps is better as it makes sure that no matter how bad we break map creator game still works
 move map sizes from board data to simply getting info from code as array dimension carry those values anyway
 
@@ -65,18 +72,20 @@ AI is once again broken completely needs a full rewrite
 in BM name unit scenes for debugger
 
 ## THINK_About
+How to implement ID/file_names to reference stuff
+
+Input_Manager different name like Player_Manager:
+	it operates more like a Game_State_Manager than something low level that calculates mouse position
+
 removal of grid_height and grid_width variables from map saves
 
 creating enum for displaying directions as words (create addon to allow displaying enum values as strings)
-
-rename basic_map to polyspear_main_project
-
-how to properly reset Singeleton objects
 
 How to approach spliting code into abstract and visual part
 
 model MVC model - view - controller -> add gameplay manager to input manager
 
+how to properly reset Singeleton objects
 
 
 ## Core goals
@@ -87,7 +96,6 @@ Create WM (World Manager)
 How to load premade maps into Grid Manager
 Make a map generator (battle maps + global maps)
 
-add colors for players
 
 ### More Armies in a single battle:
 un-summoned units have to be placed in UI
@@ -97,12 +105,16 @@ kill_unit() has to account for more sides:
 
 
 ## Nice to have goals
+refactor unit mvoe animation to get target tile from unit own cord position,
++ make move take new cord so that it replaces
+
 implement functionality to flip hex tile sprites (map creator, and data_tile func)
 
 
 moving the camera on larger map + zoom option
 #google camera tutorials + addons
 
+add colors for players
 
 
 add rotation animation (copy code from Brawler branch)
@@ -194,3 +206,8 @@ Game Settings (resolution, audio settings, etc.) - txt
 This data should be stored in either:
     1 - AppData folder -> Game will need uninstaller
     2 - To be in the same folder as the game -> not sure how to make it yet
+
+
+
+# FEATURE: neutral camps
+create a editor for neutral stacks (Army_set)

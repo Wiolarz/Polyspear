@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="DataUnit" load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://Resources/Battle/data_unit.gd" id="1_4uymu"]
+[ext_resource type="Resource" uid="uid://c61kr7bqpyhr0" path="res://Resources/Battle/Symbols/bow.tres" id="2_hk0dr"]
+[ext_resource type="Resource" uid="uid://bp747guikipcb" path="res://Resources/Battle/Symbols/spear.tres" id="3_6wlcv"]
+[ext_resource type="Resource" uid="uid://sr1570kq7sm8" path="res://Resources/Battle/Symbols/shield.tres" id="4_4q7u4"]
+[ext_resource type="Resource" uid="uid://cngonnqsgsd6e" path="res://Resources/Battle/Symbols/sword.tres" id="5_fihog"]
+
+[resource]
+script = ExtResource("1_4uymu")
+unit_name = ""
+texture_path = "res://Art/old/ork3.png"
+symbols = Array[Resource("res://Resources/Battle/data_symbol.gd")]([ExtResource("2_hk0dr"), ExtResource("3_6wlcv"), ExtResource("2_hk0dr"), ExtResource("4_4q7u4"), ExtResource("5_fihog"), ExtResource("2_hk0dr")])

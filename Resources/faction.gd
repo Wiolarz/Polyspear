@@ -9,7 +9,7 @@ Complete Faction data:
 """
 
 
-@export var unit_scenes : Array[PackedScene] = [null]
+@export var units_data : Array[DataUnit] = [null]
 
 @export var heroes : Array[PackedScene] = [null]
 

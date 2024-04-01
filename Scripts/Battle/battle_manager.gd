@@ -1,6 +1,8 @@
 # Singleton - BM
 extends Node
 
+#TODO temp
+@onready var battle_ui : BattleUI = get_node("/root/MainScene/BattleUI")
 
 const ATTACKER = 0
 const DEFENDER = 1
@@ -11,7 +13,7 @@ const DEFENDER = 1
 var participants : Array[Player] = []
 var battling_armies : Array[Army]
 
-var armies_unit_scenes : Array = [] # Array[Array[PackedScene]]
+var armies_units_data : Array = [] # Array[Array[PackedScene]]
 
 
 #endregion
@@ -339,26 +341,36 @@ func spawn_units() -> void:
 	"""
 	fighting_units = [] # TODO MOVE TO CHECK CLEAR
 	unsummoned_units_counter = 0 
-	for army in armies_unit_scenes:
+	for army in armies_units_data:
 		unsummoned_units_counter += army.size()
 	
 	# spawn armies units
 	for army in battling_armies:
 		var new_army_unit_nodes = []
 		fighting_units.append(new_army_unit_nodes)
-		for unit_scene : PackedScene in army.unit_scenes:
-			var new_unit : AUnit = unit_scene.instantiate()
-			add_child(new_unit)
-			
-			new_unit.visible = false
-			new_unit.controller = army.controller
+		# create scenes based on unit data
 
-			new_army_unit_nodes.append(new_unit)
 
+		# for unit_scene : PackedScene in army.units_data:
+		# 	var new_unit : AUnit = unit_scene.instantiate()
+		# 	add_child(new_unit)
 			
-func display_unit_summon_cards(participant_idx = current_participant):
+		# 	#new_unit.visible = false
+		# 	new_unit.controller = army.controller
+
+		# 	new_army_unit_nodes.append(new_unit)
+
+	battle_ui.load_armies(battling_armies)
+	display_unit_summon_cards() # first player (attacker)
+
+
+
+
+
+
+func display_unit_summon_cards(shown_participant : Player = current_participant):
 	# lists all selected participant units at the bottom of the screen
-	var world_map_tiles : Array[DataUnit] = []
+	battle_ui.on_player_selected(shown_participant)
 
 
 
@@ -371,7 +383,7 @@ func start_battle(new_armies : Array[Army], battle_map : BattleMap) -> void:
 
 	for army in battling_armies:
 		participants.append(army.controller)
-		armies_unit_scenes.append(army.unit_scenes)
+		armies_units_data.append(army.units_data)
 
 	current_participant = participants[ATTACKER]
 	participant_idx = ATTACKER

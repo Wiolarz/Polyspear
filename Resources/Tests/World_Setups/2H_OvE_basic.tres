@@ -3,7 +3,7 @@
 [ext_resource type="Resource" uid="uid://dm2jeuv4bo4lw" path="res://Resources/Tests/Players/human_elf.tres" id="1_uf2b6"]
 [ext_resource type="Resource" uid="uid://dkgrcmar25cmi" path="res://Resources/Tests/Players/human_orc.tres" id="2_1pwd0"]
 [ext_resource type="Script" path="res://Resources/Tests/world_setup.gd" id="3_144ni"]
-[ext_resource type="Resource" uid="uid://bivdl24dvmxp6" path="res://Resources/World_maps/small6x6.tres" id="4_2ksik"]
+[ext_resource type="Resource" uid="uid://bivdl24dvmxp6" path="res://Resources/World/World_maps/small6x6.tres" id="4_2ksik"]
 
 [resource]
 script = ExtResource("3_144ni")

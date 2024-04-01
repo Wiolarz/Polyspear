@@ -1,6 +1,6 @@
 [gd_resource type="Resource" script_class="DataSymbol" load_steps=2 format=3 uid="uid://bp747guikipcb"]
 
-[ext_resource type="Script" path="res://Resources/Warfare/data_symbol.gd" id="1_rdbby"]
+[ext_resource type="Script" path="res://Resources/Battle/data_symbol.gd" id="1_rdbby"]
 
 [resource]
 script = ExtResource("1_rdbby")

@@ -63,8 +63,8 @@ func _load_tiles(box : BoxContainer, path : String):
 
 func _ready():
 
-	_load_tiles(battle_box, "res://Resources/Battle_tiles/")
-	_load_tiles(world_box, "res://Resources/World_tiles/")
+	_load_tiles(battle_box, "res://Resources/Battle/Battle_tiles/")
+	_load_tiles(world_box, "res://Resources/World/World_tiles/")
 
 	#world_box.get_children()[0].on_click()  # default choice
 

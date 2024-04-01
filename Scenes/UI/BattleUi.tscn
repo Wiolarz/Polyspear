@@ -1,19 +1,12 @@
 [gd_scene load_steps=3 format=3 uid="uid://bawliiem6bw0u"]
 
-[ext_resource type="Script" path="res://Scripts/UI/BattleUi.gd" id="1_0rgae"]
+[ext_resource type="Script" path="res://Scripts/UI/battle_ui.gd" id="1_0rgae"]
 [ext_resource type="Texture2D" uid="uid://dnrwcdtgk6k42" path="res://Art/old/elf1.png" id="1_ye0mg"]
 
-[node name="BattleUi" type="Control"]
-layout_mode = 3
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
+[node name="BattleUI" type="CanvasLayer"]
 script = ExtResource("1_0rgae")
 
 [node name="SwitchCamera" type="Button" parent="."]
-layout_mode = 0
 offset_left = 27.0
 offset_top = 38.0
 offset_right = 150.0
@@ -22,7 +15,6 @@ scale = Vector2(2.04, 2.04)
 text = "Switch Camera"
 
 [node name="Players" type="VBoxContainer" parent="."]
-layout_mode = 1
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
@@ -46,7 +38,6 @@ layout_mode = 2
 text = "Player2"
 
 [node name="Units" type="HBoxContainer" parent="."]
-layout_mode = 1
 anchors_preset = 2
 anchor_top = 1.0
 anchor_bottom = 1.0

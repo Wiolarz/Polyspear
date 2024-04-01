@@ -1,7 +1,7 @@
 [gd_scene load_steps=7 format=3 uid="uid://sh62rfw7ulr8"]
 
 [ext_resource type="Script" path="res://Scripts/Battle/unit.gd" id="1_ep020"]
-[ext_resource type="Resource" uid="uid://beydauke55uh0" path="res://Resources/Warfare/Units/Elves/elf1.tres" id="2_exlu6"]
+[ext_resource type="Resource" uid="uid://beydauke55uh0" path="res://Resources/Battle/Units/Elves/elf1.tres" id="2_exlu6"]
 [ext_resource type="Texture2D" uid="uid://bkcv8ipw5vgsc" path="res://Art/battle_map/red_player_spawn.png" id="2_harde"]
 [ext_resource type="Texture2D" uid="uid://d0dy38p601hn" path="res://Art/old/border.png" id="3_hq4le"]
 [ext_resource type="Texture2D" uid="uid://bul31ap566nua" path="res://Art/world_heroes/elf_druid.png" id="3_jdgie"]

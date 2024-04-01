@@ -1,6 +1,6 @@
 [gd_resource type="Resource" script_class="DataSymbol" load_steps=2 format=3 uid="uid://c61kr7bqpyhr0"]
 
-[ext_resource type="Script" path="res://Resources/Warfare/data_symbol.gd" id="1_xgyuy"]
+[ext_resource type="Script" path="res://Resources/Battle/data_symbol.gd" id="1_xgyuy"]
 
 [resource]
 resource_name = "res://Art/old/bow.png"

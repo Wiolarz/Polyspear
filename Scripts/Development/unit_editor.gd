@@ -38,7 +38,7 @@ func _ready():
 	load_units()
 
 func load_symbols():
-	var path = "res://Resources/Warfare/Symbols/"
+	var path = "res://Resources/Battle/Symbols/"
 	var dir = DirAccess.open(path)
 	for f in dir.get_files():
 		symbolTypes.append(load(path+f) as DataSymbol)
@@ -54,7 +54,7 @@ func load_units():
 	tree.button_clicked.connect(on_button)
 	var root = tree.create_item()
 	tree.hide_root = true
-	var PATH = "res://Resources/Warfare/Units/"
+	var PATH = "res://Resources/Battle/Units/"
 	var dir = DirAccess.open(PATH)
 	if dir:
 		load_units_dir(dir, root);
