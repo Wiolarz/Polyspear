@@ -35,7 +35,6 @@ var players : Array[Player] = []
 
 var draw_mode : bool = false
 
-
 func grid_input_listener(cord : Vector2i):
 	
 	#if WM.current_player.bot_engine != null:
@@ -57,6 +56,47 @@ func go_to_main_menu():
 	BM.clear_battle()
 	get_node("/root/BasicMap/MainMenu").toggle_menu_visibility()
 
+func get_server():
+	var node = get_node_or_null("TheServer")
+	if node == null:
+		var client = get_node_or_null("TheClient")
+		if client:
+			client.close()
+			client.queue_free()
+			remove_child(client)
+		node = Server.new()
+		node.name = "TheServer"
+		add_child(node)
+	return node
+
+func get_client():
+	var node = get_node_or_null("TheClient")
+	if node == null:
+		var server = get_node_or_null("TheServer")
+		if server:
+			server.close()
+			server.queue_free()
+			remove_child(server)
+		node = Client.new()
+		node.name = "TheClient"
+		add_child(node)
+	return node
+
+func server_listen(address : String, port : int, username : String):
+	get_server().listen(address, port, username)
+
+func server_close():
+	get_server().close()
+
+func client_connect(address : String, port : int):
+	get_client().connect_to_server(address, port)
+
+func client_login(username : String):
+	get_client().queue_login(username)
+
+func client_disconnect():
+	get_client().logout_if_needed()
+	get_client().close()
 
 func _physics_process(_delta):
 	#func _process(_delta):
