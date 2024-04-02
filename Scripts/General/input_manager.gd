@@ -15,14 +15,6 @@ if the AI plays the move:
 	2 in multi GAME HOST only sends the call to AI for it to make a move 
 
 
-
-
-
-
-
-
-
-
 where do we call AI?
 
 there is an end turn function "switch player" it could call the input manager to let it now who the current player is
@@ -70,7 +62,7 @@ func grid_input_listener(cord : Vector2i):
 	
 	#if WM.current_player.bot_engine != null:
 	#    return # its a bot turn
-	
+	print(cord)
 	if draw_mode:
 		get_node("/root/MainScene/DrawMenu").grid_input(cord)
 		return
@@ -108,3 +100,27 @@ func _physics_process(_delta):
 	
 	# 60FPS -> timer=60 1 sec
 
+
+func server_connection() -> bool:
+	return false
+
+func multiplayer_send():
+	# CLIENT -> server
+	if not server_connection:
+		return
+	
+	pass
+
+
+func multiplayer_receive():
+	# client -> SERVER 
+	pass
+
+
+func multiplayer_broadcast_send():
+	# SERVER -> clients
+	pass
+
+func multiplayer_broadcast_receive():
+	# server -> CLIENT 
+	pass

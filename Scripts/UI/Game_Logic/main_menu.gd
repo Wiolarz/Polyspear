@@ -3,6 +3,7 @@ extends CanvasLayer
 @export var maunual_tester : GeneralTest
 
 @export var map_creator : CanvasLayer
+@export var unit_editor : CanvasLayer
 
 @export var world_setup : WorldSetup  # temporary solution
 
@@ -59,3 +60,8 @@ func _on_test_world_pressed():
 
 
 #endregion
+
+
+func _on_unit_editor_pressed():
+	unit_editor.visible = !unit_editor.visible
+	toggle_menu_visibility()

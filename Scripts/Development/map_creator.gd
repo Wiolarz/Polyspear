@@ -50,6 +50,7 @@ func _create_button(box : BoxContainer, map_tile : String):
 
 	box.add_child(new_button)
 	var lambda = func on_click():
+		print("test")
 		current_brush = tile
 	
 	new_button.pressed.connect(lambda)  # self._button_pressed
@@ -175,7 +176,7 @@ func _on_save_map_pressed():
 	if current_map_type == map_type.WORLD:
 		new_map = WorldMap.new()
 		local_tile_grid = W_GRID.tile_grid
-		save_path = "res://Resources/World_Maps/" + map_save_name + ".tres"
+		save_path = "res://Resources/World/World_maps/" + map_save_name + ".tres"
 	else:
 		new_map = BattleMap.new()
 		local_tile_grid = B_GRID.tile_grid
@@ -216,7 +217,7 @@ func _generate_empty_map(size_x : int = 5, size_y : int = 5) -> Array: # -> Arra
 		var current_column = []
 		grid_data.append(current_column)
 		for tile in range(size_y):
-			var new_data_tile = load("res://Resources/World_tiles/sentinel.tres")
+			var new_data_tile = load("res://Resources/World/World_tiles/sentinel.tres")
 
 			current_column.append(new_data_tile)
 	

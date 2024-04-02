@@ -43,15 +43,25 @@ text = "Test World"
 
 [node name="MapCreator" type="Button" parent="Control"]
 layout_mode = 0
-offset_left = -354.0
+offset_left = -148.0
 offset_top = 669.0
-offset_right = -199.0
+offset_right = -26.0
 offset_bottom = 700.0
 scale = Vector2(6.2, 5.88)
 text = "Map Creator
 "
 
+[node name="UnitEditor" type="Button" parent="Control"]
+layout_mode = 0
+offset_left = -1259.0
+offset_top = 669.0
+offset_right = -1134.0
+offset_bottom = 700.0
+scale = Vector2(6.2, 5.88)
+text = "Unit Editor"
+
 [connection signal="pressed" from="Control/StartGame" to="." method="_on_test_game_pressed"]
 [connection signal="pressed" from="Control/TestBattle" to="." method="_on_test_battle_pressed"]
 [connection signal="pressed" from="Control/TestWorld" to="." method="_on_test_world_pressed"]
 [connection signal="pressed" from="Control/MapCreator" to="." method="_on_map_creator_pressed"]
+[connection signal="pressed" from="Control/UnitEditor" to="." method="_on_unit_editor_pressed"]

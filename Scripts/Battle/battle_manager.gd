@@ -98,7 +98,7 @@ func move_unit(unit, end_cord : Vector2i, side: int) -> void:
 		return
 
 
-	unit_action(selected_unit)
+	unit_action(unit)
 	#TODO wait half a second
 
 
@@ -109,7 +109,7 @@ func move_unit(unit, end_cord : Vector2i, side: int) -> void:
 		return
 		
 		
-	unit_action(selected_unit)
+	unit_action(unit)
 
 
 func counter_attack_damage(target : AUnit) -> bool:

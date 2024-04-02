@@ -1,4 +1,4 @@
-extends Node2D
+extends CanvasLayer
 
 @export var  unitToTest : DataUnit
 
@@ -78,7 +78,7 @@ func on_button(_tree_item, _column, id:int, _mouse_button):
 
 func load_unit(path:String):
 	current_unit_path = path
-	print(current_unit_path)
+	#print(current_unit_path)
 	$UnitName.text = current_unit_path
 	var data = load(current_unit_path) as DataUnit
 	unit.unitStats = data
@@ -99,8 +99,12 @@ func _on_pick_art_dialog_file_selected(path):
 	unit.get_node("sprite_unit").texture = load(path)
 
 func on_symbol_selected(dir:int, id : int):
-	print("Dir ",dir," Symbol ",id)
+	#print("Dir ",dir," Symbol ",id)
 	unit.unitStats.symbols[dir] = symbolTypes[id]
+	if symbolTypes[id].texture_path == null:
+		unit.get_node("Symbols").get_children()[dir]\
+		.get_child(0).get_child(0).texture = null
+		return
 	unit.get_node("Symbols").get_children()[dir]\
 		.get_child(0).get_child(0).texture = \
 		load(symbolTypes[id].texture_path)

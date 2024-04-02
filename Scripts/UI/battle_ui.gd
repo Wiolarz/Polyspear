@@ -1,16 +1,19 @@
 class_name BattleUI
 extends CanvasLayer
 
-@onready
-var players_box : BoxContainer = $Players
+@onready var players_box : BoxContainer = $Players
 
-@onready
-var units_box : BoxContainer = $Units
+@onready var units_box : BoxContainer = $Units
 
 var armies : Array[Army] = []
 
 func _ready():
 	pass
+
+func _process(delta):
+	if BM.selected_unit != null:
+		print(BM.selected_unit)
+
 
 func on_player_selected(controller : Player):
 	# clean bottom row
@@ -19,7 +22,7 @@ func on_player_selected(controller : Player):
 	
 
 	var selected_armies = armies.filter(
-		func controlledBy(a : Army):
+		func controlled_by(a : Army):
 			return a.controller == controller
 			)
 	assert(selected_armies.size() == 1)
@@ -43,6 +46,7 @@ func _create_button(unit_data : String):
 
 	units_box.add_child(new_button)
 	var lambda = func on_click():
+		print("test")
 		BM.selected_unit = unit
 	
 	new_button.pressed.connect(lambda)  # self._button_pressed

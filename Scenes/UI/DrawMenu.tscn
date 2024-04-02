@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=3 uid="uid://l0kojvcxbfky"]
+[gd_scene load_steps=4 format=3 uid="uid://l0kojvcxbfky"]
 
 [ext_resource type="Script" path="res://Scripts/Development/map_creator.gd" id="1_y7q6u"]
 [ext_resource type="Script" path="res://Scripts/UI/Game_Logic/save_system.gd" id="2_ehahi"]
+[ext_resource type="Texture2D" uid="uid://dc1acpv0rlbbp" path="res://Art/old/bow.png" id="3_hne76"]
 
 [node name="DrawMenu" type="CanvasLayer" node_paths=PackedStringArray("save_box_input", "load_box_input")]
 process_mode = 3
@@ -73,6 +74,13 @@ offset_top = 369.0
 offset_right = 237.0
 offset_bottom = 420.0
 text = "new_map"
+
+[node name="TextureRect" type="TextureRect" parent="."]
+offset_left = 408.0
+offset_top = -29.0
+offset_right = 928.0
+offset_bottom = 117.0
+texture = ExtResource("3_hne76")
 
 [connection signal="pressed" from="MenuContainer/NewWorldMap" to="." method="_on_new_world_map_pressed"]
 [connection signal="pressed" from="MenuContainer/NewBattleMap" to="." method="_on_new_battle_map_pressed"]

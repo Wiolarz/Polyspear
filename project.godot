@@ -52,6 +52,10 @@ folder_colors={
 "res://test/": "pink"
 }
 
+[gui]
+
+theme/custom="res://Art/UI/default_theme.tres"
+
 [input]
 
 KEY_EXIT_GAME={
