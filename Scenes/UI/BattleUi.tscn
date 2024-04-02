@@ -1,0 +1,59 @@
+[gd_scene load_steps=3 format=3 uid="uid://bawliiem6bw0u"]
+
+[ext_resource type="Script" path="res://Scripts/UI/battle_ui.gd" id="1_0rgae"]
+[ext_resource type="Texture2D" uid="uid://dnrwcdtgk6k42" path="res://Art/old/elf1.png" id="1_ye0mg"]
+
+[node name="BattleUI" type="CanvasLayer"]
+script = ExtResource("1_0rgae")
+
+[node name="SwitchCamera" type="Button" parent="."]
+offset_left = 27.0
+offset_top = 38.0
+offset_right = 150.0
+offset_bottom = 69.0
+scale = Vector2(2.04, 2.04)
+text = "Switch Camera"
+
+[node name="Players" type="VBoxContainer" parent="."]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -274.0
+offset_top = 18.0
+offset_right = -16.0
+offset_bottom = 498.0
+grow_horizontal = 0
+
+[node name="Label" type="Label" parent="Players"]
+layout_mode = 2
+text = "Players:"
+horizontal_alignment = 2
+
+[node name="Button" type="Button" parent="Players"]
+layout_mode = 2
+text = "Player1"
+
+[node name="Button2" type="Button" parent="Players"]
+layout_mode = 2
+text = "Player2"
+
+[node name="Units" type="HBoxContainer" parent="."]
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 14.0
+offset_top = -188.0
+offset_right = 6294.0
+offset_bottom = 371.0
+grow_vertical = 0
+scale = Vector2(0.3, 0.3)
+
+[node name="TextureButton" type="TextureButton" parent="Units"]
+layout_mode = 2
+texture_normal = ExtResource("1_ye0mg")
+
+[node name="TextureButton2" type="TextureButton" parent="Units"]
+layout_mode = 2
+texture_normal = ExtResource("1_ye0mg")
+
+[connection signal="pressed" from="SwitchCamera" to="." method="_on_switch_camera_pressed"]

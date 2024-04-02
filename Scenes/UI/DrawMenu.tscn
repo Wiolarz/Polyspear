@@ -1,15 +1,13 @@
-[gd_scene load_steps=7 format=3 uid="uid://l0kojvcxbfky"]
+[gd_scene load_steps=3 format=3 uid="uid://l0kojvcxbfky"]
 
 [ext_resource type="Script" path="res://Scripts/Development/map_creator.gd" id="1_y7q6u"]
 [ext_resource type="Script" path="res://Scripts/UI/Game_Logic/save_system.gd" id="2_ehahi"]
-[ext_resource type="Texture2D" uid="uid://da6ubkmi36xyq" path="res://Art/Black_Hex.png" id="3_lf3vs"]
-[ext_resource type="Texture2D" uid="uid://cgmjmsm0jfyuv" path="res://Art/Stone_Hex.png" id="4_ddlav"]
-[ext_resource type="Texture2D" uid="uid://bt4x7bws16kg8" path="res://Art/Grass_Hex.png" id="5_g8oo0"]
-[ext_resource type="Texture2D" uid="uid://bu74luqlsb8df" path="res://Art/Dirt_Hex.png" id="6_l12at"]
 
-[node name="DrawMenu" type="CanvasLayer"]
+[node name="DrawMenu" type="CanvasLayer" node_paths=PackedStringArray("save_box_input", "load_box_input")]
 process_mode = 3
 script = ExtResource("1_y7q6u")
+save_box_input = NodePath("SaveName")
+load_box_input = NodePath("LoadName")
 
 [node name="MenuContainer" type="VBoxContainer" parent="."]
 light_mask = 2
@@ -27,9 +25,13 @@ grow_horizontal = 2
 grow_vertical = 2
 scale = Vector2(1.5, 1.5)
 
-[node name="NewMap" type="Button" parent="MenuContainer"]
+[node name="NewWorldMap" type="Button" parent="MenuContainer"]
 layout_mode = 2
-text = "New Map"
+text = "New World Map"
+
+[node name="NewBattleMap" type="Button" parent="MenuContainer"]
+layout_mode = 2
+text = "New Battle Map"
 
 [node name="LoadMap" type="Button" parent="MenuContainer"]
 layout_mode = 2
@@ -43,33 +45,36 @@ text = "Save Map
 [node name="save_system" type="Node" parent="."]
 script = ExtResource("2_ehahi")
 
-[node name="VBoxContainer" type="HBoxContainer" parent="."]
+[node name="HBattleBox" type="HBoxContainer" parent="."]
+visible = false
 offset_left = 337.0
 offset_top = 23.0
 offset_right = 3413.0
 offset_bottom = 692.0
 scale = Vector2(0.2, 0.2)
 
-[node name="SentinelButton" type="TextureButton" parent="VBoxContainer"]
-layout_mode = 2
-texture_normal = ExtResource("3_lf3vs")
+[node name="HWorldBox" type="HBoxContainer" parent="."]
+offset_left = 337.0
+offset_top = 23.0
+offset_right = 3413.0
+offset_bottom = 692.0
+scale = Vector2(0.2, 0.2)
 
-[node name="DefaultButton" type="TextureButton" parent="VBoxContainer"]
-layout_mode = 2
-texture_normal = ExtResource("4_ddlav")
+[node name="LoadName" type="TextEdit" parent="."]
+offset_left = 10.0
+offset_top = 257.0
+offset_right = 237.0
+offset_bottom = 308.0
+text = "World_Maps/new_map"
 
-[node name="Spawn1Button" type="TextureButton" parent="VBoxContainer"]
-layout_mode = 2
-texture_normal = ExtResource("5_g8oo0")
+[node name="SaveName" type="TextEdit" parent="."]
+offset_left = 10.0
+offset_top = 369.0
+offset_right = 237.0
+offset_bottom = 420.0
+text = "new_map"
 
-[node name="Spawn2Button" type="TextureButton" parent="VBoxContainer"]
-layout_mode = 2
-texture_normal = ExtResource("6_l12at")
-
-[connection signal="pressed" from="MenuContainer/NewMap" to="." method="_on_new_map_pressed"]
+[connection signal="pressed" from="MenuContainer/NewWorldMap" to="." method="_on_new_world_map_pressed"]
+[connection signal="pressed" from="MenuContainer/NewBattleMap" to="." method="_on_new_battle_map_pressed"]
 [connection signal="pressed" from="MenuContainer/LoadMap" to="." method="_on_load_map_pressed"]
 [connection signal="pressed" from="MenuContainer/SaveMap" to="." method="_on_save_map_pressed"]
-[connection signal="pressed" from="VBoxContainer/SentinelButton" to="." method="_on_sentinel_button_pressed"]
-[connection signal="pressed" from="VBoxContainer/DefaultButton" to="." method="_on_default_button_pressed"]
-[connection signal="pressed" from="VBoxContainer/Spawn1Button" to="." method="_on_spawn_1_button_pressed"]
-[connection signal="pressed" from="VBoxContainer/Spawn2Button" to="." method="_on_spawn_2_button_pressed"]

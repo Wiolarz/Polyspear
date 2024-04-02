@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://bg4s8mxbvytkf"]
 
-[ext_resource type="Script" path="res://Scripts/Battle/Symbols/symbol.gd" id="1_47k7o"]
-[ext_resource type="Texture2D" uid="uid://0lpxbb0xhfsn" path="res://Art/spear.png" id="2_02txe"]
+[ext_resource type="Script" path="res://Scripts/Battle/symbol.gd" id="1_47k7o"]
+[ext_resource type="Texture2D" uid="uid://0lpxbb0xhfsn" path="res://Art/old/spear.png" id="2_02txe"]
 
 [node name="Spear" type="Node2D"]
 script = ExtResource("1_47k7o")

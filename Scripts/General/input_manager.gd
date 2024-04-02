@@ -35,26 +35,60 @@ var players : Array[Player] = []
 
 var draw_mode : bool = false
 
+
+enum camera_position {WORLD, BATTLE}
+var current_camera_position = camera_position.WORLD
+
+
+#region Game setup
+
+func get_active_players() -> Array[Player]:
+
+	var active_players : Array[Player] = []
+
+	for player in players:
+		if player.player_type != E.player_type.OBSERVER:
+			active_players.append(player)
+	#print(active_players)
+	return active_players
+
+
+#endregion
+
+
+func switch_camera():
+	if current_camera_position == camera_position.WORLD:
+		current_camera_position = camera_position.BATTLE
+		pass
+	else:
+		current_camera_position = camera_position.WORLD
+		pass
+
+
+
 func grid_input_listener(cord : Vector2i):
 	
 	#if WM.current_player.bot_engine != null:
 	#    return # its a bot turn
 	
 	if draw_mode:
-		get_node("/root/BasicMap/DrawMenu").grid_input(cord)
+		get_node("/root/MainScene/DrawMenu").grid_input(cord)
 		return
-
-	WM.grid_input(cord)
+	
+	if WM.raging_battle:
+		BM.grid_input(cord)
+	else:
+		WM.grid_input(cord)
 	
 
 func go_to_main_menu():
 	draw_mode = false
 
-	get_node("/root/BasicMap/DrawMenu").hide_draw_menu()
+	get_node("/root/MainScene/DrawMenu").hide_draw_menu()
 
-	WM.clear_world_map()
-	BM.clear_battle()
-	get_node("/root/BasicMap/MainMenu").toggle_menu_visibility()
+	WM.close_world()
+	BM.close_battle()
+	get_node("/root/MainScene/MainMenu").toggle_menu_visibility()
 
 func get_server():
 	var node = get_node_or_null("TheServer")

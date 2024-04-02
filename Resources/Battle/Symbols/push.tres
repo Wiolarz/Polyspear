@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="DataSymbol" load_steps=2 format=3 uid="uid://cmgmw6atlub6f"]
+
+[ext_resource type="Script" path="res://Resources/Battle/data_symbol.gd" id="1_fpy2d"]
+
+[resource]
+script = ExtResource("1_fpy2d")
+type = 5
+texture_path = "res://Art/old/push.png"

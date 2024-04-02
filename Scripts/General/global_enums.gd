@@ -19,8 +19,12 @@ enum player_type
 enum WorldMapTiles
 {
 	SENTINEL,
+
+	# fundemantal game logic
 	EMPTY,
 	WALL,
+	
+	# UI based menu interfaces
 	CITY,
 	PLACE,
 }
@@ -34,14 +38,6 @@ enum MapShape
 {
 	CLASSIC,
 	SHIFTED,
-}
-
-enum HexTileType 
-{
-	SENTINEL,
-	ATTACKER_SPAWN,
-	DEFENDER_SPAWN,
-	DEFAULT,
 }
 
 enum Symbols

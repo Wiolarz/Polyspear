@@ -2,18 +2,20 @@ class_name AUnit
 
 extends Node2D
 
+@export var unitStats : DataUnit
 
 var unit_rotation : int
 var cord : Vector2i
 var controller : Player
 
+var Symbols : Array[E.Symbols] = [  # based on specific Unit scene in _ready() symbols get placed into their spots
+	E.Symbols.EMPTY, E.Symbols.EMPTY, E.Symbols.EMPTY, 
+	E.Symbols.EMPTY, E.Symbols.EMPTY, E.Symbols.EMPTY]
 
 var target_tile : HexTile
 var target_rotation = rotation
 
-var Symbols : Array[E.Symbols] = [  # based on specific Unit scene in _ready() symbols get placed into their spots
-	E.Symbols.EMPTY, E.Symbols.EMPTY, E.Symbols.EMPTY, 
-	E.Symbols.EMPTY, E.Symbols.EMPTY, E.Symbols.EMPTY]
+
 
 func _ready():
 	var idx = -1

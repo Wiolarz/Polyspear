@@ -1,9 +1,9 @@
 [gd_resource type="Resource" script_class="BattleSetup" load_steps=7 format=3 uid="uid://byhcrnn41k1aa"]
 
 [ext_resource type="Script" path="res://Resources/Tests/battle_setup.gd" id="1_668kr"]
-[ext_resource type="Resource" uid="uid://bghvw5ldgu31f" path="res://Resources/Army_sets/Elves_starter.tres" id="1_bd4q1"]
-[ext_resource type="Resource" uid="uid://cfeg62fmg3m43" path="res://Resources/Army_sets/Orcs_starter.tres" id="2_puitp"]
-[ext_resource type="Resource" uid="uid://b2ffhynpdmlve" path="res://Resources/Battle_Maps/Classic_map.tres" id="3_xkcaj"]
+[ext_resource type="Resource" uid="uid://bghvw5ldgu31f" path="res://Resources/World/Army_sets/Elves_starter.tres" id="1_bd4q1"]
+[ext_resource type="Resource" uid="uid://cfeg62fmg3m43" path="res://Resources/World/Army_sets/Orcs_starter.tres" id="2_puitp"]
+[ext_resource type="Resource" uid="uid://drtyybrqkoq45" path="res://Resources/Battle/Battle_Maps/basic5x5.tres" id="3_xwbqe"]
 [ext_resource type="Resource" uid="uid://dm2jeuv4bo4lw" path="res://Resources/Tests/Players/human_elf.tres" id="3_ya0o8"]
 [ext_resource type="Resource" uid="uid://dkgrcmar25cmi" path="res://Resources/Tests/Players/human_orc.tres" id="4_e8fk1"]
 
@@ -11,4 +11,4 @@
 script = ExtResource("1_668kr")
 player_settings = Array[Resource("res://Resources/Tests/player_setting.gd")]([ExtResource("3_ya0o8"), ExtResource("4_e8fk1")])
 armies = Array[Resource("res://Resources/army_set.gd")]([ExtResource("1_bd4q1"), ExtResource("2_puitp")])
-battle_map = ExtResource("3_xkcaj")
+battle_map = ExtResource("3_xwbqe")

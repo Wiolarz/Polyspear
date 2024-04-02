@@ -1,22 +1,23 @@
 # Singleton - BM
-
 extends Node
 
+#TODO temp
+@onready var battle_ui : BattleUI = get_node("/root/MainScene/BattleUI")
 
 const ATTACKER = 0
 const DEFENDER = 1
 
+
 #region Setup variables
 
-var commanders = []  # Hero objects that take part in battle (based on them we get players who control the battle)
 var participants : Array[Player] = []
 var battling_armies : Array[Army]
 
-
-var armies_unit_scenes : Array = [] # Array[Array[PackedScene]]
+var armies_units_data : Array = [] # Array[Array[PackedScene]]
 
 
 #endregion
+
 
 #region Variables
 var current_participant : Player
@@ -29,10 +30,6 @@ var fighting_units : Array = [] # Array[Array[AUnit]]
 var unsummoned_units_counter : int # set at the start of the during placement "summon" stage -> battle start after this number reaches 0
 
 #endregion
-
-
-
-
 
 
 #region Tools
@@ -130,7 +127,6 @@ func counter_attack_damage(target : AUnit) -> bool:
 	return false
 
 
-
 func kill_unit(target) -> void:
 	for units in fighting_units:
 		if units[0].controller == target.controller:
@@ -153,10 +149,6 @@ func kill_unit(target) -> void:
 		end_of_battle()
 	
 		
-
-	
-
-
 func unit_action(unit : AUnit) -> void:
 	var units = B_GRID.adjacent_units(unit.cord)
 
@@ -192,7 +184,7 @@ func unit_action(unit : AUnit) -> void:
 			# PUSH LOGIC
 			var distant_tile_type = B_GRID.get_distant_tile_type(unit.cord, side, 2)
 
-			if distant_tile_type == E.HexTileType.SENTINEL:  # Pushing outside the map
+			if distant_tile_type == "sentinel":  # Pushing outside the map
 				# Kill
 				kill_unit(enemy_unit)
 				continue
@@ -238,23 +230,6 @@ func select_unit(cord : Vector2i) -> bool:
 
 #region Main Functions
 
-func clear_battle():
-	current_participant = null
-	for unit in get_children():
-		unit.queue_free()
-	for tile in B_GRID.get_children():
-		tile.queue_free()
-
-
-func end_of_battle():
-	clear_battle()
-	if WM.selected_hero == null:
-		print("end of test battle")
-		IM.go_to_main_menu()
-		return
-	WM.end_of_battle()
-
-
 func switch_participant_turn():
 	if participant_idx + 1 == participants.size():
 		participant_idx = ATTACKER
@@ -293,13 +268,12 @@ func grid_input(cord : Vector2i) -> void:
 			switch_participant_turn()
 
 	
-
 func is_legal_summon_cord(cord : Vector2i) -> bool:
 	
 	# check if unit is already summoned
 	var selected_unit_tile_type = B_GRID.get_tile_type(selected_unit.cord)
 
-	if selected_unit_tile_type != E.HexTileType.SENTINEL:
+	if selected_unit_tile_type != "sentinel":
 		#print("This Unit has been already summoned")
 		return false
 	
@@ -307,8 +281,8 @@ func is_legal_summon_cord(cord : Vector2i) -> bool:
 	var cord_tile_type = B_GRID.get_tile_type(cord)
 
 	var correct_spawn_tile_destination : bool = \
-		(cord_tile_type == E.HexTileType.ATTACKER_SPAWN && participant_idx == 0) or \
-		(cord_tile_type == E.HexTileType.DEFENDER_SPAWN && participant_idx == 1)
+		(cord_tile_type == "player_0_spawn" && participant_idx == 0) or \
+		(cord_tile_type == "player_1_spawn"&& participant_idx == 1)
 
 	if not correct_spawn_tile_destination:
 		#print("Thats a wrong summon location")  # TODO: Don't reset selected_unit
@@ -335,41 +309,69 @@ func summon_unit(cord : Vector2i) -> void:
 #endregion
 
 
-#region Battle Setup
+#region End Battle
 
+func close_battle() -> void:
+	# delete all data related to battle
+	IM.switch_camera()
+
+	B_GRID.reset_data()
+	
+	current_participant = null
+	for unit in get_children():
+		unit.queue_free()
+
+
+func end_of_battle() -> void:
+	close_battle()
+	if WM.selected_hero == null:
+		print("end of test battle")
+		IM.go_to_main_menu()
+		return
+	WM.end_of_battle()
+
+#endregion
+
+
+#region Battle Setup
 
 func spawn_units() -> void:
 	"""
-	* Placing Units used in combat on their "Spawn Points" near the area of the gameplay board where they are visible to the players.
+	Create unit "cards" which players will use later to summon their units on the battlefield
 	"""
-
+	fighting_units = [] # TODO MOVE TO CHECK CLEAR
 	unsummoned_units_counter = 0 
-	for army in armies_unit_scenes:
+	for army in armies_units_data:
 		unsummoned_units_counter += army.size()
 	
-	var spawn_cord
-
 	# spawn armies units
-	for army_idx in range(armies_unit_scenes.size()):
-		var army = armies_unit_scenes[army_idx]
-		fighting_units.append([])
-		for unit_idx in range(army.size()):
-			var newUnitScene = army[unit_idx]
-			var new_unit = newUnitScene.instantiate()
-			add_child(new_unit) # jako element sceny
+	for army in battling_armies:
+		var new_army_unit_nodes = []
+		fighting_units.append(new_army_unit_nodes)
+		# create scenes based on unit data
+
+
+		# for unit_scene : PackedScene in army.units_data:
+		# 	var new_unit : AUnit = unit_scene.instantiate()
+		# 	add_child(new_unit)
 			
-			fighting_units[army_idx].append(new_unit)
+		# 	#new_unit.visible = false
+		# 	new_unit.controller = army.controller
 
-			new_unit.controller = participants[army_idx]
+		# 	new_army_unit_nodes.append(new_unit)
 
-			if army_idx == ATTACKER:
-				spawn_cord = B_GRID.summon_tiles[0][unit_idx].cord # Get spawn location
-				spawn_cord += B_GRID.DIRECTIONS[3]  # Move to a spot outside of the map near spawn point
-			elif army_idx == DEFENDER:
-				spawn_cord = B_GRID.summon_tiles[1][unit_idx].cord
-				spawn_cord += B_GRID.DIRECTIONS[0]
+	battle_ui.load_armies(battling_armies)
+	display_unit_summon_cards() # first player (attacker)
 
-			B_GRID.change_unit_cord(new_unit, spawn_cord) # Adding Unit to the Gameplay Array
+
+
+
+
+
+func display_unit_summon_cards(shown_participant : Player = current_participant):
+	# lists all selected participant units at the bottom of the screen
+	battle_ui.on_player_selected(shown_participant)
+
 
 
 
@@ -381,12 +383,11 @@ func start_battle(new_armies : Array[Army], battle_map : BattleMap) -> void:
 
 	for army in battling_armies:
 		participants.append(army.controller)
-		armies_unit_scenes.append(army.unit_scenes)
+		armies_units_data.append(army.units_data)
 
 	current_participant = participants[ATTACKER]
 	participant_idx = ATTACKER
 
 	spawn_units()
-	
-	
+
 #endregion

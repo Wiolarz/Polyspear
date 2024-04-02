@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="DataTile" load_steps=2 format=3 uid="uid://dr51l6yyu5epf"]
+
+[ext_resource type="Script" path="res://Resources/data_tile.gd" id="1_7nhkj"]
+
+[resource]
+script = ExtResource("1_7nhkj")
+texture_path = "res://Art/world_map/mountains.png"
+flip_horizontal = false
+type = "wall"

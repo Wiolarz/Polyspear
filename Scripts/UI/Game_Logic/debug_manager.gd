@@ -1,3 +1,5 @@
+extends Node
+
 """
 ESC - exit game
 ~ - Game Menu
@@ -9,10 +11,6 @@ F4 - toggle visibility of collision shapes
 F5 - Save
 F6 - Load
 """
-
-extends Node
-
-
 
 @onready var ui = $".."
 

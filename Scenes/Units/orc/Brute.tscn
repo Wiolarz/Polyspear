@@ -1,8 +1,8 @@
 [gd_scene load_steps=6 format=3 uid="uid://bsnxgr1yrp7wy"]
 
 [ext_resource type="Script" path="res://Scripts/Battle/unit.gd" id="1_nyt7h"]
-[ext_resource type="Texture2D" uid="uid://d0dy38p601hn" path="res://Art/border.png" id="2_ma2n6"]
-[ext_resource type="Texture2D" uid="uid://dsftkau5qwpk" path="res://Art/ork3.png" id="3_1n1d4"]
+[ext_resource type="Texture2D" uid="uid://d0dy38p601hn" path="res://Art/old/border.png" id="2_ma2n6"]
+[ext_resource type="Texture2D" uid="uid://dsftkau5qwpk" path="res://Art/old/ork3.png" id="3_1n1d4"]
 [ext_resource type="PackedScene" uid="uid://ue4s18kk7kpt" path="res://Scenes/Symbols/Sword.tscn" id="4_gyhod"]
 [ext_resource type="PackedScene" uid="uid://bg4s8mxbvytkf" path="res://Scenes/Symbols/Spear.tscn" id="5_blg3f"]
 

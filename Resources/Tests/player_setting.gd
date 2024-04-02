@@ -11,7 +11,7 @@ test data for Input Manager
 @export var player_name : String
 
 
-func generate_player() -> Player:
+func create_player() -> Player:
 	var new_player = Player.new()
 	new_player.faction = faction
 	new_player.player_type = player_type

@@ -12,13 +12,11 @@ extends CanvasLayer
 
 
 func _on_test_game_pressed():
-	if world_setup == null:
-		print("No game setup")
-		return
-	
+	assert(world_setup != null, "No game setup")
+
 	players = []
 	for player_set in world_setup.player_settings:
-		var player = player_set.generate_player()
+		var player = player_set.create_player()
 		players.append(player)
 
 	world_map = world_setup.world_map
@@ -27,28 +25,37 @@ func _on_test_game_pressed():
 
 func start_game():
 	toggle_menu_visibility()
-	WM.start_world(players, world_setup.world_map)
+	IM.players = players
+	WM.start_world(world_setup.world_map)
 
 func toggle_menu_visibility():
 	visible = not visible
 
 
-func _on_test_battle_pressed():
-	
-	if maunual_tester == null:
-		print("No manual tester setup")
-		return
-	
-	if maunual_tester.test_battle():
-		toggle_menu_visibility()
 
-
-
-func _on_battle_map_creator_pressed():
+func _on_map_creator_pressed():
 	IM.draw_mode = true
 	map_creator.open_draw_menu()
 	toggle_menu_visibility()
 
 
-func _on_world_map_creator_pressed():
-	pass # Replace with function body.
+#region Tests
+
+func _on_test_battle_pressed():
+	assert(maunual_tester != null, "No manual tester setup")
+
+	
+	maunual_tester.test_battle()
+	toggle_menu_visibility()
+
+
+
+func _on_test_world_pressed():
+	assert(maunual_tester != null, "No manual tester setup")
+
+	maunual_tester.test_world()
+	toggle_menu_visibility()
+
+
+
+#endregion

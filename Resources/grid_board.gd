@@ -9,8 +9,8 @@ extends Resource
 
 
 
+@export var grid_data : Array  # Array[Array[tile]]
 
-@export var map_shape : E.MapShape = E.MapShape.CLASSIC
 
-func apply_data():
+func apply_data() -> void:
 	pass

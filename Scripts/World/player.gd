@@ -1,11 +1,10 @@
 class_name Player
-
 extends Node
 
 
 var alive = true
 
-var player_name
+var player_name : String = ""
 
 var player_type : E.player_type = E.player_type.OBSERVER
 

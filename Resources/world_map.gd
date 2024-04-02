@@ -13,7 +13,8 @@ Complete world map data:
 
 
 
-func apply_data():
+func apply_data() -> void:
+	W_GRID.map_information = self  # : GridBoard : WorldMap
 	W_GRID.max_player_number = max_player_number
 	W_GRID.grid_width = grid_width
 	W_GRID.grid_height = grid_height

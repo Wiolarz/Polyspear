@@ -1,10 +1,9 @@
 class_name Army
-
 extends Node
 
 var hero : Hero
 
-var unit_scenes : Array[PackedScene]
+var units_data : Array[DataUnit]
 
 var units : Array[AUnit]
 

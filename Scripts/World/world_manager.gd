@@ -1,5 +1,4 @@
 # Singleton - WM
-
 extends Node
 
 #region Setup Parameters
@@ -32,8 +31,6 @@ contains:
 # stores all location objects with common parent class "Place" as coordinates
 var grid : Array = [] #Array[Array[Place]]
 
-# stores all heroes as coordinates
-var hero_grid : Array = [] # Array[Array[Hero]]
 
 var selected_hero : Hero
 
@@ -44,12 +41,12 @@ var combat_tile : Vector2i
 
 #region Main functions
 
-func clear_world_map():
+func close_world():
 	for hero in get_children():
 		hero.queue_free()
-	for tile in W_GRID.get_children():
-		tile.queue_free()
 
+	W_GRID.reset_data()
+	
 
 func next_player_turn():
 	var player_idx = players.find(current_player)
@@ -60,10 +57,11 @@ func next_player_turn():
 
 
 func kill_hero(hero : Hero):
-	hero_grid[hero.cord.x][hero.cord.y] = null
+	W_GRID.unit_grid[hero.cord.x][hero.cord.y] = null
 	hero.queue_free()
 
 #endregion
+
 
 #region Tools
 
@@ -74,8 +72,8 @@ func is_enemy_present(cord : Vector2i):
 		return false 
 	return true
 
-
 #endregion
+
 
 #region Player Actions
 
@@ -88,7 +86,7 @@ func grid_input(cord : Vector2i):
 		3 Select ally city -> show interface then return
 	II Scenario - player has a hero selected
 		1 Selects empty/enemy/ally city/ally hero spot -> move_hero()
-		2 Selects the same hero -> unselect current hero
+		2 Selects the same hero -> deselect current hero
 
 
 
@@ -99,9 +97,6 @@ func grid_input(cord : Vector2i):
 		4 if a hero is inside a city, a special interface will apear (either it simply selects the hero inside the city, then you can close the interaface and move freely)
 		5 player selected trade interface between heroes
 	"""
-	if raging_battle:
-		BM.grid_input(cord)
-		return
 
 	if select_city(cord) or select_hero(cord) or selected_hero == null:
 		return
@@ -128,11 +123,9 @@ func select_hero(cord : Vector2i) -> bool:
 		1 Selects empty/enemy spot -> return false
 		2 Selects ally hero -> set hero then return true
 	II Scenario - player has a hero selected
-		1 Selects the same hero  -> unselect current hero return true/false(no difference)
+		1 Selects the same hero  -> deselect current hero return true/false(no difference)
 		2 Selects another ally hero -> return false
 
-		
-	
 	"""
 	# TODO test unselect/no unselect on double click and determine which is more intuitive for most playersc
 
@@ -205,7 +198,7 @@ func combat(cord : Vector2i):
 
 	combat_tile = cord
 	
-	clear_world_map()
+	IM.switch_camera()
 
 	var armies : Array[Army] = [selected_hero.army, W_GRID.get_army(combat_tile)]
 	var battle_map : BattleMap = W_GRID.grid[combat_tile.x][combat_tile.y].battle_map
@@ -224,29 +217,26 @@ func end_of_battle():
 
 
 
-	draw_world()
-
-
 #endregion
+
 
 #region World Setup
 
-func draw_world():
-	pass
-	#W_GRID.generate_grid()
-	#spawn_heroes()
 
 func spawn_heroes():
 	pass
 
 
-func change_heroes_visibility():
-	pass
+func start_world(world_map : WorldMap) -> void:
 
-func start_world(player_list : Array[Player], world_map : WorldMap):
-	raging_battle = false
-	players = player_list
+	players = IM.get_active_players()
+
+	assert(players.size() != 0, "ERROR WM.players is empty")
+	
 	current_player = players[0]
+
+
+	raging_battle = false
 
 	W_GRID.generate_grid(world_map)
 	
