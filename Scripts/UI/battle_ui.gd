@@ -1,78 +1,96 @@
 class_name BattleUI
 extends CanvasLayer
 
-@onready var players_box : BoxContainer = $Players
+@onready
+var players_box : BoxContainer = $Players
 
-@onready var units_box : BoxContainer = $Units
+@onready
+var units_box : BoxContainer = $Units
 
 var armies : Array[Army] = []
+
+var selected_unit : DataUnit = null
+var selected_button: TextureButton = null
+var selected_unit_army_idx : int = -1
+
+var current_player : Player = null
 
 func _ready():
 	pass
 
-func _process(delta):
-	if BM.selected_unit != null:
-		print(BM.selected_unit)
+func get_army(player: Player) -> Army:
+	var currentArmy = armies.filter(
+		func controlledBy(a : Army):
+			return a.controller == player
+			)
+	assert(currentArmy.size() == 1)
+	return currentArmy[0]
 
+func on_player_selected(selectedPlayer : Player, preview : bool = false):
+	if not preview:
+		current_player = selectedPlayer
+	for i in range(armies.size()):
+		var c = Color.WHITE if armies[i].controller != current_player else Color.RED
+		players_box.get_child(i + 1).modulate = c
 
-func on_player_selected(controller : Player):
 	# clean bottom row
 	for old_buttons in units_box.get_children():
 		old_buttons.queue_free()
-	
 
-	var selected_armies = armies.filter(
-		func controlled_by(a : Army):
-			return a.controller == controller
-			)
-	assert(selected_armies.size() == 1)
-	
-	for army in selected_armies:
-		for unit : DataUnit in army.units_data:
-			var b = TextureButton.new()
-			b.texture_normal = load(unit.texture_path)
-			# idea to add unit scenes as buttons child to display unit symbols properly, then reparent them to battle manager once they are in the scene
-			# b.add_child(load("res://Scenes/Units/elf/Archer.tscn").instantiate())
-			units_box.add_child(b)
+	var army = get_army(selectedPlayer)
+	for unitId : int in range(0, army.units_data.size()):
+		var unit : DataUnit = army.units_data[unitId]
+		var b = TextureButton.new()
+		b.texture_normal = load(unit.texture_path)
+		# idea to add unit scenes as buttons child to display unit symbols properly, then reparent them to battle manager once they are in the scene
+		# b.add_child(load("res://Scenes/Units/elf/Archer.tscn").instantiate())
+		units_box.add_child(b)
+		var lambda = func on_click():
+			if (current_player != army.controller):
+				return
+			if (selected_button != null):
+				selected_button.modulate = Color.WHITE
+			selected_unit = unit
+			selected_button = b
+			selected_unit_army_idx = unitId
+			b.modulate = Color.RED
+		b.pressed.connect(lambda)
 
-
-
-func _create_button(unit_data : String):
-	var unit = load(unit_data)
-
-	var new_button = TextureButton.new()
-
-	new_button.texture_normal = ResourceLoader.load(unit.texture_path)
-
-	units_box.add_child(new_button)
-	var lambda = func on_click():
-		print("test")
-		BM.selected_unit = unit
-	
-	new_button.pressed.connect(lambda)  # self._button_pressed
-
+func _copy(army_list : Array[Army]):
+	var result : Array[Army] = []
+	for a in army_list:
+		var aCopy = Army.new()
+		aCopy.controller = a.controller
+		aCopy.units_data = a.units_data.duplicate()
+		result.append(aCopy)
+	return result
 
 func load_armies(army_list : Array[Army]):
 	# save armies
-	armies = army_list
+	armies = _copy(army_list)
 
 	# removing temp shit
 	var players = players_box.get_children()
 	players[2].queue_free()
 	players[1].queue_free()
 	
+	units_box.show()
+	
 	for army in army_list:
 		# create player buttons
 		var n = Button.new()
 		n.text = "Player " + army.controller.player_name
-		n.pressed.connect(func p1(): on_player_selected(army.controller))
+		n.pressed.connect(func p1(): on_player_selected(army.controller, true))
 		players_box.add_child(n)
 
-
-
-
-
-
+func unit_summoned(summon_phase_end : bool):
+	var army = get_army(current_player)
+	army.units_data.remove_at(selected_unit_army_idx)
+	selected_unit = null
+	selected_button = null
+	selected_unit_army_idx = -1
+	if summon_phase_end:
+		units_box.hide()
 
 
 func _on_switch_camera_pressed():

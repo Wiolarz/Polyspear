@@ -1,8 +1,7 @@
 # Singleton - BM
 extends Node
 
-#TODO temp
-@onready var battle_ui : BattleUI = get_node("/root/MainScene/BattleUI")
+var battle_ui : BattleUI = null
 
 const ATTACKER = 0
 const DEFENDER = 1
@@ -25,12 +24,17 @@ var participant_idx : int = ATTACKER
 
 var selected_unit : AUnit
 
-var fighting_units : Array = [] # Array[Array[AUnit]]
+var fighting_units : Array = [[],[]] # Array[Array[AUnit]]
 
 var unsummoned_units_counter : int # set at the start of the during placement "summon" stage -> battle start after this number reaches 0
 
 #endregion
 
+
+func _ready():
+	battle_ui = load("res://Scenes/UI/BattleUi.tscn").instantiate()
+	add_child(battle_ui)
+	battle_ui.hide()
 
 #region Tools
 
@@ -220,6 +224,7 @@ func select_unit(cord : Vector2i) -> bool:
 	var new_selection : AUnit = B_GRID.get_unit(cord)
 	if (new_selection != null && new_selection.controller == current_participant):
 		selected_unit = new_selection
+		selected_unit.set_selected(true)
 		#print("You have selected a Unit")
 		return true
 
@@ -237,59 +242,48 @@ func switch_participant_turn():
 		participant_idx += 1
 	
 	current_participant = participants[participant_idx]
-
 	selected_unit = null  # disable player to move another players units
-		
+	battle_ui.on_player_selected(current_participant)
 
 func grid_input(cord : Vector2i) -> void:
 	"""
 	input redirection (based on current ) verification
 	"""
-
-	if select_unit(cord) or selected_unit == null:
-		return # selected a new unit or wrong input which didn't select any ally unit
-
-
+	
 	if unsummoned_units_counter > 0: # Summon phase
-		"""
-		* Units are placed by the players in subsequent order on their chosen "Starting Locations"
-		* inside the area of the gameplay board.
-		"""
-		if is_legal_summon_cord(cord):
-			summon_unit(cord)
-
-			switch_participant_turn()
+		_grid_input_summon(cord)
+		return
 	
-	else:  # Gameplay phase
-		var side : int = is_legal_move(cord) # is_legal_move() returns false as -1 0-5 direction for unit to move
-		if side != -1: # spot is empty + we aren't hitting a shield
-			move_unit(selected_unit, cord, side)
+	if select_unit(cord) or selected_unit == null:
+		# selected a new unit or wrong input which didn't select any ally unit
+		return 
 
-			switch_participant_turn()
-
+	var side : int = is_legal_move(cord) # is_legal_move() returns false as -1 0-5 direction for unit to move
+	if side == -1: # spot is empty + we aren't hitting a shield
+		return
 	
+	selected_unit.set_selected(false)
+	move_unit(selected_unit, cord, side)
+	switch_participant_turn()
+
+func _grid_input_summon(cord : Vector2i):
+	"""
+	* Units are placed by the players in subsequent order on their chosen "Starting Locations"
+	* inside the area of the gameplay board.
+	"""
+	if battle_ui.selected_unit == null:
+		return # no unit selected
+
+	if is_legal_summon_cord(cord):
+		summon_unit(cord)
+		switch_participant_turn()
+
 func is_legal_summon_cord(cord : Vector2i) -> bool:
-	
-	# check if unit is already summoned
-	var selected_unit_tile_type = B_GRID.get_tile_type(selected_unit.cord)
-
-	if selected_unit_tile_type != "sentinel":
-		#print("This Unit has been already summoned")
-		return false
-	
-
 	var cord_tile_type = B_GRID.get_tile_type(cord)
-
-	var correct_spawn_tile_destination : bool = \
-		(cord_tile_type == "player_0_spawn" && participant_idx == 0) or \
-		(cord_tile_type == "player_1_spawn"&& participant_idx == 1)
-
-	if not correct_spawn_tile_destination:
-		#print("Thats a wrong summon location")  # TODO: Don't reset selected_unit
-		return false
-	
-	return true
-	
+	var is_correct_spawn =\
+		(cord_tile_type == "red_spawn" && participant_idx == 0) or \
+		(cord_tile_type == "blue_spawn"&& participant_idx == 1)
+	return is_correct_spawn and B_GRID.get_unit(cord) == null
 
 func summon_unit(cord : Vector2i) -> void:
 	"""
@@ -297,14 +291,22 @@ func summon_unit(cord : Vector2i) -> void:
 
 		@param cord cordinate, on which Unit will be summoned
 	 """
-	B_GRID.change_unit_cord(selected_unit, cord)
+	#B_GRID.change_unit_cord(selected_unit, cord)
+	var unit : AUnit = load("res://Scenes/Form/UnitForm.tscn").instantiate()
+	unit.apply_template(battle_ui.selected_unit)
+	unit.controller = current_participant
 
+	fighting_units[participant_idx].append(unit)
+	add_child(unit)
+	B_GRID.change_unit_cord(unit, cord)
+	
 	if participant_idx == ATTACKER:
-		selected_unit.turn(0)
+		unit.turn(3)
 	else:
-		selected_unit.turn(3)
+		unit.turn(0)
 
 	unsummoned_units_counter -= 1
+	battle_ui.unit_summoned(unsummoned_units_counter == 0)
 
 #endregion
 
@@ -318,8 +320,10 @@ func close_battle() -> void:
 	B_GRID.reset_data()
 	
 	current_participant = null
-	for unit in get_children():
-		unit.queue_free()
+	for child in get_children():
+		if child ==  battle_ui:
+			continue
+		child.queue_free()
 
 
 func end_of_battle() -> void:
@@ -341,8 +345,8 @@ func spawn_units() -> void:
 	"""
 	fighting_units = [] # TODO MOVE TO CHECK CLEAR
 	unsummoned_units_counter = 0 
-	for army in armies_units_data:
-		unsummoned_units_counter += army.size()
+	for army in battling_armies:
+		unsummoned_units_counter += army.units_data.size()
 	
 	# spawn armies units
 	for army in battling_armies:
@@ -365,22 +369,18 @@ func spawn_units() -> void:
 
 
 
-
-
-
 func display_unit_summon_cards(shown_participant : Player = current_participant):
 	# lists all selected participant units at the bottom of the screen
 	battle_ui.on_player_selected(shown_participant)
 
 
-
-
 func start_battle(new_armies : Array[Army], battle_map : BattleMap) -> void:
+	battle_ui.show()
 	WM.raging_battle = true
 	battling_armies = new_armies
 
 	B_GRID.generate_grid(battle_map)
-
+	participants = []
 	for army in battling_armies:
 		participants.append(army.controller)
 		armies_units_data.append(army.units_data)
