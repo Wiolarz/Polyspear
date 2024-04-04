@@ -28,3 +28,20 @@ WM and BM:
 texture
 flip_h
 type (string for game logic)
+
+
+
+## Directions
+We start looking toward the left then we move clockwise
+0-5
+0 - LEFT
+1-2 - TOP
+3 - RIGHT
+4-5 BOT
+
+0 - Vector2i(-1, 0),
+1 - Vector2i(0, -1),
+2 - Vector2i(1, -1),
+3 - Vector2i(1, 0),
+4 - Vector2i(0, 1),
+5 - Vector2i(-1, 1),
