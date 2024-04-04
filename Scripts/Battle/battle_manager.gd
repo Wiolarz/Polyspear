@@ -14,11 +14,17 @@ var battling_armies : Array[Army]
 
 var armies_units_data : Array = [] # Array[Array[PackedScene]]
 
+func _ready():
+	battle_ui = load("res://Scenes/UI/BattleUi.tscn").instantiate()
+	add_child(battle_ui)
+	battle_ui.hide()
 
 #endregion
 
 
 #region Variables
+var battle_is_ongoing : bool = false
+
 var current_participant : Player
 var participant_idx : int = ATTACKER
 
@@ -31,12 +37,62 @@ var unsummoned_units_counter : int # set at the start of the during placement "s
 #endregion
 
 
-func _ready():
-	battle_ui = load("res://Scenes/UI/BattleUi.tscn").instantiate()
-	add_child(battle_ui)
-	battle_ui.hide()
+
+#region Main Functions
+
+func switch_participant_turn():
+	if participant_idx + 1 == participants.size():
+		participant_idx = ATTACKER
+	else:
+		participant_idx += 1
+	
+	current_participant = participants[participant_idx]
+	selected_unit = null  # disable player to move another players units
+	battle_ui.on_player_selected(current_participant)
+
+
+func grid_input(cord : Vector2i) -> void:
+	"""
+	input redirection (based on current ) verification
+	"""
+	
+	if unsummoned_units_counter > 0: # Summon phase
+		_grid_input_summon(cord)
+		return
+	
+	if select_unit(cord) or selected_unit == null:
+		# selected a new unit or wrong input which didn't select any ally unit
+		return 
+
+	var side : int = is_legal_move(cord) # is_legal_move() returns false as -1 0-5 direction for unit to move
+	if side == -1: # spot is empty + we aren't hitting a shield
+		return
+	
+	selected_unit.set_selected(false)
+	move_unit(selected_unit, cord, side)
+	switch_participant_turn()
+
+#endregion
+
 
 #region Tools
+
+func select_unit(cord : Vector2i) -> bool:
+	"""
+	 * Select friendly Unit on a given cord
+	 *
+	 * @return true if unit has been selected in this operation
+	 """
+
+	var new_selection : AUnit = B_GRID.get_unit(cord)
+	if (new_selection != null && new_selection.controller == current_participant):
+		selected_unit = new_selection
+		selected_unit.set_selected(true)
+		#print("You have selected a Unit")
+		return true
+
+	return false
+
 
 func is_legal_move(cord : Vector2i, BotUnit : AUnit = null) -> int:
 	"""
@@ -104,7 +160,9 @@ func move_unit(unit, end_cord : Vector2i, side: int) -> void:
 
 	unit_action(unit)
 	#TODO wait half a second
-
+	if not battle_is_ongoing:   # TEMP
+		end_of_battle()
+		return
 
 	B_GRID.change_unit_cord(unit, end_cord)
 
@@ -114,6 +172,9 @@ func move_unit(unit, end_cord : Vector2i, side: int) -> void:
 		
 		
 	unit_action(unit)
+
+	if not battle_is_ongoing:  # TEMP
+		end_of_battle()
 
 
 func counter_attack_damage(target : AUnit) -> bool:
@@ -148,9 +209,7 @@ func kill_unit(target) -> void:
 
 
 	if armies_left_alive.size() < 2:
-		var winner_army = battling_armies[armies_left_alive[0]]
-		print(winner_army.controller.player_name + " won")
-		end_of_battle()
+		battle_is_ongoing = false
 	
 		
 func unit_action(unit : AUnit) -> void:
@@ -213,58 +272,46 @@ func unit_action(unit : AUnit) -> void:
 		if enemy_unit.get_symbol(side + 3) != E.Symbols.SHIELD:# Does Enemy has a shield?
 			kill_unit(units[side])
 		
-				
-func select_unit(cord : Vector2i) -> bool:
-	"""
-	 * Select friendly Unit on a given cord
-	 *
-	 * @return true if unit has been selected in this operation
-	 """
+#endregion
 
-	var new_selection : AUnit = B_GRID.get_unit(cord)
-	if (new_selection != null && new_selection.controller == current_participant):
-		selected_unit = new_selection
-		selected_unit.set_selected(true)
-		#print("You have selected a Unit")
-		return true
 
-	return false
+#region End Battle
+
+func close_battle() -> void:
+	# delete all data related to battle
+	IM.switch_camera()
+
+	B_GRID.reset_data()
+	
+	current_participant = null
+	for child in get_children():
+		if child ==  battle_ui:
+			continue
+		child.queue_free()
+
+
+func end_of_battle() -> void:
+	var armies_left_alive : Array[int] = [] # TEMP
+	for army_idx in range(fighting_units.size()):
+		if fighting_units[army_idx].size() > 0:
+			armies_left_alive.append(army_idx)
+		else:
+			battling_armies[army_idx].alive = false
+	
+	var winner_army = battling_armies[armies_left_alive[0]]
+	print(winner_army.controller.player_name + " won")
+
+	close_battle()
+	if WM.selected_hero == null:
+		print("end of test battle")
+		IM.go_to_main_menu()
+		return
+	WM.end_of_battle()
 
 #endregion
 
 
-#region Main Functions
-
-func switch_participant_turn():
-	if participant_idx + 1 == participants.size():
-		participant_idx = ATTACKER
-	else:
-		participant_idx += 1
-	
-	current_participant = participants[participant_idx]
-	selected_unit = null  # disable player to move another players units
-	battle_ui.on_player_selected(current_participant)
-
-func grid_input(cord : Vector2i) -> void:
-	"""
-	input redirection (based on current ) verification
-	"""
-	
-	if unsummoned_units_counter > 0: # Summon phase
-		_grid_input_summon(cord)
-		return
-	
-	if select_unit(cord) or selected_unit == null:
-		# selected a new unit or wrong input which didn't select any ally unit
-		return 
-
-	var side : int = is_legal_move(cord) # is_legal_move() returns false as -1 0-5 direction for unit to move
-	if side == -1: # spot is empty + we aren't hitting a shield
-		return
-	
-	selected_unit.set_selected(false)
-	move_unit(selected_unit, cord, side)
-	switch_participant_turn()
+#region Summon Phase
 
 func _grid_input_summon(cord : Vector2i):
 	"""
@@ -311,32 +358,6 @@ func summon_unit(cord : Vector2i) -> void:
 #endregion
 
 
-#region End Battle
-
-func close_battle() -> void:
-	# delete all data related to battle
-	IM.switch_camera()
-
-	B_GRID.reset_data()
-	
-	current_participant = null
-	for child in get_children():
-		if child ==  battle_ui:
-			continue
-		child.queue_free()
-
-
-func end_of_battle() -> void:
-	close_battle()
-	if WM.selected_hero == null:
-		print("end of test battle")
-		IM.go_to_main_menu()
-		return
-	WM.end_of_battle()
-
-#endregion
-
-
 #region Battle Setup
 
 func spawn_units() -> void:
@@ -368,7 +389,6 @@ func spawn_units() -> void:
 	display_unit_summon_cards() # first player (attacker)
 
 
-
 func display_unit_summon_cards(shown_participant : Player = current_participant):
 	# lists all selected participant units at the bottom of the screen
 	battle_ui.on_player_selected(shown_participant)
@@ -377,6 +397,7 @@ func display_unit_summon_cards(shown_participant : Player = current_participant)
 func start_battle(new_armies : Array[Army], battle_map : BattleMap) -> void:
 	battle_ui.show()
 	WM.raging_battle = true
+	battle_is_ongoing = true
 	battling_armies = new_armies
 
 	B_GRID.generate_grid(battle_map)
