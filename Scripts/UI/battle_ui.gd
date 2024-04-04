@@ -1,11 +1,9 @@
 class_name BattleUI
 extends CanvasLayer
 
-@onready
-var players_box : BoxContainer = $Players
+@onready var players_box : BoxContainer = $Players
 
-@onready
-var units_box : BoxContainer = $Units
+@onready var units_box : BoxContainer = $Units
 
 var armies : Array[Army] = []
 
