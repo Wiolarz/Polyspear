@@ -25,12 +25,13 @@ const border_size : int = 1  # Thickness of a Sentinel perimiter around the game
 
 
 static var DIRECTIONS = [ \
+	Vector2i(-1, 0),
+	Vector2i(0, -1),
+	Vector2i(1, -1),
 	Vector2i(1, 0),
 	Vector2i(0, 1),
 	Vector2i(-1, 1),
-	Vector2i(-1, 0),
-	Vector2i(0, -1),
-	Vector2i(1, -1)]
+]
 
 
 
@@ -45,7 +46,7 @@ static func is_adjacent(Cord1 : Vector2i, Cord2 : Vector2i) -> bool:
 static func adjacent_side(Cord1 : Vector2i, Cord2 : Vector2i) -> int:
 	"""
 	Return shared side between Cord1 and Cord2, if the Cords are adjacent
-
+	Side from Coord1 perspective
 	@param Cord1 
 	@param Cord2 
 	@return int32 Side

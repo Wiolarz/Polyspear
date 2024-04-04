@@ -59,7 +59,7 @@ func switch_camera():
 
 
 func grid_input_listener(cord : Vector2i):
-	
+	print("tile ",cord)
 	#if WM.current_player.bot_engine != null:
 	#    return # its a bot turn
 	print(cord)

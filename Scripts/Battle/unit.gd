@@ -16,16 +16,6 @@ var target_tile : HexTile
 var target_rotation = rotation
 
 
-
-func _ready():
-	var idx = -1
-	for symbol_spot in get_node("Symbols").get_children():
-		idx += 1
-		var symbol = symbol_spot.get_children()
-		if symbol.size() == 1:
-			Symbols[idx] = symbol[0].type
-
-
 func can_defend(side : int) -> bool:
 	return get_symbol(side) == E.Symbols.SHIELD
 		
@@ -44,13 +34,11 @@ func turn(side : int):
 	
 	# 360 / 6 = 60 -> degrees needed to rotate unit
 	# "Direction + 4" Accounts for global rotation setting for objects in the level
-	rotation = deg_to_rad((60 * (side - 2)) + 30)  # TODO: -2 is "magic number" -- ?grid rotation
+	rotation = deg_to_rad((60 * (side)))
 	#print(rotation, "   ", target_rotation)
 
 func move(target : HexTile):
 	target_tile = target
-
-
 
 func _physics_process(_delta):
 	#if target_rotation != rotation:
@@ -65,6 +53,25 @@ func _physics_process(_delta):
 		#position.y = move_toward(position.y, target_tile.position.y, BUS.animation_speed)
 		if position.x == target_tile.position.x and position.y == target_tile.position.y:
 			target_tile = null
+
+func set_selected(isSelected:bool):
+	var c = Color.RED if isSelected else Color.WHITE
+	$sprite_unit.modulate = c
+
+func apply_template(dataTemplate : DataUnit):
+	unitStats = dataTemplate
+	get_node("sprite_unit").texture = load(dataTemplate.texture_path)
+	for dir in range(0,6):
+		Symbols[dir] = unitStats.symbols[dir].type
+		print("dir ",dir," template ",unitStats.symbols[dir].type, " set ",Symbols[dir] )
+		var symbol_sprite = get_node("Symbols")\
+			.get_children()[dir].get_child(0).get_child(0)
+		var tex = unitStats.symbols[dir].texture_path
+		if ( tex == null or tex == ""):
+			symbol_sprite.hide()
+		else:
+			symbol_sprite.texture = load(tex)
+			symbol_sprite.show()
 
 func destroy():
 	queue_free()
