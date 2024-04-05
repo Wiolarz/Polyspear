@@ -5,6 +5,7 @@ extends CanvasLayer
 @export var map_creator : CanvasLayer
 @export var unit_editor : CanvasLayer
 
+@export var battle_setup : CanvasLayer
 @export var world_setup : WorldSetup  # temporary solution
 
 
@@ -64,4 +65,9 @@ func _on_test_world_pressed():
 
 func _on_unit_editor_pressed():
 	unit_editor.visible = !unit_editor.visible
+	toggle_menu_visibility()
+
+
+func _on_test_battle_with_setup_pressed():
+	battle_setup.visible = !battle_setup.visible
 	toggle_menu_visibility()
