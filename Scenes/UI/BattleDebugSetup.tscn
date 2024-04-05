@@ -1,0 +1,138 @@
+[gd_scene load_steps=5 format=3 uid="uid://cx1ypmps7i3tn"]
+
+[ext_resource type="Script" path="res://Scripts/Development/battle_debug_setup.gd" id="1_m3h17"]
+[ext_resource type="Resource" uid="uid://byhcrnn41k1aa" path="res://Resources/Tests/Battle_setups/pvp_EvsO_basic.tres" id="2_ahbvw"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_5oah4"]
+bg_color = Color(0, 0.341176, 0.219608, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tn1ik"]
+bg_color = Color(0.396078, 0.0784314, 0, 1)
+
+[node name="UiBattleDebugSetup" type="CanvasLayer"]
+script = ExtResource("1_m3h17")
+default_battle_setup = ExtResource("2_ahbvw")
+
+[node name="MapsList" type="OptionButton" parent="."]
+offset_left = 227.0
+offset_top = 264.0
+offset_right = 1822.0
+offset_bottom = 316.0
+
+[node name="PresetsList" type="OptionButton" parent="."]
+offset_left = 224.0
+offset_top = 190.0
+offset_right = 1819.0
+offset_bottom = 242.0
+
+[node name="UnitsList1_1" type="OptionButton" parent="."]
+offset_left = 193.0
+offset_top = 430.0
+offset_right = 693.0
+offset_bottom = 482.0
+
+[node name="UnitsList1_2" type="OptionButton" parent="."]
+offset_left = 193.0
+offset_top = 501.0
+offset_right = 693.0
+offset_bottom = 553.0
+
+[node name="UnitsList1_3" type="OptionButton" parent="."]
+offset_left = 193.0
+offset_top = 571.0
+offset_right = 693.0
+offset_bottom = 623.0
+
+[node name="UnitsList1_4" type="OptionButton" parent="."]
+offset_left = 191.0
+offset_top = 641.0
+offset_right = 691.0
+offset_bottom = 693.0
+
+[node name="UnitsList1_5" type="OptionButton" parent="."]
+offset_left = 195.0
+offset_top = 709.0
+offset_right = 695.0
+offset_bottom = 761.0
+
+[node name="UnitsList2_1" type="OptionButton" parent="."]
+offset_left = 1227.0
+offset_top = 456.0
+offset_right = 1727.0
+offset_bottom = 508.0
+
+[node name="UnitsList2_2" type="OptionButton" parent="."]
+offset_left = 1227.0
+offset_top = 527.0
+offset_right = 1727.0
+offset_bottom = 579.0
+
+[node name="UnitsList2_3" type="OptionButton" parent="."]
+offset_left = 1227.0
+offset_top = 597.0
+offset_right = 1727.0
+offset_bottom = 649.0
+
+[node name="UnitsList2_4" type="OptionButton" parent="."]
+offset_left = 1225.0
+offset_top = 667.0
+offset_right = 1725.0
+offset_bottom = 719.0
+
+[node name="UnitsList2_5" type="OptionButton" parent="."]
+offset_left = 1229.0
+offset_top = 735.0
+offset_right = 1729.0
+offset_bottom = 787.0
+
+[node name="Button" type="Button" parent="."]
+offset_left = 1026.0
+offset_top = 868.0
+offset_right = 1585.0
+offset_bottom = 961.0
+theme_override_font_sizes/font_size = 30
+theme_override_styles/normal = SubResource("StyleBoxFlat_5oah4")
+text = "Play"
+
+[node name="Button2" type="Button" parent="."]
+offset_left = 197.0
+offset_top = 853.0
+offset_right = 756.0
+offset_bottom = 946.0
+theme_override_font_sizes/font_size = 30
+theme_override_styles/normal = SubResource("StyleBoxFlat_tn1ik")
+text = "Save"
+
+[node name="PlayerName1" type="TextEdit" parent="."]
+offset_left = 318.0
+offset_top = 371.0
+offset_right = 528.0
+offset_bottom = 409.0
+text = "elf_player"
+
+[node name="PlayerName2" type="TextEdit" parent="."]
+offset_left = 1337.0
+offset_top = 386.0
+offset_right = 1547.0
+offset_bottom = 424.0
+text = "orc_player"
+
+[node name="Label2" type="Label" parent="."]
+offset_left = 118.0
+offset_top = 267.0
+offset_right = 210.0
+offset_bottom = 309.0
+theme_override_font_sizes/font_size = 30
+text = "Map"
+
+[node name="Label" type="Label" parent="."]
+offset_left = 108.0
+offset_top = 194.0
+offset_right = 200.0
+offset_bottom = 236.0
+theme_override_font_sizes/font_size = 30
+text = "Preset"
+
+[connection signal="item_selected" from="PresetsList" to="." method="_on_presets_list_item_selected"]
+[connection signal="pressed" from="Button" to="." method="_on_start_button_pressed"]
+[connection signal="pressed" from="Button2" to="." method="_on_save_button_pressed"]

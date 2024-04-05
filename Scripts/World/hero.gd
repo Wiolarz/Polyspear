@@ -17,9 +17,9 @@ var target_tile : HexTile
 
 
 func trade(another_hero : Hero):
-    print("trade menu")
+	print("trade menu")
 
 
 func move(target : HexTile):
-    target_tile = target
+	target_tile = target
 

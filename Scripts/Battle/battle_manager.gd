@@ -286,6 +286,7 @@ func get_battle_result() -> bool:
 func close_battle() -> void:
 	# delete all data related to battle
 	IM.switch_camera()
+	battle_ui.hide()
 
 	B_GRID.reset_data()
 	

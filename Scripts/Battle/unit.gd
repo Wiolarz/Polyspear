@@ -44,7 +44,7 @@ func _physics_process(_delta):
 	#if target_rotation != rotation:
 		#rotation = move_toward(rotation, target_rotation, 0.1)
 	
-	if target_tile != null:	
+	if target_tile != null:
 		if BUS.animation_speed == BUS.animation_speed_values.INSTANT:
 			position = target_tile.position
 		else:
