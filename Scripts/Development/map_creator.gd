@@ -50,7 +50,6 @@ func _create_button(box : BoxContainer, map_tile : String):
 
 	box.add_child(new_button)
 	var lambda = func on_click():
-		print("test")
 		current_brush = tile
 	
 	new_button.pressed.connect(lambda)  # self._button_pressed
@@ -152,7 +151,7 @@ func _toggle_menu_status():
 
 func _on_load_map_pressed():
 
-	var map_to_load = load("res://Resources/" + load_box_input.text + ".tres")
+	var map_to_load = load("res://Resources/World/" + load_box_input.text + ".tres")
 	assert(map_to_load != null, "there is no selected map to be loaded")
 	WM.close_world()
 	BM.close_battle()

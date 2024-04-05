@@ -63,7 +63,7 @@ func apply_template(dataTemplate : DataUnit):
 	get_node("sprite_unit").texture = load(dataTemplate.texture_path)
 	for dir in range(0,6):
 		Symbols[dir] = unitStats.symbols[dir].type
-		print("dir ",dir," template ",unitStats.symbols[dir].type, " set ",Symbols[dir] )
+		#print("dir ",dir," template ",unitStats.symbols[dir].type, " set ",Symbols[dir] )
 		var symbol_sprite = get_node("Symbols")\
 			.get_children()[dir].get_child(0).get_child(0)
 		var tex = unitStats.symbols[dir].texture_path

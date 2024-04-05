@@ -32,6 +32,8 @@ enum camera_position {WORLD, BATTLE}
 var current_camera_position = camera_position.WORLD
 
 
+var raging_battle : bool
+
 #region Game setup
 
 func get_active_players() -> Array[Player]:
@@ -59,15 +61,14 @@ func switch_camera():
 
 
 func grid_input_listener(cord : Vector2i):
-	print("tile ",cord)
+	#print("tile ",cord)
 	#if WM.current_player.bot_engine != null:
 	#    return # its a bot turn
-	print(cord)
 	if draw_mode:
 		get_node("/root/MainScene/DrawMenu").grid_input(cord)
 		return
 	
-	if WM.raging_battle:
+	if raging_battle:
 		BM.grid_input(cord)
 	else:
 		WM.grid_input(cord)

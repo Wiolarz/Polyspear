@@ -277,6 +277,12 @@ func unit_action(unit : AUnit) -> void:
 
 #region End Battle
 
+func get_battle_result() -> bool:
+	# TODO TEMP
+	# Add option to return "ongoing"
+	return true
+
+
 func close_battle() -> void:
 	# delete all data related to battle
 	IM.switch_camera()
@@ -396,7 +402,7 @@ func display_unit_summon_cards(shown_participant : Player = current_participant)
 
 func start_battle(new_armies : Array[Army], battle_map : BattleMap) -> void:
 	battle_ui.show()
-	WM.raging_battle = true
+	IM.raging_battle = true
 	battle_is_ongoing = true
 	battling_armies = new_armies
 

@@ -125,22 +125,9 @@ func spawn_tiles() -> void:
 				grid[data_x][data_y].apply_data(new_tile)  # texture + game logic applied
 
 			# Debug information
-			match new_tile.type:  
-				#region World Grid
-				"sentinel":
-					new_tile.name = "Sentinel_HexTile"
 
-				"empty":
-					new_tile.name = "Empty_HexTile"
-			
-				"wall":
-					new_tile.name = "Wall_HexTile"
-				"city":
-					new_tile.name = "City_HexTile"
-				#endregion
-				#region Battle Grid
+			new_tile.name = new_tile.type + "_HexTile_" + str(new_tile.cord)
 
-				#endregion
 
 
 func is_gameplay_tile(x : int, y : int, bOddRow : bool) -> bool:

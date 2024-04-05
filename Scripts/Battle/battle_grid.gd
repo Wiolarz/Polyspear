@@ -62,12 +62,12 @@ func adjacent_units(start_cord : Vector2i) -> Array:
 func get_shot_target(start_cord : Vector2i, side : int) -> AUnit:
 	while tile_grid[start_cord.x][start_cord.y].type != "sentinel":
 		start_cord += DIRECTIONS[side]
-		print("checking ",start_cord)
+		#print("checking ",start_cord)
 		var target = unit_grid[start_cord.x][start_cord.y]
 		if target != null:
-			print("hit @",start_cord)
+			#print("hit @",start_cord)
 			return target
-	print("missed")
+	#print("missed")
 	return null
 
 
