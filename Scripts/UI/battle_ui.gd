@@ -13,6 +13,8 @@ var selected_unit_army_idx : int = -1
 
 var current_player : Player = null
 
+const UNIT_SCENE_TEMPLATE = "res://Scenes/Form/UnitForm.tscn"
+const BUTTON_TEXTURE:Texture2D = preload("res://Art/battle_map/grass.png")
 func _ready():
 	pass
 
@@ -39,9 +41,12 @@ func on_player_selected(selectedPlayer : Player, preview : bool = false):
 	for unitId : int in range(0, army.units_data.size()):
 		var unit : DataUnit = army.units_data[unitId]
 		var b = TextureButton.new()
-		b.texture_normal = load(unit.texture_path)
+		b.texture_normal = BUTTON_TEXTURE
 		# idea to add unit scenes as buttons child to display unit symbols properly, then reparent them to battle manager once they are in the scene
-		# b.add_child(load("res://Scenes/Units/elf/Archer.tscn").instantiate())
+		var unit_scene : AUnit = load(UNIT_SCENE_TEMPLATE).instantiate()
+		unit_scene.position = b.texture_normal.get_size()/2
+		unit_scene.apply_template(unit)
+		b.add_child(unit_scene)
 		units_box.add_child(b)
 		var lambda = func on_click():
 			if (current_player != army.controller):
