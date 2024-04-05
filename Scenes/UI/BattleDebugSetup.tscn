@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=3 uid="uid://cx1ypmps7i3tn"]
 
-[ext_resource type="Script" path="res://Scripts/Development/ui_battle_debug_setup.gd" id="1_m3h17"]
+[ext_resource type="Script" path="res://Scripts/Development/battle_debug_setup.gd" id="1_m3h17"]
 [ext_resource type="Resource" uid="uid://byhcrnn41k1aa" path="res://Resources/Tests/Battle_setups/pvp_EvsO_basic.tres" id="2_ahbvw"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_5oah4"]
