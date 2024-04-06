@@ -8,24 +8,22 @@ extends CanvasLayer
 @export var battle_setup : CanvasLayer
 @export var world_setup : WorldSetup  # temporary solution
 
-
-@export var players : Array[Player]
 @export var world_map : WorldMap
 
 
 func _on_test_game_pressed():
 	assert(world_setup != null, "No game setup")
 
-	players = []
+	var players : Array[Player] = []
 	for player_set in world_setup.player_settings:
 		var player = player_set.create_player()
 		players.append(player)
 
 	world_map = world_setup.world_map
 
-	start_game()
+	start_game(players)
 
-func start_game():
+func start_game(players:Array[Player] = []):
 	toggle_menu_visibility()
 	IM.players = players
 	WM.start_world(world_setup.world_map)

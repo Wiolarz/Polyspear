@@ -12,6 +12,13 @@ var current_spawn : String = "sentinel"
 
 #region Tools
 
+func get_all_field_coords() -> Array[Vector2i]:
+	var result : Array[Vector2i] = []
+	for x in range(grid_width):
+		for y in range(grid_height):
+			result.append(Vector2i(x,y))
+	return result
+
 func change_unit_cord(unit, cord : Vector2i):
 
 	unit_grid[unit.cord.x][unit.cord.y] = null# clean your previous location

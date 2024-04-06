@@ -9,6 +9,10 @@ const PRESETS_PATH = "res://Resources/Tests/Battle_setups/"
 	$PlayerName1,
 	$PlayerName2,
 ]
+@onready var player_is_ai: Array[CheckBox] = [
+	$IsAI1,
+	$IsAI2,
+]
 @onready var units_lists = [ # Array[Array[OptionButton]]
 	[
 		$UnitsList1_1,
@@ -105,11 +109,13 @@ func _get_options_for_army(idx : int) -> Array[OptionButton]:
 func _on_start_button_pressed() -> void:
 	var map = load(maps_list.get_item_text(maps_list.selected))
 	var armies : Array[Army] = []
-	IM.players = []
-	IM.players.append(_create_player(player_names[0].text))
-	IM.players.append(_create_player(player_names[1].text))
-	armies.append(_create_army(_get_options_for_army(0), IM.players[0]))
-	armies.append(_create_army(_get_options_for_army(1), IM.players[1]))
+	var players: Array[Player] = []
+	for playerIdx in range(2):
+		var player = _create_player(player_names[playerIdx].text)
+		player.use_bot(player_is_ai[playerIdx].button_pressed)
+		players.append(player)
+		armies.append(_create_army(_get_options_for_army(playerIdx), player))
+	IM.players = players
 	BM.start_battle(armies, map)
 	hide()
 
