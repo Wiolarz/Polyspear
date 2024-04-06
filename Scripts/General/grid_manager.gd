@@ -9,9 +9,10 @@ var map_information : GridBoard
 
 
 # Hex Sprite draw gaps
-const TileHorizontalOffset : float = 510.0
-const TileVerticalOffset : float = 470.1
-const OddRowHorizontalOffset : float = 250.0
+const visual_empty_border = 11.0
+const TileHorizontalOffset : float = 529.0 + visual_empty_border # current sprite size 529
+const TileVerticalOffset : float = (608 + visual_empty_border) * 0.75
+const OddRowHorizontalOffset : float = TileHorizontalOffset / 2
 
 # const TileHorizontalOffset : float = 700.0
 # const TileVerticalOffset : float = 606.2

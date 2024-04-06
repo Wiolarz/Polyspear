@@ -34,15 +34,49 @@ func turn(side : int):
 	
 	# 360 / 6 = 60 -> degrees needed to rotate unit
 	# "Direction + 4" Accounts for global rotation setting for objects in the level
-	rotation = deg_to_rad((60 * (side)))
+
+	target_rotation = (60 * (side))
+	#rotation = deg_to_rad((60 * (side)))
+
 	#print(rotation, "   ", target_rotation)
 
 func move(target : HexTile):
 	target_tile = target
 
 func _physics_process(_delta):
-	#if target_rotation != rotation:
+	if 0.1 < abs(rotation_degrees - target_rotation):
+		#var p_direction =
+		#fmod(rad_to_deg(global_position.angle_to_point(player.global_position)) + 360, 360) # - 360
+		# fmod = float modulo %
+
+		var current_rotation = fmod(rotation_degrees + 360, 360)
+		var relative_rotation = target_rotation - current_rotation
+
+
+		#print(relative_rotation, "  ", p_direction, "   ", current_rotation)
+
+		if relative_rotation < 0:
+			relative_rotation += 360
+
+		if relative_rotation > 180:
+			relative_rotation -= 360
+
+
+
+
+		#body.direction_change(clamp(relative_rotation, -1, 1))
+
+		var rotation_speed = 5.0
+		var this_frame_rotation = clamp(relative_rotation, -1, 1) * rotation_speed
+		if abs(relative_rotation) < abs(this_frame_rotation):
+			rotation = deg_to_rad(target_rotation)
+		else:
+			rotation += deg_to_rad(this_frame_rotation)
 		#rotation = move_toward(rotation, target_rotation, 0.1)
+
+		$sprite_unit.rotation = -rotation
+
+		return # so that unit first rotates then moves
 	
 	if target_tile != null:
 		if BUS.animation_speed == BUS.animation_speed_values.INSTANT:
