@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=3 uid="uid://bi1yq2awm2kc0"]
 
-[ext_resource type="Script" path="res://Scripts/UI/fdebug_manager.gd" id="1_py7q0"]
+[ext_resource type="Script" path="res://Scripts/UI/debug_manager.gd" id="1_py7q0"]
 [ext_resource type="Script" path="res://Scripts/UI/save_system.gd" id="2_hnyc1"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fdxbp"]
