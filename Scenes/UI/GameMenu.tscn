@@ -1,7 +1,13 @@
-[gd_scene load_steps=3 format=3 uid="uid://bi1yq2awm2kc0"]
+[gd_scene load_steps=5 format=3 uid="uid://bi1yq2awm2kc0"]
 
 [ext_resource type="Script" path="res://Scripts/UI/Game_Logic/debug_manager.gd" id="1_py7q0"]
 [ext_resource type="Script" path="res://Scripts/UI/Game_Logic/save_system.gd" id="2_hnyc1"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fdxbp"]
+bg_color = Color(0.172549, 0.290196, 0.180392, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_p527t"]
+bg_color = Color(0.419608, 0.113725, 0.129412, 1)
 
 [node name="UI" type="CanvasLayer"]
 process_mode = 3
@@ -30,20 +36,19 @@ text = "Back to game"
 
 [node name="WinBattle" type="Button" parent="MenuContainer"]
 layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_fdxbp")
 text = "Win battle"
 
 [node name="Surrender" type="Button" parent="MenuContainer"]
 layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_p527t")
 text = "Surrender
 "
 
 [node name="Restart" type="Button" parent="MenuContainer"]
+visible = false
 layout_mode = 2
 text = "Restart"
-
-[node name="ReturnToMainMenu" type="Button" parent="MenuContainer"]
-layout_mode = 2
-text = "Return To Main Menu"
 
 [node name="FullScreen" type="Button" parent="MenuContainer"]
 layout_mode = 2
@@ -53,6 +58,10 @@ text = "Turn on/off full screen"
 layout_mode = 2
 text = "Quit"
 
+[node name="ReturnToMainMenu" type="Button" parent="MenuContainer"]
+layout_mode = 2
+text = "Return To Main Menu"
+
 [node name="save_system" type="Node" parent="."]
 script = ExtResource("2_hnyc1")
 
@@ -60,6 +69,6 @@ script = ExtResource("2_hnyc1")
 [connection signal="pressed" from="MenuContainer/WinBattle" to="Menu" method="_on_win_battle_pressed"]
 [connection signal="pressed" from="MenuContainer/Surrender" to="Menu" method="_on_surrender_pressed"]
 [connection signal="pressed" from="MenuContainer/Restart" to="Menu" method="_on_restart_pressed"]
-[connection signal="pressed" from="MenuContainer/ReturnToMainMenu" to="Menu" method="_on_return_to_main_menu_pressed"]
 [connection signal="pressed" from="MenuContainer/FullScreen" to="Menu" method="_on_full_screen_pressed"]
 [connection signal="pressed" from="MenuContainer/Quit" to="Menu" method="_on_quit_pressed"]
+[connection signal="pressed" from="MenuContainer/ReturnToMainMenu" to="Menu" method="_on_return_to_main_menu_pressed"]

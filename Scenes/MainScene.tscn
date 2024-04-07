@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://os75hnii4k0w"]
+[gd_scene load_steps=10 format=3 uid="uid://os75hnii4k0w"]
 
 [ext_resource type="PackedScene" uid="uid://bi1yq2awm2kc0" path="res://Scenes/UI/GameMenu.tscn" id="1_jo11t"]
 [ext_resource type="Script" path="res://Scripts/General/camera.gd" id="2_svb1r"]
@@ -7,7 +7,8 @@
 [ext_resource type="Resource" uid="uid://byhcrnn41k1aa" path="res://Resources/Tests/Battle_setups/pvp_EvsO_basic.tres" id="5_2fgww"]
 [ext_resource type="PackedScene" uid="uid://l0kojvcxbfky" path="res://Scenes/UI/DrawMenu.tscn" id="6_6kfr8"]
 [ext_resource type="PackedScene" uid="uid://b4ndp6v0ts1on" path="res://Scenes/UI/MainMenu.tscn" id="6_yyega"]
-[ext_resource type="PackedScene" uid="uid://bawliiem6bw0u" path="res://Scenes/UI/BattleUI.tscn" id="8_hpk6v"]
+[ext_resource type="PackedScene" uid="uid://cx1ypmps7i3tn" path="res://Scenes/UI/BattleDebugSetup.tscn" id="9_62vgl"]
+[ext_resource type="PackedScene" uid="uid://dy1m42bfkq2wv" path="res://Scenes/Editors/UnitEditor.tscn" id="9_ik2pb"]
 
 [node name="MainScene" type="Node"]
 
@@ -20,10 +21,12 @@ position = Vector2(4741, 1779)
 zoom = Vector2(0.3, 0.3)
 script = ExtResource("2_svb1r")
 
-[node name="MainMenu" parent="." node_paths=PackedStringArray("maunual_tester", "map_creator") instance=ExtResource("6_yyega")]
+[node name="MainMenu" parent="." node_paths=PackedStringArray("maunual_tester", "map_creator", "unit_editor", "battle_setup") instance=ExtResource("6_yyega")]
 editor_description = "Main interface"
 maunual_tester = NodePath("../GeneralTest")
 map_creator = NodePath("../DrawMenu")
+unit_editor = NodePath("../UnitEditor")
+battle_setup = NodePath("../BattleDebugSetup")
 world_setup = ExtResource("3_yxa6s")
 
 [node name="GeneralTest" type="Node" parent="."]
@@ -34,4 +37,8 @@ test_battle_setup = ExtResource("5_2fgww")
 [node name="DrawMenu" parent="." instance=ExtResource("6_6kfr8")]
 visible = false
 
-[node name="BattleUI" parent="." instance=ExtResource("8_hpk6v")]
+[node name="UnitEditor" parent="." instance=ExtResource("9_ik2pb")]
+visible = false
+
+[node name="BattleDebugSetup" parent="." instance=ExtResource("9_62vgl")]
+visible = false

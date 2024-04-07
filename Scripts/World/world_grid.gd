@@ -61,8 +61,28 @@ func get_city(cord : Vector2i) -> City:
 		return city
 	return null
 
+
 func get_hero(cord : Vector2i):
 	return unit_grid[cord.x][cord.y]
+
+
+func is_enemy_present(cord : Vector2i, player):
+	if get_tile_controller(cord) == player:
+		return false
+	if get_army(cord) == null:
+		return false 
+	return true
+
+
+func get_interactable_type(cord : Vector2i) -> String:
+	var city = get_city(cord)
+	if city != null:
+		return "city"
+	var army = get_army(cord)
+	if army != null:
+		return "army"
+	
+	return "empty"
 
 #endregion
 

@@ -9,9 +9,10 @@ var map_information : GridBoard
 
 
 # Hex Sprite draw gaps
-const TileHorizontalOffset : float = 510.0
-const TileVerticalOffset : float = 470.1
-const OddRowHorizontalOffset : float = 250.0
+const visual_empty_border = 11.0
+const TileHorizontalOffset : float = 529.0 + visual_empty_border # current sprite size 529
+const TileVerticalOffset : float = (608 + visual_empty_border) * 0.75
+const OddRowHorizontalOffset : float = TileHorizontalOffset / 2
 
 # const TileHorizontalOffset : float = 700.0
 # const TileVerticalOffset : float = 606.2
@@ -25,12 +26,13 @@ const border_size : int = 1  # Thickness of a Sentinel perimiter around the game
 
 
 static var DIRECTIONS = [ \
+	Vector2i(-1, 0),
+	Vector2i(0, -1),
+	Vector2i(1, -1),
 	Vector2i(1, 0),
 	Vector2i(0, 1),
 	Vector2i(-1, 1),
-	Vector2i(-1, 0),
-	Vector2i(0, -1),
-	Vector2i(1, -1)]
+]
 
 
 
@@ -45,7 +47,7 @@ static func is_adjacent(Cord1 : Vector2i, Cord2 : Vector2i) -> bool:
 static func adjacent_side(Cord1 : Vector2i, Cord2 : Vector2i) -> int:
 	"""
 	Return shared side between Cord1 and Cord2, if the Cords are adjacent
-
+	Side from Coord1 perspective
 	@param Cord1 
 	@param Cord2 
 	@return int32 Side
@@ -66,7 +68,8 @@ static func adjacent_cord(BaseCord : Vector2i, Side : int) -> Vector2i:
 	"""
 	return BaseCord + DIRECTIONS[Side]
 
-
+func tile_at(coord:Vector2i):
+	return tile_grid[coord.x][coord.y]
 #endregion
 
 #region Generate Grid
@@ -124,22 +127,9 @@ func spawn_tiles() -> void:
 				grid[data_x][data_y].apply_data(new_tile)  # texture + game logic applied
 
 			# Debug information
-			match new_tile.type:  
-				#region World Grid
-				"sentinel":
-					new_tile.name = "Sentinel_HexTile"
 
-				"empty":
-					new_tile.name = "Empty_HexTile"
-			
-				"wall":
-					new_tile.name = "Wall_HexTile"
-				"city":
-					new_tile.name = "City_HexTile"
-				#endregion
-				#region Battle Grid
+			new_tile.name = new_tile.type + "_HexTile_" + str(new_tile.cord)
 
-				#endregion
 
 
 func is_gameplay_tile(x : int, y : int, bOddRow : bool) -> bool:

@@ -3,27 +3,27 @@ extends CanvasLayer
 @export var maunual_tester : GeneralTest
 
 @export var map_creator : CanvasLayer
+@export var unit_editor : CanvasLayer
 
+@export var battle_setup : CanvasLayer
 @export var world_setup : WorldSetup  # temporary solution
 
-
-@export var players : Array[Player]
 @export var world_map : WorldMap
 
 
 func _on_test_game_pressed():
 	assert(world_setup != null, "No game setup")
 
-	players = []
+	var players : Array[Player] = []
 	for player_set in world_setup.player_settings:
 		var player = player_set.create_player()
 		players.append(player)
 
 	world_map = world_setup.world_map
 
-	start_game()
+	start_game(players)
 
-func start_game():
+func start_game(players:Array[Player] = []):
 	toggle_menu_visibility()
 	IM.players = players
 	WM.start_world(world_setup.world_map)
@@ -59,3 +59,13 @@ func _on_test_world_pressed():
 
 
 #endregion
+
+
+func _on_unit_editor_pressed():
+	unit_editor.visible = !unit_editor.visible
+	toggle_menu_visibility()
+
+
+func _on_test_battle_with_setup_pressed():
+	battle_setup.visible = !battle_setup.visible
+	toggle_menu_visibility()

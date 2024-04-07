@@ -15,10 +15,10 @@ offset_bottom = 1071.0
 
 [node name="StartGame" type="Button" parent="Control"]
 layout_mode = 0
-offset_left = -746.0
-offset_top = 58.0
-offset_right = -636.0
-offset_bottom = 112.0
+offset_left = -1039.0
+offset_top = 102.0
+offset_right = -929.0
+offset_bottom = 156.0
 scale = Vector2(6.2, 5.88)
 text = "(placeholder)
 Start Game
@@ -33,6 +33,15 @@ scale = Vector2(6.2, 5.88)
 text = "Test Battle
 "
 
+[node name="TestBattleWithSetup" type="Button" parent="Control"]
+layout_mode = 0
+offset_top = 476.0
+offset_right = 96.0
+offset_bottom = 507.0
+scale = Vector2(6.2, 5.88)
+text = "Test Battle
+with setup"
+
 [node name="TestWorld" type="Button" parent="Control"]
 layout_mode = 0
 offset_left = 4.0
@@ -44,10 +53,10 @@ text = "Test World"
 
 [node name="MapCreator" type="Button" parent="Control"]
 layout_mode = 0
-offset_left = -354.0
-offset_top = 669.0
-offset_right = -199.0
-offset_bottom = 700.0
+offset_left = -1271.0
+offset_top = 847.0
+offset_right = -1149.0
+offset_bottom = 878.0
 scale = Vector2(6.2, 5.88)
 text = "Map Creator
 "
@@ -172,11 +181,22 @@ offset_top = -1.52588e-05
 offset_bottom = -3.05176e-05
 text = "Zdzichu"
 
+[node name="UnitEditor" type="Button" parent="Control"]
+layout_mode = 0
+offset_left = -1279.0
+offset_top = 646.0
+offset_right = -1154.0
+offset_bottom = 677.0
+scale = Vector2(6.2, 5.88)
+text = "Unit Editor"
+
 [connection signal="pressed" from="Control/StartGame" to="." method="_on_test_game_pressed"]
 [connection signal="pressed" from="Control/TestBattle" to="." method="_on_test_battle_pressed"]
+[connection signal="pressed" from="Control/TestBattleWithSetup" to="." method="_on_test_battle_with_setup_pressed"]
 [connection signal="pressed" from="Control/TestWorld" to="." method="_on_test_world_pressed"]
 [connection signal="pressed" from="Control/MapCreator" to="." method="_on_map_creator_pressed"]
 [connection signal="pressed" from="Control2/ButtonListen" to="Control2" method="start_server"]
 [connection signal="pressed" from="Control2/ButtonStopServer" to="Control2" method="stop_server"]
 [connection signal="pressed" from="Control2/ButtonClientConnect" to="Control2" method="client_connect"]
 [connection signal="pressed" from="Control2/ButtonClientDisconnect" to="Control2" method="client_disconnect"]
+[connection signal="pressed" from="Control/UnitEditor" to="." method="_on_unit_editor_pressed"]

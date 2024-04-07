@@ -15,14 +15,6 @@ if the AI plays the move:
 	2 in multi GAME HOST only sends the call to AI for it to make a move 
 
 
-
-
-
-
-
-
-
-
 where do we call AI?
 
 there is an end turn function "switch player" it could call the input manager to let it now who the current player is
@@ -31,7 +23,18 @@ there is an end turn function "switch player" it could call the input manager to
 """
 var timer = 0
 
-var players : Array[Player] = []
+var _players : Array[Player] = []
+var players : Array[Player] : 
+	get: 
+		return _players
+	set(value):
+		for p in _players:
+			print("removing child")
+			remove_child(p)
+		for p in value:
+			print("adding child")
+			add_child(p)
+		_players = value
 
 var draw_mode : bool = false
 
@@ -39,6 +42,8 @@ var draw_mode : bool = false
 enum camera_position {WORLD, BATTLE}
 var current_camera_position = camera_position.WORLD
 
+
+var raging_battle : bool
 
 #region Game setup
 
@@ -67,15 +72,14 @@ func switch_camera():
 
 
 func grid_input_listener(cord : Vector2i):
-	
+	#print("tile ",cord)
 	#if WM.current_player.bot_engine != null:
 	#    return # its a bot turn
-	
 	if draw_mode:
 		get_node("/root/MainScene/DrawMenu").grid_input(cord)
 		return
 	
-	if WM.raging_battle:
+	if raging_battle:
 		BM.grid_input(cord)
 	else:
 		WM.grid_input(cord)
@@ -148,3 +152,27 @@ func _physics_process(_delta):
 	
 	# 60FPS -> timer=60 1 sec
 
+
+func server_connection() -> bool:
+	return false
+
+func multiplayer_send():
+	# CLIENT -> server
+	if not server_connection:
+		return
+	
+	pass
+
+
+func multiplayer_receive():
+	# client -> SERVER 
+	pass
+
+
+func multiplayer_broadcast_send():
+	# SERVER -> clients
+	pass
+
+func multiplayer_broadcast_receive():
+	# server -> CLIENT 
+	pass

@@ -49,7 +49,7 @@ type = "wall"
 script = ExtResource("1_g6hww")
 texture_path = "res://Art/world_map/elven_city.png"
 flip_horizontal = false
-type = "city"
+type = "elf_city"
 
 [sub_resource type="Resource" id="Resource_5qbhi"]
 script = ExtResource("1_g6hww")
@@ -175,7 +175,7 @@ type = "empty"
 script = ExtResource("1_g6hww")
 texture_path = "res://Art/world_map/orc_city.png"
 flip_horizontal = false
-type = "city"
+type = "orc_city"
 
 [sub_resource type="Resource" id="Resource_fq2df"]
 script = ExtResource("1_g6hww")
