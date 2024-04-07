@@ -63,7 +63,7 @@ func adjacent_units(start_cord : Vector2i) -> Array:
 	return units
 
 
-func get_shot_target(start_cord : Vector2i, side : int) -> AUnit:
+func get_shot_target(start_cord : Vector2i, side : int) -> Unit:
 	while tile_grid[start_cord.x][start_cord.y].type != "sentinel":
 		start_cord += DIRECTIONS[side]
 		#print("checking ",start_cord)
@@ -75,7 +75,7 @@ func get_shot_target(start_cord : Vector2i, side : int) -> AUnit:
 	return null
 
 
-func get_distant_unit(start_cord : Vector2i, side : int, distance : int) -> AUnit:
+func get_distant_unit(start_cord : Vector2i, side : int, distance : int) -> Unit:
 	for i in range(distance):
 		start_cord += DIRECTIONS[side]
 	
@@ -96,7 +96,7 @@ func get_distant_cord(start_cord : Vector2i, side : int, distance : int) -> Vect
 	return start_cord
 
 
-# func get_melee_targets(start_Cord : Vector2i, direction, symbol_side : int) -> Array[AUnit]:
+# func get_melee_targets(start_Cord : Vector2i, direction, symbol_side : int) -> Array[Unit]:
 # 	"""
 # 	AI/UI tool
 # 	take a side on which a weapon symbol is present -> simulate movement -> return list of damaged targets
@@ -105,7 +105,7 @@ func get_distant_cord(start_cord : Vector2i, side : int, distance : int) -> Vect
 # 	direction : int / Vector2i
 
 # 	"""
-# 	var units : Array[AUnit] = []
+# 	var units : Array[Unit] = []
 	
 # 	return units
 

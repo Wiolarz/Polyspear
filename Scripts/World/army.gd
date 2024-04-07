@@ -5,7 +5,7 @@ var hero : Hero
 
 var units_data : Array[DataUnit]
 
-var units : Array[AUnit]
+var units : Array[Unit]
 
 var controller : Player
 

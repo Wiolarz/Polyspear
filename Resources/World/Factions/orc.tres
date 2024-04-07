@@ -1,9 +1,8 @@
-[gd_resource type="Resource" script_class="Faction" load_steps=3 format=3 uid="uid://blmlq31auuhh0"]
+[gd_resource type="Resource" script_class="Faction" load_steps=2 format=3 uid="uid://blmlq31auuhh0"]
 
-[ext_resource type="PackedScene" uid="uid://ck5q8s1q7qpeb" path="res://Scenes/Heroes/OrcHero.tscn" id="1_2aqtt"]
 [ext_resource type="Script" path="res://Resources/faction.gd" id="1_iksfp"]
 
 [resource]
 script = ExtResource("1_iksfp")
 units_data = Array[Resource("res://Resources/Battle/data_unit.gd")]([])
-heroes = Array[PackedScene]([ExtResource("1_2aqtt")])
+heroes = Array[PackedScene]([null])
