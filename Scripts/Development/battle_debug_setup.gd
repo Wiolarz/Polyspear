@@ -1,8 +1,14 @@
 extends CanvasLayer
 
+
 const MAPS_PATH = "res://Resources/Battle/Battle_Maps/"
 const UNITS_PATH = "res://Resources/Battle/Units/"
 const PRESETS_PATH = "res://Resources/Tests/Battle_setups/"
+
+
+@export var default_battle_setup : BattleSetup
+
+var current_preset: BattleSetup
 
 @onready var maps_list : OptionButton = $MapsList
 @onready var player_names: Array[TextEdit] = [
@@ -30,10 +36,7 @@ const PRESETS_PATH = "res://Resources/Tests/Battle_setups/"
 	]
 ]
 
-
 @onready var presets_list: OptionButton = $PresetsList
-@export var default_battle_setup : BattleSetup
-var  current_preset: BattleSetup
 
 
 #region Main methods

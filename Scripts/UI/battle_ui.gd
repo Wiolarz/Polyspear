@@ -88,7 +88,8 @@ func load_armies(army_list : Array[Army]):
 
 func unit_summoned(summon_phase_end : bool):
 	var army = get_army(current_player)
-	army.units_data.remove_at(selected_unit_army_idx)
+	if selected_unit_army_idx >= 0: # TEMP for AI
+		army.units_data.remove_at(selected_unit_army_idx)
 	selected_unit = null
 	selected_button = null
 	selected_unit_army_idx = -1

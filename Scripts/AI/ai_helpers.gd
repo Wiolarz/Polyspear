@@ -1,5 +1,5 @@
-extends Object
-class_name AIHelpers
+class_name AIHelpers extends Object
+
 
 static func get_all_legal_moves(my_units : Array, me:Player) -> Array[MoveInfo]:
 	"""
@@ -35,11 +35,12 @@ static func get_all_kill_moves(all_moves: Array[MoveInfo], me : Player) -> Array
 	
 	return all_kill_moves
 
+
 static func is_kill_move(move : MoveInfo, me : Player) -> bool:
 	"""  
-		Only moves that kill something pass this filter.
-		Note: Moving into enemy hex is a kill
-		as only legal moves are allowed here
+	Only moves that kill something pass this filter.
+	Note: Moving into enemy hex is a kill
+	as only legal moves are allowed here
 	"""
 	if move.move_type != MoveInfo.TYPE_MOVE:
 		return false
@@ -50,7 +51,7 @@ static func is_kill_move(move : MoveInfo, me : Player) -> bool:
 		return true
 	
 	# BOW
-	var move_direction = GridManager.adjacent_side(\
+	var move_direction = GridManager.adjacent_side( \
 			move.move_source, move.target_tile_coord);
 	for side in range(6):
 		if B_GRID.get_unit(move.move_source).get_symbol(side) != E.Symbols.BOW:
@@ -62,7 +63,7 @@ static func is_kill_move(move : MoveInfo, me : Player) -> bool:
 	return false
 
 
-static func get_all_spawn_moves(me:Player) -> Array[MoveInfo]:
+static func get_all_spawn_moves(me : Player) -> Array[MoveInfo]:
 	"""
 	Compares every possible directions for all units using:
 	1 Check for friendly units placements
@@ -75,6 +76,6 @@ static func get_all_spawn_moves(me:Player) -> Array[MoveInfo]:
 	var units = BM.get_not_summoned_units(me)
 	for unit in units:
 		for spawn_tile in spawn_tiles:
-			legal_moves.append( MoveInfo.make_summon(unit, spawn_tile.cord))
+			legal_moves.append(MoveInfo.make_summon(unit, spawn_tile.cord))
 	
 	return legal_moves
