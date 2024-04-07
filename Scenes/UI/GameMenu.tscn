@@ -46,12 +46,9 @@ text = "Surrender
 "
 
 [node name="Restart" type="Button" parent="MenuContainer"]
+visible = false
 layout_mode = 2
 text = "Restart"
-
-[node name="ReturnToMainMenu" type="Button" parent="MenuContainer"]
-layout_mode = 2
-text = "Return To Main Menu"
 
 [node name="FullScreen" type="Button" parent="MenuContainer"]
 layout_mode = 2
@@ -61,6 +58,10 @@ text = "Turn on/off full screen"
 layout_mode = 2
 text = "Quit"
 
+[node name="ReturnToMainMenu" type="Button" parent="MenuContainer"]
+layout_mode = 2
+text = "Return To Main Menu"
+
 [node name="save_system" type="Node" parent="."]
 script = ExtResource("2_hnyc1")
 
@@ -68,6 +69,6 @@ script = ExtResource("2_hnyc1")
 [connection signal="pressed" from="MenuContainer/WinBattle" to="Menu" method="_on_win_battle_pressed"]
 [connection signal="pressed" from="MenuContainer/Surrender" to="Menu" method="_on_surrender_pressed"]
 [connection signal="pressed" from="MenuContainer/Restart" to="Menu" method="_on_restart_pressed"]
-[connection signal="pressed" from="MenuContainer/ReturnToMainMenu" to="Menu" method="_on_return_to_main_menu_pressed"]
 [connection signal="pressed" from="MenuContainer/FullScreen" to="Menu" method="_on_full_screen_pressed"]
 [connection signal="pressed" from="MenuContainer/Quit" to="Menu" method="_on_quit_pressed"]
+[connection signal="pressed" from="MenuContainer/ReturnToMainMenu" to="Menu" method="_on_return_to_main_menu_pressed"]

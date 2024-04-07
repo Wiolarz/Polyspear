@@ -6,6 +6,7 @@ var battle_ui : BattleUI = null
 const ATTACKER = 0
 const DEFENDER = 1
 
+const AI_MOVE_DELAY = 0.7 # seconds
 
 #region Setup variables
 
@@ -49,6 +50,8 @@ func switch_participant_turn():
 	current_participant = participants[participant_idx]
 	selected_unit = null  # disable player to move another players units
 	battle_ui.on_player_selected(current_participant)
+	if battle_is_ongoing:
+		current_participant.your_turn()
 
 
 func grid_input(cord : Vector2i) -> void:
@@ -72,10 +75,34 @@ func grid_input(cord : Vector2i) -> void:
 	move_unit(selected_unit, cord, side)
 	switch_participant_turn()
 
+func perform_ai_move( move :MoveInfo,  me: Player):
+	if move.move_type == MoveInfo.TYPE_MOVE:
+		var unit = B_GRID.get_unit(move.move_source)
+		var dir = GridManager.adjacent_side(unit.cord, move.target_tile_coord) 
+		move_unit(unit, move.target_tile_coord, dir)
+		await get_tree().create_timer(AI_MOVE_DELAY).timeout
+		switch_participant_turn()
+		return
+	if move.move_type == MoveInfo.TYPE_SUMMON:
+		summon_unit(move.summon_unit, move.target_tile_coord)
+		await get_tree().create_timer(AI_MOVE_DELAY).timeout
+		switch_participant_turn()
+		return
+	assert(false, "Move move_type not supported in perform")
+
 #endregion
 
 
 #region Tools
+
+func get_units(player:Player) -> Array[AUnit]:
+	for armyIdx in range(fighting_units.size()):
+		if participants[armyIdx] == player:
+			var typed:Array[AUnit] = []
+			typed.assign(fighting_units[armyIdx])
+			return typed
+	return []
+
 
 func select_unit(cord : Vector2i) -> bool:
 	"""
@@ -328,18 +355,19 @@ func _grid_input_summon(cord : Vector2i):
 	if battle_ui.selected_unit == null:
 		return # no unit selected
 
-	if is_legal_summon_cord(cord):
-		summon_unit(cord)
+	if is_legal_summon_cord(cord, current_participant):
+		summon_unit(battle_ui.selected_unit, cord)
 		switch_participant_turn()
 
-func is_legal_summon_cord(cord : Vector2i) -> bool:
+func is_legal_summon_cord(cord : Vector2i, player: Player) -> bool:
 	var cord_tile_type = B_GRID.get_tile_type(cord)
+	var idx = participants.find(player)
 	var is_correct_spawn =\
-		(cord_tile_type == "red_spawn" && participant_idx == 0) or \
-		(cord_tile_type == "blue_spawn"&& participant_idx == 1)
+		(cord_tile_type == "red_spawn" && idx == 0) or \
+		(cord_tile_type == "blue_spawn"&& idx == 1)
 	return is_correct_spawn and B_GRID.get_unit(cord) == null
 
-func summon_unit(cord : Vector2i) -> void:
+func summon_unit(unitData:DataUnit, cord : Vector2i) -> void:
 	"""
 		Summon currently selected unit to a Gameplay Board
 
@@ -347,7 +375,7 @@ func summon_unit(cord : Vector2i) -> void:
 	 """
 	#B_GRID.change_unit_cord(selected_unit, cord)
 	var unit : AUnit = load("res://Scenes/Form/UnitForm.tscn").instantiate()
-	unit.apply_template(battle_ui.selected_unit)
+	unit.apply_template(unitData)
 	unit.controller = current_participant
 
 	fighting_units[participant_idx].append(unit)
@@ -362,6 +390,16 @@ func summon_unit(cord : Vector2i) -> void:
 	unsummoned_units_counter -= 1
 	battle_ui.unit_summoned(unsummoned_units_counter == 0)
 
+func get_not_summoned_units(player:Player) -> Array[DataUnit]:
+	return battle_ui.get_army(player).units_data
+
+func get_summon_tiles(player:Player) -> Array[HexTile]:
+	var summon_tiles = B_GRID.get_all_field_coords()\
+		.filter(func isOk(coord) : return is_legal_summon_cord(coord, player))\
+		.map(func getTile(coord) : return B_GRID.tile_at(coord))
+	var typed:Array[HexTile] = []
+	typed.assign(summon_tiles)
+	return typed
 #endregion
 
 
@@ -417,5 +455,6 @@ func start_battle(new_armies : Array[Army], battle_map : BattleMap) -> void:
 	participant_idx = ATTACKER
 
 	spawn_units()
+	current_participant.your_turn()
 
 #endregion

@@ -23,7 +23,18 @@ there is an end turn function "switch player" it could call the input manager to
 """
 var timer = 0
 
-var players : Array[Player] = []
+var _players : Array[Player] = []
+var players : Array[Player] : 
+	get: 
+		return _players
+	set(value):
+		for p in _players:
+			print("removing child")
+			remove_child(p)
+		for p in value:
+			print("adding child")
+			add_child(p)
+		_players = value
 
 var draw_mode : bool = false
 

@@ -133,6 +133,24 @@ offset_bottom = 236.0
 theme_override_font_sizes/font_size = 30
 text = "Preset"
 
+[node name="IsAI1" type="CheckBox" parent="."]
+offset_left = 1565.0
+offset_top = 388.0
+offset_right = 1589.0
+offset_bottom = 412.0
+button_pressed = true
+text = "AI
+"
+
+[node name="IsAI2" type="CheckBox" parent="."]
+offset_left = 543.0
+offset_top = 371.0
+offset_right = 587.0
+offset_bottom = 402.0
+button_pressed = true
+text = "AI
+"
+
 [connection signal="item_selected" from="PresetsList" to="." method="_on_presets_list_item_selected"]
 [connection signal="pressed" from="Button" to="." method="_on_start_button_pressed"]
 [connection signal="pressed" from="Button2" to="." method="_on_save_button_pressed"]
