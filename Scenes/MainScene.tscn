@@ -2,7 +2,7 @@
 
 [ext_resource type="PackedScene" uid="uid://bi1yq2awm2kc0" path="res://Scenes/UI/GameMenu.tscn" id="1_jo11t"]
 [ext_resource type="Script" path="res://Scripts/General/camera.gd" id="2_svb1r"]
-[ext_resource type="Script" path="res://Scripts/Manual Tests/general_test.gd" id="3_p68en"]
+[ext_resource type="Script" path="res://Scripts/Development/general_test.gd" id="3_p68en"]
 [ext_resource type="Resource" uid="uid://c0xnyv5cb6g8h" path="res://Resources/Tests/World_Setups/2H_OvE_basic.tres" id="3_yxa6s"]
 [ext_resource type="Resource" uid="uid://byhcrnn41k1aa" path="res://Resources/Tests/Battle_setups/pvp_EvsO_basic.tres" id="5_2fgww"]
 [ext_resource type="PackedScene" uid="uid://l0kojvcxbfky" path="res://Scenes/UI/DrawMenu.tscn" id="6_6kfr8"]

@@ -1,4 +1,4 @@
-class_name AUnit
+class_name Unit
 
 extends Node2D
 

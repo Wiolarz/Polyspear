@@ -2,7 +2,7 @@ extends CanvasLayer
 
 @export var  unitToTest : DataUnit
 
-@onready var unit: AUnit = $Unit
+@onready var unit: Unit = $Unit
 
 var current_unit_path : String = ""
 

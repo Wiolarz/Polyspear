@@ -23,9 +23,4 @@ enum animation_speed_values
 var animation_speed : animation_speed_values = animation_speed_values.NORMAL 
 
 
-
-signal collect_save_data(save : Save)
-signal load_game(save : Save)
-
-
 #var player_reference : CharacterBody2D
