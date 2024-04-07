@@ -54,7 +54,7 @@ static func set_session(client : Client, params : Dictionary) -> int:
 
 
 static func kicked(client : Client, params : Dictionary) -> int:
-	if not "reason" in params and params["reason"] is String:
+	if "reason" in params and params["reason"] is String:
 		print("kicked from server with reason: %s" % params["reason"])
 	else:
 		print("kicked from server without good reason")
