@@ -48,5 +48,5 @@ func _get_possible_moves() -> Array[MoveInfo]:
 	if BM.unsummoned_units_counter != 0:
 		return AIHelpers.get_all_spawn_moves(me)
 	
-	var my_units : Array[AUnit] = BM.get_units(me)
+	var my_units : Array[Unit] = BM.get_units(me)
 	return AIHelpers.get_all_legal_moves(my_units, me)
