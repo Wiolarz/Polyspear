@@ -1,6 +1,6 @@
+class_name Server
 extends Node
 
-class_name Server
 
 class Session:
 	var username : String = ""
@@ -20,6 +20,7 @@ var server_username : String = ""
 @onready var sessions : Array = [] # Array[Session] TODO other structure for speed
 @onready var enet_network : ENetConnection = null
 
+#region Connection
 
 func listen(address : String, port : int, username : String):
 	print("Requested server to listen at %s:%d" % [ address, port ])
@@ -37,6 +38,66 @@ func listen(address : String, port : int, username : String):
 	enet_network = null
 
 
+func get_session_by_username(username : String) -> Session:
+	if username == server_username:
+		return null
+	for session in sessions:
+		if session.username == username:
+			return session
+	return null
+
+
+func get_session_by_peer(peer : ENetPacketPeer) -> Session:
+	for session in sessions:
+		if session.peer == peer:
+			return session
+	return null
+
+
+func create_session(username : String) -> Session:
+	if username == server_username:
+		return null
+	var session : Session = get_session_by_username(username)
+	if session:
+		# session is alreadey created for this user -- we disconnect him or her
+		detach_session(session)
+		# TODO send command logout,
+		# but not in this function -- do it in outer
+	else:
+		session = Session.new()
+		sessions.append(session)
+	session.username = username
+	# var token = 0
+	# while token == 0 and get_session_by_token(token) != null:
+	# 	token = randi()
+	# session.token = token
+	return session
+
+
+func connect_peer_to_session(peer : ENetPacketPeer, session : Session):
+	session.peer = peer
+
+
+func detach_session(session : Session):
+	session.peer = null
+
+
+func drop_session(session : Session):
+	sessions.erase(session)
+
+
+func kick_peer(peer : ENetPacketPeer, reason : String) -> void:
+	var session = get_session_by_peer(peer)
+	if session:
+		sessions.erase(session)
+	var message = {
+		"name": "kicked",
+		"reason": reason,
+	}
+	send_to_peer(peer, message)
+	peer.peer_disconnect_later()
+
+
 func close():
 	print("Stopping server")
 	if enet_network == null:
@@ -50,6 +111,17 @@ func close():
 	server_username = ""
 	print("Server stopped")
 
+#endregion
+
+
+#region Communication
+
+func send_to_peer(peer : ENetPacketPeer, command_dictionary : Dictionary):
+	if not command_dictionary is Dictionary:
+		return
+	var content : PackedByteArray = var_to_bytes(command_dictionary)
+	peer.send(0, content, ENetPacketPeer.FLAG_RELIABLE)
+
 
 func roll() -> void:
 	var broken : bool = false
@@ -60,7 +132,7 @@ func roll() -> void:
 
 		var type : ENetConnection.EventType = event[0]
 		var peer : ENetPacketPeer = event[1]
-		var data = event[2]
+		#var data = event[2]
 		var channel : int = event[3]
 
 		match type:
@@ -104,71 +176,7 @@ func roll() -> void:
 		close()
 
 
-func get_session_by_username(username : String) -> Session:
-	if username == server_username:
-		return null
-	for session in sessions:
-		if session.username == username:
-			return session
-	return null
-
-
-func get_session_by_peer(peer : ENetPacketPeer) -> Session:
-	for session in sessions:
-		if session.peer == peer:
-			return session
-	return null
-
-
-func create_session(username : String) -> Session:
-	if username == server_username:
-		return null
-	var session : Session = get_session_by_username(username)
-	if session:
-		# session is alreadey created for this user -- we disconnect him or her
-		detach_session(session)
-		# TODO send command logout,
-		# but not in this function -- do it in outer
-	else:
-		session = Session.new()
-		sessions.append(session)
-	session.username = username
-	# var token = 0
-	# while token == 0 and get_session_by_token(token) != null:
-	# 	token = randi()
-	# session.token = token
-	return session
-
-
-func drop_session(session : Session):
-	detach_session(session)
-	sessions.erase(session)
-
-
-func connect_peer_to_session(peer : ENetPacketPeer, session : Session):
-	session.peer = peer
-
-
-func detach_session(session : Session):
-	session.peer = null
-
-
-func send_to_peer(peer, command_dictionary : Dictionary):
-	if not command_dictionary is Dictionary:
-		return
-	var content : PackedByteArray = var_to_bytes(command_dictionary)
-	peer.send(0, content, ENetPacketPeer.FLAG_RELIABLE)
-
-func kick_peer(peer, reason : String) -> void:
-	var session = get_session_by_peer(peer)
-	if session:
-		sessions.erase(session)
-	var message = {
-		"name": "kicked",
-		"reason": reason,
-	}
-	send_to_peer(peer, message)
-	peer.peer_disconnect_later()
-
-func _process(delta):
+func _process(_delta):
 	roll()
+
+#endregion

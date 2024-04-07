@@ -1,12 +1,14 @@
 class_name AllTheCommands
+extends Object
 
+#region Server
 
-static func login(server : Server, peer, params : Dictionary) -> int:
+static func login(server : Server, peer : ENetPacketPeer, params : Dictionary) -> int:
 	if not "username" in params or not params["username"] is String:
-		return -1 # TODO consider better convention
+		return FAILED
 	if server.get_session_by_peer(peer) != null:
 		server.kick_peer(peer, "was logged in already")
-		return 0
+		return OK
 	var username : String = params["username"]
 	var session = server.create_session(username)
 	if session != null:
@@ -19,38 +21,42 @@ static func login(server : Server, peer, params : Dictionary) -> int:
 		}
 		print("created a session for user %s" % username)
 		server.send_to_peer(peer, response_packet)
-		return 0
+		return OK
 	server.kick_peer(peer, "username taken by server")
-	return 0
+	return OK
 
 
-static func logout(server : Server, peer, params : Dictionary) -> int:
+static func logout(server : Server, peer : ENetPacketPeer, _params : Dictionary) -> int:
 	var session : Server.Session = server.get_session_by_peer(peer)
 	if session == null:
-		return 0
+		return OK
 	server.sessions.erase(session)
-	return 0
+	return OK
 
 
-static func join_game(server : Server, peer, params : Dictionary) -> int:
-	return -1
+static func join_game(server : Server, peer : ENetPacketPeer, params : Dictionary) -> int:
+	return FAILED
 
 
-static func order_game_move(server : Server, peer, params : Dictionary) -> int:
-	return -1
+static func order_game_move(server : Server, peer : ENetPacketPeer, params : Dictionary) -> int:
+	return FAILED
 
+#endregion
+
+
+#region Client
 
 static func replay_game_move(client : Client, params : Dictionary) -> int:
-	return -1
+	return FAILED
 
 
 static func set_session(client : Client, params : Dictionary) -> int:
 	if not "username" in params or not params["username"] is String:
-		return -1
+		return FAILED
 	var username : String = params["username"]
 	client.username = username
 	print("server sent us that we are called %s" % username)
-	return 0
+	return OK
 
 
 static func kicked(client : Client, params : Dictionary) -> int:
@@ -59,5 +65,6 @@ static func kicked(client : Client, params : Dictionary) -> int:
 	else:
 		print("kicked from server without good reason")
 	client.close()
-	client.reset_session()
-	return 0
+	return OK
+
+#endregion

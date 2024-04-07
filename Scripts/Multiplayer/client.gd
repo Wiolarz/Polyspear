@@ -1,21 +1,21 @@
+class_name Client
 extends Node
 
-class_name Client
 
 var username : String = ""
-var peer : ENetPacketPeer = null
-@onready var enet_network : ENetConnection = null
+var peer : ENetPacketPeer = null # TODO peer = server_peer fix local peer in roll()
 var send_queue : Array = []
-
-
 var incoming_commands : Dictionary = {
 	"set_session": Command.create_on_client(AllTheCommands.set_session),
 	"kicked": Command.create_on_client(AllTheCommands.kicked),
 	"replay_game_move": Command.create_on_client(AllTheCommands.replay_game_move),
 }
 
+@onready var enet_network : ENetConnection = null
 
-func connect_to_server(address : String, port : int):
+#region Connection
+
+func connect_to_server(address : String, port : int) -> void:
 	print("Requested connection to a server: %s:%d" % [ address, port ])
 	if enet_network != null:
 		print("Client was already connected -- disconnecting first")
@@ -33,32 +33,15 @@ func connect_to_server(address : String, port : int):
 	print("No errors")
 
 
-func reset_session() -> void:
-	username = ""
-
-
-func queue_message_to_server(command_dictionary : Dictionary):
-	if not command_dictionary is Dictionary:
-		return
-	var content : PackedByteArray = var_to_bytes(command_dictionary)
-	send_queue.append(content)
-
-
-func send_message_to_server_immediately(command_dictionary : Dictionary):
-	var content : PackedByteArray = var_to_bytes(command_dictionary)
-	peer.send(0, content, ENetPacketPeer.FLAG_RELIABLE)
-	enet_network.flush()
-
-
-func queue_login(username : String):
+func queue_login(desired_username : String) -> void:
 	var packet : Dictionary = {
 		"name": "login",
-		"username": username,
+		"username": desired_username,
 	}
 	queue_message_to_server(packet)
 
 
-func logout_if_needed():
+func logout_if_needed() -> void:
 	if username == "":
 		return
 	var packet : Dictionary = {
@@ -69,7 +52,7 @@ func logout_if_needed():
 	# TODO consider unrealiable packet send here
 
 
-func close():
+func close() -> void:
 	print("Requested client disconnect")
 	if enet_network == null:
 		print("Client was not connected")
@@ -81,7 +64,27 @@ func close():
 	enet_network.destroy()
 	enet_network = null
 	peer = null
+	username = ""
 	print("Client disconnected")
+
+#endregion
+
+
+#region Communication
+
+func queue_message_to_server(command_dictionary : Dictionary) -> void:
+	if not command_dictionary is Dictionary:
+		return
+	var content : PackedByteArray = var_to_bytes(command_dictionary)
+	send_queue.append(content)
+
+
+func send_message_to_server_immediately(command_dictionary : Dictionary) -> void:
+	if peer == null:
+		return
+	var content : PackedByteArray = var_to_bytes(command_dictionary)
+	peer.send(0, content, ENetPacketPeer.FLAG_RELIABLE)
+	enet_network.flush()
 
 
 func roll() -> void:
@@ -92,8 +95,7 @@ func roll() -> void:
 		var event : Array = enet_network.service()
 
 		var type : ENetConnection.EventType = event[0]
-		var peer : ENetPacketPeer = event[1]
-		var data = event[2]
+		assert(type == ENetConnection.EventType.EVENT_NONE or peer == event[1], "got event not from server")
 		var channel : int = event[3]
 
 		match type:
@@ -139,5 +141,7 @@ func roll() -> void:
 		close()
 
 
-func _process(delta):
+func _process(_delta):
 	roll()
+
+#endregion

@@ -1,4 +1,6 @@
 class_name MultiCommon
+extends Object
+
 
 static func decode_packet(packet : PackedByteArray):
 	var result = bytes_to_var(packet)

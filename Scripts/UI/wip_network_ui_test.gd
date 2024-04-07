@@ -94,7 +94,7 @@ func update_client_info():
 	label.text = label_content
 
 
-func _process(delta : float) -> void:
+func _process(_delta : float) -> void:
 
 	update_server_info()
 	update_client_info()
