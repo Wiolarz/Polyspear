@@ -74,7 +74,7 @@ func roll() -> void:
 				print("New connection arrived %d" % peer.get_instance_id())
 			ENetConnection.EventType.EVENT_DISCONNECT:
 				var id : int = peer.get_instance_id()
-				print("Connection %d disconnected" % id)
+				print("Connection %x disconnected" % id)
 				var session = get_session_by_peer(peer)
 				if session:
 					detach_session(session)
@@ -82,6 +82,7 @@ func roll() -> void:
 				var packet : PackedByteArray = peer.get_packet()
 				if channel != 0:
 					print("Peer %x sent something on different channel than 0 -- ignoring" % peer.get_instance_id())
+					break
 				var decoded = MultiCommon.decode_packet(packet)
 				if not decoded:
 					print("Peer %x sent something not being a command" % peer.get_instance_id())
@@ -126,6 +127,8 @@ func create_session(username : String) -> Session:
 	if session:
 		# session is alreadey created for this user -- we disconnect him or her
 		detach_session(session)
+		# TODO send command logout,
+		# but not in this function -- do it in outer
 	else:
 		session = Session.new()
 		sessions.append(session)
@@ -156,6 +159,16 @@ func send_to_peer(peer, command_dictionary : Dictionary):
 	var content : PackedByteArray = var_to_bytes(command_dictionary)
 	peer.send(0, content, ENetPacketPeer.FLAG_RELIABLE)
 
+func kick_peer(peer, reason : String) -> void:
+	var session = get_session_by_peer(peer)
+	if session:
+		sessions.erase(session)
+	var message = {
+		"name": "kicked",
+		"reason": reason,
+	}
+	send_to_peer(peer, message)
+	peer.peer_disconnect_later()
 
 func _process(delta):
 	roll()

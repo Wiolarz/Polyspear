@@ -75,6 +75,9 @@ func close():
 		print("Client was not connected")
 		return
 	enet_network.flush()
+	if peer:
+		peer.peer_disconnect_later()
+	enet_network.flush()
 	enet_network.destroy()
 	enet_network = null
 	peer = null
@@ -101,10 +104,9 @@ func roll() -> void:
 			ENetConnection.EventType.EVENT_NONE:
 				break
 			ENetConnection.EventType.EVENT_CONNECT:
-				print("Connected arrived %d" % peer.get_instance_id())
+				print("Connected to server")
 			ENetConnection.EventType.EVENT_DISCONNECT:
-				var id : int = peer.get_instance_id()
-				print("Disconnected" % id)
+				print("Disconnected")
 				peer = null
 				enet_network = null
 				return
@@ -126,8 +128,9 @@ func roll() -> void:
 					var result = (command.client_callback).call(self, decoded)
 					if result != 0:
 						print("server sent us %s command, but we couldn't process it well" % [ command_name ])
+					break
 					print("command processed")
-	if peer.get_state() == ENetPacketPeer.STATE_CONNECTED:
+	if peer != null and peer.get_state() == ENetPacketPeer.STATE_CONNECTED:
 		while send_queue.size() != 0:
 			var content = send_queue[0]
 			send_queue.remove_at(0)

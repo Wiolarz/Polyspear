@@ -4,22 +4,23 @@ class_name AllTheCommands
 static func login(server : Server, peer, params : Dictionary) -> int:
 	if not "username" in params or not params["username"] is String:
 		return -1 # TODO consider better convention
+	if server.get_session_by_peer(peer) != null:
+		server.kick_peer(peer, "was logged in already")
+		return 0
 	var username : String = params["username"]
 	var session = server.create_session(username)
-	var response_packet : Dictionary = {}
 	if session != null:
 		server.connect_peer_to_session(peer, session)
-		response_packet = {
-			"name": "set_session", # name of the command client should do on its side
-			"username": session.username, # this is the content
+		var response_packet = {
+			# this is the name of the command client should do on its side
+			"name": "set_session",
+			# this is the content
+			"username": session.username,
 		}
-	else:
-		response_packet = {
-			"name": "kicked",
-			"reason": "username taken by server",
-		}
-	print("created a session for user %s" % username)
-	server.send_to_peer(peer, response_packet)
+		print("created a session for user %s" % username)
+		server.send_to_peer(peer, response_packet)
+		return 0
+	server.kick_peer(peer, "username taken by server")
 	return 0
 
 
@@ -53,6 +54,10 @@ static func set_session(client : Client, params : Dictionary) -> int:
 
 
 static func kicked(client : Client, params : Dictionary) -> int:
+	if not "reason" in params and params["reason"] is String:
+		print("kicked from server with reason: %s" % params["reason"])
+	else:
+		print("kicked from server without good reason")
 	client.close()
 	client.reset_session()
 	return 0

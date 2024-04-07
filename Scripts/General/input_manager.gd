@@ -122,13 +122,12 @@ func server_listen(address : String, port : int, username : String):
 func server_close():
 	get_server().close()
 
-func client_connect(address : String, port : int):
+func client_connect_and_login(address : String, port : int, username : String):
 	get_client().connect_to_server(address, port)
-
-func client_login(username : String):
 	get_client().queue_login(username)
 
-func client_disconnect():
+
+func client_logout_and_disconnect():
 	get_client().logout_if_needed()
 	get_client().close()
 

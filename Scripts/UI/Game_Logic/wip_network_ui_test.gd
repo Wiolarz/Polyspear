@@ -13,12 +13,11 @@ func stop_server():
 
 
 func client_connect():
-	IM.client_connect(get_address(), get_port())
-	IM.client_login(get_username())
+	IM.client_connect_and_login(get_address(), get_port(), get_username())
 
 
 func client_disconnect():
-	IM.client_disconnect()
+	IM.client_logout_and_disconnect()
 
 
 func get_address():
@@ -42,10 +41,26 @@ func update_server_info():
 			label_content = "server is listening\nusername: %s" % server.server_username
 			for peer in server.enet_network.get_peers():
 				var session = server.get_session_by_peer(peer)
+				var connection_state : String = ""
+				match peer.get_state():
+					ENetPacketPeer.PeerState.STATE_CONNECTED:
+						connection_state = "connected"
+					ENetPacketPeer.PeerState.STATE_CONNECTING, \
+					ENetPacketPeer.PeerState.STATE_ACKNOWLEDGING_CONNECT, \
+					ENetPacketPeer.PeerState.STATE_CONNECTION_PENDING, \
+					ENetPacketPeer.PeerState.STATE_CONNECTION_SUCCEEDED:
+						connection_state = "connecting"
+					ENetPacketPeer.PeerState.STATE_DISCONNECT_LATER, \
+					ENetPacketPeer.PeerState.STATE_DISCONNECTING, \
+					ENetPacketPeer.PeerState.STATE_ACKNOWLEDGING_DISCONNECT, \
+					ENetPacketPeer.PeerState.STATE_ZOMBIE:
+						connection_state = "disconnecting"
+					ENetPacketPeer.PeerState.STATE_DISCONNECTED:
+						connection_state = "disconnected"
 				if session:
-					label_content += "\n%x %s %s %d as %s" % [ peer.get_instance_id(), peer.get_state(), peer.get_remote_address(), peer.get_remote_port(), session.username ]
+					label_content += "\n%s from %s:%d as %s" % [ connection_state, peer.get_remote_address(), peer.get_remote_port(), session.username ]
 				else:
-					label_content += "\n%x %s %s %d not logged" % [ peer.get_instance_id(), peer.get_state(), peer.get_remote_address(), peer.get_remote_port() ]
+					label_content += "\n%s from %s:%d not logged" % [ connection_state, peer.get_remote_address(), peer.get_remote_port() ]
 			for session in server.sessions:
 				if session.peer == null:
 					label_content += "\ndisconnected session of %s" % session.username
