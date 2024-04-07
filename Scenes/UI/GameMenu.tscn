@@ -1,7 +1,7 @@
 [gd_scene load_steps=5 format=3 uid="uid://bi1yq2awm2kc0"]
 
-[ext_resource type="Script" path="res://Scripts/UI/Game_Logic/debug_manager.gd" id="1_py7q0"]
-[ext_resource type="Script" path="res://Scripts/UI/Game_Logic/save_system.gd" id="2_hnyc1"]
+[ext_resource type="Script" path="res://Scripts/UI/fdebug_manager.gd" id="1_py7q0"]
+[ext_resource type="Script" path="res://Scripts/UI/save_system.gd" id="2_hnyc1"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fdxbp"]
 bg_color = Color(0.172549, 0.290196, 0.180392, 1)

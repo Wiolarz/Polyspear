@@ -7,5 +7,5 @@ extends Resource
 @export var texture_path : String
 @export var symbols : Array[DataSymbol] = [null,null,null,null,null,null]
 
-func apply_data(unit : AUnit) -> void:
+func apply_data(unit : Unit) -> void:
 	pass

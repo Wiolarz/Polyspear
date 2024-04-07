@@ -29,9 +29,9 @@ var battle_is_ongoing : bool = false
 var current_participant : Player
 var participant_idx : int = ATTACKER
 
-var selected_unit : AUnit
+var selected_unit : Unit
 
-var fighting_units : Array = [[],[]] # Array[Array[AUnit]]
+var fighting_units : Array = [[],[]] # Array[Array[Unit]]
 
 var unsummoned_units_counter : int # set at the start of the during placement "summon" stage -> battle start after this number reaches 0
 
@@ -95,10 +95,10 @@ func perform_ai_move( move :MoveInfo,  me: Player):
 
 #region Tools
 
-func get_units(player:Player) -> Array[AUnit]:
+func get_units(player:Player) -> Array[Unit]:
 	for armyIdx in range(fighting_units.size()):
 		if participants[armyIdx] == player:
-			var typed:Array[AUnit] = []
+			var typed:Array[Unit] = []
 			typed.assign(fighting_units[armyIdx])
 			return typed
 	return []
@@ -111,7 +111,7 @@ func select_unit(cord : Vector2i) -> bool:
 	 * @return true if unit has been selected in this operation
 	 """
 
-	var new_selection : AUnit = B_GRID.get_unit(cord)
+	var new_selection : Unit = B_GRID.get_unit(cord)
 	if (new_selection != null && new_selection.controller == current_participant):
 		selected_unit = new_selection
 		selected_unit.set_selected(true)
@@ -121,7 +121,7 @@ func select_unit(cord : Vector2i) -> bool:
 	return false
 
 
-func is_legal_move(cord : Vector2i, BotUnit : AUnit = null) -> int:
+func is_legal_move(cord : Vector2i, BotUnit : Unit = null) -> int:
 	"""
 		Function checks 2 things:
 		1 Target cord is a Neighbour of a selected_unit
@@ -204,7 +204,7 @@ func move_unit(unit, end_cord : Vector2i, side: int) -> void:
 		end_of_battle()
 
 
-func counter_attack_damage(target : AUnit) -> bool:
+func counter_attack_damage(target : Unit) -> bool:
 	# Returns true is Enemy spear can kill the target
 	var units = B_GRID.adjacent_units(target.cord)
 
@@ -239,7 +239,7 @@ func kill_unit(target) -> void:
 		battle_is_ongoing = false
 	
 		
-func unit_action(unit : AUnit) -> void:
+func unit_action(unit : Unit) -> void:
 	var units = B_GRID.adjacent_units(unit.cord)
 
 	for side in range(6):
@@ -374,7 +374,7 @@ func summon_unit(unitData:DataUnit, cord : Vector2i) -> void:
 		@param cord cordinate, on which Unit will be summoned
 	 """
 	#B_GRID.change_unit_cord(selected_unit, cord)
-	var unit : AUnit = load("res://Scenes/Form/UnitForm.tscn").instantiate()
+	var unit : Unit = load("res://Scenes/Form/UnitForm.tscn").instantiate()
 	unit.apply_template(unitData)
 	unit.controller = current_participant
 
@@ -422,7 +422,7 @@ func spawn_units() -> void:
 
 
 		# for unit_scene : PackedScene in army.units_data:
-		# 	var new_unit : AUnit = unit_scene.instantiate()
+		# 	var new_unit : Unit = unit_scene.instantiate()
 		# 	add_child(new_unit)
 			
 		# 	#new_unit.visible = false
