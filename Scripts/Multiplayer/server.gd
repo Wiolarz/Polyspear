@@ -54,28 +54,22 @@ func get_session_by_peer(peer : ENetPacketPeer) -> Session:
 	return null
 
 
-func create_session(username : String) -> Session:
+func create_or_get_session(username : String) -> Session:
 	if username == server_username:
 		return null
 	var session : Session = get_session_by_username(username)
-	if session:
-		# session is alreadey created for this user -- we disconnect him or her
-		detach_session(session)
-		# TODO send command logout,
-		# but not in this function -- do it in outer
-	else:
-		session = Session.new()
-		sessions.append(session)
+	if session != null:
+		return session
+	session = Session.new()
+	sessions.append(session)
 	session.username = username
-	# var token = 0
-	# while token == 0 and get_session_by_token(token) != null:
-	# 	token = randi()
-	# session.token = token
 	return session
 
 
 func connect_peer_to_session(peer : ENetPacketPeer, session : Session):
+	var previous_peer : ENetPacketPeer = session.peer
 	session.peer = peer
+	return previous_peer
 
 
 func detach_session(session : Session):

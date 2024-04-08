@@ -10,9 +10,10 @@ static func login(server : Server, peer : ENetPacketPeer, params : Dictionary) -
 		server.kick_peer(peer, "was logged in already")
 		return OK
 	var username : String = params["username"]
-	var session = server.create_session(username)
+	var session = server.create_or_get_session(username)
 	if session != null:
-		server.connect_peer_to_session(peer, session)
+		var previous_peer : ENetPacketPeer = \
+		  server.connect_peer_to_session(peer, session)
 		var response_packet = {
 			# this is the name of the command client should do on its side
 			"name": "set_session",
@@ -21,6 +22,11 @@ static func login(server : Server, peer : ENetPacketPeer, params : Dictionary) -
 		}
 		print("created a session for user %s" % username)
 		server.send_to_peer(peer, response_packet)
+		if previous_peer:
+			print("kicking previous user of this session because of second " +\
+				"login")
+			server.kick_peer(previous_peer,
+				"logged to this account from somewhere else")
 		return OK
 	server.kick_peer(peer, "username taken by server")
 	return OK
