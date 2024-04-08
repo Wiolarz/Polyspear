@@ -69,3 +69,9 @@ func _on_unit_editor_pressed():
 func _on_test_battle_with_setup_pressed():
 	battle_setup.visible = !battle_setup.visible
 	toggle_menu_visibility()
+
+func _on_editors_menu_id_pressed(id):
+	match id:
+		0: _on_map_creator_pressed()
+		1: _on_unit_editor_pressed()
+		_: pass

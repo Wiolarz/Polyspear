@@ -1,3 +1,10 @@
 [gd_resource type="Theme" format=3 uid="uid://dmv43h86d07fy"]
 
 [resource]
+Button/font_sizes/font_size = 40
+Label/font_sizes/font_size = 40
+LineEdit/font_sizes/font_size = 40
+MenuBar/font_sizes/font_size = 40
+PopupMenu/font_sizes/font_size = 40
+TextEdit/font_sizes/font_size = 40
+Tree/font_sizes/font_size = 40

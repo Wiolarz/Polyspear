@@ -1,0 +1,131 @@
+[gd_resource type="Resource" script_class="BattleMap" load_steps=23 format=3]
+
+[ext_resource type="Script" path="res://Resources/data_tile.gd" id="1_5nc6c"]
+[ext_resource type="Script" path="res://Resources/battle_map.gd" id="2_i30r3"]
+
+[sub_resource type="Resource" id="Resource_cu33l"]
+script = ExtResource("1_5nc6c")
+texture_path = "res://Art/battle_map/blue_player_spawn.png"
+flip_horizontal = false
+type = "blue_spawn"
+
+[sub_resource type="Resource" id="Resource_soej8"]
+script = ExtResource("1_5nc6c")
+texture_path = "res://Art/battle_map/grass.png"
+flip_horizontal = false
+type = "empty"
+
+[sub_resource type="Resource" id="Resource_pnm7a"]
+script = ExtResource("1_5nc6c")
+texture_path = "res://Art/battle_map/hole.png"
+flip_horizontal = false
+type = "hole"
+
+[sub_resource type="Resource" id="Resource_bv1ck"]
+script = ExtResource("1_5nc6c")
+texture_path = "res://Art/battle_map/grass.png"
+flip_horizontal = false
+type = "empty"
+
+[sub_resource type="Resource" id="Resource_17mmk"]
+script = ExtResource("1_5nc6c")
+texture_path = "res://Art/battle_map/blue_player_spawn.png"
+flip_horizontal = false
+type = "blue_spawn"
+
+[sub_resource type="Resource" id="Resource_0ca4w"]
+script = ExtResource("1_5nc6c")
+texture_path = "res://Art/battle_map/grass.png"
+flip_horizontal = false
+type = "empty"
+
+[sub_resource type="Resource" id="Resource_0r4q1"]
+script = ExtResource("1_5nc6c")
+texture_path = "res://Art/battle_map/grass.png"
+flip_horizontal = false
+type = "empty"
+
+[sub_resource type="Resource" id="Resource_0ma8u"]
+script = ExtResource("1_5nc6c")
+texture_path = "res://Art/battle_map/grass.png"
+flip_horizontal = false
+type = "empty"
+
+[sub_resource type="Resource" id="Resource_cthru"]
+script = ExtResource("1_5nc6c")
+texture_path = "res://Art/battle_map/hole.png"
+flip_horizontal = false
+type = "hole"
+
+[sub_resource type="Resource" id="Resource_0tciw"]
+script = ExtResource("1_5nc6c")
+texture_path = "res://Art/battle_map/blue_player_spawn.png"
+flip_horizontal = false
+type = "blue_spawn"
+
+[sub_resource type="Resource" id="Resource_66idi"]
+script = ExtResource("1_5nc6c")
+texture_path = "res://Art/battle_map/red_player_spawn.png"
+flip_horizontal = false
+type = "red_spawn"
+
+[sub_resource type="Resource" id="Resource_y2tcr"]
+script = ExtResource("1_5nc6c")
+texture_path = "res://Art/battle_map/grass.png"
+flip_horizontal = false
+type = "empty"
+
+[sub_resource type="Resource" id="Resource_r7khe"]
+script = ExtResource("1_5nc6c")
+texture_path = "res://Art/battle_map/hole.png"
+flip_horizontal = false
+type = "hole"
+
+[sub_resource type="Resource" id="Resource_mdagn"]
+script = ExtResource("1_5nc6c")
+texture_path = "res://Art/battle_map/blue_player_spawn.png"
+flip_horizontal = false
+type = "blue_spawn"
+
+[sub_resource type="Resource" id="Resource_p1djk"]
+script = ExtResource("1_5nc6c")
+texture_path = "res://Art/battle_map/grass.png"
+flip_horizontal = false
+type = "empty"
+
+[sub_resource type="Resource" id="Resource_ruf3d"]
+script = ExtResource("1_5nc6c")
+texture_path = "res://Art/battle_map/grass.png"
+flip_horizontal = false
+type = "empty"
+
+[sub_resource type="Resource" id="Resource_i14kp"]
+script = ExtResource("1_5nc6c")
+texture_path = "res://Art/battle_map/grass.png"
+flip_horizontal = false
+type = "empty"
+
+[sub_resource type="Resource" id="Resource_xbuuv"]
+script = ExtResource("1_5nc6c")
+texture_path = "res://Art/battle_map/red_player_spawn.png"
+flip_horizontal = false
+type = "red_spawn"
+
+[sub_resource type="Resource" id="Resource_xf71u"]
+script = ExtResource("1_5nc6c")
+texture_path = "res://Art/battle_map/red_player_spawn.png"
+flip_horizontal = false
+type = "red_spawn"
+
+[sub_resource type="Resource" id="Resource_foij0"]
+script = ExtResource("1_5nc6c")
+texture_path = "res://Art/battle_map/red_player_spawn.png"
+flip_horizontal = false
+type = "red_spawn"
+
+[resource]
+script = ExtResource("2_i30r3")
+max_player_number = 2
+grid_width = 4
+grid_height = 5
+grid_data = [[SubResource("Resource_cu33l"), SubResource("Resource_soej8"), SubResource("Resource_pnm7a"), SubResource("Resource_bv1ck"), SubResource("Resource_17mmk")], [SubResource("Resource_0ca4w"), SubResource("Resource_0r4q1"), SubResource("Resource_0ma8u"), SubResource("Resource_cthru"), SubResource("Resource_0tciw")], [SubResource("Resource_66idi"), SubResource("Resource_y2tcr"), SubResource("Resource_r7khe"), SubResource("Resource_mdagn"), SubResource("Resource_p1djk")], [SubResource("Resource_ruf3d"), SubResource("Resource_i14kp"), SubResource("Resource_xbuuv"), SubResource("Resource_xf71u"), SubResource("Resource_foij0")]]

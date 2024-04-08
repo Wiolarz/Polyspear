@@ -9,194 +9,123 @@ script = ExtResource("1_iln2i")
 [node name="Control" type="Control" parent="."]
 layout_mode = 3
 anchors_preset = 0
-offset_left = 1287.0
-offset_right = 1850.0
+offset_left = 1038.0
+offset_right = 1917.0
 offset_bottom = 1071.0
 
-[node name="StartGame" type="Button" parent="Control"]
-layout_mode = 0
-offset_left = -1039.0
-offset_top = 102.0
-offset_right = -929.0
-offset_bottom = 156.0
-scale = Vector2(6.2, 5.88)
-text = "(placeholder)
-Start Game
+[node name="MenuBar" type="MenuBar" parent="Control"]
+layout_mode = 2
+anchor_left = 1.003
+anchor_right = 1.003
+offset_left = -547.637
+offset_top = 6.0
+offset_right = -8.63702
+offset_bottom = 80.0
+
+[node name="Editors Menu" type="PopupMenu" parent="Control/MenuBar"]
+size = Vector2i(238, 126)
+item_count = 2
+item_0/text = "Map Editor"
+item_0/id = 0
+item_1/text = "Unit Editor"
+item_1/id = 1
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Control"]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -564.0
+offset_top = 239.0
+offset_right = -25.0
+offset_bottom = 721.0
+grow_horizontal = 0
+theme_override_constants/separation = 30
+
+[node name="TestBattle" type="Button" parent="Control/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 40
+text = " Quick Battle
 "
 
-[node name="TestBattle" type="Button" parent="Control"]
-layout_mode = 0
-offset_top = 254.0
-offset_right = 96.0
-offset_bottom = 285.0
-scale = Vector2(6.2, 5.88)
-text = "Test Battle
-"
+[node name="TestBattleWithSetup" type="Button" parent="Control/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 40
+text = "Test Battle"
 
-[node name="TestBattleWithSetup" type="Button" parent="Control"]
-layout_mode = 0
-offset_top = 476.0
-offset_right = 96.0
-offset_bottom = 507.0
-scale = Vector2(6.2, 5.88)
-text = "Test Battle
-with setup"
-
-[node name="TestWorld" type="Button" parent="Control"]
-layout_mode = 0
-offset_left = 4.0
-offset_top = 38.0
-offset_right = 100.0
-offset_bottom = 69.0
-scale = Vector2(6.2, 5.88)
+[node name="TestWorld" type="Button" parent="Control/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 40
 text = "Test World"
 
-[node name="MapCreator" type="Button" parent="Control"]
-layout_mode = 0
-offset_left = -1271.0
-offset_top = 847.0
-offset_right = -1149.0
-offset_bottom = 878.0
-scale = Vector2(6.2, 5.88)
-text = "Map Creator
-"
-
-[node name="WorldMapCreator" type="Button" parent="Control"]
-layout_mode = 0
-offset_left = -360.0
-offset_top = 873.0
-offset_right = -204.0
-offset_bottom = 904.0
-scale = Vector2(6.2, 5.88)
-text = "World Map Creator
-"
-
-[node name="UnitEditor" type="Button" parent="Control"]
-layout_mode = 0
-offset_left = -1279.0
-offset_top = 646.0
-offset_right = -1154.0
-offset_bottom = 677.0
-scale = Vector2(6.2, 5.88)
-text = "Unit Editor"
-
-[node name="Control2" type="Control" parent="."]
+[node name="Multiplayer" type="Control" parent="."]
 layout_mode = 3
 anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
+offset_left = 34.0
+offset_top = 59.0
+offset_right = 945.0
+offset_bottom = 1016.0
 script = ExtResource("3_jlo2g")
 
-[node name="ButtonListen" type="Button" parent="Control2"]
-layout_mode = 1
-anchors_preset = -1
-anchor_right = 12.74
-anchor_bottom = 27.107
-offset_left = 49.0
-offset_top = 463.0
-offset_right = -162.6
-offset_bottom = -475.28
+[node name="VBoxContainer" type="VBoxContainer" parent="Multiplayer"]
+layout_mode = 0
+offset_right = 889.0
+offset_bottom = 970.0
+
+[node name="TextEditUsernameServer" type="TextEdit" parent="Multiplayer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 70)
+layout_mode = 2
+size_flags_vertical = 0
+text = "Zdzichu Server"
+
+[node name="ButtonListen" type="Button" parent="Multiplayer/VBoxContainer"]
+layout_mode = 2
 text = "server na"
 
-[node name="ButtonStopServer" type="Button" parent="Control2"]
-layout_mode = 1
-anchors_preset = -1
-anchor_right = 12.74
-anchor_bottom = 27.107
-offset_left = 59.0
-offset_top = 627.0
-offset_right = -152.6
-offset_bottom = -311.28
+[node name="ButtonStopServer" type="Button" parent="Multiplayer/VBoxContainer"]
+layout_mode = 2
 text = "server stop"
 
-[node name="ButtonClientConnect" type="Button" parent="Control2"]
-layout_mode = 1
-anchors_preset = -1
-anchor_right = 12.74
-anchor_bottom = 27.107
-offset_left = 52.0
-offset_top = 31.0
-offset_right = -159.6
-offset_bottom = -907.28
-text = "connect"
-
-[node name="ButtonClientDisconnect" type="Button" parent="Control2"]
-layout_mode = 1
-anchors_preset = -1
-anchor_right = 12.74
-anchor_bottom = 27.107
-offset_left = 49.0
-offset_top = 196.0
-offset_right = -162.6
-offset_bottom = -742.28
-text = "disconnect"
-
-[node name="ServerInfo" type="Label" parent="Control2"]
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 9.425
-anchor_top = 10.75
-anchor_right = 18.575
-anchor_bottom = 23.175
-offset_right = -12.0
-offset_bottom = -79.0
+[node name="ServerInfo" type="Label" parent="Multiplayer/VBoxContainer"]
+layout_mode = 2
 text = "server info"
 
-[node name="ClientInfo" type="Label" parent="Control2"]
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 9.425
-anchor_top = 10.75
-anchor_right = 18.575
-anchor_bottom = 23.175
-offset_left = 8.0
-offset_top = -404.0
-offset_right = -85.0
-offset_bottom = -590.0
-text = "client info"
+[node name="HSeparator" type="HSeparator" parent="Multiplayer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
 
-[node name="TextEditAddress" type="TextEdit" parent="Control2"]
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 18.15
-anchor_top = 0.55
-anchor_right = 26.55
-anchor_bottom = 2.075
-offset_left = -6.10352e-05
+[node name="TextEditUsernameClient" type="TextEdit" parent="Multiplayer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 70)
+layout_mode = 2
+text = "Zdzichu Client"
+
+[node name="ButtonClientConnect" type="Button" parent="Multiplayer/VBoxContainer"]
+layout_mode = 2
+text = "connect"
+
+[node name="ButtonClientDisconnect" type="Button" parent="Multiplayer/VBoxContainer"]
+layout_mode = 2
+text = "disconnect"
+
+[node name="TextEditAddress" type="TextEdit" parent="Multiplayer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 70)
+layout_mode = 2
 text = "127.0.0.1"
 
-[node name="TextEditPort" type="TextEdit" parent="Control2"]
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 18.605
-anchor_top = 3.007
-anchor_right = 25.099
-anchor_bottom = 3.771
-offset_left = -13.2001
-offset_top = -13.28
-offset_right = 8.03998
-offset_bottom = 18.16
+[node name="TextEditPort" type="TextEdit" parent="Multiplayer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 70)
+layout_mode = 2
 text = "12000"
 
-[node name="TextEditUsername" type="TextEdit" parent="Control2"]
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 18.175
-anchor_top = 5.7
-anchor_right = 25.2
-anchor_bottom = 7.25
-offset_left = -6.10352e-05
-offset_top = -1.52588e-05
-offset_bottom = -3.05176e-05
-text = "Zdzichu"
+[node name="ClientInfo" type="Label" parent="Multiplayer/VBoxContainer"]
+layout_mode = 2
+text = "client info"
 
-[connection signal="pressed" from="Control/StartGame" to="." method="_on_test_game_pressed"]
-[connection signal="pressed" from="Control/TestBattle" to="." method="_on_test_battle_pressed"]
-[connection signal="pressed" from="Control/TestBattleWithSetup" to="." method="_on_test_battle_with_setup_pressed"]
-[connection signal="pressed" from="Control/TestWorld" to="." method="_on_test_world_pressed"]
-[connection signal="pressed" from="Control/MapCreator" to="." method="_on_map_creator_pressed"]
-[connection signal="pressed" from="Control/UnitEditor" to="." method="_on_unit_editor_pressed"]
-[connection signal="pressed" from="Control2/ButtonListen" to="Control2" method="start_server"]
-[connection signal="pressed" from="Control2/ButtonStopServer" to="Control2" method="stop_server"]
-[connection signal="pressed" from="Control2/ButtonClientConnect" to="Control2" method="client_connect"]
-[connection signal="pressed" from="Control2/ButtonClientDisconnect" to="Control2" method="client_disconnect"]
+[connection signal="id_pressed" from="Control/MenuBar/Editors Menu" to="." method="_on_editors_menu_id_pressed"]
+[connection signal="pressed" from="Control/VBoxContainer/TestBattle" to="." method="_on_test_battle_pressed"]
+[connection signal="pressed" from="Control/VBoxContainer/TestBattleWithSetup" to="." method="_on_test_battle_with_setup_pressed"]
+[connection signal="pressed" from="Control/VBoxContainer/TestWorld" to="." method="_on_test_world_pressed"]
+[connection signal="pressed" from="Multiplayer/VBoxContainer/ButtonListen" to="Multiplayer" method="start_server"]
+[connection signal="pressed" from="Multiplayer/VBoxContainer/ButtonStopServer" to="Multiplayer" method="stop_server"]
+[connection signal="pressed" from="Multiplayer/VBoxContainer/ButtonClientConnect" to="Multiplayer" method="client_connect"]
+[connection signal="pressed" from="Multiplayer/VBoxContainer/ButtonClientDisconnect" to="Multiplayer" method="client_disconnect"]
