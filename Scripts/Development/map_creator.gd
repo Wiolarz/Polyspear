@@ -1,8 +1,9 @@
 extends CanvasLayer
 
+const WORLD_MAPS_PATH = "res://Resources/World/World_maps/"
+const BATTLE_MAPS_PATH = "res://Resources/Battle/Battle_Maps/"
 
-@export var save_box_input : TextEdit
-@export var load_box_input : TextEdit
+@export var map_file_name_input : TextEdit
 
 @export var new_map_width : int = 5
 @export var new_map_height : int = 5
@@ -150,8 +151,10 @@ func _toggle_menu_status():
 #region Buttons:
 
 func _on_load_map_pressed():
+	var map_to_load = load(WORLD_MAPS_PATH + map_file_name_input.text + ".tres")
+	if current_map_type != map_type.WORLD:
+		map_to_load = load(BATTLE_MAPS_PATH + map_file_name_input.text + ".tres")
 
-	var map_to_load = load("res://Resources/World/" + load_box_input.text + ".tres")
 	assert(map_to_load != null, "there is no selected map to be loaded")
 	WM.close_world()
 	BM.close_battle()
@@ -163,11 +166,9 @@ func _on_load_map_pressed():
 		B_GRID.generate_grid(map_to_load)
 
 
-
-
 func _on_save_map_pressed():
 	print("save map")
-	var map_save_name : String = save_box_input.text
+	var map_save_name : String = map_file_name_input.text
 
 	var new_map
 	var local_tile_grid : Array
@@ -175,11 +176,11 @@ func _on_save_map_pressed():
 	if current_map_type == map_type.WORLD:
 		new_map = WorldMap.new()
 		local_tile_grid = W_GRID.tile_grid
-		save_path = "res://Resources/World/World_maps/" + map_save_name + ".tres"
+		save_path = WORLD_MAPS_PATH + map_save_name + ".tres"
 	else:
 		new_map = BattleMap.new()
 		local_tile_grid = B_GRID.tile_grid
-		save_path = "res://Resources/Battle_Maps/" + map_save_name + ".tres"
+		save_path = BATTLE_MAPS_PATH + map_save_name + ".tres"
 
 	var grid_data = []
 
@@ -198,9 +199,6 @@ func _on_save_map_pressed():
 
 	new_map.grid_height = grid_data[0].size()
 	new_map.grid_width = grid_data.size()
-
-
-
 	
 	ResourceSaver.save(new_map, save_path)
 

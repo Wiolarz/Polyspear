@@ -5,7 +5,7 @@ extends Control
 
 
 func start_server():
-	IM.server_listen(get_address(), get_port(), get_username())
+	IM.server_listen(get_address(), get_port(), get_username_server())
 
 
 func stop_server():
@@ -13,7 +13,7 @@ func stop_server():
 
 
 func client_connect():
-	IM.client_connect_and_login(get_address(), get_port(), get_username())
+	IM.client_connect_and_login(get_address(), get_port(), get_username_client())
 
 
 func client_disconnect():
@@ -21,20 +21,23 @@ func client_disconnect():
 
 
 func get_address():
-	return $TextEditAddress.text
+	return $VBoxContainer/TextEditAddress.text
 
 
 func get_port():
-	return int($TextEditPort.text)
+	return int($VBoxContainer/TextEditPort.text)
 
 
-func get_username():
-	return $TextEditUsername.text
+func get_username_client():
+	return $VBoxContainer/TextEditUsernameClient.text
+
+func get_username_server():
+	return $VBoxContainer/TextEditUsernameServer.text
 
 
 func update_server_info():
 	var label_content = "server does not exist"
-	var label = $ServerInfo
+	var label = $VBoxContainer/ServerInfo
 	var server = IM.get_node_or_null("TheServer")
 	if server:
 		if server.enet_network:
@@ -71,7 +74,7 @@ func update_server_info():
 
 func update_client_info():
 	var label_content = "client does not exist"
-	var label = $ClientInfo
+	var label = $VBoxContainer/ClientInfo
 	var client = IM.get_node_or_null("TheClient")
 	if client:
 		if client.enet_network:
@@ -99,6 +102,6 @@ func _process(_delta : float) -> void:
 	update_server_info()
 	update_client_info()
 
-	$ButtonListen.text = "server on %s:%d" % [ get_address(), get_port() ]
-	$ButtonClientConnect.text = "connect to %s:%d" % [ get_address(), get_port() ]
+	$VBoxContainer/ButtonListen.text = "server on %s:%d" % [ get_address(), get_port() ]
+	$VBoxContainer/ButtonClientConnect.text = "connect to %s:%d" % [ get_address(), get_port() ]
 
