@@ -8,7 +8,7 @@
 [ext_resource type="PackedScene" uid="uid://l0kojvcxbfky" path="res://Scenes/UI/MapEditor.tscn" id="6_6kfr8"]
 [ext_resource type="PackedScene" uid="uid://b4ndp6v0ts1on" path="res://Scenes/UI/MainMenu.tscn" id="6_yyega"]
 [ext_resource type="PackedScene" uid="uid://cx1ypmps7i3tn" path="res://Scenes/UI/BattleDebugSetup.tscn" id="9_62vgl"]
-[ext_resource type="PackedScene" uid="uid://dy1m42bfkq2wv" path="res://Scenes/Editors/UnitEditor.tscn" id="9_ik2pb"]
+[ext_resource type="PackedScene" uid="uid://dy1m42bfkq2wv" path="res://Scenes/UI/UnitEditor.tscn" id="9_ik2pb"]
 
 [node name="MainScene" type="Node"]
 

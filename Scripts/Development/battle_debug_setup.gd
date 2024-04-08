@@ -21,18 +21,18 @@ var current_preset: BattleSetup
 ]
 @onready var units_lists = [ # Array[Array[OptionButton]]
 	[
-		$UnitsList1_1,
-		$UnitsList1_2,
-		$UnitsList1_3,
-		$UnitsList1_4,
-		$UnitsList1_5,
+		$VBoxContainer1/UnitsList1_1,
+		$VBoxContainer1/UnitsList1_2,
+		$VBoxContainer1/UnitsList1_3,
+		$VBoxContainer1/UnitsList1_4,
+		$VBoxContainer1/UnitsList1_5,
 	],
 	[
-		$UnitsList2_1,
-		$UnitsList2_2,
-		$UnitsList2_3,
-		$UnitsList2_4,
-		$UnitsList2_5,
+		$VBoxContainer2/UnitsList2_1,
+		$VBoxContainer2/UnitsList2_2,
+		$VBoxContainer2/UnitsList2_3,
+		$VBoxContainer2/UnitsList2_4,
+		$VBoxContainer2/UnitsList2_5,
 	]
 ]
 
@@ -61,7 +61,7 @@ func _clear_armies() -> void:
 
 func _try_set_unit(units_option : OptionButton, path : String) -> bool:
 	for idx in range(units_option.item_count):
-		if units_option.get_item_text(idx) == path:
+		if units_option.get_item_text(idx) == path.trim_prefix(UNITS_PATH):
 			units_option.select(idx)
 			return true
 	return false
@@ -88,9 +88,9 @@ func _get_army_as_units_data(unit_options : Array[OptionButton]) -> Array[DataUn
 
 
 func _get_unit_data(option : OptionButton) -> DataUnit :
-	var path = option.get_item_text(option.selected)
-	if path == "empty": return null
-	return load(path) 
+	var unit_name = option.get_item_text(option.selected)
+	if unit_name == "empty": return null
+	return load(UNITS_PATH + unit_name) 
 
 
 func _create_player(player_name : String) -> Player:
@@ -135,7 +135,7 @@ func _on_save_button_pressed() -> void:
 
 
 func _on_presets_list_item_selected(index) -> void:
-	_load_preset(load(presets_list.get_item_text(index)))
+	_load_preset(load(UNITS_PATH+presets_list.get_item_text(index)))
 
 
 
@@ -153,7 +153,7 @@ func _load_resource_lists() -> void:
 		for army_slot in army:
 			army_slot.add_item("empty")
 			for unit_path in unit_paths:
-				army_slot.add_item(unit_path)
+				army_slot.add_item(unit_path.trim_prefix(UNITS_PATH))
 	
 	for preset_path in TestTools.list_files_in_folder(PRESETS_PATH, true):
 		presets_list.add_item(preset_path)
