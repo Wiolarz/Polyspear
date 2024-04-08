@@ -71,8 +71,6 @@ func _ready():
 	_load_tiles(battle_box, "res://Resources/Battle/Battle_tiles/")
 	_load_tiles(world_box, "res://Resources/World/World_tiles/")
 
-	_on_new_world_map_pressed()
-
 #endregion
 
 
@@ -142,6 +140,7 @@ func _optimize_grid_size(local_tile_grid : Array) -> Array:
 
 func open_draw_menu():
 	visible = true
+	_on_new_world_map_pressed()
 
 func hide_draw_menu():
 	visible = false
