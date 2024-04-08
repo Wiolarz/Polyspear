@@ -75,7 +75,7 @@ func grid_input(cord : Vector2i) -> void:
 	move_unit(selected_unit, cord, side)
 	switch_participant_turn()
 
-func perform_ai_move( move :MoveInfo,  me: Player):
+func perform_ai_move( move :MoveInfo,  _me: Player):
 	if move.move_type == MoveInfo.TYPE_MOVE:
 		var unit = B_GRID.get_unit(move.move_source)
 		var dir = GridManager.adjacent_side(unit.cord, move.target_tile_coord) 

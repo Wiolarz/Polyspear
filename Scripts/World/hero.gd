@@ -16,7 +16,7 @@ var movement_points = 3
 var target_tile : HexTile
 
 
-func trade(another_hero : Hero):
+func trade(_another_hero : Hero):
 	print("trade menu")
 
 

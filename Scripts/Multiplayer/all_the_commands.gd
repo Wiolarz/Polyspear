@@ -34,11 +34,11 @@ static func logout(server : Server, peer : ENetPacketPeer, _params : Dictionary)
 	return OK
 
 
-static func join_game(server : Server, peer : ENetPacketPeer, params : Dictionary) -> int:
+static func join_game(_server : Server, _peer : ENetPacketPeer, _params : Dictionary) -> int:
 	return FAILED
 
 
-static func order_game_move(server : Server, peer : ENetPacketPeer, params : Dictionary) -> int:
+static func order_game_move(_server : Server, _peer : ENetPacketPeer, _params : Dictionary) -> int:
 	return FAILED
 
 #endregion
@@ -46,7 +46,7 @@ static func order_game_move(server : Server, peer : ENetPacketPeer, params : Dic
 
 #region Client
 
-static func replay_game_move(client : Client, params : Dictionary) -> int:
+static func replay_game_move(_client : Client, _params : Dictionary) -> int:
 	return FAILED
 
 

@@ -109,7 +109,7 @@ func grid_input(cord : Vector2i):
 
 
 
-func trade_armies(second_army : Army):
+func trade_armies(_second_army : Army):
 	#TODO
 	pass
 
@@ -120,12 +120,12 @@ func trade_armies(second_army : Army):
 #region City Management
 
 
-func trade_city(city : City):
+func trade_city(_city : City):
 	#TODO
 	pass
 
 
-func city_show_interface(city : City):
+func city_show_interface(_city : City):
 	print("city shows interface")
 
 """
