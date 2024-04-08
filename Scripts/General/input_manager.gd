@@ -76,7 +76,7 @@ func grid_input_listener(cord : Vector2i):
 	#if WM.current_player.bot_engine != null:
 	#    return # its a bot turn
 	if draw_mode:
-		get_node("/root/MainScene/DrawMenu").grid_input(cord)
+		get_node("/root/MainScene/MapEditor").grid_input(cord)
 		return
 	
 	if raging_battle:
@@ -88,7 +88,7 @@ func grid_input_listener(cord : Vector2i):
 func go_to_main_menu():
 	draw_mode = false
 
-	get_node("/root/MainScene/DrawMenu").hide_draw_menu()
+	get_node("/root/MainScene/MapEditor").hide_draw_menu()
 
 	WM.close_world()
 	BM.close_battle()

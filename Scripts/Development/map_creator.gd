@@ -18,7 +18,8 @@ enum map_type
 var current_map_type : map_type
 
 
-@onready var current_brush : DataTile
+var current_brush : DataTile
+var current_button: TextureButton
 
 @onready var world_box : BoxContainer = $HWorldBox
 @onready var battle_box : BoxContainer = $HBattleBox
@@ -46,12 +47,15 @@ func _create_button(box : BoxContainer, map_tile : String):
 	var tile = load(map_tile)
 
 	var new_button = TextureButton.new()
-
 	new_button.texture_normal = ResourceLoader.load(tile.texture_path)
 
 	box.add_child(new_button)
 	var lambda = func on_click():
+		if current_button != null:
+			current_button.modulate = Color.WHITE
 		current_brush = tile
+		current_button = new_button
+		current_button.modulate = Color.DIM_GRAY
 	
 	new_button.pressed.connect(lambda)  # self._button_pressed
 
@@ -67,7 +71,7 @@ func _ready():
 	_load_tiles(battle_box, "res://Resources/Battle/Battle_tiles/")
 	_load_tiles(world_box, "res://Resources/World/World_tiles/")
 
-	#world_box.get_children()[0].on_click()  # default choice
+	_on_new_world_map_pressed()
 
 #endregion
 
@@ -151,10 +155,11 @@ func _toggle_menu_status():
 #region Buttons:
 
 func _on_load_map_pressed():
-	var map_to_load = load(WORLD_MAPS_PATH + map_file_name_input.text + ".tres")
-	if current_map_type != map_type.WORLD:
-		map_to_load = load(BATTLE_MAPS_PATH + map_file_name_input.text + ".tres")
-
+	var map_path = WORLD_MAPS_PATH
+	if current_map_type == map_type.BATTLE:
+		map_path = BATTLE_MAPS_PATH
+	map_path += map_file_name_input.text + ".tres"
+	var map_to_load = load(map_path)
 	assert(map_to_load != null, "there is no selected map to be loaded")
 	WM.close_world()
 	BM.close_battle()
@@ -224,6 +229,7 @@ func _generate_empty_map(size_x : int = 5, size_y : int = 5) -> Array: # -> Arra
 
 func _on_new_world_map_pressed():
 	_set_grid_type(map_type.WORLD)
+	world_box.get_children()[0].pressed.emit()  # default tile choice
 
 	var new_map = WorldMap.new()
 	var grid_data = _generate_empty_map()
@@ -238,6 +244,7 @@ func _on_new_world_map_pressed():
 
 func _on_new_battle_map_pressed():
 	_set_grid_type(map_type.BATTLE)
+	battle_box.get_children()[0].pressed.emit()  # default tile choice
 
 	var grid_data = _generate_empty_map()
 
@@ -253,3 +260,13 @@ func _on_new_battle_map_pressed():
 
 
 #endregion
+
+func _on_open_button_pressed():
+	$FileDialog.root_subfolder = WORLD_MAPS_PATH \
+		 if current_map_type == map_type.WORLD else BATTLE_MAPS_PATH
+	$FileDialog.show()
+
+
+func _on_file_dialog_file_selected(path : String):
+	map_file_name_input.text = path.get_file().trim_suffix(".tres")
+	_on_load_map_pressed()

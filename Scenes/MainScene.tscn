@@ -5,7 +5,7 @@
 [ext_resource type="Script" path="res://Scripts/Development/general_test.gd" id="3_p68en"]
 [ext_resource type="Resource" uid="uid://c0xnyv5cb6g8h" path="res://Resources/Tests/World_Setups/2H_OvE_basic.tres" id="3_yxa6s"]
 [ext_resource type="Resource" uid="uid://byhcrnn41k1aa" path="res://Resources/Tests/Battle_setups/pvp_EvsO_basic.tres" id="5_2fgww"]
-[ext_resource type="PackedScene" uid="uid://l0kojvcxbfky" path="res://Scenes/UI/DrawMenu.tscn" id="6_6kfr8"]
+[ext_resource type="PackedScene" uid="uid://l0kojvcxbfky" path="res://Scenes/UI/MapEditor.tscn" id="6_6kfr8"]
 [ext_resource type="PackedScene" uid="uid://b4ndp6v0ts1on" path="res://Scenes/UI/MainMenu.tscn" id="6_yyega"]
 [ext_resource type="PackedScene" uid="uid://cx1ypmps7i3tn" path="res://Scenes/UI/BattleDebugSetup.tscn" id="9_62vgl"]
 [ext_resource type="PackedScene" uid="uid://dy1m42bfkq2wv" path="res://Scenes/Editors/UnitEditor.tscn" id="9_ik2pb"]
@@ -24,7 +24,7 @@ script = ExtResource("2_svb1r")
 [node name="MainMenu" parent="." node_paths=PackedStringArray("maunual_tester", "map_creator", "unit_editor", "battle_setup") instance=ExtResource("6_yyega")]
 editor_description = "Main interface"
 maunual_tester = NodePath("../GeneralTest")
-map_creator = NodePath("../DrawMenu")
+map_creator = NodePath("../MapEditor")
 unit_editor = NodePath("../UnitEditor")
 battle_setup = NodePath("../BattleDebugSetup")
 world_setup = ExtResource("3_yxa6s")
@@ -34,7 +34,7 @@ script = ExtResource("3_p68en")
 world_setup = ExtResource("3_yxa6s")
 test_battle_setup = ExtResource("5_2fgww")
 
-[node name="DrawMenu" parent="." instance=ExtResource("6_6kfr8")]
+[node name="MapEditor" parent="." instance=ExtResource("6_6kfr8")]
 visible = false
 
 [node name="UnitEditor" parent="." instance=ExtResource("9_ik2pb")]

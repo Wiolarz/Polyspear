@@ -3,14 +3,14 @@
 [ext_resource type="Script" path="res://Scripts/Development/map_creator.gd" id="1_y7q6u"]
 [ext_resource type="Script" path="res://Scripts/UI/save_system.gd" id="2_ehahi"]
 
-[node name="DrawMenu" type="CanvasLayer" node_paths=PackedStringArray("map_file_name_input")]
+[node name="MapEditor" type="CanvasLayer" node_paths=PackedStringArray("map_file_name_input")]
 process_mode = 3
 script = ExtResource("1_y7q6u")
 map_file_name_input = NodePath("mapFileName")
 
 [node name="mapFileName" type="TextEdit" parent="."]
 custom_minimum_size = Vector2(0, 70)
-offset_left = 7.0
+offset_left = 112.0
 offset_top = 999.0
 offset_right = 1849.0
 offset_bottom = 1069.0
@@ -34,6 +34,7 @@ layout_mode = 2
 text = "New Battle Map"
 
 [node name="LoadMap" type="Button" parent="MenuContainer"]
+visible = false
 layout_mode = 2
 text = "Load Map"
 
@@ -60,7 +61,24 @@ offset_right = 3598.0
 offset_bottom = 696.0
 scale = Vector2(0.2, 0.2)
 
+[node name="OpenButton" type="Button" parent="."]
+offset_left = 8.0
+offset_top = 996.0
+offset_right = 101.0
+offset_bottom = 1065.0
+text = "📁"
+
+[node name="FileDialog" type="FileDialog" parent="."]
+title = "Open map"
+initial_position = 2
+size = Vector2i(900, 900)
+ok_button_text = "Open"
+file_mode = 0
+filters = PackedStringArray("*.tres")
+
 [connection signal="pressed" from="MenuContainer/NewWorldMap" to="." method="_on_new_world_map_pressed"]
 [connection signal="pressed" from="MenuContainer/NewBattleMap" to="." method="_on_new_battle_map_pressed"]
 [connection signal="pressed" from="MenuContainer/LoadMap" to="." method="_on_load_map_pressed"]
 [connection signal="pressed" from="MenuContainer/SaveMap" to="." method="_on_save_map_pressed"]
+[connection signal="pressed" from="OpenButton" to="." method="_on_open_button_pressed"]
+[connection signal="file_selected" from="FileDialog" to="." method="_on_file_dialog_file_selected"]
