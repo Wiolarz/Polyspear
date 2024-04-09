@@ -42,7 +42,6 @@ func on_player_selected(selectedPlayer : Player, preview : bool = false):
 		var unit : DataUnit = army.units_data[unitId]
 		var b = TextureButton.new()
 		b.texture_normal = BUTTON_TEXTURE
-		# idea to add unit scenes as buttons child to display unit symbols properly, then reparent them to battle manager once they are in the scene
 		var unit_scene : Unit = load(UNIT_SCENE_TEMPLATE).instantiate()
 		unit_scene.position = b.texture_normal.get_size()/2
 		unit_scene.apply_template(unit)

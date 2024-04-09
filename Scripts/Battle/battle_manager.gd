@@ -38,7 +38,6 @@ var unsummoned_units_counter : int # set at the start of the during placement "s
 #endregion
 
 
-
 #region Main Functions
 
 func switch_participant_turn():
@@ -359,6 +358,7 @@ func _grid_input_summon(cord : Vector2i):
 		summon_unit(battle_ui.selected_unit, cord)
 		switch_participant_turn()
 
+
 func is_legal_summon_cord(cord : Vector2i, player: Player) -> bool:
 	var cord_tile_type = B_GRID.get_tile_type(cord)
 	var idx = participants.find(player)
@@ -367,7 +367,8 @@ func is_legal_summon_cord(cord : Vector2i, player: Player) -> bool:
 		(cord_tile_type == "blue_spawn"&& idx == 1)
 	return is_correct_spawn and B_GRID.get_unit(cord) == null
 
-func summon_unit(unitData:DataUnit, cord : Vector2i) -> void:
+
+func summon_unit(unitData : DataUnit, cord : Vector2i) -> void:
 	"""
 		Summon currently selected unit to a Gameplay Board
 
@@ -390,8 +391,10 @@ func summon_unit(unitData:DataUnit, cord : Vector2i) -> void:
 	unsummoned_units_counter -= 1
 	battle_ui.unit_summoned(unsummoned_units_counter == 0)
 
+
 func get_not_summoned_units(player:Player) -> Array[DataUnit]:
 	return battle_ui.get_army(player).units_data
+
 
 func get_summon_tiles(player:Player) -> Array[HexTile]:
 	var summon_tiles = B_GRID.get_all_field_coords()\
@@ -400,6 +403,7 @@ func get_summon_tiles(player:Player) -> Array[HexTile]:
 	var typed:Array[HexTile] = []
 	typed.assign(summon_tiles)
 	return typed
+
 #endregion
 
 
@@ -414,21 +418,11 @@ func spawn_units() -> void:
 	for army in battling_armies:
 		unsummoned_units_counter += army.units_data.size()
 	
-	# spawn armies units
+	# spawn armies units cards in battle UI
 	for army in battling_armies:
 		var new_army_unit_nodes = []
 		fighting_units.append(new_army_unit_nodes)
-		# create scenes based on unit data
 
-
-		# for unit_scene : PackedScene in army.units_data:
-		# 	var new_unit : Unit = unit_scene.instantiate()
-		# 	add_child(new_unit)
-			
-		# 	#new_unit.visible = false
-		# 	new_unit.controller = army.controller
-
-		# 	new_army_unit_nodes.append(new_unit)
 
 	battle_ui.load_armies(battling_armies)
 	display_unit_summon_cards() # first player (attacker)

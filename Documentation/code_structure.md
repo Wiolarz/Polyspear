@@ -68,15 +68,15 @@ Unit once placed can't be relocated again. After all units are placed Battle pro
 Main Menu
 
 Input Manager - holds all player objects
-    *Multiplayer Manager 
+	*Multiplayer Manager 
 
 Gameplay Manager
 
-    World Manager
-        World Grid Manager
+	World Manager
+		World Grid Manager
 
-    Battle Manager
-        Battle Grid Manager
+	Battle Manager
+		Battle Grid Manager
 
 
 
@@ -95,13 +95,13 @@ while gameplay classes like Battle_Grid and World_Grid would care about gameplay
 # World Manager
 
 parameters:
-    List of players (Host-Seat/AI/Connected_User)
-    World Map ID
-    From lobby game parameters (Races, starting locations, alliances)
+	List of players (Host-Seat/AI/Connected_User)
+	World Map ID
+	From lobby game parameters (Races, starting locations, alliances)
 
 
 Data:
-    Every tile has 
+	Every tile has 
 
 
 

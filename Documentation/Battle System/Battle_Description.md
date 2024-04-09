@@ -1,19 +1,3 @@
-# Game Description
-
-
-var Short_Summary
-
-PolySpear is a chesslike turn based strategy game
-
-
-
-
-
-
-
-
-var Extended_Description
-
 Turn based game, set on hexagonal board. The goal of two opposing players is to eliminate the opponents units.
 
 
@@ -46,17 +30,3 @@ CIRCLE - 'Fist' Pushes enemy unit 1 tile away, if that tile isn't empty or is ou
 CROSS - 'Spear' Kills any enemy unit that enters this tile. Spear acts before any enemy unit symbol does (except for a shield). If a unit protected by a shield rotates at the start of its movement while this shield is covering the spear, and at its final rotation position the spear can hit the unit rotation ends with the unit death.
 
 TRIANGLE - 'Shield' nullifies sources of damage (doesn't work against push)
-
-
-
-
-
-var gameplay_rework
-
-
-
-
-
-
-
-
