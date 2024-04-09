@@ -19,7 +19,7 @@ func get_all_field_coords() -> Array[Vector2i]:
 	return result
 
 
-func change_unit_cord(unit, cord : Vector2i):
+func change_unit_cord(unit : Unit, cord : Vector2i):
 
 	unit_grid[unit.cord.x][unit.cord.y] = null# clean your previous location
 	unit_grid[cord.x][cord.y] = unit# unit_grid Update

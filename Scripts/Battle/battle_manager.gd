@@ -384,9 +384,9 @@ func summon_unit(unitData : DataUnit, cord : Vector2i) -> void:
 	B_GRID.change_unit_cord(unit, cord)
 	
 	if participant_idx == ATTACKER:
-		unit.turn(3)
+		unit.turn(3, true)
 	else:
-		unit.turn(0)
+		unit.turn(0, true)
 
 	unsummoned_units_counter -= 1
 	battle_ui.unit_summoned(unsummoned_units_counter == 0, unitData)

@@ -135,7 +135,7 @@ func _on_save_button_pressed() -> void:
 
 
 func _on_presets_list_item_selected(index) -> void:
-	_load_preset(load(UNITS_PATH+presets_list.get_item_text(index)))
+	_load_preset(load(presets_list.get_item_text(index)))
 
 
 

@@ -23,7 +23,7 @@ func can_defend(side : int) -> bool:
 func get_symbol(side : int) -> E.Symbols:
 	return Symbols[(side - unit_rotation) % 6]
 
-func turn(side : int):
+func turn(side : int, skip_animation = false):
 	"""
 	  360 / 6 = 60  degrees needed to rotate unit
 	  
@@ -36,6 +36,9 @@ func turn(side : int):
 	# "Direction + 4" Accounts for global rotation setting for objects in the level
 
 	target_rotation = (60 * (side))
+	if skip_animation:
+		rotation_degrees = target_rotation
+		$sprite_unit.rotation = -rotation
 	#rotation = deg_to_rad((60 * (side)))
 
 	#print(rotation, "   ", target_rotation)
@@ -44,7 +47,7 @@ func move(target : HexTile):
 	target_tile = target
 
 func _physics_process(_delta):
-	if 0.1 < abs(rotation_degrees - target_rotation):
+	if 0.1 < abs(fmod(rotation_degrees, 360) - target_rotation):
 		#var p_direction =
 		#fmod(rad_to_deg(global_position.angle_to_point(player.global_position)) + 360, 360) # - 360
 		# fmod = float modulo %
@@ -85,7 +88,8 @@ func _physics_process(_delta):
 			position = position.move_toward(target_tile.position, BUS.animation_speed)
 		#position.x = move_toward(position.x, target_tile.position.x, BUS.animation_speed)
 		#position.y = move_toward(position.y, target_tile.position.y, BUS.animation_speed)
-		if position.x == target_tile.position.x and position.y == target_tile.position.y:
+		if (position - target_tile.position).length_squared() < 0.01:
+			position = target_tile.position
 			target_tile = null
 
 func set_selected(isSelected:bool):
