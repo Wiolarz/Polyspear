@@ -85,10 +85,12 @@ func load_armies(army_list : Array[Army]):
 		n.pressed.connect(func p1(): on_player_selected(army.controller, true))
 		players_box.add_child(n)
 
-func unit_summoned(summon_phase_end : bool):
+func unit_summoned(summon_phase_end : bool, unit : DataUnit):
 	var army = get_army(current_player)
-	if selected_unit_army_idx >= 0: # TEMP for AI
-		army.units_data.remove_at(selected_unit_army_idx)
+	# for AI
+	if selected_unit_army_idx == -1:
+		selected_unit_army_idx = army.units_data.find(unit)
+	army.units_data.remove_at(selected_unit_army_idx)
 	selected_unit = null
 	selected_button = null
 	selected_unit_army_idx = -1

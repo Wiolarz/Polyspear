@@ -389,7 +389,7 @@ func summon_unit(unitData : DataUnit, cord : Vector2i) -> void:
 		unit.turn(0)
 
 	unsummoned_units_counter -= 1
-	battle_ui.unit_summoned(unsummoned_units_counter == 0)
+	battle_ui.unit_summoned(unsummoned_units_counter == 0, unitData)
 
 
 func get_not_summoned_units(player:Player) -> Array[DataUnit]:
