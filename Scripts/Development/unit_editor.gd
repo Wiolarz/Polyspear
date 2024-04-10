@@ -100,8 +100,10 @@ func on_symbol_selected(dir : int, symbol_id : int):
 		.get_child(0).get_child(0)
 	if texture_path == null or texture_path == "":
 		symbol_sprite_node.texture = null
+		symbol_sprite_node.hide()
 		return
 	symbol_sprite_node.texture = load(texture_path)
+	symbol_sprite_node.show()
 
 
 func _on_save_pressed():
