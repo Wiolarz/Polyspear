@@ -12,6 +12,12 @@
 
 [node name="MainScene" type="Node"]
 
+[node name="MapEditor" parent="." instance=ExtResource("6_6kfr8")]
+visible = false
+
+[node name="UnitEditor" parent="." instance=ExtResource("9_ik2pb")]
+visible = false
+
 [node name="GameMenu" parent="." instance=ExtResource("1_jo11t")]
 editor_description = "popup menu under ~ KEY"
 visible = false
@@ -33,12 +39,6 @@ world_setup = ExtResource("3_yxa6s")
 script = ExtResource("3_p68en")
 world_setup = ExtResource("3_yxa6s")
 test_battle_setup = ExtResource("5_2fgww")
-
-[node name="MapEditor" parent="." instance=ExtResource("6_6kfr8")]
-visible = false
-
-[node name="UnitEditor" parent="." instance=ExtResource("9_ik2pb")]
-visible = false
 
 [node name="BattleDebugSetup" parent="." instance=ExtResource("9_62vgl")]
 visible = false
