@@ -41,12 +41,16 @@ var unsummoned_units_counter : int # set at the start of the during placement "s
 #region Main Functions
 
 func switch_participant_turn():
-	if participant_idx + 1 == participants.size():
-		participant_idx = ATTACKER
-	else:
-		participant_idx += 1
-	
+	participant_idx += 1
+	participant_idx %= participants.size()
 	current_participant = participants[participant_idx]
+
+	while unsummoned_units_counter > 0 \
+		and get_not_summoned_units(current_participant).size() == 0:
+		participant_idx += 1
+		participant_idx %= participants.size()
+		current_participant = participants[participant_idx]
+
 	selected_unit = null  # disable player to move another players units
 	battle_ui.on_player_selected(current_participant)
 	if battle_is_ongoing:
