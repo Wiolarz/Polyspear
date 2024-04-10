@@ -269,3 +269,7 @@ func _on_open_button_pressed():
 func _on_file_dialog_file_selected(path : String):
 	map_file_name_input.text = path.get_file().trim_suffix(".tres")
 	_on_load_map_pressed()
+
+func _on_back_button_pressed():
+	hide()
+	IM.go_to_main_menu()

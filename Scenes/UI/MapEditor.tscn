@@ -69,12 +69,19 @@ offset_bottom = 1065.0
 text = "📁"
 
 [node name="FileDialog" type="FileDialog" parent="."]
-title = "Open map"
+title = "Open a File"
 initial_position = 2
 size = Vector2i(900, 900)
 ok_button_text = "Open"
 file_mode = 0
 filters = PackedStringArray("*.tres")
+
+[node name="BackButton" type="Button" parent="."]
+offset_left = 9.0
+offset_top = 878.0
+offset_right = 55.0
+offset_bottom = 941.0
+text = "◀"
 
 [connection signal="pressed" from="MenuContainer/NewWorldMap" to="." method="_on_new_world_map_pressed"]
 [connection signal="pressed" from="MenuContainer/NewBattleMap" to="." method="_on_new_battle_map_pressed"]
@@ -82,3 +89,4 @@ filters = PackedStringArray("*.tres")
 [connection signal="pressed" from="MenuContainer/SaveMap" to="." method="_on_save_map_pressed"]
 [connection signal="pressed" from="OpenButton" to="." method="_on_open_button_pressed"]
 [connection signal="file_selected" from="FileDialog" to="." method="_on_file_dialog_file_selected"]
+[connection signal="pressed" from="BackButton" to="." method="_on_back_button_pressed"]
