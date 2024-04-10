@@ -112,6 +112,8 @@ func select_unit(cord : Vector2i) -> bool:
 
 	var new_selection : Unit = B_GRID.get_unit(cord)
 	if (new_selection != null && new_selection.controller == current_participant):
+		if selected_unit:
+			selected_unit.set_selected(false)
 		selected_unit = new_selection
 		selected_unit.set_selected(true)
 		#print("You have selected a Unit")
