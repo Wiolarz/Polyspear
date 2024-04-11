@@ -9,3 +9,8 @@ var type : String = "sentinel"
 func _on_input_event(_viewport:Node, event:InputEvent, _shape_idx:int):
 	if event.is_action_pressed("KEY_SELECT"):
 		IM.grid_input_listener(cord)
+	
+
+func set_coord(c:Vector2i)->void:
+	cord = c
+	$CoordLabel.text = str(cord)
