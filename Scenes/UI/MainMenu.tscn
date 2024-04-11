@@ -45,18 +45,18 @@ theme_override_constants/separation = 30
 [node name="TestBattle" type="Button" parent="Control/VBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 40
-text = " Quick Battle
+text = " Quick Battle ⚔⚡
 "
 
 [node name="TestBattleWithSetup" type="Button" parent="Control/VBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 40
-text = "Test Battle"
+text = "Test Battle ⚔"
 
 [node name="TestWorld" type="Button" parent="Control/VBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 40
-text = "Test World"
+text = "Test World 🗺"
 
 [node name="Multiplayer" type="Control" parent="."]
 layout_mode = 3

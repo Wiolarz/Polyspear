@@ -102,6 +102,6 @@ func _process(_delta : float) -> void:
 	update_server_info()
 	update_client_info()
 
-	$VBoxContainer/ButtonListen.text = "server on %s:%d" % [ get_address(), get_port() ]
-	$VBoxContainer/ButtonClientConnect.text = "connect to %s:%d" % [ get_address(), get_port() ]
+	$VBoxContainer/ButtonListen.text = "🔊 server on %s:%d" % [ get_address(), get_port() ]
+	$VBoxContainer/ButtonClientConnect.text = "🔌 connect to %s:%d" % [ get_address(), get_port() ]
 
