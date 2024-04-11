@@ -112,7 +112,7 @@ func spawn_tiles() -> void:
 			
 			# Set tile cord
 			tile_grid[x][y] = new_tile
-			new_tile.cord = Vector2i(x, y)
+			new_tile.set_coord(Vector2i(x, y))
 			
 			# setting a new tile node visual location
 			var x_tile_pos = x * TileHorizontalOffset + y * OddRowHorizontalOffset
@@ -177,6 +177,7 @@ func generate_grid(new_map_data : GridBoard) -> void:
 	init_tile_grid()
 	spawn_tiles()
 
-	
+func to_bordered_coords(initial:Vector2i) -> Vector2i:
+	return initial + Vector2i(border_size,border_size)
 
 #endregion

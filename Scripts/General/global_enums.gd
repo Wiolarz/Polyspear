@@ -29,6 +29,8 @@ enum WorldMapTiles
 	PLACE,
 }
 
+static func to_name(wmt: WorldMapTiles) -> String:
+	return WorldMapTiles.keys()[wmt].to_lower()
 #endregion
 
 

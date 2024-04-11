@@ -9,15 +9,19 @@ var max_player_number : int
 
 #region Tools
 
-func change_hero_position(hero, cord : Vector2i):
+func place_army(army : ArmyOnWorldMap, coord : Vector2i):
+	assert(unit_grid[coord.x][coord.y] == null, "can't place 2 armies on the same field")
+	army.army_data.cord = coord
+	unit_grid[coord.x][coord.y] = army
+	army.position = tile_at(coord).position
 
-	unit_grid[hero.cord.x][hero.cord.y] = null# clean your previous location
-	unit_grid[cord.x][cord.y] = hero
+func change_hero_position(hero, coord : Vector2i):
 
-	hero.cord = cord
-	
+	unit_grid[hero.cord.x][hero.cord.y] = null # clean your previous location
+	unit_grid[coord.x][coord.y] = hero
+
 	# Move visuals of the unit
-	hero.move(unit_grid[cord.x][cord.y])
+	hero.move(tile_grid[coord.x][coord.y])
 	
 
 
@@ -35,24 +39,21 @@ func remove_hero(hero):
 #region Coordinates Tools
 
 func is_moveable(cord : Vector2i):
-	if tile_grid[cord.x][cord.y].type in \
-		[E.WorldMapTiles.EMPTY, E.WorldMapTiles.CITY,  E.WorldMapTiles.PLACE]:
-			return true
-	
-	return false
+	return tile_grid[cord.x][cord.y].type in [ \
+		E.to_name(E.WorldMapTiles.EMPTY),
+		E.to_name(E.WorldMapTiles.CITY),
+		E.to_name(E.WorldMapTiles.PLACE),
+	]
 
 func get_tile_controller(cord : Vector2i):
 	var hero = get_hero(cord)
 	if hero != null:
 		return hero.controller
-	return tile_grid[cord.x][cord.y].controller
+	return null # tile_grid[cord.x][cord.y].controller
 
 
-func get_army(cord : Vector2i):
-	var hero = get_hero(cord)
-	if hero != null:
-		return hero.army
-	return tile_grid[cord.x][cord.y].defender_army
+func get_army(cord : Vector2i) -> ArmyOnWorldMap:
+	return unit_grid[cord.x][cord.y]
 
 
 func get_city(cord : Vector2i) -> City:
@@ -62,8 +63,11 @@ func get_city(cord : Vector2i) -> City:
 	return null
 
 
-func get_hero(cord : Vector2i):
-	return unit_grid[cord.x][cord.y]
+func get_hero(coord : Vector2i):
+	var army = get_army(coord)
+	if army!= null and army.army_data.hero != null:
+		return army
+	return null
 
 
 func is_enemy_present(cord : Vector2i, player):

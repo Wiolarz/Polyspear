@@ -12,4 +12,11 @@ polygon = PackedVector2Array(-264, -151, -7, -304, 264, -148, 264, 153, -1, 303,
 [node name="Sprite2D" type="Sprite2D" parent="."]
 texture = ExtResource("2_utlft")
 
+[node name="CoordLabel" type="Label" parent="."]
+offset_left = -32.0
+offset_top = 223.0
+offset_right = 25.0
+offset_bottom = 278.0
+text = "(-,-)"
+
 [connection signal="input_event" from="." to="." method="_on_input_event"]
