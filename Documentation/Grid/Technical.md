@@ -3,21 +3,22 @@
 ## Coordinates
 
 ```
-
-	  /\   /\ 
-	 /  \ /  \
-	|0,0 |1,0 | ...
-	|    |    |
-	 \  / \  / \
-	  \/   \/   \
-	  |0,1 |1,1 | ...
-	  |    |    |
-	   \  / \  /
-		\/   \/
-		 \ ...
+      /\   /\ 
+     /  \ /  \
+    |0,0 |1,0 | ...
+    |    |    |
+     \  / \  / \
+      \/   \/   \
+      |0,1 |1,1 | ...
+      |    |    |
+       \  / \  /
+        \/   \/
+         \ ...
 ```
 
-Grid uses Axial coordinate system. Reference:
+Grid uses Axial coordinate system.
+
+Reference:
 [redblobgames blog about coding hexagonal grids](https://www.redblobgames.com/grids/hexagons/)
 
 - X represents direction right
@@ -31,11 +32,11 @@ We start looking toward the left (0) then we move clockwise up to 5
 
 ```
 
-	1 /\ 2
-	 /  \
+    1 /\ 2
+     /  \
   0 |    | 3
-	 \  /
-	5 \/ 4
+     \  /
+    5 \/ 4
 
 0 - LEFT
 1-2 - TOP LEFT - RIGHT

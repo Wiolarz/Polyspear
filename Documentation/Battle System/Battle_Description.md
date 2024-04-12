@@ -1,3 +1,5 @@
+# Battle system description
+
 Turn based game, set on hexagonal board. The goal of two opposing players is to eliminate the opponents units.
 
 
@@ -19,14 +21,14 @@ Main way to kill enemy units is with the 'Symbols' at the edges of your units. T
 
 #### Active Symbols:
 
-Sword - 'Sword' Kills enemy units on an adjacent tile.
+ - Sword - 'Sword' Kills enemy units on an adjacent tile.
 
-ARROW - 'Bow' Shoots an arrow that damages the first encountered enemy unit. If the path is blocked by the ally unit, the arrow doesn't travel further.
+ - ARROW - 'Bow' Shoots an arrow that damages the first encountered enemy unit. If the path is blocked by the ally unit, the arrow doesn't travel further.
 
-CIRCLE - 'Fist' Pushes enemy unit 1 tile away, if that tile isn't empty or is outside the gameplay area the pushed unit is killed. It's possible to push an enemy unit on top of a tile covered by your spear, in that case the pushed unit is killed. This symbol ignores the shield.
+ - CIRCLE - 'Fist' Pushes enemy unit 1 tile away, if that tile isn't empty or is outside the gameplay area the pushed unit is killed. It's possible to push an enemy unit on top of a tile covered by your spear, in that case the pushed unit is killed. This symbol ignores the shield.
 
 #### Passive Symbols:
 
-CROSS - 'Spear' Kills any enemy unit that enters this tile. Spear acts before any enemy unit symbol does (except for a shield). If a unit protected by a shield rotates at the start of its movement while this shield is covering the spear, and at its final rotation position the spear can hit the unit rotation ends with the unit death.
+ - CROSS - 'Spear' Kills any enemy unit that enters this tile. Spear acts before any enemy unit symbol does (except for a shield). If a unit protected by a shield rotates at the start of its movement while this shield is covering the spear, and at its final rotation position the spear can hit the unit rotation ends with the unit death.
 
-TRIANGLE - 'Shield' nullifies sources of damage (doesn't work against push)
+ - TRIANGLE - 'Shield' nullifies sources of damage (doesn't work against push)
