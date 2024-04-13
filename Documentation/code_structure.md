@@ -1,29 +1,27 @@
 # Code Structure
 
-
-
-
 # main game logic
 
-Everything centers around singletons:
+Logic uses global singletons (see: "Project Settings >> Autoload")
 
-Input Manager IM
+- IM (Input Manager)
+	- WM (World Manager)
+		- W_GRID (World Grid Manager)
+	- BM (Battle Manager)
+		- B_GRID (Battle Grid Manager)
 
-	World Manager WM
-		World Grid Manager W_GRID
+IM is notified when tiles are clicked. Then sends signal to WM or BM depending on the state. WM/BM control the game using W_GRID/B_GRID respectively, for positional queries etc.
 
-		Battle Manager BM
-			Battle Grid Manager B_GRID
-
+IM contains list of players and knows if there is an active battle that needs to be resolved.
 
 # Description of how game works:
 
-
 ## Game Setup
-### -a Tester:
+
+### a) Tester:
 Selects using Main Menu interface desired play test scenario, previously created in Resources and attached to MainMenu variables in Main_Scene
 
-### -b Normal Player:
+### b) Normal Player:
 Selects using Main Menu interface buttons calls Input_Manager functions that determine:
 - list of players that is stored inside Input_Manager
 - World/Battle map
@@ -31,8 +29,12 @@ Selects using Main Menu interface buttons calls Input_Manager functions that det
 
 ## Start of the game
 Input Manager calls depending on chosen game mode either:
-- a - World Manager with 1 World_Map variable
-- b - Battle Manager with 1 list of armies and 2 chosen Battle_Map variable
+
+- a - World Manager with 
+  - 1 World_Map variable
+- b - Battle Manager with 
+  - list of armies 
+  - chosen Battle_Map variable
 
 World/Battle Manager start functions now setup their own proper variables and launch:
 
@@ -58,27 +60,8 @@ Battle section is split into 2 parts:
 - 1 Unit placement
 - 2 Combat
 
-1 During Unit placement player can choose any unit from his army and place it on one of the available "starting tiles".
-Unit once placed can't be relocated again. After all units are placed Battle proceeds into
-
-
-
-# Singletons:
-
-Main Menu
-
-Input Manager - holds all player objects
-	*Multiplayer Manager 
-
-Gameplay Manager
-
-	World Manager
-		World Grid Manager
-
-	Battle Manager
-		Battle Grid Manager
-
-
+During Unit placement player can choose any unit from his army and place it on one of the available "starting tiles".
+Unit once placed can't be relocated again. After all units are placed Battle proceeds into Combat phase where units can move and attack each other.
 
 
 # Ideas for drawing the map:
@@ -86,11 +69,6 @@ Gameplay Manager
 class Map_Draw
 would be responisble for drawing specific map (visually)
 while gameplay classes like Battle_Grid and World_Grid would care about gameplay only and simply use Map_Draw
-
-
-
-
-
 
 # World Manager
 
@@ -102,10 +80,6 @@ parameters:
 
 Data:
 	Every tile has 
-
-
-
-
 
 
 # Important Grid functions:

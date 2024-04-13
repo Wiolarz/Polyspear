@@ -1,4 +1,6 @@
-# Ideas:
+# Battle notes
+
+## Ideas:
 
 Game could allow for more sides participate in a single battle. Requirments:
 Special map that has more spawn point groups
@@ -7,11 +9,9 @@ Proper result handling
 
 
 
-# Code structure:
+## Code structure:
 
 B_Grid battle_grid.gd extends grid_manager.gd so it 
-
-
 
 
 ## TODO
@@ -27,9 +27,6 @@ upon hovering over that faction, their roster is shown instead
 Modify general approach to:
 get army input
 give army output
-
-
-
 
 
 
