@@ -1,17 +1,19 @@
-[gd_scene load_steps=3 format=3 uid="uid://b4ndp6v0ts1on"]
+[gd_scene load_steps=2 format=3 uid="uid://b4ndp6v0ts1on"]
 
 [ext_resource type="Script" path="res://Scripts/UI/main_menu.gd" id="1_iln2i"]
-[ext_resource type="Script" path="res://Scripts/UI/wip_network_ui_test.gd" id="3_jlo2g"]
 
 [node name="MainMenu" type="CanvasLayer"]
 script = ExtResource("1_iln2i")
 
 [node name="Control" type="Control" parent="."]
 layout_mode = 3
-anchors_preset = 0
-offset_left = 1038.0
-offset_right = 1917.0
-offset_bottom = 1071.0
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
 
 [node name="MenuBar" type="MenuBar" parent="Control"]
 layout_mode = 2
@@ -58,74 +60,18 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 40
 text = "Test World 🗺"
 
-[node name="Multiplayer" type="Control" parent="."]
-layout_mode = 3
-anchors_preset = 0
-offset_left = 34.0
-offset_top = 59.0
-offset_right = 945.0
-offset_bottom = 1016.0
-script = ExtResource("3_jlo2g")
-
-[node name="VBoxContainer" type="VBoxContainer" parent="Multiplayer"]
-layout_mode = 0
-offset_right = 889.0
-offset_bottom = 970.0
-
-[node name="TextEditUsernameServer" type="TextEdit" parent="Multiplayer/VBoxContainer"]
-custom_minimum_size = Vector2(0, 70)
+[node name="Host" type="Button" parent="Control/VBoxContainer"]
 layout_mode = 2
-size_flags_vertical = 0
-text = "Zdzichu Server"
+theme_override_font_sizes/font_size = 40
+text = "Host a server 🪐"
 
-[node name="ButtonListen" type="Button" parent="Multiplayer/VBoxContainer"]
+[node name="Join" type="Button" parent="Control/VBoxContainer"]
 layout_mode = 2
-text = "server na"
-
-[node name="ButtonStopServer" type="Button" parent="Multiplayer/VBoxContainer"]
-layout_mode = 2
-text = "server stop"
-
-[node name="ServerInfo" type="Label" parent="Multiplayer/VBoxContainer"]
-layout_mode = 2
-text = "server info"
-
-[node name="HSeparator" type="HSeparator" parent="Multiplayer/VBoxContainer"]
-custom_minimum_size = Vector2(0, 50)
-layout_mode = 2
-
-[node name="TextEditUsernameClient" type="TextEdit" parent="Multiplayer/VBoxContainer"]
-custom_minimum_size = Vector2(0, 70)
-layout_mode = 2
-text = "Zdzichu Client"
-
-[node name="ButtonClientConnect" type="Button" parent="Multiplayer/VBoxContainer"]
-layout_mode = 2
-text = "connect"
-
-[node name="ButtonClientDisconnect" type="Button" parent="Multiplayer/VBoxContainer"]
-layout_mode = 2
-text = "disconnect"
-
-[node name="TextEditAddress" type="TextEdit" parent="Multiplayer/VBoxContainer"]
-custom_minimum_size = Vector2(0, 70)
-layout_mode = 2
-text = "127.0.0.1"
-
-[node name="TextEditPort" type="TextEdit" parent="Multiplayer/VBoxContainer"]
-custom_minimum_size = Vector2(0, 70)
-layout_mode = 2
-text = "12000"
-
-[node name="ClientInfo" type="Label" parent="Multiplayer/VBoxContainer"]
-layout_mode = 2
-text = "client info"
+text = "Join to server 🙌"
 
 [connection signal="id_pressed" from="Control/MenuBar/Editors Menu" to="." method="_on_editors_menu_id_pressed"]
 [connection signal="pressed" from="Control/VBoxContainer/TestBattle" to="." method="_on_test_battle_pressed"]
 [connection signal="pressed" from="Control/VBoxContainer/TestBattleWithSetup" to="." method="_on_test_battle_with_setup_pressed"]
 [connection signal="pressed" from="Control/VBoxContainer/TestWorld" to="." method="_on_test_world_pressed"]
-[connection signal="pressed" from="Multiplayer/VBoxContainer/ButtonListen" to="Multiplayer" method="start_server"]
-[connection signal="pressed" from="Multiplayer/VBoxContainer/ButtonStopServer" to="Multiplayer" method="stop_server"]
-[connection signal="pressed" from="Multiplayer/VBoxContainer/ButtonClientConnect" to="Multiplayer" method="client_connect"]
-[connection signal="pressed" from="Multiplayer/VBoxContainer/ButtonClientDisconnect" to="Multiplayer" method="client_disconnect"]
+[connection signal="pressed" from="Control/VBoxContainer/Host" to="." method="_on_host_pressed"]
+[connection signal="pressed" from="Control/VBoxContainer/Join" to="." method="_on_join_pressed"]

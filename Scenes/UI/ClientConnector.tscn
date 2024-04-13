@@ -1,0 +1,164 @@
+[gd_scene load_steps=5 format=3 uid="uid://dunktaeebf6f1"]
+
+[ext_resource type="Script" path="res://Scripts/UI/client_connector.gd" id="1_emdy6"]
+[ext_resource type="Shortcut" uid="uid://fuvss5hfg4q2" path="res://Scenes/UI/ShortcutGoBack.tres" id="2_5wlfn"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_avfjo"]
+bg_color = Color(0, 0.6, 0, 1)
+border_width_top = 2
+border_width_bottom = 2
+expand_margin_left = 30.0
+expand_margin_top = 5.0
+expand_margin_right = 30.0
+expand_margin_bottom = 5.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_mtx8d"]
+bg_color = Color(0, 0.67451, 0.776471, 1)
+border_width_top = 2
+border_width_bottom = 2
+expand_margin_left = 30.0
+expand_margin_top = 5.0
+expand_margin_right = 30.0
+expand_margin_bottom = 5.0
+
+[node name="ClientConnector" type="Control"]
+clip_contents = true
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("1_emdy6")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 14
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_top = -216.5
+offset_bottom = 216.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 30
+theme_override_constants/margin_top = 30
+theme_override_constants/margin_right = 30
+theme_override_constants/margin_bottom = 30
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 25
+
+[node name="UserName" type="VBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/UserName"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "Player name"
+
+[node name="LineEdit" type="LineEdit" parent="MarginContainer/VBoxContainer/UserName"]
+custom_minimum_size = Vector2(0, 70)
+layout_mode = 2
+size_flags_vertical = 0
+text = "Mag"
+placeholder_text = "Type your desired name here"
+
+[node name="ServerList" type="VBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/ServerList"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "Available servers"
+
+[node name="ColorRect" type="PanelContainer" parent="MarginContainer/VBoxContainer/ServerList"]
+custom_minimum_size = Vector2(0, 120)
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_avfjo")
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/ServerList/ColorRect"]
+custom_minimum_size = Vector2(0, 20)
+layout_mode = 2
+text = "Beautiful list of servers will go here.
+
+Also, when we select some server here, the big bottom button will get new label: CONNECT TO SELECTED SERVER. Probably manual connection inputs will be grayed out."
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 2
+
+[node name="ManualConnection" type="VBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/ManualConnection"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "Connect manually"
+
+[node name="ConnectionParameters" type="PanelContainer" parent="MarginContainer/VBoxContainer/ManualConnection"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_mtx8d")
+
+[node name="H" type="HBoxContainer" parent="MarginContainer/VBoxContainer/ManualConnection/ConnectionParameters"]
+layout_mode = 2
+theme_override_constants/separation = 25
+
+[node name="IPAddress" type="VBoxContainer" parent="MarginContainer/VBoxContainer/ManualConnection/ConnectionParameters/H"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/ManualConnection/ConnectionParameters/H/IPAddress"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "Address of server to connect"
+
+[node name="LineEdit" type="LineEdit" parent="MarginContainer/VBoxContainer/ManualConnection/ConnectionParameters/H/IPAddress"]
+custom_minimum_size = Vector2(0, 70)
+layout_mode = 2
+size_flags_vertical = 0
+text = "127.0.0.1"
+placeholder_text = "type server address here"
+
+[node name="Port" type="VBoxContainer" parent="MarginContainer/VBoxContainer/ManualConnection/ConnectionParameters/H"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/ManualConnection/ConnectionParameters/H/Port"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "Port"
+
+[node name="LineEdit" type="LineEdit" parent="MarginContainer/VBoxContainer/ManualConnection/ConnectionParameters/H/Port"]
+custom_minimum_size = Vector2(0, 70)
+layout_mode = 2
+size_flags_vertical = 0
+text = "12000"
+
+[node name="Separator" type="Control" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="ButtonConnect" type="Button" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 60
+text = "CONNECT TO ENTERED ADDRESS"
+
+[node name="ButtonBack" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 57.0
+offset_top = -124.0
+offset_right = 322.0
+offset_bottom = -10.0
+grow_vertical = 0
+shortcut = ExtResource("2_5wlfn")
+text = "Back"
+
+[connection signal="pressed" from="MarginContainer/VBoxContainer/ButtonConnect" to="." method="_on_button_listen_pressed"]
+[connection signal="pressed" from="ButtonBack" to="." method="_on_button_back_pressed"]

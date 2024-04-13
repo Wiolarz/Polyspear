@@ -17,10 +17,7 @@ F6 - Load
 
 
 func _process(_delta):
-	if Input.is_action_just_pressed("KEY_EXIT_GAME"):
-		get_tree().quit()
-		#get_tree().quit.call_deferred()  # In case normal quit doesnt work properly with save system TRY THIS
-	
+
 	if Input.is_action_just_pressed("KEY_RESTART_LEVEL"):
 		get_tree().reload_current_scene()
 	

@@ -1,6 +1,7 @@
-[gd_scene load_steps=5 format=3 uid="uid://bi1yq2awm2kc0"]
+[gd_scene load_steps=6 format=3 uid="uid://bi1yq2awm2kc0"]
 
 [ext_resource type="Script" path="res://Scripts/UI/debug_manager.gd" id="1_py7q0"]
+[ext_resource type="Shortcut" uid="uid://fuvss5hfg4q2" path="res://Scenes/UI/ShortcutGoBack.tres" id="2_48g4r"]
 [ext_resource type="Script" path="res://Scripts/UI/save_system.gd" id="2_hnyc1"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fdxbp"]
@@ -32,6 +33,7 @@ grow_vertical = 2
 
 [node name="BackToGame" type="Button" parent="MenuContainer"]
 layout_mode = 2
+shortcut = ExtResource("2_48g4r")
 text = "Back to game"
 
 [node name="WinBattle" type="Button" parent="MenuContainer"]

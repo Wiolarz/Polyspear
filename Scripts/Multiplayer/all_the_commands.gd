@@ -47,6 +47,20 @@ static func join_game(_server : Server, _peer : ENetPacketPeer, _params : Dictio
 static func order_game_move(_server : Server, _peer : ENetPacketPeer, _params : Dictionary) -> int:
 	return FAILED
 
+
+static func say(server : Server, peer : ENetPacketPeer, \
+		params : Dictionary) -> int:
+	var session : Server.Session = server.get_session_by_peer(peer)
+	if session == null:
+		return FAILED
+	if not "content" in params or not params["content"] is String:
+		return FAILED
+	var message : String = params["content"]
+	var author : String  = session.username
+	server.broadcast_chat_message(message, author)
+	server.get_parent().append_message_to_local_chat_log(message, author)
+	return OK
+
 #endregion
 
 
@@ -71,6 +85,19 @@ static func kicked(client : Client, params : Dictionary) -> int:
 	else:
 		print("kicked from server without good reason")
 	client.close()
+	return OK
+
+
+static func chat(client : Client, params : Dictionary) -> int:
+	if client.username == "":
+		return FAILED
+	if not "content" in params or not params["content"] is String:
+		return FAILED
+	if not "author" in params or not params["author"] is String:
+		return FAILED
+	var message = params["content"]
+	var author = params["author"]
+	client.get_parent().append_message_to_local_chat_log(message, author)
 	return OK
 
 #endregion

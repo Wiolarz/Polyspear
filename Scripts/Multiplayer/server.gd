@@ -13,6 +13,7 @@ var incoming_commands : Dictionary = { # Dictionary[String -> Command]
 	"logout": Command.create_on_server(AllTheCommands.logout),
 	"join_game": Command.create_on_server(AllTheCommands.join_game),
 	"order_game_move": Command.create_on_server(AllTheCommands.order_game_move),
+	"say": Command.create_on_server(AllTheCommands.say),
 }
 
 
@@ -92,6 +93,15 @@ func kick_peer(peer : ENetPacketPeer, reason : String) -> void:
 	peer.peer_disconnect_later()
 
 
+func kick_all() -> void:
+	var peers : Array[ENetPacketPeer] = []
+	for session in sessions:
+		if session.peer != null:
+			peers.append(session.peer)
+	for peer in peers:
+		kick_peer(peer, "no reason")
+
+
 func close():
 	print("Stopping server")
 	if enet_network == null:
@@ -115,6 +125,37 @@ func send_to_peer(peer : ENetPacketPeer, command_dictionary : Dictionary):
 		return
 	var content : PackedByteArray = var_to_bytes(command_dictionary)
 	peer.send(0, content, ENetPacketPeer.FLAG_RELIABLE)
+
+
+func broadcast(command_dictionary : Dictionary):
+	if not command_dictionary is Dictionary:
+		return
+	var content : PackedByteArray = var_to_bytes(command_dictionary)
+	enet_network.broadcast(0, content, ENetPacketPeer.FLAG_RELIABLE)
+
+
+func broadcast_movement(movement : MoveInfo):
+	var message : Dictionary = {
+		"name": "replay_game_move",
+		"type": movement.move_type,
+		"summon_unit": movement.summon_unit,
+		"source": movement.move_source,
+		"target": movement.target_tile_coord,
+	}
+	broadcast(message)
+
+
+func broadcast_chat_message(message : String, author : String):
+	var packet : Dictionary = {
+		"name": "chat",
+		"content": message,
+		"author": author,
+	}
+	broadcast(packet)
+
+
+func broadcast_say(message : String):
+	return broadcast_chat_message(message, server_username)
 
 
 func roll() -> void:

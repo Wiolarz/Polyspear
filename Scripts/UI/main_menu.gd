@@ -10,6 +10,7 @@ extends CanvasLayer
 
 @export var world_map : WorldMap
 
+@onready var main_page : Control = $Control
 
 func _on_test_game_pressed():
 	assert(world_setup != null, "No game setup")
@@ -23,14 +24,52 @@ func _on_test_game_pressed():
 
 	start_game(players)
 
+
 func start_game(players:Array[Player] = []):
 	toggle_menu_visibility()
 	IM.players = players
 	WM.start_world(world_setup.world_map)
 
+
 func toggle_menu_visibility():
 	visible = not visible
 
+
+func clear_main_menu():
+	main_page.visible = false
+	for child in get_children():
+		if (child.name == "Control"):
+			continue
+		remove_child(child)
+
+
+func go_to_main_menu():
+	clear_main_menu()
+	main_page.visible = true
+
+
+func go_to_host_lobby():
+	clear_main_menu()
+	var host_menu = get_node_or_null("HostMenu")
+	if host_menu:
+		host_menu.visible = true
+		return
+	host_menu = load("res://Scenes/UI/HostMenu.tscn").instantiate()
+	add_child(host_menu)
+	host_menu.name = "HostMenu"
+	host_menu.visible = true
+
+
+func go_to_client_lobby():
+	clear_main_menu()
+	var client_menu = get_node_or_null("ClientMenu")
+	if client_menu:
+		client_menu.visible = true
+		return
+	client_menu = load("res://Scenes/UI/ClientMenu.tscn").instantiate()
+	add_child(client_menu)
+	client_menu.name = "ClientMenu"
+	client_menu.visible = true
 
 
 func _on_map_creator_pressed():
@@ -70,8 +109,17 @@ func _on_test_battle_with_setup_pressed():
 	battle_setup.visible = !battle_setup.visible
 	toggle_menu_visibility()
 
+
 func _on_editors_menu_id_pressed(id):
 	match id:
 		0: _on_map_creator_pressed()
 		1: _on_unit_editor_pressed()
 		_: pass
+
+
+func _on_host_pressed():
+	go_to_host_lobby()
+
+
+func _on_join_pressed():
+	go_to_client_lobby()

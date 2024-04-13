@@ -1,0 +1,90 @@
+[gd_scene load_steps=3 format=3 uid="uid://vnybjv76iw0f"]
+
+[ext_resource type="Script" path="res://Scripts/UI/server_info_and_chat.gd" id="1_rt8it"]
+[ext_resource type="Shortcut" uid="uid://fuvss5hfg4q2" path="res://Scenes/UI/ShortcutGoBack.tres" id="2_jf4sm"]
+
+[node name="ServerInfoAndChat" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("1_rt8it")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 30
+theme_override_constants/margin_top = 30
+theme_override_constants/margin_right = 30
+theme_override_constants/margin_bottom = 30
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Buttons" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="ButtonStop" type="Button" parent="MarginContainer/VBoxContainer/Buttons"]
+layout_mode = 2
+size_flags_horizontal = 3
+shortcut = ExtResource("2_jf4sm")
+text = "Stop server"
+
+[node name="ButtonKickAll" type="Button" parent="MarginContainer/VBoxContainer/Buttons"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Kick all players"
+
+[node name="ServerInfo" type="ScrollContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+follow_focus = true
+horizontal_scroll_mode = 0
+vertical_scroll_mode = 2
+
+[node name="Log" type="Label" parent="MarginContainer/VBoxContainer/ServerInfo"]
+layout_mode = 2
+text = "server info"
+
+[node name="Chat" type="VBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="LogScroll" type="ScrollContainer" parent="MarginContainer/VBoxContainer/Chat"]
+layout_mode = 2
+size_flags_vertical = 3
+follow_focus = true
+horizontal_scroll_mode = 0
+vertical_scroll_mode = 2
+
+[node name="Log" type="Label" parent="MarginContainer/VBoxContainer/Chat/LogScroll"]
+layout_mode = 2
+text = "Zdzichu: siemanko"
+
+[node name="Writing" type="HBoxContainer" parent="MarginContainer/VBoxContainer/Chat"]
+layout_mode = 2
+
+[node name="ChatMessage" type="LineEdit" parent="MarginContainer/VBoxContainer/Chat/Writing"]
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "type some beautiful words here..."
+middle_mouse_paste_enabled = false
+caret_blink = true
+
+[node name="ButtonSend" type="Button" parent="MarginContainer/VBoxContainer/Chat/Writing"]
+layout_mode = 2
+text = "Send"
+
+[connection signal="pressed" from="MarginContainer/VBoxContainer/Buttons/ButtonStop" to="." method="_on_button_stop_pressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/Buttons/ButtonKickAll" to="." method="_on_button_kick_all_pressed"]
+[connection signal="text_submitted" from="MarginContainer/VBoxContainer/Chat/Writing/ChatMessage" to="." method="_on_chat_message_text_submitted"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/Chat/Writing/ButtonSend" to="." method="_on_button_send_pressed"]

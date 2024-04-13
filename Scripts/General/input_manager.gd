@@ -45,6 +45,25 @@ var current_camera_position = camera_position.WORLD
 
 var raging_battle : bool
 
+
+const default_usernames : Array[String] = [
+	"Zdzichu",
+	"Mag",
+	"Gołąb",
+	"Polygończyk",
+	"Przemek",
+	"Czarodziej",
+	"Student",
+	"Stary",
+	"Cebularz",
+	"DJ Skwarka",
+	"Książę żab Marcin",
+	"Gracz Doty",
+]
+
+
+var chat_log : String
+
 #region Game setup
 
 func get_active_players() -> Array[Player]:
@@ -94,44 +113,60 @@ func go_to_main_menu():
 	BM.close_battle()
 	get_node("/root/MainScene/MainMenu").toggle_menu_visibility()
 
-func get_server():
+func make_server():
 	var node = get_node_or_null("TheServer")
-	if node == null:
-		var client = get_node_or_null("TheClient")
-		if client:
-			client.close()
-			client.queue_free()
-			remove_child(client)
-		node = Server.new()
-		node.name = "TheServer"
-		add_child(node)
-	return node
+	if node != null:
+		return
+	var client = get_node_or_null("TheClient")
+	if client:
+		client.close()
+		client.queue_free()
+		remove_child(client)
+	node = Server.new()
+	node.name = "TheServer"
+	add_child(node)
 
-func get_client():
+
+func make_client() -> void:
 	var node = get_node_or_null("TheClient")
-	if node == null:
-		var server = get_node_or_null("TheServer")
-		if server:
-			server.close()
-			server.queue_free()
-			remove_child(server)
-		node = Client.new()
-		node.name = "TheClient"
-		add_child(node)
-	return node
+	if node != null:
+		return
+	var server = get_node_or_null("TheServer")
+	if server:
+		server.close()
+		server.queue_free()
+		remove_child(server)
+	node = Client.new()
+	node.name = "TheClient"
+	add_child(node)
+
 
 func server_listen(address : String, port : int, username : String):
+	make_server()
 	get_server().listen(address, port, username)
 
+
 func server_close():
+	if not get_server():
+		return
 	get_server().close()
 
+
+func server_kick_all():
+	if not get_server():
+		return
+	get_server().kick_all()
+
+
 func client_connect_and_login(address : String, port : int, username : String):
+	make_client()
 	get_client().connect_to_server(address, port)
 	get_client().queue_login(username)
 
 
 func client_logout_and_disconnect():
+	if not get_client():
+		return
 	get_client().logout_if_needed()
 	get_client().close()
 
@@ -153,15 +188,64 @@ func _physics_process(_delta):
 	# 60FPS -> timer=60 1 sec
 
 
-func server_connection() -> bool:
-	return false
+func get_server() -> Server:
+	var server = get_node_or_null("TheServer")
+	if server is Server:
+		return server
+	return null
 
-func multiplayer_send():
+
+func get_client() -> Client:
+	var client = get_node_or_null("TheClient")
+	if client is Client:
+		return client
+	return null
+
+
+func server_connection() -> bool:
+	return get_server() and get_server().enet_network
+
+
+func client_connection() -> bool:
+	return get_client() and get_client().enet_network
+
+
+func get_current_name() -> String:
+	if get_server():
+		return get_server().server_username
+	return "(( you ))"
+
+
+func send_chat_message(message : String) -> void:
+	var server = get_server()
+	var client = get_client()
+	if not client:
+		append_message_to_local_chat_log(message, get_current_name())
+	if server:
+		server.broadcast_say(message)
+	elif client:
+		client.queue_say(message)
+
+
+func append_message_to_local_chat_log(message : String, \
+		author : String) -> void:
+	append_to_local_chat_log("%s: %s" % [ author, message ])
+
+
+func append_to_local_chat_log(line : String) -> void:
+	chat_log += line + '\n'
+
+
+func clear_local_chat_log() -> void:
+	chat_log = ""
+
+
+func multiplayer_send(movement : MoveInfo):
 	# CLIENT -> server
-	if not server_connection:
+	var client : Client = get_client()
+	if not client:
 		return
-	
-	pass
+	client.queue_movement(movement)
 
 
 func multiplayer_receive():
@@ -169,10 +253,17 @@ func multiplayer_receive():
 	pass
 
 
-func multiplayer_broadcast_send():
+func multiplayer_broadcast_send(movement : MoveInfo):
 	# SERVER -> clients
-	pass
+	var server : Server = get_server()
+	if not server:
+		return
+	server.broadcast_movement(movement)
 
 func multiplayer_broadcast_receive():
 	# server -> CLIENT 
 	pass
+
+
+func get_random_username() -> String:
+	return default_usernames[randi() % default_usernames.size()]

@@ -1,0 +1,107 @@
+[gd_scene load_steps=3 format=3 uid="uid://dv7ndu5dc7rex"]
+
+[ext_resource type="Script" path="res://Scripts/UI/server_creator.gd" id="1_6sh1g"]
+[ext_resource type="Shortcut" uid="uid://fuvss5hfg4q2" path="res://Scenes/UI/ShortcutGoBack.tres" id="2_m7mtt"]
+
+[node name="ServerCreator" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("1_6sh1g")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 14
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_top = -216.5
+offset_bottom = 216.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 30
+theme_override_constants/margin_top = 30
+theme_override_constants/margin_right = 30
+theme_override_constants/margin_bottom = 30
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 25
+
+[node name="ServerName" type="VBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/ServerName"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "Name of hosting Player"
+
+[node name="LineEdit" type="LineEdit" parent="MarginContainer/VBoxContainer/ServerName"]
+custom_minimum_size = Vector2(0, 70)
+layout_mode = 2
+size_flags_vertical = 0
+text = "Zdzichu Server"
+
+[node name="BindingOptions" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 25
+
+[node name="IPAddress" type="VBoxContainer" parent="MarginContainer/VBoxContainer/BindingOptions"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/BindingOptions/IPAddress"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "Address to listen on"
+
+[node name="LineEdit" type="LineEdit" parent="MarginContainer/VBoxContainer/BindingOptions/IPAddress"]
+custom_minimum_size = Vector2(0, 70)
+layout_mode = 2
+size_flags_vertical = 0
+text = "127.0.0.1"
+placeholder_text = "type 0.0.0.0 here if you don't know what to type here"
+
+[node name="Port" type="VBoxContainer" parent="MarginContainer/VBoxContainer/BindingOptions"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/BindingOptions/Port"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "Port"
+
+[node name="LineEdit" type="LineEdit" parent="MarginContainer/VBoxContainer/BindingOptions/Port"]
+custom_minimum_size = Vector2(0, 70)
+layout_mode = 2
+size_flags_vertical = 0
+text = "12000"
+
+[node name="Separator" type="Control" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="ButtonListen" type="Button" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 60
+text = "START SERVER"
+
+[node name="ButtonBack" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 83.0
+offset_top = -197.0
+offset_right = 356.0
+offset_bottom = -60.0
+grow_vertical = 0
+shortcut = ExtResource("2_m7mtt")
+text = "Back"
+
+[connection signal="pressed" from="MarginContainer/VBoxContainer/ButtonListen" to="." method="_on_button_listen_pressed"]
+[connection signal="pressed" from="ButtonBack" to="." method="_on_button_back_pressed"]

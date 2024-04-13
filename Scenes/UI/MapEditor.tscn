@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=3 uid="uid://l0kojvcxbfky"]
+[gd_scene load_steps=4 format=3 uid="uid://l0kojvcxbfky"]
 
 [ext_resource type="Script" path="res://Scripts/Development/map_creator.gd" id="1_y7q6u"]
 [ext_resource type="Script" path="res://Scripts/UI/save_system.gd" id="2_ehahi"]
+[ext_resource type="Shortcut" uid="uid://fuvss5hfg4q2" path="res://Scenes/UI/ShortcutGoBack.tres" id="3_a1hl2"]
 
 [node name="MapEditor" type="CanvasLayer" node_paths=PackedStringArray("map_file_name_input")]
 process_mode = 3
@@ -81,6 +82,7 @@ offset_left = 9.0
 offset_top = 878.0
 offset_right = 55.0
 offset_bottom = 941.0
+shortcut = ExtResource("3_a1hl2")
 text = "◀"
 
 [connection signal="pressed" from="MenuContainer/NewWorldMap" to="." method="_on_new_world_map_pressed"]

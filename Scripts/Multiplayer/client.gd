@@ -9,6 +9,7 @@ var incoming_commands : Dictionary = {
 	"set_session": Command.create_on_client(AllTheCommands.set_session),
 	"kicked": Command.create_on_client(AllTheCommands.kicked),
 	"replay_game_move": Command.create_on_client(AllTheCommands.replay_game_move),
+	"chat": Command.create_on_client(AllTheCommands.chat),
 }
 
 @onready var enet_network : ENetConnection = null
@@ -37,6 +38,25 @@ func queue_login(desired_username : String) -> void:
 	var packet : Dictionary = {
 		"name": "login",
 		"username": desired_username,
+	}
+	queue_message_to_server(packet)
+
+
+func queue_movement(movement : MoveInfo):
+	var message : Dictionary = {
+		"name": "order_game_move",
+		"type": movement.move_type,
+		"summon_unit": movement.summon_unit,
+		"source": movement.move_source,
+		"target": movement.target_tile_coord,
+	}
+	queue_message_to_server(message)
+
+
+func queue_say(message : String):
+	var packet : Dictionary = {
+		"name": "say",
+		"content": message,
 	}
 	queue_message_to_server(packet)
 
