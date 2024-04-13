@@ -3,13 +3,14 @@ extends Node
 
 
 var username : String = ""
-var peer : ENetPacketPeer = null # TODO peer = server_peer fix local peer in roll()
+var peer : ENetPacketPeer = null
 var send_queue : Array = []
 var incoming_commands : Dictionary = {
-	"set_session": Command.create_on_client(AllTheCommands.set_session),
-	"kicked": Command.create_on_client(AllTheCommands.kicked),
-	"replay_game_move": Command.create_on_client(AllTheCommands.replay_game_move),
-	"chat": Command.create_on_client(AllTheCommands.chat),
+	"set_session": Command.create_on_client(AllTheCommands.client_set_session),
+	"kicked": Command.create_on_client(AllTheCommands.client_kicked),
+	"replay_game_move": Command.create_on_client( \
+		AllTheCommands.client_replay_game_move),
+	"chat": Command.create_on_client(AllTheCommands.client_chat),
 }
 
 @onready var enet_network : ENetConnection = null

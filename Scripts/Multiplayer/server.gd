@@ -9,16 +9,17 @@ class Session:
 
 
 var incoming_commands : Dictionary = { # Dictionary[String -> Command]
-	"login": Command.create_on_server(AllTheCommands.login),
-	"logout": Command.create_on_server(AllTheCommands.logout),
-	"join_game": Command.create_on_server(AllTheCommands.join_game),
-	"order_game_move": Command.create_on_server(AllTheCommands.order_game_move),
-	"say": Command.create_on_server(AllTheCommands.say),
+	"login": Command.create_on_server(AllTheCommands.server_login),
+	"logout": Command.create_on_server(AllTheCommands.server_logout),
+	"join_game": Command.create_on_server(AllTheCommands.server_join_game),
+	"order_game_move": Command.create_on_server( \
+		AllTheCommands.server_order_game_move),
+	"say": Command.create_on_server(AllTheCommands.server_say),
 }
 
 
 var server_username : String = ""
-@onready var sessions : Array = [] # Array[Session] TODO other structure for speed
+@onready var sessions : Array = []
 @onready var enet_network : ENetConnection = null
 
 #region Connection
@@ -32,7 +33,8 @@ func listen(address : String, port : int, username : String):
 	var error = enet_network.create_host_bound(address, port, 32, 0, 0, 0)
 	if error == OK:
 		server_username = username
-		print("Server successfully started to listen on %s:%d" % [ address, port ])
+		print("Server successfully started to listen on %s:%d" % [ \
+			address, port ])
 		return
 	print("Could not start to listen: %d" % error)
 	enet_network.destroy()
@@ -188,22 +190,29 @@ func roll() -> void:
 			ENetConnection.EventType.EVENT_RECEIVE:
 				var packet : PackedByteArray = peer.get_packet()
 				if channel != 0:
-					print("Peer %x sent something on different channel than 0 -- ignoring" % peer.get_instance_id())
+					print(("Peer %x sent something on different channel " + \
+						"than 0 -- ignoring") % peer.get_instance_id())
 					break
 				var decoded = MultiCommon.decode_packet(packet)
 				if not decoded:
-					print("Peer %x sent something not being a command" % peer.get_instance_id())
+					print("Peer %x sent something not being a command" % \
+						peer.get_instance_id())
 					break
 				var command_name = decoded["name"]
-				print("peer %x sent us command %s" % [ peer.get_instance_id(), command_name ])
+				print("peer %x sent us command %s" % [ peer.get_instance_id(), \
+					command_name ])
 				if not command_name in incoming_commands:
-					print("peer %x sent us unknown command %s" % [ peer.get_instance_id(), command_name ])
+					print("peer %x sent us unknown command %s" % [ \
+						peer.get_instance_id(), command_name ])
 					break
 				var command = incoming_commands[command_name]
 				if command.server_callback:
-					var result = (command.server_callback).call(self, peer, decoded)
+					var result = (command.server_callback).call(self, peer, \
+						decoded)
 					if result != 0:
-						print("Peer %x sent us %s command, but we couldn't process it well" % [ peer.get_instance_id(), command_name ])
+						print("Peer %x sent us %s command, but we couldn't " + \
+							"process it well" % [ peer.get_instance_id(), \
+							command_name ])
 					print("command processed")
 				if command.game_callback:
 					pass

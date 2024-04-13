@@ -3,7 +3,8 @@ extends Object
 
 #region Server
 
-static func login(server : Server, peer : ENetPacketPeer, params : Dictionary) -> int:
+static func server_login(server : Server, peer : ENetPacketPeer, \
+		params : Dictionary) -> int:
 	if not "username" in params or not params["username"] is String:
 		return FAILED
 	if server.get_session_by_peer(peer) != null:
@@ -32,7 +33,8 @@ static func login(server : Server, peer : ENetPacketPeer, params : Dictionary) -
 	return OK
 
 
-static func logout(server : Server, peer : ENetPacketPeer, _params : Dictionary) -> int:
+static func server_logout(server : Server, peer : ENetPacketPeer, \
+		_params : Dictionary) -> int:
 	var session : Server.Session = server.get_session_by_peer(peer)
 	if session == null:
 		return OK
@@ -40,15 +42,17 @@ static func logout(server : Server, peer : ENetPacketPeer, _params : Dictionary)
 	return OK
 
 
-static func join_game(_server : Server, _peer : ENetPacketPeer, _params : Dictionary) -> int:
+static func server_join_game(_server : Server, _peer : ENetPacketPeer, \
+		_params : Dictionary) -> int:
 	return FAILED
 
 
-static func order_game_move(_server : Server, _peer : ENetPacketPeer, _params : Dictionary) -> int:
+static func server_order_game_move(_server : Server, _peer : ENetPacketPeer, \
+		_params : Dictionary) -> int:
 	return FAILED
 
 
-static func say(server : Server, peer : ENetPacketPeer, \
+static func server_say(server : Server, peer : ENetPacketPeer, \
 		params : Dictionary) -> int:
 	var session : Server.Session = server.get_session_by_peer(peer)
 	if session == null:
@@ -66,11 +70,12 @@ static func say(server : Server, peer : ENetPacketPeer, \
 
 #region Client
 
-static func replay_game_move(_client : Client, _params : Dictionary) -> int:
+static func client_replay_game_move(_client : Client, \
+		_params : Dictionary) -> int:
 	return FAILED
 
 
-static func set_session(client : Client, params : Dictionary) -> int:
+static func client_set_session(client : Client, params : Dictionary) -> int:
 	if not "username" in params or not params["username"] is String:
 		return FAILED
 	var username : String = params["username"]
@@ -79,7 +84,7 @@ static func set_session(client : Client, params : Dictionary) -> int:
 	return OK
 
 
-static func kicked(client : Client, params : Dictionary) -> int:
+static func client_kicked(client : Client, params : Dictionary) -> int:
 	if "reason" in params and params["reason"] is String:
 		print("kicked from server with reason: %s" % params["reason"])
 	else:
@@ -88,7 +93,7 @@ static func kicked(client : Client, params : Dictionary) -> int:
 	return OK
 
 
-static func chat(client : Client, params : Dictionary) -> int:
+static func client_chat(client : Client, params : Dictionary) -> int:
 	if client.username == "":
 		return FAILED
 	if not "content" in params or not params["content"] is String:
