@@ -9,7 +9,7 @@ bg_color = Color(0, 0.341176, 0.219608, 1)
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tn1ik"]
 bg_color = Color(0.396078, 0.0784314, 0, 1)
 
-[node name="UiBattleDebugSetup" type="CanvasLayer"]
+[node name="UiBattleSetup" type="CanvasLayer"]
 script = ExtResource("1_m3h17")
 default_battle_setup = ExtResource("2_ahbvw")
 

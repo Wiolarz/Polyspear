@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://Scripts/Development/map_creator.gd" id="1_y7q6u"]
 [ext_resource type="Script" path="res://Scripts/UI/save_system.gd" id="2_ehahi"]
-[ext_resource type="Shortcut" uid="uid://fuvss5hfg4q2" path="res://Scenes/UI/ShortcutGoBack.tres" id="3_a1hl2"]
+[ext_resource type="Shortcut" uid="uid://fuvss5hfg4q2" path="res://Resources/Shortcuts/go_back.tres" id="3_a1hl2"]
 
 [node name="MapEditor" type="CanvasLayer" node_paths=PackedStringArray("map_file_name_input")]
 process_mode = 3

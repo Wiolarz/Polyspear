@@ -12,30 +12,12 @@ extends CanvasLayer
 
 @onready var main_page : Control = $Control
 
-func _on_test_game_pressed():
-	assert(world_setup != null, "No game setup")
-
-	var players : Array[Player] = []
-	for player_set in world_setup.player_settings:
-		var player = player_set.create_player()
-		players.append(player)
-
-	world_map = world_setup.world_map
-
-	start_game(players)
-
-
-func start_game(players:Array[Player] = []):
-	toggle_menu_visibility()
-	IM.players = players
-	WM.start_world(world_setup.world_map)
-
 
 func toggle_menu_visibility():
 	visible = not visible
 
 
-func clear_main_menu():
+func clear_main_menu(): #TODO needs refactor
 	main_page.visible = false
 	for child in get_children():
 		if (child.name == "Control"):
@@ -47,6 +29,60 @@ func go_to_main_menu():
 	clear_main_menu()
 	main_page.visible = true
 
+
+#region Manual Tests
+
+func _on_test_battle_pressed():
+	# Quick Battle map test
+	assert(maunual_tester != null, "No manual tester setup")
+
+	
+	maunual_tester.test_battle()
+	toggle_menu_visibility()
+
+
+func _on_test_world_pressed():
+	# World map test
+	assert(maunual_tester != null, "No manual tester setup")
+
+	maunual_tester.test_world()
+	toggle_menu_visibility()
+
+#endregion
+
+
+#region Editors
+
+func _on_editors_menu_id_pressed(id):
+	match id:
+		0: _on_map_creator_pressed()
+		1: _on_unit_editor_pressed()
+		_: pass
+
+
+func _on_unit_editor_pressed():
+	unit_editor.visible = !unit_editor.visible
+	toggle_menu_visibility()
+
+
+func _on_map_creator_pressed():
+	IM.draw_mode = true
+	map_creator.open_draw_menu()
+	toggle_menu_visibility()
+
+#endregion
+
+
+#region Gameplay
+
+func _on_battle_setup_pressed():
+	battle_setup.visible = !battle_setup.visible
+	toggle_menu_visibility()
+
+#endregion
+
+
+#region Multiplayer
 
 func go_to_host_lobby():
 	clear_main_menu()
@@ -72,54 +108,11 @@ func go_to_client_lobby():
 	client_menu.visible = true
 
 
-func _on_map_creator_pressed():
-	IM.draw_mode = true
-	map_creator.open_draw_menu()
-	toggle_menu_visibility()
-
-
-#region Tests
-
-func _on_test_battle_pressed():
-	assert(maunual_tester != null, "No manual tester setup")
-
-	
-	maunual_tester.test_battle()
-	toggle_menu_visibility()
-
-
-
-func _on_test_world_pressed():
-	assert(maunual_tester != null, "No manual tester setup")
-
-	maunual_tester.test_world()
-	toggle_menu_visibility()
-
-
-
-#endregion
-
-
-func _on_unit_editor_pressed():
-	unit_editor.visible = !unit_editor.visible
-	toggle_menu_visibility()
-
-
-func _on_test_battle_with_setup_pressed():
-	battle_setup.visible = !battle_setup.visible
-	toggle_menu_visibility()
-
-
-func _on_editors_menu_id_pressed(id):
-	match id:
-		0: _on_map_creator_pressed()
-		1: _on_unit_editor_pressed()
-		_: pass
-
-
 func _on_host_pressed():
 	go_to_host_lobby()
 
 
 func _on_join_pressed():
 	go_to_client_lobby()
+
+#endregion

@@ -1,6 +1,9 @@
 class_name ServerCreator
 extends Control
 
+"""
+UI - smalll menu where you setup a server
+"""
 
 var host_menu : HostMenu = null
 
@@ -11,6 +14,10 @@ var host_menu : HostMenu = null
 	$MarginContainer/VBoxContainer/BindingOptions/IPAddress/LineEdit
 @onready var server_port_line = \
 	$MarginContainer/VBoxContainer/BindingOptions/Port/LineEdit
+
+
+func _ready():
+	server_name_line.text = IM.get_random_username()
 
 
 func start_server():
@@ -28,10 +35,6 @@ func get_port():
 
 func get_username_server():
 	return server_name_line.text
-
-
-func _ready():
-	server_name_line.text = IM.get_random_username()
 
 
 func _on_button_listen_pressed():

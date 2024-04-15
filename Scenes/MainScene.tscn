@@ -7,7 +7,7 @@
 [ext_resource type="Resource" uid="uid://byhcrnn41k1aa" path="res://Resources/Tests/Battle_setups/pvp_EvsO_basic.tres" id="5_2fgww"]
 [ext_resource type="PackedScene" uid="uid://l0kojvcxbfky" path="res://Scenes/UI/MapEditor.tscn" id="6_6kfr8"]
 [ext_resource type="PackedScene" uid="uid://b4ndp6v0ts1on" path="res://Scenes/UI/MainMenu.tscn" id="6_yyega"]
-[ext_resource type="PackedScene" uid="uid://cx1ypmps7i3tn" path="res://Scenes/UI/BattleDebugSetup.tscn" id="9_62vgl"]
+[ext_resource type="PackedScene" uid="uid://cx1ypmps7i3tn" path="res://Scenes/UI/BattleSetup.tscn" id="9_62vgl"]
 [ext_resource type="PackedScene" uid="uid://dy1m42bfkq2wv" path="res://Scenes/UI/UnitEditor.tscn" id="9_ik2pb"]
 
 [node name="MainScene" type="Node"]
@@ -32,7 +32,7 @@ editor_description = "Main interface"
 maunual_tester = NodePath("../GeneralTest")
 map_creator = NodePath("../MapEditor")
 unit_editor = NodePath("../UnitEditor")
-battle_setup = NodePath("../BattleDebugSetup")
+battle_setup = NodePath("../BattleSetup")
 world_setup = ExtResource("3_yxa6s")
 
 [node name="GeneralTest" type="Node" parent="."]
@@ -40,5 +40,5 @@ script = ExtResource("3_p68en")
 world_setup = ExtResource("3_yxa6s")
 test_battle_setup = ExtResource("5_2fgww")
 
-[node name="BattleDebugSetup" parent="." instance=ExtResource("9_62vgl")]
+[node name="BattleSetup" parent="." instance=ExtResource("9_62vgl")]
 visible = false

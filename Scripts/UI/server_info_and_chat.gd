@@ -1,6 +1,9 @@
 class_name ServerInfoAndChat
 extends Control
 
+"""
+UI - Server Admin tools + chat box
+"""
 
 @onready var chat_line_edit = \
 	$MarginContainer/VBoxContainer/Chat/Writing/ChatMessage
@@ -9,13 +12,13 @@ extends Control
 	$MarginContainer/VBoxContainer/Chat/LogScroll
 
 
+#region Chat
+func update_chat():
+	chat_container.get_node("Log").text = IM.chat_log
 
-func stop_server():
-	IM.server_close()
 
-
-func kick_all_players():
-	IM.server_kick_all()
+func scroll_chat_down():
+	chat_container.get_v_scroll_bar().ratio = 1
 
 
 func send_chat_message():
@@ -27,12 +30,35 @@ func send_chat_message():
 	scroll_chat_down()
 
 
-func update_chat():
-	chat_container.get_node("Log").text = IM.chat_log
+func _on_button_send_pressed():
+	send_chat_message()
 
 
-func scroll_chat_down():
-	chat_container.get_v_scroll_bar().ratio = 1
+func _on_chat_message_text_submitted(_new_text):
+	# _new_text - default Godot LineEdit requires a single variable
+	send_chat_message()
+	
+#endregion
+
+
+#region Server Admin Buttons
+
+func stop_server():
+	IM.server_close()
+
+
+func kick_all_players():
+	IM.server_kick_all()
+
+
+func _on_button_stop_pressed():
+	stop_server()
+
+
+func _on_button_kick_all_pressed():
+	kick_all_players()
+
+#endregion
 
 
 func update_server_info():
@@ -78,22 +104,6 @@ func update_server_info():
 	label.text = label_content
 
 
-func _on_button_send_pressed():
-	send_chat_message()
-
-
-func _on_button_stop_pressed():
-	stop_server()
-
-
-func _on_button_kick_all_pressed():
-	kick_all_players()
-
-
-func _on_chat_message_text_submitted(new_text):
-	send_chat_message()
-
-
-func _process(_delta : float) -> void:
+func _process(_delta):
 	update_server_info()
 	update_chat()

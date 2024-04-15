@@ -62,7 +62,8 @@ func _on_button_disconnect_pressed():
 	disconnect_from_server()
 
 
-func _on_chat_message_text_submitted(new_text):
+func _on_chat_message_text_submitted(_new_text):
+	# _new_text - default Godot LineEdit requires a single variable
 	send_chat_message()
 
 

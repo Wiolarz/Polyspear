@@ -1,7 +1,7 @@
 [gd_scene load_steps=5 format=3 uid="uid://dunktaeebf6f1"]
 
 [ext_resource type="Script" path="res://Scripts/UI/client_connector.gd" id="1_emdy6"]
-[ext_resource type="Shortcut" uid="uid://fuvss5hfg4q2" path="res://Scenes/UI/ShortcutGoBack.tres" id="2_5wlfn"]
+[ext_resource type="Shortcut" uid="uid://fuvss5hfg4q2" path="res://Resources/Shortcuts/go_back.tres" id="2_5wlfn"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_avfjo"]
 bg_color = Color(0, 0.6, 0, 1)

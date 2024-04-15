@@ -2,6 +2,10 @@ class_name ClientConnector
 extends Control
 
 
+"""
+UI - smalll menu where you connect to a server
+"""
+
 var client_menu : ClientMenu = null
 
 
@@ -13,9 +17,8 @@ var client_menu : ClientMenu = null
 	$MarginContainer/VBoxContainer/ManualConnection/ConnectionParameters/H/Port/LineEdit
 
 
-func connect_to_server():
-	IM.clear_local_chat_log()
-	IM.client_connect_and_login(get_address(), get_port(), get_username())
+func _ready():
+	username_line.text = IM.get_random_username()
 
 
 func get_address():
@@ -36,8 +39,9 @@ func get_username():
 	return username_line.text
 
 
-func _ready():
-	username_line.text = IM.get_random_username()
+func connect_to_server():
+	IM.clear_local_chat_log()
+	IM.client_connect_and_login(get_address(), get_port(), get_username())
 
 
 func _on_button_listen_pressed():

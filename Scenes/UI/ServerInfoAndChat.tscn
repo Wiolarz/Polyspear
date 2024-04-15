@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://vnybjv76iw0f"]
 
 [ext_resource type="Script" path="res://Scripts/UI/server_info_and_chat.gd" id="1_rt8it"]
-[ext_resource type="Shortcut" uid="uid://fuvss5hfg4q2" path="res://Scenes/UI/ShortcutGoBack.tres" id="2_jf4sm"]
+[ext_resource type="Shortcut" uid="uid://fuvss5hfg4q2" path="res://Resources/Shortcuts/go_back.tres" id="2_jf4sm"]
 
 [node name="ServerInfoAndChat" type="Control"]
 layout_mode = 3

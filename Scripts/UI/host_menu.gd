@@ -1,6 +1,9 @@
 class_name HostMenu
 extends Control
 
+"""
+Manager scripts that displays specific UI 
+"""
 
 @onready var server_creator = \
 	load("res://Scenes/UI/ServerCreator.tscn").instantiate()

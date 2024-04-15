@@ -19,10 +19,11 @@ size_flags_vertical = 3
 layout_mode = 2
 anchor_left = 1.003
 anchor_right = 1.003
-offset_left = -547.637
-offset_top = 6.0
-offset_right = -8.63702
-offset_bottom = 80.0
+offset_left = -1787.76
+offset_top = 29.0
+offset_right = -1245.76
+offset_bottom = 176.0
+scale = Vector2(2, 2)
 
 [node name="Editors Menu" type="PopupMenu" parent="Control/MenuBar"]
 size = Vector2i(238, 126)
@@ -37,11 +38,12 @@ layout_mode = 1
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -564.0
-offset_top = 239.0
-offset_right = -25.0
-offset_bottom = 721.0
+offset_left = -825.0
+offset_top = 143.0
+offset_right = -286.0
+offset_bottom = 625.0
 grow_horizontal = 0
+scale = Vector2(1.5, 1.5)
 theme_override_constants/separation = 30
 
 [node name="TestBattle" type="Button" parent="Control/VBoxContainer"]
@@ -50,10 +52,10 @@ theme_override_font_sizes/font_size = 40
 text = " Quick Battle ⚔⚡
 "
 
-[node name="TestBattleWithSetup" type="Button" parent="Control/VBoxContainer"]
+[node name="BattleSetup" type="Button" parent="Control/VBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 40
-text = "Test Battle ⚔"
+text = "Battle Setup ⚔"
 
 [node name="TestWorld" type="Button" parent="Control/VBoxContainer"]
 layout_mode = 2
@@ -71,7 +73,7 @@ text = "Join to server 🙌"
 
 [connection signal="id_pressed" from="Control/MenuBar/Editors Menu" to="." method="_on_editors_menu_id_pressed"]
 [connection signal="pressed" from="Control/VBoxContainer/TestBattle" to="." method="_on_test_battle_pressed"]
-[connection signal="pressed" from="Control/VBoxContainer/TestBattleWithSetup" to="." method="_on_test_battle_with_setup_pressed"]
+[connection signal="pressed" from="Control/VBoxContainer/BattleSetup" to="." method="_on_battle_setup_pressed"]
 [connection signal="pressed" from="Control/VBoxContainer/TestWorld" to="." method="_on_test_world_pressed"]
 [connection signal="pressed" from="Control/VBoxContainer/Host" to="." method="_on_host_pressed"]
 [connection signal="pressed" from="Control/VBoxContainer/Join" to="." method="_on_join_pressed"]

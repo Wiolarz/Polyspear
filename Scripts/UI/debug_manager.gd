@@ -1,9 +1,9 @@
 extends Node
 
 """
-ESC - exit game
+ESC - Return to the previous menu interface
 ~ - Game Menu
-F1 - restart level
+F1 - Exit Game
 F2 - maximize window
 F3 - toggle cheat mode
 F4 - toggle visibility of collision shapes
@@ -17,15 +17,14 @@ F6 - Load
 
 
 func _process(_delta):
-
-	if Input.is_action_just_pressed("KEY_RESTART_LEVEL"):
-		get_tree().reload_current_scene()
+	if Input.is_action_just_pressed("KEY_EXIT_GAME"):
+		_on_quit_pressed()
 	
 	if Input.is_action_just_pressed("KEY_MAXIMIZE_WINDOW"):
 		_on_full_screen_pressed()
 
 	if Input.is_action_just_pressed("KEY_MENU"):
-		_on_back_to_game_pressed()
+		_toggle_menu_status()
 	
 	if Input.is_action_just_pressed("KEY_DEBUG_COLLISION_SHAPES"):
 		var tree := get_tree()
@@ -50,12 +49,6 @@ func _process(_delta):
 
 func _on_back_to_game_pressed():
 	_toggle_menu_status()
-	
-
-
-func _on_restart_pressed():
-	_toggle_menu_status()
-	get_tree().reload_current_scene()
 
 
 func _on_full_screen_pressed():
@@ -69,7 +62,6 @@ func _on_full_screen_pressed():
 
 func _on_quit_pressed():
 	get_tree().quit()
-
 
 
 func _on_win_battle_pressed():
@@ -96,6 +88,7 @@ func _on_return_to_main_menu_pressed():
 
 #endregion
 
+
 #region Tools
 
 func _toggle_menu_status():
@@ -103,4 +96,5 @@ func _toggle_menu_status():
 	
 	get_tree().paused = not get_tree().paused
 	# get_tree().set_deferred("paused", ui.visible)  # TODO research the difference
+
 #endregion
