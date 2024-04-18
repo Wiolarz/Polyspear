@@ -29,7 +29,6 @@ offset_top = 893.0
 offset_right = 1683.0
 offset_bottom = 956.0
 scale = Vector2(2.04, 2.04)
-shortcut = ExtResource("2_nfb7t")
 text = "End turn"
 
 [node name="Players" type="VBoxContainer" parent="."]
