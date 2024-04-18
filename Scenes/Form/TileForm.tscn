@@ -19,4 +19,10 @@ offset_right = 25.0
 offset_bottom = 278.0
 text = "(-,-)"
 
+[node name="PlaceLabel" type="Label" parent="."]
+offset_left = -73.0
+offset_top = -243.0
+offset_right = 58.0
+offset_bottom = -188.0
+
 [connection signal="input_event" from="." to="." method="_on_input_event"]
