@@ -321,7 +321,7 @@ func close_battle() -> void:
 	battle_ui.hide()
 
 	B_GRID.reset_data()
-	
+	battle_is_ongoing =  false
 	current_participant = null
 	for child in get_children():
 		if child ==  battle_ui:
