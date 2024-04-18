@@ -4,5 +4,6 @@
 
 [resource]
 script = ExtResource("1_iksfp")
+faction_name = "orc"
 units_data = Array[Resource("res://Resources/Battle/data_unit.gd")]([])
 heroes = Array[PackedScene]([null])

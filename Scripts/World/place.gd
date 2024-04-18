@@ -5,3 +5,4 @@ extends Node
 @export var controller : Player
 @export var defender_army : Army
 @export var battle_map : BattleMap
+@export var coord : Vector2i

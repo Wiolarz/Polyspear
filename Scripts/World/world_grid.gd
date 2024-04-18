@@ -2,10 +2,9 @@
 extends GridManager
 
 
-
 var max_player_number : int
 
-
+var cities: Array[City] = []
 
 #region Tools
 
@@ -15,6 +14,7 @@ func place_army(army : ArmyOnWorldMap, coord : Vector2i):
 	unit_grid[coord.x][coord.y] = army
 	army.position = tile_at(coord).position
 
+
 func change_hero_position(hero, coord : Vector2i):
 
 	unit_grid[hero.cord.x][hero.cord.y] = null # clean your previous location
@@ -23,8 +23,6 @@ func change_hero_position(hero, coord : Vector2i):
 	# Move visuals of the unit
 	hero.move(tile_grid[coord.x][coord.y])
 	
-
-
 
 func remove_hero(hero):
 
@@ -51,17 +49,26 @@ func get_tile_controller(cord : Vector2i):
 		return hero.controller
 	return null # tile_grid[cord.x][cord.y].controller
 
+func get_battle_map(_cord : Vector2i):
+	return load("res://Resources/Battle/Battle_Maps/basic5x5.tres")
 
 func get_army(cord : Vector2i) -> ArmyOnWorldMap:
 	return unit_grid[cord.x][cord.y]
 
+func is_city(cord : Vector2i) -> bool:
+	var tile = tile_at(cord)
+	return tile.type == "orc_city" or tile.type == "elf_city"
 
-func get_city(cord : Vector2i) -> City:
-	var city = tile_grid[cord.x][cord.y]
-	if city is City:
-		return city
-	return null
-
+func get_city(coord : Vector2i) -> City:
+	for c in cities:
+		if c.coord == coord:
+			return c
+	if not is_city(coord):
+		return null
+	var c = City.new()
+	c.coord = coord
+	cities.append(c)
+	return c
 
 func get_hero(coord : Vector2i):
 	var army = get_army(coord)
@@ -79,12 +86,11 @@ func is_enemy_present(cord : Vector2i, player):
 
 
 func get_interactable_type(cord : Vector2i) -> String:
-	var city = get_city(cord)
-	if city != null:
-		return "city"
 	var army = get_army(cord)
 	if army != null:
 		return "army"
+	if is_city(cord):
+		return "city"
 	
 	return "empty"
 
