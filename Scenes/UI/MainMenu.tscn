@@ -46,12 +46,6 @@ grow_horizontal = 0
 scale = Vector2(1.5, 1.5)
 theme_override_constants/separation = 30
 
-[node name="TestBattle" type="Button" parent="Control/VBoxContainer"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 40
-text = " Quick Battle ⚔⚡
-"
-
 [node name="BattleSetup" type="Button" parent="Control/VBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 40
@@ -72,7 +66,6 @@ layout_mode = 2
 text = "Join to server 🙌"
 
 [connection signal="id_pressed" from="Control/MenuBar/Editors Menu" to="." method="_on_editors_menu_id_pressed"]
-[connection signal="pressed" from="Control/VBoxContainer/TestBattle" to="." method="_on_test_battle_pressed"]
 [connection signal="pressed" from="Control/VBoxContainer/BattleSetup" to="." method="_on_battle_setup_pressed"]
 [connection signal="pressed" from="Control/VBoxContainer/TestWorld" to="." method="_on_test_world_pressed"]
 [connection signal="pressed" from="Control/VBoxContainer/Host" to="." method="_on_host_pressed"]
