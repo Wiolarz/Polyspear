@@ -12,9 +12,7 @@ var bot_engine : AIInteface
 var faction : Faction = Faction.new()
 
 # Player resources
-var wood : int = 0
-var iron : int = 0
-var ruby : int = 0
+var goods : Goods = Goods.new()
 
 
 var cities : Array[City] = []
