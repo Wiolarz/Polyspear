@@ -14,7 +14,6 @@ static func create_place(new_data_tile : DataTile) -> Place:
 	
 	match new_data_tile.type:
 		"sawmill", "iron_mine", "ruby_cave":
-			print("DEPOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO")
 			return Deposit.new()
 		"elf_city", "orc_city":
 			return City.new()

@@ -1,25 +1,19 @@
 class_name Player
 extends Node
 
-var alive = true
-
 var player_name : String = ""
-
-var player_type : E.player_type = E.player_type.OBSERVER
 
 var bot_engine : AIInteface
 
-var faction : Faction = Faction.new()
+var faction : Faction
 
 # Player resources
 var goods : Goods = Goods.new()
 
-
+# UI
 var cities : Array[City] = []
 var heroes : Array[Hero] = []
 
-func _ready():
-	name = "Player > " + player_name
 
 func use_bot(bot_enabled:bool):
 	if bot_enabled == (bot_engine != null):

@@ -7,9 +7,12 @@ var cord : Vector2i
 var type : String = "sentinel"
 
 
-func _on_input_event(_viewport : Node, _event : InputEvent, _shape_idx : int):
-	if Input.is_action_pressed("KEY_SELECT"):
+func _on_input_event(_viewport : Node, event : InputEvent, _shape_idx : int):
+	if event.is_action_pressed("KEY_SELECT"): # normal gameplay
 		IM.grid_input_listener(cord)
+	
+	if Input.is_action_pressed("KEY_SELECT"): # for map draw
+		IM.grid_smooth_input_listener(cord)
 	
 
 func set_coord(c:Vector2i)->void:

@@ -15,7 +15,6 @@ test data for Input Manager
 func create_player() -> Player:
 	var new_player = Player.new()
 	new_player.faction = faction
-	new_player.player_type = player_type
 	new_player.player_name = player_name
 	new_player.goods = goods.duplicate()
 	return new_player

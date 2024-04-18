@@ -109,8 +109,7 @@ func get_active_players() -> Array[Player]:
 	var active_players : Array[Player] = []
 
 	for player in players:
-		if player.player_type != E.player_type.OBSERVER:
-			active_players.append(player)
+		active_players.append(player)
 	#print(active_players)
 	return active_players
 
@@ -126,20 +125,22 @@ func switch_camera():
 		current_camera_position = camera_position.WORLD
 		pass
 
+func grid_smooth_input_listener(coord : Vector2i):
+	if draw_mode:
+		get_node("/root/MainScene/MapEditor").grid_input(coord)
 
 
-func grid_input_listener(cord : Vector2i):
-	#print("tile ",cord)
+func grid_input_listener(coord : Vector2i):
+	#print("tile ",coord)
 	#if WM.current_player.bot_engine != null:
 	#    return # its a bot turn
 	if draw_mode:
-		get_node("/root/MainScene/MapEditor").grid_input(cord)
 		return
 	
 	if raging_battle:
-		BM.grid_input(cord)
+		BM.grid_input(coord)
 	else:
-		WM.grid_input(cord)
+		WM.grid_input(coord)
 	
 
 func go_to_main_menu():
