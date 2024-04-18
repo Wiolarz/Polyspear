@@ -32,15 +32,6 @@ func go_to_main_menu():
 
 #region Manual Tests
 
-func _on_test_battle_pressed():
-	# Quick Battle map test
-	assert(maunual_tester != null, "No manual tester setup")
-
-	
-	maunual_tester.test_battle()
-	toggle_menu_visibility()
-
-
 func _on_test_world_pressed():
 	# World map test
 	assert(maunual_tester != null, "No manual tester setup")

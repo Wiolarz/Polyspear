@@ -15,13 +15,7 @@ func set_players(players : Array[PlayerSetting]):
 
 
 func test_battle() -> void:
-	"""
-	Returns true if the test started succesfully
-	"""
 	assert(test_battle_setup != null, "No battle setup")
-
-
-
 
 	set_players(test_battle_setup.player_settings)
 	
@@ -35,14 +29,9 @@ func test_battle() -> void:
 	BM.start_battle(new_armies, test_battle_setup.battle_map)
 
 
-
 func test_world() -> void:
-	"""
-	Returns true if the test started succesfully
-	"""
 	assert(world_setup != null, "No world setup")
 
 	set_players(world_setup.player_settings)
 
 	WM.start_world(world_setup.world_map)
-	

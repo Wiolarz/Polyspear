@@ -1,7 +1,8 @@
-[gd_scene load_steps=5 format=3 uid="uid://cx1ypmps7i3tn"]
+[gd_scene load_steps=6 format=3 uid="uid://cx1ypmps7i3tn"]
 
-[ext_resource type="Script" path="res://Scripts/Development/battle_debug_setup.gd" id="1_m3h17"]
+[ext_resource type="Script" path="res://Scripts/Development/battle_setup.gd" id="1_m3h17"]
 [ext_resource type="Resource" uid="uid://byhcrnn41k1aa" path="res://Resources/Tests/Battle_setups/pvp_EvsO_basic.tres" id="2_ahbvw"]
+[ext_resource type="Shortcut" uid="uid://fuvss5hfg4q2" path="res://Resources/Shortcuts/go_back.tres" id="3_ceqen"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_5oah4"]
 bg_color = Color(0, 0.341176, 0.219608, 1)
@@ -35,10 +36,10 @@ theme_override_styles/normal = SubResource("StyleBoxFlat_5oah4")
 text = "Play"
 
 [node name="Button2" type="Button" parent="."]
-offset_left = 197.0
-offset_top = 853.0
-offset_right = 756.0
-offset_bottom = 946.0
+offset_left = 399.0
+offset_top = 869.0
+offset_right = 958.0
+offset_bottom = 962.0
 theme_override_font_sizes/font_size = 30
 theme_override_styles/normal = SubResource("StyleBoxFlat_tn1ik")
 text = "Save"
@@ -91,6 +92,14 @@ button_pressed = true
 text = "AI
 "
 
+[node name="BackButton" type="Button" parent="."]
+offset_left = 70.0
+offset_top = 870.0
+offset_right = 220.0
+offset_bottom = 971.0
+shortcut = ExtResource("3_ceqen")
+text = "◀"
+
 [node name="VBoxContainer1" type="VBoxContainer" parent="."]
 offset_left = 144.0
 offset_top = 342.0
@@ -136,3 +145,4 @@ layout_mode = 2
 [connection signal="item_selected" from="PresetsList" to="." method="_on_presets_list_item_selected"]
 [connection signal="pressed" from="Button" to="." method="_on_start_button_pressed"]
 [connection signal="pressed" from="Button2" to="." method="_on_save_button_pressed"]
+[connection signal="pressed" from="BackButton" to="." method="_on_back_button_pressed"]
