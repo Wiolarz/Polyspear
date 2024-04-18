@@ -1,8 +1,9 @@
-[gd_scene load_steps=6 format=3 uid="uid://dy1m42bfkq2wv"]
+[gd_scene load_steps=7 format=3 uid="uid://dy1m42bfkq2wv"]
 
 [ext_resource type="Script" path="res://Scripts/Development/unit_editor.gd" id="1_77kxj"]
 [ext_resource type="Resource" uid="uid://beydauke55uh0" path="res://Resources/Battle/Units/Elves/elf1.tres" id="2_8i56d"]
 [ext_resource type="PackedScene" uid="uid://sh62rfw7ulr8" path="res://Scenes/Form/UnitForm.tscn" id="3_yftbb"]
+[ext_resource type="Shortcut" uid="uid://fuvss5hfg4q2" path="res://Resources/Shortcuts/go_back.tres" id="4_bwq2j"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_nf1n4"]
 bg_color = Color(0.0235294, 0.227451, 0.372549, 1)
@@ -106,6 +107,7 @@ offset_left = 5.0
 offset_top = 1012.0
 offset_right = 51.0
 offset_bottom = 1075.0
+shortcut = ExtResource("4_bwq2j")
 text = "◀"
 
 [connection signal="pressed" from="PickArt" to="." method="_on_pick_art_button_pressed"]
