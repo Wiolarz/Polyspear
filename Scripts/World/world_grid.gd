@@ -4,7 +4,8 @@ extends GridManager
 
 var max_player_number : int
 
-var cities: Array[City] = []
+var cities: Array[City] = [] # TODO remove
+var places : Array = [] # Array[Array[Place]]
 
 #region Tools
 
@@ -38,9 +39,11 @@ func remove_hero(hero):
 
 func is_moveable(cord : Vector2i):
 	return tile_grid[cord.x][cord.y].type in [ \
-		E.to_name(E.WorldMapTiles.EMPTY),
-		E.to_name(E.WorldMapTiles.CITY),
-		E.to_name(E.WorldMapTiles.PLACE),
+		"empty",
+		"iron_mine",
+		"sawmill",
+		"ruby_cave",
+		#E.to_name(E.WorldMapTiles.DEPOSIT),
 	]
 
 func get_tile_controller(cord : Vector2i):
@@ -55,20 +58,14 @@ func get_battle_map(_cord : Vector2i):
 func get_army(cord : Vector2i) -> ArmyOnWorldMap:
 	return unit_grid[cord.x][cord.y]
 
-func is_city(cord : Vector2i) -> bool:
-	var tile = tile_at(cord)
-	return tile.type == "orc_city" or tile.type == "elf_city"
+
+func is_city(coord : Vector2i) -> bool: #TODO
+	return get_city(coord) != null
+
 
 func get_city(coord : Vector2i) -> City:
-	for c in cities:
-		if c.coord == coord:
-			return c
-	if not is_city(coord):
-		return null
-	var c = City.new()
-	c.coord = coord
-	cities.append(c)
-	return c
+	return places[coord.x][coord.y] as City
+
 
 func get_hero(coord : Vector2i):
 	var army = get_army(coord)
@@ -105,14 +102,19 @@ func init_tile_grid() -> void:
 	for i in range(grid_width):
 		tile_grid.append([])
 		unit_grid.append([])
+		places.append([])
 		for j in range(grid_height):
 			unit_grid[i].append(null)
 			tile_grid[i].append(null)
+			places[i].append(null)
 
 
-
+func generate_special_tiles() -> void:
+	for x in map_information.grid_data.size():
+		for y in map_information.grid_data[0].size():
+			var new_location : Place = Place.create_place(map_information.grid_data[x][y])
+			places[x + W_GRID.border_size][y + W_GRID.border_size] = new_location
 			
-
 
 func reset_data():
 	super.reset_data()

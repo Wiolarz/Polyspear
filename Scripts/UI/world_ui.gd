@@ -1,6 +1,7 @@
 class_name WorldUI
 extends CanvasLayer
 
+@onready var good_label : Label = $HBoxContainer/GoodsLabel
 
 func _on_menu_pressed():
 	IM.show_in_game_menu()
@@ -57,3 +58,8 @@ func _on_city_ui_close_requested():
 
 func _on_end_turn_pressed():
 	WM.next_player_turn()
+	
+
+func _process(_delta):
+
+	good_label.text = "%d 🪓| %d ⛏️| %d 💎" % WM.current_player.goods.to_array()

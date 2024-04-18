@@ -12,9 +12,7 @@ var bot_engine : AIInteface
 var faction : Faction = Faction.new()
 
 # Player resources
-var wood : int = 0
-var iron : int = 0
-var ruby : int = 0
+var goods : Goods = Goods.new()
 
 
 var cities : Array[City] = []
@@ -42,3 +40,11 @@ func your_turn():
 		bot_engine.play_move()
 	
 	print("your move " + player_name)
+
+
+func purchase(cost : Goods) -> bool:
+	if goods.has_enough(cost):
+		goods.subtract(cost)
+		return true
+	print("not enough money")
+	return false

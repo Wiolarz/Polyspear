@@ -27,10 +27,14 @@ enum WorldMapTiles
 	# UI based menu interfaces
 	CITY,
 	PLACE,
+
+	# undifined
+	DEPOSIT,
 }
 
-static func to_name(wmt: WorldMapTiles) -> String:
+static func to_name(wmt : WorldMapTiles) -> String:
 	return WorldMapTiles.keys()[wmt].to_lower()
+
 #endregion
 
 

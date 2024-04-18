@@ -61,7 +61,7 @@ offset_top = 25.0
 offset_right = 1315.0
 offset_bottom = 80.0
 
-[node name="Label" type="Label" parent="HBoxContainer"]
+[node name="GoodsLabel" type="Label" parent="HBoxContainer"]
 layout_mode = 2
 text = "0 🪓| 0 ⛏️| 0 💎"
 

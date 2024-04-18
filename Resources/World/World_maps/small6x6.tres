@@ -61,7 +61,7 @@ type = "empty"
 script = ExtResource("1_gvfox")
 texture_path = "res://Art/world_map/sawmill.png"
 flip_horizontal = false
-type = "empty"
+type = "sawmill"
 
 [sub_resource type="Resource" id="Resource_yppfi"]
 script = ExtResource("1_gvfox")
@@ -121,7 +121,7 @@ type = "wall"
 script = ExtResource("1_gvfox")
 texture_path = "res://Art/world_map/iron_mine.png"
 flip_horizontal = false
-type = "empty"
+type = "iron_mine"
 
 [sub_resource type="Resource" id="Resource_oiryn"]
 script = ExtResource("1_gvfox")
@@ -163,7 +163,7 @@ type = "empty"
 script = ExtResource("1_gvfox")
 texture_path = "res://Art/world_map/ruby_cave.png"
 flip_horizontal = false
-type = "empty"
+type = "ruby_cave"
 
 [sub_resource type="Resource" id="Resource_echm1"]
 script = ExtResource("1_gvfox")
