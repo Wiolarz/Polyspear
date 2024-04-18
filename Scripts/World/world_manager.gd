@@ -16,7 +16,7 @@ var players : Array[Player] = []
 
 
 #region Variables
-
+var world_ui : WorldUI = null
 var current_player : Player
 
 """ grid
@@ -200,6 +200,11 @@ func close_world():
 
 #region World Setup
 
+func spawn_world_ui():
+	world_ui = load("res://Scenes/UI/WorldUi.tscn").instantiate()
+	add_child(world_ui)
+	world_ui.hide()
+
 func start_world(world_map : WorldMap) -> void:
 
 	var spawn_location = world_map.get_spawn_locations()
@@ -212,7 +217,9 @@ func start_world(world_map : WorldMap) -> void:
 	assert(players.size() != 0, "ERROR WM.players is empty")
 	
 	current_player = players[0]
-
+	if world_ui == null or not is_instance_valid(world_ui):
+		spawn_world_ui()
+	world_ui.show()
 
 	IM.raging_battle = false
 

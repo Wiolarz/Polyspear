@@ -100,3 +100,7 @@ func unit_summoned(summon_phase_end : bool, unit : DataUnit):
 
 func _on_switch_camera_pressed():
 	IM.switch_camera()
+
+func _on_menu_pressed():
+	IM.show_in_game_menu()
+	

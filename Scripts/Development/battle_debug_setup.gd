@@ -164,3 +164,8 @@ func _ready():
 	_load_preset(default_battle_setup)
 
 #endregion
+
+
+func _on_back_button_pressed():
+	hide()
+	IM.go_to_main_menu()

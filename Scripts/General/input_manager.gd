@@ -113,6 +113,11 @@ func go_to_main_menu():
 	BM.close_battle()
 	get_node("/root/MainScene/MainMenu").toggle_menu_visibility()
 
+func show_in_game_menu():
+	# TODO: refactor UI
+	$"/root/MainScene/GameMenu/Menu"._toggle_menu_status()
+
+
 func make_server():
 	var node = get_node_or_null("TheServer")
 	if node != null:
