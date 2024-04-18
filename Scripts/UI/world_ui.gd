@@ -9,12 +9,14 @@ func _on_menu_pressed():
 func _on_switch_camera_pressed():
 	assert(false, "not implemented")
 
-func show_trade_ui(city : City, hero:ArmyOnWorldMap):
+
+func show_trade_ui(city : City, hero : ArmyOnWorldMap):
 	_refresh_units_to_buy(city, hero)
 	_refresh_army_display(hero)
 	$CityUi.show()
-	
-func _refresh_units_to_buy(city : City, hero:ArmyOnWorldMap):
+
+
+func _refresh_units_to_buy(city : City, hero : ArmyOnWorldMap):
 	var units = city.get_units_to_buy()
 	var buy_children = $CityUi/HBoxContainer/Buy.get_children()
 	for i in range(buy_children.size()-1):
@@ -27,7 +29,8 @@ func _refresh_units_to_buy(city : City, hero:ArmyOnWorldMap):
 			
 			b.pressed.connect(_buy_unit.bind(units[i], hero))
 
-func _refresh_army_display(hero:ArmyOnWorldMap):
+
+func _refresh_army_display(hero : ArmyOnWorldMap):
 	var army_children = $CityUi/HBoxContainer/Army.get_children()
 	for i in range(army_children.size()-1):
 		var b = army_children[i+1] as Button
@@ -35,7 +38,8 @@ func _refresh_army_display(hero:ArmyOnWorldMap):
 		if i < hero.army_data.units_data.size():
 			b.text = hero.army_data.units_data[i].unit_name
 
-func _buy_unit(unit:DataUnit, hero:ArmyOnWorldMap):
+
+func _buy_unit(unit : DataUnit, hero : ArmyOnWorldMap):
 	print("buy", unit.unit_name)
 	
 	if hero.army_data.units_data.size() >= \
