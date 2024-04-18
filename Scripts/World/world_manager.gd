@@ -25,9 +25,10 @@ var combat_tile : Vector2i
 
 #endregion
 
+
 #region helpers
 
-func set_selected_hero(new_hero: ArmyOnWorldMap):
+func set_selected_hero(new_hero : ArmyOnWorldMap):
 	print("selected ", new_hero)
 	if selected_hero:
 		selected_hero.set_selected(false)
@@ -36,6 +37,7 @@ func set_selected_hero(new_hero: ArmyOnWorldMap):
 		selected_hero.set_selected(true)
 
 #endregion # helpers
+
 
 #region Main functions
 	
@@ -189,6 +191,7 @@ func kill_army(army : ArmyOnWorldMap):
 #region World End
 
 func close_world():
+	selected_hero = null
 	for hero in get_children():
 		hero.queue_free()
 
@@ -203,6 +206,7 @@ func spawn_world_ui():
 	world_ui = load("res://Scenes/UI/WorldUi.tscn").instantiate()
 	add_child(world_ui)
 	world_ui.hide()
+
 
 func start_world(world_map : WorldMap) -> void:
 
@@ -224,15 +228,16 @@ func start_world(world_map : WorldMap) -> void:
 
 	W_GRID.generate_grid(world_map)
 	
-	spawn_player(spawn_location[0], players[0], "elf")
-	spawn_player(spawn_location[1], players[1], "orc")
+	for player_id in range(players.size()):
+		spawn_player(spawn_location[player_id], players[player_id])
 
-func spawn_player(coords:Vector2i, player:Player, faction:String):
+
+func spawn_player(coords : Vector2i, player : Player):
 	var army_for_world_map = load("res://Scenes/Form/ArmyForm.tscn").instantiate()
-	player.faction.faction_name = faction
+	add_child(army_for_world_map)
 	army_for_world_map.name = "hero 1"
 	army_for_world_map.army_data.controller = player
-	add_child(army_for_world_map)
+	
 	var coord =  W_GRID.to_bordered_coords(coords)
 	W_GRID.place_army(army_for_world_map, coord)
 	W_GRID.get_city(coord).controller = player

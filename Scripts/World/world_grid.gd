@@ -14,6 +14,7 @@ func place_army(army : ArmyOnWorldMap, coord : Vector2i):
 	unit_grid[coord.x][coord.y] = army
 	army.position = tile_at(coord).position
 
+
 func change_hero_position(hero, coord : Vector2i):
 
 	unit_grid[hero.cord.x][hero.cord.y] = null # clean your previous location
@@ -22,8 +23,6 @@ func change_hero_position(hero, coord : Vector2i):
 	# Move visuals of the unit
 	hero.move(tile_grid[coord.x][coord.y])
 	
-
-
 
 func remove_hero(hero):
 
