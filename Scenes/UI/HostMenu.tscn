@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://b3dmmym31kdbx"]
+[gd_scene load_steps=3 format=3 uid="uid://b3dmmym31kdbx"]
 
 [ext_resource type="Script" path="res://Scripts/UI/host_menu.gd" id="1_7qrid"]
+[ext_resource type="PackedScene" uid="uid://dev0nuoeb5bbv" path="res://Scenes/UI/MultiGameSetup.tscn" id="2_p8mrs"]
 
 [node name="HostMenu" type="HBoxContainer"]
 anchors_preset = 15
@@ -17,3 +18,6 @@ size_flags_horizontal = 3
 [node name="PanelContainer" type="PanelContainer" parent="."]
 layout_mode = 2
 size_flags_horizontal = 3
+
+[node name="MultiGameSetup" parent="PanelContainer" instance=ExtResource("2_p8mrs")]
+layout_mode = 2

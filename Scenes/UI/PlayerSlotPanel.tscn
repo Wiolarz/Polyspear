@@ -1,0 +1,75 @@
+[gd_scene load_steps=7 format=3 uid="uid://dql37o7nhkxj6"]
+
+[ext_resource type="Script" path="res://Scripts/UI/player_slot_panel.gd" id="1_5ldju"]
+[ext_resource type="Shader" path="res://Art/UI/player_slot_panel.gdshader" id="1_jkj60"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_aw5fe"]
+shader = ExtResource("1_jkj60")
+
+[sub_resource type="Theme" id="Theme_ojgk6"]
+default_font_size = 30
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_6g5p6"]
+resource_local_to_scene = true
+content_margin_left = 10.0
+content_margin_top = 0.0
+content_margin_right = 10.0
+content_margin_bottom = 0.0
+bg_color = Color(1, 1, 1, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_nhatr"]
+bg_color = Color(0, 0, 0, 0.25098)
+
+[node name="PlayerSlotPanel" type="PanelContainer"]
+material = SubResource("ShaderMaterial_aw5fe")
+custom_minimum_size = Vector2(0, 80)
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 63.0
+grow_horizontal = 2
+size_flags_horizontal = 3
+size_flags_vertical = 0
+theme = SubResource("Theme_ojgk6")
+theme_override_styles/panel = SubResource("StyleBoxFlat_6g5p6")
+script = ExtResource("1_5ldju")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="PlayerInfoPanel" type="Panel" parent="HBoxContainer"]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_nhatr")
+
+[node name="Label" type="Label" parent="HBoxContainer/PlayerInfoPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 20
+text = "Zdzichu"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ButtonTakeLeave" type="Button" parent="HBoxContainer"]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+size_flags_horizontal = 0
+text = "Take"
+
+[node name="ButtonColor" type="Button" parent="HBoxContainer"]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+text = "Color"
+
+[node name="ButtonFaction" type="Button" parent="HBoxContainer"]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+text = "Elves"
+
+[connection signal="pressed" from="HBoxContainer/ButtonTakeLeave" to="." method="_on_button_take_leave_pressed"]
+[connection signal="pressed" from="HBoxContainer/ButtonColor" to="." method="_on_button_color_pressed"]
+[connection signal="pressed" from="HBoxContainer/ButtonFaction" to="." method="_on_button_faction_pressed"]

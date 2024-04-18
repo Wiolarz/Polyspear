@@ -12,6 +12,9 @@ UI - Server Admin tools + chat box
 	$MarginContainer/VBoxContainer/Chat/LogScroll
 
 
+var host_menu : HostMenu = null
+
+
 #region Chat
 func update_chat():
 	chat_container.get_node("Log").text = IM.chat_log
@@ -53,6 +56,7 @@ func kick_all_players():
 
 func _on_button_stop_pressed():
 	stop_server()
+	host_menu.refresh_after_connection_change()
 
 
 func _on_button_kick_all_pressed():

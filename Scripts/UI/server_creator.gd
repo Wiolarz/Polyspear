@@ -5,6 +5,7 @@ extends Control
 UI - smalll menu where you setup a server
 """
 
+
 var host_menu : HostMenu = null
 
 
@@ -23,6 +24,7 @@ func _ready():
 func start_server():
 	IM.clear_local_chat_log()
 	IM.server_listen(get_address(), get_port(), get_username_server())
+	host_menu.refresh_after_connection_change()
 
 
 func get_address():

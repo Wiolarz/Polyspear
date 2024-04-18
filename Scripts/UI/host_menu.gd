@@ -12,6 +12,7 @@ Manager scripts that displays specific UI
 
 
 @onready var server_management = $ServerManagement
+@onready var multi_game_setup = $PanelContainer/MultiGameSetup
 
 
 func go_back():
@@ -34,6 +35,11 @@ func show_server_info_and_chat():
 	clear_management()
 	server_management.add_child(server_info_and_chat)
 	server_info_and_chat.name = "ServerInfoAndChat"
+	server_info_and_chat.host_menu = self
+
+
+func refresh_after_connection_change():
+	multi_game_setup.refresh_after_conenction_change()
 
 
 func _ready():

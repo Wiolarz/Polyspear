@@ -62,9 +62,47 @@ const default_usernames : Array[String] = [
 ]
 
 
+const team_colors : Array[Dictionary] = [
+	{ "name": "red", "color": Color(1.0, 0.0, 0.0) },
+	{ "name": "blue", "color": Color(0.0, 0.4, 1.0) },
+	{ "name": "green", "color": Color(0.0, 0.9, 0.0) },
+	{ "name": "yellow", "color": Color(0.9, 0.8, 0.0) },
+	{ "name": "purple", "color": Color(0.9, 0.2, 0.85) },
+	{ "name": "orange", "color": Color(0.9, 0.5, 0.0) },
+]
+
+
+func get_team_color_at(index : int) -> Color:
+	if not index in range(team_colors.size()):
+		return Color(0.5, 0.5, 0.5, 1.0)
+	return team_colors[index]["color"]
+
+
 var chat_log : String
 
 #region Game setup
+
+# this probably should go somewhere else, but for now i don't know where to
+# place it
+var game_setup_info : GameSetupInfo
+
+
+func set_default_game_setup_info() -> void:
+	const slot_count : int = 4
+	game_setup_info = GameSetupInfo.new()
+	game_setup_info.slots.resize(slot_count)
+	for i in range(slot_count):
+		game_setup_info.slots[i] = GameSetupInfo.Slot.new()
+		game_setup_info.slots[i].occupier = 0
+		game_setup_info.slots[i].faction = WIP_factions[0]
+		game_setup_info.slots[i].color = i
+
+
+@export var WIP_factions : Array[Faction] = [
+	preload("res://Resources/World/Factions/elf.tres"),
+	preload("res://Resources/World/Factions/orc.tres"),
+] # TODO choose a better place for this xD
+
 
 func get_active_players() -> Array[Player]:
 
@@ -215,8 +253,8 @@ func client_connection() -> bool:
 	return get_client() and get_client().enet_network
 
 
-func get_current_name() -> String:
-	if get_server():
+func get_current_name() -> String: # TODO rename to get_current_username
+	if server_connection():
 		return get_server().server_username
 	return "(( you ))"
 

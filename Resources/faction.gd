@@ -8,12 +8,12 @@ Complete Faction data:
 	2 Info about assignment of every city
 """
 
-@export var faction_name : String
-
 @export var units_data : Array[DataUnit] = [null]
 
 @export var heroes : Array[PackedScene] = [null]
 
 @export var city : PackedScene
+
+@export var faction_name : String = "Cats"
 
 # no factory needed
