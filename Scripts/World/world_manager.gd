@@ -111,10 +111,14 @@ func grid_input(cord : Vector2i):
 		else:
 			if W_GRID.is_moveable(cord):
 				print("moving ", selected_hero," to ",cord)
-				W_GRID.change_hero_position(selected_hero, cord)
+				hero_move(selected_hero, cord)
 
 
-
+func hero_move(hero : ArmyOnWorldMap, coord : Vector2i):
+	W_GRID.change_hero_position(hero, coord)
+	var place = W_GRID.places[coord.x][coord.y]
+	if place != null:
+		place.interact(hero)
 
 func trade_armies(_second_army : Army):
 	#TODO
@@ -174,7 +178,7 @@ func end_of_battle():
 	if result:
 		print("you won")
 		kill_army(W_GRID.get_army(combat_tile)) # clear the tile of enemy presence
-		W_GRID.change_hero_position(selected_hero, combat_tile)
+		hero_move(selected_hero, combat_tile)
 	else:
 		set_selected_hero(null)
 		print("hero died")

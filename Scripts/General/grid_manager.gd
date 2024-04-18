@@ -158,6 +158,9 @@ func is_gameplay_tile(x : int, y : int, bOddRow : bool) -> bool:
 	return bHeight and (bEven_Row_Width or bOdd_Row_Width)
 
 
+func generate_special_tiles() -> void:
+	pass
+
 func is_clear() -> bool:
 	return true
 
@@ -176,6 +179,7 @@ func generate_grid(new_map_data : GridBoard) -> void:
 
 	init_tile_grid()
 	spawn_tiles()
+	generate_special_tiles()
 
 func to_bordered_coords(initial:Vector2i) -> Vector2i:
 	return initial + Vector2i(border_size,border_size)

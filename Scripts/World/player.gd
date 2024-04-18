@@ -40,3 +40,11 @@ func your_turn():
 		bot_engine.play_move()
 	
 	print("your move " + player_name)
+
+
+func purchase(cost : Goods) -> bool:
+	if goods.has_enough(cost):
+		goods.subtract(cost)
+		return true
+	print("not enough money")
+	return false
