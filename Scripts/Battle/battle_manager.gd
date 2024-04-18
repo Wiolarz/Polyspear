@@ -339,7 +339,7 @@ func end_of_battle() -> void:
 	
 	var winner_army = battling_armies[armies_left_alive[0]]
 	print(winner_army.controller.player_name + " won")
-
+	battle_is_ongoing = false
 	close_battle()
 	if WM.selected_hero == null:
 		print("end of test battle")

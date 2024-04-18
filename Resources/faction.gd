@@ -8,6 +8,7 @@ Complete Faction data:
 	2 Info about assignment of every city
 """
 
+@export var faction_name: String
 
 @export var units_data : Array[DataUnit] = [null]
 

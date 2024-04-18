@@ -9,7 +9,7 @@ var player_type : E.player_type = E.player_type.OBSERVER
 
 var bot_engine : AIInteface
 
-var faction : Faction
+var faction : Faction = Faction.new()
 
 # Player resources
 var wood : int = 0

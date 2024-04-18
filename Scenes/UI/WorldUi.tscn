@@ -23,6 +23,15 @@ scale = Vector2(2.04, 2.04)
 shortcut = ExtResource("2_nfb7t")
 text = "Menu"
 
+[node name="End Turn" type="Button" parent="."]
+offset_left = 1510.0
+offset_top = 893.0
+offset_right = 1683.0
+offset_bottom = 956.0
+scale = Vector2(2.04, 2.04)
+shortcut = ExtResource("2_nfb7t")
+text = "End turn"
+
 [node name="Players" type="VBoxContainer" parent="."]
 anchors_preset = 1
 anchor_left = 1.0
@@ -56,5 +65,67 @@ offset_bottom = 80.0
 layout_mode = 2
 text = "0 🪓| 0 ⛏️| 0 💎"
 
+[node name="CityUi" type="Window" parent="."]
+title = "City 1"
+position = Vector2i(200, 200)
+size = Vector2i(500, 500)
+visible = false
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CityUi"]
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Buy" type="VBoxContainer" parent="CityUi/HBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="CityUi/HBoxContainer/Buy"]
+layout_mode = 2
+text = "Buy:
+"
+
+[node name="Button" type="Button" parent="CityUi/HBoxContainer/Buy"]
+layout_mode = 2
+text = "Unit1"
+
+[node name="Button2" type="Button" parent="CityUi/HBoxContainer/Buy"]
+layout_mode = 2
+text = "Unit2"
+
+[node name="Button3" type="Button" parent="CityUi/HBoxContainer/Buy"]
+layout_mode = 2
+text = "Unit3"
+
+[node name="Army" type="VBoxContainer" parent="CityUi/HBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="CityUi/HBoxContainer/Army"]
+layout_mode = 2
+text = "Army:"
+
+[node name="Button" type="Button" parent="CityUi/HBoxContainer/Army"]
+layout_mode = 2
+text = "Spearman"
+
+[node name="Button2" type="Button" parent="CityUi/HBoxContainer/Army"]
+layout_mode = 2
+text = "Archer"
+
+[node name="Button3" type="Button" parent="CityUi/HBoxContainer/Army"]
+layout_mode = 2
+text = "Dryad
+"
+
+[node name="Button4" type="Button" parent="CityUi/HBoxContainer/Army"]
+layout_mode = 2
+text = "Dryad
+"
+
+[node name="Button5" type="Button" parent="CityUi/HBoxContainer/Army"]
+layout_mode = 2
+text = "Dryad
+"
+
 [connection signal="pressed" from="SwitchCamera" to="." method="_on_switch_camera_pressed"]
 [connection signal="pressed" from="Menu" to="." method="_on_menu_pressed"]
+[connection signal="pressed" from="End Turn" to="." method="_on_end_turn_pressed"]
+[connection signal="close_requested" from="CityUi" to="." method="_on_city_ui_close_requested"]

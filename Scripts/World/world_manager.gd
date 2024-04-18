@@ -19,16 +19,6 @@ var players : Array[Player] = []
 var world_ui : WorldUI = null
 var current_player : Player
 
-""" grid
-contains:
-	Places - Resource node /+ Neutral camp
-	Cities
-	Terrain blocks
-	Sentinels
-"""
-# stores all location objects with common parent class "Place" as coordinates
-var grid : Array = [] #Array[Array[Place]]
-
 var selected_hero : ArmyOnWorldMap  # Only army that has a hero can move (army can only have a single hero)
 
 var combat_tile : Vector2i
@@ -36,6 +26,7 @@ var combat_tile : Vector2i
 #endregion
 
 #region helpers
+
 func set_selected_hero(new_hero: ArmyOnWorldMap):
 	print("selected ", new_hero)
 	if selected_hero:
@@ -50,6 +41,7 @@ func set_selected_hero(new_hero: ArmyOnWorldMap):
 	
 
 func next_player_turn():
+	set_selected_hero(null)
 	var player_idx = players.find(current_player)
 	if player_idx + 1 == players.size():
 		current_player = players[0]
@@ -86,10 +78,11 @@ func grid_input(cord : Vector2i):
 			if current_player == army.army_data.controller:
 				set_selected_hero(army)
 		elif selected_spot_type == "city":
-			var city = W_GRID.get_city(cord)
-			if city.controller == current_player:
-				#TODO CITY you could select current city here
-				city_show_interface(city)
+			pass
+			#var city = W_GRID.get_city(cord)
+			#if city.controller == current_player:
+				##TODO CITY you could select current city here
+				#city_show_interface(city)
 		return
 	
 	else: # hero is selected
@@ -111,7 +104,7 @@ func grid_input(cord : Vector2i):
 			var city = W_GRID.get_city(cord)
 			if city.controller == current_player:
 				# CITY TRADE
-				trade_city(city)
+				trade_city(city, selected_hero)
 				pass
 		else:
 			if W_GRID.is_moveable(cord):
@@ -132,8 +125,9 @@ func trade_armies(_second_army : Army):
 #region City Management
 
 
-func trade_city(_city : City):
-	#TODO
+func trade_city(_city : City, _hero:ArmyOnWorldMap ):
+	print("trade_city")
+	world_ui.show_trade_ui(_city, _hero)
 	pass
 
 
@@ -161,14 +155,19 @@ func start_combat(cord : Vector2i):
 	
 	IM.switch_camera()
 
-	var armies : Array[Army] = [selected_hero.army, W_GRID.get_army(combat_tile).army_data]
-	var battle_map : BattleMap = W_GRID.grid[combat_tile.x][combat_tile.y].battle_map
-
+	var armies : Array[Army] = [
+		selected_hero.army_data,
+		W_GRID.get_army(combat_tile).army_data,
+	]
+	var battle_map : BattleMap = W_GRID.get_battle_map(combat_tile)
+	
+	world_ui.hide()
 	BM.start_battle(armies, battle_map)
 
 
 func end_of_battle():
 	#TODO get result from Battle Manager
+	IM.raging_battle = false
 	var result : bool = BM.get_battle_result()
 	if result:
 		print("you won")
@@ -225,10 +224,17 @@ func start_world(world_map : WorldMap) -> void:
 
 	W_GRID.generate_grid(world_map)
 	
-	var army = load("res://Scenes/Form/ArmyForm.tscn").instantiate()
-	army.name = "hero 1"
-	army.army_data.controller = players[0]
-	add_child(army)
-	W_GRID.place_army(army, W_GRID.to_bordered_coords(spawn_location[0]))
-	
+	spawn_player(spawn_location[0], players[0], "elf")
+	spawn_player(spawn_location[1], players[1], "orc")
+
+func spawn_player(coords:Vector2i, player:Player, faction:String):
+	var army_for_world_map = load("res://Scenes/Form/ArmyForm.tscn").instantiate()
+	player.faction.faction_name = faction
+	army_for_world_map.name = "hero 1"
+	army_for_world_map.army_data.controller = player
+	add_child(army_for_world_map)
+	var coord =  W_GRID.to_bordered_coords(coords)
+	W_GRID.place_army(army_for_world_map, coord)
+	W_GRID.get_city(coord).controller = player
+
 #endregion
