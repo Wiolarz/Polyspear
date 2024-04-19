@@ -12,7 +12,7 @@ there input_manager check who the current play is:
 
 if the AI plays the move:
 	1 in single player AI gets called to act when its their turn so it goes straight to gameplay
-	2 in multi GAME HOST only sends the call to AI for it to make a move 
+	2 in multi GAME HOST only sends the call to AI for it to make a move
 
 
 where do we call AI?
@@ -24,8 +24,8 @@ there is an end turn function "switch player" it could call the input manager to
 var timer = 0
 
 var _players : Array[Player] = []
-var players : Array[Player] : 
-	get: 
+var players : Array[Player] :
+	get:
 		return _players
 	set(value):
 		for p in _players:
@@ -136,12 +136,12 @@ func grid_input_listener(coord : Vector2i):
 	#    return # its a bot turn
 	if draw_mode:
 		return
-	
+
 	if raging_battle:
 		BM.grid_input(coord)
 	else:
 		WM.grid_input(coord)
-	
+
 
 func go_to_main_menu():
 	draw_mode = false
@@ -217,7 +217,7 @@ func client_logout_and_disconnect():
 func _physics_process(_delta):
 	#func _process(_delta):
 	timer += 1
-	
+
 	if Input.is_action_just_pressed("KEY_BOT_SPEED_SLOW"):
 		BUS.animation_speed = BUS.animation_speed_values.NORMAL
 		BUS.BotSpeed = BUS.bot_speed_values.FREEZE # 0 sec
@@ -226,9 +226,9 @@ func _physics_process(_delta):
 		BUS.BotSpeed = BUS.bot_speed_values.NORMAL # 0.5 sec
 	elif Input.is_action_just_pressed("KEY_BOT_SPEED_FAST"):
 		BUS.animation_speed = BUS.animation_speed_values.INSTANT
-		
+
 		BUS.BotSpeed = BUS.bot_speed_values.FAST # 1/60 sec
-	
+
 	# 60FPS -> timer=60 1 sec
 
 
@@ -293,7 +293,7 @@ func multiplayer_send(movement : MoveInfo):
 
 
 func multiplayer_receive():
-	# client -> SERVER 
+	# client -> SERVER
 	pass
 
 
@@ -305,7 +305,7 @@ func multiplayer_broadcast_send(movement : MoveInfo):
 	server.broadcast_movement(movement)
 
 func multiplayer_broadcast_receive():
-	# server -> CLIENT 
+	# server -> CLIENT
 	pass
 
 

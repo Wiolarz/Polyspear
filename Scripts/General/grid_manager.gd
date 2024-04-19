@@ -41,32 +41,32 @@ var unit_grid : Array = [] # Array[Array[Unit/Army]]
 
 #region Coordinate Tools
 
-static func is_adjacent(Cord1 : Vector2i, Cord2 : Vector2i) -> bool:
-	return (Cord2 - Cord1) in DIRECTIONS
+static func is_adjacent(coord1 : Vector2i, coord2 : Vector2i) -> bool:
+	return (coord2 - coord1) in DIRECTIONS
 
-static func adjacent_side(Cord1 : Vector2i, Cord2 : Vector2i) -> int:
+static func adjacent_side(coord1 : Vector2i, coord2 : Vector2i) -> int:
 	"""
-	Return shared side between Cord1 and Cord2, if the Cords are adjacent
+	Return shared side between coord1 and coord2, if the coords are adjacent
 	Side from Coord1 perspective
-	@param Cord1 
-	@param Cord2 
-	@return int32 Side
-	@note -1 is return, when Cord1 and Cord2 don't have shared side
+	@param coord1
+	@param coord2
+	@return int32 side
+	@note -1 is returned, when coord1 and coord2 don't have shared side
 	"""
-	if (Cord2 - Cord1) in DIRECTIONS:
-		return DIRECTIONS.find(Cord2 - Cord1)
+	if (coord2 - coord1) in DIRECTIONS:
+		return DIRECTIONS.find(coord2 - coord1)
 	return -1
 
 
-static func adjacent_cord(BaseCord : Vector2i, Side : int) -> Vector2i:
+static func adjacent_coord(base_coord : Vector2i, side : int) -> Vector2i:
 	"""
-	Return cord adjacent to BaseCord at given Side
-	
-	@param BaseCord
-	@param Side {0, 1, ..., 5}
-	@return Vector2i cord adjacent to BaseCord
+	Return coord adjacent to Basecoord at given side
+
+	@param base_coord
+	@param side {0, 1, ..., 5}
+	@return Vector2i coord adjacent to base_coord
 	"""
-	return BaseCord + DIRECTIONS[Side]
+	return base_coord + DIRECTIONS[side]
 
 func tile_at(coord : Vector2i) -> HexTile:
 	return tile_grid[coord.x][coord.y]
@@ -109,30 +109,30 @@ func spawn_tiles() -> void:
 			var new_tile_scene : PackedScene = BASIC_HEX_TILE
 			var new_tile : HexTile = new_tile_scene.instantiate()
 			add_child(new_tile)
-			
-			# Set tile cord
+
+			# Set tile coord
 			tile_grid[x][y] = new_tile
 			new_tile.set_coord(Vector2i(x, y))
-			
+
 			# setting a new tile node visual location
 			var x_tile_pos = x * TileHorizontalOffset + y * OddRowHorizontalOffset
 			var y_tile_pos = y * TileVerticalOffset
 			new_tile.global_position.x = x_tile_pos
 			new_tile.global_position.y = y_tile_pos
-			
-			# apllying sentinel border correction to data files cords
+
+			# apllying sentinel border correction to data files coords
 			var data_x = x - border_size
 			var data_y = y - border_size
-			if data_x >= 0 and data_y >= 0 and data_x < grid.size() and data_y < grid[0].size(): 
+			if data_x >= 0 and data_y >= 0 and data_x < grid.size() and data_y < grid[0].size():
 				grid[data_x][data_y].apply_data(new_tile)  # texture + game logic applied
 
 			# Debug information
 
-			new_tile.name = new_tile.type + "_HexTile_" + str(new_tile.cord)
+			new_tile.name = new_tile.type + "_HexTile_" + str(new_tile.coord)
 
 
 
-func is_gameplay_tile(x : int, y : int, bOddRow : bool) -> bool:
+func is_gameplay_tile(x : int, y : int, is_odd_row : bool) -> bool:
 	"""
 	3:1 - 7:1 even 5
 	3:2 - 6:2 odd 4
@@ -149,13 +149,15 @@ func is_gameplay_tile(x : int, y : int, bOddRow : bool) -> bool:
 	var gameplay_height_end = grid_height - border_size
 	var gameplay_width_odd_end = grid_width - border_size - floor(y / 2)
 	var gameplay_width_even_end = grid_width - border_size - floor(y / 2)
-	################################################################################################################################### clean
+	##### clean
 	# Height
 	# even row width
-	var bHeight = gameplay_height_start <= y and y < gameplay_height_end
-	var bEven_Row_Width = gameplay_width_start	 <= x and x < gameplay_width_even_end and not bOddRow
-	var bOdd_Row_Width = gameplay_width_start + 1 <= x and x < gameplay_width_odd_end and bOddRow
-	return bHeight and (bEven_Row_Width or bOdd_Row_Width)
+	var height_ok = gameplay_height_start <= y and y < gameplay_height_end
+	var even_row_width_ok = gameplay_width_start <= x \
+		and x < gameplay_width_even_end and not is_odd_row
+	var odd_row_width_ok = gameplay_width_start + 1 <= x \
+		and x < gameplay_width_odd_end and is_odd_row
+	return height_ok and (even_row_width_ok or odd_row_width_ok)
 
 
 func generate_special_tiles() -> void:
@@ -170,9 +172,9 @@ func generate_grid(new_map_data : GridBoard) -> void:
 	"""
 	assert(is_clear(), "Grid is already loaded")
 	reset_data()
-	
+
 	new_map_data.apply_data()
-	
+
 
 	# "+2" is to reserve space for sentinel tiles on each side of the board
 	adjust_grid_size()

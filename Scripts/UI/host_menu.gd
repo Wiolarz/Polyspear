@@ -2,7 +2,7 @@ class_name HostMenu
 extends Control
 
 """
-Manager scripts that displays specific UI 
+Manager scripts that displays specific UI
 """
 
 @onready var server_creator = \

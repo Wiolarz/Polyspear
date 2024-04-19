@@ -75,9 +75,9 @@ func load_armies(army_list : Array[Army]):
 	var players = players_box.get_children()
 	players[2].queue_free()
 	players[1].queue_free()
-	
+
 	units_box.show()
-	
+
 	for army in army_list:
 		# create player buttons
 		var n = Button.new()
@@ -103,4 +103,4 @@ func _on_switch_camera_pressed():
 
 func _on_menu_pressed():
 	IM.show_in_game_menu()
-	
+

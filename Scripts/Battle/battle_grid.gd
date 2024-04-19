@@ -19,24 +19,24 @@ func get_all_field_coords() -> Array[Vector2i]:
 	return result
 
 
-func change_unit_cord(unit : Unit, cord : Vector2i):
+func change_unit_coord(unit : Unit, coord : Vector2i):
 
-	unit_grid[unit.cord.x][unit.cord.y] = null# clean your previous location
-	unit_grid[cord.x][cord.y] = unit# unit_grid Update
+	unit_grid[unit.coord.x][unit.coord.y] = null# clean your previous location
+	unit_grid[coord.x][coord.y] = unit# unit_grid Update
 
-	unit.cord = cord# update unit Index
-	
+	unit.coord = coord# update unit Index
+
 	# Move visuals of the unit
 	if BM.unsummoned_units_counter > 0:
-		unit.global_position = tile_grid[cord.x][cord.y].global_position
+		unit.global_position = tile_grid[coord.x][coord.y].global_position
 	else:
-		unit.move(tile_grid[cord.x][cord.y])
-	
+		unit.move(tile_grid[coord.x][coord.y])
+
 
 func remove_unit(unit):
 
-	var cord : Vector2i = unit.cord
-	unit_grid[cord.x][cord.y] = null # Remove unit from gameplay grid
+	var coord : Vector2i = unit.coord
+	unit_grid[coord.x][coord.y] = null # Remove unit from gameplay grid
 	unit.destroy()
 
 #endregion
@@ -44,69 +44,69 @@ func remove_unit(unit):
 
 #region Coordinates tools
 
-func get_tile_type(cord : Vector2i) -> String:
-	return tile_grid[cord.x][cord.y].type
+func get_tile_type(coord : Vector2i) -> String:
+	return tile_grid[coord.x][coord.y].type
 
 
-func get_unit(cord : Vector2i):
-	return unit_grid[cord.x][cord.y]
+func get_unit(coord : Vector2i):
+	return unit_grid[coord.x][coord.y]
 
 
-func adjacent_units(start_cord : Vector2i) -> Array:
+func adjacent_units(start_coord : Vector2i) -> Array:
 	# Returns 6 elements Array, elements can be null
 	var units = []
 	for side in range(6):
-		var cord = GridManager.adjacent_cord(start_cord, side)
-		var neighbour = unit_grid[cord.x][cord.y]
+		var coord = GridManager.adjacent_coord(start_coord, side)
+		var neighbour = unit_grid[coord.x][coord.y]
 		#if (neighbour != null):
 		units.append(neighbour)
 	return units
 
 
-func get_shot_target(start_cord : Vector2i, side : int) -> Unit:
-	while tile_grid[start_cord.x][start_cord.y].type != "sentinel":
-		start_cord += DIRECTIONS[side]
-		#print("checking ",start_cord)
-		var target = unit_grid[start_cord.x][start_cord.y]
+func get_shot_target(start_coord : Vector2i, side : int) -> Unit:
+	while tile_grid[start_coord.x][start_coord.y].type != "sentinel":
+		start_coord += DIRECTIONS[side]
+		#print("checking ",start_coord)
+		var target = unit_grid[start_coord.x][start_coord.y]
 		if target != null:
-			#print("hit @",start_cord)
+			#print("hit @",start_coord)
 			return target
 	#print("missed")
 	return null
 
 
-func get_distant_unit(start_cord : Vector2i, side : int, distance : int) -> Unit:
+func get_distant_unit(start_coord : Vector2i, side : int, distance : int) -> Unit:
 	for i in range(distance):
-		start_cord += DIRECTIONS[side]
-	
-	return unit_grid[start_cord.x][start_cord.y]
+		start_coord += DIRECTIONS[side]
+
+	return unit_grid[start_coord.x][start_coord.y]
 
 
-func get_distant_tile_type(start_cord : Vector2i, side : int, distance : int) -> String:
+func get_distant_tile_type(start_coord : Vector2i, side : int, distance : int) -> String:
 	for i in range(distance):
-		start_cord += DIRECTIONS[side]
+		start_coord += DIRECTIONS[side]
 
-	return tile_grid[start_cord.x][start_cord.y].type
+	return tile_grid[start_coord.x][start_coord.y].type
 
 
-func get_distant_cord(start_cord : Vector2i, side : int, distance : int) -> Vector2i:
+func get_distant_coord(start_coord : Vector2i, side : int, distance : int) -> Vector2i:
 	for i in range(distance):
-		start_cord += DIRECTIONS[side]
-	
-	return start_cord
+		start_coord += DIRECTIONS[side]
+
+	return start_coord
 
 
-# func get_melee_targets(start_Cord : Vector2i, direction, symbol_side : int) -> Array[Unit]:
+# func get_melee_targets(start_coord : Vector2i, direction, symbol_side : int) -> Array[Unit]:
 # 	"""
 # 	AI/UI tool
 # 	take a side on which a weapon symbol is present -> simulate movement -> return list of damaged targets
 # 	(can return friednly units)
-	
+
 # 	direction : int / Vector2i
 
 # 	"""
 # 	var units : Array[Unit] = []
-	
+
 # 	return units
 
 #endregion
