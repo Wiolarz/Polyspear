@@ -15,16 +15,7 @@ func on_end_of_turn():
 	accumulated_goods.add(per_turn)
 
 func get_map_description() -> String:
-	var result = "|"
-	if accumulated_goods.wood > 0:
-		result += "%d 🪓|" % accumulated_goods.wood
-	if accumulated_goods.iron > 0:
-		result += "%d ⛏️|" % accumulated_goods.iron
-	if accumulated_goods.ruby > 0:
-		result += "%d 💎|" % accumulated_goods.ruby
-	if result == "|":
-		result = "Nothing"
-	return result
+	return accumulated_goods.to_string_short("empty")
 
 func collect(player : Player):
 	player.goods.add(accumulated_goods)

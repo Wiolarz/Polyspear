@@ -9,7 +9,7 @@ extends Node
 
 
 static func create_place(new_data_tile : DataTile) -> Place:
-	
+
 	match new_data_tile.type:
 		"sawmill":
 			return Deposit.new(Goods.new(5,0,0), Goods.new(1,0,0))

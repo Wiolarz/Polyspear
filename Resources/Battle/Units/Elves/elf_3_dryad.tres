@@ -1,12 +1,20 @@
-[gd_resource type="Resource" script_class="DataUnit" load_steps=5 format=3 uid="uid://ffyygt7w8ulw"]
+[gd_resource type="Resource" script_class="DataUnit" load_steps=7 format=3 uid="uid://ffyygt7w8ulw"]
 
 [ext_resource type="Script" path="res://Resources/Battle/data_unit.gd" id="1_exjyy"]
+[ext_resource type="Script" path="res://Scripts/World/goods.gd" id="1_glgq7"]
 [ext_resource type="Resource" uid="uid://sr1570kq7sm8" path="res://Resources/Battle/Symbols/shield.tres" id="2_2pdkj"]
 [ext_resource type="Resource" uid="uid://o4rlmfc33rsh" path="res://Resources/Battle/Symbols/empty.tres" id="3_bfjrc"]
 [ext_resource type="Resource" uid="uid://cngonnqsgsd6e" path="res://Resources/Battle/Symbols/sword.tres" id="6_5gyf8"]
+
+[sub_resource type="Resource" id="Resource_6r5q3"]
+script = ExtResource("1_glgq7")
+wood = 0
+iron = 0
+ruby = 3
 
 [resource]
 script = ExtResource("1_exjyy")
 unit_name = "Dryad"
 texture_path = "res://Art/units/elf_dryad.png"
 symbols = Array[Resource("res://Resources/Battle/data_symbol.gd")]([ExtResource("6_5gyf8"), ExtResource("2_2pdkj"), ExtResource("6_5gyf8"), ExtResource("3_bfjrc"), ExtResource("6_5gyf8"), ExtResource("2_2pdkj")])
+cost = SubResource("Resource_6r5q3")

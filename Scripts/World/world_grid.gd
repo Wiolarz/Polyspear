@@ -23,7 +23,7 @@ func change_hero_position(hero, coord : Vector2i):
 
 	# Move visuals of the unit
 	hero.move(tile_grid[coord.x][coord.y])
-	
+
 
 func remove_hero(hero):
 	var cord : Vector2i = hero.cord
@@ -82,7 +82,7 @@ func is_enemy_present(cord : Vector2i, player : Player) -> bool:
 	if get_tile_controller(cord) == player:
 		return false
 	elif get_army(cord) == null:
-		return false 
+		return false
 	return true
 
 
@@ -92,7 +92,7 @@ func get_interactable_type(cord : Vector2i) -> String:
 		return "army"
 	elif is_city(cord):
 		return "city"
-	
+
 	return "empty"
 
 #endregion

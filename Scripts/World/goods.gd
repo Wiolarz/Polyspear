@@ -34,6 +34,24 @@ func clear():
 	iron = 0
 	ruby = 0
 
+func to_string_short(empty: String = "") -> String:
+	if wood == 0 and iron == 0 and ruby == 0:
+		return empty
+	var result = ""
+	if wood != 0:
+		result += "%d 🪓" % wood
+	if iron != 0:
+		if result != "":
+			result += " | "
+		result += "%d ⛏️" % iron
+	if ruby != 0:
+		if result != "":
+			result += " | "
+		result += "%d 💎" % ruby
+	return result
+
+func _to_string() -> String:
+	return "%d 🪓| %d ⛏️| %d 💎" % to_array()
 
 func to_array() -> Array[int]:
 	return [wood, iron, ruby]
