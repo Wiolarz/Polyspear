@@ -25,13 +25,13 @@ func change_unit_cord(unit : Unit, cord : Vector2i):
 	unit_grid[cord.x][cord.y] = unit# unit_grid Update
 
 	unit.cord = cord# update unit Index
-	
+
 	# Move visuals of the unit
 	if BM.unsummoned_units_counter > 0:
 		unit.global_position = tile_grid[cord.x][cord.y].global_position
 	else:
 		unit.move(tile_grid[cord.x][cord.y])
-	
+
 
 func remove_unit(unit):
 
@@ -78,7 +78,7 @@ func get_shot_target(start_cord : Vector2i, side : int) -> Unit:
 func get_distant_unit(start_cord : Vector2i, side : int, distance : int) -> Unit:
 	for i in range(distance):
 		start_cord += DIRECTIONS[side]
-	
+
 	return unit_grid[start_cord.x][start_cord.y]
 
 
@@ -92,7 +92,7 @@ func get_distant_tile_type(start_cord : Vector2i, side : int, distance : int) ->
 func get_distant_cord(start_cord : Vector2i, side : int, distance : int) -> Vector2i:
 	for i in range(distance):
 		start_cord += DIRECTIONS[side]
-	
+
 	return start_cord
 
 
@@ -101,12 +101,12 @@ func get_distant_cord(start_cord : Vector2i, side : int, distance : int) -> Vect
 # 	AI/UI tool
 # 	take a side on which a weapon symbol is present -> simulate movement -> return list of damaged targets
 # 	(can return friednly units)
-	
+
 # 	direction : int / Vector2i
 
 # 	"""
 # 	var units : Array[Unit] = []
-	
+
 # 	return units
 
 #endregion

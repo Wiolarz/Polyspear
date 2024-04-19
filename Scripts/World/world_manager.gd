@@ -40,7 +40,7 @@ func set_selected_hero(new_hero : ArmyOnWorldMap):
 
 
 #region Main functions
-	
+
 
 func next_player_turn():
 	set_selected_hero(null)
@@ -93,7 +93,7 @@ func grid_input(cord : Vector2i):
 				##TODO CITY you could select current city here
 				#city_show_interface(city)
 		return
-	
+
 	else: # hero is selected
 		#TEMP in future there will be pathfiding here
 		if not GridManager.is_adjacent(selected_hero.cord, cord):
@@ -165,7 +165,7 @@ func start_combat(cord : Vector2i):
 	IM.raging_battle = true
 
 	combat_tile = cord
-	
+
 	IM.switch_camera()
 
 	var armies : Array[Army] = [
@@ -173,7 +173,7 @@ func start_combat(cord : Vector2i):
 		W_GRID.get_army(combat_tile).army_data,
 	]
 	var battle_map : BattleMap = W_GRID.get_battle_map(combat_tile)
-	
+
 	world_ui.hide()
 	BM.start_battle(armies, battle_map)
 
@@ -229,7 +229,7 @@ func start_world(world_map : WorldMap) -> void:
 	players = IM.get_active_players()
 
 	assert(players.size() != 0, "ERROR WM.players is empty")
-	
+
 	current_player = players[0]
 	if world_ui == null or not is_instance_valid(world_ui):
 		spawn_world_ui()
@@ -238,7 +238,7 @@ func start_world(world_map : WorldMap) -> void:
 	IM.raging_battle = false
 
 	W_GRID.generate_grid(world_map)
-	
+
 	for player_id in range(players.size()):
 		spawn_player(spawn_location[player_id], players[player_id])
 
@@ -248,7 +248,7 @@ func spawn_player(coords : Vector2i, player : Player):
 	add_child(army_for_world_map)
 	army_for_world_map.name = "hero 1"
 	army_for_world_map.army_data.controller = player
-	
+
 	var coord =  W_GRID.to_bordered_coords(coords)
 	W_GRID.place_army(army_for_world_map, coord)
 	W_GRID.get_city(coord).controller = player

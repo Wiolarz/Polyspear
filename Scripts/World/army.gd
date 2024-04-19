@@ -20,5 +20,5 @@ func destroy_army():
 		WM.kill_hero(hero)
 	else:
 		WM.grid[cord.x][cord.y].army = null
-	
+
 	queue_free()

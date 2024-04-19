@@ -23,7 +23,7 @@ enum WorldMapTiles
 	# fundemantal game logic
 	EMPTY,
 	WALL,
-	
+
 	# UI based menu interfaces
 	CITY,
 	PLACE,

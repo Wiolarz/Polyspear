@@ -61,19 +61,19 @@ func grid_input(cord : Vector2i) -> void:
 	"""
 	input redirection (based on current ) verification
 	"""
-	
+
 	if unsummoned_units_counter > 0: # Summon phase
 		_grid_input_summon(cord)
 		return
-	
+
 	if select_unit(cord) or selected_unit == null:
 		# selected a new unit or wrong input which didn't select any ally unit
-		return 
+		return
 
 	var side : int = is_legal_move(cord) # is_legal_move() returns false as -1 0-5 direction for unit to move
 	if side == -1: # spot is empty + we aren't hitting a shield
 		return
-	
+
 	selected_unit.set_selected(false)
 	move_unit(selected_unit, cord, side)
 	switch_participant_turn()
@@ -81,7 +81,7 @@ func grid_input(cord : Vector2i) -> void:
 func perform_ai_move( move :MoveInfo,  _me: Player):
 	if move.move_type == MoveInfo.TYPE_MOVE:
 		var unit = B_GRID.get_unit(move.move_source)
-		var dir = GridManager.adjacent_side(unit.cord, move.target_tile_coord) 
+		var dir = GridManager.adjacent_side(unit.cord, move.target_tile_coord)
 		move_unit(unit, move.target_tile_coord, dir)
 		await get_tree().create_timer(AI_MOVE_DELAY).timeout
 		switch_participant_turn()
@@ -132,7 +132,7 @@ func is_legal_move(cord : Vector2i, BotUnit : Unit = null) -> int:
 		1 Target cord is a Neighbour of a selected_unit
 		2 if selected_unit doesn't have push symbol on it's front (none currently have it yet)
 			Target cord doesn't contatin an Enemy Unit with a shield pointing at our selected_unit
-		
+
 		@param cord target cord for selected_unit to move to
 		@param BotUnit optional parameter for AI that replaces selected_unit with BotUnit
 		@return result_side -1 if move is illegal, direction of the move if it is
@@ -141,7 +141,7 @@ func is_legal_move(cord : Vector2i, BotUnit : Unit = null) -> int:
 		selected_unit = BotUnit  # Locally replacs Unit for Bot legal move search
 
 	# 1
-	var result_side = GridManager.adjacent_side(selected_unit.cord, cord)  
+	var result_side = GridManager.adjacent_side(selected_unit.cord, cord)
 	if result_side == null:
 		return -1
 
@@ -150,7 +150,7 @@ func is_legal_move(cord : Vector2i, BotUnit : Unit = null) -> int:
 	var enemy_unit = B_GRID.get_unit(cord)
 	if enemy_unit == null:  # Is there a Unit in this spot?
 		return result_side
-	
+
 	match selected_unit.Symbols[0]:
 		E.Symbols.EMPTY:
 			return -1
@@ -171,7 +171,7 @@ func move_unit(unit, end_cord : Vector2i, side: int) -> void:
 	# Move General function
 	"""
 		Turns unit to @side then Moves unit to end_cord
-		
+
 		1 Turn
 		2 Check for counter attack damage
 		3 Actions
@@ -201,8 +201,8 @@ func move_unit(unit, end_cord : Vector2i, side: int) -> void:
 	if counter_attack_damage(unit):
 		kill_unit(unit)
 		return
-		
-		
+
+
 	unit_action(unit)
 
 	if not battle_is_ongoing:  # TEMP
@@ -229,7 +229,7 @@ func kill_unit(target) -> void:
 		if units[0].controller == target.controller:
 			units.erase(target)
 			break
-	
+
 	B_GRID.remove_unit(target)
 
 	var armies_left_alive : Array[int] = []
@@ -242,8 +242,8 @@ func kill_unit(target) -> void:
 
 	if armies_left_alive.size() < 2:
 		battle_is_ongoing = false
-	
-		
+
+
 func unit_action(unit : Unit) -> void:
 	var units = B_GRID.adjacent_units(unit.cord)
 
@@ -266,7 +266,7 @@ func unit_action(unit : Unit) -> void:
 				continue
 			_:
 				pass
-			
+
 
 		if (units[side] == null or units[side].controller == unit.controller):
 			# no one to hit
@@ -292,10 +292,10 @@ func unit_action(unit : Unit) -> void:
 				continue
 
 			B_GRID.change_unit_cord(enemy_unit, B_GRID.get_distant_cord(unit.cord, side, 2))
-			if counter_attack_damage(enemy_unit): # Simple push	
+			if counter_attack_damage(enemy_unit): # Simple push
 				kill_unit(enemy_unit)
 			continue
-		
+
 
 
 		# Rotation is based on where the unit is pointing toward
@@ -303,7 +303,7 @@ func unit_action(unit : Unit) -> void:
 
 		if enemy_unit.get_symbol(side + 3) != E.Symbols.SHIELD:# Does Enemy has a shield?
 			kill_unit(units[side])
-		
+
 #endregion
 
 
@@ -336,7 +336,7 @@ func end_of_battle() -> void:
 			armies_left_alive.append(army_idx)
 		else:
 			battling_armies[army_idx].alive = false
-	
+
 	var winner_army = battling_armies[armies_left_alive[0]]
 	print(winner_army.controller.player_name + " won")
 
@@ -388,7 +388,7 @@ func summon_unit(unitData : DataUnit, cord : Vector2i) -> void:
 	fighting_units[participant_idx].append(unit)
 	add_child(unit)
 	B_GRID.change_unit_cord(unit, cord)
-	
+
 	if participant_idx == ATTACKER:
 		unit.turn(3, true)
 	else:
@@ -420,10 +420,10 @@ func spawn_units() -> void:
 	Create unit "cards" which players will use later to summon their units on the battlefield
 	"""
 	fighting_units = [] # TODO MOVE TO CHECK CLEAR
-	unsummoned_units_counter = 0 
+	unsummoned_units_counter = 0
 	for army in battling_armies:
 		unsummoned_units_counter += army.units_data.size()
-	
+
 	# spawn armies units cards in battle UI
 	for army in battling_armies:
 		var new_army_unit_nodes = []

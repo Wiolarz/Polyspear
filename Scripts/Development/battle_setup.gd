@@ -90,7 +90,7 @@ func _get_army_as_units_data(unit_options : Array[OptionButton]) -> Array[DataUn
 func _get_unit_data(option : OptionButton) -> DataUnit :
 	var unit_name = option.get_item_text(option.selected)
 	if unit_name == "empty": return null
-	return load(UNITS_PATH + unit_name) 
+	return load(UNITS_PATH + unit_name)
 
 
 func _create_player(player_name : String) -> Player:
@@ -154,7 +154,7 @@ func _load_resource_lists() -> void:
 			army_slot.add_item("empty")
 			for unit_path in unit_paths:
 				army_slot.add_item(unit_path.trim_prefix(UNITS_PATH))
-	
+
 	for preset_path in TestTools.list_files_in_folder(PRESETS_PATH, true):
 		presets_list.add_item(preset_path)
 

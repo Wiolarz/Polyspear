@@ -38,7 +38,7 @@ func remove_tag(tag : TAG):
 	# update state
 
 
-func play_move() -> void: 
+func play_move() -> void:
 	var legal_moves = _get_possible_moves()
 	var move = current_state.choose_move(legal_moves)
 	BM.perform_ai_move( move, me )
@@ -47,6 +47,6 @@ func play_move() -> void:
 func _get_possible_moves() -> Array[MoveInfo]:
 	if BM.unsummoned_units_counter != 0:
 		return AIHelpers.get_all_spawn_moves(me)
-	
+
 	var my_units : Array[Unit] = BM.get_units(me)
 	return AIHelpers.get_all_legal_moves(my_units, me)

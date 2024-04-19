@@ -3,7 +3,7 @@ extends Node2D
 
 var army_data: Army = Army.new()
 
-var cord: 
+var cord:
 	get: return army_data.cord
 
 var controller:
@@ -12,7 +12,7 @@ var controller:
 func _ready():
 	army_data.hero = Hero.new()
 	army_data.hero.controller = army_data.controller
-	
+
 func move(tile):
 	position = tile.position
 	army_data.cord = tile.cord

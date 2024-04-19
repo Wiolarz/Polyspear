@@ -18,7 +18,7 @@ func test_battle() -> void:
 	assert(test_battle_setup != null, "No battle setup")
 
 	set_players(test_battle_setup.player_settings)
-	
+
 	var active_players = IM.get_active_players()
 	var new_armies : Array[Army] = []
 	for i in range(test_battle_setup.armies.size()):

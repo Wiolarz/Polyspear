@@ -21,8 +21,8 @@ func get_spawn_locations() -> Array[Vector2i]:
 		for y in range(grid_data[x].size()):
 			if grid_data[x][y].is_spawn_tile():
 				spawn_locations.append(Vector2i(x, y))
-	
-	
+
+
 	return spawn_locations
 
 
