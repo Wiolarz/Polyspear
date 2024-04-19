@@ -5,7 +5,7 @@ extends Resource
 @export var iron : int = 0
 @export var ruby : int = 0
 
-func _init(wood_ : int = 1, iron_ : int = 0, ruby_ : int = 0):
+func _init(wood_ : int = 0, iron_ : int = 0, ruby_ : int = 0):
 	wood = wood_
 	iron = iron_
 	ruby = ruby_
@@ -27,6 +27,7 @@ func add(resource : Goods):
 	wood += resource.wood
 	iron += resource.iron
 	ruby += resource.ruby
+
 
 func clear():
 	wood = 0

@@ -36,7 +36,7 @@ static var DIRECTIONS = [ \
 
 
 
-var tile_grid : Array = []  # Array[Array[Place]]
+var tile_grid : Array = []  # Array[Array[HexTile]]
 var unit_grid : Array = [] # Array[Array[Unit/Army]]
 
 #region Coordinate Tools
@@ -68,7 +68,7 @@ static func adjacent_cord(BaseCord : Vector2i, Side : int) -> Vector2i:
 	"""
 	return BaseCord + DIRECTIONS[Side]
 
-func tile_at(coord:Vector2i):
+func tile_at(coord : Vector2i) -> HexTile:
 	return tile_grid[coord.x][coord.y]
 #endregion
 

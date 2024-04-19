@@ -46,10 +46,17 @@ func next_player_turn():
 	set_selected_hero(null)
 	var player_idx = players.find(current_player)
 	if player_idx + 1 == players.size():
+		_call_end_of_turn()
 		current_player = players[0]
 	else:
 		current_player = players[player_idx + 1]
 
+func _call_end_of_turn() -> void:
+	for column in W_GRID.places:
+		for place : Place in column:
+			if place == null:
+				continue
+			place.on_end_of_turn()
 #endregion
 
 
