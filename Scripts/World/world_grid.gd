@@ -12,13 +12,13 @@ var places : Array = [] # Array[Array[Place]]
 
 func place_army(army : ArmyOnWorldMap, coord : Vector2i):
 	assert(unit_grid[coord.x][coord.y] == null, "can't place 2 armies on the same field")
-	army.army_data.cord = coord
+	army.army_data.coord = coord
 	unit_grid[coord.x][coord.y] = army
 	army.position = tile_at(coord).position
 
 
 func change_hero_position(hero, coord : Vector2i):
-	unit_grid[hero.cord.x][hero.cord.y] = null # clean your previous location
+	unit_grid[hero.coord.x][hero.coord.y] = null # clean your previous location
 	unit_grid[coord.x][coord.y] = hero
 
 	# Move visuals of the unit
@@ -26,8 +26,8 @@ func change_hero_position(hero, coord : Vector2i):
 
 
 func remove_hero(hero):
-	var cord : Vector2i = hero.cord
-	unit_grid[cord.x][cord.y] = null # Remove unit from gameplay grid
+	var coord : Vector2i = hero.coord
+	unit_grid[coord.x][coord.y] = null # Remove unit from gameplay grid
 
 	hero.destroy()
 
@@ -36,8 +36,8 @@ func remove_hero(hero):
 
 #region Coordinates Tools
 
-func is_moveable(cord : Vector2i):
-	return tile_grid[cord.x][cord.y].type in [ \
+func is_moveable(coord : Vector2i):
+	return tile_grid[coord.x][coord.y].type in [ \
 		"empty",
 		"iron_mine",
 		"sawmill",
@@ -45,22 +45,22 @@ func is_moveable(cord : Vector2i):
 	]
 
 
-func get_tile_controller(cord : Vector2i) -> Player:
-	var hero = get_hero(cord)
+func get_tile_controller(coord : Vector2i) -> Player:
+	var hero = get_hero(coord)
 	if hero != null:
 		return hero.controller
-	var place = places[cord.x][cord.y]
+	var place = places[coord.x][coord.y]
 	if place != null:
 		return place.controller
 	return null
 
 
-func get_battle_map(_cord : Vector2i):
+func get_battle_map(_coord : Vector2i):
 	return load("res://Resources/Battle/Battle_Maps/basic5x5.tres")
 
 
-func get_army(cord : Vector2i) -> ArmyOnWorldMap:
-	return unit_grid[cord.x][cord.y]
+func get_army(coord : Vector2i) -> ArmyOnWorldMap:
+	return unit_grid[coord.x][coord.y]
 
 
 func is_city(coord : Vector2i) -> bool: #TODO
@@ -78,19 +78,19 @@ func get_hero(coord : Vector2i):
 	return null
 
 
-func is_enemy_present(cord : Vector2i, player : Player) -> bool:
-	if get_tile_controller(cord) == player:
+func is_enemy_present(coord : Vector2i, player : Player) -> bool:
+	if get_tile_controller(coord) == player:
 		return false
-	elif get_army(cord) == null:
+	elif get_army(coord) == null:
 		return false
 	return true
 
 
-func get_interactable_type(cord : Vector2i) -> String:
-	var army = get_army(cord)
+func get_interactable_type(coord : Vector2i) -> String:
+	var army = get_army(coord)
 	if army != null:
 		return "army"
-	elif is_city(cord):
+	elif is_city(coord):
 		return "city"
 
 	return "empty"

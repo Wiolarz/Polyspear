@@ -5,7 +5,7 @@ extends Node2D
 @export var unitStats : DataUnit
 
 var unit_rotation : int
-var cord : Vector2i
+var coord : Vector2i
 var controller : Player
 
 var Symbols : Array[E.Symbols] = [  # based on specific Unit scene in _ready() symbols get placed into their spots

@@ -62,7 +62,7 @@ func _call_end_of_turn() -> void:
 
 #region Player Actions
 
-func grid_input(cord : Vector2i):
+func grid_input(coord : Vector2i):
 	"""
 	I no hero selected
 	if owned city/army:
@@ -77,18 +77,18 @@ func grid_input(cord : Vector2i):
 		move()
 	"""
 
-	print("world input @", cord)
+	print("world input @", coord)
 
-	var selected_spot_type : String = W_GRID.get_interactable_type(cord)
+	var selected_spot_type : String = W_GRID.get_interactable_type(coord)
 
 	if selected_hero == null:
 		if selected_spot_type == "army":
-			var army : ArmyOnWorldMap = W_GRID.get_army(cord)
+			var army : ArmyOnWorldMap = W_GRID.get_army(coord)
 			if current_player == army.army_data.controller:
 				set_selected_hero(army)
 		elif selected_spot_type == "city":
 			pass
-			#var city = W_GRID.get_city(cord)
+			#var city = W_GRID.get_city(coord)
 			#if city.controller == current_player:
 				##TODO CITY you could select current city here
 				#city_show_interface(city)
@@ -96,29 +96,29 @@ func grid_input(cord : Vector2i):
 
 	else: # hero is selected
 		#TEMP in future there will be pathfiding here
-		if not GridManager.is_adjacent(selected_hero.cord, cord):
+		if not GridManager.is_adjacent(selected_hero.coord, coord):
 			set_selected_hero(null)
 			return
 
-		if W_GRID.is_enemy_present(cord, current_player):
-			start_combat(cord)
+		if W_GRID.is_enemy_present(coord, current_player):
+			start_combat(coord)
 
 		if selected_spot_type == "army":
-			var army = W_GRID.get_army(cord)
+			var army = W_GRID.get_army(coord)
 			if current_player == army.controller:
 				# ARMY TRADE
 				trade_armies(army)
 
 		elif selected_spot_type == "city":
-			var city = W_GRID.get_city(cord)
+			var city = W_GRID.get_city(coord)
 			if city.controller == current_player:
 				# CITY TRADE
 				trade_city(city, selected_hero)
 				pass
 		else:
-			if W_GRID.is_moveable(cord):
-				print("moving ", selected_hero," to ",cord)
-				hero_move(selected_hero, cord)
+			if W_GRID.is_moveable(coord):
+				print("moving ", selected_hero," to ",coord)
+				hero_move(selected_hero, coord)
 
 
 func hero_move(hero : ArmyOnWorldMap, coord : Vector2i):
@@ -157,14 +157,14 @@ func city_show_interface(_city : City):
 
 #region Battles
 
-func start_combat(cord : Vector2i):
+func start_combat(coord : Vector2i):
 	"""
 	Starts a battle using Battle Manager (BM)
 	"""
 	print("start_combat")
 	IM.raging_battle = true
 
-	combat_tile = cord
+	combat_tile = coord
 
 	IM.switch_camera()
 
@@ -193,7 +193,7 @@ func end_of_battle():
 
 
 func kill_army(army : ArmyOnWorldMap):
-	W_GRID.unit_grid[army.cord.x][army.cord.y] = null  # there can only be one army at a single tile
+	W_GRID.unit_grid[army.coord.x][army.coord.y] = null  # there can only be one army at a single tile
 	army.queue_free()
 
 # endregion
@@ -223,8 +223,8 @@ func start_world(world_map : WorldMap) -> void:
 
 	var spawn_location = world_map.get_spawn_locations()
 
-	for cord in spawn_location:
-		print("spawn: ", cord + Vector2i(GridManager.border_size, GridManager.border_size))
+	for coord in spawn_location:
+		print("spawn: ", coord + Vector2i(GridManager.border_size, GridManager.border_size))
 
 	players = IM.get_active_players()
 

@@ -12,7 +12,7 @@ static func get_all_legal_moves(my_units : Array, me:Player) -> Array[MoveInfo]:
 
 	for unit in my_units:
 		for side in range(6):
-			var new_move = unit.cord + B_GRID.DIRECTIONS[side]
+			var new_move = unit.coord + B_GRID.DIRECTIONS[side]
 			var neighbour : Unit = B_GRID.get_unit(new_move)
 			if (neighbour != null and neighbour.controller == me): # 1
 				continue
@@ -23,7 +23,7 @@ static func get_all_legal_moves(my_units : Array, me:Player) -> Array[MoveInfo]:
 			if BM.is_legal_move(new_move, unit) == -1:
 				continue
 
-			legal_moves.append(MoveInfo.make_move(unit.cord, new_move))
+			legal_moves.append(MoveInfo.make_move(unit.coord, new_move))
 	return legal_moves
 
 
@@ -76,6 +76,6 @@ static func get_all_spawn_moves(me : Player) -> Array[MoveInfo]:
 	var units = BM.get_not_summoned_units(me)
 	for unit in units:
 		for spawn_tile in spawn_tiles:
-			legal_moves.append(MoveInfo.make_summon(unit, spawn_tile.cord))
+			legal_moves.append(MoveInfo.make_summon(unit, spawn_tile.coord))
 
 	return legal_moves

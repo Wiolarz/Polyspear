@@ -76,13 +76,13 @@ func _ready():
 
 #region Tools
 
-func grid_input(cord : Vector2i) -> void:
+func grid_input(coord : Vector2i) -> void:
 	if current_map_type == map_type.WORLD:
-		W_GRID.tile_grid[cord.x][cord.y].type = current_brush.type
-		W_GRID.tile_grid[cord.x][cord.y].get_node("Sprite2D").texture = ResourceLoader.load(current_brush.texture_path)
+		W_GRID.tile_grid[coord.x][coord.y].type = current_brush.type
+		W_GRID.tile_grid[coord.x][coord.y].get_node("Sprite2D").texture = ResourceLoader.load(current_brush.texture_path)
 	else:
-		B_GRID.tile_grid[cord.x][cord.y].type = current_brush.type
-		B_GRID.tile_grid[cord.x][cord.y].get_node("Sprite2D").texture = ResourceLoader.load(current_brush.texture_path)
+		B_GRID.tile_grid[coord.x][coord.y].type = current_brush.type
+		B_GRID.tile_grid[coord.x][coord.y].get_node("Sprite2D").texture = ResourceLoader.load(current_brush.texture_path)
 
 
 func _set_grid_type(new_type : map_type) -> void:
