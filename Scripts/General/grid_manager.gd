@@ -68,7 +68,7 @@ static func adjacent_cord(BaseCord : Vector2i, Side : int) -> Vector2i:
 	"""
 	return BaseCord + DIRECTIONS[Side]
 
-func tile_at(coord:Vector2i) -> HexTile:
+func tile_at(coord : Vector2i) -> HexTile:
 	return tile_grid[coord.x][coord.y]
 #endregion
 

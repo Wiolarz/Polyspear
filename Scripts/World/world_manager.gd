@@ -52,11 +52,11 @@ func next_player_turn():
 		current_player = players[player_idx + 1]
 
 func _call_end_of_turn() -> void:
-	for row in W_GRID.places:
-		for p in row:
-			if p == null:
+	for column in W_GRID.places:
+		for place : Place in column:
+			if place == null:
 				continue
-			(p as Place).on_end_of_turn()
+			place.on_end_of_turn()
 #endregion
 
 

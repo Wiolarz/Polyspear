@@ -28,6 +28,7 @@ func add(resource : Goods):
 	iron += resource.iron
 	ruby += resource.ruby
 
+
 func clear():
 	wood = 0
 	iron = 0

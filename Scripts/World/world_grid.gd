@@ -7,6 +7,7 @@ var max_player_number : int
 var cities: Array[City] = [] # TODO remove
 var places : Array = [] # Array[Array[Place]]
 
+
 #region Tools
 
 func place_army(army : ArmyOnWorldMap, coord : Vector2i):
@@ -17,7 +18,6 @@ func place_army(army : ArmyOnWorldMap, coord : Vector2i):
 
 
 func change_hero_position(hero, coord : Vector2i):
-
 	unit_grid[hero.cord.x][hero.cord.y] = null # clean your previous location
 	unit_grid[coord.x][coord.y] = hero
 
@@ -26,7 +26,6 @@ func change_hero_position(hero, coord : Vector2i):
 	
 
 func remove_hero(hero):
-
 	var cord : Vector2i = hero.cord
 	unit_grid[cord.x][cord.y] = null # Remove unit from gameplay grid
 
@@ -43,17 +42,22 @@ func is_moveable(cord : Vector2i):
 		"iron_mine",
 		"sawmill",
 		"ruby_cave",
-		#E.to_name(E.WorldMapTiles.DEPOSIT),
 	]
 
-func get_tile_controller(cord : Vector2i):
+
+func get_tile_controller(cord : Vector2i) -> Player:
 	var hero = get_hero(cord)
 	if hero != null:
 		return hero.controller
-	return null # tile_grid[cord.x][cord.y].controller
+	var place = places[cord.x][cord.y]
+	if place != null:
+		return place.controller
+	return null
+
 
 func get_battle_map(_cord : Vector2i):
 	return load("res://Resources/Battle/Battle_Maps/basic5x5.tres")
+
 
 func get_army(cord : Vector2i) -> ArmyOnWorldMap:
 	return unit_grid[cord.x][cord.y]
@@ -69,15 +73,15 @@ func get_city(coord : Vector2i) -> City:
 
 func get_hero(coord : Vector2i):
 	var army = get_army(coord)
-	if army!= null and army.army_data.hero != null:
+	if army != null and army.army_data.hero != null:
 		return army
 	return null
 
 
-func is_enemy_present(cord : Vector2i, player):
+func is_enemy_present(cord : Vector2i, player : Player) -> bool:
 	if get_tile_controller(cord) == player:
 		return false
-	if get_army(cord) == null:
+	elif get_army(cord) == null:
 		return false 
 	return true
 
@@ -86,7 +90,7 @@ func get_interactable_type(cord : Vector2i) -> String:
 	var army = get_army(cord)
 	if army != null:
 		return "army"
-	if is_city(cord):
+	elif is_city(cord):
 		return "city"
 	
 	return "empty"
@@ -95,8 +99,10 @@ func get_interactable_type(cord : Vector2i) -> String:
 
 
 #region Generate Grid
+
 func is_clear() -> bool:
 	return tile_grid.size() == 0 and unit_grid.size() == 0
+
 
 func init_tile_grid() -> void:
 	for i in range(grid_width):
@@ -112,15 +118,16 @@ func init_tile_grid() -> void:
 func generate_special_tiles() -> void:
 	for x in map_information.grid_data.size():
 		for y in map_information.grid_data[0].size():
-			var coords = Vector2i(\
-				x + W_GRID.border_size,\
+			var coords = Vector2i( \
+				x + W_GRID.border_size, \
 				y + W_GRID.border_size)
 			var place : Place = Place.create_place( \
 				map_information.grid_data[x][y])
 			places[coords.x][coords.y] = place
 			W_GRID.tile_at(coords).place = place
 
-func reset_data():
+
+func reset_data() -> void:
 	super.reset_data()
 
 #endregion

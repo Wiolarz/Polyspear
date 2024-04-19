@@ -6,7 +6,7 @@ var cord : Vector2i
 
 var type : String = "sentinel"
 
-var place: Place
+var place : Place
 
 
 func _on_input_event(_viewport : Node, event : InputEvent, _shape_idx : int):
@@ -20,7 +20,8 @@ func _on_input_event(_viewport : Node, event : InputEvent, _shape_idx : int):
 func set_coord(c:Vector2i)->void:
 	cord = c
 	$CoordLabel.text = str(cord)
-	
+
+
 func _process(_delta):
-	if place != null:
+	if place != null: #TEMP
 		$PlaceLabel.text = place.get_map_description()
