@@ -26,9 +26,9 @@ func _refresh_units_to_buy(city : City, hero : ArmyOnWorldMap):
 		for s in b.get_signal_connection_list("pressed"):
 			b.disconnect("pressed", s.callable)
 		if i < units.size():
-			b.text = units[i].unit_name
-			
-			b.pressed.connect(_buy_unit.bind(units[i], hero))
+			var unit = units[i]
+			b.text = unit.cost.to_string_short("-") + " -> "+ unit.unit_name
+			b.pressed.connect(_buy_unit.bind(unit, hero))
 
 
 func _refresh_army_display(hero : ArmyOnWorldMap):
@@ -41,16 +41,20 @@ func _refresh_army_display(hero : ArmyOnWorldMap):
 
 
 func _buy_unit(unit : DataUnit, hero : ArmyOnWorldMap):
-	print("buy", unit.unit_name)
-	
+	print("trying to buy ", unit.unit_name)
+
 	if hero.army_data.units_data.size() >= \
-		$CityUi/HBoxContainer/Army.get_child_count() - 1 :
-			print("army size limit")
-			return
+			$CityUi/HBoxContainer/Army.get_child_count() - 1 :
+		print("army size limit")
+		return
+
+	if !hero.controller.purchase(unit.cost):
+		print("not enough cash, needed ",unit.cost)
+		return
 
 	hero.army_data.units_data.append(unit)
 	_refresh_army_display(hero)
-	
+
 
 func _on_city_ui_close_requested():
 	$CityUi.hide()
@@ -58,8 +62,7 @@ func _on_city_ui_close_requested():
 
 func _on_end_turn_pressed():
 	WM.next_player_turn()
-	
+
 
 func _process(_delta):
-
-	good_label.text = "%d 🪓| %d ⛏️| %d 💎" % WM.current_player.goods.to_array()
+	good_label.text = WM.current_player.goods.to_string()

@@ -20,9 +20,21 @@ offset_bottom = 278.0
 text = "(-,-)"
 
 [node name="PlaceLabel" type="Label" parent="."]
-offset_left = -170.0
-offset_top = -24.0
-offset_right = -39.0
-offset_bottom = 31.0
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -108.0
+offset_top = -27.5
+offset_right = 108.0
+offset_bottom = 27.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 70
+text = "description"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [connection signal="input_event" from="." to="." method="_on_input_event"]
