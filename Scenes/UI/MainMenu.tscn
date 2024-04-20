@@ -46,27 +46,28 @@ grow_horizontal = 0
 scale = Vector2(1.5, 1.5)
 theme_override_constants/separation = 30
 
+[node name="Host" type="Button" parent="Control/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 40
+text = "Start Game 🪐"
+
 [node name="BattleSetup" type="Button" parent="Control/VBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 40
-text = "Battle Setup ⚔"
+text = "Test Battle ⚔"
 
 [node name="TestWorld" type="Button" parent="Control/VBoxContainer"]
+visible = false
 layout_mode = 2
 theme_override_font_sizes/font_size = 40
 text = "Test World 🗺"
 
-[node name="Host" type="Button" parent="Control/VBoxContainer"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 40
-text = "Host a server 🪐"
-
 [node name="Join" type="Button" parent="Control/VBoxContainer"]
 layout_mode = 2
-text = "Join to server 🙌"
+text = "Join a server 🙌"
 
 [connection signal="id_pressed" from="Control/MenuBar/Editors Menu" to="." method="_on_editors_menu_id_pressed"]
+[connection signal="pressed" from="Control/VBoxContainer/Host" to="." method="_on_host_pressed"]
 [connection signal="pressed" from="Control/VBoxContainer/BattleSetup" to="." method="_on_battle_setup_pressed"]
 [connection signal="pressed" from="Control/VBoxContainer/TestWorld" to="." method="_on_test_world_pressed"]
-[connection signal="pressed" from="Control/VBoxContainer/Host" to="." method="_on_host_pressed"]
 [connection signal="pressed" from="Control/VBoxContainer/Join" to="." method="_on_join_pressed"]

@@ -72,22 +72,6 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="MapSelect" type="VBoxContainer" parent="V"]
-layout_mode = 2
-
-[node name="Label" type="Label" parent="V/MapSelect"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 30
-text = "Select a battle map"
-
-[node name="ColorRect" type="PanelContainer" parent="V/MapSelect"]
-layout_mode = 2
-size_flags_vertical = 3
-theme_override_styles/panel = SubResource("StyleBoxFlat_ybc2s")
-
-[node name="MapList" type="OptionButton" parent="V/MapSelect/ColorRect"]
-layout_mode = 2
-
 [node name="PresetSelect" type="VBoxContainer" parent="V"]
 layout_mode = 2
 
@@ -102,6 +86,22 @@ size_flags_vertical = 3
 theme_override_styles/panel = SubResource("StyleBoxFlat_ybc2s")
 
 [node name="PresetList" type="OptionButton" parent="V/PresetSelect/ColorRect"]
+layout_mode = 2
+
+[node name="MapSelect" type="VBoxContainer" parent="V"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="V/MapSelect"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "Select a map"
+
+[node name="ColorRect" type="PanelContainer" parent="V/MapSelect"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_ybc2s")
+
+[node name="MapList" type="OptionButton" parent="V/MapSelect/ColorRect"]
 layout_mode = 2
 
 [node name="Slots" type="VBoxContainer" parent="V"]
