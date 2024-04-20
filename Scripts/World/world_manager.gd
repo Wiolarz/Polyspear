@@ -174,7 +174,6 @@ func start_combat(coord : Vector2i):
 	]
 	var battle_map : BattleMap = W_GRID.get_battle_map(combat_tile)
 
-	world_ui.hide()
 	BM.start_battle(armies, battle_map)
 
 
@@ -215,9 +214,7 @@ func close_world():
 
 func spawn_world_ui():
 	world_ui = load("res://Scenes/UI/WorldUi.tscn").instantiate()
-	add_child(world_ui)
-	world_ui.hide()
-
+	UI.add_custom_screen(world_ui)
 
 func start_world(world_map : WorldMap) -> void:
 
@@ -233,7 +230,7 @@ func start_world(world_map : WorldMap) -> void:
 	current_player = players[0]
 	if world_ui == null or not is_instance_valid(world_ui):
 		spawn_world_ui()
-	world_ui.show()
+	UI.go_to_custom_ui(world_ui)
 
 	IM.raging_battle = false
 

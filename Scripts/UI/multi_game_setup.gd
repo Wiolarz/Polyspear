@@ -162,8 +162,5 @@ func get_player_settings() -> Array[PlayerSetting]:
 	return [ elf, orc ]
 
 func _on_button_confirm_pressed():
-	var ui = $"/root/MainScene/MainMenu"
-	ui.go_to_main_menu()
-	ui.toggle_menu_visibility()
-
+	UI.go_to_main_menu()
 	IM.start_game("small6x6.tres", get_player_settings())

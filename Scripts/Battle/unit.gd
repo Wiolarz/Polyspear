@@ -9,7 +9,7 @@ var coord : Vector2i
 var controller : Player
 
 var Symbols : Array[E.Symbols] = [  # based on specific Unit scene in _ready() symbols get placed into their spots
-	E.Symbols.EMPTY, E.Symbols.EMPTY, E.Symbols.EMPTY, 
+	E.Symbols.EMPTY, E.Symbols.EMPTY, E.Symbols.EMPTY,
 	E.Symbols.EMPTY, E.Symbols.EMPTY, E.Symbols.EMPTY]
 
 var target_tile : HexTile
@@ -18,7 +18,7 @@ var target_rotation = rotation
 
 func can_defend(side : int) -> bool:
 	return get_symbol(side) == E.Symbols.SHIELD
-		
+
 
 func get_symbol(side : int) -> E.Symbols:
 	return Symbols[(side - unit_rotation) % 6]
@@ -26,12 +26,12 @@ func get_symbol(side : int) -> E.Symbols:
 func turn(side : int, skip_animation = false):
 	"""
 	  360 / 6 = 60  degrees needed to rotate unit
-	  
+
 	  param Unit - Reference to the object we are rotating
 	  param Direction
 	"""
 	unit_rotation = side
-	
+
 	# 360 / 6 = 60 -> degrees needed to rotate unit
 	# "Direction + 4" Accounts for global rotation setting for objects in the level
 
@@ -80,12 +80,12 @@ func _physics_process(_delta):
 		$sprite_unit.rotation = -rotation
 
 		return # so that unit first rotates then moves
-	
+
 	if target_tile != null:
-		if BUS.animation_speed == BUS.animation_speed_values.INSTANT:
+		if CFG.animation_speed == CFG.AnimationSpeed.INSTANT:
 			position = target_tile.position
 		else:
-			position = position.move_toward(target_tile.position, BUS.animation_speed)
+			position = position.move_toward(target_tile.position, CFG.animation_speed)
 		#position.x = move_toward(position.x, target_tile.position.x, BUS.animation_speed)
 		#position.y = move_toward(position.y, target_tile.position.y, BUS.animation_speed)
 		if (position - target_tile.position).length_squared() < 0.01:

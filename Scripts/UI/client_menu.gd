@@ -12,8 +12,7 @@ extends Control
 
 
 func go_back():
-	get_parent().go_to_main_menu()
-
+	IM.go_to_main_menu()
 
 func clear_management():
 	for child in connection_management.get_children():

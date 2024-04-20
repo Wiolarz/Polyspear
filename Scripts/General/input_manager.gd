@@ -4,6 +4,9 @@ extends Node
 
 
 """
+Top level god class
+TODO: split reasonably
+
 when player selects a hex it inform input_manager
 
 there input_manager check who the current play is:
@@ -21,7 +24,6 @@ there is an end turn function "switch player" it could call the input manager to
 
 
 """
-var timer = 0
 
 var _players : Array[Player] = []
 var players : Array[Player] :
@@ -80,6 +82,75 @@ func get_team_color_at(index : int) -> Color:
 
 var chat_log : String
 
+
+#region Input Support
+
+"""
+ESC - Return to the previous menu interface
+~ - Game Menu
+F1 - Exit Game
+F2 - maximize window
+F3 - toggle cheat mode
+F4 - toggle visibility of collision shapes
+
+F5 - Save
+F6 - Load
+"""
+func _process(_delta):
+	if Input.is_action_just_pressed("KEY_EXIT_GAME"):
+		quit_game()
+
+	if Input.is_action_just_pressed("KEY_MAXIMIZE_WINDOW"):
+		toggle_fullscreen()
+
+	if Input.is_action_just_pressed("KEY_MENU"):
+		show_in_game_menu()
+
+	if Input.is_action_just_pressed("KEY_DEBUG_COLLISION_SHAPES"):
+		toggle_collision_debug()
+
+	if Input.is_action_just_pressed("KEY_SAVE_GAME"):
+		print("quick save is not yet supported")
+
+	if Input.is_action_just_pressed("KEY_LOAD_GAME"):
+		print("quick load is not yet supported")
+
+func _physics_process(_delta):
+	if Input.is_action_just_pressed("KEY_BOT_SPEED_SLOW"):
+		print("anim speed - slow")
+		CFG.animation_speed = CFG.AnimationSpeed.NORMAL
+		CFG.bot_speed = CFG.BotSpeed.FREEZE
+	elif Input.is_action_just_pressed("KEY_BOT_SPEED_MEDIUM"):
+		print("anim speed - medium")
+		CFG.animation_speed = CFG.AnimationSpeed.NORMAL
+		CFG.bot_speed = CFG.BotSpeed.NORMAL
+	elif Input.is_action_just_pressed("KEY_BOT_SPEED_FAST"):
+		print("anim speed - fast")
+		CFG.animation_speed = CFG.AnimationSpeed.INSTANT
+		CFG.bot_speed = CFG.BotSpeed.FAST
+
+
+# called from HexTile mouse detection
+func grid_smooth_input_listener(coord : Vector2i):
+	if draw_mode:
+		UI.map_editor.grid_input(coord)
+
+# called from HexTile mouse detection
+func grid_input_listener(coord : Vector2i):
+	#print("tile ",coord)
+	#if WM.current_player.bot_engine != null:
+	#    return # its a bot turn
+	if draw_mode:
+		return
+
+	if raging_battle:
+		BM.grid_input(coord)
+	else:
+		WM.grid_input(coord)
+
+
+#endregion
+
 #region Game setup
 
 # this probably should go somewhere else, but for now i don't know where to
@@ -125,37 +196,19 @@ func switch_camera():
 		current_camera_position = camera_position.WORLD
 		pass
 
-func grid_smooth_input_listener(coord : Vector2i):
-	if draw_mode:
-		get_node("/root/MainScene/MapEditor").grid_input(coord)
-
-
-func grid_input_listener(coord : Vector2i):
-	#print("tile ",coord)
-	#if WM.current_player.bot_engine != null:
-	#    return # its a bot turn
-	if draw_mode:
-		return
-
-	if raging_battle:
-		BM.grid_input(coord)
-	else:
-		WM.grid_input(coord)
-
-
 func go_to_main_menu():
 	draw_mode = false
-
-	get_node("/root/MainScene/MapEditor").hide_draw_menu()
-
 	WM.close_world()
 	BM.close_battle()
-	get_node("/root/MainScene/MainMenu").toggle_menu_visibility()
+	UI.go_to_main_menu()
 
 func show_in_game_menu():
-	# TODO: refactor UI
-	$"/root/MainScene/GameMenu/Menu"._toggle_menu_status()
+	set_game_paused(true)
+	UI.show_in_game_menu()
 
+func hide_in_game_menu():
+	UI.hide_in_game_menu()
+	set_game_paused(false)
 
 func make_server():
 	var node = get_node_or_null("TheServer")
@@ -213,24 +266,6 @@ func client_logout_and_disconnect():
 		return
 	get_client().logout_if_needed()
 	get_client().close()
-
-func _physics_process(_delta):
-	#func _process(_delta):
-	timer += 1
-
-	if Input.is_action_just_pressed("KEY_BOT_SPEED_SLOW"):
-		BUS.animation_speed = BUS.animation_speed_values.NORMAL
-		BUS.BotSpeed = BUS.bot_speed_values.FREEZE # 0 sec
-	elif Input.is_action_just_pressed("KEY_BOT_SPEED_MEDIUM"):
-		BUS.animation_speed = BUS.animation_speed_values.NORMAL
-		BUS.BotSpeed = BUS.bot_speed_values.NORMAL # 0.5 sec
-	elif Input.is_action_just_pressed("KEY_BOT_SPEED_FAST"):
-		BUS.animation_speed = BUS.animation_speed_values.INSTANT
-
-		BUS.BotSpeed = BUS.bot_speed_values.FAST # 1/60 sec
-
-	# 60FPS -> timer=60 1 sec
-
 
 func get_server() -> Server:
 	var server = get_node_or_null("TheServer")
@@ -322,3 +357,45 @@ func start_game(map_name : String, player_settings : Array[PlayerSetting]):
 	var new_players = player_settings.map( func (setting) : return setting.create_player() )
 	players.assign(new_players)
 	WM.start_world(map_data)
+
+
+#region Technical
+
+func is_game_paused():
+	return get_tree().paused
+
+func set_game_paused(is_paused : bool):
+	print("pause = ",is_paused)
+	get_tree().paused = is_paused
+
+func quit_game():
+	get_tree().quit()
+
+func toggle_fullscreen():
+	if DisplayServer.window_get_mode() == DisplayServer.WINDOW_MODE_WINDOWED:
+		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_EXCLUSIVE_FULLSCREEN)
+		#DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)  # there is a grey border around the screen
+		# https://github.com/godotengine/godot/issues/63500
+	else:
+		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
+#endregion
+
+#region Debug
+
+func toggle_collision_debug():
+	var tree := get_tree()
+	tree.debug_collisions_hint = not tree.debug_collisions_hint
+
+	# Traverse tree to call queue_redraw on instances of
+	# CollisionShape2D and CollisionPolygon2D.
+	var node_stack: Array[Node] = [tree.get_root()]
+	while not node_stack.is_empty():
+		var node: Node = node_stack.pop_back()
+		if is_instance_valid(node):
+			if node is CollisionShape2D or node is CollisionPolygon2D:
+				node.queue_redraw()
+			if node is TileMap:
+				node.collision_visibility_mode = TileMap.VISIBILITY_MODE_FORCE_HIDE
+				node.collision_visibility_mode = TileMap.VISIBILITY_MODE_DEFAULT
+			node_stack.append_array(node.get_children())
+#endregion

@@ -1,8 +1,7 @@
-[gd_scene load_steps=6 format=3 uid="uid://bi1yq2awm2kc0"]
+[gd_scene load_steps=5 format=3 uid="uid://bi1yq2awm2kc0"]
 
-[ext_resource type="Script" path="res://Scripts/UI/debug_manager.gd" id="1_py7q0"]
+[ext_resource type="Script" path="res://Scripts/UI/in_game_menu.gd" id="1_4iw1x"]
 [ext_resource type="Shortcut" uid="uid://fuvss5hfg4q2" path="res://Resources/Shortcuts/go_back.tres" id="2_48g4r"]
-[ext_resource type="Script" path="res://Scripts/UI/save_system.gd" id="2_hnyc1"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fdxbp"]
 bg_color = Color(0.172549, 0.290196, 0.180392, 1)
@@ -10,11 +9,9 @@ bg_color = Color(0.172549, 0.290196, 0.180392, 1)
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_p527t"]
 bg_color = Color(0.419608, 0.113725, 0.129412, 1)
 
-[node name="UI" type="CanvasLayer"]
+[node name="InGameMenu" type="CanvasLayer"]
 process_mode = 3
-
-[node name="Menu" type="Node" parent="."]
-script = ExtResource("1_py7q0")
+script = ExtResource("1_4iw1x")
 
 [node name="MenuContainer" type="VBoxContainer" parent="."]
 light_mask = 2
@@ -64,13 +61,9 @@ text = "Quit"
 layout_mode = 2
 text = "Return To Main Menu"
 
-[node name="save_system" type="Node" parent="."]
-script = ExtResource("2_hnyc1")
-
-[connection signal="pressed" from="MenuContainer/BackToGame" to="Menu" method="_on_back_to_game_pressed"]
-[connection signal="pressed" from="MenuContainer/WinBattle" to="Menu" method="_on_win_battle_pressed"]
-[connection signal="pressed" from="MenuContainer/Surrender" to="Menu" method="_on_surrender_pressed"]
-[connection signal="pressed" from="MenuContainer/Restart" to="Menu" method="_on_restart_pressed"]
-[connection signal="pressed" from="MenuContainer/FullScreen" to="Menu" method="_on_full_screen_pressed"]
-[connection signal="pressed" from="MenuContainer/Quit" to="Menu" method="_on_quit_pressed"]
-[connection signal="pressed" from="MenuContainer/ReturnToMainMenu" to="Menu" method="_on_return_to_main_menu_pressed"]
+[connection signal="pressed" from="MenuContainer/BackToGame" to="." method="_on_back_to_game_pressed"]
+[connection signal="pressed" from="MenuContainer/WinBattle" to="." method="_on_win_battle_pressed"]
+[connection signal="pressed" from="MenuContainer/Surrender" to="." method="_on_surrender_pressed"]
+[connection signal="pressed" from="MenuContainer/FullScreen" to="." method="_on_full_screen_pressed"]
+[connection signal="pressed" from="MenuContainer/Quit" to="." method="_on_quit_pressed"]
+[connection signal="pressed" from="MenuContainer/ReturnToMainMenu" to="." method="_on_return_to_main_menu_pressed"]
