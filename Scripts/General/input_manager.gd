@@ -21,7 +21,6 @@ there is an end turn function "switch player" it could call the input manager to
 
 
 """
-var timer = 0
 
 var _players : Array[Player] = []
 var players : Array[Player] :
@@ -145,17 +144,12 @@ func grid_input_listener(coord : Vector2i):
 
 func go_to_main_menu():
 	draw_mode = false
-
-	get_node("/root/MainScene/MapEditor").hide_draw_menu()
-
 	WM.close_world()
 	BM.close_battle()
-	get_node("/root/MainScene/MainMenu").toggle_menu_visibility()
+	UI.go_to_main_menu()
 
 func show_in_game_menu():
-	# TODO: refactor UI
-	$"/root/MainScene/GameMenu/Menu"._toggle_menu_status()
-
+	UI.show_in_game_menu()
 
 func make_server():
 	var node = get_node_or_null("TheServer")
@@ -213,24 +207,6 @@ func client_logout_and_disconnect():
 		return
 	get_client().logout_if_needed()
 	get_client().close()
-
-func _physics_process(_delta):
-	#func _process(_delta):
-	timer += 1
-
-	if Input.is_action_just_pressed("KEY_BOT_SPEED_SLOW"):
-		BUS.animation_speed = BUS.animation_speed_values.NORMAL
-		BUS.BotSpeed = BUS.bot_speed_values.FREEZE # 0 sec
-	elif Input.is_action_just_pressed("KEY_BOT_SPEED_MEDIUM"):
-		BUS.animation_speed = BUS.animation_speed_values.NORMAL
-		BUS.BotSpeed = BUS.bot_speed_values.NORMAL # 0.5 sec
-	elif Input.is_action_just_pressed("KEY_BOT_SPEED_FAST"):
-		BUS.animation_speed = BUS.animation_speed_values.INSTANT
-
-		BUS.BotSpeed = BUS.bot_speed_values.FAST # 1/60 sec
-
-	# 60FPS -> timer=60 1 sec
-
 
 func get_server() -> Server:
 	var server = get_node_or_null("TheServer")
