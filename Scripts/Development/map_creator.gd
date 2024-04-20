@@ -56,7 +56,7 @@ func _create_button(box : BoxContainer, map_tile : String):
 		current_brush = tile
 		current_button = new_button
 		current_button.modulate = Color.DIM_GRAY
-	
+
 	new_button.pressed.connect(lambda)  # self._button_pressed
 
 
@@ -124,7 +124,7 @@ func _optimize_grid_size(local_tile_grid : Array) -> Array:
 
 	for left in range(max(left_pos, 0)):
 		local_tile_grid.pop_front()
-	
+
 	var rows_at_the_back_to_remove : int = local_tile_grid[0].size() - bot_pos
 
 	for column in local_tile_grid:
@@ -133,10 +133,10 @@ func _optimize_grid_size(local_tile_grid : Array) -> Array:
 
 		for top in range(max(top_pos, 0)):
 			column.pop_front()
-	
+
 	#print(left_pos, " ", right_pos, " ", top_pos, " ", bot_pos)
 	return local_tile_grid
-	
+
 
 func open_draw_menu():
 	visible = true
@@ -203,7 +203,7 @@ func _on_save_map_pressed():
 
 	new_map.grid_height = grid_data[0].size()
 	new_map.grid_width = grid_data.size()
-	
+
 	ResourceSaver.save(new_map, save_path)
 
 	print("end save map")
@@ -221,7 +221,7 @@ func _generate_empty_map(size_x : int = 5, size_y : int = 5) -> Array: # -> Arra
 			var new_data_tile = load("res://Resources/World/World_tiles/sentinel.tres")
 
 			current_column.append(new_data_tile)
-	
+
 	return grid_data
 
 
@@ -248,7 +248,7 @@ func _on_new_battle_map_pressed():
 	var grid_data = _generate_empty_map()
 
 	var new_map = BattleMap.new()
-		
+
 	new_map.grid_data = grid_data
 
 	new_map.grid_height = grid_data.size()

@@ -54,10 +54,6 @@ func scroll_chat_down():
 	chat_container.get_v_scroll_bar().ratio = 1
 
 
-func _on_send_send_pressed():
-	send_chat_message()
-
-
 func _on_button_disconnect_pressed():
 	disconnect_from_server()
 
@@ -67,8 +63,10 @@ func _on_chat_message_text_submitted(_new_text):
 	send_chat_message()
 
 
+func _on_button_send_pressed():
+	send_chat_message()
+
+
 func _process(_delta : float) -> void:
 	update_chat()
 	update_connection_info()
-
-

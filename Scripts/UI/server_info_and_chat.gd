@@ -40,7 +40,7 @@ func _on_button_send_pressed():
 func _on_chat_message_text_submitted(_new_text):
 	# _new_text - default Godot LineEdit requires a single variable
 	send_chat_message()
-	
+
 #endregion
 
 
