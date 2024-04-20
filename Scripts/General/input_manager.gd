@@ -109,6 +109,27 @@ func _process(_delta):
 	if Input.is_action_just_pressed("KEY_DEBUG_COLLISION_SHAPES"):
 		toggle_collision_debug()
 
+	if Input.is_action_just_pressed("KEY_SAVE_GAME"):
+		print("quick save is not yet supported")
+
+	if Input.is_action_just_pressed("KEY_LOAD_GAME"):
+		print("quick load is not yet supported")
+
+func _physics_process(_delta):
+	if Input.is_action_just_pressed("KEY_BOT_SPEED_SLOW"):
+		print("anim speed - slow")
+		CFG.animation_speed = CFG.AnimationSpeed.NORMAL
+		CFG.bot_speed = CFG.BotSpeed.FREEZE
+	elif Input.is_action_just_pressed("KEY_BOT_SPEED_MEDIUM"):
+		print("anim speed - medium")
+		CFG.animation_speed = CFG.AnimationSpeed.NORMAL
+		CFG.bot_speed = CFG.BotSpeed.NORMAL
+	elif Input.is_action_just_pressed("KEY_BOT_SPEED_FAST"):
+		print("anim speed - fast")
+		CFG.animation_speed = CFG.AnimationSpeed.INSTANT
+		CFG.bot_speed = CFG.BotSpeed.FAST
+
+
 # called from HexTile mouse detection
 func grid_smooth_input_listener(coord : Vector2i):
 	if draw_mode:
@@ -340,7 +361,11 @@ func start_game(map_name : String, player_settings : Array[PlayerSetting]):
 
 #region Technical
 
+func is_game_paused():
+	return get_tree().paused
+
 func set_game_paused(is_paused : bool):
+	print("pause = ",is_paused)
 	get_tree().paused = is_paused
 
 func quit_game():

@@ -83,11 +83,15 @@ func perform_ai_move( move :MoveInfo,  _me: Player):
 		var dir = GridManager.adjacent_side(unit.coord, move.target_tile_coord)
 		move_unit(unit, move.target_tile_coord, dir)
 		await get_tree().create_timer(AI_MOVE_DELAY).timeout
+		while IM.is_game_paused():
+			await get_tree().create_timer(0.1).timeout
 		switch_participant_turn()
 		return
 	if move.move_type == MoveInfo.TYPE_SUMMON:
 		summon_unit(move.summon_unit, move.target_tile_coord)
 		await get_tree().create_timer(AI_MOVE_DELAY).timeout
+		while IM.is_game_paused():
+			await get_tree().create_timer(0.1).timeout
 		switch_participant_turn()
 		return
 	assert(false, "Move move_type not supported in perform")

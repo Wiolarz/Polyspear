@@ -16,15 +16,3 @@ enum AnimationSpeed
 	INSTANT = 666,
 }
 var animation_speed : AnimationSpeed = AnimationSpeed.NORMAL
-
-
-func _physics_process(_delta):
-	if Input.is_action_just_pressed("KEY_BOT_SPEED_SLOW"):
-		animation_speed = AnimationSpeed.NORMAL
-		bot_speed = BotSpeed.FREEZE
-	elif Input.is_action_just_pressed("KEY_BOT_SPEED_MEDIUM"):
-		animation_speed = AnimationSpeed.NORMAL
-		bot_speed = BotSpeed.NORMAL
-	elif Input.is_action_just_pressed("KEY_BOT_SPEED_FAST"):
-		animation_speed = AnimationSpeed.INSTANT
-		bot_speed = BotSpeed.FAST
