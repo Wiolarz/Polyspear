@@ -241,9 +241,9 @@ func start_world(world_map : WorldMap) -> void:
 
 
 func spawn_player(coords : Vector2i, player : Player):
-	var army_for_world_map = load("res://Scenes/Form/ArmyForm.tscn").instantiate()
+	var army_for_world_map = CFG.DEFAULT_ARMY_FORM.instantiate()
 	add_child(army_for_world_map)
-	army_for_world_map.name = "hero 1"
+	army_for_world_map.name = "hero"
 	army_for_world_map.army_data.controller = player
 
 	var coord =  W_GRID.to_bordered_coords(coords)

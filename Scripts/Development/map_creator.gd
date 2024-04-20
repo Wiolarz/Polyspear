@@ -1,8 +1,5 @@
 extends CanvasLayer
 
-const WORLD_MAPS_PATH = "res://Resources/World/World_maps/"
-const BATTLE_MAPS_PATH = "res://Resources/Battle/Battle_Maps/"
-
 @export var map_file_name_input : TextEdit
 
 @export var new_map_width : int = 5
@@ -68,8 +65,8 @@ func _load_tiles(box : BoxContainer, path : String):
 
 func _ready():
 
-	_load_tiles(battle_box, "res://Resources/Battle/Battle_tiles/")
-	_load_tiles(world_box, "res://Resources/World/World_tiles/")
+	_load_tiles(battle_box, CFG.BATTLE_MAP_TILES_PATH)
+	_load_tiles(world_box, CFG.WORLD_MAP_TILES_PATH)
 
 #endregion
 
@@ -154,9 +151,9 @@ func _toggle_menu_status():
 #region Buttons:
 
 func _on_load_map_pressed():
-	var map_path = WORLD_MAPS_PATH
+	var map_path = CFG.WORLD_MAPS_PATH
 	if current_map_type == map_type.BATTLE:
-		map_path = BATTLE_MAPS_PATH
+		map_path = CFG.BATTLE_MAPS_PATH
 	map_path += map_file_name_input.text + ".tres"
 	var map_to_load = load(map_path)
 	assert(map_to_load != null, "there is no selected map to be loaded")
@@ -180,11 +177,11 @@ func _on_save_map_pressed():
 	if current_map_type == map_type.WORLD:
 		new_map = WorldMap.new()
 		local_tile_grid = W_GRID.tile_grid
-		save_path = WORLD_MAPS_PATH + map_save_name + ".tres"
+		save_path = CFG.WORLD_MAPS_PATH + map_save_name + ".tres"
 	else:
 		new_map = BattleMap.new()
 		local_tile_grid = B_GRID.tile_grid
-		save_path = BATTLE_MAPS_PATH + map_save_name + ".tres"
+		save_path = CFG.BATTLE_MAPS_PATH + map_save_name + ".tres"
 
 	var grid_data = []
 
@@ -218,7 +215,7 @@ func _generate_empty_map(size_x : int = 5, size_y : int = 5) -> Array: # -> Arra
 		var current_column = []
 		grid_data.append(current_column)
 		for tile in range(size_y):
-			var new_data_tile = load("res://Resources/World/World_tiles/sentinel.tres")
+			var new_data_tile = load(CFG.SENTINEL_TILE_PATH)
 
 			current_column.append(new_data_tile)
 
@@ -261,8 +258,8 @@ func _on_new_battle_map_pressed():
 #endregion
 
 func _on_open_button_pressed():
-	$FileDialog.root_subfolder = WORLD_MAPS_PATH \
-		 if current_map_type == map_type.WORLD else BATTLE_MAPS_PATH
+	$FileDialog.root_subfolder = CFG.WORLD_MAPS_PATH \
+		 if current_map_type == map_type.WORLD else CFG.BATTLE_MAPS_PATH
 	$FileDialog.show()
 
 

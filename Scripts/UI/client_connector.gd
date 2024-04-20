@@ -18,7 +18,7 @@ var client_menu : ClientMenu = null
 
 
 func _ready():
-	username_line.text = IM.get_random_username()
+	username_line.text = CFG.get_random_username()
 
 
 func get_address():

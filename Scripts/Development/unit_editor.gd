@@ -38,7 +38,7 @@ func _ready():
 	load_units()
 
 func load_symbols():
-	var path = "res://Resources/Battle/Symbols/"
+	var path = CFG.SYMBOLS_PATH
 	var dir = DirAccess.open(path)
 	for f in dir.get_files():
 		symbolTypes.append(load(path+f) as DataSymbol)
@@ -54,12 +54,11 @@ func load_units():
 	tree.button_clicked.connect(on_button)
 	var root = tree.create_item()
 	tree.hide_root = true
-	var PATH = "res://Resources/Battle/Units/"
-	var dir = DirAccess.open(PATH)
+	var dir = DirAccess.open(CFG.UNITS_PATH)
 	if dir:
 		load_units_dir(dir, root);
 	else:
-		print("Error opening folder:", PATH)
+		print("Error opening folder:", CFG.UNITS_PATH)
 
 func load_units_dir(dir : DirAccess, parent : TreeItem):
 	for file in dir.get_files():

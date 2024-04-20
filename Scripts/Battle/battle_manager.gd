@@ -382,7 +382,7 @@ func summon_unit(unitData : DataUnit, coord : Vector2i) -> void:
 		@param coord coordinate, on which Unit will be summoned
 	 """
 	#B_GRID.change_unit_coord(selected_unit, coord)
-	var unit : Unit = load("res://Scenes/Form/UnitForm.tscn").instantiate()
+	var unit : Unit = CFG.UNIT_FORM_SCENE.instantiate()
 	unit.apply_template(unitData)
 	unit.controller = current_participant
 

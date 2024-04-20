@@ -89,7 +89,7 @@ func try_to_cycle_color_slot(index : int, backwards : bool) -> bool:
 		# return false # we will change this after server responds
 	var new_color_index = slots[index].color
 	while true:
-		new_color_index = (new_color_index + diff) % IM.team_colors.size()
+		new_color_index = (new_color_index + diff) % CFG.TEAM_COLORS.size()
 		if new_color_index == slots[index].color: # all colors are taken
 			return false
 		var is_color_unique = func() -> bool:
@@ -148,13 +148,13 @@ func _ready():
 
 func get_player_settings() -> Array[PlayerSetting]:
 	var elf = PlayerSetting.new();
-	elf.faction = load("res://Resources/World/Factions/elf.tres")
+	elf.faction = CFG.FACTION_ELVES
 	elf.player_name = "asd"
 	elf.player_type =  E.player_type.HUMAN
 	elf.goods = Goods.new(0,0,0)
 
 	var orc = PlayerSetting.new()
-	orc.faction = load("res://Resources/World/Factions/orc.tres")
+	orc.faction = CFG.FACTION_ORCS
 	orc.player_name = "asd"
 	orc.player_type =  E.player_type.HUMAN
 	orc.goods = Goods.new(0,0,0)

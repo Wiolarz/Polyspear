@@ -1,7 +1,7 @@
 [gd_resource type="Resource" script_class="PlayerSetting" load_steps=3 format=3 uid="uid://clmr2vmji423c"]
 
-[ext_resource type="Resource" uid="uid://3ni121kxkl5l" path="res://Resources/World/Factions/elf.tres" id="1_pra3v"]
-[ext_resource type="Script" path="res://Resources/Tests/player_setting.gd" id="2_c4l2b"]
+[ext_resource type="Resource" uid="uid://3ni121kxkl5l" path="res://Resources/Factions/elf.tres" id="1_pra3v"]
+[ext_resource type="Script" path="res://Resources/Presets/player_setting.gd" id="2_c4l2b"]
 
 [resource]
 script = ExtResource("2_c4l2b")

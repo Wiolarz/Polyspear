@@ -1,6 +1,6 @@
 [gd_resource type="Resource" script_class="Faction" load_steps=5 format=3 uid="uid://blmlq31auuhh0"]
 
-[ext_resource type="Script" path="res://Resources/faction.gd" id="1_iksfp"]
+[ext_resource type="Script" path="res://Resources/Factions/faction.gd" id="1_iksfp"]
 [ext_resource type="Resource" uid="uid://cb5k3h5c3pq4m" path="res://Resources/Battle/Units/Orcs/orc_1_brute.tres" id="2_0fwro"]
 [ext_resource type="Resource" uid="uid://bnxmiy7obuw3y" path="res://Resources/Battle/Units/Orcs/orc_2_brigand.tres" id="3_bni20"]
 [ext_resource type="Resource" uid="uid://b7t1kfp7wq7mc" path="res://Resources/Battle/Units/Orcs/orc_3_champion.tres" id="4_layy6"]

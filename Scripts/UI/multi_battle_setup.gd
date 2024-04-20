@@ -52,7 +52,7 @@ func refresh_slot(index : int):
 			take_leave_button_state = \
 				PlayerSlotPanel.TakeLeaveButtonState.FREE
 		faction = logic_slot.faction
-		color = IM.get_team_color_at(logic_slot.color)
+		color = CFG.get_team_color_at(logic_slot.color)
 	ui_slot.set_visible_color(color)
 	ui_slot.set_visible_name(username)
 	ui_slot.set_visible_faction(faction)
