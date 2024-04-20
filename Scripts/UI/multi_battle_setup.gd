@@ -5,6 +5,9 @@ extends Control
 @onready var player_list = \
 	$V/Slots/ColorRect/PlayerList
 
+@onready var maps_list = \
+	$V/MapSelect/ColorRect/MapList
+
 var game_setup : MultiGameSetup
 
 
@@ -13,6 +16,7 @@ var player_slot_panels = []
 
 func _ready():
 	rebuild()
+	fill_maps_list()
 
 
 func refresh():
@@ -106,3 +110,9 @@ func rebuild():
 		player_slot_panels.append(slot)
 	# don't want to refresh here -- we want to be able to build this widget
 	# without real data
+
+
+func fill_maps_list():
+	var maps = IM.get_maps_list()
+	for map_name in maps:
+		maps_list.add_item(map_name)

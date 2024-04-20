@@ -56,7 +56,8 @@ size_flags_vertical = 3
 [node name="ButtonConfirm" type="Button" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 60
-text = "START / READY chyba"
+text = "START"
 
 [connection signal="toggled" from="MarginContainer/VBoxContainer/ModeChoice/ButtonFullScenario" to="." method="_on_button_full_scenario_toggled"]
 [connection signal="toggled" from="MarginContainer/VBoxContainer/ModeChoice/ButtonBattle" to="." method="_on_button_battle_toggled"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/ButtonConfirm" to="." method="_on_button_confirm_pressed"]

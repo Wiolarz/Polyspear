@@ -144,3 +144,26 @@ func _enter_tree():
 func _ready():
 	button_battle.button_pressed = true
 	button_battle.button_group = button_full_scenario.button_group
+
+
+func get_player_settings() -> Array[PlayerSetting]:
+	var elf = PlayerSetting.new();
+	elf.faction = load("res://Resources/World/Factions/elf.tres")
+	elf.player_name = "asd"
+	elf.player_type =  E.player_type.HUMAN
+	elf.goods = Goods.new(0,0,0)
+
+	var orc = PlayerSetting.new()
+	orc.faction = load("res://Resources/World/Factions/orc.tres")
+	orc.player_name = "asd"
+	orc.player_type =  E.player_type.HUMAN
+	orc.goods = Goods.new(0,0,0)
+
+	return [ elf, orc ]
+
+func _on_button_confirm_pressed():
+	var ui = $"/root/MainScene/MainMenu"
+	ui.go_to_main_menu()
+	ui.toggle_menu_visibility()
+
+	IM.start_game("small6x6.tres", get_player_settings())

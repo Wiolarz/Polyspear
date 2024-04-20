@@ -311,3 +311,14 @@ func multiplayer_broadcast_receive():
 
 func get_random_username() -> String:
 	return default_usernames[randi() % default_usernames.size()]
+
+
+func get_maps_list() -> Array[String]:
+	return TestTools.list_files_in_folder("res://Resources/World/World_maps/")
+
+
+func start_game(map_name : String, player_settings : Array[PlayerSetting]):
+	var map_data: WorldMap = load("res://Resources/World/World_maps/" + map_name)
+	var new_players = player_settings.map( func (setting) : return setting.create_player() )
+	players.assign(new_players)
+	WM.start_world(map_data)
