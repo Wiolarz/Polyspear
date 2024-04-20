@@ -1,0 +1,21 @@
+[gd_scene load_steps=2 format=3 uid="uid://biy1n2dqeqrox"]
+
+[ext_resource type="Script" path="res://Scripts/UI/client_menu.gd" id="1_li74l"]
+
+[node name="ClientLobby" type="CanvasLayer"]
+
+[node name="ClientMenu" type="HBoxContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_li74l")
+
+[node name="ConnectionManagement" type="PanelContainer" parent="ClientMenu"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="PanelContainer" type="PanelContainer" parent="ClientMenu"]
+layout_mode = 2
+size_flags_horizontal = 3

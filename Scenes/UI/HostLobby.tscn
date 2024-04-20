@@ -1,0 +1,25 @@
+[gd_scene load_steps=3 format=3 uid="uid://b3dmmym31kdbx"]
+
+[ext_resource type="Script" path="res://Scripts/UI/host_menu.gd" id="1_72jwl"]
+[ext_resource type="PackedScene" uid="uid://dev0nuoeb5bbv" path="res://Scenes/UI/MultiGameSetup.tscn" id="2_ov7l4"]
+
+[node name="HostLobby" type="CanvasLayer"]
+
+[node name="HostMenu" type="HBoxContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_72jwl")
+
+[node name="ServerManagement" type="PanelContainer" parent="HostMenu"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="PanelContainer" type="PanelContainer" parent="HostMenu"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="MultiGameSetup" parent="HostMenu/PanelContainer" instance=ExtResource("2_ov7l4")]
+layout_mode = 2

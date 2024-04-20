@@ -17,8 +17,7 @@ var armies_units_data : Array = [] # Array[Array[PackedScene]]
 
 func _ready():
 	battle_ui = load("res://Scenes/UI/BattleUi.tscn").instantiate()
-	add_child(battle_ui)
-	battle_ui.hide()
+	UI.add_custom_screen(battle_ui)
 
 #endregion
 
@@ -324,8 +323,6 @@ func close_battle() -> void:
 	battle_is_ongoing =  false
 	current_participant = null
 	for child in get_children():
-		if child ==  battle_ui:
-			continue
 		child.queue_free()
 
 
@@ -440,7 +437,7 @@ func display_unit_summon_cards(shown_participant : Player = current_participant)
 
 
 func start_battle(new_armies : Array[Army], battle_map : BattleMap) -> void:
-	battle_ui.show()
+	UI.go_to_custom_ui(battle_ui)
 	IM.raging_battle = true
 	battle_is_ongoing = true
 	battling_armies = new_armies
@@ -457,4 +454,17 @@ func start_battle(new_armies : Array[Army], battle_map : BattleMap) -> void:
 	spawn_units()
 	current_participant.your_turn()
 
+#endregion
+
+#region cheats/debug
+func force_win_battle():
+	for army_idx in range(fighting_units.size()):
+		if army_idx == participant_idx:
+			continue
+		for unit_idx in range(fighting_units[army_idx].size() - 1, -1, -1):
+			kill_unit(fighting_units[army_idx][unit_idx])
+
+func force_surrender():
+	for unit_idx in range(fighting_units[participant_idx].size() - 1, -1, -1):
+		kill_unit(fighting_units[participant_idx][unit_idx])
 #endregion

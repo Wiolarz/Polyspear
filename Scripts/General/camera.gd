@@ -3,17 +3,17 @@ extends Camera2D
 var last_mouse_position:Vector2
 
 func _process(_delta):
-	
+
 	if Input.is_action_just_pressed("KEY_ZOOM_OUT"):
 		if zoom.x > 0.11: # float precision
 			zoom.x -= 0.1
 			zoom.y -= 0.1
-		
+
 	elif Input.is_action_just_pressed("KEY_ZOOM_IN"):
 		if zoom.x < 1:
 			zoom.x += 0.1
 			zoom.y += 0.1
-			
+
 	if Input.is_action_pressed("KEY_DRAG_CAMERA"):
 		var current_mouse_position = get_viewport().get_mouse_position()
 		if Input.is_action_just_pressed("KEY_DRAG_CAMERA"):

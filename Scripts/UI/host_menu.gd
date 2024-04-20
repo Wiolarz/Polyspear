@@ -16,7 +16,7 @@ Manager scripts that displays specific UI
 
 
 func go_back():
-	get_parent().go_to_main_menu()
+	UI.go_to_main_menu()
 
 
 func clear_management():
