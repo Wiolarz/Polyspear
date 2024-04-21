@@ -1,4 +1,4 @@
-# Krong 3 
+# Krong 3
 Organised by Wiolarz a regular meeting with people interested in learning Godot.
 
 ## branches
