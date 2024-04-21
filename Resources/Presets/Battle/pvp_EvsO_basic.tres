@@ -1,12 +1,12 @@
-[gd_resource type="Resource" script_class="BattleSetup" load_steps=12 format=3 uid="uid://byhcrnn41k1aa"]
+[gd_resource type="Resource" script_class="PresetBattle" load_steps=12 format=3 uid="uid://byhcrnn41k1aa"]
 
-[ext_resource type="Script" path="res://Resources/Presets/battle_setup.gd" id="1_668kr"]
-[ext_resource type="Script" path="res://Resources/Presets/army_set.gd" id="1_fhuoc"]
+[ext_resource type="Script" path="res://Resources/Presets/preset_battle.gd" id="1_668kr"]
+[ext_resource type="Script" path="res://Resources/Presets/preset_army.gd" id="1_fhuoc"]
 [ext_resource type="Resource" uid="uid://bn5vy3pjiyv0n" path="res://Resources/Battle/Units/Elves/elf_1_spearmen.tres" id="2_2wjhs"]
 [ext_resource type="Resource" uid="uid://do6f1w1wkpt8f" path="res://Resources/Battle/Units/Elves/elf_2_archer.tres" id="3_8exuy"]
 [ext_resource type="Resource" uid="uid://drtyybrqkoq45" path="res://Resources/Battle/Battle_maps/basic5x5.tres" id="3_xwbqe"]
-[ext_resource type="Resource" uid="uid://dm2jeuv4bo4lw" path="res://Resources/Presets/Players/human_elf.tres" id="3_ya0o8"]
-[ext_resource type="Resource" uid="uid://dkgrcmar25cmi" path="res://Resources/Presets/Players/human_orc.tres" id="4_e8fk1"]
+[ext_resource type="Resource" uid="uid://dm2jeuv4bo4lw" path="res://Resources/Presets/Player/human_elf.tres" id="3_ya0o8"]
+[ext_resource type="Resource" uid="uid://dkgrcmar25cmi" path="res://Resources/Presets/Player/human_orc.tres" id="4_e8fk1"]
 [ext_resource type="Resource" uid="uid://ffyygt7w8ulw" path="res://Resources/Battle/Units/Elves/elf_3_dryad.tres" id="4_eemjt"]
 [ext_resource type="Resource" uid="uid://dsifqvw5c6id5" path="res://Resources/Battle/Units/Elves/elf_hero_druid.tres" id="5_w24k3"]
 
@@ -20,6 +20,6 @@ units = Array[Resource("res://Resources/Battle/data_unit.gd")]([ExtResource("5_w
 
 [resource]
 script = ExtResource("1_668kr")
-player_settings = Array[Resource("res://Resources/Presets/player_setting.gd")]([ExtResource("3_ya0o8"), ExtResource("4_e8fk1")])
+player_settings = Array[Resource("res://Resources/Presets/preset_player.gd")]([ExtResource("3_ya0o8"), ExtResource("4_e8fk1")])
 armies = Array[ExtResource("1_fhuoc")]([SubResource("Resource_8gfw6"), SubResource("Resource_renb5")])
 battle_map = ExtResource("3_xwbqe")

@@ -1,6 +1,6 @@
 extends CanvasLayer
 
-var current_preset: BattleSetup
+var current_preset: PresetBattle
 
 @onready var maps_list : OptionButton = $MapsList
 @onready var player_names: Array[TextEdit] = [
@@ -33,7 +33,7 @@ var current_preset: BattleSetup
 
 #region Main methods
 
-func _load_preset(preset : BattleSetup) -> void:
+func _load_preset(preset : PresetBattle) -> void:
 	current_preset = preset
 	_clear_armies()
 	for army_idx in range(2):
@@ -121,7 +121,7 @@ func _on_save_button_pressed() -> void:
 	for army_idx in range(units_lists.size()):
 		var unit_options = _get_options_for_army(army_idx)
 		var units_data = _get_army_as_units_data(unit_options)
-		var army_set = ArmySet.from_units_data(units_data)
+		var army_set = PresetArmy.from_units_data(units_data)
 		current_preset.armies.append(army_set)
 	ResourceSaver.save(current_preset)
 

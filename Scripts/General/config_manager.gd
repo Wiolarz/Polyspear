@@ -20,7 +20,7 @@ var animation_speed : AnimationSpeed = AnimationSpeed.NORMAL
 
 const BATTLE_MAPS_PATH = "res://Resources/Battle/Battle_Maps/"
 const UNITS_PATH = "res://Resources/Battle/Units/"
-const BATTLE_PRESETS_PATH = "res://Resources/Presets/Battle_setups/"
+const BATTLE_PRESETS_PATH = "res://Resources/Presets/Battle/"
 const WORLD_MAPS_PATH = "res://Resources/World/World_maps/"
 const SENTINEL_TILE_PATH = "res://Resources/World/World_tiles/sentinel.tres"
 const BATTLE_MAP_TILES_PATH = "res://Resources/Battle/Battle_tiles/"

@@ -2,11 +2,11 @@ class_name GeneralTest
 
 extends Node
 
-@export var world_setup : WorldSetup
-@export var test_battle_setup : BattleSetup
+@export var world_setup : PresetWorld
+@export var test_battle_setup : PresetBattle
 
 
-func set_players(players : Array[PlayerSetting]):
+func set_players(players : Array[PresetPlayer]):
 	var new_players : Array[Player] = []
 	for player_set in test_battle_setup.player_settings:
 			var new_player = player_set.create_player()

@@ -8,7 +8,7 @@ class Slot extends RefCounted: # check if this is good base
 					 # computer
 	var faction : DataFaction = null
 	var color : int = 0 # index of color in input manager
-	var army_set : ArmySet = null # unused in scenario
+	var army_set : PresetArmy = null # unused in scenario
 
 
 var slots : Array[Slot]

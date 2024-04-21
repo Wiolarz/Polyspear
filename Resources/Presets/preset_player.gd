@@ -1,4 +1,4 @@
-class_name  PlayerSetting
+class_name  PresetPlayer
 
 extends Resource
 

@@ -35,7 +35,7 @@ func after_all():
 
 
 func test_tiles_assigned():
-	
+
 	for level in managers.keys():
 		var manager = managers[level]
 		assert_true(manager.map_data != null, level + " No map data")
