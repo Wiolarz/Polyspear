@@ -34,7 +34,7 @@ func refresh_slot(index : int):
 			else null
 	var color : Color = Color(0.5, 0.5, 0.5, 1.0)
 	var username : String = ""
-	var faction : Faction = null
+	var faction : DataFaction = null
 	var take_leave_button_state : PlayerSlotPanel.TakeLeaveButtonState =\
 		PlayerSlotPanel.TakeLeaveButtonState.GHOST
 	if logic_slot:

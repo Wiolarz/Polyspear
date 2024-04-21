@@ -27,11 +27,10 @@ const BATTLE_MAP_TILES_PATH = "res://Resources/Battle/Battle_tiles/"
 const WORLD_MAP_TILES_PATH = "res://Resources/World/World_tiles/"
 const SYMBOLS_PATH = "res://Resources/Battle/Symbols/"
 
-var FACTION_ELVES = load("res://Resources/Factions/elf.tres")
-var FACTION_ORCS = load("res://Resources/Factions/orc.tres")
-# const FACTION_ORCS = preload("res://Resources/Factions/orc.tres")
+var FACTION_ELVES : DataFaction = load("res://Resources/Factions/elf.tres")
+var FACTION_ORCS : DataFaction = load("res://Resources/Factions/orc.tres")
 
-var FACTIONS_LIST : Array[Faction] = [
+var FACTIONS_LIST : Array[DataFaction] = [
 	FACTION_ELVES,
 	FACTION_ORCS,
 ]
@@ -76,7 +75,7 @@ func get_team_color_at(index : int) -> Color:
 		return DEFAULT_TEAM_COLOR
 	return TEAM_COLORS[index]["color"]
 
-var DEFAULT_BATTLE_MAP : BattleMap = \
+var DEFAULT_BATTLE_MAP : DataBattleMap = \
 	load("res://Resources/Battle/Battle_Maps/basic5x5.tres")
 const DEFAULT_ARMY_FORM = preload("res://Scenes/Form/ArmyForm.tscn")
 

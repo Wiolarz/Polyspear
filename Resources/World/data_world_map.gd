@@ -1,6 +1,5 @@
-class_name WorldMap
-
-extends GridBoard
+class_name DataWorldMap
+extends DataGenericMap
 
 """
 Placeholder variables.
@@ -27,7 +26,7 @@ func get_spawn_locations() -> Array[Vector2i]:
 
 
 func apply_data() -> void:
-	W_GRID.map_information = self  # : GridBoard : WorldMap
+	W_GRID.map_information = self  # : DataGenericMap : DataWorldMap
 	W_GRID.max_player_number = max_player_number
 	W_GRID.grid_width = grid_width
 	W_GRID.grid_height = grid_height

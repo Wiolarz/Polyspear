@@ -10,5 +10,5 @@ Gameplay Test Data allowing to simulate starting conditions for a battlefield
 
 @export var armies : Array[ArmySet] = []
 
-@export var battle_map : BattleMap
+@export var battle_map : DataBattleMap
 

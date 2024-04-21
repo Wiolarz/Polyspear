@@ -2,7 +2,7 @@ class_name GridManager
 extends Node
 
 
-var map_information : GridBoard
+var map_information : DataGenericMap
 
 
 # Hex Sprite draw gaps
@@ -162,7 +162,7 @@ func generate_special_tiles() -> void:
 func is_clear() -> bool:
 	return true
 
-func generate_grid(new_map_data : GridBoard) -> void:
+func generate_grid(new_map_data : DataGenericMap) -> void:
 	"""
 	Main grid map generation function
 	"""

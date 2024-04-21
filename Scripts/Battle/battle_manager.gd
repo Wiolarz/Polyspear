@@ -440,7 +440,7 @@ func display_unit_summon_cards(shown_participant : Player = current_participant)
 	battle_ui.on_player_selected(shown_participant)
 
 
-func start_battle(new_armies : Array[Army], battle_map : BattleMap) -> void:
+func start_battle(new_armies : Array[Army], battle_map : DataBattleMap) -> void:
 	UI.go_to_custom_ui(battle_ui)
 	IM.raging_battle = true
 	battle_is_ongoing = true

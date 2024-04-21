@@ -5,7 +5,7 @@ var player_name : String = ""
 
 var bot_engine : AIInteface
 
-var faction : Faction
+var faction : DataFaction
 
 # Player resources
 var goods : Goods = Goods.new()

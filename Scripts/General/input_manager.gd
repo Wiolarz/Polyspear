@@ -308,7 +308,7 @@ func get_maps_list() -> Array[String]:
 
 
 func start_game(map_name : String, player_settings : Array[PlayerSetting]):
-	var map_data: WorldMap = load(CFG.WORLD_MAPS_PATH + map_name)
+	var map_data: DataWorldMap = load(CFG.WORLD_MAPS_PATH + map_name)
 	var new_players = player_settings.map( func (setting) : return setting.create_player() )
 	players.assign(new_players)
 	WM.start_world(map_data)

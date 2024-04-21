@@ -5,7 +5,7 @@ extends Resource
 
 @export_category("Main")
 @export var player_settings : Array[PlayerSetting] = []
-@export var world_map : WorldMap
+@export var world_map : DataWorldMap
 
 
 

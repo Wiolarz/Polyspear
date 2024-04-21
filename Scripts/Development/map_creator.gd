@@ -159,7 +159,7 @@ func _on_load_map_pressed():
 	assert(map_to_load != null, "there is no selected map to be loaded")
 	WM.close_world()
 	BM.close_battle()
-	if map_to_load is WorldMap:
+	if map_to_load is DataWorldMap:
 		_set_grid_type(map_type.WORLD)
 		W_GRID.generate_grid(map_to_load)
 	else:
@@ -175,11 +175,11 @@ func _on_save_map_pressed():
 	var local_tile_grid : Array
 	var save_path
 	if current_map_type == map_type.WORLD:
-		new_map = WorldMap.new()
+		new_map = DataWorldMap.new()
 		local_tile_grid = W_GRID.tile_grid
 		save_path = CFG.WORLD_MAPS_PATH + map_save_name + ".tres"
 	else:
-		new_map = BattleMap.new()
+		new_map = DataBattleMap.new()
 		local_tile_grid = B_GRID.tile_grid
 		save_path = CFG.BATTLE_MAPS_PATH + map_save_name + ".tres"
 
@@ -227,7 +227,7 @@ func _on_new_world_map_pressed():
 	_set_grid_type(map_type.WORLD)
 	world_box.get_children()[0].pressed.emit()  # default tile choice
 
-	var new_map = WorldMap.new()
+	var new_map = DataWorldMap.new()
 	var grid_data = _generate_empty_map()
 	new_map.grid_data = grid_data
 
@@ -244,7 +244,7 @@ func _on_new_battle_map_pressed():
 
 	var grid_data = _generate_empty_map()
 
-	var new_map = BattleMap.new()
+	var new_map = DataBattleMap.new()
 
 	new_map.grid_data = grid_data
 
