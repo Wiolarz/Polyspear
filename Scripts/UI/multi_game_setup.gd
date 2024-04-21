@@ -89,7 +89,7 @@ func try_to_cycle_color_slot(index : int, backwards : bool) -> bool:
 		# return false # we will change this after server responds
 	var new_color_index = slots[index].color
 	while true:
-		new_color_index = (new_color_index + diff) % IM.team_colors.size()
+		new_color_index = (new_color_index + diff) % CFG.TEAM_COLORS.size()
 		if new_color_index == slots[index].color: # all colors are taken
 			return false
 		var is_color_unique = func() -> bool:
@@ -114,10 +114,10 @@ func try_to_cycle_faction_slot(index : int, backwards : bool) -> bool:
 	# if we are a client:
 		# send request cycle faction of this slot
 		# return false # we will change this after server responds
-	var faction_index = IM.WIP_factions.find(slots[index].faction)
+	var faction_index = CFG.FACTIONS_LIST.find(slots[index].faction)
 	var new_faction_index = \
-		(faction_index + diff) % IM.WIP_factions.size()
-	slots[index].faction = IM.WIP_factions[new_faction_index]
+		(faction_index + diff) % CFG.FACTIONS_LIST.size()
+	slots[index].faction = CFG.FACTIONS_LIST[new_faction_index]
 	# if we are a server:
 		# broadcasst this change to everyone (probably the result of it, not
 		# only the fact)
@@ -146,16 +146,16 @@ func _ready():
 	button_battle.button_group = button_full_scenario.button_group
 
 
-func get_player_settings() -> Array[PlayerSetting]:
-	var elf = PlayerSetting.new();
-	elf.faction = load("res://Resources/World/Factions/elf.tres")
-	elf.player_name = "asd"
+func get_player_settings() -> Array[PresetPlayer]:
+	var elf = PresetPlayer.new();
+	elf.faction = CFG.FACTION_ELVES
+	elf.player_name = "elf"
 	elf.player_type =  E.player_type.HUMAN
 	elf.goods = Goods.new(0,0,0)
 
-	var orc = PlayerSetting.new()
-	orc.faction = load("res://Resources/World/Factions/orc.tres")
-	orc.player_name = "asd"
+	var orc = PresetPlayer.new()
+	orc.faction = CFG.FACTION_ORCS
+	orc.player_name = "orc"
 	orc.player_type =  E.player_type.HUMAN
 	orc.goods = Goods.new(0,0,0)
 

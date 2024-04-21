@@ -55,9 +55,8 @@ func get_tile_controller(coord : Vector2i) -> Player:
 	return null
 
 
-func get_battle_map(_coord : Vector2i):
-	return load("res://Resources/Battle/Battle_Maps/basic5x5.tres")
-
+func get_battle_map(_coord : Vector2i) -> DataBattleMap:
+	return CFG.DEFAULT_BATTLE_MAP
 
 func get_army(coord : Vector2i) -> ArmyOnWorldMap:
 	return unit_grid[coord.x][coord.y]

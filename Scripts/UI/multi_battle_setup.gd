@@ -32,9 +32,9 @@ func refresh_slot(index : int):
 		IM.game_setup_info.slots[index] if index in \
 				range(IM.game_setup_info.slots.size()) \
 			else null
-	var color : Color = Color(0.5, 0.5, 0.5, 1.0)
+	var color : Color = CFG.DEFAULT_TEAM_COLOR
 	var username : String = ""
-	var faction : Faction = null
+	var faction : DataFaction = null
 	var take_leave_button_state : PlayerSlotPanel.TakeLeaveButtonState =\
 		PlayerSlotPanel.TakeLeaveButtonState.GHOST
 	if logic_slot:
@@ -52,7 +52,7 @@ func refresh_slot(index : int):
 			take_leave_button_state = \
 				PlayerSlotPanel.TakeLeaveButtonState.FREE
 		faction = logic_slot.faction
-		color = IM.get_team_color_at(logic_slot.color)
+		color = CFG.get_team_color_at(logic_slot.color)
 	ui_slot.set_visible_color(color)
 	ui_slot.set_visible_name(username)
 	ui_slot.set_visible_faction(faction)

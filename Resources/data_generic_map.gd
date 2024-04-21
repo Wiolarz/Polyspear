@@ -1,4 +1,4 @@
-class_name GridBoard  # GridMap is reserved for 3D
+class_name DataGenericMap  # GridMap is reserved for 3D
 
 extends Resource
 

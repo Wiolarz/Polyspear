@@ -48,38 +48,6 @@ var current_camera_position = camera_position.WORLD
 var raging_battle : bool
 
 
-const default_usernames : Array[String] = [
-	"Zdzichu",
-	"Mag",
-	"Gołąb",
-	"Polygończyk",
-	"Przemek",
-	"Czarodziej",
-	"Student",
-	"Stary",
-	"Cebularz",
-	"DJ Skwarka",
-	"Książę żab Marcin",
-	"Gracz Doty",
-]
-
-
-const team_colors : Array[Dictionary] = [
-	{ "name": "red", "color": Color(1.0, 0.0, 0.0) },
-	{ "name": "blue", "color": Color(0.0, 0.4, 1.0) },
-	{ "name": "green", "color": Color(0.0, 0.9, 0.0) },
-	{ "name": "yellow", "color": Color(0.9, 0.8, 0.0) },
-	{ "name": "purple", "color": Color(0.9, 0.2, 0.85) },
-	{ "name": "orange", "color": Color(0.9, 0.5, 0.0) },
-]
-
-
-func get_team_color_at(index : int) -> Color:
-	if not index in range(team_colors.size()):
-		return Color(0.5, 0.5, 0.5, 1.0)
-	return team_colors[index]["color"]
-
-
 var chat_log : String
 
 
@@ -165,15 +133,8 @@ func set_default_game_setup_info() -> void:
 	for i in range(slot_count):
 		game_setup_info.slots[i] = GameSetupInfo.Slot.new()
 		game_setup_info.slots[i].occupier = 0
-		game_setup_info.slots[i].faction = WIP_factions[0]
+		game_setup_info.slots[i].faction = CFG.FACTIONS_LIST[0]
 		game_setup_info.slots[i].color = i
-
-
-@export var WIP_factions : Array[Faction] = [
-	preload("res://Resources/World/Factions/elf.tres"),
-	preload("res://Resources/World/Factions/orc.tres"),
-] # TODO choose a better place for this xD
-
 
 func get_active_players() -> Array[Player]:
 
@@ -191,10 +152,8 @@ func get_active_players() -> Array[Player]:
 func switch_camera():
 	if current_camera_position == camera_position.WORLD:
 		current_camera_position = camera_position.BATTLE
-		pass
 	else:
 		current_camera_position = camera_position.WORLD
-		pass
 
 func go_to_main_menu():
 	draw_mode = false
@@ -292,7 +251,7 @@ func client_connection() -> bool:
 func get_current_name() -> String: # TODO rename to get_current_username
 	if server_connection():
 		return get_server().server_username
-	return "(( you ))"
+	return CFG.DEFAULT_USER_NAME
 
 
 func send_chat_message(message : String) -> void:
@@ -344,16 +303,12 @@ func multiplayer_broadcast_receive():
 	pass
 
 
-func get_random_username() -> String:
-	return default_usernames[randi() % default_usernames.size()]
-
-
 func get_maps_list() -> Array[String]:
-	return TestTools.list_files_in_folder("res://Resources/World/World_maps/")
+	return TestTools.list_files_in_folder(CFG.WORLD_MAPS_PATH)
 
 
-func start_game(map_name : String, player_settings : Array[PlayerSetting]):
-	var map_data: WorldMap = load("res://Resources/World/World_maps/" + map_name)
+func start_game(map_name : String, player_settings : Array[PresetPlayer]):
+	var map_data: DataWorldMap = load(CFG.WORLD_MAPS_PATH + map_name)
 	var new_players = player_settings.map( func (setting) : return setting.create_player() )
 	players.assign(new_players)
 	WM.start_world(map_data)

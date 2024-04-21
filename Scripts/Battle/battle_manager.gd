@@ -382,7 +382,7 @@ func summon_unit(unitData : DataUnit, coord : Vector2i) -> void:
 		@param coord coordinate, on which Unit will be summoned
 	 """
 	#B_GRID.change_unit_coord(selected_unit, coord)
-	var unit : Unit = load("res://Scenes/Form/UnitForm.tscn").instantiate()
+	var unit : Unit = CFG.UNIT_FORM_SCENE.instantiate()
 	unit.apply_template(unitData)
 	unit.controller = current_participant
 
@@ -440,7 +440,7 @@ func display_unit_summon_cards(shown_participant : Player = current_participant)
 	battle_ui.on_player_selected(shown_participant)
 
 
-func start_battle(new_armies : Array[Army], battle_map : BattleMap) -> void:
+func start_battle(new_armies : Array[Army], battle_map : DataBattleMap) -> void:
 	UI.go_to_custom_ui(battle_ui)
 	IM.raging_battle = true
 	battle_is_ongoing = true

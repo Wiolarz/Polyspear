@@ -1,4 +1,4 @@
-class_name ArmySet
+class_name PresetArmy
 
 extends Resource
 
@@ -14,7 +14,7 @@ func create_army() -> Army:
 	new_army.hero = hero
 	return new_army
 
-static func from_units_data(unitData : Array[DataUnit]) -> ArmySet:
-	var result = ArmySet.new()
+static func from_units_data(unitData : Array[DataUnit]) -> PresetArmy:
+	var result = PresetArmy.new()
 	result.units = unitData
 	return result

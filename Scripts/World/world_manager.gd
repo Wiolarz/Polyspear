@@ -172,7 +172,7 @@ func start_combat(coord : Vector2i):
 		selected_hero.army_data,
 		W_GRID.get_army(combat_tile).army_data,
 	]
-	var battle_map : BattleMap = W_GRID.get_battle_map(combat_tile)
+	var battle_map : DataBattleMap = W_GRID.get_battle_map(combat_tile)
 
 	BM.start_battle(armies, battle_map)
 
@@ -216,7 +216,7 @@ func spawn_world_ui():
 	world_ui = load("res://Scenes/UI/WorldUi.tscn").instantiate()
 	UI.add_custom_screen(world_ui)
 
-func start_world(world_map : WorldMap) -> void:
+func start_world(world_map : DataWorldMap) -> void:
 
 	var spawn_location = world_map.get_spawn_locations()
 
@@ -241,9 +241,9 @@ func start_world(world_map : WorldMap) -> void:
 
 
 func spawn_player(coords : Vector2i, player : Player):
-	var army_for_world_map = load("res://Scenes/Form/ArmyForm.tscn").instantiate()
+	var army_for_world_map = CFG.DEFAULT_ARMY_FORM.instantiate()
 	add_child(army_for_world_map)
-	army_for_world_map.name = "hero 1"
+	army_for_world_map.name = "hero"
 	army_for_world_map.army_data.controller = player
 
 	var coord =  W_GRID.to_bordered_coords(coords)

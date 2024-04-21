@@ -1,14 +1,6 @@
 extends CanvasLayer
 
-
-const MAPS_PATH = "res://Resources/Battle/Battle_Maps/"
-const UNITS_PATH = "res://Resources/Battle/Units/"
-const PRESETS_PATH = "res://Resources/Tests/Battle_setups/"
-
-
-@export var default_battle_setup : BattleSetup
-
-var current_preset: BattleSetup
+var current_preset: PresetBattle
 
 @onready var maps_list : OptionButton = $MapsList
 @onready var player_names: Array[TextEdit] = [
@@ -41,7 +33,7 @@ var current_preset: BattleSetup
 
 #region Main methods
 
-func _load_preset(preset : BattleSetup) -> void:
+func _load_preset(preset : PresetBattle) -> void:
 	current_preset = preset
 	_clear_armies()
 	for army_idx in range(2):
@@ -61,7 +53,7 @@ func _clear_armies() -> void:
 
 func _try_set_unit(units_option : OptionButton, path : String) -> bool:
 	for idx in range(units_option.item_count):
-		if units_option.get_item_text(idx) == path.trim_prefix(UNITS_PATH):
+		if units_option.get_item_text(idx) == path.trim_prefix(CFG.UNITS_PATH):
 			units_option.select(idx)
 			return true
 	return false
@@ -90,7 +82,7 @@ func _get_army_as_units_data(unit_options : Array[OptionButton]) -> Array[DataUn
 func _get_unit_data(option : OptionButton) -> DataUnit :
 	var unit_name = option.get_item_text(option.selected)
 	if unit_name == "empty": return null
-	return load(UNITS_PATH + unit_name)
+	return load(CFG.UNITS_PATH + unit_name)
 
 
 func _create_player(player_name : String) -> Player:
@@ -129,7 +121,7 @@ func _on_save_button_pressed() -> void:
 	for army_idx in range(units_lists.size()):
 		var unit_options = _get_options_for_army(army_idx)
 		var units_data = _get_army_as_units_data(unit_options)
-		var army_set = ArmySet.from_units_data(units_data)
+		var army_set = PresetArmy.from_units_data(units_data)
 		current_preset.armies.append(army_set)
 	ResourceSaver.save(current_preset)
 
@@ -145,23 +137,24 @@ func _on_presets_list_item_selected(index) -> void:
 #region Setup
 
 func _load_resource_lists() -> void:
-	for map_path in TestTools.list_files_in_folder(MAPS_PATH, true):
+	for map_path in TestTools.list_files_in_folder(CFG.BATTLE_MAPS_PATH, true):
 		maps_list.add_item(map_path)
 
-	var unit_paths = TestTools.list_files_in_folder(UNITS_PATH, true, true);
+	var unit_paths = TestTools.list_files_in_folder(CFG.UNITS_PATH, true, true);
 	for army in units_lists:
 		for army_slot in army:
 			army_slot.add_item("empty")
 			for unit_path in unit_paths:
-				army_slot.add_item(unit_path.trim_prefix(UNITS_PATH))
+				army_slot.add_item(unit_path.trim_prefix(CFG.UNITS_PATH))
 
-	for preset_path in TestTools.list_files_in_folder(PRESETS_PATH, true):
+	for preset_path in TestTools.list_files_in_folder(CFG.BATTLE_PRESETS_PATH, true):
 		presets_list.add_item(preset_path)
 
 
 func _ready():
 	_load_resource_lists()
-	_load_preset(default_battle_setup)
+	if presets_list.item_count > 0:
+		_on_presets_list_item_selected(0)
 
 #endregion
 

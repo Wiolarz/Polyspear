@@ -2,10 +2,7 @@ class_name GridManager
 extends Node
 
 
-var map_information : GridBoard
-
-# const Basic scene to get Collision area for player input
-@onready var BASIC_HEX_TILE : PackedScene = load("res://Scenes/Form/TileForm.tscn")
+var map_information : DataGenericMap
 
 
 # Hex Sprite draw gaps
@@ -106,8 +103,7 @@ func spawn_tiles() -> void:
 	for x in range(grid_width):
 		for y in range(grid_height):
 			# creating a node
-			var new_tile_scene : PackedScene = BASIC_HEX_TILE
-			var new_tile : HexTile = new_tile_scene.instantiate()
+			var new_tile : HexTile = CFG.HEX_TILE_FORM_SCENE.instantiate()
 			add_child(new_tile)
 
 			# Set tile coord
@@ -166,7 +162,7 @@ func generate_special_tiles() -> void:
 func is_clear() -> bool:
 	return true
 
-func generate_grid(new_map_data : GridBoard) -> void:
+func generate_grid(new_map_data : DataGenericMap) -> void:
 	"""
 	Main grid map generation function
 	"""

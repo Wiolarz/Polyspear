@@ -1,4 +1,4 @@
-class_name Faction
+class_name DataFaction
 
 extends Resource
 

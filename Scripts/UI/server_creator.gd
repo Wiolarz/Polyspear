@@ -18,7 +18,7 @@ var host_menu : HostMenu = null
 
 
 func _ready():
-	server_name_line.text = IM.get_random_username()
+	server_name_line.text = CFG.get_random_username()
 
 
 func start_server():

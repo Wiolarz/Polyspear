@@ -56,7 +56,7 @@ func test_generate_grid():
 	for level in managers.keys():
 		var manager = managers[level]
 		manager.generate_grid()
-		
+
 		assert_eq(level + " Different number of starting tiles: A:"
 		+ str(manager.AttackerTiles.size()) + " D:" + str(manager..size())
 		)

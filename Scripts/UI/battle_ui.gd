@@ -13,8 +13,6 @@ var selected_unit_army_idx : int = -1
 
 var current_player : Player = null
 
-const UNIT_SCENE_TEMPLATE = "res://Scenes/Form/UnitForm.tscn"
-const BUTTON_TEXTURE:Texture2D = preload("res://Art/battle_map/grass.png")
 func _ready():
 	pass
 
@@ -41,8 +39,8 @@ func on_player_selected(selectedPlayer : Player, preview : bool = false):
 	for unitId : int in range(0, army.units_data.size()):
 		var unit : DataUnit = army.units_data[unitId]
 		var b = TextureButton.new()
-		b.texture_normal = BUTTON_TEXTURE
-		var unit_scene : Unit = load(UNIT_SCENE_TEMPLATE).instantiate()
+		b.texture_normal = CFG.SUMMON_BUTTON_TEXTURE
+		var unit_scene : Unit = CFG.UNIT_FORM_SCENE.instantiate()
 		unit_scene.position = b.texture_normal.get_size()/2
 		unit_scene.apply_template(unit)
 		b.add_child(unit_scene)
