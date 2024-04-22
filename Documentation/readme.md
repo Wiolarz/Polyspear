@@ -1,15 +1,17 @@
 # Polyspear Documantation
 
 
+## Code
+
+- [Code Structure and basic game flow](code_structure.md)
+- [Coding guidelines](coding_guidelines.md)
+
+## Core / Technical Design
+
 - [Grid](<Grid/Technical.md>)
 - [Battle description](<Battle System/Battle_Description.md>)
 - [World description](<World map/design.md>)
 - [Economy description](<World map/economy.md>)
-
-## Code
-
-- [Code Structure](code_structure.md)
-- [Coding guidelines](coding_guidelines.md)
 
 
 ## Notes
@@ -20,4 +22,4 @@
 - [Ai](AI/ai_interface.md)
   - [Tags for AI](AI/doc_TagStateMachine.md)
 - [Graphics technical notes](<Graphics/Technical.md>)
-- [Ui ideas](<UI/ui_ideas.md>)
+- [Ui](<UI/Menu_UI.md>)

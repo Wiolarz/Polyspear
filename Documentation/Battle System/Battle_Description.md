@@ -32,3 +32,8 @@ Main way to kill enemy units is with the 'Symbols' at the edges of your units. T
  - CROSS - 'Spear' Kills any enemy unit that enters this tile. Spear acts before any enemy unit symbol does (except for a shield). If a unit protected by a shield rotates at the start of its movement while this shield is covering the spear, and at its final rotation position the spear can hit the unit rotation ends with the unit death.
 
  - TRIANGLE - 'Shield' nullifies sources of damage (doesn't work against push)
+
+
+#### Notes
+
+[More battle notes](B_structure.md)
