@@ -20,7 +20,7 @@ var world_ui : WorldUI = null
 var current_player : Player
 
 var selected_hero : ArmyOnWorldMap  # Only army that has a hero can move (army can only have a single hero)
-
+var selected_city : City
 var combat_tile : Vector2i
 
 #endregion
@@ -127,10 +127,9 @@ func hero_move(hero : ArmyOnWorldMap, coord : Vector2i):
 	if place != null:
 		place.interact(hero)
 
-func trade_armies(_second_army : Army):
+func trade_armies(_second_army : ArmyOnWorldMap):
 	#TODO
-	pass
-
+	print("trading armies")
 
 #endregion
 
@@ -138,19 +137,26 @@ func trade_armies(_second_army : Army):
 #region City Management
 
 
-func trade_city(_city : City, _hero:ArmyOnWorldMap ):
+func trade_city(city : City, hero : ArmyOnWorldMap ):
 	print("trade_city")
-	world_ui.show_trade_ui(_city, _hero)
+	selected_city = city
+	world_ui.show_trade_ui(city, hero)
 	pass
 
 
 func city_show_interface(_city : City):
 	print("city shows interface")
 
-"""
-
-
-"""
+func recruit_hero(player : Player, coord : Vector2i) -> void:
+	var army_for_world_map = CFG.DEFAULT_ARMY_FORM.instantiate()
+	add_child(army_for_world_map)
+	army_for_world_map.name = "hero"
+	army_for_world_map.army_data.controller = player
+	army_for_world_map.army_data.hero = Hero.create_hero(player.faction.heroes[0])
+	army_for_world_map.army_data.hero.controller = player
+	
+	army_for_world_map.army_data.units_data.append(army_for_world_map.army_data.hero.data_unit)
+	W_GRID.place_army(army_for_world_map, coord)
 
 #endregion
 
@@ -240,14 +246,10 @@ func start_world(world_map : DataWorldMap) -> void:
 		spawn_player(spawn_location[player_id], players[player_id])
 
 
-func spawn_player(coords : Vector2i, player : Player):
-	var army_for_world_map = CFG.DEFAULT_ARMY_FORM.instantiate()
-	add_child(army_for_world_map)
-	army_for_world_map.name = "hero"
-	army_for_world_map.army_data.controller = player
+func spawn_player(coord : Vector2i, player : Player):
+	var fixed_coord =  W_GRID.to_bordered_coords(coord)
+	recruit_hero(player, fixed_coord)
 
-	var coord =  W_GRID.to_bordered_coords(coords)
-	W_GRID.place_army(army_for_world_map, coord)
-	W_GRID.get_city(coord).controller = player
+	W_GRID.get_city(fixed_coord).controller = player
 
 #endregion

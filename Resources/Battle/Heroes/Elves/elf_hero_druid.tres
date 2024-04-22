@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="DataHero" load_steps=3 format=3 uid="uid://bi7fwl6i8o6a3"]
+
+[ext_resource type="Script" path="res://Resources/Battle/data_hero.gd" id="1_gde2x"]
+[ext_resource type="Resource" uid="uid://dsifqvw5c6id5" path="res://Resources/Battle/Units/Elves/elf_hero_druid.tres" id="1_gvmd2"]
+
+[resource]
+script = ExtResource("1_gde2x")
+hero_name = "druid"
+data_unit = ExtResource("1_gvmd2")
+max_army_size = 3
+max_movement_points = 3

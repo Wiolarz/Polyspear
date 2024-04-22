@@ -66,3 +66,19 @@ func _on_end_turn_pressed():
 
 func _process(_delta):
 	good_label.text = WM.current_player.goods.to_string()
+
+
+func _on_buy_hero_button_pressed():
+	print("trying to buy a hero ")
+	
+	#temp
+	# verify no hero occupying a city spot
+	
+	'''
+	if !city.controller.purchase(hero.cost):
+		print("not enough cash, needed ", hero.cost)
+		return
+	'''
+	
+	# generate a hero
+	WM.recruit_hero(WM.current_player, WM.selected_city.coord)

@@ -117,13 +117,14 @@ func init_tile_grid() -> void:
 func generate_special_tiles() -> void:
 	for x in map_information.grid_data.size():
 		for y in map_information.grid_data[0].size():
-			var coords = Vector2i( \
+			var coord = Vector2i( \
 				x + W_GRID.border_size, \
 				y + W_GRID.border_size)
 			var place : Place = Place.create_place( \
-				map_information.grid_data[x][y])
-			places[coords.x][coords.y] = place
-			W_GRID.tile_at(coords).place = place
+				map_information.grid_data[x][y],
+				coord)
+			places[coord.x][coord.y] = place
+			W_GRID.tile_at(coord).place = place
 
 
 func reset_data() -> void:

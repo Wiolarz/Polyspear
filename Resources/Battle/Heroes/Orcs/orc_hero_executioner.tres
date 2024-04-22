@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="DataHero" load_steps=3 format=3 uid="uid://wxlo2qqrsl4f"]
+
+[ext_resource type="Resource" uid="uid://bh25ksb83o3cx" path="res://Resources/Battle/Units/Orcs/orc_hero_executioner.tres" id="1_640dv"]
+[ext_resource type="Script" path="res://Resources/Battle/data_hero.gd" id="1_murgn"]
+
+[resource]
+script = ExtResource("1_murgn")
+hero_name = "executioner"
+data_unit = ExtResource("1_640dv")
+max_army_size = 3
+max_movement_points = 3
