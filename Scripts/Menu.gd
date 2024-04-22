@@ -21,10 +21,10 @@ func _ready():
 func _process(_delta):
 	if Input.is_action_just_pressed("EXIT_GAME"):
 		get_tree().quit()
-	
+
 	if Input.is_action_just_pressed("RESTART_LEVEL"):
 		get_tree().reload_current_scene()
-	
+
 	if Input.is_action_just_pressed("MAXIMIZE_WINDOW"):
 		if not maximize:
 			maximize = true
@@ -32,4 +32,4 @@ func _process(_delta):
 		else:
 			maximize = false
 			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
-	
+

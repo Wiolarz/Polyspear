@@ -21,16 +21,16 @@ var player : RigidBody2D  # reference to Player position
 
 func _ready():
 	player = $"../../Player/PlayerMovement"  # get a reference to Player position
-	
+
 
 
 func _physics_process(_delta):
-	
+
 	weapon.look_at(player.global_position)
-	
-	
-	
-	
+
+
+
+
 #	var p_direction = fmod(rad_to_deg(move_tool.global_position.angle_to_point(player.global_position)) + 360, 360) # - 360
 #	var current_rotation = fmod(rotate_tool.rotation_degrees + 360, 360)
 #	var goal_direction = p_direction - current_rotation
@@ -43,12 +43,12 @@ func _physics_process(_delta):
 #
 #
 #	rotate_tool.direction_change(clamp(goal_direction, -1, 1))
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
 	#direction
 #	var player_direction = fmod(rad_to_deg(move_tool.global_position.angle_to_point(player.global_position)) + 360, 360)
 #	var current_rotation = fmod(rotate_tool.rotation_degrees + 360, 360)
@@ -86,4 +86,5 @@ func _on_character_hitbox_got_hit(value):
 	health -= value
 	print("enemy", health)
 	if health <= 0:
+		Score.value += 1
 		queue_free()

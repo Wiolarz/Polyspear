@@ -24,9 +24,9 @@ radius = 258.0
 script = ExtResource("1_rbn8w")
 
 [node name="PlayerMovement" type="RigidBody2D" parent="."]
-inertia = 1.0
-center_of_mass_mode = 1
 gravity_scale = 0.0
+center_of_mass_mode = 1
+inertia = 1.0
 lock_rotation = true
 linear_damp = 1.0
 angular_damp = 10.0
@@ -56,8 +56,8 @@ script = ExtResource("4_unhkc")
 immunity_frames = 30
 
 [node name="WeaponBody" type="RigidBody2D" parent="Weapon"]
-center_of_mass_mode = 1
 gravity_scale = 0.0
+center_of_mass_mode = 1
 angular_damp = 10.0
 script = ExtResource("5_4cym0")
 

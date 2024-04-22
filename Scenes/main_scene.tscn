@@ -1,0 +1,113 @@
+[gd_scene load_steps=3 format=3 uid="uid://drtivqbvxi1tc"]
+
+[sub_resource type="GDScript" id="GDScript_d2n5d"]
+resource_name = "MainScene"
+script/source = "extends Node2D
+
+
+func _on_button_play_basic_pressed():
+	get_tree().change_scene_to_file(\"res://Scenes/Basic/BasicMap.tscn\")
+
+func _on_button_play_simple_pressed():
+	get_tree().change_scene_to_file(\"res://Scenes/Simple/SimpleMap.tscn\")
+
+func _on_button_play_latest_pressed():
+	get_tree().change_scene_to_file(\"res://Scenes/Latest/Map.tscn\")
+"
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_gdqnx"]
+bg_color = Color(0.32549, 0.0196078, 0, 1)
+
+[node name="MainScene" type="Node2D"]
+script = SubResource("GDScript_d2n5d")
+
+[node name="UICanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UICanvasLayer"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -113.5
+offset_top = -59.5
+offset_right = 113.5
+offset_bottom = 59.5
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+alignment = 1
+
+[node name="ButtonPlaySimple" type="Button" parent="UICanvasLayer/VBoxContainer"]
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_gdqnx")
+text = "Simple physics (best)"
+
+[node name="ButtonPlayBasic" type="Button" parent="UICanvasLayer/VBoxContainer"]
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_gdqnx")
+text = "Basic physics (initial)"
+
+[node name="ButtonPlayLatest" type="Button" parent="UICanvasLayer/VBoxContainer"]
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_gdqnx")
+text = "Latest physics (in development)"
+
+[node name="Label" type="Label" parent="UICanvasLayer"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -487.0
+offset_top = -209.0
+offset_right = 489.0
+offset_bottom = -72.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 100
+text = "BRAWLER
+"
+horizontal_alignment = 1
+
+[node name="Label2" type="Label" parent="UICanvasLayer"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -485.0
+offset_top = 56.0
+offset_right = -96.0
+offset_bottom = 193.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "different physics implementations:
+
+basic - initial implementation
+simple - rewrite based on physics
+latest - third attempt started"
+horizontal_alignment = 1
+
+[node name="Label3" type="Label" parent="UICanvasLayer"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 82.0
+offset_top = 48.0
+offset_right = 471.0
+offset_bottom = 185.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "controls:
+
+WSAD/arrows = move
+QE or FG or mouse buttons = spin weapon"
+horizontal_alignment = 1
+
+[connection signal="pressed" from="UICanvasLayer/VBoxContainer/ButtonPlaySimple" to="." method="_on_button_play_simple_pressed"]
+[connection signal="pressed" from="UICanvasLayer/VBoxContainer/ButtonPlayBasic" to="." method="_on_button_play_basic_pressed"]
+[connection signal="pressed" from="UICanvasLayer/VBoxContainer/ButtonPlayLatest" to="." method="_on_button_play_latest_pressed"]

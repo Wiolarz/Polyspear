@@ -33,7 +33,7 @@ func _process(_delta):
 		get_node("PlayerMovement").speed += 1
 		get_node("Weapon/WeaponBody").rotation_speed += 0.25
 
-func _physics_process(delta):
+func _physics_process(_delta):
 	regeneration_timer += 1
 	if regeneration_timer == regeneration_cooldown:
 		regeneration_timer = 0
@@ -49,9 +49,9 @@ func _on_character_hitbox_got_hit(value):
 		emit_signal("HPchanged", health, max_health)
 		#print("player", health)
 
-	
+
 	if health <= 0:
 		get_tree().reload_current_scene()
 
 
-	
+

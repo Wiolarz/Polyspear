@@ -2,7 +2,7 @@ extends Node2D
 
 
 
-@export var enemy_scene = load("res://Scenes/small_enemy.tscn")
+@export var enemy_scene = load("res://Scenes/Latest/small_enemy.tscn")
 #@onready var enemy = enemy_scene.instantiate()
 
 func spawn():
@@ -17,11 +17,11 @@ func spawn():
 
 var not_yet = true
 
-func _physics_process(delta):
+func _physics_process(_delta):
 	if not_yet:
 		spawn()
 		not_yet = false
 
-	
-		
+
+
 

@@ -24,9 +24,9 @@ radius = 258.0
 script = ExtResource("1_yowb6")
 
 [node name="PlayerMovement" type="RigidBody2D" parent="."]
-inertia = 1.0
-center_of_mass_mode = 1
 gravity_scale = 0.0
+center_of_mass_mode = 1
+inertia = 1.0
 lock_rotation = true
 linear_damp = 5.0
 angular_damp = 10.0
@@ -42,7 +42,7 @@ node_a = NodePath("..")
 node_b = NodePath("../../Weapon/WeaponBody")
 
 [node name="Camera2D" type="Camera2D" parent="PlayerMovement"]
-zoom = Vector2(0.4, 0.4)
+zoom = Vector2(0.2, 0.2)
 
 [node name="PlayerSprite" type="Sprite2D" parent="PlayerMovement"]
 texture = ExtResource("3_u8cof")
@@ -56,9 +56,9 @@ immunity_frames = 30
 
 [node name="WeaponBody" type="RigidBody2D" parent="Weapon"]
 mass = 20.0
-inertia = 1e+08
-center_of_mass_mode = 1
 gravity_scale = 0.0
+center_of_mass_mode = 1
+inertia = 1e+08
 angular_damp = 1.0
 script = ExtResource("5_opclm")
 rotation_speed = 800000000

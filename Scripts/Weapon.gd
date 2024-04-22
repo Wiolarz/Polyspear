@@ -22,10 +22,10 @@ func _physics_process(_delta):
 		if plunged_bodies[body]["PLUNGED"] and immune == 0:
 			body.damage(hit())
 			plunged_bodies[body]["IMMUNE_TIMER"] = immunity_frames
-			
-				
 
-	
+
+
+
 func hit():
 	return damage_value
 
@@ -35,7 +35,7 @@ func _on_weapon_hitbox_area_entered(area:Area2D):
 		area.damage(hit())
 		plunged_bodies[area] = {"IMMUNE_TIMER" = immunity_frames, "PLUNGED" = true}
 
-	
+
 
 
 func _on_weapon_hitbox_area_exited(area:Area2D):

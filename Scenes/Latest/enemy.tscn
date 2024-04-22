@@ -20,9 +20,9 @@ radius = 258.0
 script = ExtResource("1_ifhev")
 
 [node name="EnemyMovement" type="RigidBody2D" parent="."]
-inertia = 1.0
-center_of_mass_mode = 1
 gravity_scale = 0.0
+center_of_mass_mode = 1
+inertia = 1.0
 lock_rotation = true
 linear_damp = 1.0
 angular_damp = 10.0
@@ -46,8 +46,8 @@ update_scale = false
 script = ExtResource("3_t15x1")
 
 [node name="WeaponBody" type="RigidBody2D" parent="Weapon"]
-center_of_mass_mode = 1
 gravity_scale = 0.0
+center_of_mass_mode = 1
 angular_damp = 10.0
 script = ExtResource("4_v071l")
 

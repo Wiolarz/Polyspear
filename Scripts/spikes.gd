@@ -40,4 +40,3 @@ func _on_area_exited(area:Area2D):
 	if area.has_method("damage"):
 		plunged_bodies[area]["PLUNGED"] = false
 
-		
