@@ -1,90 +1,79 @@
-# Krong 3
-Organised by Wiolarz a regular meeting with people interested in learning Godot.
+# Krong 3 - Polyspear
 
-## branches
+Polyspear is a turn based strategy game.
 
-List of game projects:
+Inspirations include
+- chess (no random element)
+- heroes (game structure)
+- asymetric multiplayer strategy games \
+(intentionally designed imbalance,\
+compensated by skill gap, allies, diplomacy etc)
 
-Brawler
+Developed as a part of "Krąg Godota", a community organised by Wiolarz
+for people interested in learning Godot with regular weekly meetings.
+Part of Polygon gamedev enthusiasts organisation.
 
-Schmup
+Currently polyspear is the main project Krong is working on.
 
-Polyspear - current main project
+- [Polyspear documentation](Documentation/readme.md)
 
+## Other projects
 
-# PolySpear project
+Available as branches on this repo:
 
-## Key bindings
+ - [Brawler](https://github.com/Wiolarz/Krong/tree/Brawler)
 
-KEY_SELECT = Left mouse button
-
-KEY_BOT_SPEED_SLOW = 3
-
-KEY_BOT_SPEED_MEDIUM = 2
-
-KEY_BOT_SPEED_FAST = 1
-
-KEY_EXIT_GAME = F1
-
-KEY_MENU = ~
-
-KEY_GO_BACK = ESC # Return to the previous menu interface
-
-KEY_MAXIMIZE_WINDOW = F2
-
-#KEY_CHEAT_MODE = F3   # Enables keys related to cheats to work/opens up a MENU with cheat codes
-
-KEY_DEBUG_COLLISION_SHAPES = F4
-
-KEY_SAVE_GAME = F5
-
-KEY_LOAD_GAME = F6
+ - [Schmup](https://github.com/Wiolarz/Krong/tree/Shmup)
 
 
-KEYS WSAD + Arrow keys = camera movement
+## Polyspear key bindings
+
+Generally use mouse / touchscreen
+
+- `KEY_SELECT` = Left mouse button
+- `KEYS WSAD or Arrows` = camera movement
+- `middle mouse button + drag` = drag camera
+- `KEY_GO_BACK` = ESC (UI navigation shortcut)
+- `KEY_MAXIMIZE_WINDOW` = F2
+
+Debug
+- `KEY_BOT_SPEED_SLOW` = 3 (number key)
+- `KEY_BOT_SPEED_MEDIUM` = 2
+- `KEY_BOT_SPEED_FAST` = 1
+- `KEY_DEBUG_COLLISION_SHAPES` = F4
+
+Other
+- `KEY_EXIT_GAME` = F1
+- `KEY_MENU` = ~
+- `KEY_CHEAT_MODE` = F3
+- `KEY_SAVE_GAME` = F5
+- `KEY_LOAD_GAME` = F6
 
 
 
-## Game Description
+## Git branches
 
-PolySpear is a chesslike turn based strategy game.
-"Documentation/Game_Description"
+- `main` - "Production playable" release, updated after completing some milestone and testing
+ - `Polyspear` - main development branch, shouldn't contain major bugs
+- `polyspear_X` - feature branches, waitinng to be merged to Polyspear
 
+## Aletrnative implementations
 
-Same Game made in Unity with C#
-
-[https://github.com/defacto2k15/PolySpear](https://github.com/defacto2k15/PolySpear)
-
-Same Game made in Unreal with C++
-
-[https://github.com/y3snt/Hegzy/tree/gameplay-refactor](https://github.com/y3snt/Hegzy/tree/gameplay-refactor)
+Project vision is a long running one. See previous implementations in other engines.
 
 
-## Important documentation files
+Unity - C#
+- [https://github.com/defacto2k15/PolySpear](https://github.com/defacto2k15/PolySpear)
 
-/Documentation:
-
-coding_guidelines.md
-
-TODO.md
-
-code_structure.md
+Unreal - C++
+- [https://github.com/y3snt/Hegzy/tree/gameplay-refactor](https://github.com/y3snt/Hegzy/tree/gameplay-refactor)
 
 
-## Git structure
-Main - "Production" playable and presentable new release featuring new fun content
-Polyspear - "Develop" working main doesn't have to include new features but shouldn't contain major bugs
-polyspear_X - branch focused on X feature
 
+# Authors
 
-# Authors:
-
-Wiolarz
-
-Zephyr - NamespaceV
-
-Carcinizer
-
-Trupen - MrTrupen
-
-Pierożek - PieroganoReggiano
+- Wiolarz
+- Zephyr (NamespaceV)
+- Carcinizer
+- Trupen (MrTrupen)
+- Pierożek (PieroganoReggiano)

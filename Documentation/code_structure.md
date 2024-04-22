@@ -1,67 +1,87 @@
 # Code Structure
 
-# main game logic
+## Singletons
 
-Logic uses global singletons (see: "Project Settings >> Autoload")
+Global singletons provide key facades over core systems.
 
-- IM (Input Manager)
-	- WM (World Manager)
-		- W_GRID (World Grid Manager)
-	- BM (Battle Manager)
-		- B_GRID (Battle Grid Manager)
+see: "Project Settings >> Autoload" for full list
 
-IM is notified when tiles are clicked. Then sends signal to WM or BM depending on the state. WM/BM control the game using W_GRID/B_GRID respectively, for positional queries etc.
+- `IM` (Input Manager)
+	- `WM` (World Manager)
+		- `W_GRID` (World Grid Manager)
+	- `BM` (Battle Manager)
+		- `B_GRID` (Battle Grid Manager)
 
-IM contains list of players and knows if there is an active battle that needs to be resolved.
+`IM` is notified when tiles are clicked. Then sends calls `WM` or `BM` depending on the game state (is battle or world map active). `WM`/`BM` control the game using maps loaded to `W_GRID`/`B_GRID` respectively. Grids handle positional queries etc.
 
-# Description of how game works:
+`IM` contains list of `Players` and knows if there is an active battle that needs to be resolved.
 
-## Game Setup
+## Core user journeys
 
-### a) Tester:
-Selects using Main Menu interface desired play test scenario, previously created in Resources and attached to MainMenu variables in Main_Scene
+### 1. Starting the game
 
-### b) Normal Player:
-Selects using Main Menu interface buttons calls Input_Manager functions that determine:
-- list of players that is stored inside Input_Manager
-- World/Battle map
-- in case of battle map, armies that will fight during the battle
+a) Normal Player
 
-## Start of the game
-Input Manager calls depending on chosen game mode either:
+Uses Main Menu UI buttons to setup:
+- pick scenario (pick a World or Battle map)
+- configure list of players (AI or hot seat)
+- [battle map only]\
+configure armies that will fight
 
-- a - World Manager with 
-  - 1 World_Map variable
-- b - Battle Manager with 
-  - list of armies 
-  - chosen Battle_Map variable
+b) Tester
 
-World/Battle Manager start functions now setup their own proper variables and launch:
+Speads up common setups using *preset* resources.
 
-World/Battle Grid Manager generate_grid function passing to it World/Battle Map variable
+- configured mostly in gotod editor
 
-Grid Managers now draw a map creating clickable hex_tile nodes
+### Behind the scenes
 
-## Gameplay start
-first player can now provide his first gameplay input:
+`UI` code interacts with `IM` (Input manager).
 
-### World
+It sets up Players based on intended map, then starts the map.
 
-in World Map he can at the start only select his starting city where he can:
+(see 1a for list of required config)
+
+When map is started `WM`/`BM` (World/Battle Manager) set up their own state and init corresponding grids.
+
+Grid Managers (`W_GRID`/`B_GRID`) spawn `HexGrid` Nodes creating a clickable map that is based on `DataXyzMap` resource
+
+### 2. Gameplay start - World map
+
+Note: For battle map scenarios skip to "3."
+
+Player opens theirs starting city where they can:
 - recruit a hero
 - build a building
 - recruit units
-After he acquires a hero, he will be able to perform actions with him too:
-- swap/pass units between himself and another heroe/city with which he collides/stands on top of
-- move around the map (where upon contact with enemy controlled army a Battle starts)
 
-### Battle
-Battle section is split into 2 parts:
-- 1 Unit placement
-- 2 Combat
+After player acquires a hero, they will be able to:
+- move around the map 
+- interact with a city or another hero (swap/buy units)
+- collect goods on the map
+- fight enemy controlled armies (neutral or other players)
 
-During Unit placement player can choose any unit from his army and place it on one of the available "starting tiles".
-Unit once placed can't be relocated again. After all units are placed Battle proceeds into Combat phase where units can move and attack each other.
+
+[More world info](../Documentation/World%20map/design.md)
+
+[More economy info](../Documentation/World%20map/economy.md)
+
+### 3. Battle
+
+Battle has 2 phases:
+
+1. Unit placement / summonning
+2. Combat
+
+During Unit placement players deploy units one by one. Units can only be deployed on "starting tiles" specific for the given player. Once unit is placed it can't be relocated until combat starts. 
+
+After all units are placed Battle proceeds into Combat phase.
+
+In combat, payers take turns givin an order to one opf the units. Unit moves and attacks enemies.
+
+Battle ends when all enemies are eliminated.
+
+[More battle info](../Documentation/Battle%20System/Battle_Description.md)
 
 
 # Ideas for drawing the map:

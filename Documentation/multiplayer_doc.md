@@ -1,31 +1,49 @@
 # Multiplayer Doc 
 
+We picked the route of using ENet GDscript wrappers directly.
+
+We are not using Godots multiplayer and RPC code.
+
+We send simple hand tailored messages with a Dictionary.
+
+`name` field defines message type, e.g.
+ - "set_session"
+ - "kicked"
+ - "replay_game_move"
+ - "chat"
+
+Server maintains a Session object for each connected client Peer.
+
+Sessions are assigned to a given username to allow reconnects in the future. Usernames should be unique, or sessions will get conflicts.
+
+Clients communicate with server only. No client to client communication.
+
+## Key architectural drivers
+
+- Pierożek wanted to write this code
+- high control over networking if needed
+- no need to learn Godot Networking and Rpc quircks
+- easier if deciding to support dedicated servers
+- we don't forsee any complex sync scenarios, we need
+  - sync game setup info (map + selected factions/armies)
+  - send 2 coordinates when army/unit moves
+  - send some simple ids when buying building, swapping units, levelling up a hero etc.
+  - (maybe) send serialised replay/snapshot for reconnect after client state loss or to support save/load for multiplayer games
+
 ## Why it's doable
 Player base at the start will be pretty hardcore, so asking players to setup a hamachi/other means
-to ease making multiplayer work on devlopers part makes it possible.
+to ease making multiplayer work on devlopers part makes is viable option.
 
+Some quality of life improvements like setting up some dedicated servers, so users can simply connect to them would be nice though.
 
+## Not in scope
 
-## What we need -> don't need
+We don't care about cheating nor advanced tools to avoid desync
 
-we don't care about cheating -> tools to avoid desync? may even help with that
+We may even help desync with debug commands to check what happens in those scenarios.
 
+It's a learning project intended to be forked not an esport
 
+## Future ideas (to encourage growth)
 
-
-
-## ideas to scale
-
-Main Server acting only as a list of currently hosted games, on players PC
-server would only need hosted game owner IP + game settings
-
-
-
-
-# TODO
-
-
-## basic_start
-
-input_manager -> grid_input_listener()
-
+Server acting only as a list of currently hosted games (IP,  port, name). To make finding players and joining games easier.
