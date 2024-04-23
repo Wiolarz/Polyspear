@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://vnybjv76iw0f"]
 
-[ext_resource type="Script" path="res://Scripts/UI/server_info_and_chat.gd" id="1_rt8it"]
-[ext_resource type="Shortcut" uid="uid://fuvss5hfg4q2" path="res://Resources/Shortcuts/go_back.tres" id="2_jf4sm"]
+[ext_resource type="Script" path="res://Scripts/UI/server_info_and_chat.gd" id="1_gxumh"]
+[ext_resource type="Shortcut" uid="uid://fuvss5hfg4q2" path="res://Resources/Shortcuts/go_back.tres" id="2_x5rgd"]
 
 [node name="ServerInfoAndChat" type="Control"]
 layout_mode = 3
@@ -12,7 +12,7 @@ grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-script = ExtResource("1_rt8it")
+script = ExtResource("1_gxumh")
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
 layout_mode = 1
@@ -36,7 +36,7 @@ layout_mode = 2
 [node name="ButtonStop" type="Button" parent="MarginContainer/VBoxContainer/Buttons"]
 layout_mode = 2
 size_flags_horizontal = 3
-shortcut = ExtResource("2_jf4sm")
+shortcut = ExtResource("2_x5rgd")
 text = "Stop server"
 
 [node name="ButtonKickAll" type="Button" parent="MarginContainer/VBoxContainer/Buttons"]

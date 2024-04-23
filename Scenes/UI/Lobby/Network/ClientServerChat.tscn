@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://cvcqwnm864s0g"]
 
-[ext_resource type="Script" path="res://Scripts/UI/client_server_chat.gd" id="1_y3xqf"]
-[ext_resource type="Shortcut" uid="uid://fuvss5hfg4q2" path="res://Resources/Shortcuts/go_back.tres" id="2_lptfp"]
+[ext_resource type="Script" path="res://Scripts/UI/client_server_chat.gd" id="1_b8j0j"]
+[ext_resource type="Shortcut" uid="uid://fuvss5hfg4q2" path="res://Resources/Shortcuts/go_back.tres" id="2_1if57"]
 
 [node name="ClientServerChat" type="Control"]
 layout_mode = 3
@@ -12,7 +12,7 @@ grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-script = ExtResource("1_y3xqf")
+script = ExtResource("1_b8j0j")
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
 layout_mode = 1
@@ -36,7 +36,7 @@ layout_mode = 2
 [node name="ButtonDisconnect" type="Button" parent="MarginContainer/VBoxContainer/Buttons"]
 layout_mode = 2
 size_flags_horizontal = 3
-shortcut = ExtResource("2_lptfp")
+shortcut = ExtResource("2_1if57")
 text = "Disconnect"
 
 [node name="ConnectionInfo" type="ScrollContainer" parent="MarginContainer/VBoxContainer"]

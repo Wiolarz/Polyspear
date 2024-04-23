@@ -1,6 +1,0 @@
-[gd_scene load_steps=2 format=3 uid="uid://dvkdmgwpo4cag"]
-
-[ext_resource type="Script" path="res://Scripts/Multiplayer/server.gd" id="1_p3hv0"]
-
-[node name="Server" type="Node"]
-script = ExtResource("1_p3hv0")
