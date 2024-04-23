@@ -3,9 +3,9 @@ extends Control
 
 
 @onready var client_connector = \
-	load("res://Scenes/UI/ClientConnector.tscn").instantiate()
+	load("res://Scenes/UI/Lobby/ClientConnector.tscn").instantiate()
 @onready var client_server_chat = \
-	load("res://Scenes/UI/ClientServerChat.tscn").instantiate()
+	load("res://Scenes/UI/Lobby/ClientServerChat.tscn").instantiate()
 
 
 @onready var connection_management = $ConnectionManagement

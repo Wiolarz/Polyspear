@@ -10,13 +10,13 @@ var host_lobby
 var client_lobby
 
 func _ready():
-	test_battle_setup = load("res://Scenes/UI/BattleSetup.tscn").instantiate()
+	test_battle_setup = load("res://Scenes/UI/Lobby/BattleSetup.tscn").instantiate()
 	in_game_menu = load("res://Scenes/UI/GameMenu.tscn").instantiate()
 	main_menu    = load("res://Scenes/UI/MainMenu.tscn").instantiate()
-	map_editor   = load("res://Scenes/UI/MapEditor.tscn").instantiate()
-	unit_editor  = load("res://Scenes/UI/UnitEditor.tscn").instantiate()
-	host_lobby   = load("res://Scenes/UI/HostLobby.tscn").instantiate()
-	client_lobby = load("res://Scenes/UI/ClientLobby.tscn").instantiate()
+	map_editor   = load("res://Scenes/UI/Editors/MapEditor.tscn").instantiate()
+	unit_editor  = load("res://Scenes/UI/Editors/UnitEditor.tscn").instantiate()
+	host_lobby   = load("res://Scenes/UI/Lobby/HostLobby.tscn").instantiate()
+	client_lobby = load("res://Scenes/UI/Lobby/ClientLobby.tscn").instantiate()
 
 	add_child(main_menu)
 	add_child(test_battle_setup)
