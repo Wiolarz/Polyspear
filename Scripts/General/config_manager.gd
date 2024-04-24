@@ -2,20 +2,23 @@
 extends Node
 
 enum BotSpeed
-{# delay between AI moves in frames (60 = 1 sec, 30 = 0.5 sec)
+{
 	FREEZE = 0,
-	NORMAL = 30,
+	NORMAL = 60,
 	FAST = 1,
 }
-var bot_speed : BotSpeed = BotSpeed.NORMAL
-
+## dont set it lower than 2 * animation_speed_frames
+## or ai will not wait for animations to finish
+var bot_speed_frames : BotSpeed = BotSpeed.NORMAL
 
 enum AnimationSpeed
 {
-	NORMAL = 30,
+	NORMAL = 20,
 	INSTANT = 666,
 }
-var animation_speed : AnimationSpeed = AnimationSpeed.NORMAL
+## both rotation and move take this much time,
+## so unit move takes between X and 2X
+var animation_speed_frames : AnimationSpeed = AnimationSpeed.NORMAL
 
 
 const BATTLE_MAPS_PATH = "res://Resources/Battle/Battle_Maps/"

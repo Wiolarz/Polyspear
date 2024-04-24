@@ -86,16 +86,16 @@ func _process(_delta):
 func _physics_process(_delta):
 	if Input.is_action_just_pressed("KEY_BOT_SPEED_SLOW"):
 		print("anim speed - slow")
-		CFG.animation_speed = CFG.AnimationSpeed.NORMAL
-		CFG.bot_speed = CFG.BotSpeed.FREEZE
+		CFG.animation_speed_frames = CFG.AnimationSpeed.NORMAL
+		CFG.bot_speed_frames = CFG.BotSpeed.FREEZE
 	elif Input.is_action_just_pressed("KEY_BOT_SPEED_MEDIUM"):
 		print("anim speed - medium")
-		CFG.animation_speed = CFG.AnimationSpeed.NORMAL
-		CFG.bot_speed = CFG.BotSpeed.NORMAL
+		CFG.animation_speed_frames = CFG.AnimationSpeed.NORMAL
+		CFG.bot_speed_frames = CFG.BotSpeed.NORMAL
 	elif Input.is_action_just_pressed("KEY_BOT_SPEED_FAST"):
 		print("anim speed - fast")
-		CFG.animation_speed = CFG.AnimationSpeed.INSTANT
-		CFG.bot_speed = CFG.BotSpeed.FAST
+		CFG.animation_speed_frames = CFG.AnimationSpeed.INSTANT
+		CFG.bot_speed_frames = CFG.BotSpeed.FAST
 
 
 # called from HexTile mouse detection
