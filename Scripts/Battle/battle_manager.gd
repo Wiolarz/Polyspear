@@ -1,43 +1,57 @@
 # Singleton - BM
 extends Node
 
-var battle_ui : BattleUI = null
+#region variables
 
 const ATTACKER = 0
 const DEFENDER = 1
 
-const AI_MOVE_DELAY = 0.7 # seconds
+var battle_is_ongoing : bool = false
+## count units for transition between summon and battle steps
+var unsummoned_units_counter : int
 
-#region Setup variables
-
-var participants : Array[Player] = []
 var battling_armies : Array[Army]
 
-var armies_units_data : Array = [] # Array[Array[PackedScene]]
+var participants : Array[Player] = []
+var current_participant : Player
+var participant_idx : int = ATTACKER
+
+var selected_unit : Unit
+var fighting_units : Array = [[],[]] # Array[Array[Unit]]
+
+var battle_ui : BattleUI = null
+
+#endregion
 
 func _ready():
 	battle_ui = load("res://Scenes/UI/BattleUi.tscn").instantiate()
 	UI.add_custom_screen(battle_ui)
 
-#endregion
-
-
-#region Variables
-var battle_is_ongoing : bool = false
-
-var current_participant : Player
-var participant_idx : int = ATTACKER
-
-var selected_unit : Unit
-
-var fighting_units : Array = [[],[]] # Array[Array[Unit]]
-
-var unsummoned_units_counter : int # set at the start of the during placement "summon" stage -> battle start after this number reaches 0
-
-#endregion
-
 
 #region Main Functions
+
+func start_battle(new_armies : Array[Army], battle_map : DataBattleMap) -> void:
+	UI.go_to_custom_ui(battle_ui)
+	IM.raging_battle = true
+	battle_is_ongoing = true
+	unsummoned_units_counter = 0
+	battling_armies = new_armies
+
+	B_GRID.generate_grid(battle_map)
+	participants = []
+	for army in battling_armies:
+		participants.append(army.controller)
+		unsummoned_units_counter += army.units_data.size()
+
+	participant_idx = ATTACKER
+	current_participant = participants[participant_idx]
+
+	fighting_units = [[],[]]
+	battle_ui.load_armies(battling_armies)
+	display_unit_summon_cards() # first player (attacker)
+
+	current_participant.your_turn()
+
 
 func switch_participant_turn():
 	participant_idx += 1
@@ -52,6 +66,7 @@ func switch_participant_turn():
 
 	selected_unit = null  # disable player to move another players units
 	battle_ui.on_player_selected(current_participant)
+
 	if battle_is_ongoing:
 		current_participant.your_turn()
 
@@ -82,19 +97,15 @@ func perform_ai_move( move :MoveInfo,  _me: Player):
 		var unit = B_GRID.get_unit(move.move_source)
 		var dir = GridManager.adjacent_side(unit.coord, move.target_tile_coord)
 		move_unit(unit, move.target_tile_coord, dir)
-		await get_tree().create_timer(AI_MOVE_DELAY).timeout
-		while IM.is_game_paused():
-			await get_tree().create_timer(0.1).timeout
 		switch_participant_turn()
 		return
 	if move.move_type == MoveInfo.TYPE_SUMMON:
 		summon_unit(move.summon_unit, move.target_tile_coord)
-		await get_tree().create_timer(AI_MOVE_DELAY).timeout
-		while IM.is_game_paused():
-			await get_tree().create_timer(0.1).timeout
 		switch_participant_turn()
 		return
 	assert(false, "Move move_type not supported in perform")
+
+
 
 #endregion
 
@@ -154,7 +165,7 @@ func is_legal_move(coord : Vector2i, BotUnit : Unit = null) -> int:
 	if enemy_unit == null:  # Is there a Unit in this spot?
 		return result_side
 
-	match selected_unit.Symbols[0]:
+	match selected_unit.symbols[0]:
 		E.Symbols.EMPTY:
 			return -1
 		E.Symbols.SHIELD:
@@ -331,6 +342,7 @@ func close_battle() -> void:
 
 
 func end_of_battle() -> void:
+	battle_is_ongoing = false
 	var armies_left_alive : Array[int] = [] # TEMP
 	for army_idx in range(fighting_units.size()):
 		if fighting_units[army_idx].size() > 0:
@@ -416,47 +428,11 @@ func get_summon_tiles(player:Player) -> Array[HexTile]:
 
 #region Battle Setup
 
-func spawn_units() -> void:
-	"""
-	Create unit "cards" which players will use later to summon their units on the battlefield
-	"""
-	fighting_units = [] # TODO MOVE TO CHECK CLEAR
-	unsummoned_units_counter = 0
-	for army in battling_armies:
-		unsummoned_units_counter += army.units_data.size()
-
-	# spawn armies units cards in battle UI
-	for army in battling_armies:
-		var new_army_unit_nodes = []
-		fighting_units.append(new_army_unit_nodes)
-
-
-	battle_ui.load_armies(battling_armies)
-	display_unit_summon_cards() # first player (attacker)
-
 
 func display_unit_summon_cards(shown_participant : Player = current_participant):
 	# lists all selected participant units at the bottom of the screen
 	battle_ui.on_player_selected(shown_participant)
 
-
-func start_battle(new_armies : Array[Army], battle_map : DataBattleMap) -> void:
-	UI.go_to_custom_ui(battle_ui)
-	IM.raging_battle = true
-	battle_is_ongoing = true
-	battling_armies = new_armies
-
-	B_GRID.generate_grid(battle_map)
-	participants = []
-	for army in battling_armies:
-		participants.append(army.controller)
-		armies_units_data.append(army.units_data)
-
-	current_participant = participants[ATTACKER]
-	participant_idx = ATTACKER
-
-	spawn_units()
-	current_participant.your_turn()
 
 #endregion
 
