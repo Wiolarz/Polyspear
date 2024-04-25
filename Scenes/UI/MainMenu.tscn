@@ -66,8 +66,23 @@ text = "Test World 🗺"
 layout_mode = 2
 text = "Join a server 🙌"
 
+[node name="Replay" type="Button" parent="Control/VBoxContainer"]
+layout_mode = 2
+text = "Replay 🎥"
+
+[node name="FileDialogReplay" type="FileDialog" parent="."]
+title = "Open a File"
+initial_position = 2
+size = Vector2i(1000, 900)
+ok_button_text = "Open"
+file_mode = 0
+access = 1
+root_subfolder = "replays/"
+
 [connection signal="id_pressed" from="Control/MenuBar/Editors Menu" to="." method="_on_editors_menu_id_pressed"]
 [connection signal="pressed" from="Control/VBoxContainer/Host" to="." method="_on_host_pressed"]
 [connection signal="pressed" from="Control/VBoxContainer/BattleSetup" to="." method="_on_battle_setup_pressed"]
 [connection signal="pressed" from="Control/VBoxContainer/TestWorld" to="." method="_on_test_world_pressed"]
 [connection signal="pressed" from="Control/VBoxContainer/Join" to="." method="_on_join_pressed"]
+[connection signal="pressed" from="Control/VBoxContainer/Replay" to="." method="_on_replay_pressed"]
+[connection signal="file_selected" from="FileDialogReplay" to="." method="_on_file_dialog_replay_file_selected"]

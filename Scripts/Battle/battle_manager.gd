@@ -20,6 +20,7 @@ var selected_unit : Unit
 var fighting_units : Array = [[],[]] # Array[Array[Unit]]
 
 var battle_ui : BattleUI = null
+var _replay : BattleReplay
 
 #endregion
 
@@ -31,6 +32,8 @@ func _ready():
 #region Main Functions
 
 func start_battle(new_armies : Array[Army], battle_map : DataBattleMap) -> void:
+	_replay = BattleReplay.create(new_armies, battle_map)
+	_replay.save()
 	UI.go_to_custom_ui(battle_ui)
 	IM.raging_battle = true
 	battle_is_ongoing = true
@@ -51,6 +54,36 @@ func start_battle(new_armies : Array[Army], battle_map : DataBattleMap) -> void:
 	display_unit_summon_cards() # first player (attacker)
 
 	current_participant.your_turn()
+
+func load_replay(path : String):
+	var replay = load(path) as BattleReplay
+	assert(replay != null)
+	var map = replay.battle_map
+	var armies: Array[Army] = []
+	var playerIdx = 0
+	while (IM.players.size() < replay.units_at_start.size()):
+		IM.add_player("Replay_"+str(IM.players.size()))
+	for p in IM.players:
+		p.use_bot(false)
+	for u in replay.units_at_start:
+		var a = Army.new()
+		a.units_data = u
+		a.controller = IM.players[playerIdx]
+		armies.append(a)
+		playerIdx+= 1
+	start_battle(armies, map)
+	for m in replay.moves:
+		if not battle_is_ongoing:
+			return # terminating battle while watching
+		perform_ai_move(m, current_participant)
+		await replay_move_delay()
+
+func replay_move_delay():
+	await get_tree().create_timer(CFG.bot_speed_frames/60).timeout
+	while IM.is_game_paused() or CFG.bot_speed_frames == CFG.BotSpeed.FREEZE:
+		await get_tree().create_timer(0.1).timeout
+		if not battle_is_ongoing:
+			return # terminating battle while watching
 
 
 func switch_participant_turn():
@@ -89,10 +122,14 @@ func grid_input(coord : Vector2i) -> void:
 		return
 
 	selected_unit.set_selected(false)
+	_replay.record_move(MoveInfo.make_move(selected_unit.coord, coord))
+	_replay.save()
 	move_unit(selected_unit, coord, side)
 	switch_participant_turn()
 
 func perform_ai_move( move :MoveInfo,  _me: Player):
+	_replay.record_move(move)
+	_replay.save()
 	if move.move_type == MoveInfo.TYPE_MOVE:
 		var unit = B_GRID.get_unit(move.move_source)
 		var dir = GridManager.adjacent_side(unit.coord, move.target_tile_coord)
@@ -374,6 +411,8 @@ func _grid_input_summon(coord : Vector2i):
 		return # no unit selected
 
 	if is_legal_summon_coord(coord, current_participant):
+		_replay.record_move(MoveInfo.make_summon(battle_ui.selected_unit, coord))
+		_replay.save()
 		summon_unit(battle_ui.selected_unit, coord)
 		switch_participant_turn()
 
