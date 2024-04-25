@@ -14,7 +14,7 @@ see: "Project Settings >> Autoload" for full list
 
 `IM` is notified when tiles are clicked. Then sends calls `WM` or `BM` depending on the game state (is battle or world map active). `WM`/`BM` control the game using maps loaded to `W_GRID`/`B_GRID` respectively. Grids handle positional queries etc.
 
-`IM` contains list of `Players` and knows if there is an active battle that needs to be resolved.
+`IM` contains a list of `Players` and knows if there is an active battle that needs to be resolved.
 
 ## Core user journeys
 
@@ -30,19 +30,19 @@ configure armies that will fight
 
 b) Tester
 
-Speads up common setups using *preset* resources.
+Speeds up common setups using *preset* resources.
 
-- configured mostly in gotod editor
+- configured mostly in godot editor
 
 ### Behind the scenes
 
 `UI` code interacts with `IM` (Input manager).
 
-It sets up Players based on intended map, then starts the map.
+It sets up Players based on the intended map, then starts the map.
 
 (see 1a for list of required config)
 
-When map is started `WM`/`BM` (World/Battle Manager) set up their own state and init corresponding grids.
+When the map is started `WM`/`BM` (World/Battle Manager) set up their own state and init corresponding grids.
 
 Grid Managers (`W_GRID`/`B_GRID`) spawn `HexGrid` Nodes creating a clickable map that is based on `DataXyzMap` resource
 
@@ -70,25 +70,19 @@ After player acquires a hero, they will be able to:
 
 Battle has 2 phases:
 
-1. Unit placement / summonning
+1. Unit placement / summoning
 2. Combat
 
-During Unit placement players deploy units one by one. Units can only be deployed on "starting tiles" specific for the given player. Once unit is placed it can't be relocated until combat starts. 
+During Unit placement players deploy units one by one. Units can only be deployed on "starting tiles" specific for the given player. Once a unit is placed it can't be relocated until combat starts. 
 
-After all units are placed Battle proceeds into Combat phase.
+After all units are placed, Battle proceeds into the Combat phase.
 
-In combat, payers take turns givin an order to one opf the units. Unit moves and attacks enemies.
+In combat, players take turns giving an order to one of the units. Unit moves and attacks enemies.
 
 Battle ends when all enemies are eliminated.
 
 [More battle info](../Documentation/Battle%20System/Battle_Description.md)
 
-
-# Ideas for drawing the map:
-
-class Map_Draw
-would be responisble for drawing specific map (visually)
-while gameplay classes like Battle_Grid and World_Grid would care about gameplay only and simply use Map_Draw
 
 # World Manager
 
