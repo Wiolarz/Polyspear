@@ -13,8 +13,8 @@ extends Control
 	$MarginContainer/VBoxContainer/SetupContainer
 
 
-const multi_scenario_setup = preload("res://Scenes/UI/MultiScenarioSetup.tscn")
-const multi_battle_setup = preload("res://Scenes/UI/MultiBattleSetup.tscn")
+const multi_scenario_setup = preload("res://Scenes/UI/Lobby/MultiScenarioSetup.tscn")
+const multi_battle_setup = preload("res://Scenes/UI/Lobby/MultiBattleSetup.tscn")
 
 
 var current_player_to_set : String = "" # if empty we select for us

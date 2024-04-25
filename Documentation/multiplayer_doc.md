@@ -22,17 +22,17 @@ Clients communicate with server only. No client to client communication.
 
 - Pierożek wanted to write this code
 - high control over networking if needed
-- no need to learn Godot Networking and Rpc quircks
+- no need to learn Godot Networking and Rpc quirks
 - easier if deciding to support dedicated servers
-- we don't forsee any complex sync scenarios, we need
+- we don't foresee any complex sync scenarios, we need
   - sync game setup info (map + selected factions/armies)
   - send 2 coordinates when army/unit moves
-  - send some simple ids when buying building, swapping units, levelling up a hero etc.
-  - (maybe) send serialised replay/snapshot for reconnect after client state loss or to support save/load for multiplayer games
+  - send some simple ids when buying buildings, swapping units, leveling up a hero etc.
+  - (maybe) send serialized replay/snapshot for reconnect after client state loss or to support save/load for multiplayer games
 
 ## Why it's doable
 Player base at the start will be pretty hardcore, so asking players to setup a hamachi/other means
-to ease making multiplayer work on devlopers part makes is viable option.
+to ease making multiplayer work on developers' part makes it a viable option.
 
 Some quality of life improvements like setting up some dedicated servers, so users can simply connect to them would be nice though.
 
@@ -43,7 +43,3 @@ We don't care about cheating nor advanced tools to avoid desync
 We may even help desync with debug commands to check what happens in those scenarios.
 
 It's a learning project intended to be forked not an esport
-
-## Future ideas (to encourage growth)
-
-Server acting only as a list of currently hosted games (IP,  port, name). To make finding players and joining games easier.

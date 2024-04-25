@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://dv7ndu5dc7rex"]
 
-[ext_resource type="Script" path="res://Scripts/UI/server_creator.gd" id="1_6sh1g"]
-[ext_resource type="Shortcut" uid="uid://fuvss5hfg4q2" path="res://Resources/Shortcuts/go_back.tres" id="2_m7mtt"]
+[ext_resource type="Script" path="res://Scripts/UI/server_creator.gd" id="1_5bd3v"]
+[ext_resource type="Shortcut" uid="uid://fuvss5hfg4q2" path="res://Resources/Shortcuts/go_back.tres" id="2_rcid6"]
 
 [node name="ServerCreator" type="Control"]
 layout_mode = 3
@@ -12,7 +12,7 @@ grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-script = ExtResource("1_6sh1g")
+script = ExtResource("1_5bd3v")
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
 layout_mode = 1
@@ -100,7 +100,7 @@ offset_top = -197.0
 offset_right = 356.0
 offset_bottom = -60.0
 grow_vertical = 0
-shortcut = ExtResource("2_m7mtt")
+shortcut = ExtResource("2_rcid6")
 text = "Back"
 
 [connection signal="pressed" from="MarginContainer/VBoxContainer/ButtonListen" to="." method="_on_button_listen_pressed"]

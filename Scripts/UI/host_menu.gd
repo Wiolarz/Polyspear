@@ -6,9 +6,9 @@ Manager scripts that displays specific UI
 """
 
 @onready var server_creator = \
-	load("res://Scenes/UI/ServerCreator.tscn").instantiate()
+	load("res://Scenes/UI/Lobby/Network/ServerCreator.tscn").instantiate()
 @onready var server_info_and_chat = \
-	load("res://Scenes/UI/ServerInfoAndChat.tscn").instantiate()
+	load("res://Scenes/UI/Lobby/Network/ServerInfoAndChat.tscn").instantiate()
 
 
 @onready var server_management = $ServerManagement

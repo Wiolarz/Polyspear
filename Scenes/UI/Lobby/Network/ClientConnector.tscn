@@ -1,7 +1,7 @@
 [gd_scene load_steps=5 format=3 uid="uid://dunktaeebf6f1"]
 
-[ext_resource type="Script" path="res://Scripts/UI/client_connector.gd" id="1_emdy6"]
-[ext_resource type="Shortcut" uid="uid://fuvss5hfg4q2" path="res://Resources/Shortcuts/go_back.tres" id="2_5wlfn"]
+[ext_resource type="Script" path="res://Scripts/UI/client_connector.gd" id="1_axf84"]
+[ext_resource type="Shortcut" uid="uid://fuvss5hfg4q2" path="res://Resources/Shortcuts/go_back.tres" id="2_qqtls"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_avfjo"]
 bg_color = Color(0, 0.6, 0, 1)
@@ -31,7 +31,7 @@ grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-script = ExtResource("1_emdy6")
+script = ExtResource("1_axf84")
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
 layout_mode = 1
@@ -157,7 +157,7 @@ offset_top = -124.0
 offset_right = 322.0
 offset_bottom = -10.0
 grow_vertical = 0
-shortcut = ExtResource("2_5wlfn")
+shortcut = ExtResource("2_qqtls")
 text = "Back"
 
 [connection signal="pressed" from="MarginContainer/VBoxContainer/ButtonConnect" to="." method="_on_button_listen_pressed"]
