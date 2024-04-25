@@ -1,11 +1,11 @@
 class_name MoveInfo
-extends RefCounted
+extends Resource
 
 
-var move_type: String = ""
-var summon_unit: DataUnit
-var move_source: Vector2i
-var target_tile_coord: Vector2i
+@export var move_type: String = ""
+@export var summon_unit: DataUnit
+@export var move_source: Vector2i
+@export var target_tile_coord: Vector2i
 
 const TYPE_MOVE = "move"
 const TYPE_SUMMON = "summon"

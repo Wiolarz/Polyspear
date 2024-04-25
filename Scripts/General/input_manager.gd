@@ -98,6 +98,13 @@ func _physics_process(_delta):
 		CFG.bot_speed_frames = CFG.BotSpeed.FAST
 
 
+func add_player(player_name:String) -> Player:
+	var p = Player.new()
+	p.player_name = player_name
+	players.append(p)
+	add_child(p)
+	return p
+
 # called from HexTile mouse detection
 func grid_smooth_input_listener(coord : Vector2i):
 	if draw_mode:
