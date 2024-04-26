@@ -13,8 +13,8 @@ extends Control
 	$MarginContainer/VBoxContainer/SetupContainer
 
 
-const multi_scenario_setup = preload("res://Scenes/UI/Lobby/MultiScenarioSetup.tscn")
-const multi_battle_setup = preload("res://Scenes/UI/Lobby/MultiBattleSetup.tscn")
+@onready var multi_world_setup = load("res://Scenes/UI/Lobby/MultiWorldSetup.tscn")
+@onready var multi_battle_setup = load("res://Scenes/UI/Lobby/MultiBattleSetup.tscn")
 
 
 var current_player_to_set : String = "" # if empty we select for us
@@ -26,7 +26,7 @@ func clear_container():
 
 
 func select_full_scenario():
-	_select_setup_page(multi_scenario_setup)
+	_select_setup_page(multi_world_setup)
 
 
 func select_battle():

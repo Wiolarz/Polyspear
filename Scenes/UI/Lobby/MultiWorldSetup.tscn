@@ -1,10 +1,10 @@
-[gd_scene load_steps=7 format=3 uid="uid://blx0kj8gah080"]
+[gd_scene load_steps=9 format=3 uid="uid://cyp43rqdf2pth"]
 
-[ext_resource type="Script" path="res://Scripts/UI/multi_battle_setup.gd" id="1_w61xs"]
-[ext_resource type="PackedScene" uid="uid://j6n24hs0xavf" path="res://Scenes/UI/Lobby/BattlePlayerSlotPanel.tscn" id="2_hstyp"]
+[ext_resource type="Script" path="res://Scripts/UI/multi_world_setup.gd" id="1_5qw0q"]
+[ext_resource type="PackedScene" uid="uid://dql37o7nhkxj6" path="res://Scenes/UI/Lobby/PlayerSlotPanel.tscn" id="2_hpvug"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ybc2s"]
-bg_color = Color(0, 0.588235, 0.356863, 1)
+bg_color = Color(0, 0.537255, 0.72549, 1)
 border_width_top = 2
 border_width_bottom = 2
 expand_margin_left = 30.0
@@ -21,7 +21,7 @@ expand_margin_top = 5.0
 expand_margin_right = 30.0
 expand_margin_bottom = 5.0
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_86ke8"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_imdx5"]
 resource_local_to_scene = true
 content_margin_left = 10.0
 content_margin_top = 0.0
@@ -29,7 +29,7 @@ content_margin_right = 10.0
 content_margin_bottom = 0.0
 bg_color = Color(1, 1, 1, 1)
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_4gp8n"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_21lvi"]
 resource_local_to_scene = true
 content_margin_left = 10.0
 content_margin_top = 0.0
@@ -37,7 +37,23 @@ content_margin_right = 10.0
 content_margin_bottom = 0.0
 bg_color = Color(1, 1, 1, 1)
 
-[node name="MultiBattleSetup" type="Control"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ajriv"]
+resource_local_to_scene = true
+content_margin_left = 10.0
+content_margin_top = 0.0
+content_margin_right = 10.0
+content_margin_bottom = 0.0
+bg_color = Color(1, 1, 1, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_8tc31"]
+resource_local_to_scene = true
+content_margin_left = 10.0
+content_margin_top = 0.0
+content_margin_right = 10.0
+content_margin_bottom = 0.0
+bg_color = Color(1, 1, 1, 1)
+
+[node name="MultiWorldSetup" type="Control"]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -46,7 +62,7 @@ grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-script = ExtResource("1_w61xs")
+script = ExtResource("1_5qw0q")
 
 [node name="V" type="VBoxContainer" parent="."]
 layout_mode = 1
@@ -104,13 +120,21 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_oid6t")
 [node name="PlayerList" type="VBoxContainer" parent="V/Slots/ColorRect"]
 layout_mode = 2
 
-[node name="BattlePlayerSlotPanel" parent="V/Slots/ColorRect/PlayerList" instance=ExtResource("2_hstyp")]
+[node name="PlayerSlotPanel1" parent="V/Slots/ColorRect/PlayerList" instance=ExtResource("2_hpvug")]
 layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_86ke8")
+theme_override_styles/panel = SubResource("StyleBoxFlat_imdx5")
 
-[node name="BattlePlayerSlotPanel2" parent="V/Slots/ColorRect/PlayerList" instance=ExtResource("2_hstyp")]
+[node name="PlayerSlotPanel2" parent="V/Slots/ColorRect/PlayerList" instance=ExtResource("2_hpvug")]
 layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_4gp8n")
+theme_override_styles/panel = SubResource("StyleBoxFlat_21lvi")
+
+[node name="PlayerSlotPanel3" parent="V/Slots/ColorRect/PlayerList" instance=ExtResource("2_hpvug")]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_ajriv")
+
+[node name="PlayerSlotPanel4" parent="V/Slots/ColorRect/PlayerList" instance=ExtResource("2_hpvug")]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_8tc31")
 
 [node name="cokolwiek" type="VBoxContainer" parent="V"]
 layout_mode = 2

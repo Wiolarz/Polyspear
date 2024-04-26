@@ -1,5 +1,18 @@
-class_name PlayerSlotPanel
+class_name BattlePlayerSlotPanel
 extends PanelContainer
+
+
+@onready var button_take_leave = $HBoxContainer/ButtonTakeLeave
+@onready var label_name = $HBoxContainer/PlayerInfoPanel/Label
+@onready var button_faction = $HBoxContainer/ButtonFaction
+@onready var button_ai = $HBoxContainer/ButtonAI
+@onready var buttons_units = [
+	$HBoxContainer/OptionButtonUnit1,
+	$HBoxContainer/OptionButtonUnit2,
+	$HBoxContainer/OptionButtonUnit3,
+	$HBoxContainer/OptionButtonUnit4,
+	$HBoxContainer/OptionButtonUnit5,
+]
 
 enum TakeLeaveButtonState {
 	FREE,
@@ -8,13 +21,16 @@ enum TakeLeaveButtonState {
 	GHOST, # state when we display too much slots
 }
 
+enum AiButtonState {
+	HUMAN,
+	AI,
+}
+
+
 var setup_ui = null # TODO some base class for MultiBattleSetup and
 					# MultiScenarioSetup
 var button_take_leave_state : TakeLeaveButtonState = TakeLeaveButtonState.FREE
-
-@onready var button_take_leave = $HBoxContainer/ButtonTakeLeave
-@onready var label_name = $HBoxContainer/PlayerInfoPanel/Label
-@onready var button_faction = $HBoxContainer/ButtonFaction
+var button_ai_state : AiButtonState = AiButtonState.HUMAN
 
 func try_to_take():
 	if not setup_ui:
@@ -34,10 +50,11 @@ func cycle_color(backwards : bool = false):
 	setup_ui.cycle_color_slot(self, backwards)
 
 
-func cycle_faction(backwards : bool = false):
-	if not setup_ui:
-		return
-	setup_ui.cycle_faction_slot(self, backwards)
+func cycle_ai(backwards : bool = false):
+	button_ai_state += -1 if backwards else 1
+	button_ai_state %= 2
+	button_ai.text = AiButtonState.keys()[button_ai_state]
+	pass
 
 
 func set_visible_color(c : Color):
@@ -72,10 +89,11 @@ func set_visible_take_leave_button_state(state : TakeLeaveButtonState):
 
 
 func set_visible_faction(faction : DataFaction):
-	if faction == null:
-		button_faction.text = "nobody"
-		return
-	button_faction.text = faction.faction_name
+	pass
+	#if faction == null:
+		#button_faction.text = "nobody"
+		#return
+	#button_faction.text = faction.faction_name
 
 
 func _ready():
@@ -95,6 +113,5 @@ func _on_button_take_leave_pressed():
 func _on_button_color_pressed():
 	cycle_color()
 
-
-func _on_button_faction_pressed():
-	cycle_faction()
+func _on_button_ai_pressed():
+	cycle_ai()

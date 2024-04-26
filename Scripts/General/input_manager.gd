@@ -314,6 +314,10 @@ func get_maps_list() -> Array[String]:
 	return TestTools.list_files_in_folder(CFG.WORLD_MAPS_PATH)
 
 
+func get_battle_maps_list() -> Array[String]:
+	return TestTools.list_files_in_folder(CFG.BATTLE_MAPS_PATH)
+
+
 func start_game(map_name : String, player_settings : Array[PresetPlayer]):
 	var map_data: DataWorldMap = load(CFG.WORLD_MAPS_PATH + map_name)
 	var new_players = player_settings.map( func (setting) : return setting.create_player() )

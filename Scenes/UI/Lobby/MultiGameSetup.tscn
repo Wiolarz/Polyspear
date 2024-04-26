@@ -41,13 +41,13 @@ layout_mode = 2
 size_flags_horizontal = 3
 toggle_mode = true
 button_group = SubResource("ButtonGroup_giv8q")
-text = "Full scenario"
+text = "Full game"
 
 [node name="ButtonBattle" type="Button" parent="MarginContainer/VBoxContainer/ModeChoice"]
 layout_mode = 2
 size_flags_horizontal = 3
 toggle_mode = true
-text = "Battle"
+text = "Single Battle"
 
 [node name="SetupContainer" type="Control" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
