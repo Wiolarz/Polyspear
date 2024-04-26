@@ -9,6 +9,13 @@ var city_on_ui : City
 func _process(_delta):
 	good_label.text = WM.current_player.goods.to_string()
 
+func refresh_player_buttons():
+	var player_buttons = $Players.get_children()
+	for i in range(player_buttons.size() - 1):
+		var selected = WM.players[i] == WM.current_player
+		var button = player_buttons[i+1] as Button
+		button.text = WM.players[i].player_name
+		button.modulate = Color.RED if selected else Color.WHITE
 
 func show_trade_ui(city : City, hero : ArmyForm):
 	city_on_ui = city
@@ -64,7 +71,7 @@ func _refresh_army_display(hero : ArmyForm):
 		b.disabled = not hero
 		if hero and i < hero.entity.units_data.size():
 			b.text = hero.entity.units_data[i].unit_name
-			print(i, b.text )
+			# print(i, b.text )
 
 
 func _buy_unit(unit : DataUnit, hero_army : ArmyForm):
@@ -86,10 +93,9 @@ func _buy_unit(unit : DataUnit, hero_army : ArmyForm):
 func _on_city_ui_close_requested():
 	close_city_ui()
 
-
 func _on_end_turn_pressed():
 	WM.next_player_turn()
-
+	refresh_player_buttons()
 
 func _on_buy_hero_button_pressed():
 	print("trying to buy a hero ")

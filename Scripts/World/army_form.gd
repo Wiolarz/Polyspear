@@ -14,6 +14,8 @@ func _process(_delta):
 	var hero = entity.hero
 	if hero:
 		$MoveLabel.text = "Move %d / %d" % [hero.movement_points, hero.max_movement_points]
+		$sprite_unit.modulate = Color.DIM_GRAY if not has_movement_points() \
+				else Color.WHITE
 
 
 static func create_hero_army(player : Player, hero_data : DataHero) -> ArmyForm:

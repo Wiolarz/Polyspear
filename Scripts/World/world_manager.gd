@@ -240,6 +240,7 @@ func start_world(world_map : DataWorldMap) -> void:
 	if world_ui == null or not is_instance_valid(world_ui):
 		spawn_world_ui()
 	UI.go_to_custom_ui(world_ui)
+	world_ui.refresh_player_buttons()
 
 	IM.raging_battle = false
 
