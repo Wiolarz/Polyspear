@@ -45,14 +45,18 @@ func set_selected_hero(new_hero : ArmyForm):
 
 func next_player_turn():
 	set_selected_hero(null)
+	_end_of_turn_callbacks(current_player)
 	var player_idx = players.find(current_player)
 	if player_idx + 1 == players.size():
-		_call_end_of_turn()
+		_end_of_day_callbacks()
 		current_player = players[0]
 	else:
 		current_player = players[player_idx + 1]
 
-func _call_end_of_turn() -> void:
+func _end_of_turn_callbacks(player : Player):
+	W_GRID.end_of_turn_callbacks(player)
+
+func _end_of_day_callbacks() -> void:
 	for column in W_GRID.places:
 		for place : Place in column:
 			if place == null:
@@ -115,9 +119,11 @@ func grid_input(coord : Vector2i):
 			# CITY TRADE
 			trade_city(city, selected_hero)
 	else:
-		if W_GRID.is_moveable(coord):
+		if W_GRID.is_moveable(coord) \
+				and selected_hero.entity.hero.movement_points > 0:
 			print("moving ", selected_hero," to ",coord)
 			hero_move(selected_hero, coord)
+			selected_hero.entity.hero.movement_points -= 1
 
 
 func hero_move(hero : ArmyForm, coord : Vector2i):

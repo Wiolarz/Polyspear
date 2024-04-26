@@ -35,5 +35,10 @@ func move(tile):
 	entity.coord = tile.coord
 
 
+func on_end_of_turn(player : Player):
+	if player == entity.controller and entity.hero:
+		entity.hero.movement_points = entity.hero.max_movement_points
+
+
 func set_selected(is_selected : bool) -> void:
 	$sprite_color.modulate = Color.RED if is_selected else Color.WHITE

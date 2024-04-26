@@ -23,8 +23,9 @@ text = "Bogumił
 Level 1"
 
 [node name="MoveLabel" type="Label" parent="."]
-offset_left = 107.0
-offset_top = 60.0
+offset_left = 23.0
+offset_top = 6.0
 offset_right = 265.0
 offset_bottom = 118.0
 text = "Move 3"
+horizontal_alignment = 2
