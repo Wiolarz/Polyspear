@@ -13,7 +13,7 @@ config_version=5
 config/name="Krong"
 run/main_scene="res://Scenes/MainScene.tscn"
 config/features=PackedStringArray("4.2", "GL Compatibility")
-config/icon="res://Art/old/elf3.png"
+config/icon="res://Art/world_map/ruby_cave.png"
 
 [autoload]
 

@@ -1,7 +1,7 @@
 [gd_scene load_steps=7 format=3 uid="uid://dy1m42bfkq2wv"]
 
 [ext_resource type="Script" path="res://Scripts/Development/unit_editor.gd" id="1_77kxj"]
-[ext_resource type="Resource" uid="uid://beydauke55uh0" path="res://Resources/Battle/Units/Elves/elf1.tres" id="2_8i56d"]
+[ext_resource type="Resource" path="res://Resources/Battle/Units/Classic/elf1.tres" id="2_8i56d"]
 [ext_resource type="PackedScene" uid="uid://sh62rfw7ulr8" path="res://Scenes/Form/UnitForm.tscn" id="3_yftbb"]
 [ext_resource type="Shortcut" uid="uid://fuvss5hfg4q2" path="res://Resources/Shortcuts/go_back.tres" id="4_bwq2j"]
 

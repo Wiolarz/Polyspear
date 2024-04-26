@@ -89,11 +89,11 @@ func _on_pick_art_button_pressed():
 	$PickArtDialog.show()
 
 func _on_pick_art_dialog_file_selected(path):
-	unit.unitStats.texture_path = path
+	unit.unit_stats.texture_path = path
 	unit.get_node("sprite_unit").texture = load(path)
 
 func on_symbol_selected(dir : int, symbol_id : int):
-	unit.unitStats.symbols[dir] = symbolTypes[symbol_id]
+	unit.unit_stats.symbols[dir] = symbolTypes[symbol_id]
 	var texture_path = symbolTypes[symbol_id].texture_path
 	var symbol_sprite_node = unit.get_node("Symbols").get_children()[dir]\
 		.get_child(0).get_child(0)
@@ -106,7 +106,7 @@ func on_symbol_selected(dir : int, symbol_id : int):
 
 
 func _on_save_pressed():
-	ResourceSaver.save(unit.unitStats, current_unit_path)
+	ResourceSaver.save(unit.unit_stats, current_unit_path)
 
 
 func _on_back_button_pressed():

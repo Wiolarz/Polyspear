@@ -1,8 +1,9 @@
-[gd_scene load_steps=4 format=3 uid="uid://bawliiem6bw0u"]
+[gd_scene load_steps=5 format=3 uid="uid://bawliiem6bw0u"]
 
 [ext_resource type="Script" path="res://Scripts/UI/battle_ui.gd" id="1_0rgae"]
-[ext_resource type="Texture2D" uid="uid://dnrwcdtgk6k42" path="res://Art/old/elf1.png" id="1_ye0mg"]
 [ext_resource type="Shortcut" uid="uid://fuvss5hfg4q2" path="res://Resources/Shortcuts/go_back.tres" id="2_hku4e"]
+[ext_resource type="Texture2D" uid="uid://bcf50aa63e5x7" path="res://Art/units/elf_archer.png" id="3_tidxc"]
+[ext_resource type="Texture2D" uid="uid://i280h28mqf1x" path="res://Art/units/elf_dryad.png" id="4_k6rxg"]
 
 [node name="BattleUI" type="CanvasLayer"]
 script = ExtResource("1_0rgae")
@@ -60,11 +61,11 @@ scale = Vector2(0.3, 0.3)
 
 [node name="TextureButton" type="TextureButton" parent="Units"]
 layout_mode = 2
-texture_normal = ExtResource("1_ye0mg")
+texture_normal = ExtResource("3_tidxc")
 
 [node name="TextureButton2" type="TextureButton" parent="Units"]
 layout_mode = 2
-texture_normal = ExtResource("1_ye0mg")
+texture_normal = ExtResource("4_k6rxg")
 
 [connection signal="pressed" from="SwitchCamera" to="." method="_on_switch_camera_pressed"]
 [connection signal="pressed" from="Menu" to="." method="_on_menu_pressed"]
