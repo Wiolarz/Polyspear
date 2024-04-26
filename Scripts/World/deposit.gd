@@ -8,7 +8,7 @@ func _init(start : Goods, gain_per_turn : Goods):
 	accumulated_goods = start.duplicate()
 	per_turn = gain_per_turn.duplicate()
 
-func interact(army : ArmyOnWorldMap):
+func interact(army : ArmyForm):
 	collect(army.controller)
 
 func on_end_of_turn():

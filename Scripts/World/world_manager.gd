@@ -19,7 +19,8 @@ var players : Array[Player] = []
 var world_ui : WorldUI = null
 var current_player : Player
 
-var selected_hero : ArmyOnWorldMap  # Only army that has a hero can move (army can only have a single hero)
+## Only army that has a hero can move (army can only have a single hero)
+var selected_hero : ArmyForm
 var selected_city : City
 var combat_tile : Vector2i
 
@@ -28,7 +29,7 @@ var combat_tile : Vector2i
 
 #region helpers
 
-func set_selected_hero(new_hero : ArmyOnWorldMap):
+func set_selected_hero(new_hero : ArmyForm):
 	print("selected ", new_hero)
 	if selected_hero:
 		selected_hero.set_selected(false)
@@ -83,9 +84,9 @@ func grid_input(coord : Vector2i):
 
 	if selected_hero == null:
 		if selected_spot_type == "army":
-			var army : ArmyOnWorldMap = W_GRID.get_army(coord)
-			if current_player == army.army_data.controller:
-				set_selected_hero(army)
+			var army_form : ArmyForm = W_GRID.get_army(coord)
+			if current_player == army_form.entity.controller:
+				set_selected_hero(army_form)
 		elif selected_spot_type == "city":
 			pass
 			#var city = W_GRID.get_city(coord)
@@ -94,40 +95,38 @@ func grid_input(coord : Vector2i):
 				#city_show_interface(city)
 		return
 
-	else: # hero is selected
-		#TEMP in future there will be pathfiding here
-		if not GridManager.is_adjacent(selected_hero.coord, coord):
-			set_selected_hero(null)
-			return
+	#TEMP in future there will be pathfiding here
+	if not GridManager.is_adjacent(selected_hero.coord, coord):
+		set_selected_hero(null)
+		return
 
-		if W_GRID.is_enemy_present(coord, current_player):
-			start_combat(coord)
+	if W_GRID.is_enemy_present(coord, current_player):
+		start_combat(coord)
 
-		if selected_spot_type == "army":
-			var army = W_GRID.get_army(coord)
-			if current_player == army.controller:
-				# ARMY TRADE
-				trade_armies(army)
+	if selected_spot_type == "army":
+		var army = W_GRID.get_army(coord)
+		if current_player == army.controller:
+			# ARMY TRADE
+			trade_armies(army)
 
-		elif selected_spot_type == "city":
-			var city = W_GRID.get_city(coord)
-			if city.controller == current_player:
-				# CITY TRADE
-				trade_city(city, selected_hero)
-				pass
-		else:
-			if W_GRID.is_moveable(coord):
-				print("moving ", selected_hero," to ",coord)
-				hero_move(selected_hero, coord)
+	elif selected_spot_type == "city":
+		var city = W_GRID.get_city(coord)
+		if city.controller == current_player:
+			# CITY TRADE
+			trade_city(city, selected_hero)
+	else:
+		if W_GRID.is_moveable(coord):
+			print("moving ", selected_hero," to ",coord)
+			hero_move(selected_hero, coord)
 
 
-func hero_move(hero : ArmyOnWorldMap, coord : Vector2i):
+func hero_move(hero : ArmyForm, coord : Vector2i):
 	W_GRID.change_hero_position(hero, coord)
 	var place = W_GRID.places[coord.x][coord.y]
 	if place != null:
 		place.interact(hero)
 
-func trade_armies(_second_army : ArmyOnWorldMap):
+func trade_armies(_second_army : ArmyForm):
 	#TODO
 	print("trading armies")
 
@@ -137,25 +136,24 @@ func trade_armies(_second_army : ArmyOnWorldMap):
 #region City Management
 
 
-func trade_city(city : City, hero : ArmyOnWorldMap ):
+func trade_city(city : City, hero : ArmyForm ):
 	print("trade_city")
 	selected_city = city
 	world_ui.show_trade_ui(city, hero)
-	pass
 
 
 func city_show_interface(_city : City):
 	print("city shows interface")
 
 func recruit_hero(player : Player, coord : Vector2i) -> void:
-	var army_for_world_map = CFG.DEFAULT_ARMY_FORM.instantiate()
+	var army_for_world_map: ArmyForm = CFG.DEFAULT_ARMY_FORM.instantiate()
 	add_child(army_for_world_map)
 	army_for_world_map.name = "hero"
-	army_for_world_map.army_data.controller = player
-	army_for_world_map.army_data.hero = Hero.create_hero(player.faction.heroes[0])
-	army_for_world_map.army_data.hero.controller = player
-	
-	army_for_world_map.army_data.units_data.append(army_for_world_map.army_data.hero.data_unit)
+	army_for_world_map.entity.controller = player
+	army_for_world_map.entity.hero = Hero.create_hero(player.faction.heroes[0])
+	army_for_world_map.entity.hero.controller = player
+
+	army_for_world_map.entity.units_data.append(army_for_world_map.entity.hero.data_unit)
 	W_GRID.place_army(army_for_world_map, coord)
 
 #endregion
@@ -175,8 +173,8 @@ func start_combat(coord : Vector2i):
 	IM.switch_camera()
 
 	var armies : Array[Army] = [
-		selected_hero.army_data,
-		W_GRID.get_army(combat_tile).army_data,
+		selected_hero.entity,
+		W_GRID.get_army(combat_tile).entity,
 	]
 	var battle_map : DataBattleMap = W_GRID.get_battle_map(combat_tile)
 
@@ -196,8 +194,7 @@ func end_of_battle():
 		print("hero died")
 		kill_army(selected_hero)  # clear the tile where selected_hero was
 
-
-func kill_army(army : ArmyOnWorldMap):
+func kill_army(army : ArmyForm):
 	W_GRID.unit_grid[army.coord.x][army.coord.y] = null  # there can only be one army at a single tile
 	army.queue_free()
 

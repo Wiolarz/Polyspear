@@ -11,13 +11,13 @@ func _on_switch_camera_pressed():
 	assert(false, "not implemented")
 
 
-func show_trade_ui(city : City, hero : ArmyOnWorldMap):
+func show_trade_ui(city : City, hero : ArmyForm):
 	_refresh_units_to_buy(city, hero)
 	_refresh_army_display(hero)
 	$CityUi.show()
 
 
-func _refresh_units_to_buy(city : City, hero : ArmyOnWorldMap):
+func _refresh_units_to_buy(city : City, hero : ArmyForm):
 	var units = city.get_units_to_buy()
 	var buy_children = $CityUi/HBoxContainer/Buy.get_children()
 	for i in range(buy_children.size()-1):
@@ -31,29 +31,29 @@ func _refresh_units_to_buy(city : City, hero : ArmyOnWorldMap):
 			b.pressed.connect(_buy_unit.bind(unit, hero))
 
 
-func _refresh_army_display(hero : ArmyOnWorldMap):
+func _refresh_army_display(hero_army : ArmyForm):
 	var army_children = $CityUi/HBoxContainer/Army.get_children()
 	for i in range(army_children.size()-1):
 		var b = army_children[i+1] as Button
 		b.text = "-empty-"
-		if i < hero.army_data.units_data.size():
-			b.text = hero.army_data.units_data[i].unit_name
+		if i < hero_army.entity.units_data.size():
+			b.text = hero_army.entity.units_data[i].unit_name
 
 
-func _buy_unit(unit : DataUnit, hero : ArmyOnWorldMap):
+func _buy_unit(unit : DataUnit, hero_army : ArmyForm):
 	print("trying to buy ", unit.unit_name)
 
-	if hero.army_data.units_data.size() >= \
+	if hero_army.entity.units_data.size() >= \
 			$CityUi/HBoxContainer/Army.get_child_count() - 1 :
 		print("army size limit")
 		return
 
-	if !hero.controller.purchase(unit.cost):
+	if !hero_army.controller.purchase(unit.cost):
 		print("not enough cash, needed ",unit.cost)
 		return
 
-	hero.army_data.units_data.append(unit)
-	_refresh_army_display(hero)
+	hero_army.entity.units_data.append(unit)
+	_refresh_army_display(hero_army)
 
 
 func _on_city_ui_close_requested():
@@ -70,15 +70,15 @@ func _process(_delta):
 
 func _on_buy_hero_button_pressed():
 	print("trying to buy a hero ")
-	
+
 	#temp
 	# verify no hero occupying a city spot
-	
+
 	'''
 	if !city.controller.purchase(hero.cost):
 		print("not enough cash, needed ", hero.cost)
 		return
 	'''
-	
+
 	# generate a hero
 	WM.recruit_hero(WM.current_player, WM.selected_city.coord)

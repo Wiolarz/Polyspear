@@ -10,9 +10,9 @@ var places : Array = [] # Array[Array[Place]]
 
 #region Tools
 
-func place_army(army : ArmyOnWorldMap, coord : Vector2i):
+func place_army(army : ArmyForm, coord : Vector2i):
 	assert(unit_grid[coord.x][coord.y] == null, "can't place 2 armies on the same field")
-	army.army_data.coord = coord
+	army.entity.coord = coord
 	unit_grid[coord.x][coord.y] = army
 	army.position = tile_at(coord).position
 
@@ -58,7 +58,7 @@ func get_tile_controller(coord : Vector2i) -> Player:
 func get_battle_map(_coord : Vector2i) -> DataBattleMap:
 	return CFG.DEFAULT_BATTLE_MAP
 
-func get_army(coord : Vector2i) -> ArmyOnWorldMap:
+func get_army(coord : Vector2i) -> ArmyForm:
 	return unit_grid[coord.x][coord.y]
 
 
@@ -72,7 +72,7 @@ func get_city(coord : Vector2i) -> City:
 
 func get_hero(coord : Vector2i):
 	var army = get_army(coord)
-	if army != null and army.army_data.hero != null:
+	if army != null and army.entity.hero != null:
 		return army
 	return null
 

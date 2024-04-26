@@ -28,7 +28,7 @@ static func create_place(new_data_tile : DataTile, coord_ : Vector2i) -> Place:
 	return new_place
 
 
-func interact(army : ArmyOnWorldMap) -> void:
+func interact(army : ArmyForm) -> void:
 	print(army)
 
 
