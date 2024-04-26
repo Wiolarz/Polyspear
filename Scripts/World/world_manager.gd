@@ -146,12 +146,10 @@ func city_show_interface(_city : City):
 	print("city shows interface")
 
 func recruit_hero(player : Player, coord : Vector2i) -> void:
-	var army_for_world_map: ArmyForm = CFG.DEFAULT_ARMY_FORM.instantiate()
+	var army_for_world_map : ArmyForm = \
+		ArmyForm.create_hero_army(player, player.faction.heroes[0])
+
 	add_child(army_for_world_map)
-	army_for_world_map.name = "hero"
-	army_for_world_map.entity.controller = player
-	army_for_world_map.entity.hero = Hero.create_hero(player.faction.heroes[0])
-	army_for_world_map.entity.hero.controller = player
 
 	army_for_world_map.entity.units_data.append(army_for_world_map.entity.hero.data_unit)
 	W_GRID.place_army(army_for_world_map, coord)
