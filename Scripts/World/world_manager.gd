@@ -45,6 +45,7 @@ func set_selected_hero(new_hero : ArmyForm):
 
 func next_player_turn():
 	set_selected_hero(null)
+	world_ui.close_city_ui()
 	_end_of_turn_callbacks(current_player)
 	var player_idx = players.find(current_player)
 	if player_idx + 1 == players.size():
@@ -121,6 +122,7 @@ func grid_input(coord : Vector2i):
 	else:
 		if W_GRID.is_moveable(coord) \
 				and selected_hero.entity.hero.movement_points > 0:
+			world_ui.close_city_ui()
 			print("moving ", selected_hero," to ",coord)
 			hero_move(selected_hero, coord)
 			selected_hero.entity.hero.movement_points -= 1

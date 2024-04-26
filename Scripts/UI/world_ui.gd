@@ -3,18 +3,27 @@ extends CanvasLayer
 
 @onready var good_label : Label = $HBoxContainer/GoodsLabel
 
-func _on_menu_pressed():
-	IM.show_in_game_menu()
 
-
-func _on_switch_camera_pressed():
-	assert(false, "not implemented")
+func _process(_delta):
+	good_label.text = WM.current_player.goods.to_string()
 
 
 func show_trade_ui(city : City, hero : ArmyForm):
 	_refresh_units_to_buy(city, hero)
 	_refresh_army_display(hero)
 	$CityUi.show()
+
+
+func close_city_ui() -> void:
+	$CityUi.hide()
+
+
+func _on_menu_pressed():
+	IM.show_in_game_menu()
+
+
+func _on_switch_camera_pressed():
+	assert(false, "not implemented")
 
 
 func _refresh_units_to_buy(city : City, hero : ArmyForm):
@@ -57,15 +66,11 @@ func _buy_unit(unit : DataUnit, hero_army : ArmyForm):
 
 
 func _on_city_ui_close_requested():
-	$CityUi.hide()
+	close_city_ui()
 
 
 func _on_end_turn_pressed():
 	WM.next_player_turn()
-
-
-func _process(_delta):
-	good_label.text = WM.current_player.goods.to_string()
 
 
 func _on_buy_hero_button_pressed():
