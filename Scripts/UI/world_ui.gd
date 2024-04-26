@@ -9,6 +9,7 @@ func _process(_delta):
 
 
 func show_trade_ui(city : City, hero : ArmyForm):
+	_refresh_heroes_to_buy(city)
 	_refresh_units_to_buy(city, hero)
 	_refresh_army_display(hero)
 	$CityUi.show()
@@ -24,6 +25,14 @@ func _on_menu_pressed():
 
 func _on_switch_camera_pressed():
 	assert(false, "not implemented")
+
+
+func _refresh_heroes_to_buy(city : City):
+	var heroes = city.controller.faction.heroes
+	$CityUi/HBoxContainer/VBoxContainer/HeroImage.texture = \
+			load(heroes[0].data_unit.texture_path)
+	$CityUi/HBoxContainer/VBoxContainer/BuyHeroButton.text = \
+			"Buy hero\n"+str(heroes[0].cost)
 
 
 func _refresh_units_to_buy(city : City, hero : ArmyForm):
