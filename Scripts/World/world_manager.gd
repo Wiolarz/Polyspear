@@ -69,35 +69,10 @@ func _end_of_day_callbacks() -> void:
 #region Player Actions
 
 func grid_input(coord : Vector2i):
-	"""
-	I no hero selected
-	if owned city/army:
-		select()
-
-	II hero selected
-	if enemy_present:
-		attack()
-	elif city/army:
-		trade()
-	elif can_move_there:
-		move()
-	"""
-
 	print("world input @", coord)
 
-	var selected_spot_type : String = W_GRID.get_interactable_type(coord)
-
 	if selected_hero == null:
-		if selected_spot_type == "army":
-			var army_form : ArmyForm = W_GRID.get_army(coord)
-			if current_player == army_form.entity.controller:
-				set_selected_hero(army_form)
-		elif selected_spot_type == "city":
-			pass
-			#var city = W_GRID.get_city(coord)
-			#if city.controller == current_player:
-				##TODO CITY you could select current city here
-				#city_show_interface(city)
+		input_try_select(coord)
 		return
 
 	#TEMP in future there will be pathfiding here
@@ -105,27 +80,54 @@ func grid_input(coord : Vector2i):
 		set_selected_hero(null)
 		return
 
+	try_interact(selected_hero, coord)
+
+func input_try_select(coord)->void:
+	var selected_spot_type : String = W_GRID.get_interactable_type(coord)
+	if selected_spot_type == "army":
+		var army_form : ArmyForm = W_GRID.get_army(coord)
+		if current_player == army_form.entity.controller:
+			set_selected_hero(army_form)
+	elif selected_spot_type == "city":
+		var city = W_GRID.get_city(coord)
+		if city.controller == current_player:
+			selected_city = city
+			world_ui.show_trade_ui(city, null)
+
+
+func try_interact(hero : ArmyForm, coord : Vector2i):
+
 	if W_GRID.is_enemy_present(coord, current_player):
 		start_combat(coord)
+
+	var selected_spot_type : String = W_GRID.get_interactable_type(coord)
 
 	if selected_spot_type == "army":
 		var army = W_GRID.get_army(coord)
 		if current_player == army.controller:
 			# ARMY TRADE
 			trade_armies(army)
+		return
 
-	elif selected_spot_type == "city":
+	if selected_spot_type == "city":
 		var city = W_GRID.get_city(coord)
 		if city.controller == current_player:
 			# CITY TRADE
-			trade_city(city, selected_hero)
-	else:
-		if W_GRID.is_moveable(coord) \
-				and selected_hero.entity.hero.movement_points > 0:
-			world_ui.close_city_ui()
-			print("moving ", selected_hero," to ",coord)
-			hero_move(selected_hero, coord)
-			selected_hero.entity.hero.movement_points -= 1
+			trade_city(city, hero)
+		else:
+			# CITY SIEGE
+			print ("siege not implemented")
+			pass
+		return
+
+	if W_GRID.is_moveable(coord):
+		if not hero.has_movement_points():
+			print("not enough movement points")
+			return
+		world_ui.close_city_ui()
+		print("moving ", hero," to ",coord)
+		hero_move(hero, coord)
+		hero.spend_movement_point()
 
 
 func hero_move(hero : ArmyForm, coord : Vector2i):
@@ -150,12 +152,9 @@ func trade_city(city : City, hero : ArmyForm ):
 	world_ui.show_trade_ui(city, hero)
 
 
-func city_show_interface(_city : City):
-	print("city shows interface")
-
-func recruit_hero(player : Player, coord : Vector2i) -> void:
+func recruit_hero(player : Player, hero_data : DataHero, coord : Vector2i) -> void:
 	var army_for_world_map : ArmyForm = \
-		ArmyForm.create_hero_army(player, player.faction.heroes[0])
+		ArmyForm.create_hero_army(player, hero_data)
 
 	add_child(army_for_world_map)
 
@@ -252,7 +251,7 @@ func start_world(world_map : DataWorldMap) -> void:
 
 func spawn_player(coord : Vector2i, player : Player):
 	var fixed_coord =  W_GRID.to_bordered_coords(coord)
-	recruit_hero(player, fixed_coord)
+	recruit_hero(player, player.faction.heroes[0], fixed_coord)
 
 	W_GRID.get_city(fixed_coord).controller = player
 

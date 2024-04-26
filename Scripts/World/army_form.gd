@@ -30,9 +30,18 @@ static func create_hero_army(player : Player, hero_data : DataHero) -> ArmyForm:
 	return result
 
 
+func has_movement_points() -> bool:
+	return entity.hero.movement_points > 0
+
+
 func move(tile):
 	position = tile.position
 	entity.coord = tile.coord
+
+
+func spend_movement_point() -> void:
+	assert(entity.hero.movement_points > 0)
+	entity.hero.movement_points -= 1
 
 
 func on_end_of_turn(player : Player):

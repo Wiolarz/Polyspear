@@ -14,7 +14,7 @@ ruby = 1
 
 [resource]
 script = ExtResource("1_755x7")
-unit_name = ""
+unit_name = "druid_unit"
 texture_path = "res://Art/world_heroes/elf_druid.png"
 symbols = Array[Resource("res://Resources/Battle/data_symbol.gd")]([ExtResource("2_drtun"), ExtResource("4_7atru"), ExtResource("3_tkndh"), ExtResource("3_tkndh"), ExtResource("3_tkndh"), ExtResource("4_7atru")])
 cost = SubResource("Resource_o8yk3")

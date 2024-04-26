@@ -1,6 +1,8 @@
 class_name WorldUI
 extends CanvasLayer
 
+var city_on_ui : City
+
 @onready var good_label : Label = $HBoxContainer/GoodsLabel
 
 
@@ -9,6 +11,7 @@ func _process(_delta):
 
 
 func show_trade_ui(city : City, hero : ArmyForm):
+	city_on_ui = city
 	_refresh_heroes_to_buy(city)
 	_refresh_units_to_buy(city, hero)
 	_refresh_army_display(hero)
@@ -16,6 +19,7 @@ func show_trade_ui(city : City, hero : ArmyForm):
 
 
 func close_city_ui() -> void:
+	city_on_ui = null
 	$CityUi.hide()
 
 
@@ -24,15 +28,17 @@ func _on_menu_pressed():
 
 
 func _on_switch_camera_pressed():
-	assert(false, "not implemented")
+	print("not implemented")
 
 
 func _refresh_heroes_to_buy(city : City):
 	var heroes = city.controller.faction.heroes
 	$CityUi/HBoxContainer/VBoxContainer/HeroImage.texture = \
 			load(heroes[0].data_unit.texture_path)
-	$CityUi/HBoxContainer/VBoxContainer/BuyHeroButton.text = \
-			"Buy hero\n"+str(heroes[0].cost)
+	var button = $CityUi/HBoxContainer/VBoxContainer/BuyHeroButton
+	button.text = "Buy hero\n"+str(heroes[0].cost)
+	button.disabled = W_GRID.get_army(city.coord) != null or \
+		not city.controller.has_enough(heroes[0].cost)
 
 
 func _refresh_units_to_buy(city : City, hero : ArmyForm):
@@ -47,15 +53,18 @@ func _refresh_units_to_buy(city : City, hero : ArmyForm):
 			var unit = units[i]
 			b.text = unit.cost.to_string_short("-") + " -> "+ unit.unit_name
 			b.pressed.connect(_buy_unit.bind(unit, hero))
+			b.disabled = not hero
 
 
-func _refresh_army_display(hero_army : ArmyForm):
+func _refresh_army_display(hero : ArmyForm):
 	var army_children = $CityUi/HBoxContainer/Army.get_children()
 	for i in range(army_children.size()-1):
 		var b = army_children[i+1] as Button
 		b.text = "-empty-"
-		if i < hero_army.entity.units_data.size():
-			b.text = hero_army.entity.units_data[i].unit_name
+		b.disabled = not hero
+		if hero and i < hero.entity.units_data.size():
+			b.text = hero.entity.units_data[i].unit_name
+			print(i, b.text )
 
 
 func _buy_unit(unit : DataUnit, hero_army : ArmyForm):
@@ -85,14 +94,12 @@ func _on_end_turn_pressed():
 func _on_buy_hero_button_pressed():
 	print("trying to buy a hero ")
 
-	#temp
-	# verify no hero occupying a city spot
+	var hero = city_on_ui.controller.faction.heroes[0]
 
-	'''
-	if !city.controller.purchase(hero.cost):
+	if !city_on_ui.controller.purchase(hero.cost):
 		print("not enough cash, needed ", hero.cost)
 		return
-	'''
 
-	# generate a hero
-	WM.recruit_hero(WM.current_player, WM.selected_city.coord)
+	WM.recruit_hero(city_on_ui.controller, hero, city_on_ui.coord)
+
+	_refresh_heroes_to_buy(city_on_ui)
