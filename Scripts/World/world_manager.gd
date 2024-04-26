@@ -193,6 +193,7 @@ func end_of_battle():
 		set_selected_hero(null)
 		print("hero died")
 		kill_army(selected_hero)  # clear the tile where selected_hero was
+	UI.go_to_custom_ui(world_ui)
 
 func kill_army(army : ArmyForm):
 	W_GRID.unit_grid[army.coord.x][army.coord.y] = null  # there can only be one army at a single tile
