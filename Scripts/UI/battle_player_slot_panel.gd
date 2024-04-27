@@ -49,6 +49,9 @@ func cycle_color(backwards : bool = false):
 	setup_ui.cycle_color_slot(self, backwards)
 
 
+func is_bot() -> bool:
+	return button_ai_state == AiButtonState.AI
+
 func cycle_ai(backwards : bool = false):
 	var new_state = button_ai_state + (-1 if backwards else 1)
 	button_ai_state = wrapi(new_state, 0, AiButtonState.size()) as AiButtonState

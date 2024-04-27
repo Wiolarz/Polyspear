@@ -8,12 +8,54 @@ var player_slot_panels = []
 @onready var player_list = \
 	$Slots/ColorRect/PlayerList
 
-@onready var maps_list = \
+@onready var maps_list : OptionButton = \
 	$MapSelect/ColorRect/MapList
+
 
 func _ready():
 	rebuild()
 	fill_maps_list()
+
+
+func start_game():
+	var map_name = maps_list.get_item_text(maps_list.selected)
+	var map_data = load(CFG.BATTLE_MAPS_PATH + "/" + map_name)
+	var players : Array[Player] = []
+	var armies : Array[Army] = []
+
+	for playerIdx in range(2):
+		var player = create_player(playerIdx)
+		players.append(player)
+		armies.append(create_army(playerIdx, player))
+	IM.players = players
+
+	UI.go_to_main_menu()
+	BM.start_battle(armies, map_data)
+
+func is_ai(playerIdx : int) -> bool:
+	return player_slot_panels[playerIdx].is_bot()
+
+func create_player(playerIdx : int) -> Player:
+	if playerIdx == 0:
+		var elf = Player.new();
+		elf.faction = CFG.FACTION_ELVES
+		elf.player_name = "elf"
+		elf.use_bot(is_ai(playerIdx))
+		elf.goods = CFG.get_start_goods()
+		return elf
+
+	var orc = Player.new()
+	orc.faction = CFG.FACTION_ORCS
+	orc.player_name = "orc"
+	orc.use_bot(is_ai(playerIdx))
+	orc.goods = CFG.get_start_goods()
+	return orc
+
+func create_army(_playerIdx:int, player:Player) -> Army:
+	var army = Army.new()
+	army.controller = player
+	army.units_data.append(load("res://Resources/Battle/Units/Elves/elf1.tres"))
+	return army
 
 
 func refresh():
