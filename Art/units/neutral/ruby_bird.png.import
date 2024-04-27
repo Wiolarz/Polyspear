@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bgh4h23yeriqg"
-path="res://.godot/imported/orc_brigand.png-036f85dfcf03b6bf95190db2e3af32a6.ctex"
+uid="uid://bucsrxuddlprr"
+path="res://.godot/imported/ruby_bird.png-fdba32110b81c1d0bd4e4afeab4be628.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Art/units/orc_brigand.png"
-dest_files=["res://.godot/imported/orc_brigand.png-036f85dfcf03b6bf95190db2e3af32a6.ctex"]
+source_file="res://Art/units/neutral/ruby_bird.png"
+dest_files=["res://.godot/imported/ruby_bird.png-fdba32110b81c1d0bd4e4afeab4be628.ctex"]
 
 [params]
 

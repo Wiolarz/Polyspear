@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bv37t438k1yn8"
-path="res://.godot/imported/orc_champion.png-a063c5cf10e973aae9eaba08fc955944.ctex"
+uid="uid://dn2y0fgrftwsd"
+path="res://.godot/imported/elf_spearmen.png-9cd9ad2b5f93f06504c0abdf15f52279.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Art/units/orc_champion.png"
-dest_files=["res://.godot/imported/orc_champion.png-a063c5cf10e973aae9eaba08fc955944.ctex"]
+source_file="res://Art/units/elf/elf_spearmen.png"
+dest_files=["res://.godot/imported/elf_spearmen.png-9cd9ad2b5f93f06504c0abdf15f52279.ctex"]
 
 [params]
 

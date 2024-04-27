@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://btn3mtda2gtq7"
-path="res://.godot/imported/orc_brute.png-b389de2e5b336d9448b9d72fc15171d9.ctex"
+uid="uid://bv37t438k1yn8"
+path="res://.godot/imported/orc_champion.png-009e525698278c258c8cd9a9bfab5be0.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Art/units/orc_brute.png"
-dest_files=["res://.godot/imported/orc_brute.png-b389de2e5b336d9448b9d72fc15171d9.ctex"]
+source_file="res://Art/units/orc/orc_champion.png"
+dest_files=["res://.godot/imported/orc_champion.png-009e525698278c258c8cd9a9bfab5be0.ctex"]
 
 [params]
 

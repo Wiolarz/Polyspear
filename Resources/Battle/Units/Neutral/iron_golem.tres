@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="DataUnit" load_steps=7 format=3 uid="uid://lrugffw7y5h5"]
+
+[ext_resource type="Script" path="res://Scripts/World/goods.gd" id="1_031we"]
+[ext_resource type="Script" path="res://Resources/Battle/data_unit.gd" id="2_6aj0w"]
+[ext_resource type="Resource" uid="uid://bp747guikipcb" path="res://Resources/Battle/Symbols/spear.tres" id="3_8d80l"]
+[ext_resource type="Resource" uid="uid://sr1570kq7sm8" path="res://Resources/Battle/Symbols/shield.tres" id="4_gycx0"]
+[ext_resource type="Resource" uid="uid://o4rlmfc33rsh" path="res://Resources/Battle/Symbols/empty.tres" id="5_4acvx"]
+
+[sub_resource type="Resource" id="Resource_6r5q3"]
+script = ExtResource("1_031we")
+wood = 0
+iron = 0
+ruby = 3
+
+[resource]
+script = ExtResource("2_6aj0w")
+unit_name = "Iron Golem"
+texture_path = "res://Art/units/neutral/iron_golem.png"
+symbols = Array[Resource("res://Resources/Battle/data_symbol.gd")]([ExtResource("3_8d80l"), ExtResource("4_gycx0"), ExtResource("5_4acvx"), ExtResource("5_4acvx"), ExtResource("5_4acvx"), ExtResource("4_gycx0")])
+cost = SubResource("Resource_6r5q3")

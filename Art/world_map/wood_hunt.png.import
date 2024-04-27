@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dn2y0fgrftwsd"
-path="res://.godot/imported/elf_spearmen.png-0a5915c7528c83e594017132651a01fd.ctex"
+uid="uid://pslcjhnvdala"
+path="res://.godot/imported/wood_hunt.png-eca775833efe470c2c42ecf94a348f04.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Art/units/elf_spearmen.png"
-dest_files=["res://.godot/imported/elf_spearmen.png-0a5915c7528c83e594017132651a01fd.ctex"]
+source_file="res://Art/world_map/wood_hunt.png"
+dest_files=["res://.godot/imported/wood_hunt.png-eca775833efe470c2c42ecf94a348f04.ctex"]
 
 [params]
 

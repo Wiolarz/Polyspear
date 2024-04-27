@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://i280h28mqf1x"
-path="res://.godot/imported/elf_dryad.png-bd234c033d3bd33577f2182070482cb3.ctex"
+uid="uid://ba4jx3vdjoujh"
+path="res://.godot/imported/ruby_hunt.png-c0eb02a36680a1606d7a43448611ac6c.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Art/units/elf_dryad.png"
-dest_files=["res://.godot/imported/elf_dryad.png-bd234c033d3bd33577f2182070482cb3.ctex"]
+source_file="res://Art/world_map/ruby_hunt.png"
+dest_files=["res://.godot/imported/ruby_hunt.png-c0eb02a36680a1606d7a43448611ac6c.ctex"]
 
 [params]
 
