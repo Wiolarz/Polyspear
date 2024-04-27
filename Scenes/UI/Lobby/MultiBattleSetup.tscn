@@ -103,3 +103,5 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_86ke8")
 [node name="BattlePlayerSlotPanel2" parent="Slots/ColorRect/PlayerList" instance=ExtResource("2_hstyp")]
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_4gp8n")
+
+[connection signal="item_selected" from="PresetSelect/ColorRect/PresetList" to="." method="_on_preset_list_item_selected"]

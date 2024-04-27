@@ -11,10 +11,13 @@ var player_slot_panels = []
 @onready var maps_list : OptionButton = \
 	$MapSelect/ColorRect/MapList
 
+@onready var presets_list : OptionButton = \
+	$PresetSelect/ColorRect/PresetList
 
 func _ready():
 	rebuild()
 	fill_maps_list()
+	fill_presets_list()
 
 
 func start_game():
@@ -154,3 +157,29 @@ func fill_maps_list():
 	var maps = IM.get_battle_maps_list()
 	for map_name in maps:
 		maps_list.add_item(map_name)
+
+
+func fill_presets_list():
+	var presets = TestTools.list_files_in_folder(CFG.BATTLE_PRESETS_PATH, true, true)
+	presets_list.clear()
+	for preset in presets:
+		presets_list.add_item(preset.trim_prefix(CFG.BATTLE_PRESETS_PATH))
+	if presets.size() > 0:
+		_on_preset_list_item_selected(0)
+
+
+func _on_preset_list_item_selected(index):
+	var preset_file = presets_list.get_item_text(index)
+	var preset_data : PresetBattle = \
+			load(CFG.BATTLE_PRESETS_PATH + "/" + preset_file)
+	apply_preset(preset_data)
+
+func apply_preset(preset : PresetBattle):
+	var map_name = preset.battle_map.resource_path
+	for i in range(maps_list.item_count):
+		if maps_list.get_item_text(i) == map_name:
+			maps_list.select(i)
+	for playerIdx in preset.armies.size():
+		var army = preset.armies[playerIdx]
+		player_slot_panels[playerIdx].apply_army_preset(army)
+

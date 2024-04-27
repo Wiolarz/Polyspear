@@ -20,6 +20,7 @@ var setup_ui = null # TODO some base class for MultiBattleSetup and
 var button_take_leave_state : TakeLeaveButtonState = TakeLeaveButtonState.FREE
 var button_ai_state : AiButtonState = AiButtonState.HUMAN
 
+
 @onready var button_take_leave = $VBoxContainer/HBoxContainer/ButtonTakeLeave
 @onready var label_name = $VBoxContainer/HBoxContainer/PlayerInfoPanel/Label
 @onready var button_ai = $VBoxContainer/HBoxContainer/ButtonAI
@@ -91,7 +92,7 @@ func set_visible_take_leave_button_state(state : TakeLeaveButtonState):
 
 
 func _ready():
-	var unit_paths = TestTools.list_files_in_folder(CFG.UNITS_PATH, true, true);
+	var unit_paths = TestTools.list_files_in_folder(CFG.UNITS_PATH, true, true)
 	for b in buttons_units:
 		b.clear()
 		b.add_item(EMPTY_UNIT_TEXT)
@@ -107,6 +108,19 @@ func get_units_data() -> Array[DataUnit]:
 			units.append(load(CFG.UNITS_PATH + "/" + text))
 	return units
 
+func apply_army_preset(army : PresetArmy):
+	var idx = 0
+	for u in army.units:
+		set_unit(buttons_units[idx], u)
+		idx += 1
+	while idx < buttons_units.size():
+		buttons_units[idx].select(0)
+		idx += 1
+
+func set_unit(unit_button : OptionButton, unit : DataUnit):
+	for idx in unit_button.item_count:
+		if unit.resource_path.ends_with(unit_button.get_item_text(idx)):
+			unit_button.select(idx)
 
 func _on_button_take_leave_pressed():
 	match button_take_leave_state:
