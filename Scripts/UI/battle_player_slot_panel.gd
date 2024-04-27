@@ -1,18 +1,6 @@
 class_name BattlePlayerSlotPanel
 extends PanelContainer
 
-
-@onready var button_take_leave = $VBoxContainer/HBoxContainer/ButtonTakeLeave
-@onready var label_name = $VBoxContainer/HBoxContainer/PlayerInfoPanel/Label
-@onready var button_ai = $VBoxContainer/HBoxContainer/ButtonAI
-@onready var buttons_units : Array[OptionButton] = [
-	$VBoxContainer/OptionButtonUnit1,
-	$VBoxContainer/OptionButtonUnit2,
-	$VBoxContainer/OptionButtonUnit3,
-	$VBoxContainer/OptionButtonUnit4,
-	$VBoxContainer/OptionButtonUnit5,
-]
-
 enum TakeLeaveButtonState {
 	FREE,
 	TAKEN_BY_YOU,
@@ -25,11 +13,23 @@ enum AiButtonState {
 	AI,
 }
 
+const EMPTY_UNIT_TEXT = " - empty - "
 
 var setup_ui = null # TODO some base class for MultiBattleSetup and
 					# MultiScenarioSetup
 var button_take_leave_state : TakeLeaveButtonState = TakeLeaveButtonState.FREE
 var button_ai_state : AiButtonState = AiButtonState.HUMAN
+
+@onready var button_take_leave = $VBoxContainer/HBoxContainer/ButtonTakeLeave
+@onready var label_name = $VBoxContainer/HBoxContainer/PlayerInfoPanel/Label
+@onready var button_ai = $VBoxContainer/HBoxContainer/ButtonAI
+@onready var buttons_units : Array[OptionButton] = [
+	$VBoxContainer/OptionButtonUnit1,
+	$VBoxContainer/OptionButtonUnit2,
+	$VBoxContainer/OptionButtonUnit3,
+	$VBoxContainer/OptionButtonUnit4,
+	$VBoxContainer/OptionButtonUnit5,
+]
 
 func try_to_take():
 	if not setup_ui:
@@ -94,9 +94,18 @@ func _ready():
 	var unit_paths = TestTools.list_files_in_folder(CFG.UNITS_PATH, true, true);
 	for b in buttons_units:
 		b.clear()
-		b.add_item(" - empty - ")
+		b.add_item(EMPTY_UNIT_TEXT)
 		for unit_path in unit_paths:
 			b.add_item(unit_path.trim_prefix(CFG.UNITS_PATH))
+
+
+func get_units_data() -> Array[DataUnit]:
+	var units :Array[DataUnit] = []
+	for ub in buttons_units:
+		var text = ub.get_item_text(ub.selected)
+		if text != EMPTY_UNIT_TEXT:
+			units.append(load(CFG.UNITS_PATH + "/" + text))
+	return units
 
 
 func _on_button_take_leave_pressed():

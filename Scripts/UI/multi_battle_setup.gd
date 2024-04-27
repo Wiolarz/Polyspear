@@ -32,7 +32,7 @@ func start_game():
 	UI.go_to_main_menu()
 	BM.start_battle(armies, map_data)
 
-func is_ai(playerIdx : int) -> bool:
+func is_bot(playerIdx : int) -> bool:
 	return player_slot_panels[playerIdx].is_bot()
 
 func create_player(playerIdx : int) -> Player:
@@ -40,21 +40,21 @@ func create_player(playerIdx : int) -> Player:
 		var elf = Player.new();
 		elf.faction = CFG.FACTION_ELVES
 		elf.player_name = "elf"
-		elf.use_bot(is_ai(playerIdx))
+		elf.use_bot(is_bot(playerIdx))
 		elf.goods = CFG.get_start_goods()
 		return elf
 
 	var orc = Player.new()
 	orc.faction = CFG.FACTION_ORCS
 	orc.player_name = "orc"
-	orc.use_bot(is_ai(playerIdx))
+	orc.use_bot(is_bot(playerIdx))
 	orc.goods = CFG.get_start_goods()
 	return orc
 
-func create_army(_playerIdx:int, player:Player) -> Army:
+func create_army(playerIdx : int, player : Player) -> Army:
 	var army = Army.new()
 	army.controller = player
-	army.units_data.append(load("res://Resources/Battle/Units/Elves/elf1.tres"))
+	army.units_data = player_slot_panels[playerIdx].get_units_data()
 	return army
 
 
