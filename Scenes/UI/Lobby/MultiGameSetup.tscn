@@ -49,9 +49,10 @@ size_flags_horizontal = 3
 toggle_mode = true
 text = "Single Battle"
 
-[node name="SetupContainer" type="Control" parent="MarginContainer/VBoxContainer"]
+[node name="SetupContainer" type="ScrollContainer" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
+vertical_scroll_mode = 2
 
 [node name="ButtonConfirm" type="Button" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2

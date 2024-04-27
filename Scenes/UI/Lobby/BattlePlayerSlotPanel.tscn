@@ -33,16 +33,19 @@ theme = SubResource("Theme_ojgk6")
 theme_override_styles/panel = SubResource("StyleBoxFlat_6g5p6")
 script = ExtResource("2_ifloy")
 
-[node name="HBoxContainer" type="HBoxContainer" parent="."]
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="PlayerInfoPanel" type="Panel" parent="HBoxContainer"]
+[node name="PlayerInfoPanel" type="Panel" parent="VBoxContainer/HBoxContainer"]
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_nhatr")
 
-[node name="Label" type="Label" parent="HBoxContainer/PlayerInfoPanel"]
+[node name="Label" type="Label" parent="VBoxContainer/HBoxContainer/PlayerInfoPanel"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -54,47 +57,47 @@ text = "Zdzichu"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="ButtonTakeLeave" type="Button" parent="HBoxContainer"]
+[node name="ButtonTakeLeave" type="Button" parent="VBoxContainer/HBoxContainer"]
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
 size_flags_horizontal = 0
 text = "Take"
 
-[node name="ButtonAI" type="Button" parent="HBoxContainer"]
+[node name="ButtonAI" type="Button" parent="VBoxContainer/HBoxContainer"]
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
 text = "Human"
 
-[node name="ButtonColor" type="Button" parent="HBoxContainer"]
+[node name="ButtonColor" type="Button" parent="VBoxContainer/HBoxContainer"]
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
 text = "Color"
 
-[node name="OptionButtonUnit1" type="OptionButton" parent="HBoxContainer"]
+[node name="OptionButtonUnit1" type="OptionButton" parent="VBoxContainer"]
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
 
-[node name="OptionButtonUnit2" type="OptionButton" parent="HBoxContainer"]
+[node name="OptionButtonUnit2" type="OptionButton" parent="VBoxContainer"]
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
 
-[node name="OptionButtonUnit3" type="OptionButton" parent="HBoxContainer"]
+[node name="OptionButtonUnit3" type="OptionButton" parent="VBoxContainer"]
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
 
-[node name="OptionButtonUnit4" type="OptionButton" parent="HBoxContainer"]
+[node name="OptionButtonUnit4" type="OptionButton" parent="VBoxContainer"]
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
 
-[node name="OptionButtonUnit5" type="OptionButton" parent="HBoxContainer"]
+[node name="OptionButtonUnit5" type="OptionButton" parent="VBoxContainer"]
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
 
-[connection signal="pressed" from="HBoxContainer/ButtonTakeLeave" to="." method="_on_button_take_leave_pressed"]
-[connection signal="pressed" from="HBoxContainer/ButtonAI" to="." method="_on_button_ai_pressed"]
-[connection signal="pressed" from="HBoxContainer/ButtonColor" to="." method="_on_button_color_pressed"]
-[connection signal="pressed" from="HBoxContainer/OptionButtonUnit1" to="." method="_on_button_faction_pressed"]
-[connection signal="pressed" from="HBoxContainer/OptionButtonUnit2" to="." method="_on_button_faction_pressed"]
-[connection signal="pressed" from="HBoxContainer/OptionButtonUnit3" to="." method="_on_button_faction_pressed"]
-[connection signal="pressed" from="HBoxContainer/OptionButtonUnit4" to="." method="_on_button_faction_pressed"]
-[connection signal="pressed" from="HBoxContainer/OptionButtonUnit5" to="." method="_on_button_faction_pressed"]
+[connection signal="pressed" from="VBoxContainer/HBoxContainer/ButtonTakeLeave" to="." method="_on_button_take_leave_pressed"]
+[connection signal="pressed" from="VBoxContainer/HBoxContainer/ButtonAI" to="." method="_on_button_ai_pressed"]
+[connection signal="pressed" from="VBoxContainer/HBoxContainer/ButtonColor" to="." method="_on_button_color_pressed"]
+[connection signal="pressed" from="VBoxContainer/OptionButtonUnit1" to="." method="_on_button_faction_pressed"]
+[connection signal="pressed" from="VBoxContainer/OptionButtonUnit2" to="." method="_on_button_faction_pressed"]
+[connection signal="pressed" from="VBoxContainer/OptionButtonUnit3" to="." method="_on_button_faction_pressed"]
+[connection signal="pressed" from="VBoxContainer/OptionButtonUnit4" to="." method="_on_button_faction_pressed"]
+[connection signal="pressed" from="VBoxContainer/OptionButtonUnit5" to="." method="_on_button_faction_pressed"]

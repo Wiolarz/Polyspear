@@ -2,16 +2,15 @@ class_name BattlePlayerSlotPanel
 extends PanelContainer
 
 
-@onready var button_take_leave = $HBoxContainer/ButtonTakeLeave
-@onready var label_name = $HBoxContainer/PlayerInfoPanel/Label
-@onready var button_faction = $HBoxContainer/ButtonFaction
-@onready var button_ai = $HBoxContainer/ButtonAI
-@onready var buttons_units = [
-	$HBoxContainer/OptionButtonUnit1,
-	$HBoxContainer/OptionButtonUnit2,
-	$HBoxContainer/OptionButtonUnit3,
-	$HBoxContainer/OptionButtonUnit4,
-	$HBoxContainer/OptionButtonUnit5,
+@onready var button_take_leave = $VBoxContainer/HBoxContainer/ButtonTakeLeave
+@onready var label_name = $VBoxContainer/HBoxContainer/PlayerInfoPanel/Label
+@onready var button_ai = $VBoxContainer/HBoxContainer/ButtonAI
+@onready var buttons_units : Array[OptionButton] = [
+	$VBoxContainer/OptionButtonUnit1,
+	$VBoxContainer/OptionButtonUnit2,
+	$VBoxContainer/OptionButtonUnit3,
+	$VBoxContainer/OptionButtonUnit4,
+	$VBoxContainer/OptionButtonUnit5,
 ]
 
 enum TakeLeaveButtonState {
@@ -51,8 +50,8 @@ func cycle_color(backwards : bool = false):
 
 
 func cycle_ai(backwards : bool = false):
-	button_ai_state += -1 if backwards else 1
-	button_ai_state %= 2
+	var new_state = button_ai_state + (-1 if backwards else 1)
+	button_ai_state = wrapi(new_state, 0, AiButtonState.size()) as AiButtonState
 	button_ai.text = AiButtonState.keys()[button_ai_state]
 	pass
 
@@ -88,16 +87,13 @@ func set_visible_take_leave_button_state(state : TakeLeaveButtonState):
 			button_take_leave.disabled = true
 
 
-func set_visible_faction(faction : DataFaction):
-	pass
-	#if faction == null:
-		#button_faction.text = "nobody"
-		#return
-	#button_faction.text = faction.faction_name
-
-
 func _ready():
-	pass
+	var unit_paths = TestTools.list_files_in_folder(CFG.UNITS_PATH, true, true);
+	for b in buttons_units:
+		b.clear()
+		b.add_item(" - empty - ")
+		for unit_path in unit_paths:
+			b.add_item(unit_path.trim_prefix(CFG.UNITS_PATH))
 
 
 func _on_button_take_leave_pressed():
@@ -112,6 +108,7 @@ func _on_button_take_leave_pressed():
 
 func _on_button_color_pressed():
 	cycle_color()
+
 
 func _on_button_ai_pressed():
 	cycle_ai()

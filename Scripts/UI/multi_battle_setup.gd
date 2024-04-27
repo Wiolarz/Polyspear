@@ -6,10 +6,10 @@ var game_setup : MultiGameSetup
 var player_slot_panels = []
 
 @onready var player_list = \
-	$V/Slots/ColorRect/PlayerList
+	$Slots/ColorRect/PlayerList
 
 @onready var maps_list = \
-	$V/MapSelect/ColorRect/MapList
+	$MapSelect/ColorRect/MapList
 
 func _ready():
 	rebuild()
@@ -52,7 +52,6 @@ func refresh_slot(index : int):
 		color = CFG.get_team_color_at(logic_slot.color)
 	ui_slot.set_visible_color(color)
 	ui_slot.set_visible_name(username)
-	ui_slot.set_visible_faction(faction)
 	ui_slot.set_visible_take_leave_button_state(take_leave_button_state)
 	ui_slot.setup_ui = self
 

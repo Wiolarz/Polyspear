@@ -37,8 +37,7 @@ content_margin_right = 10.0
 content_margin_bottom = 0.0
 bg_color = Color(1, 1, 1, 1)
 
-[node name="MultiBattleSetup" type="Control"]
-layout_mode = 3
+[node name="MultiBattleSetup" type="VBoxContainer"]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -48,81 +47,59 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("1_w61xs")
 
-[node name="V" type="VBoxContainer" parent="."]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="PresetSelect" type="VBoxContainer" parent="V"]
+[node name="PresetSelect" type="VBoxContainer" parent="."]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="V/PresetSelect"]
+[node name="Label" type="Label" parent="PresetSelect"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 30
 text = "Select a preset"
 
-[node name="ColorRect" type="PanelContainer" parent="V/PresetSelect"]
+[node name="ColorRect" type="PanelContainer" parent="PresetSelect"]
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_styles/panel = SubResource("StyleBoxFlat_ybc2s")
 
-[node name="PresetList" type="OptionButton" parent="V/PresetSelect/ColorRect"]
+[node name="PresetList" type="OptionButton" parent="PresetSelect/ColorRect"]
 layout_mode = 2
 
-[node name="MapSelect" type="VBoxContainer" parent="V"]
+[node name="MapSelect" type="VBoxContainer" parent="."]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="V/MapSelect"]
+[node name="Label" type="Label" parent="MapSelect"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 30
 text = "Select a map"
 
-[node name="ColorRect" type="PanelContainer" parent="V/MapSelect"]
+[node name="ColorRect" type="PanelContainer" parent="MapSelect"]
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_styles/panel = SubResource("StyleBoxFlat_ybc2s")
 
-[node name="MapList" type="OptionButton" parent="V/MapSelect/ColorRect"]
+[node name="MapList" type="OptionButton" parent="MapSelect/ColorRect"]
 layout_mode = 2
 
-[node name="Slots" type="VBoxContainer" parent="V"]
+[node name="Slots" type="VBoxContainer" parent="."]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="V/Slots"]
+[node name="Label" type="Label" parent="Slots"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 30
 text = "Players"
 
-[node name="ColorRect" type="PanelContainer" parent="V/Slots"]
+[node name="ColorRect" type="PanelContainer" parent="Slots"]
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_styles/panel = SubResource("StyleBoxFlat_oid6t")
 
-[node name="PlayerList" type="VBoxContainer" parent="V/Slots/ColorRect"]
+[node name="PlayerList" type="VBoxContainer" parent="Slots/ColorRect"]
 layout_mode = 2
+theme_override_constants/separation = 50
 
-[node name="BattlePlayerSlotPanel" parent="V/Slots/ColorRect/PlayerList" instance=ExtResource("2_hstyp")]
+[node name="BattlePlayerSlotPanel" parent="Slots/ColorRect/PlayerList" instance=ExtResource("2_hstyp")]
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_86ke8")
 
-[node name="BattlePlayerSlotPanel2" parent="V/Slots/ColorRect/PlayerList" instance=ExtResource("2_hstyp")]
+[node name="BattlePlayerSlotPanel2" parent="Slots/ColorRect/PlayerList" instance=ExtResource("2_hstyp")]
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_4gp8n")
-
-[node name="cokolwiek" type="VBoxContainer" parent="V"]
-layout_mode = 2
-
-[node name="Label" type="Label" parent="V/cokolwiek"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 30
-text = "aaa"
-
-[node name="LineEdit" type="LineEdit" parent="V/cokolwiek"]
-custom_minimum_size = Vector2(0, 70)
-layout_mode = 2
-size_flags_vertical = 0
-text = "hyhy"
-placeholder_text = "Type your desired name here"
