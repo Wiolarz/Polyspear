@@ -52,6 +52,7 @@ theme_override_font_sizes/font_size = 40
 text = "Start Game 🪐"
 
 [node name="BattleSetup" type="Button" parent="Control/VBoxContainer"]
+visible = false
 layout_mode = 2
 theme_override_font_sizes/font_size = 40
 text = "Test Battle ⚔"
