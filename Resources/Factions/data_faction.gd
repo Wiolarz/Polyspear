@@ -11,7 +11,7 @@ Complete Faction data:
 
 @export var units_data : Array[DataUnit]
 
-@export var heroes : Array # Hero_Data
+@export var heroes : Array[DataHero]
 
 @export var city : Resource # TODO City_Data
 

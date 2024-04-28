@@ -35,6 +35,8 @@ func your_turn():
 
 	print("your move " + player_name)
 
+func has_enough(cost : Goods) -> bool:
+	return goods.has_enough(cost)
 
 func purchase(cost : Goods) -> bool:
 	if goods.has_enough(cost):

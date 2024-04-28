@@ -9,16 +9,16 @@ var host_lobby
 var client_lobby
 
 func _ready():
-	
+
 	IM.set_default_game_setup_info() # drut
-	
+
 	in_game_menu = load("res://Scenes/UI/GameMenu.tscn").instantiate()
 	main_menu    = load("res://Scenes/UI/MainMenu.tscn").instantiate()
 	map_editor   = load("res://Scenes/UI/Editors/MapEditor.tscn").instantiate()
 	unit_editor  = load("res://Scenes/UI/Editors/UnitEditor.tscn").instantiate()
 	host_lobby   = load("res://Scenes/UI/Lobby/HostLobby.tscn").instantiate()
 	client_lobby = load("res://Scenes/UI/Lobby/ClientLobby.tscn").instantiate()
-	
+
 	add_child(main_menu)
 	add_child(map_editor)
 	add_child(unit_editor)
@@ -76,4 +76,3 @@ func show_in_game_menu():
 
 func hide_in_game_menu():
 	in_game_menu.hide()
-

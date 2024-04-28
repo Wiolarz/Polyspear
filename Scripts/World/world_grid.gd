@@ -10,9 +10,9 @@ var places : Array = [] # Array[Array[Place]]
 
 #region Tools
 
-func place_army(army : ArmyOnWorldMap, coord : Vector2i):
+func place_army(army : ArmyForm, coord : Vector2i):
 	assert(unit_grid[coord.x][coord.y] == null, "can't place 2 armies on the same field")
-	army.army_data.coord = coord
+	army.entity.coord = coord
 	unit_grid[coord.x][coord.y] = army
 	army.position = tile_at(coord).position
 
@@ -58,7 +58,7 @@ func get_tile_controller(coord : Vector2i) -> Player:
 func get_battle_map(_coord : Vector2i) -> DataBattleMap:
 	return CFG.DEFAULT_BATTLE_MAP
 
-func get_army(coord : Vector2i) -> ArmyOnWorldMap:
+func get_army(coord : Vector2i) -> ArmyForm:
 	return unit_grid[coord.x][coord.y]
 
 
@@ -72,7 +72,7 @@ func get_city(coord : Vector2i) -> City:
 
 func get_hero(coord : Vector2i):
 	var army = get_army(coord)
-	if army != null and army.army_data.hero != null:
+	if army != null and army.entity.hero != null:
 		return army
 	return null
 
@@ -117,14 +117,22 @@ func init_tile_grid() -> void:
 func generate_special_tiles() -> void:
 	for x in map_information.grid_data.size():
 		for y in map_information.grid_data[0].size():
-			var coords = Vector2i( \
+			var coord = Vector2i( \
 				x + W_GRID.border_size, \
 				y + W_GRID.border_size)
 			var place : Place = Place.create_place( \
-				map_information.grid_data[x][y])
-			places[coords.x][coords.y] = place
-			W_GRID.tile_at(coords).place = place
+				map_information.grid_data[x][y],
+				coord)
+			places[coord.x][coord.y] = place
+			W_GRID.tile_at(coord).place = place
 
+func end_of_turn_callbacks(player : Player) -> void:
+	#TODO make it nicer
+	for x in range(grid_width):
+		for y in range(grid_height):
+			var a = get_army(Vector2i(x,y))
+			if a != null:
+				a.on_end_of_turn(player)
 
 func reset_data() -> void:
 	super.reset_data()

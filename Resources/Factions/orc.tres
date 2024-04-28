@@ -1,5 +1,6 @@
-[gd_resource type="Resource" script_class="Faction" load_steps=5 format=3 uid="uid://blmlq31auuhh0"]
+[gd_resource type="Resource" script_class="DataFaction" load_steps=6 format=3 uid="uid://blmlq31auuhh0"]
 
+[ext_resource type="Resource" uid="uid://wxlo2qqrsl4f" path="res://Resources/Battle/Heroes/Orcs/orc_hero_executioner.tres" id="1_64ilx"]
 [ext_resource type="Script" path="res://Resources/Factions/data_faction.gd" id="1_iksfp"]
 [ext_resource type="Resource" uid="uid://cb5k3h5c3pq4m" path="res://Resources/Battle/Units/Orcs/orc_1_brute.tres" id="2_0fwro"]
 [ext_resource type="Resource" uid="uid://bnxmiy7obuw3y" path="res://Resources/Battle/Units/Orcs/orc_2_brigand.tres" id="3_bni20"]
@@ -9,4 +10,4 @@
 script = ExtResource("1_iksfp")
 faction_name = "orc"
 units_data = Array[Resource("res://Resources/Battle/data_unit.gd")]([ExtResource("2_0fwro"), ExtResource("3_bni20"), ExtResource("4_layy6")])
-heroes = []
+heroes = Array[Resource("res://Resources/Battle/data_hero.gd")]([ExtResource("1_64ilx")])

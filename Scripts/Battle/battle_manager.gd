@@ -238,8 +238,9 @@ func move_unit(unit, end_coord : Vector2i, side: int) -> void:
 	#TODO: if shields: # maybe check for every unit
 	if counter_attack_damage(unit):
 		kill_unit(unit)
+		if not battle_is_ongoing:   # TEMP
+			end_of_battle()
 		return
-
 
 	unit_action(unit)
 	#TODO wait half a second
@@ -251,6 +252,8 @@ func move_unit(unit, end_coord : Vector2i, side: int) -> void:
 
 	if counter_attack_damage(unit):
 		kill_unit(unit)
+		if not battle_is_ongoing:   # TEMP
+			end_of_battle()
 		return
 
 
