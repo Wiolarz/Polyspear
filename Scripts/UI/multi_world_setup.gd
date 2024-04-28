@@ -1,4 +1,4 @@
-class_name MultiWorldSetup
+class_name WorldSetup
 extends Control
 
 

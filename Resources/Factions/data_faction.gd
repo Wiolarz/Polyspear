@@ -16,6 +16,11 @@ Complete Faction data:
 @export var city : Resource # TODO City_Data
 
 func get_network_id() -> String:
-	return resource_path.get_file()
+	return resource_path
+
+
+static func from_network_id(network_id : String) -> DataFaction:
+	return load(network_id) as DataFaction
+
 
 # no factory needed

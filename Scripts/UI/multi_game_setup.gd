@@ -49,6 +49,15 @@ func refresh_after_conenction_change():
 			battle_setup.refresh()
 
 
+func force_full_rebuild():
+	if container.get_child_count() == 1:
+		var setup = container.get_child(0)
+		if setup is MultiBattleSetup or setup is WorldSetup:
+			setup.rebuild()
+			setup.refresh()
+
+
+
 func try_to_take_slot(index : int) -> bool:
 	var slots = IM.game_setup_info.slots
 	if index < 0 or index > slots.size():
@@ -103,6 +112,9 @@ func try_to_cycle_color_slot(index : int, backwards : bool) -> bool:
 	# if we are a server:
 		# broadcasst this change to everyone (probably the result of it, not
 		# only the fact)
+	if IM.get_server():
+		IM.get_server().broadcast_full_game_setup(IM.game_setup_info)
+	#
 	return true
 
 
@@ -133,13 +145,6 @@ func _on_button_full_scenario_toggled(toggled_on : bool):
 func _on_button_battle_toggled(toggled_on : bool):
 	if toggled_on:
 		select_battle()
-
-
-func _enter_tree():
-	# need to do it here, not in _ready because _on_button_battle_toggled gets
-	# called before it
-	IM.set_default_game_setup_info()
-
 
 
 func _ready():

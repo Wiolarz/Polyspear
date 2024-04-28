@@ -160,6 +160,28 @@ func broadcast_say(message : String):
 	return broadcast_chat_message(message, server_username)
 
 
+func broadcast_full_game_setup(game_setup : GameSetupInfo):
+	if game_setup == null:
+		game_setup = IM.game_setup_info
+	var packet : Dictionary = {
+		"name": "fill_game_setup",
+		"setup" : game_setup.to_dictionary(server_username)
+	}
+	broadcast(packet)
+
+
+func send_additional_callbacks_to_logging_client(peer : ENetPacketPeer):
+	if true: # game is being set up
+		var game_setup = IM.game_setup_info
+		var packet : Dictionary = {
+			"name": "fill_game_setup",
+			"setup" : game_setup.to_dictionary(server_username)
+		}
+		send_to_peer(peer, packet)
+	if false: # game is in progress
+		pass
+
+
 func roll() -> void:
 	var broken : bool = false
 	if not enet_network:

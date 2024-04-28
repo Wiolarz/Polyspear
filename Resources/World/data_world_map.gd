@@ -30,3 +30,11 @@ func apply_data() -> void:
 	W_GRID.max_player_number = max_player_number
 	W_GRID.grid_width = grid_width
 	W_GRID.grid_height = grid_height
+
+
+func get_network_id() -> String:
+	return resource_path
+
+
+static func from_network_id(network_id : String) -> DataWorldMap:
+	return load(network_id) as DataWorldMap

@@ -64,6 +64,7 @@ F4 - toggle visibility of collision shapes
 F5 - Save
 F6 - Load
 """
+
 func _process(_delta):
 	if Input.is_action_just_pressed("KEY_EXIT_GAME"):
 		quit_game()

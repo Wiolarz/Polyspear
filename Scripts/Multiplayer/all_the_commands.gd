@@ -28,6 +28,7 @@ static func server_login(server : Server, peer : ENetPacketPeer, \
 				"login")
 			server.kick_peer(previous_peer,
 				"logged to this account from somewhere else")
+		server.send_additional_callbacks_to_logging_client(peer)
 		return OK
 	server.kick_peer(peer, "username taken by server")
 	return OK
@@ -102,7 +103,16 @@ static func client_chat(client : Client, params : Dictionary) -> int:
 		return FAILED
 	var message = params["content"]
 	var author = params["author"]
-	client.get_parent().append_message_to_local_chat_log(message, author)
+	IM.append_message_to_local_chat_log(message, author)
+	return OK
+
+static func client_fill_game_setup(client : Client, params : Dictionary) -> int:
+	if not "setup" in params or not params["setup"] is Dictionary:
+		return FAILED
+	var setup = GameSetupInfo.from_dictionary(params["setup"], \
+		IM.get_current_name())
+	IM.game_setup_info = setup
+	IM.force_refresh_game_setup()
 	return OK
 
 #endregion
