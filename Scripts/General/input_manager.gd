@@ -260,7 +260,9 @@ func client_connection() -> bool:
 func get_current_name() -> String: # TODO rename to get_current_username
 	if server_connection():
 		return get_server().server_username
-	return CFG.DEFAULT_USER_NAME
+	if client_connection():
+		return get_client().username
+	return CFG.DEFAULT_USER_NAME # TODO rename to PLACEHOLDER_USER_NAME
 
 
 func send_chat_message(message : String) -> void:

@@ -20,6 +20,10 @@ func _ready():
 	fill_presets_list()
 
 
+func make_client_side():
+	pass # interface function
+
+
 func start_game():
 	var map_name = maps_list.get_item_text(maps_list.selected)
 	var map_data = load(CFG.BATTLE_MAPS_PATH + "/" + map_name)

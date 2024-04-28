@@ -72,6 +72,31 @@ func queue_cycle_color(slot_index : int, backwards : bool = false):
 	queue_message_to_server(packet)
 
 
+func queue_cycle_faction(slot_index : int, backwards : bool = false):
+	var packet : Dictionary = {
+		"name": "request_faction_cycle",
+		"slot": slot_index,
+		"backwards": backwards,
+	}
+	queue_message_to_server(packet)
+
+
+func queue_take_slot(slot_index : int):
+	var packet : Dictionary = {
+		"name": "take_slot",
+		"slot": slot_index,
+	}
+	queue_message_to_server(packet)
+
+
+func queue_leave_slot(slot_index : int):
+	var packet : Dictionary = {
+		"name": "leave_slot",
+		"slot": slot_index,
+	}
+	queue_message_to_server(packet)
+
+
 func logout_if_needed() -> void:
 	if username == "":
 		return

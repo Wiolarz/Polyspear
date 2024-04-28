@@ -23,3 +23,4 @@ size_flags_horizontal = 3
 
 [node name="MultiGameSetup" parent="ClientMenu/PanelContainer" instance=ExtResource("2_hvdur")]
 layout_mode = 2
+client_side = true

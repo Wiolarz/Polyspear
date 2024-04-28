@@ -17,6 +17,10 @@ var incoming_commands : Dictionary = { # Dictionary[String -> Command]
 	"say": Command.create_on_server(AllTheCommands.server_say),
 	"request_color_cycle": Command.create_on_server( \
 		AllTheCommands.server_request_color_cycle),
+	"request_faction_cycle": Command.create_on_server( \
+		AllTheCommands.server_request_faction_cycle),
+	"take_slot": Command.create_on_server(AllTheCommands.server_take_slot),
+	"leave_slot": Command.create_on_server(AllTheCommands.server_leave_slot),
 }
 
 

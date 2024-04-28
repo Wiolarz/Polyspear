@@ -33,10 +33,10 @@ func apply_data() -> void:
 
 
 static func get_network_id(world_map : DataWorldMap) -> String:
-	return world_map.resource_path if world_map else ""
+	return world_map.resource_path.get_file() if world_map else ""
 
 
 static func from_network_id(network_id : String) -> DataWorldMap:
 	if network_id.is_empty():
 		return null
-	return load(network_id) as DataWorldMap
+	return load("%s/%s" % [ CFG.WORLD_MAPS_PATH, network_id ]) as DataWorldMap
