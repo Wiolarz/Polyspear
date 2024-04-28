@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://b3dmmym31kdbx"]
 
 [ext_resource type="Script" path="res://Scripts/UI/host_menu.gd" id="1_72jwl"]
-[ext_resource type="PackedScene" uid="uid://dev0nuoeb5bbv" path="res://Scenes/UI/Lobby/MultiGameSetup.tscn" id="2_ov7l4"]
+[ext_resource type="PackedScene" uid="uid://dev0nuoeb5bbv" path="res://Scenes/UI/Lobby/GameSetup.tscn" id="2_ov7l4"]
 
 [node name="HostLobby" type="CanvasLayer"]
 

@@ -1,7 +1,7 @@
 [gd_scene load_steps=7 format=3 uid="uid://blx0kj8gah080"]
 
-[ext_resource type="Script" path="res://Scripts/UI/multi_battle_setup.gd" id="1_w61xs"]
-[ext_resource type="PackedScene" uid="uid://j6n24hs0xavf" path="res://Scenes/UI/Lobby/BattlePlayerSlotPanel.tscn" id="2_hstyp"]
+[ext_resource type="Script" path="res://Scripts/UI/multi_battle_setup.gd" id="1_dfdeh"]
+[ext_resource type="PackedScene" uid="uid://j6n24hs0xavf" path="res://Scenes/UI/Lobby/BattlePlayerSlotPanel.tscn" id="2_vpapl"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ybc2s"]
 bg_color = Color(0, 0.588235, 0.356863, 1)
@@ -45,7 +45,7 @@ grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-script = ExtResource("1_w61xs")
+script = ExtResource("1_dfdeh")
 
 [node name="PresetSelect" type="VBoxContainer" parent="."]
 layout_mode = 2
@@ -96,11 +96,11 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_oid6t")
 layout_mode = 2
 theme_override_constants/separation = 50
 
-[node name="BattlePlayerSlotPanel" parent="Slots/ColorRect/PlayerList" instance=ExtResource("2_hstyp")]
+[node name="BattlePlayerSlotPanel" parent="Slots/ColorRect/PlayerList" instance=ExtResource("2_vpapl")]
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_86ke8")
 
-[node name="BattlePlayerSlotPanel2" parent="Slots/ColorRect/PlayerList" instance=ExtResource("2_hstyp")]
+[node name="BattlePlayerSlotPanel2" parent="Slots/ColorRect/PlayerList" instance=ExtResource("2_vpapl")]
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_4gp8n")
 

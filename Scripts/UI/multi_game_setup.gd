@@ -13,8 +13,8 @@ extends Control
 	$MarginContainer/VBoxContainer/SetupContainer
 
 
-@onready var multi_world_setup = load("res://Scenes/UI/Lobby/MultiWorldSetup.tscn")
-@onready var multi_battle_setup = load("res://Scenes/UI/Lobby/MultiBattleSetup.tscn")
+@onready var multi_world_setup = load("res://Scenes/UI/Lobby/WorldSetup.tscn")
+@onready var multi_battle_setup = load("res://Scenes/UI/Lobby/BattleSetup.tscn")
 
 
 var current_player_to_set : String = "" # if empty we select for us

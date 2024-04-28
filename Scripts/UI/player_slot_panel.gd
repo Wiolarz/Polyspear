@@ -8,8 +8,7 @@ enum TakeLeaveButtonState {
 	GHOST, # state when we display too much slots
 }
 
-var setup_ui = null # TODO some base class for MultiBattleSetup and
-					# MultiScenarioSetup
+var setup_ui = null # TODO some base class for BattleSetup and WorldSetup
 var button_take_leave_state : TakeLeaveButtonState = TakeLeaveButtonState.FREE
 
 @onready var button_take_leave = $HBoxContainer/ButtonTakeLeave

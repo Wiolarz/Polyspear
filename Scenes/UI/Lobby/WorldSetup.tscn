@@ -1,7 +1,7 @@
 [gd_scene load_steps=9 format=3 uid="uid://cyp43rqdf2pth"]
 
 [ext_resource type="Script" path="res://Scripts/UI/multi_world_setup.gd" id="1_5qw0q"]
-[ext_resource type="PackedScene" uid="uid://dql37o7nhkxj6" path="res://Scenes/UI/Lobby/PlayerSlotPanel.tscn" id="2_hpvug"]
+[ext_resource type="PackedScene" uid="uid://dql37o7nhkxj6" path="res://Scenes/UI/Lobby/WorldPlayerSlotPanel.tscn" id="2_hpvug"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ybc2s"]
 bg_color = Color(0, 0.537255, 0.72549, 1)
@@ -135,18 +135,3 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_ajriv")
 [node name="PlayerSlotPanel4" parent="V/Slots/ColorRect/PlayerList" instance=ExtResource("2_hpvug")]
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_8tc31")
-
-[node name="cokolwiek" type="VBoxContainer" parent="V"]
-layout_mode = 2
-
-[node name="Label" type="Label" parent="V/cokolwiek"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 30
-text = "aaa"
-
-[node name="LineEdit" type="LineEdit" parent="V/cokolwiek"]
-custom_minimum_size = Vector2(0, 70)
-layout_mode = 2
-size_flags_vertical = 0
-text = "hyhy"
-placeholder_text = "Type your desired name here"
