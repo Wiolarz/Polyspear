@@ -118,6 +118,7 @@ func try_to_cycle_faction_slot(index : int, backwards : bool) -> bool:
 	var new_faction_index = \
 		(faction_index + diff) % CFG.FACTIONS_LIST.size()
 	slots[index].faction = CFG.FACTIONS_LIST[new_faction_index]
+	print("faction: ",index," --> ",slots[index].faction.get_network_id())
 	# if we are a server:
 		# broadcasst this change to everyone (probably the result of it, not
 		# only the fact)

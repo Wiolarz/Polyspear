@@ -15,4 +15,7 @@ Complete Faction data:
 
 @export var city : Resource # TODO City_Data
 
+func get_network_id() -> String:
+	return resource_path.get_file()
+
 # no factory needed
