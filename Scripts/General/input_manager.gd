@@ -67,6 +67,7 @@ F6 - Load
 """
 
 func _process(_delta):
+	## fastest response time to player input
 	if Input.is_action_just_pressed("KEY_EXIT_GAME"):
 		quit_game()
 
@@ -86,6 +87,7 @@ func _process(_delta):
 		print("quick load is not yet supported")
 
 func _physics_process(_delta):
+	## To prevent desync when animating + enemy bot gameplay
 	if Input.is_action_just_pressed("KEY_BOT_SPEED_SLOW"):
 		print("anim speed - slow")
 		CFG.animation_speed_frames = CFG.AnimationSpeed.NORMAL
@@ -130,20 +132,9 @@ func grid_input_listener(coord : Vector2i):
 
 #region Game setup
 
-# this probably should go somewhere else, but for now i don't know where to
-# place it
+# TODO clean up, used in networking, should be universal
 var game_setup_info : GameSetupInfo
 
-
-func set_default_game_setup_info() -> void:
-	const slot_count : int = 4
-	game_setup_info = GameSetupInfo.new()
-	game_setup_info.slots.resize(slot_count)
-	for i in range(slot_count):
-		game_setup_info.slots[i] = GameSetupInfo.Slot.new()
-		game_setup_info.slots[i].occupier = 0
-		game_setup_info.slots[i].faction = CFG.FACTIONS_LIST[0]
-		game_setup_info.slots[i].color = i
 
 func get_active_players() -> Array[Player]:
 
@@ -155,8 +146,24 @@ func get_active_players() -> Array[Player]:
 	return active_players
 
 
+func get_maps_list() -> Array[String]:
+	return TestTools.list_files_in_folder(CFG.WORLD_MAPS_PATH)
+
+
+func get_battle_maps_list() -> Array[String]:
+	return TestTools.list_files_in_folder(CFG.BATTLE_MAPS_PATH)
+
+
+func start_game(map_name : String, player_settings : Array[PresetPlayer]):
+	var map_data: DataWorldMap = load(CFG.WORLD_MAPS_PATH + map_name)
+	var new_players = player_settings.map( func (setting) : return setting.create_player() )
+	players.assign(new_players)
+	WM.start_world(map_data)
+
 #endregion
 
+
+#region Gameplay UI
 
 func switch_camera():
 	if current_camera_position == camera_position.WORLD:
@@ -177,6 +184,22 @@ func show_in_game_menu():
 func hide_in_game_menu():
 	UI.hide_in_game_menu()
 	set_game_paused(false)
+
+#endregion
+
+
+#region Network
+
+func set_default_game_setup_info() -> void:
+	const slot_count : int = 4
+	game_setup_info = GameSetupInfo.new()
+	game_setup_info.slots.resize(slot_count)
+	for i in range(slot_count):
+		game_setup_info.slots[i] = GameSetupInfo.Slot.new()
+		game_setup_info.slots[i].occupier = 0
+		game_setup_info.slots[i].faction = CFG.FACTIONS_LIST[0]
+		game_setup_info.slots[i].color = i
+
 
 func make_server():
 	var node = get_node_or_null("TheServer")
@@ -313,34 +336,26 @@ func multiplayer_broadcast_receive():
 	# server -> CLIENT
 	pass
 
+# endregion
 
-func get_maps_list() -> Array[String]:
-	return TestTools.list_files_in_folder(CFG.WORLD_MAPS_PATH)
-
-
-func get_battle_maps_list() -> Array[String]:
-	return TestTools.list_files_in_folder(CFG.BATTLE_MAPS_PATH)
-
-
-func start_game(map_name : String, player_settings : Array[PresetPlayer]):
-	var map_data: DataWorldMap = load(CFG.WORLD_MAPS_PATH + map_name)
-	var new_players = player_settings.map( func (setting) : return setting.create_player() )
-	players.assign(new_players)
-	WM.start_world(map_data)
 
 
 #region Technical
+# not gameplay
 
 func is_game_paused():
 	return get_tree().paused
+
 
 func set_game_paused(is_paused : bool):
 	print("pause = ",is_paused)
 	get_tree().paused = is_paused
 
+
 func quit_game():
 	get_tree().quit()
 
+## DisplayServer.WINDOW_MODE_EXCLUSIVE_FULLSCREEN because of this bug: https://github.com/godotengine/godot/issues/63500
 func toggle_fullscreen():
 	if DisplayServer.window_get_mode() == DisplayServer.WINDOW_MODE_WINDOWED:
 		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_EXCLUSIVE_FULLSCREEN)
@@ -348,11 +363,15 @@ func toggle_fullscreen():
 		# https://github.com/godotengine/godot/issues/63500
 	else:
 		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
+
 #endregion
+
 
 #region Debug
 
+## Toggle of default godot Debug tool - visible collision shapes
 func toggle_collision_debug():
+	
 	var tree := get_tree()
 	tree.debug_collisions_hint = not tree.debug_collisions_hint
 
@@ -368,4 +387,5 @@ func toggle_collision_debug():
 				node.collision_visibility_mode = TileMap.VISIBILITY_MODE_FORCE_HIDE
 				node.collision_visibility_mode = TileMap.VISIBILITY_MODE_DEFAULT
 			node_stack.append_array(node.get_children())
+
 #endregion
