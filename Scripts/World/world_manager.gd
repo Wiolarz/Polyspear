@@ -85,7 +85,8 @@ func grid_input(coord : Vector2i):
 
 	try_interact(selected_hero, coord)
 
-func input_try_select(coord)->void:
+## Tries to Select owned Hero / City
+func input_try_select(coord) -> void:  #TODO "nothing is selected try to select stuff"
 	var selected_spot_type : String = W_GRID.get_interactable_type(coord)
 	if selected_spot_type == "army":
 		var army_form : ArmyForm = W_GRID.get_army(coord)

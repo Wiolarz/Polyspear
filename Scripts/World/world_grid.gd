@@ -127,6 +127,7 @@ func generate_special_tiles() -> void:
 			W_GRID.tile_at(coord).place = place
 
 func end_of_turn_callbacks(player : Player) -> void:
+	#TODO make it nicer
 	for x in range(grid_width):
 		for y in range(grid_height):
 			var a = get_army(Vector2i(x,y))
