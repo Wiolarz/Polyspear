@@ -1,65 +1,43 @@
-class_name MultiBattleSetup
+class_name MultiWorldSetup
 extends Control
+
 
 var game_setup : MultiGameSetup
 
 var player_slot_panels = []
 
 @onready var player_list = \
-	$Slots/ColorRect/PlayerList
+	$V/Slots/ColorRect/PlayerList
 
-@onready var maps_list : OptionButton = \
-	$MapSelect/ColorRect/MapList
+@onready var maps_list : OptionButton  = \
+	$V/MapSelect/ColorRect/MapList
 
-@onready var presets_list : OptionButton = \
-	$PresetSelect/ColorRect/PresetList
 
 func _ready():
 	rebuild()
 	fill_maps_list()
-	fill_presets_list()
 
 
 func start_game():
 	var map_name = maps_list.get_item_text(maps_list.selected)
-	var map_data = load(CFG.BATTLE_MAPS_PATH + "/" + map_name)
-	var players : Array[Player] = []
-	var armies : Array[Army] = []
-
-	for playerIdx in range(2):
-		var player = create_player(playerIdx)
-		players.append(player)
-		armies.append(create_army(playerIdx, player))
-	IM.players = players
-
 	UI.go_to_main_menu()
-	BM.start_battle(armies, map_data)
+	IM.start_game(map_name, get_player_settings())
 
-func is_bot(playerIdx : int) -> bool:
-	return player_slot_panels[playerIdx].is_bot()
 
-func create_player(playerIdx : int) -> Player:
-	if playerIdx == 0:
-		var elf = Player.new();
-		elf.faction = CFG.FACTION_ELVES
-		elf.player_name = "elf"
-		elf.use_bot(is_bot(playerIdx))
-		elf.goods = CFG.get_start_goods()
-		return elf
+func get_player_settings() -> Array[PresetPlayer]:
+	var elf = PresetPlayer.new();
+	elf.faction = CFG.FACTION_ELVES
+	elf.player_name = "elf"
+	elf.player_type =  E.player_type.HUMAN
+	elf.goods = CFG.get_start_goods()
 
-	var orc = Player.new()
+	var orc = PresetPlayer.new()
 	orc.faction = CFG.FACTION_ORCS
 	orc.player_name = "orc"
-	orc.use_bot(is_bot(playerIdx))
+	orc.player_type =  E.player_type.HUMAN
 	orc.goods = CFG.get_start_goods()
-	return orc
 
-func create_army(playerIdx : int, player : Player) -> Army:
-	var army = Army.new()
-	army.controller = player
-	army.units_data = player_slot_panels[playerIdx].get_units_data()
-	return army
-
+	return [ elf, orc ]
 
 func refresh():
 	for index in range(player_slot_panels.size()):
@@ -69,7 +47,7 @@ func refresh():
 func refresh_slot(index : int):
 	if not index in range(player_slot_panels.size()):
 		return
-	var ui_slot : BattlePlayerSlotPanel = player_slot_panels[index]
+	var ui_slot : PlayerSlotPanel = player_slot_panels[index]
 	var logic_slot : GameSetupInfo.Slot = \
 		IM.game_setup_info.slots[index] if index in \
 				range(IM.game_setup_info.slots.size()) \
@@ -77,26 +55,27 @@ func refresh_slot(index : int):
 	var color : Color = CFG.DEFAULT_TEAM_COLOR
 	var username : String = ""
 	var faction : DataFaction = null
-	var take_leave_button_state : BattlePlayerSlotPanel.TakeLeaveButtonState =\
-		BattlePlayerSlotPanel.TakeLeaveButtonState.GHOST
+	var take_leave_button_state : PlayerSlotPanel.TakeLeaveButtonState =\
+		PlayerSlotPanel.TakeLeaveButtonState.GHOST
 	if logic_slot:
 		if logic_slot.occupier is String:
 			if logic_slot.occupier == "":
 				username = IM.get_current_name()
 				take_leave_button_state = \
-					BattlePlayerSlotPanel.TakeLeaveButtonState.TAKEN_BY_YOU
+					PlayerSlotPanel.TakeLeaveButtonState.TAKEN_BY_YOU
 			else:
 				username = logic_slot.occupier
 				take_leave_button_state = \
-					BattlePlayerSlotPanel.TakeLeaveButtonState.TAKEN_BY_OTHER
+					PlayerSlotPanel.TakeLeaveButtonState.TAKEN_BY_OTHER
 		else:
 			username = "Computer\nlevel %d" % logic_slot.occupier
 			take_leave_button_state = \
-				BattlePlayerSlotPanel.TakeLeaveButtonState.FREE
+				PlayerSlotPanel.TakeLeaveButtonState.FREE
 		faction = logic_slot.faction
 		color = CFG.get_team_color_at(logic_slot.color)
 	ui_slot.set_visible_color(color)
 	ui_slot.set_visible_name(username)
+	ui_slot.set_visible_faction(faction)
 	ui_slot.set_visible_take_leave_button_state(take_leave_button_state)
 	ui_slot.setup_ui = self
 
@@ -125,7 +104,7 @@ func try_to_leave_slot(slot) -> bool:
 	return changed
 
 
-func cycle_color_slot(slot : BattlePlayerSlotPanel, backwards : bool) -> bool:
+func cycle_color_slot(slot : PlayerSlotPanel, backwards : bool) -> bool:
 	if not game_setup:
 		return false
 	var index : int = slot_to_index(slot)
@@ -135,7 +114,7 @@ func cycle_color_slot(slot : BattlePlayerSlotPanel, backwards : bool) -> bool:
 	return changed
 
 
-func cycle_faction_slot(slot : BattlePlayerSlotPanel, backwards : bool) -> bool:
+func cycle_faction_slot(slot : PlayerSlotPanel, backwards : bool) -> bool:
 	if not game_setup:
 		return false
 	var index : int = slot_to_index(slot)
@@ -154,32 +133,6 @@ func rebuild():
 
 
 func fill_maps_list():
-	var maps = IM.get_battle_maps_list()
+	var maps = IM.get_maps_list()
 	for map_name in maps:
 		maps_list.add_item(map_name)
-
-
-func fill_presets_list():
-	var presets = TestTools.list_files_in_folder(CFG.BATTLE_PRESETS_PATH, true, true)
-	presets_list.clear()
-	for preset in presets:
-		presets_list.add_item(preset.trim_prefix(CFG.BATTLE_PRESETS_PATH))
-	if presets.size() > 0:
-		_on_preset_list_item_selected(0)
-
-
-func _on_preset_list_item_selected(index):
-	var preset_file = presets_list.get_item_text(index)
-	var preset_data : PresetBattle = \
-			load(CFG.BATTLE_PRESETS_PATH + "/" + preset_file)
-	apply_preset(preset_data)
-
-func apply_preset(preset : PresetBattle):
-	var map_name = preset.battle_map.resource_path
-	for i in range(maps_list.item_count):
-		if maps_list.get_item_text(i) == map_name:
-			maps_list.select(i)
-	for playerIdx in preset.armies.size():
-		var army = preset.armies[playerIdx]
-		player_slot_panels[playerIdx].apply_army_preset(army)
-

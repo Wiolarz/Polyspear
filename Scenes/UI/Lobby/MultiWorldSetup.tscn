@@ -1,0 +1,152 @@
+[gd_scene load_steps=9 format=3 uid="uid://cyp43rqdf2pth"]
+
+[ext_resource type="Script" path="res://Scripts/UI/multi_world_setup.gd" id="1_5qw0q"]
+[ext_resource type="PackedScene" uid="uid://dql37o7nhkxj6" path="res://Scenes/UI/Lobby/PlayerSlotPanel.tscn" id="2_hpvug"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ybc2s"]
+bg_color = Color(0, 0.537255, 0.72549, 1)
+border_width_top = 2
+border_width_bottom = 2
+expand_margin_left = 30.0
+expand_margin_top = 5.0
+expand_margin_right = 30.0
+expand_margin_bottom = 5.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_oid6t"]
+bg_color = Color(0.227451, 0.227451, 0.227451, 1)
+border_width_top = 2
+border_width_bottom = 2
+expand_margin_left = 30.0
+expand_margin_top = 5.0
+expand_margin_right = 30.0
+expand_margin_bottom = 5.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_imdx5"]
+resource_local_to_scene = true
+content_margin_left = 10.0
+content_margin_top = 0.0
+content_margin_right = 10.0
+content_margin_bottom = 0.0
+bg_color = Color(1, 1, 1, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_21lvi"]
+resource_local_to_scene = true
+content_margin_left = 10.0
+content_margin_top = 0.0
+content_margin_right = 10.0
+content_margin_bottom = 0.0
+bg_color = Color(1, 1, 1, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ajriv"]
+resource_local_to_scene = true
+content_margin_left = 10.0
+content_margin_top = 0.0
+content_margin_right = 10.0
+content_margin_bottom = 0.0
+bg_color = Color(1, 1, 1, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_8tc31"]
+resource_local_to_scene = true
+content_margin_left = 10.0
+content_margin_top = 0.0
+content_margin_right = 10.0
+content_margin_bottom = 0.0
+bg_color = Color(1, 1, 1, 1)
+
+[node name="MultiWorldSetup" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("1_5qw0q")
+
+[node name="V" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="PresetSelect" type="VBoxContainer" parent="V"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="V/PresetSelect"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "Select a preset"
+
+[node name="ColorRect" type="PanelContainer" parent="V/PresetSelect"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_ybc2s")
+
+[node name="PresetList" type="OptionButton" parent="V/PresetSelect/ColorRect"]
+layout_mode = 2
+
+[node name="MapSelect" type="VBoxContainer" parent="V"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="V/MapSelect"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "Select a map"
+
+[node name="ColorRect" type="PanelContainer" parent="V/MapSelect"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_ybc2s")
+
+[node name="MapList" type="OptionButton" parent="V/MapSelect/ColorRect"]
+layout_mode = 2
+
+[node name="Slots" type="VBoxContainer" parent="V"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="V/Slots"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "Players"
+
+[node name="ColorRect" type="PanelContainer" parent="V/Slots"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_oid6t")
+
+[node name="PlayerList" type="VBoxContainer" parent="V/Slots/ColorRect"]
+layout_mode = 2
+
+[node name="PlayerSlotPanel1" parent="V/Slots/ColorRect/PlayerList" instance=ExtResource("2_hpvug")]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_imdx5")
+
+[node name="PlayerSlotPanel2" parent="V/Slots/ColorRect/PlayerList" instance=ExtResource("2_hpvug")]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_21lvi")
+
+[node name="PlayerSlotPanel3" parent="V/Slots/ColorRect/PlayerList" instance=ExtResource("2_hpvug")]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_ajriv")
+
+[node name="PlayerSlotPanel4" parent="V/Slots/ColorRect/PlayerList" instance=ExtResource("2_hpvug")]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_8tc31")
+
+[node name="cokolwiek" type="VBoxContainer" parent="V"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="V/cokolwiek"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "aaa"
+
+[node name="LineEdit" type="LineEdit" parent="V/cokolwiek"]
+custom_minimum_size = Vector2(0, 70)
+layout_mode = 2
+size_flags_vertical = 0
+text = "hyhy"
+placeholder_text = "Type your desired name here"

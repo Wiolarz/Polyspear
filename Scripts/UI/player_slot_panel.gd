@@ -1,12 +1,6 @@
 class_name PlayerSlotPanel
 extends PanelContainer
 
-
-@onready var button_take_leave = $HBoxContainer/ButtonTakeLeave
-@onready var label_name = $HBoxContainer/PlayerInfoPanel/Label
-@onready var button_faction = $HBoxContainer/ButtonFaction
-
-
 enum TakeLeaveButtonState {
 	FREE,
 	TAKEN_BY_YOU,
@@ -14,11 +8,13 @@ enum TakeLeaveButtonState {
 	GHOST, # state when we display too much slots
 }
 
-
 var setup_ui = null # TODO some base class for MultiBattleSetup and
 					# MultiScenarioSetup
 var button_take_leave_state : TakeLeaveButtonState = TakeLeaveButtonState.FREE
 
+@onready var button_take_leave = $HBoxContainer/ButtonTakeLeave
+@onready var label_name = $HBoxContainer/PlayerInfoPanel/Label
+@onready var button_faction = $HBoxContainer/ButtonFaction
 
 func try_to_take():
 	if not setup_ui:
