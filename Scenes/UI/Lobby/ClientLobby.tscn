@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://biy1n2dqeqrox"]
+[gd_scene load_steps=3 format=3 uid="uid://biy1n2dqeqrox"]
 
 [ext_resource type="Script" path="res://Scripts/UI/client_menu.gd" id="1_li74l"]
+[ext_resource type="PackedScene" uid="uid://dev0nuoeb5bbv" path="res://Scenes/UI/Lobby/GameSetup.tscn" id="2_hvdur"]
 
 [node name="ClientLobby" type="CanvasLayer"]
 
@@ -19,3 +20,6 @@ size_flags_horizontal = 3
 [node name="PanelContainer" type="PanelContainer" parent="ClientMenu"]
 layout_mode = 2
 size_flags_horizontal = 3
+
+[node name="MultiGameSetup" parent="ClientMenu/PanelContainer" instance=ExtResource("2_hvdur")]
+layout_mode = 2

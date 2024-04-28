@@ -7,6 +7,8 @@ extends Control
 @onready var client_server_chat = \
 	load("res://Scenes/UI/Lobby/Network/ClientServerChat.tscn").instantiate()
 
+@onready var multi_game_setup : MultiGameSetup = $PanelContainer/MultiGameSetup
+
 
 @onready var connection_management = $ConnectionManagement
 
@@ -34,6 +36,7 @@ func show_client_server_chat():
 
 func _ready():
 	show_client_connector()
+	multi_game_setup.hide()
 
 
 func _process(_delta : float):
@@ -41,6 +44,8 @@ func _process(_delta : float):
 	if client_connected and \
 			not connection_management.get_node_or_null("ClientServerChat"):
 		show_client_server_chat()
+		multi_game_setup.show()
 	elif not client_connected and \
 			not connection_management.get_node_or_null("ClientConnector"):
 		show_client_connector()
+		multi_game_setup.hide()

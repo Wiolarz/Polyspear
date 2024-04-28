@@ -44,9 +44,9 @@ func _select_setup_page(page):
 func refresh_after_conenction_change():
 	# this refresh is to change our username when we start or stop server ;)
 	if container.get_child_count() == 1:
-		var battle_setup = container.get_child(0)
-		if battle_setup is MultiBattleSetup:
-			battle_setup.refresh()
+		var setup = container.get_child(0)
+		if setup is MultiBattleSetup or setup is WorldSetup:
+			setup.refresh()
 
 
 func force_full_rebuild():
@@ -69,6 +69,8 @@ func try_to_take_slot(index : int) -> bool:
 	# if we are server:
 		# broadcasst this change to everyone (probably the result of it, not
 		# only the fact)
+	if IM.get_server():
+		IM.get_server().broadcast_full_game_setup(IM.game_setup_info)
 	return true
 
 
@@ -85,6 +87,8 @@ func try_to_leave_slot(index : int) -> bool:
 	# if we are a server:
 		# broadcasst this change to everyone (probably the result of it, not
 		# only the fact)
+	if IM.get_server():
+		IM.get_server().broadcast_full_game_setup(IM.game_setup_info)
 	return true
 
 # TODO move to input manager or somewhere
@@ -134,6 +138,17 @@ func try_to_cycle_faction_slot(index : int, backwards : bool) -> bool:
 	# if we are a server:
 		# broadcasst this change to everyone (probably the result of it, not
 		# only the fact)
+	if IM.get_server():
+		IM.get_server().broadcast_full_game_setup(IM.game_setup_info)
+	return true
+
+
+func try_to_set_world_map_name(map_name : String) -> bool:
+	# drut
+	IM.game_setup_info.world_map = load("%s/%s" % [ CFG.WORLD_MAPS_PATH, map_name ])
+	if IM.get_server():
+		IM.get_server().broadcast_full_game_setup(IM.game_setup_info)
+	# TODO here load this map and adjust slot number
 	return true
 
 
@@ -148,9 +163,10 @@ func _on_button_battle_toggled(toggled_on : bool):
 
 
 func _ready():
+	IM.game_setup_info_changed.connect(refresh_after_conenction_change)
 	button_battle.button_pressed = true
 	button_battle.button_group = button_full_scenario.button_group
 
 
 func _on_button_confirm_pressed():
-	container.get_child(0).start_game()
+	container.get_child(0).start_game() # mały drucik

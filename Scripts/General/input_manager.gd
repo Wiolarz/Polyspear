@@ -50,6 +50,7 @@ var raging_battle : bool
 
 var chat_log : String
 
+signal game_setup_info_changed
 
 #region Input Support
 

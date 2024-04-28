@@ -25,13 +25,13 @@ var world_map : DataWorldMap # used only in full world game
 func to_dictionary(local_username : String = "") -> Dictionary:
 	var result = {
 		"slots": [],
-		"world_map": world_map.get_netword_id(),
+		"world_map": DataWorldMap.get_network_id(world_map),
 	}
 	for slot in slots:
 		result["slots"].append({
 			"occupier": \
 				occupier_prepare_for_network(slot.occupier, local_username),
-			"faction": slot.faction.get_netword_id(),
+			"faction": slot.faction.get_network_id(),
 			"color": slot.color,
 		})
 	return result

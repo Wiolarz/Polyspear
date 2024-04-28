@@ -135,3 +135,5 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_ajriv")
 [node name="PlayerSlotPanel4" parent="V/Slots/ColorRect/PlayerList" instance=ExtResource("2_hpvug")]
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_8tc31")
+
+[connection signal="item_selected" from="V/MapSelect/ColorRect/MapList" to="." method="_on_map_list_item_selected"]

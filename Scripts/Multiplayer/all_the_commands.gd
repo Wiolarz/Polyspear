@@ -112,7 +112,8 @@ static func client_fill_game_setup(client : Client, params : Dictionary) -> int:
 	var setup = GameSetupInfo.from_dictionary(params["setup"], \
 		IM.get_current_name())
 	IM.game_setup_info = setup
-	IM.force_refresh_game_setup()
+	IM.game_setup_info_changed.emit()
+	print("Client: %s" % params)
 	return OK
 
 #endregion

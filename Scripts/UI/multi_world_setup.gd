@@ -15,7 +15,7 @@ var player_slot_panels = []
 
 func _ready():
 	rebuild()
-	fill_maps_list()
+	# fill_maps_list()
 
 
 func start_game():
@@ -40,6 +40,7 @@ func get_player_settings() -> Array[PresetPlayer]:
 	return [ elf, orc ]
 
 func refresh():
+	fill_maps_list()
 	for index in range(player_slot_panels.size()):
 		refresh_slot(index)
 
@@ -134,5 +135,20 @@ func rebuild():
 
 func fill_maps_list():
 	var maps = IM.get_maps_list()
+	maps_list.clear()
 	for map_name in maps:
 		maps_list.add_item(map_name)
+	if not maps.is_empty():
+		_on_map_list_item_selected(0)
+
+
+func _on_map_list_item_selected(index):
+	if not game_setup:
+		print("warning: no game setup")
+		return
+	var map_name = maps_list.get_item_text(maps_list.selected)
+	# drut
+	var changed = game_setup.try_to_set_world_map_name(map_name)
+	# if changed:
+	# 	refresh()
+	print("map select ", changed)
