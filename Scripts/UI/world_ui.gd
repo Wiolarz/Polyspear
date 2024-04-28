@@ -43,7 +43,7 @@ func _refresh_heroes_to_buy(city : City):
 	$CityUi/HBoxContainer/VBoxContainer/HeroImage.texture = \
 			load(heroes[0].data_unit.texture_path)
 	var button = $CityUi/HBoxContainer/VBoxContainer/BuyHeroButton
-	button.text = "Buy hero\n"+str(heroes[0].cost)
+	button.text = "Buy hero\n" + str(heroes[0].cost)
 	button.disabled = W_GRID.get_army(city.coord) != null or \
 		not city.controller.has_enough(heroes[0].cost)
 
@@ -71,7 +71,6 @@ func _refresh_army_display(hero : ArmyForm):
 		b.disabled = not hero
 		if hero and i < hero.entity.units_data.size():
 			b.text = hero.entity.units_data[i].unit_name
-			# print(i, b.text )
 
 
 func _buy_unit(unit : DataUnit, hero_army : ArmyForm):

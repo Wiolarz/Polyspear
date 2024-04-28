@@ -68,6 +68,9 @@ func _end_of_day_callbacks() -> void:
 
 #region Player Actions
 
+## Called when player interacts (presses) on the map tile
+## Selects objects OR orders selected object
+## City/Heroes -> orders Heroes
 func grid_input(coord : Vector2i):
 	print("world input @", coord)
 
