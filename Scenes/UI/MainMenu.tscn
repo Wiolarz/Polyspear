@@ -51,18 +51,6 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 40
 text = "Start Game 🪐"
 
-[node name="BattleSetup" type="Button" parent="Control/VBoxContainer"]
-visible = false
-layout_mode = 2
-theme_override_font_sizes/font_size = 40
-text = "Test Battle ⚔"
-
-[node name="TestWorld" type="Button" parent="Control/VBoxContainer"]
-visible = false
-layout_mode = 2
-theme_override_font_sizes/font_size = 40
-text = "Test World 🗺"
-
 [node name="Join" type="Button" parent="Control/VBoxContainer"]
 layout_mode = 2
 text = "Join a server 🙌"
@@ -82,8 +70,6 @@ root_subfolder = "replays/"
 
 [connection signal="id_pressed" from="Control/MenuBar/Editors Menu" to="." method="_on_editors_menu_id_pressed"]
 [connection signal="pressed" from="Control/VBoxContainer/Host" to="." method="_on_host_pressed"]
-[connection signal="pressed" from="Control/VBoxContainer/BattleSetup" to="." method="_on_battle_setup_pressed"]
-[connection signal="pressed" from="Control/VBoxContainer/TestWorld" to="." method="_on_test_world_pressed"]
 [connection signal="pressed" from="Control/VBoxContainer/Join" to="." method="_on_join_pressed"]
 [connection signal="pressed" from="Control/VBoxContainer/Replay" to="." method="_on_replay_pressed"]
 [connection signal="file_selected" from="FileDialogReplay" to="." method="_on_file_dialog_replay_file_selected"]
