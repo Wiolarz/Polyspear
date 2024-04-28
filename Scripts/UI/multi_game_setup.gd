@@ -97,9 +97,9 @@ func try_to_cycle_color_slot(index : int, backwards : bool) -> bool:
 	if index < 0 or index > slots.size():
 		return false
 	var diff : int = 1 if not backwards else -1
-	# if we are a client:
-		# send request cycle color of this slot
-		# return false # we will change this after server responds
+	if IM.get_client():
+		IM.get_client().queue_cycle_color(index, backwards)
+		return false # we will change this after server responds
 	var new_color_index = slots[index].color
 	while true:
 		new_color_index = (new_color_index + diff) % CFG.TEAM_COLORS.size()

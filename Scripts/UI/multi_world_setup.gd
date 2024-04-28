@@ -91,7 +91,7 @@ func try_to_take_slot(slot) -> bool: # true means something changed
 	var index : int = slot_to_index(slot)
 	var changed = game_setup.try_to_take_slot(index)
 	if changed:
-		refresh_slot(index)
+		refresh()
 	return changed
 
 

@@ -63,6 +63,15 @@ func queue_say(message : String):
 	queue_message_to_server(packet)
 
 
+func queue_cycle_color(slot_index : int, backwards : bool = false):
+	var packet : Dictionary = {
+		"name": "request_color_cycle",
+		"slot": slot_index,
+		"backwards": backwards,
+	}
+	queue_message_to_server(packet)
+
+
 func logout_if_needed() -> void:
 	if username == "":
 		return

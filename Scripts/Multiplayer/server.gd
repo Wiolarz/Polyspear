@@ -15,6 +15,8 @@ var incoming_commands : Dictionary = { # Dictionary[String -> Command]
 	"order_game_move": Command.create_on_server( \
 		AllTheCommands.server_order_game_move),
 	"say": Command.create_on_server(AllTheCommands.server_say),
+	"request_color_cycle": Command.create_on_server( \
+		AllTheCommands.server_request_color_cycle),
 }
 
 
@@ -130,7 +132,7 @@ func send_to_peer(peer : ENetPacketPeer, command_dictionary : Dictionary):
 
 
 func broadcast(command_dictionary : Dictionary):
-	if not command_dictionary is Dictionary:
+	if not command_dictionary is Dictionary or enet_network == null:
 		return
 	var content : PackedByteArray = var_to_bytes(command_dictionary)
 	enet_network.broadcast(0, content, ENetPacketPeer.FLAG_RELIABLE)
