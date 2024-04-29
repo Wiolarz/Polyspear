@@ -2,9 +2,9 @@
 
 [ext_resource type="Resource" uid="uid://wxlo2qqrsl4f" path="res://Resources/Battle/Heroes/Orcs/orc_hero_executioner.tres" id="1_64ilx"]
 [ext_resource type="Script" path="res://Resources/Factions/data_faction.gd" id="1_iksfp"]
-[ext_resource type="Resource" uid="uid://cb5k3h5c3pq4m" path="res://Resources/Battle/Units/Orcs/orc_1_brute.tres" id="2_0fwro"]
-[ext_resource type="Resource" uid="uid://bnxmiy7obuw3y" path="res://Resources/Battle/Units/Orcs/orc_2_brigand.tres" id="3_bni20"]
-[ext_resource type="Resource" uid="uid://b7t1kfp7wq7mc" path="res://Resources/Battle/Units/Orcs/orc_3_champion.tres" id="4_layy6"]
+[ext_resource type="Resource" uid="uid://r3j5c2j73nya" path="res://Resources/Battle/Units/Orcs/orc_1_brute.tres" id="2_0fwro"]
+[ext_resource type="Resource" uid="uid://dgshvlhnis4e4" path="res://Resources/Battle/Units/Orcs/orc_2_brigand.tres" id="3_bni20"]
+[ext_resource type="Resource" uid="uid://fewqs1k7eitf" path="res://Resources/Battle/Units/Orcs/orc_3_champion.tres" id="4_layy6"]
 
 [resource]
 script = ExtResource("1_iksfp")

@@ -1,9 +1,9 @@
-[gd_resource type="Resource" script_class="DataUnit" load_steps=6 format=3]
+[gd_resource type="Resource" script_class="DataUnit" load_steps=6 format=3 uid="uid://b1t0ae1k1lr1q"]
 
 [ext_resource type="Script" path="res://Resources/Battle/data_unit.gd" id="1_g5mkx"]
 [ext_resource type="Script" path="res://Scripts/World/goods.gd" id="1_mfacn"]
-[ext_resource type="Resource" path="res://Resources/Battle/Symbols/empty.tres" id="4_e4j4m"]
-[ext_resource type="Resource" path="res://Resources/Battle/Symbols/bow.tres" id="4_fssgl"]
+[ext_resource type="Resource" uid="uid://o4rlmfc33rsh" path="res://Resources/Battle/Symbols/empty.tres" id="4_e4j4m"]
+[ext_resource type="Resource" uid="uid://c61kr7bqpyhr0" path="res://Resources/Battle/Symbols/bow.tres" id="4_fssgl"]
 
 [sub_resource type="Resource" id="Resource_505uq"]
 script = ExtResource("1_mfacn")
