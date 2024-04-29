@@ -40,7 +40,7 @@ func on_player_selected(selectedPlayer : Player, preview : bool = false):
 		var unit : DataUnit = army.units_data[unitId]
 		var b = TextureButton.new()
 		b.texture_normal = CFG.SUMMON_BUTTON_TEXTURE
-		var unit_scene : Unit = CFG.UNIT_FORM_SCENE.instantiate()
+		var unit_scene : UnitForm = CFG.UNIT_FORM_SCENE.instantiate()
 		unit_scene.position = b.texture_normal.get_size()/2
 		unit_scene.apply_template(unit)
 		b.add_child(unit_scene)

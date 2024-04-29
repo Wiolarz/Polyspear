@@ -34,7 +34,7 @@ static var DIRECTIONS = [ \
 
 
 var tile_grid : Array = []  # Array[Array[HexTile]]
-var unit_grid : Array = [] # Array[Array[Unit/Army]]
+var unit_grid : Array = [] # Array[Array[UnitForm/Army]]
 
 #region Coordinate Tools
 

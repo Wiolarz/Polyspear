@@ -1,4 +1,4 @@
-class_name Unit
+class_name UnitForm
 
 extends Node2D
 
@@ -8,7 +8,7 @@ var unit_rotation : int
 var coord : Vector2i
 var controller : Player
 
-## based on specific Unit scene in _ready() symbols get placed into their spots
+## based on specific UnitForm scene in _ready() symbols get placed into their spots
 var symbols : Array[E.Symbols] = [
 	E.Symbols.EMPTY, E.Symbols.EMPTY, E.Symbols.EMPTY,
 	E.Symbols.EMPTY, E.Symbols.EMPTY, E.Symbols.EMPTY,
@@ -35,7 +35,7 @@ func turn(side : int, skip_animation = false):
 	"""
 	360 / 6 = 60  degrees needed to rotate unit
 
-	param Unit - Reference to the object we are rotating
+	param UnitForm - Reference to the object we are rotating
 	param Direction
 	"""
 	unit_rotation = side

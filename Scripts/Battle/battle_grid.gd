@@ -21,7 +21,7 @@ func get_all_field_coords() -> Array[Vector2i]:
 	return result
 
 
-func change_unit_coord(unit : Unit, coord : Vector2i):
+func change_unit_coord(unit : UnitForm, coord : Vector2i):
 
 	unit_grid[unit.coord.x][unit.coord.y] = null# clean your previous location
 	unit_grid[coord.x][coord.y] = unit# unit_grid Update
@@ -64,7 +64,7 @@ func adjacent_units(start_coord : Vector2i) -> Array:
 	return units
 
 
-func get_shot_target(start_coord : Vector2i, side : int) -> Unit:
+func get_shot_target(start_coord : Vector2i, side : int) -> UnitForm:
 	while tile_grid[start_coord.x][start_coord.y].type != "sentinel":
 		start_coord += DIRECTIONS[side]
 		#print("checking ",start_coord)
@@ -76,7 +76,7 @@ func get_shot_target(start_coord : Vector2i, side : int) -> Unit:
 	return null
 
 
-func get_distant_unit(start_coord : Vector2i, side : int, distance : int) -> Unit:
+func get_distant_unit(start_coord : Vector2i, side : int, distance : int) -> UnitForm:
 	for i in range(distance):
 		start_coord += DIRECTIONS[side]
 
@@ -97,7 +97,7 @@ func get_distant_coord(start_coord : Vector2i, side : int, distance : int) -> Ve
 	return start_coord
 
 
-# func get_melee_targets(start_coord : Vector2i, direction, symbol_side : int) -> Array[Unit]:
+# func get_melee_targets(start_coord : Vector2i, direction, symbol_side : int) -> Array[UnitForm]:
 # 	"""
 # 	AI/UI tool
 # 	take a side on which a weapon symbol is present -> simulate movement
@@ -107,7 +107,7 @@ func get_distant_coord(start_coord : Vector2i, side : int, distance : int) -> Ve
 # 	direction : int / Vector2i
 
 # 	"""
-# 	var units : Array[Unit] = []
+# 	var units : Array[UnitForm] = []
 
 # 	return units
 
