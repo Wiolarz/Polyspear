@@ -29,8 +29,8 @@ func to_dictionary(local_username : String = "") -> Dictionary:
 	}
 	for slot in slots:
 		result["slots"].append({
-			"occupier": \
-				occupier_prepare_for_network(slot.occupier, local_username),
+			"occupier": GameSetupInfo.occupier_prepare_for_network( \
+					slot.occupier, local_username),
 			"faction": slot.faction.get_network_id(),
 			"color": slot.color,
 		})
@@ -63,5 +63,6 @@ static func occupier_prepare_for_network(occupier, local_username : String):
 static func occupier_receive_from_network(occupier, local_username : String):
 	if occupier is String and occupier == local_username:
 		return ""
-	elif occupier is String or occupier is int:
+	if occupier is String or occupier is int:
 		return occupier
+	push_error("invalid occupier received ", occupier)

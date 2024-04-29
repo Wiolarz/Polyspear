@@ -33,13 +33,13 @@ func get_player_settings() -> Array[PresetPlayer]:
 	var elf = PresetPlayer.new();
 	elf.faction = CFG.FACTION_ELVES
 	elf.player_name = "elf"
-	elf.player_type =  E.player_type.HUMAN
+	elf.player_type =  E.PlayerType.HUMAN
 	elf.goods = CFG.get_start_goods()
 
 	var orc = PresetPlayer.new()
 	orc.faction = CFG.FACTION_ORCS
 	orc.player_name = "orc"
-	orc.player_type =  E.player_type.HUMAN
+	orc.player_type =  E.PlayerType.HUMAN
 	orc.goods = CFG.get_start_goods()
 
 	return [ elf, orc ]

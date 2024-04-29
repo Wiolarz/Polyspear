@@ -4,7 +4,7 @@ extends Node
 
 #region General
 
-enum player_type
+enum PlayerType
 {
 	OBSERVER,
 	HUMAN,
