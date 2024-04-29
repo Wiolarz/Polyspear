@@ -62,7 +62,7 @@ func _fill_symbol_pickers():
 func fill_symbol_picker(picker : OptionButton, direction : int):
 	picker.clear()
 	for data_symbol in all_data_symbols:
-		picker.add_item(E.Symbols.keys()[data_symbol.type])
+		picker.add_item(E.symbol_to_name(data_symbol.type))
 	# bind direction in callback
 	var callback = func onSelected(_index):
 		on_symbol_selected(direction, _index)
@@ -155,8 +155,9 @@ func _set_symbol_picker(dir: int, value: DataSymbol):
 ## updates `unit_preview_form` when symbol is picked
 func on_symbol_selected(dir : int, picker_index : int):
 	var picked_symbol = all_data_symbols[picker_index]
-	print("selected dir %d - symbol %s - %s" % \
-			[dir, picked_symbol.type, E.Symbols.keys()[picked_symbol.type]])
+	print("selected dir %d %s - symbol %s - %s" % \
+			[dir, E.direction_to_name(dir as E.GridDirections), \
+			picked_symbol.type, E.symbol_to_name(picked_symbol.type)])
 
 	unit_preview_form.unit_stats.symbols[dir] = picked_symbol
 	unit_preview_form._apply_symbol_sprite(dir, picked_symbol.texture_path)
