@@ -31,6 +31,8 @@ func test_map_start_and_close() -> void:
 	var world_ui = $/root/UI/WorldUi
 	assert_is(world_ui, CanvasLayer, "World UI not a CanvasLayer")
 	assert_true(world_ui.visible, "World UI not visible")
+	# TODO: stabilize default map so that this test doesnt need to be updated
+	# when new map is added and happens to be picked as first
 	assert_eq(W_GRID.get_child_count(),14*10, "Map spawned, but tiles count not 14*10")
 	assert_is(W_GRID.get_child(0), HexTile, "Map spawned, but tiles are not HexTile")
 
