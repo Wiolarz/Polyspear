@@ -3,7 +3,7 @@ extends Node
 
 var player_name : String = ""
 
-var bot_engine : AIInteface
+var bot_engine : AIInterface
 
 var faction : DataFaction
 

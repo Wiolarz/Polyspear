@@ -4,7 +4,9 @@ extends GridManager
 
 var max_player_number : int
 
-var summon_tiles : Array = []  # Array[Array[HexTile]] seperated by player lists all possible tiles units can be summoned to
+## Array[Array[HexTile]] player, index -> HexTile
+## lists all tiles that can be used to summon units for a given player
+var summon_tiles : Array = []
 
 var current_spawn : String = "sentinel"
 
@@ -27,7 +29,7 @@ func change_unit_coord(unit : Unit, coord : Vector2i):
 	unit.coord = coord# update unit Index
 
 	# Move visuals of the unit
-	if BM.unsummoned_units_counter > 0:
+	if BM.is_during_summoning_phase():
 		unit.global_position = tile_grid[coord.x][coord.y].global_position
 	else:
 		unit.move(tile_grid[coord.x][coord.y])
@@ -52,14 +54,13 @@ func get_unit(coord : Vector2i):
 	return unit_grid[coord.x][coord.y]
 
 
+## Returns 6 elements Array, elements can be null
 func adjacent_units(start_coord : Vector2i) -> Array:
-	# Returns 6 elements Array, elements can be null
 	var units = []
 	for side in range(6):
 		var coord = GridManager.adjacent_coord(start_coord, side)
-		var neighbour = unit_grid[coord.x][coord.y]
-		#if (neighbour != null):
-		units.append(neighbour)
+		var neighbor = unit_grid[coord.x][coord.y]
+		units.append(neighbor)
 	return units
 
 
@@ -99,8 +100,9 @@ func get_distant_coord(start_coord : Vector2i, side : int, distance : int) -> Ve
 # func get_melee_targets(start_coord : Vector2i, direction, symbol_side : int) -> Array[Unit]:
 # 	"""
 # 	AI/UI tool
-# 	take a side on which a weapon symbol is present -> simulate movement -> return list of damaged targets
-# 	(can return friednly units)
+# 	take a side on which a weapon symbol is present -> simulate movement
+#		-> return list of damaged targets
+# 	(can return friendly units)
 
 # 	direction : int / Vector2i
 
@@ -117,7 +119,8 @@ func get_distant_coord(start_coord : Vector2i, side : int, distance : int) -> Ve
 func is_clear() -> bool:
 	var clearness = tile_grid.size() == 0 and unit_grid.size() == 0 and summon_tiles.size() == 0
 	if not clearness:
-		print("ERROR battle_grid is_clear()  tile_grid ", tile_grid.size(), "  unit_grid", unit_grid.size(), "  summon_tiles ", summon_tiles.size())
+		print("ERROR battle_grid is_clear()  tile_grid ", tile_grid.size(), \
+				"  unit_grid", unit_grid.size(), "  summon_tiles ", summon_tiles.size())
 	return clearness
 
 

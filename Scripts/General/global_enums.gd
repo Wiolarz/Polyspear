@@ -35,7 +35,7 @@ enum WorldMapTiles
 {
 	SENTINEL,
 
-	# fundemantal game logic
+	# fundamental game logic
 	EMPTY,
 	WALL,
 
@@ -43,7 +43,7 @@ enum WorldMapTiles
 	CITY,
 	PLACE,
 
-	# undifined
+	# undefined
 	DEPOSIT,
 }
 

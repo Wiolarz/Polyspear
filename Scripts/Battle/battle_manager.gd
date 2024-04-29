@@ -6,6 +6,8 @@ extends Node
 const ATTACKER = 0
 const DEFENDER = 1
 
+const MOVE_IS_INVALID = -1
+
 var battle_is_ongoing : bool = false
 ## count units for transition between summon and battle steps
 var unsummoned_units_counter : int
@@ -60,7 +62,7 @@ func load_replay(path : String):
 	assert(replay != null)
 	var map = replay.battle_map
 	var armies: Array[Army] = []
-	var playerIdx = 0
+	var player_idx = 0
 	while (IM.players.size() < replay.units_at_start.size()):
 		IM.add_player("Replay_"+str(IM.players.size()))
 	for p in IM.players:
@@ -68,9 +70,9 @@ func load_replay(path : String):
 	for u in replay.units_at_start:
 		var a = Army.new()
 		a.units_data = u
-		a.controller = IM.players[playerIdx]
+		a.controller = IM.players[player_idx]
 		armies.append(a)
-		playerIdx+= 1
+		player_idx += 1
 	start_battle(armies, map)
 	for m in replay.moves:
 		if not battle_is_ongoing:
@@ -109,7 +111,7 @@ func grid_input(coord : Vector2i) -> void:
 	input redirection (based on current ) verification
 	"""
 
-	if unsummoned_units_counter > 0: # Summon phase
+	if is_during_summoning_phase(): # Summon phase
 		_grid_input_summon(coord)
 		return
 
@@ -117,8 +119,9 @@ func grid_input(coord : Vector2i) -> void:
 		# selected a new unit or wrong input which didn't select any ally unit
 		return
 
-	var side : int = is_legal_move(coord) # is_legal_move() returns false as -1 0-5 direction for unit to move
-	if side == -1: # spot is empty + we aren't hitting a shield
+	# is_legal_move() returns false as -1 0-5 direction for unit to move
+	var side : int = is_legal_move(coord)
+	if side == MOVE_IS_INVALID: # spot is empty + we aren't hitting a shield
 		return
 
 	selected_unit.set_selected(false)
@@ -149,21 +152,21 @@ func perform_ai_move( move :MoveInfo,  _me: Player):
 
 #region Tools
 
-func get_units(player:Player) -> Array[Unit]:
-	for armyIdx in range(fighting_units.size()):
-		if participants[armyIdx] == player:
-			var typed:Array[Unit] = []
-			typed.assign(fighting_units[armyIdx])
+func get_units(player : Player) -> Array[Unit]:
+	for army_idx in range(fighting_units.size()):
+		if participants[army_idx] == player:
+			var typed : Array[Unit] = []
+			typed.assign(fighting_units[army_idx])
 			return typed
 	return []
 
 
 func select_unit(coord : Vector2i) -> bool:
 	"""
-	 * Select friendly Unit on a given coord
-	 *
-	 * @return true if unit has been selected in this operation
-	 """
+	* Select friendly Unit on a given coord
+	*
+	* @return true if unit has been selected in this operation
+	"""
 
 	var new_selection : Unit = B_GRID.get_unit(coord)
 	if (new_selection != null && new_selection.controller == current_participant):
@@ -176,46 +179,47 @@ func select_unit(coord : Vector2i) -> bool:
 
 	return false
 
-
-func is_legal_move(coord : Vector2i, BotUnit : Unit = null) -> int:
+## Returns `MOVE_IS_INVALID` if move is incorrect
+## or a turn direction `E.GridDirections` if move is correct
+func is_legal_move(coord : Vector2i, bot_unit : Unit = null) -> int:
 	"""
 		Function checks 2 things:
-		1 Target coord is a Neighbour of a selected_unit
+		1 Target coord is a Neighbor of a selected_unit
 		2 if selected_unit doesn't have push symbol on it's front (none currently have it yet)
-			Target coord doesn't contatin an Enemy Unit with a shield pointing at our selected_unit
+			Target coord doesn't contain an Enemy Unit with a shield pointing at our selected_unit
 
 		@param coord target coord for selected_unit to move to
 		@param BotUnit optional parameter for AI that replaces selected_unit with BotUnit
 		@return result_side -1 if move is illegal, direction of the move if it is
 	"""
-	if BotUnit != null:
-		selected_unit = BotUnit  # Locally replacs Unit for Bot legal move search
+	if bot_unit != null:
+		selected_unit = bot_unit  # Locally replaces Unit for Bot legal move search
 
 	# 1
-	var result_side = GridManager.adjacent_side(selected_unit.coord, coord)
-	if result_side == null:
-		return -1
+	var move_direction = GridManager.adjacent_side(selected_unit.coord, coord)
+	if move_direction == null:
+		return MOVE_IS_INVALID
 
-	#print(result_side)
+	#print(move_direction)
 	# 2
 	var enemy_unit = B_GRID.get_unit(coord)
 	if enemy_unit == null:  # Is there a Unit in this spot?
-		return result_side
+		return move_direction
 
 	match selected_unit.symbols[0]:
 		E.Symbols.EMPTY:
-			return -1
+			return MOVE_IS_INVALID
 		E.Symbols.SHIELD:
-			return -1 # selected_unit can't deal with enemy_unit
+			return MOVE_IS_INVALID # selected_unit can't deal with enemy_unit
 		E.Symbols.PUSH:
-			return result_side # selected_unit ignores enemy_unit Shield
+			return move_direction # selected_unit ignores enemy_unit Shield
 		_:
 			pass
 	# Does enemy_unit has a shield?
-	if enemy_unit.get_symbol(result_side + 3) == E.Symbols.SHIELD:
-		return -1
+	if enemy_unit.get_symbol(move_direction + 3) == E.Symbols.SHIELD:
+		return MOVE_IS_INVALID
 
-	return result_side
+	return move_direction
 
 
 func move_unit(unit, end_coord : Vector2i, side: int) -> void:
@@ -405,6 +409,10 @@ func end_of_battle() -> void:
 
 #region Summon Phase
 
+func is_during_summoning_phase() -> bool:
+	return unsummoned_units_counter > 0
+
+
 func _grid_input_summon(coord : Vector2i):
 	"""
 	* Units are placed by the players in subsequent order on their chosen "Starting Locations"
@@ -429,15 +437,15 @@ func is_legal_summon_coord(coord : Vector2i, player: Player) -> bool:
 	return is_correct_spawn and B_GRID.get_unit(coord) == null
 
 
-func summon_unit(unitData : DataUnit, coord : Vector2i) -> void:
+func summon_unit(unit_data : DataUnit, coord : Vector2i) -> void:
 	"""
 		Summon currently selected unit to a Gameplay Board
 
 		@param coord coordinate, on which Unit will be summoned
-	 """
+	"""
 	#B_GRID.change_unit_coord(selected_unit, coord)
 	var unit : Unit = CFG.UNIT_FORM_SCENE.instantiate()
-	unit.apply_template(unitData)
+	unit.apply_template(unit_data)
 	unit.controller = current_participant
 
 	fighting_units[participant_idx].append(unit)
@@ -450,7 +458,7 @@ func summon_unit(unitData : DataUnit, coord : Vector2i) -> void:
 		unit.turn(0, true)
 
 	unsummoned_units_counter -= 1
-	battle_ui.unit_summoned(unsummoned_units_counter == 0, unitData)
+	battle_ui.unit_summoned(not is_during_summoning_phase(), unit_data)
 
 
 func get_not_summoned_units(player:Player) -> Array[DataUnit]:

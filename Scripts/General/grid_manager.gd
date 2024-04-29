@@ -19,7 +19,7 @@ const OddRowHorizontalOffset : float = TileHorizontalOffset / 2
 var grid_width : int
 var	grid_height : int
 
-const border_size : int = 1  # Thickness of a Sentinel perimiter around the gameplay area.
+const border_size : int = 1  # Thickness of a Sentinel perimeter around the gameplay area.
 
 
 static var DIRECTIONS = [ \
@@ -57,7 +57,7 @@ static func adjacent_side(coord1 : Vector2i, coord2 : Vector2i) -> int:
 
 static func adjacent_coord(base_coord : Vector2i, side : int) -> Vector2i:
 	"""
-	Return coord adjacent to Basecoord at given side
+	Return coord adjacent to Base coord at given side
 
 	@param base_coord
 	@param side {0, 1, ..., 5}
@@ -116,7 +116,7 @@ func spawn_tiles() -> void:
 			new_tile.global_position.x = x_tile_pos
 			new_tile.global_position.y = y_tile_pos
 
-			# apllying sentinel border correction to data files coords
+			# applying sentinel border correction to data files coords
 			var data_x = x - border_size
 			var data_y = y - border_size
 			if data_x >= 0 and data_y >= 0 and data_x < grid.size() and data_y < grid[0].size():

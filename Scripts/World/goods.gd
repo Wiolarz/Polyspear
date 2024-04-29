@@ -5,10 +5,10 @@ extends Resource
 @export var iron : int = 0
 @export var ruby : int = 0
 
-func _init(wood_ : int = 0, iron_ : int = 0, ruby_ : int = 0):
-	wood = wood_
-	iron = iron_
-	ruby = ruby_
+func _init(new_wood: int = 0, new_iron : int = 0, new_ruby : int = 0):
+	wood = new_wood
+	iron = new_iron
+	ruby = new_ruby
 
 
 func has_enough(needed : Goods):

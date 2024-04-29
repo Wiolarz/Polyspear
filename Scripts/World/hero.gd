@@ -5,8 +5,8 @@ extends Node
 var template : DataHero
 
 # code
-var army : Army
 var controller : Player
+var army : Army
 var coord : Vector2i
 # visual
 var target_tile : HexTile
@@ -15,7 +15,7 @@ var target_tile : HexTile
 # gameplay
 var hero_name : String
 
-var data_unit : DataUnit 
+var data_unit : DataUnit
 
 var max_army_size : int
 

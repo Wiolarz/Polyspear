@@ -33,10 +33,10 @@ func _physics_process(_delta):
 
 func turn(side : int, skip_animation = false):
 	"""
-	  360 / 6 = 60  degrees needed to rotate unit
+	360 / 6 = 60  degrees needed to rotate unit
 
-	  param Unit - Reference to the object we are rotating
-	  param Direction
+	param Unit - Reference to the object we are rotating
+	param Direction
 	"""
 	unit_rotation = side
 
