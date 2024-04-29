@@ -62,6 +62,15 @@ static func occupier_receive_from_network(occupier, local_username : String):
 	push_error("invalid occupier received ", occupier)
 
 
+static func create_empty(slot_count : int):
+	slots.resize(slot_count)
+	for i in range(slot_count):
+		slots[i] = GameSetupInfo.Slot.new()
+		slots[i].occupier = 0
+		slots[i].faction = CFG.FACTIONS_LIST[0]
+		slots[i].color = i
+
+
 ## Info for a single slot
 class Slot extends RefCounted: # check if this is good base
 

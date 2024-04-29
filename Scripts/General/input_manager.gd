@@ -2,30 +2,35 @@
 
 extends Node
 
-
-"""
-Top level god class
-TODO: split reasonably
-
-when player selects a hex it inform input_manager
-
-there input_manager check who the current play is:
-	1 in single player its simple check if its the player turn
-	2 in multi player we check if its the local machine turn, if it is then it sends the move to all users
-
-if the AI plays the move:
-	1 in single player AI gets called to act when its their turn so it goes straight to gameplay
-	2 in multi GAME HOST only sends the call to AI for it to make a move
-
-
-where do we call AI?
-
-there is an end turn function "switch player" it could call the input manager to let it now who the current player is
+## Top level god class
+## TODO: split reasonably
+##
+## When a player selects a hex `IM.grid_input_listener` is called
+##
+## there input_manager check who the current play is:
+## 	1 in single player its simple check if its the player turn
+## 	2 in multi player we will check if its the local machine turn,
+## 		if it is then it sends the move to all users
+##
+## if the AI plays the move:
+## 	1 in single player AI gets called to act when its their turn
+## 	2 in multi GAME only HOST will call AI to make a move, and broadcast it
+##
+## TODO: improve code that calls AI?
+## TODO: improve "switch player" code (end of turn)
+## so that IM knows who current player is
 
 
-"""
+## notifies when `game_setup_info` is modified
+signal game_setup_info_changed
 
-var _players : Array[Player] = []
+enum CameraPosition {WORLD, BATTLE}
+
+
+## TODO clean up, this lobby setup is used only in networking,
+## it should be universal
+var game_setup_info : GameSetupInfo
+
 var players : Array[Player] :
 	get:
 		return _players
@@ -38,19 +43,18 @@ var players : Array[Player] :
 			add_child(p)
 		_players = value
 
+## flag for MAP EDITOR
 var draw_mode : bool = false
-
-
-enum camera_position {WORLD, BATTLE}
-var current_camera_position = camera_position.WORLD
-
 
 var raging_battle : bool
 
+var current_camera_position = CameraPosition.WORLD
 
+## TODO move to some chat class
 var chat_log : String
 
-signal game_setup_info_changed
+var _players : Array[Player] = []
+
 
 #region Input Support
 
@@ -86,6 +90,7 @@ func _process(_delta):
 	if Input.is_action_just_pressed("KEY_LOAD_GAME"):
 		print("quick load is not yet supported")
 
+
 func _physics_process(_delta):
 	## To prevent desync when animating + enemy bot gameplay
 	if Input.is_action_just_pressed("KEY_BOT_SPEED_SLOW"):
@@ -100,14 +105,6 @@ func _physics_process(_delta):
 		print("anim speed - fast")
 		CFG.animation_speed_frames = CFG.AnimationSpeed.INSTANT
 		CFG.bot_speed_frames = CFG.BotSpeed.FAST
-
-
-func add_player(player_name:String) -> Player:
-	var p = Player.new()
-	p.player_name = player_name
-	players.append(p)
-	add_child(p)
-	return p
 
 # called from HexTile mouse detection
 func grid_smooth_input_listener(coord : Vector2i):
@@ -132,8 +129,11 @@ func grid_input_listener(coord : Vector2i):
 
 #region Game setup
 
-# TODO clean up, used in networking, should be universal
-var game_setup_info : GameSetupInfo
+func get_world_maps_list() -> Array[String]:
+	return TestTools.list_files_in_folder(CFG.WORLD_MAPS_PATH)
+
+func get_battle_maps_list() -> Array[String]:
+	return TestTools.list_files_in_folder(CFG.BATTLE_MAPS_PATH)
 
 
 func get_active_players() -> Array[Player]:
@@ -146,13 +146,12 @@ func get_active_players() -> Array[Player]:
 	return active_players
 
 
-func get_maps_list() -> Array[String]:
-	return TestTools.list_files_in_folder(CFG.WORLD_MAPS_PATH)
-
-
-func get_battle_maps_list() -> Array[String]:
-	return TestTools.list_files_in_folder(CFG.BATTLE_MAPS_PATH)
-
+func add_player(player_name:String) -> Player:
+	var p = Player.new()
+	p.player_name = player_name
+	players.append(p)
+	add_child(p)
+	return p
 
 func start_game(map_name : String, player_settings : Array[PresetPlayer]):
 	var map_data: DataWorldMap = load(CFG.WORLD_MAPS_PATH + map_name)
@@ -166,10 +165,11 @@ func start_game(map_name : String, player_settings : Array[PresetPlayer]):
 #region Gameplay UI
 
 func switch_camera():
-	if current_camera_position == camera_position.WORLD:
-		current_camera_position = camera_position.BATTLE
+	## TODO implement actual camera switches
+	if current_camera_position == CameraPosition.WORLD:
+		current_camera_position = CameraPosition.BATTLE
 	else:
-		current_camera_position = camera_position.WORLD
+		current_camera_position = CameraPosition.WORLD
 
 func go_to_main_menu():
 	draw_mode = false
@@ -191,14 +191,7 @@ func hide_in_game_menu():
 #region Network
 
 func set_default_game_setup_info() -> void:
-	const slot_count : int = 4
-	game_setup_info = GameSetupInfo.new()
-	game_setup_info.slots.resize(slot_count)
-	for i in range(slot_count):
-		game_setup_info.slots[i] = GameSetupInfo.Slot.new()
-		game_setup_info.slots[i].occupier = 0
-		game_setup_info.slots[i].faction = CFG.FACTIONS_LIST[0]
-		game_setup_info.slots[i].color = i
+	game_setup_info = GameSetupInfo.crete_empty(4)
 
 
 func make_server():
@@ -257,6 +250,7 @@ func client_logout_and_disconnect():
 		return
 	get_client().logout_if_needed()
 	get_client().close()
+
 
 func get_server() -> Server:
 	var server = get_node_or_null("TheServer")
@@ -355,12 +349,15 @@ func set_game_paused(is_paused : bool):
 func quit_game():
 	get_tree().quit()
 
-## DisplayServer.WINDOW_MODE_EXCLUSIVE_FULLSCREEN because of this bug: https://github.com/godotengine/godot/issues/63500
+
+## NOTE: fullscreen uses old style exclusive fullscreen because of Godot bug
 func toggle_fullscreen():
 	if DisplayServer.window_get_mode() == DisplayServer.WINDOW_MODE_WINDOWED:
 		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_EXCLUSIVE_FULLSCREEN)
-		#DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)  # there is a grey border around the screen
+		# DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
+		# TODO: change to borderless when Godot bug is fixed
 		# https://github.com/godotengine/godot/issues/63500
+		# there is a grey border around the screen
 	else:
 		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
 

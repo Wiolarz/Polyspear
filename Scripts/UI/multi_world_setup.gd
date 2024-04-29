@@ -165,7 +165,7 @@ func make_client_side():
 func fill_maps_list():
 	if not maps_list:
 		return
-	var maps = IM.get_maps_list()
+	var maps = IM.get_world_maps_list()
 	if maps_list.item_count > 0:
 		return
 	maps_list.clear()
@@ -175,7 +175,7 @@ func fill_maps_list():
 		_on_map_list_item_selected(0) # kind of drut
 
 
-func _on_map_list_item_selected(index):
+func _on_map_list_item_selected(_index):
 	if not maps_list:
 		return
 	if not game_setup:
