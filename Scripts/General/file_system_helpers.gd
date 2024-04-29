@@ -16,12 +16,12 @@ static func list_files_in_folder(
 		result.append(name_to_add)
 	if scan_subfolders:
 		for subdir in dir.get_directories():
-			var subdirFiles = list_files_in_folder(\
+			var subdir_files = list_files_in_folder(\
 				dir.get_current_dir() + "/" + subdir, return_full_path, true)
 			if not return_full_path:
-				subdirFiles = subdirFiles.map(\
-					func add_prefix(fileName): return subdir + "/" + fileName)
-			result.append_array(subdirFiles)
+				subdir_files = subdir_files.map(\
+					func add_prefix(file_name): return subdir + "/" + file_name)
+			result.append_array(subdir_files)
 	return result
 
 func _init():

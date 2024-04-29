@@ -33,7 +33,7 @@ static var DIRECTIONS = [ \
 
 
 
-var tile_grid : Array = []  # Array[Array[HexTile]]
+var tile_grid : Array = []  # Array[Array[TileForm]]
 var unit_grid : Array = [] # Array[Array[UnitForm/Army]]
 
 #region Coordinate Tools
@@ -65,7 +65,7 @@ static func adjacent_coord(base_coord : Vector2i, side : int) -> Vector2i:
 	"""
 	return base_coord + DIRECTIONS[side]
 
-func tile_at(coord : Vector2i) -> HexTile:
+func tile_at(coord : Vector2i) -> TileForm:
 	return tile_grid[coord.x][coord.y]
 #endregion
 
@@ -103,7 +103,7 @@ func spawn_tiles() -> void:
 	for x in range(grid_width):
 		for y in range(grid_height):
 			# creating a node
-			var new_tile : HexTile = CFG.HEX_TILE_FORM_SCENE.instantiate()
+			var new_tile : TileForm = CFG.HEX_TILE_FORM_SCENE.instantiate()
 			add_child(new_tile)
 
 			# Set tile coord
@@ -124,7 +124,7 @@ func spawn_tiles() -> void:
 
 			# Debug information
 
-			new_tile.name = new_tile.type + "_HexTile_" + str(new_tile.coord)
+			new_tile.name = new_tile.type + "_TileForm_" + str(new_tile.coord)
 
 
 

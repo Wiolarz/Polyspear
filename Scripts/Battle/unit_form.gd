@@ -14,7 +14,7 @@ var symbols : Array[E.Symbols] = [
 	E.Symbols.EMPTY, E.Symbols.EMPTY, E.Symbols.EMPTY,
 ]
 
-var _target_tile : HexTile
+var _target_tile : TileForm
 var _move_speed : float
 
 var _target_rotation_degrees : float
@@ -51,7 +51,7 @@ func turn(side : int, skip_animation = false):
 	_rotation_speed = abs(relative_rotation) / CFG.animation_speed_frames
 
 
-func move(target : HexTile):
+func move(target : TileForm):
 	_target_tile = target
 	_move_speed = (target.position - position).length() / CFG.animation_speed_frames
 

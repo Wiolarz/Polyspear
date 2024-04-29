@@ -4,7 +4,7 @@ extends GridManager
 
 var max_player_number : int
 
-## Array[Array[HexTile]] player, index -> HexTile
+## Array[Array[TileForm]] player, index -> TileForm
 ## lists all tiles that can be used to summon units for a given player
 var summon_tiles : Array = []
 

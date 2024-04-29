@@ -16,7 +16,7 @@ extends Resource
 @export var type : String
 
 
-static func create_data_tile(hex_tile : HexTile) -> DataTile:
+static func create_data_tile(hex_tile : TileForm) -> DataTile:
 	var new_data_tile = DataTile.new()
 
 	var sprite_node : Sprite2D = hex_tile.get_node("Sprite2D")
@@ -28,7 +28,7 @@ static func create_data_tile(hex_tile : HexTile) -> DataTile:
 	return new_data_tile
 
 
-func apply_data(tile : HexTile) -> void:
+func apply_data(tile : TileForm) -> void:
 	tile.get_node("Sprite2D").texture = ResourceLoader.load(texture_path)
 	tile.type = type
 

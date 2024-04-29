@@ -465,11 +465,11 @@ func get_not_summoned_units(player:Player) -> Array[DataUnit]:
 	return battle_ui.get_army(player).units_data
 
 
-func get_summon_tiles(player:Player) -> Array[HexTile]:
+func get_summon_tiles(player:Player) -> Array[TileForm]:
 	var summon_tiles = B_GRID.get_all_field_coords()\
 		.filter(func isOk(coord) : return is_legal_summon_coord(coord, player))\
 		.map(func getTile(coord) : return B_GRID.tile_at(coord))
-	var typed:Array[HexTile] = []
+	var typed:Array[TileForm] = []
 	typed.assign(summon_tiles)
 	return typed
 

@@ -9,7 +9,7 @@ var controller : Player
 var army : Army
 var coord : Vector2i
 # visual
-var target_tile : HexTile
+var target_tile : TileForm
 
 
 # gameplay
@@ -38,6 +38,6 @@ func trade(_another_hero : Hero):
 	print("trade menu")
 
 
-func move(target : HexTile):
+func move(target : TileForm):
 	target_tile = target
 

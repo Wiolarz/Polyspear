@@ -106,12 +106,12 @@ func _physics_process(_delta):
 		CFG.animation_speed_frames = CFG.AnimationSpeed.INSTANT
 		CFG.bot_speed_frames = CFG.BotSpeed.FAST
 
-# called from HexTile mouse detection
+# called from TileForm mouse detection
 func grid_smooth_input_listener(coord : Vector2i):
 	if draw_mode:
 		UI.map_editor.grid_input(coord)
 
-# called from HexTile mouse detection
+# called from TileForm mouse detection
 func grid_input_listener(coord : Vector2i):
 	#print("tile ",coord)
 	#if WM.current_player.bot_engine != null:
