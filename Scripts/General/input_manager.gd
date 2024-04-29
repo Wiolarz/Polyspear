@@ -31,10 +31,10 @@ var players : Array[Player] :
 		return _players
 	set(value):
 		for p in _players:
-			print("removing child")
+			print("removing player ", p)
 			remove_child(p)
 		for p in value:
-			print("adding child")
+			print("adding player ", p)
 			add_child(p)
 		_players = value
 
