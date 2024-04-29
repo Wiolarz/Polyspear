@@ -108,5 +108,22 @@ func apply_template(data_template : DataUnit):
 			symbol_sprite.texture = load(tex)
 			symbol_sprite.show()
 
+
 func destroy():
 	queue_free()
+
+
+## WARNING: only for UNIT EDITOR
+func _apply_symbol_sprite(dir : int, texture_path : String) -> void:
+	var symbol_sprite = $"Symbols".get_children()[dir].get_child(0).get_child(0)
+	if texture_path == null or texture_path.is_empty():
+		symbol_sprite.texture = null
+		symbol_sprite.hide()
+		return
+	symbol_sprite.texture = load(texture_path)
+	symbol_sprite.show()
+
+
+## WARNING: only for UNIT EDITOR
+func _apply_unit_texture(texture : Texture2D) -> void:
+	$sprite_unit.texture = texture

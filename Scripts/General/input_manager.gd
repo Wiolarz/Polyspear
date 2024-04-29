@@ -371,7 +371,7 @@ func toggle_fullscreen():
 
 ## Toggle of default godot Debug tool - visible collision shapes
 func toggle_collision_debug():
-	
+
 	var tree := get_tree()
 	tree.debug_collisions_hint = not tree.debug_collisions_hint
 
