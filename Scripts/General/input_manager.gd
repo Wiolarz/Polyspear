@@ -191,7 +191,7 @@ func hide_in_game_menu():
 #region Network
 
 func set_default_game_setup_info() -> void:
-	game_setup_info = GameSetupInfo.crete_empty(4)
+	game_setup_info = GameSetupInfo.create_empty(4)
 
 
 func make_server():

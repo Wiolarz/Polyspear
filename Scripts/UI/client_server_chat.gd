@@ -36,9 +36,12 @@ func update_connection_info():
 				var peer = client.peer
 				match client.peer.get_state():
 					ENetPacketPeer.PeerState.STATE_CONNECTED:
-						label_content += "\nconnected to %s %d" % [ peer.get_remote_address(), peer.get_remote_port() ]
-					ENetPacketPeer.PeerState.STATE_CONNECTING, ENetPacketPeer.PeerState.STATE_ACKNOWLEDGING_CONNECT:
-						label_content += "\nconnecting to %s %d" % [ peer.get_remote_address(), peer.get_remote_port() ]
+						label_content += "\nconnected to %s %d" \
+								% [ peer.get_remote_address(), peer.get_remote_port() ]
+					ENetPacketPeer.PeerState.STATE_CONNECTING, \
+					ENetPacketPeer.PeerState.STATE_ACKNOWLEDGING_CONNECT:
+						label_content += "\nconnecting to %s %d" \
+								% [ peer.get_remote_address(), peer.get_remote_port() ]
 					_:
 						pass
 				if client.username != "":

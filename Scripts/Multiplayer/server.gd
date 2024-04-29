@@ -2,12 +2,6 @@ class_name Server
 extends Node
 
 
-class Session:
-	var username : String = ""
-	var peer : ENetPacketPeer = null
-	var seats : Dictionary = {} # Dictionary[int -> int]
-
-
 var incoming_commands : Dictionary = { # Dictionary[String -> Command]
 	"login": Command.create_on_server(AllTheCommands.server_login),
 	"logout": Command.create_on_server(AllTheCommands.server_logout),
@@ -27,6 +21,10 @@ var incoming_commands : Dictionary = { # Dictionary[String -> Command]
 var server_username : String = ""
 @onready var sessions : Array = []
 @onready var enet_network : ENetConnection = null
+
+
+func _process(_delta):
+	roll()
 
 #region Connection
 
@@ -246,9 +244,10 @@ func roll() -> void:
 					pass
 	if broken:
 		close()
-
-
-func _process(_delta):
-	roll()
-
 #endregion
+
+## info on an accepted network connection to the client
+class Session:
+	var username : String = ""
+	var peer : ENetPacketPeer = null
+	var seats : Dictionary = {} # Dictionary[int -> int]

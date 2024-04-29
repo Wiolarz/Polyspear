@@ -80,7 +80,6 @@ static func server_request_color_cycle(server : Server, peer : ENetPacketPeer, \
 	var index = params["slot"] as int
 	if index < 0 or index >= slots.size():
 		return FAILED
-	var slot = slots[index]
 	var new_color_index = slots[index].color
 	while true:
 		new_color_index = (new_color_index + diff) % CFG.TEAM_COLORS.size()
@@ -201,7 +200,7 @@ static func client_chat(client : Client, params : Dictionary) -> int:
 	IM.append_message_to_local_chat_log(message, author)
 	return OK
 
-static func client_fill_game_setup(client : Client, params : Dictionary) -> int:
+static func client_fill_game_setup(_c : Client, params : Dictionary) -> int:
 	if not "setup" in params or not params["setup"] is Dictionary:
 		return FAILED
 	var setup = GameSetupInfo.from_dictionary(params["setup"], \

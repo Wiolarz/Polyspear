@@ -77,10 +77,6 @@ func set_visible_faction(faction : DataFaction):
 	button_faction.text = faction.faction_name
 
 
-func _ready():
-	pass
-
-
 func _on_button_take_leave_pressed():
 	match button_take_leave_state:
 		TakeLeaveButtonState.FREE:
