@@ -130,10 +130,10 @@ func grid_input_listener(coord : Vector2i):
 #region Game setup
 
 func get_world_maps_list() -> Array[String]:
-	return TestTools.list_files_in_folder(CFG.WORLD_MAPS_PATH)
+	return FileSystemHelpers.list_files_in_folder(CFG.WORLD_MAPS_PATH)
 
 func get_battle_maps_list() -> Array[String]:
-	return TestTools.list_files_in_folder(CFG.BATTLE_MAPS_PATH)
+	return FileSystemHelpers.list_files_in_folder(CFG.BATTLE_MAPS_PATH)
 
 
 func get_active_players() -> Array[Player]:

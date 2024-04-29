@@ -1,7 +1,4 @@
-class_name TestTools
-
-extends GutTest
-
+class_name FileSystemHelpers
 
 static func list_files_in_folder(
 		folder_path : String,
@@ -26,3 +23,6 @@ static func list_files_in_folder(
 					func add_prefix(fileName): return subdir + "/" + fileName)
 			result.append_array(subdirFiles)
 	return result
+
+func _init():
+	assert(false, "static class do not instantiate")

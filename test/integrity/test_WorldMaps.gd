@@ -17,7 +17,7 @@ const ALLOWED_WORLD_TILE_TYPES = {
 func test_world_tiles_set():
 	gut.p("Testing world tiles set")
 	var tile_types_seen = {}
-	var tiles = TestTools.list_files_in_folder(CFG.WORLD_MAP_TILES_PATH, true)
+	var tiles = FileSystemHelpers.list_files_in_folder(CFG.WORLD_MAP_TILES_PATH, true)
 	for tile_path in tiles:
 		gut.p("Checking " + tile_path)
 		var tile = load(tile_path)
@@ -35,7 +35,7 @@ func test_world_tiles_set():
 
 func test_world_maps():
 	gut.p("Testing world maps %s" % CFG.WORLD_MAPS_PATH)
-	var map_paths = TestTools.list_files_in_folder(CFG.WORLD_MAPS_PATH, true)
+	var map_paths = FileSystemHelpers.list_files_in_folder(CFG.WORLD_MAPS_PATH, true)
 	for path in map_paths:
 		gut.p("Checking "+path)
 		var map_data : DataWorldMap = load(path)

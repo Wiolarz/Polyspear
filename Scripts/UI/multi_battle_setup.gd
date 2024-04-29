@@ -164,7 +164,7 @@ func fill_maps_list():
 
 
 func fill_presets_list():
-	var presets = TestTools.list_files_in_folder(CFG.BATTLE_PRESETS_PATH, true, true)
+	var presets = FileSystemHelpers.list_files_in_folder(CFG.BATTLE_PRESETS_PATH, true, true)
 	presets_list.clear()
 	for preset in presets:
 		presets_list.add_item(preset.trim_prefix(CFG.BATTLE_PRESETS_PATH))
