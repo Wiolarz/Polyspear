@@ -15,6 +15,12 @@ func test_map_start_and_close() -> void:
 		"Start Game button not visible")
 	start_game_button.pressed.emit()
 
+	gut.p("click 'Full game' in lobby")
+	var full_game_button = $"/root/UI/HostLobby/HostMenu/PanelContainer/MultiGameSetup/MarginContainer/VBoxContainer/ModeChoice/ButtonFullScenario"
+	assert_true( full_game_button.is_visible_in_tree(), \
+		"Full Game button not visible")
+	full_game_button.toggled.emit(true)
+
 	gut.p("click 'Start' button in lobby")
 	var lobby_start_button = $/root/UI/HostLobby/HostMenu/PanelContainer/MultiGameSetup/MarginContainer/VBoxContainer/ButtonConfirm
 	assert_true( lobby_start_button.is_visible_in_tree(), \
@@ -25,7 +31,7 @@ func test_map_start_and_close() -> void:
 	var world_ui = $/root/UI/WorldUi
 	assert_is(world_ui, CanvasLayer, "World UI not a CanvasLayer")
 	assert_true(world_ui.visible, "World UI not visible")
-	assert_eq(W_GRID.get_child_count(), 8*8, "Map spawned, but tiles count not 8x8")
+	assert_eq(W_GRID.get_child_count(),14*10, "Map spawned, but tiles count not 14*10")
 	assert_is(W_GRID.get_child(0), HexTile, "Map spawned, but tiles are not HexTile")
 
 	gut.p("open in game menu")

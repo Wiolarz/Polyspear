@@ -9,6 +9,9 @@ const ALLOWED_WORLD_TILE_TYPES = {
 	"iron_mine": true,
 	"ruby_cave": true,
 	"sawmill": true,
+	"iron_hunt": true,
+	"ruby_hunt": true,
+	"wood_hunt": true,
 }
 
 func test_world_tiles_set():
