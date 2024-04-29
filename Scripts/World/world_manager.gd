@@ -229,6 +229,7 @@ func spawn_world_ui():
 	world_ui = load("res://Scenes/UI/WorldUi.tscn").instantiate()
 	UI.add_custom_screen(world_ui)
 
+
 func start_world(world_map : DataWorldMap) -> void:
 
 	var spawn_location = world_map.get_spawn_locations()

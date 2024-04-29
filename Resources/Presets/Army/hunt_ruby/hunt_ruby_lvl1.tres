@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="PresetArmy" load_steps=3 format=3 uid="uid://cabfuod10fsgj"]
+
+[ext_resource type="Script" path="res://Resources/Presets/preset_army.gd" id="1_idwqm"]
+[ext_resource type="Resource" uid="uid://cap1ybfpgyy4n" path="res://Resources/Battle/Units/Neutral/ruby_bird.tres" id="2_tp5fl"]
+
+[resource]
+script = ExtResource("1_idwqm")
+units = Array[Resource("res://Resources/Battle/data_unit.gd")]([ExtResource("2_tp5fl")])

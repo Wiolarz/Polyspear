@@ -84,3 +84,11 @@ const DEFAULT_ARMY_FORM = preload("res://Scenes/Form/ArmyForm.tscn")
 
 func get_start_goods() -> Goods:
 	return Goods.new(10,5,1)
+
+#region Neutral Units armies
+
+const HUNT_WOOD_PATH : String = "res://Resources/Presets/Army/hunt_wood/" 
+const HUNT_IRON_PATH : String = "res://Resources/Presets/Army/hunt_iron/" 
+const HUNT_RUBY_PATH : String = "res://Resources/Presets/Army/hunt_ruby/"
+
+#endregion

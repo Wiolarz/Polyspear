@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="PresetArmy" load_steps=3 format=3 uid="uid://cclo8g7km2geq"]
+
+[ext_resource type="Script" path="res://Resources/Presets/preset_army.gd" id="1_qo1nq"]
+[ext_resource type="Resource" uid="uid://c5dvglr4grxt5" path="res://Resources/Battle/Units/Neutral/wood_dryad.tres" id="2_44bbe"]
+
+[resource]
+script = ExtResource("1_qo1nq")
+units = Array[Resource("res://Resources/Battle/data_unit.gd")]([ExtResource("2_44bbe")])
