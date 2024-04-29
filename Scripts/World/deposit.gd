@@ -1,5 +1,5 @@
-extends Place
 class_name Deposit
+extends Place
 
 var accumulated_goods : Goods
 var per_turn : Goods

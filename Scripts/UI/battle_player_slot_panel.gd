@@ -53,11 +53,11 @@ func cycle_color(backwards : bool = false):
 func is_bot() -> bool:
 	return button_ai_state == AiButtonState.AI
 
+
 func cycle_ai(backwards : bool = false):
 	var new_state = button_ai_state + (-1 if backwards else 1)
 	button_ai_state = wrapi(new_state, 0, AiButtonState.size()) as AiButtonState
 	button_ai.text = AiButtonState.keys()[button_ai_state]
-	pass
 
 
 func set_visible_color(c : Color):

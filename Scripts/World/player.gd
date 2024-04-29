@@ -3,7 +3,7 @@ extends Node
 
 var player_name : String = ""
 
-var bot_engine : AIInteface
+var bot_engine : AIInterface
 
 var faction : DataFaction
 
@@ -15,7 +15,7 @@ var cities : Array[City] = []
 var heroes : Array[Hero] = []
 
 
-func use_bot(bot_enabled:bool):
+func use_bot(bot_enabled : bool):
 	if bot_enabled == (bot_engine != null):
 		return
 	if not bot_enabled:

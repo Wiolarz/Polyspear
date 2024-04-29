@@ -1,51 +1,8 @@
 class_name E
-
-extends Node
-
-#region General
-
-enum player_type
-{
-	OBSERVER,
-	HUMAN,
-	BOT,
-}
+extends Object
 
 
-
-
-#region World
-
-enum WorldMapTiles
-{
-	SENTINEL,
-
-	# fundemantal game logic
-	EMPTY,
-	WALL,
-
-	# UI based menu interfaces
-	CITY,
-	PLACE,
-
-	# undifined
-	DEPOSIT,
-}
-
-static func to_name(wmt : WorldMapTiles) -> String:
-	return WorldMapTiles.keys()[wmt].to_lower()
-
-#endregion
-
-
-#region Battle
-
-enum MapShape
-{
-	CLASSIC,
-	SHIFTED,
-}
-
+## Symbols for units in battle, assigned to each side of a hex
 enum Symbols
 {
 	EMPTY,
@@ -56,6 +13,55 @@ enum Symbols
 	PUSH,
 }
 
-#endregion
+## used to specify direction on a hex grid
+enum GridDirections
+{
+	LEFT,
+	TOP_LEFT,
+	TOP_RIGHT,
+	RIGHT,
+	BOTTOM_RIGHT,
+	BOTTOM_LEFT,
+}
 
+enum PlayerType
+{
+	OBSERVER,
+	HUMAN,
+	BOT,
+}
+
+enum WorldMapTiles
+{
+	SENTINEL,
+
+	# fundamental game logic
+	EMPTY,
+	WALL,
+
+	# UI based menu interfaces
+	CITY,
+	PLACE,
+
+	# undefined
+	DEPOSIT,
+}
+
+
+static func symbol_to_name(s : Symbols) -> String:
+	return Symbols.keys()[s]
+
+static func direction_to_name(d : GridDirections) -> String:
+	return GridDirections.keys()[d]
+
+static func player_type_to_name(pt : PlayerType) -> String:
+	return PlayerType.keys()[pt].to_lower()
+
+
+static func world_map_tile_to_name(wmt : WorldMapTiles) -> String:
+	return WorldMapTiles.keys()[wmt].to_lower()
+
+
+func _init():
+	assert(false, "do not instantiate this class, it's static only")
 

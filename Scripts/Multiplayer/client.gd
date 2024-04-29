@@ -16,6 +16,10 @@ var incoming_commands : Dictionary = {
 
 @onready var enet_network : ENetConnection = null
 
+
+func _process(_delta):
+	roll()
+
 #region Connection
 
 func connect_to_server(address : String, port : int) -> void:
@@ -151,7 +155,8 @@ func roll() -> void:
 		var event : Array = enet_network.service()
 
 		var type : ENetConnection.EventType = event[0]
-		assert(type == ENetConnection.EventType.EVENT_NONE or peer == event[1], "got event not from server")
+		assert(type == ENetConnection.EventType.EVENT_NONE \
+				or peer == event[1], "got event not from server")
 		var channel : int = event[3]
 
 		match type:
@@ -196,8 +201,5 @@ func roll() -> void:
 	if broken:
 		close()
 
-
-func _process(_delta):
-	roll()
 
 #endregion

@@ -7,7 +7,7 @@ test data for Input Manager
 """
 
 @export var faction : DataFaction
-@export var player_type : E.player_type = E.player_type.OBSERVER
+@export var player_type : E.PlayerType = E.PlayerType.OBSERVER
 @export var player_name : String
 @export var goods : Goods
 

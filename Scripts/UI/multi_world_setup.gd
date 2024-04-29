@@ -33,13 +33,13 @@ func get_player_settings() -> Array[PresetPlayer]:
 	var elf = PresetPlayer.new();
 	elf.faction = CFG.FACTION_ELVES
 	elf.player_name = "elf"
-	elf.player_type =  E.player_type.HUMAN
+	elf.player_type =  E.PlayerType.HUMAN
 	elf.goods = CFG.get_start_goods()
 
 	var orc = PresetPlayer.new()
 	orc.faction = CFG.FACTION_ORCS
 	orc.player_name = "orc"
-	orc.player_type =  E.player_type.HUMAN
+	orc.player_type =  E.PlayerType.HUMAN
 	orc.goods = CFG.get_start_goods()
 
 	return [ elf, orc ]
@@ -165,7 +165,7 @@ func make_client_side():
 func fill_maps_list():
 	if not maps_list:
 		return
-	var maps = IM.get_maps_list()
+	var maps = IM.get_world_maps_list()
 	if maps_list.item_count > 0:
 		return
 	maps_list.clear()
@@ -175,7 +175,7 @@ func fill_maps_list():
 		_on_map_list_item_selected(0) # kind of drut
 
 
-func _on_map_list_item_selected(index):
+func _on_map_list_item_selected(_index):
 	if not maps_list:
 		return
 	if not game_setup:

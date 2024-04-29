@@ -5,6 +5,9 @@ extends Control
 UI - Server Admin tools + chat box
 """
 
+
+var host_menu : HostMenu = null
+
 @onready var chat_line_edit = \
 	$MarginContainer/VBoxContainer/Chat/Writing/ChatMessage
 
@@ -12,7 +15,9 @@ UI - Server Admin tools + chat box
 	$MarginContainer/VBoxContainer/Chat/LogScroll
 
 
-var host_menu : HostMenu = null
+func _process(_delta):
+	update_server_info()
+	update_chat()
 
 
 #region Chat
@@ -106,8 +111,3 @@ func update_server_info():
 		else:
 			label_content = "server is off"
 	label.text = label_content
-
-
-func _process(_delta):
-	update_server_info()
-	update_chat()

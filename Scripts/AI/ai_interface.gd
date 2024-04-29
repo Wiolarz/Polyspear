@@ -1,11 +1,11 @@
-class_name AIInteface extends Node
+class_name AIInterface extends Node
 
 
 var me : Player
 
 
-func _init( controlledPlayer: Player ):
-	me = controlledPlayer
+func _init(controlled_player : Player):
+	me = controlled_player
 
 
 func play_move():

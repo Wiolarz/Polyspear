@@ -80,7 +80,7 @@ func get_hero(coord : Vector2i):
 func is_enemy_present(coord : Vector2i, player : Player) -> bool:
 	if get_tile_controller(coord) == player:
 		return false
-	elif get_army(coord) == null:
+	if get_army(coord) == null:
 		return false
 	return true
 
@@ -89,7 +89,7 @@ func get_interactable_type(coord : Vector2i) -> String:
 	var army = get_army(coord)
 	if army != null:
 		return "army"
-	elif is_city(coord):
+	if is_city(coord):
 		return "city"
 
 	return "empty"

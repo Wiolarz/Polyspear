@@ -1,5 +1,5 @@
 class_name ExampleBot
-extends AIInteface
+extends AIInterface
 
 """
 Bot with a state determined by tags
@@ -13,7 +13,7 @@ enum TAG \
 	DEFEND,
 }
 
-var tagsSet: Dictionary = {} # [TAG -> null] used as Hash set
+var tags_set: Dictionary = {} # [TAG -> null] used as Hash set
 
 var current_state
 
@@ -26,15 +26,15 @@ func _ready():
 
 
 func add_tag(tag : TAG):
-	if tagsSet.has(tag):
+	if tags_set.has(tag):
 		return
-	tagsSet[tag] = null
+	tags_set[tag] = null
 	# update state
 
 
 func remove_tag(tag : TAG):
-	if tagsSet.has(tag):
-		tagsSet.erase(tag)
+	if tags_set.has(tag):
+		tags_set.erase(tag)
 	# update state
 
 
@@ -55,7 +55,7 @@ func ai_thinking_delay() -> void:
 		await get_tree().create_timer(0.1).timeout
 
 func _get_possible_moves() -> Array[MoveInfo]:
-	if BM.unsummoned_units_counter != 0:
+	if BM.is_during_summoning_phase():
 		return AIHelpers.get_all_spawn_moves(me)
 
 	var my_units : Array[Unit] = BM.get_units(me)
