@@ -25,7 +25,7 @@ Rest - Previous working scripts act incorrectly for unknown reasons. To move any
 ## Colors used in UI
 background - 1A1A1A
 HP - 9D201D
-Stamina - 506638 
+Stamina - 506638
 
 ## Exercices:
 

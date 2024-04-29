@@ -1,0 +1,108 @@
+[gd_scene load_steps=12 format=3 uid="uid://cf1cbn0ouimmo"]
+
+[ext_resource type="Texture2D" uid="uid://dbxvvbwku3y6w" path="res://ART/background.png" id="1_7difp"]
+[ext_resource type="PackedScene" uid="uid://d5ev2j4bvf01" path="res://Scenes/UI/UI.tscn" id="1_h6apb"]
+[ext_resource type="PackedScene" uid="uid://b2ln8fu45j13f" path="res://Scenes/Env/spikes.tscn" id="2_asq6b"]
+[ext_resource type="PackedScene" uid="uid://daxr8sv6kdpxx" path="res://Scenes/Basic/player.tscn" id="3_2prdd"]
+[ext_resource type="Script" path="res://Scripts/test_Spawner.gd" id="4_7vm6b"]
+[ext_resource type="PackedScene" uid="uid://dp67ppyuvv8ob" path="res://Scenes/Env/map_edge.tscn" id="5_hrxtm"]
+[ext_resource type="PackedScene" uid="uid://darurk3tn4vxp" path="res://Scenes/Env/map_corner.tscn" id="6_qdhgk"]
+[ext_resource type="PackedScene" uid="uid://cdby23e1a3eeh" path="res://Scenes/UI/menu.tscn" id="7_1ijh5"]
+[ext_resource type="PackedScene" uid="uid://ce1v3ocbkdcfb" path="res://Scenes/Env/rock_1.tscn" id="8_ndcg6"]
+[ext_resource type="PackedScene" uid="uid://ck4gb58gt0b7s" path="res://Scenes/Env/rock_2.tscn" id="9_kf2f3"]
+[ext_resource type="PackedScene" uid="uid://brivq0jp25jxa" path="res://Scenes/spawner.tscn" id="10_xofc3"]
+
+[node name="BasicMap" type="Node"]
+
+[node name="UI" parent="." node_paths=PackedStringArray("player") instance=ExtResource("1_h6apb")]
+player = NodePath("../Player")
+
+[node name="Background" type="Sprite2D" parent="."]
+position = Vector2(-1249, 259)
+scale = Vector2(1.45039, 1.25409)
+texture = ExtResource("1_7difp")
+
+[node name="Spikes" parent="." instance=ExtResource("2_asq6b")]
+position = Vector2(1066, 1424)
+
+[node name="Spikes2" parent="." instance=ExtResource("2_asq6b")]
+position = Vector2(981, -1433)
+
+[node name="Spikes3" parent="." instance=ExtResource("2_asq6b")]
+position = Vector2(-2539, 1350)
+
+[node name="Player" parent="." instance=ExtResource("3_2prdd")]
+position = Vector2(-795, 371)
+
+[node name="test_spawner" type="Node2D" parent="."]
+position = Vector2(-53, -150)
+script = ExtResource("4_7vm6b")
+
+[node name="MapBorders" type="Node2D" parent="."]
+
+[node name="MapEdge" parent="MapBorders" instance=ExtResource("5_hrxtm")]
+position = Vector2(3147, 240)
+
+[node name="MapEdge2" parent="MapBorders" instance=ExtResource("5_hrxtm")]
+position = Vector2(613, -2179)
+rotation = -1.5708
+
+[node name="MapEdge5" parent="MapBorders" instance=ExtResource("5_hrxtm")]
+position = Vector2(-3221, 2767)
+rotation = 1.5708
+
+[node name="MapEdge6" parent="MapBorders" instance=ExtResource("5_hrxtm")]
+position = Vector2(-3378, -2208)
+rotation = -1.5708
+
+[node name="MapEdge3" parent="MapBorders" instance=ExtResource("5_hrxtm")]
+position = Vector2(737, 2774)
+rotation = 1.5708
+
+[node name="MapEdge4" parent="MapBorders" instance=ExtResource("5_hrxtm")]
+position = Vector2(-5642, 347)
+rotation = -3.14159
+
+[node name="MapCorner" parent="MapBorders" instance=ExtResource("6_qdhgk")]
+position = Vector2(2977, -2008)
+
+[node name="MapCorner2" parent="MapBorders" instance=ExtResource("6_qdhgk")]
+position = Vector2(2977, 2604)
+rotation = 1.5708
+
+[node name="MapCorner3" parent="MapBorders" instance=ExtResource("6_qdhgk")]
+position = Vector2(-5553, 2505)
+rotation = -3.14159
+
+[node name="MapCorner4" parent="MapBorders" instance=ExtResource("6_qdhgk")]
+position = Vector2(-5473, -2021)
+rotation = -1.5708
+
+[node name="Menu" parent="." instance=ExtResource("7_1ijh5")]
+
+[node name="Rock1" parent="." instance=ExtResource("8_ndcg6")]
+position = Vector2(-3820, 1161)
+
+[node name="Rock2" parent="." instance=ExtResource("9_kf2f3")]
+position = Vector2(-1255, -1080)
+
+[node name="Spawner" parent="." instance=ExtResource("10_xofc3")]
+position = Vector2(-5295, -1901)
+
+[node name="Spawner2" parent="." instance=ExtResource("10_xofc3")]
+position = Vector2(2788, 2489)
+
+[node name="Spawner3" parent="." instance=ExtResource("10_xofc3")]
+position = Vector2(2814, -1876)
+
+[node name="Spawner4" parent="." instance=ExtResource("10_xofc3")]
+position = Vector2(-5306, 2277)
+
+[node name="MapEdge" parent="." instance=ExtResource("5_hrxtm")]
+position = Vector2(1361, 330)
+scale = Vector2(1, 1.24)
+
+[node name="MapEdge" parent="MapEdge" instance=ExtResource("5_hrxtm")]
+position = Vector2(-4801, -57.2581)
+rotation = 3.14159
+scale = Vector2(0.843914, 1.04645)

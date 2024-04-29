@@ -1,6 +1,6 @@
 [gd_scene load_steps=9 format=3 uid="uid://bhtwerywf8kh6"]
 
-[ext_resource type="Script" path="res://Scripts/basic_small_enemy.gd" id="1_vtcag"]
+[ext_resource type="Script" path="res://Scripts/Basic/basic_small_enemy.gd" id="1_vtcag"]
 [ext_resource type="Texture2D" uid="uid://7xpv6p8ujb1" path="res://ART/red.png" id="2_jetgw"]
 [ext_resource type="Script" path="res://Scripts/Weapon.gd" id="3_vp4qp"]
 [ext_resource type="Texture2D" uid="uid://b1l4romg0h16r" path="res://ART/sword.png" id="4_nr1wr"]

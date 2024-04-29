@@ -12,7 +12,7 @@ extends Node2D
 var enemies = 0
 var seconds = 0
 
-@export var enemy_scene = load("res://Scenes/small_enemy.tscn")
+@export var enemy_scene = load("res://Scenes/Latest/small_enemy.tscn")
 #@onready var enemy = enemy_scene.instantiate()
 var countdown = 0
 
@@ -39,19 +39,19 @@ func _physics_process(_delta):
 		seconds += 1
 		#print("time: ", seconds)
 		if seconds % difficulty_tempo == 0:
-			if spawnrate > 30: # 30 hard coded minimum time between spawn 
+			if spawnrate > 30: # 30 hard coded minimum time between spawn
 				spawnrate -= difficulty_increase
 				if spawnrate < 30:
 					spawnrate = 30
-			
 
-	
-	
+
+
+
 	if countdown % spawnrate == 0:
 		enemies += 1
 		#print(enemies)
 		spawn()
 
-	
-		
+
+
 
