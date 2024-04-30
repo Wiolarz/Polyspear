@@ -1,6 +1,6 @@
 [gd_scene load_steps=7 format=3 uid="uid://dql37o7nhkxj6"]
 
-[ext_resource type="Script" path="res://Scripts/UI/player_slot_panel.gd" id="1_5ldju"]
+[ext_resource type="Script" path="res://Scripts/UI/Lobby/player_slot_panel.gd" id="1_5ldju"]
 [ext_resource type="Shader" path="res://Art/UI/player_slot_panel.gdshader" id="1_jkj60"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_aw5fe"]
