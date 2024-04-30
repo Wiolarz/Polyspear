@@ -1,4 +1,4 @@
-class_name MultiGameSetup
+class_name GameSetup
 extends Control
 
 # VERY IMPORTANT TODO:

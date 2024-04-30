@@ -1,4 +1,4 @@
-class_name PlayerSlotPanel
+class_name WorldPlayerSlotPanel
 extends PanelContainer
 
 enum TakeLeaveButtonState {

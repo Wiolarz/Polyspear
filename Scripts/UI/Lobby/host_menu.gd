@@ -12,7 +12,7 @@ Manager scripts that displays specific UI
 
 
 @onready var server_management = $ServerManagement
-@onready var multi_game_setup = $PanelContainer/MultiGameSetup
+@onready var multi_game_setup = $PanelContainer/GameSetup
 
 
 func go_back():

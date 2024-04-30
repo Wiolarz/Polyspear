@@ -1,7 +1,7 @@
 class_name MultiBattleSetup
 extends Control
 
-var game_setup : MultiGameSetup
+var game_setup : GameSetup
 
 var player_slot_panels = []
 
