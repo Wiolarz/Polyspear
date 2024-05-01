@@ -136,6 +136,7 @@ func end_of_turn_callbacks(player : Player) -> void:
 				a.on_end_of_turn(player)
 
 func reset_data() -> void:
+	places = []
 	super.reset_data()
 
 #endregion
