@@ -6,8 +6,8 @@
 
 [sub_resource type="Resource" id="Resource_jcp01"]
 script = ExtResource("1_2xdw8")
-wood = 2
-iron = 1
+wood = 3
+iron = 3
 ruby = 0
 
 [resource]
