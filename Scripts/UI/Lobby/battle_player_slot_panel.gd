@@ -92,7 +92,7 @@ func set_visible_take_leave_button_state(state : TakeLeaveButtonState):
 
 
 func _ready():
-	var unit_paths = TestTools.list_files_in_folder(CFG.UNITS_PATH, true, true)
+	var unit_paths = FileSystemHelpers.list_files_in_folder(CFG.UNITS_PATH, true, true)
 	for b in buttons_units:
 		b.clear()
 		b.add_item(EMPTY_UNIT_TEXT)

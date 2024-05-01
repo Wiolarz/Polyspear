@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=3 uid="uid://dunktaeebf6f1"]
 
-[ext_resource type="Script" path="res://Scripts/UI/client_connector.gd" id="1_axf84"]
+[ext_resource type="Script" path="res://Scripts/UI/Lobby/Network/client_connector.gd" id="1_axf84"]
 [ext_resource type="Shortcut" uid="uid://fuvss5hfg4q2" path="res://Resources/Shortcuts/go_back.tres" id="2_qqtls"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_avfjo"]

@@ -59,7 +59,7 @@ func _create_button(box : BoxContainer, map_tile : String):
 
 func _load_tiles(box : BoxContainer, path : String):
 
-	var map_tiles_paths : Array[String] = TestTools.list_files_in_folder(path, true)
+	var map_tiles_paths : Array[String] = FileSystemHelpers.list_files_in_folder(path, true)
 	for map_tile : String in map_tiles_paths:
 		_create_button(box, map_tile)
 

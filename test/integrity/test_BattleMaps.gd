@@ -13,7 +13,7 @@ const ALLOWED_BATTLE_TILE_TYPES = {
 func test_battle_tiles_set():
 	gut.p("Testing battle tiles set")
 	var tile_types_seen = {}
-	var tiles = TestTools.list_files_in_folder(CFG.BATTLE_MAP_TILES_PATH, true)
+	var tiles = FileSystemHelpers.list_files_in_folder(CFG.BATTLE_MAP_TILES_PATH, true)
 	for tile_path in tiles:
 		gut.p("Checking " + tile_path)
 		var tile = load(tile_path)
@@ -31,7 +31,7 @@ func test_battle_tiles_set():
 
 func test_battle_maps():
 	gut.p("Testing battle maps %s" % CFG.BATTLE_MAPS_PATH)
-	var map_paths = TestTools.list_files_in_folder(CFG.BATTLE_MAPS_PATH, true)
+	var map_paths = FileSystemHelpers.list_files_in_folder(CFG.BATTLE_MAPS_PATH, true)
 	for path in map_paths:
 		gut.p("Checking "+path)
 		var map_data : DataBattleMap = load(path)

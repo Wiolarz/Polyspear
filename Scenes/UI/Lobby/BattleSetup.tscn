@@ -1,6 +1,6 @@
 [gd_scene load_steps=7 format=3 uid="uid://blx0kj8gah080"]
 
-[ext_resource type="Script" path="res://Scripts/UI/multi_battle_setup.gd" id="1_dfdeh"]
+[ext_resource type="Script" path="res://Scripts/UI/Lobby/battle_setup.gd" id="1_dfdeh"]
 [ext_resource type="PackedScene" uid="uid://j6n24hs0xavf" path="res://Scenes/UI/Lobby/BattlePlayerSlotPanel.tscn" id="2_vpapl"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ybc2s"]
@@ -37,7 +37,7 @@ content_margin_right = 10.0
 content_margin_bottom = 0.0
 bg_color = Color(1, 1, 1, 1)
 
-[node name="MultiBattleSetup" type="VBoxContainer"]
+[node name="BattleSetup" type="VBoxContainer"]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0

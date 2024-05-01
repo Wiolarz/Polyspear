@@ -18,8 +18,8 @@ var participants : Array[Player] = []
 var current_participant : Player
 var participant_idx : int = ATTACKER
 
-var selected_unit : Unit
-var fighting_units : Array = [[],[]] # Array[Array[Unit]]
+var selected_unit : UnitForm
+var fighting_units : Array = [[],[]] # Array[Array[UnitForm]]
 
 var battle_ui : BattleUI = null
 var _replay : BattleReplay
@@ -152,10 +152,10 @@ func perform_ai_move( move :MoveInfo,  _me: Player):
 
 #region Tools
 
-func get_units(player : Player) -> Array[Unit]:
+func get_units(player : Player) -> Array[UnitForm]:
 	for army_idx in range(fighting_units.size()):
 		if participants[army_idx] == player:
-			var typed : Array[Unit] = []
+			var typed : Array[UnitForm] = []
 			typed.assign(fighting_units[army_idx])
 			return typed
 	return []
@@ -163,37 +163,37 @@ func get_units(player : Player) -> Array[Unit]:
 
 func select_unit(coord : Vector2i) -> bool:
 	"""
-	* Select friendly Unit on a given coord
+	* Select friendly UnitForm on a given coord
 	*
 	* @return true if unit has been selected in this operation
 	"""
 
-	var new_selection : Unit = B_GRID.get_unit(coord)
+	var new_selection : UnitForm = B_GRID.get_unit(coord)
 	if (new_selection != null && new_selection.controller == current_participant):
 		if selected_unit:
 			selected_unit.set_selected(false)
 		selected_unit = new_selection
 		selected_unit.set_selected(true)
-		#print("You have selected a Unit")
+		#print("You have selected a UnitForm")
 		return true
 
 	return false
 
 ## Returns `MOVE_IS_INVALID` if move is incorrect
 ## or a turn direction `E.GridDirections` if move is correct
-func is_legal_move(coord : Vector2i, bot_unit : Unit = null) -> int:
+func is_legal_move(coord : Vector2i, bot_unit : UnitForm = null) -> int:
 	"""
 		Function checks 2 things:
 		1 Target coord is a Neighbor of a selected_unit
 		2 if selected_unit doesn't have push symbol on it's front (none currently have it yet)
-			Target coord doesn't contain an Enemy Unit with a shield pointing at our selected_unit
+			Target coord doesn't contain an Enemy UnitForm with a shield pointing at our selected_unit
 
 		@param coord target coord for selected_unit to move to
 		@param BotUnit optional parameter for AI that replaces selected_unit with BotUnit
 		@return result_side -1 if move is illegal, direction of the move if it is
 	"""
 	if bot_unit != null:
-		selected_unit = bot_unit  # Locally replaces Unit for Bot legal move search
+		selected_unit = bot_unit  # Locally replaces UnitForm for Bot legal move search
 
 	# 1
 	var move_direction = GridManager.adjacent_side(selected_unit.coord, coord)
@@ -203,7 +203,7 @@ func is_legal_move(coord : Vector2i, bot_unit : Unit = null) -> int:
 	#print(move_direction)
 	# 2
 	var enemy_unit = B_GRID.get_unit(coord)
-	if enemy_unit == null:  # Is there a Unit in this spot?
+	if enemy_unit == null:  # Is there a UnitForm in this spot?
 		return move_direction
 
 	match selected_unit.symbols[0]:
@@ -267,7 +267,7 @@ func move_unit(unit, end_coord : Vector2i, side: int) -> void:
 		end_of_battle()
 
 
-func counter_attack_damage(target : Unit) -> bool:
+func counter_attack_damage(target : UnitForm) -> bool:
 	# Returns true is Enemy spear can kill the target
 	var units = B_GRID.adjacent_units(target.coord)
 
@@ -302,7 +302,7 @@ func kill_unit(target) -> void:
 		battle_is_ongoing = false
 
 
-func unit_action(unit : Unit) -> void:
+func unit_action(unit : UnitForm) -> void:
 	var units = B_GRID.adjacent_units(unit.coord)
 
 	for side in range(6):
@@ -441,10 +441,10 @@ func summon_unit(unit_data : DataUnit, coord : Vector2i) -> void:
 	"""
 		Summon currently selected unit to a Gameplay Board
 
-		@param coord coordinate, on which Unit will be summoned
+		@param coord coordinate, on which UnitForm will be summoned
 	"""
 	#B_GRID.change_unit_coord(selected_unit, coord)
-	var unit : Unit = CFG.UNIT_FORM_SCENE.instantiate()
+	var unit : UnitForm = CFG.UNIT_FORM_SCENE.instantiate()
 	unit.apply_template(unit_data)
 	unit.controller = current_participant
 
@@ -465,11 +465,11 @@ func get_not_summoned_units(player:Player) -> Array[DataUnit]:
 	return battle_ui.get_army(player).units_data
 
 
-func get_summon_tiles(player:Player) -> Array[HexTile]:
+func get_summon_tiles(player:Player) -> Array[TileForm]:
 	var summon_tiles = B_GRID.get_all_field_coords()\
 		.filter(func isOk(coord) : return is_legal_summon_coord(coord, player))\
 		.map(func getTile(coord) : return B_GRID.tile_at(coord))
-	var typed:Array[HexTile] = []
+	var typed:Array[TileForm] = []
 	typed.assign(summon_tiles)
 	return typed
 

@@ -1,4 +1,4 @@
-class_name Unit
+class_name UnitForm
 
 extends Node2D
 
@@ -8,13 +8,13 @@ var unit_rotation : int
 var coord : Vector2i
 var controller : Player
 
-## based on specific Unit scene in _ready() symbols get placed into their spots
+## based on specific UnitForm scene in _ready() symbols get placed into their spots
 var symbols : Array[E.Symbols] = [
 	E.Symbols.EMPTY, E.Symbols.EMPTY, E.Symbols.EMPTY,
 	E.Symbols.EMPTY, E.Symbols.EMPTY, E.Symbols.EMPTY,
 ]
 
-var _target_tile : HexTile
+var _target_tile : TileForm
 var _move_speed : float
 
 var _target_rotation_degrees : float
@@ -35,7 +35,7 @@ func turn(side : int, skip_animation = false):
 	"""
 	360 / 6 = 60  degrees needed to rotate unit
 
-	param Unit - Reference to the object we are rotating
+	param UnitForm - Reference to the object we are rotating
 	param Direction
 	"""
 	unit_rotation = side
@@ -51,7 +51,7 @@ func turn(side : int, skip_animation = false):
 	_rotation_speed = abs(relative_rotation) / CFG.animation_speed_frames
 
 
-func move(target : HexTile):
+func move(target : TileForm):
 	_target_tile = target
 	_move_speed = (target.position - position).length() / CFG.animation_speed_frames
 

@@ -1,4 +1,4 @@
-class_name HexTile
+class_name TileForm
 
 extends Area2D
 

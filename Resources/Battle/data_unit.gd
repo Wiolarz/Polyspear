@@ -8,5 +8,5 @@ extends Resource
 @export var symbols : Array[DataSymbol] = [null,null,null,null,null,null]
 @export var cost : Goods = Goods.new()
 
-func apply_data(_unit : Unit) -> void:
+func apply_data(_unit : UnitForm) -> void:
 	pass

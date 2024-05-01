@@ -106,12 +106,12 @@ func _physics_process(_delta):
 		CFG.animation_speed_frames = CFG.AnimationSpeed.INSTANT
 		CFG.bot_speed_frames = CFG.BotSpeed.FAST
 
-# called from HexTile mouse detection
+# called from TileForm mouse detection
 func grid_smooth_input_listener(coord : Vector2i):
 	if draw_mode:
 		UI.map_editor.grid_input(coord)
 
-# called from HexTile mouse detection
+# called from TileForm mouse detection
 func grid_input_listener(coord : Vector2i):
 	#print("tile ",coord)
 	#if WM.current_player.bot_engine != null:
@@ -130,10 +130,10 @@ func grid_input_listener(coord : Vector2i):
 #region Game setup
 
 func get_world_maps_list() -> Array[String]:
-	return TestTools.list_files_in_folder(CFG.WORLD_MAPS_PATH)
+	return FileSystemHelpers.list_files_in_folder(CFG.WORLD_MAPS_PATH)
 
 func get_battle_maps_list() -> Array[String]:
-	return TestTools.list_files_in_folder(CFG.BATTLE_MAPS_PATH)
+	return FileSystemHelpers.list_files_in_folder(CFG.BATTLE_MAPS_PATH)
 
 
 func get_active_players() -> Array[Player]:

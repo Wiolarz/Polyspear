@@ -7,7 +7,7 @@ extends Control
 @onready var client_server_chat = \
 	load("res://Scenes/UI/Lobby/Network/ClientServerChat.tscn").instantiate()
 
-@onready var multi_game_setup : MultiGameSetup = $PanelContainer/MultiGameSetup
+@onready var multi_game_setup : GameSetup = $PanelContainer/GameSetup
 
 
 @onready var connection_management = $ConnectionManagement
