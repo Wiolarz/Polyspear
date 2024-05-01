@@ -51,7 +51,12 @@ func turn(side : int, skip_animation = false):
 	_rotation_speed = abs(relative_rotation) / CFG.animation_speed_frames
 
 
-func move(target : TileForm):
+func move(target : TileForm, summon : bool = false):
+	coord = target.coord
+	if summon:
+		global_position = target.global_position
+		return
+
 	_target_tile = target
 	_move_speed = (target.position - position).length() / CFG.animation_speed_frames
 

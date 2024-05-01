@@ -2,19 +2,11 @@ class_name DataTile
 
 extends Resource
 
+@export var type : String
 
 @export var texture_path : String
 
 @export var flip_horizontal : bool = false
-
-
-"""
-
-
-"""
-
-@export var type : String
-
 
 static func create_data_tile(hex_tile : TileForm) -> DataTile:
 	var new_data_tile = DataTile.new()

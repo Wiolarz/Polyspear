@@ -2,27 +2,16 @@ class_name GridManager
 extends Node
 
 
-var map_information : DataGenericMap
-
-
 # Hex Sprite draw gaps
-const visual_empty_border = 11.0
-const TileHorizontalOffset : float = 529.0 + visual_empty_border # current sprite size 529
-const TileVerticalOffset : float = (608 + visual_empty_border) * 0.75
-const OddRowHorizontalOffset : float = TileHorizontalOffset / 2
+const VISUAL_EMPTY_BORDER = 11.0
+const TILE_OFFSET_HORIZONTAL_PER_X : float = 529.0 + VISUAL_EMPTY_BORDER # current sprite size 529
+const TILE_OFFSET_HORIZONTAL_PER_Y : float = TILE_OFFSET_HORIZONTAL_PER_X / 2
+const TILE_OFFSET_VERTICAL_PER_Y : float = (608 + VISUAL_EMPTY_BORDER) * 0.75
+## Thickness of a Sentinel perimeter around the gameplay area.
+const SENTINEL_BORDER_SIZE : int = 1
 
-# const TileHorizontalOffset : float = 700.0
-# const TileVerticalOffset : float = 606.2
-# const OddRowHorizontalOffset : float = 350.0
-
-
-var grid_width : int
-var	grid_height : int
-
-const border_size : int = 1  # Thickness of a Sentinel perimeter around the gameplay area.
-
-
-static var DIRECTIONS = [ \
+## see E.GridDirections
+const DIRECTIONS = [ \
 	Vector2i(-1, 0),
 	Vector2i(0, -1),
 	Vector2i(1, -1),
@@ -31,29 +20,31 @@ static var DIRECTIONS = [ \
 	Vector2i(-1, 1),
 ]
 
+const TILES_NOT_ADJACENT = -1
 
+var map_information : DataGenericMap
+
+var grid_width : int
+var	grid_height : int
 
 var tile_grid : Array = []  # Array[Array[TileForm]]
-var unit_grid : Array = [] # Array[Array[UnitForm/Army]]
+var unit_grid : Array = [] # Array[Array[UnitForm/ArmyForm]]
 
 #region Coordinate Tools
 
 static func is_adjacent(coord1 : Vector2i, coord2 : Vector2i) -> bool:
-	return (coord2 - coord1) in DIRECTIONS
+	return adjacent_side_direction(coord1, coord2) != TILES_NOT_ADJACENT
 
-static func adjacent_side(coord1 : Vector2i, coord2 : Vector2i) -> int:
-	"""
-	Return shared side between coord1 and coord2, if the coords are adjacent
-	Side from Coord1 perspective
-	@param coord1
-	@param coord2
-	@return int32 side
-	@note -1 is returned, when coord1 and coord2 don't have shared side
-	"""
-	if (coord2 - coord1) in DIRECTIONS:
-		return DIRECTIONS.find(coord2 - coord1)
-	return -1
 
+## If the coords are adjacent, returns direction to coord2
+## from Coord1 perspective
+## @param coord1
+## @param coord2
+## @return int32 side
+## @note TILES_NOT_ADJACENT (-1) is returned,
+## when coord1 and coord2 don't have shared side
+static func adjacent_side_direction(coord1 : Vector2i, coord2 : Vector2i) -> int:
+	return DIRECTIONS.find(coord2 - coord1)
 
 static func adjacent_coord(base_coord : Vector2i, side : int) -> Vector2i:
 	"""
@@ -65,27 +56,74 @@ static func adjacent_coord(base_coord : Vector2i, side : int) -> Vector2i:
 	"""
 	return base_coord + DIRECTIONS[side]
 
-func tile_at(coord : Vector2i) -> TileForm:
+
+func is_on_grid(coord : Vector2i):
+	return coord.x >= 0 and coord.y >= 0 \
+		and coord.x < grid_width and coord.y < grid_height
+
+
+func get_tile(coord : Vector2i) -> TileForm:
 	return tile_grid[coord.x][coord.y]
+
+
+func get_all_field_coords() -> Array[Vector2i]:
+	var result : Array[Vector2i] = []
+	for x in range(grid_width):
+		for y in range(grid_height):
+			result.append(Vector2i(x,y))
+	return result
+
+
+func get_tile_type(coord : Vector2i) -> String:
+	return tile_grid[coord.x][coord.y].type
+
+
+func get_unit(coord : Vector2i):
+	return unit_grid[coord.x][coord.y]
+
+
+func get_distant_unit(start_coord : Vector2i, side : int, distance : int):
+	var target_coord = start_coord + distance * DIRECTIONS[side]
+	if not is_on_grid(target_coord):
+		return null
+	return get_unit(target_coord)
+
+
+## Returns 6 elements Array, elements can be null
+func adjacent_units(start_coord : Vector2i) -> Array:
+	var units = []
+	for side in range(6):
+		var coord = GridManager.adjacent_coord(start_coord, side)
+		var neighbor = get_unit(coord)
+		units.append(neighbor)
+	return units
+
+
+func get_distant_tile_type(start_coord : Vector2i, side : int, distance : int) -> String:
+	for i in range(distance):
+		start_coord += DIRECTIONS[side]
+
+	return tile_grid[start_coord.x][start_coord.y].type
+
+
+func get_distant_coord(start_coord : Vector2i, side : int, distance : int) -> Vector2i:
+	for i in range(distance):
+		start_coord += DIRECTIONS[side]
+
+	return start_coord
+
 #endregion
 
 #region Generate Grid
 
+## Remove the content of map from memory
 func reset_data() -> void:
-	# Remove the content of map from memory
 	tile_grid = []
 	unit_grid = []
 	map_information = null
 
 	for tile in get_children():
 		tile.queue_free()
-
-
-func adjust_grid_size() -> void:
-	# sentinels appear on both sides
-	grid_width += (border_size * 2)
-	grid_height += (border_size * 2)
-	#grid_width += (grid_height / 2) # adjustment for Axial grid system
 
 
 func init_tile_grid() -> void:
@@ -98,69 +136,51 @@ func init_tile_grid() -> void:
 
 
 func spawn_tiles() -> void:
-	var grid = map_information.grid_data
-
 	for x in range(grid_width):
 		for y in range(grid_height):
-			# creating a node
-			var new_tile : TileForm = CFG.HEX_TILE_FORM_SCENE.instantiate()
-			add_child(new_tile)
-
-			# Set tile coord
-			tile_grid[x][y] = new_tile
-			new_tile.set_coord(Vector2i(x, y))
-
-			# setting a new tile node visual location
-			var x_tile_pos = x * TileHorizontalOffset + y * OddRowHorizontalOffset
-			var y_tile_pos = y * TileVerticalOffset
-			new_tile.global_position.x = x_tile_pos
-			new_tile.global_position.y = y_tile_pos
-
-			# applying sentinel border correction to data files coords
-			var data_x = x - border_size
-			var data_y = y - border_size
-			if data_x >= 0 and data_y >= 0 and data_x < grid.size() and data_y < grid[0].size():
-				grid[data_x][data_y].apply_data(new_tile)  # texture + game logic applied
-
-			# Debug information
-
-			new_tile.name = new_tile.type + "_TileForm_" + str(new_tile.coord)
+			spawn_tile(x, y)
 
 
+static func coord_to_global_position(coord : Vector2i) -> Vector2:
+	var result = Vector2()
+	# note: x is direction right, y is direction bottom_right
+	result.x =  coord.x * TILE_OFFSET_HORIZONTAL_PER_X \
+			+ coord.y * TILE_OFFSET_HORIZONTAL_PER_Y
+	result.y =  coord.y * TILE_OFFSET_VERTICAL_PER_Y
+	return result
 
-func is_gameplay_tile(x : int, y : int, is_odd_row : bool) -> bool:
-	"""
-	3:1 - 7:1 even 5
-	3:2 - 6:2 odd 4
-	2:3 - 6:3 even 5
-	2:4 - 5:4 odd 4
-	1:5 - 6:5 even 5
+## x,y are coords on the grid
+func spawn_tile(x : int, y : int) -> TileForm:
+	# creating a node
+	var coord = Vector2i(x, y)
+	var new_tile : TileForm = CFG.HEX_TILE_FORM_SCENE.instantiate()
+	add_child(new_tile)
 
-	"""
+	# Set tile coord
+	tile_grid[x][y] = new_tile
+	new_tile.set_coord(coord)
+	# setting a new tile node visual location
+	new_tile.global_position = GridManager.coord_to_global_position(coord)
 
-	var start : int = floor(grid_height / 2) # axial start position
-	var gameplay_width_start = start + border_size - floor(y / 2)
-	var gameplay_height_start = border_size
+	# applying sentinel border correction to data files coords
+	var data_x = x - SENTINEL_BORDER_SIZE
+	var data_y = y - SENTINEL_BORDER_SIZE
+	if map_information.is_on_grid(Vector2i(data_x, data_y)):
+		# apply texture + game logic
+		map_information.grid_data[data_x][data_y].apply_data(new_tile)
 
-	var gameplay_height_end = grid_height - border_size
-	var gameplay_width_odd_end = grid_width - border_size - floor(y / 2)
-	var gameplay_width_even_end = grid_width - border_size - floor(y / 2)
-	##### clean
-	# Height
-	# even row width
-	var height_ok = gameplay_height_start <= y and y < gameplay_height_end
-	var even_row_width_ok = gameplay_width_start <= x \
-		and x < gameplay_width_even_end and not is_odd_row
-	var odd_row_width_ok = gameplay_width_start + 1 <= x \
-		and x < gameplay_width_odd_end and is_odd_row
-	return height_ok and (even_row_width_ok or odd_row_width_ok)
+	# Debug information
+	new_tile.name = new_tile.type + "_TileForm_" + str(new_tile.coord)
+	return new_tile
 
 
 func generate_special_tiles() -> void:
 	pass
 
+
 func is_clear() -> bool:
 	return true
+
 
 func generate_grid(new_map_data : DataGenericMap) -> void:
 	"""
@@ -171,15 +191,15 @@ func generate_grid(new_map_data : DataGenericMap) -> void:
 
 	new_map_data.apply_data()
 
-
-	# "+2" is to reserve space for sentinel tiles on each side of the board
-	adjust_grid_size()
+	# sentinels appear on both sides
+	grid_width += (SENTINEL_BORDER_SIZE * 2)
+	grid_height += (SENTINEL_BORDER_SIZE * 2)
 
 	init_tile_grid()
 	spawn_tiles()
 	generate_special_tiles()
 
 func to_bordered_coords(initial:Vector2i) -> Vector2i:
-	return initial + Vector2i(border_size,border_size)
+	return initial + Vector2i(SENTINEL_BORDER_SIZE, SENTINEL_BORDER_SIZE)
 
 #endregion

@@ -135,7 +135,7 @@ func perform_ai_move( move :MoveInfo,  _me: Player):
 	_replay.save()
 	if move.move_type == MoveInfo.TYPE_MOVE:
 		var unit = B_GRID.get_unit(move.move_source)
-		var dir = GridManager.adjacent_side(unit.coord, move.target_tile_coord)
+		var dir = GridManager.adjacent_side_direction(unit.coord, move.target_tile_coord)
 		move_unit(unit, move.target_tile_coord, dir)
 		switch_participant_turn()
 		return
@@ -196,7 +196,7 @@ func is_legal_move(coord : Vector2i, bot_unit : UnitForm = null) -> int:
 		selected_unit = bot_unit  # Locally replaces UnitForm for Bot legal move search
 
 	# 1
-	var move_direction = GridManager.adjacent_side(selected_unit.coord, coord)
+	var move_direction = GridManager.adjacent_side_direction(selected_unit.coord, coord)
 	if move_direction == null:
 		return MOVE_IS_INVALID
 
@@ -468,7 +468,7 @@ func get_not_summoned_units(player:Player) -> Array[DataUnit]:
 func get_summon_tiles(player:Player) -> Array[TileForm]:
 	var summon_tiles = B_GRID.get_all_field_coords()\
 		.filter(func isOk(coord) : return is_legal_summon_coord(coord, player))\
-		.map(func getTile(coord) : return B_GRID.tile_at(coord))
+		.map(func getTile(coord) : return B_GRID.get_tile(coord))
 	var typed:Array[TileForm] = []
 	typed.assign(summon_tiles)
 	return typed
