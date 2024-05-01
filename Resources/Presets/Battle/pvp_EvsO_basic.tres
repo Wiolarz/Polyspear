@@ -8,7 +8,7 @@
 [ext_resource type="Resource" uid="uid://dm2jeuv4bo4lw" path="res://Resources/Presets/Player/human_elf.tres" id="3_ya0o8"]
 [ext_resource type="Resource" uid="uid://dkgrcmar25cmi" path="res://Resources/Presets/Player/human_orc.tres" id="4_e8fk1"]
 [ext_resource type="Resource" uid="uid://cn8b63tln0enm" path="res://Resources/Battle/Units/Elves/elf_3_swordsmen.tres" id="4_eemjt"]
-[ext_resource type="Resource" uid="uid://dsifqvw5c6id5" path="res://Resources/Battle/Units/Elves/elf_hero_druid.tres" id="5_w24k3"]
+[ext_resource type="Resource" uid="uid://dsifqvw5c6id5" path="res://Resources/Battle/Units/Elves/elf_unit_hero_druid.tres" id="5_w24k3"]
 
 [sub_resource type="Resource" id="Resource_8gfw6"]
 script = ExtResource("1_fhuoc")

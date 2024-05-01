@@ -1,7 +1,7 @@
 [gd_resource type="Resource" script_class="ArmySet" load_steps=3 format=3 uid="uid://cfeg62fmg3m43"]
 
 [ext_resource type="Script" path="res://Resources/Presets/preset_army.gd" id="1_txxgy"]
-[ext_resource type="Resource" uid="uid://dsifqvw5c6id5" path="res://Resources/Battle/Units/Elves/elf_hero_druid.tres" id="2_f22lj"]
+[ext_resource type="Resource" uid="uid://dsifqvw5c6id5" path="res://Resources/Battle/Units/Elves/elf_unit_hero_druid.tres" id="2_f22lj"]
 
 [resource]
 script = ExtResource("1_txxgy")
