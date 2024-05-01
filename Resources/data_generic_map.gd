@@ -7,10 +7,11 @@ extends Resource
 @export var grid_width : int = 5
 @export var	grid_height : int = 5
 
+@export var grid_data : Array  # Array[Array[DataTile]]
 
-
-@export var grid_data : Array  # Array[Array[tile]]
-
+func is_on_grid(coord : Vector2i):
+	return coord.x >= 0 and coord.y >= 0 \
+		and coord.x < grid_width and coord.y < grid_height
 
 func apply_data() -> void:
 	pass

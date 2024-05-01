@@ -234,7 +234,7 @@ func start_world(world_map : DataWorldMap) -> void:
 	var spawn_location = world_map.get_spawn_locations()
 
 	for coord in spawn_location:
-		print("spawn: ", coord + Vector2i(GridManager.border_size, GridManager.border_size))
+		print("spawn: ",  W_GRID.to_bordered_coords(coord))
 
 	players = IM.get_active_players()
 

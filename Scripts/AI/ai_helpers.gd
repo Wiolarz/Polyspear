@@ -51,7 +51,7 @@ static func is_kill_move(move : MoveInfo, me : Player) -> bool:
 		return true
 
 	# BOW
-	var move_direction = GridManager.adjacent_side( \
+	var move_direction = GridManager.adjacent_side_direction( \
 			move.move_source, move.target_tile_coord);
 	for side in range(6):
 		if B_GRID.get_unit(move.move_source).get_symbol(side) != E.Symbols.BOW:

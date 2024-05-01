@@ -36,9 +36,13 @@ func has_movement_points() -> bool:
 	return entity.hero.movement_points > 0
 
 
-func move(tile):
-	position = tile.position
+func place_on(tile):
 	entity.coord = tile.coord
+	position = tile.position
+
+
+func move(tile):
+	place_on(tile)
 
 
 func spend_movement_point() -> void:
