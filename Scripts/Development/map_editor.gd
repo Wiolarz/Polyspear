@@ -1,44 +1,30 @@
 extends CanvasLayer
 
+enum MapType
+{
+	WORLD,
+	BATTLE,
+}
+
 @export var map_file_name_input : TextEdit
 
 @export var new_map_width : int = 5
 @export var new_map_height : int = 5
 
 
-enum map_type
-{
-	WORLD,
-	BATTLE,
-}
-
-var current_map_type : map_type
-
+var current_map_type : MapType
 
 var current_brush : DataTile
 var current_button: TextureButton
 
-@onready var world_box : BoxContainer = $HWorldBox
-@onready var battle_box : BoxContainer = $HBattleBox
+@onready var tile_buttons_box : BoxContainer = $Scroll/TilesPickerBox
+@onready var tiles_world : Array[String] = \
+		FileSystemHelpers.list_files_in_folder(CFG.WORLD_MAP_TILES_PATH, true)
+@onready var tiles_battle : Array[String] = \
+		FileSystemHelpers.list_files_in_folder(CFG.BATTLE_MAP_TILES_PATH, true)
+
 
 #region Setup
-
-# static func list_files_in_folder(folder_path : String, return_full_path : bool = false) -> Array[String]:
-# 	var dir = DirAccess.open(folder_path)
-# 	var scenes:Array[String] = []
-
-# 	if dir:
-# 		for file in dir.get_files():
-# 			if return_full_path:
-# 				scenes.append(folder_path + "/" + file)
-# 			else:
-# 				scenes.append(file)
-# 	else:
-# 		print("Error opening folder:", folder_path)
-# 	dir = null
-# 	return scenes
-
-
 
 func _create_button(box : BoxContainer, map_tile : String):
 	var tile = load(map_tile)
@@ -57,24 +43,13 @@ func _create_button(box : BoxContainer, map_tile : String):
 	new_button.pressed.connect(lambda)  # self._button_pressed
 
 
-func _load_tiles(box : BoxContainer, path : String):
-
-	var map_tiles_paths : Array[String] = FileSystemHelpers.list_files_in_folder(path, true)
-	for map_tile : String in map_tiles_paths:
-		_create_button(box, map_tile)
-
-func _ready():
-
-	_load_tiles(battle_box, CFG.BATTLE_MAP_TILES_PATH)
-	_load_tiles(world_box, CFG.WORLD_MAP_TILES_PATH)
-
 #endregion
 
 
 #region Tools
 
 func grid_input(coord : Vector2i) -> void:
-	if current_map_type == map_type.WORLD:
+	if current_map_type == MapType.WORLD:
 		W_GRID.tile_grid[coord.x][coord.y].type = current_brush.type
 		W_GRID.tile_grid[coord.x][coord.y].get_node("Sprite2D").texture = ResourceLoader.load(current_brush.texture_path)
 	else:
@@ -82,17 +57,25 @@ func grid_input(coord : Vector2i) -> void:
 		B_GRID.tile_grid[coord.x][coord.y].get_node("Sprite2D").texture = ResourceLoader.load(current_brush.texture_path)
 
 
-func _set_grid_type(new_type : map_type) -> void:
-	if new_type == map_type.WORLD:
-		current_map_type = map_type.WORLD
-		world_box.visible = true
-		battle_box.visible = false
+func _set_grid_type(new_type : MapType) -> void:
+	current_map_type = new_type
+	_mark_button(new_type)
+	var tile_set = tiles_world if new_type == MapType.WORLD else tiles_battle
+	for b in tile_buttons_box.get_children():
+		tile_buttons_box.remove_child(b)
+		b.queue_free()
+	for tile_path in tile_set:
+		_create_button(tile_buttons_box, tile_path)
+	# pick first tile as a default tile
+	tile_buttons_box.get_child(0).pressed.emit()
 
+func _mark_button(selected_type : MapType):
+	if selected_type == MapType.WORLD:
+		$MenuContainer/NewWorldMap.modulate = Color.FIREBRICK
+		$MenuContainer/NewBattleMap.modulate = Color.WHITE
 	else:
-		current_map_type = map_type.BATTLE
-		world_box.visible = false
-		battle_box.visible = true
-
+		$MenuContainer/NewBattleMap.modulate = Color.FIREBRICK
+		$MenuContainer/NewWorldMap.modulate = Color.WHITE
 
 func _optimize_grid_size(local_tile_grid : Array) -> Array:
 	"""
@@ -152,7 +135,7 @@ func _toggle_menu_status():
 
 func _on_load_map_pressed():
 	var map_path = CFG.WORLD_MAPS_PATH
-	if current_map_type == map_type.BATTLE:
+	if current_map_type == MapType.BATTLE:
 		map_path = CFG.BATTLE_MAPS_PATH
 	map_path += map_file_name_input.text + ".tres"
 	var map_to_load = load(map_path)
@@ -160,10 +143,10 @@ func _on_load_map_pressed():
 	WM.close_world()
 	BM.close_battle()
 	if map_to_load is DataWorldMap:
-		_set_grid_type(map_type.WORLD)
+		_set_grid_type(MapType.WORLD)
 		W_GRID.generate_grid(map_to_load)
 	else:
-		_set_grid_type(map_type.BATTLE)
+		_set_grid_type(MapType.BATTLE)
 		B_GRID.generate_grid(map_to_load)
 
 
@@ -174,7 +157,7 @@ func _on_save_map_pressed():
 	var new_map
 	var local_tile_grid : Array
 	var save_path
-	if current_map_type == map_type.WORLD:
+	if current_map_type == MapType.WORLD:
 		new_map = DataWorldMap.new()
 		local_tile_grid = W_GRID.tile_grid
 		save_path = CFG.WORLD_MAPS_PATH + map_save_name + ".tres"
@@ -224,8 +207,8 @@ func _generate_empty_map(size_x : int = 5, size_y : int = 5) -> Array: # -> Arra
 
 
 func _on_new_world_map_pressed():
-	_set_grid_type(map_type.WORLD)
-	world_box.get_children()[0].pressed.emit()  # default tile choice
+	_set_grid_type(MapType.WORLD)
+	map_file_name_input.text = "new_world"
 
 	var new_map = DataWorldMap.new()
 	var grid_data = _generate_empty_map()
@@ -234,13 +217,13 @@ func _on_new_world_map_pressed():
 	new_map.grid_height = grid_data.size()
 	new_map.grid_width = grid_data[0].size()
 	#print(new_map.grid_height, " ", new_map.grid_width)
-
+	W_GRID.reset_data()
 	W_GRID.generate_grid(new_map)
 
 
 func _on_new_battle_map_pressed():
-	_set_grid_type(map_type.BATTLE)
-	battle_box.get_children()[0].pressed.emit()  # default tile choice
+	_set_grid_type(MapType.BATTLE)
+	map_file_name_input.text = "new_battleground"
 
 	var grid_data = _generate_empty_map()
 
@@ -251,7 +234,7 @@ func _on_new_battle_map_pressed():
 	new_map.grid_height = grid_data.size()
 	new_map.grid_width = grid_data[0].size()
 	#print(new_map.grid_height, " ", new_map.grid_width)
-
+	B_GRID.reset_data()
 	B_GRID.generate_grid(new_map)
 
 
@@ -259,7 +242,7 @@ func _on_new_battle_map_pressed():
 
 func _on_open_button_pressed():
 	$FileDialog.root_subfolder = CFG.WORLD_MAPS_PATH \
-		 if current_map_type == map_type.WORLD else CFG.BATTLE_MAPS_PATH
+			if current_map_type == MapType.WORLD else CFG.BATTLE_MAPS_PATH
 	$FileDialog.show()
 
 
