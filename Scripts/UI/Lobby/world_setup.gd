@@ -80,7 +80,7 @@ func refresh_slot(index : int):
 	if logic_slot:
 		if logic_slot.occupier is String:
 			if logic_slot.occupier == "":
-				username = IM.get_current_name()
+				username = NET.get_current_login()
 				take_leave_button_state = \
 					WorldPlayerSlotPanel.TakeLeaveButtonState.TAKEN_BY_YOU
 			else:

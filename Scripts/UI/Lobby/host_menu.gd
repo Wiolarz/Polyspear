@@ -47,7 +47,7 @@ func _ready():
 
 
 func _process(_delta : float):
-	var server_works : bool = IM.server_connection()
+	var server_works : bool = NET.server_connection()
 	if server_works and \
 			not server_management.get_node_or_null("ServerInfoAndChat"):
 		show_server_info_and_chat()

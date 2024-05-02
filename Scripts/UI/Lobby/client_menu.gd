@@ -40,7 +40,7 @@ func _ready():
 
 
 func _process(_delta : float):
-	var client_connected : bool = IM.client_connection()
+	var client_connected : bool = NET.client_connection()
 	if client_connected and \
 			not connection_management.get_node_or_null("ClientServerChat"):
 		show_client_server_chat()

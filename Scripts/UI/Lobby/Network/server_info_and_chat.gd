@@ -22,7 +22,7 @@ func _process(_delta):
 
 #region Chat
 func update_chat():
-	chat_container.get_node("Log").text = IM.chat_log
+	chat_container.get_node("Log").text = NET.chat_log
 
 
 func scroll_chat_down():
@@ -32,7 +32,7 @@ func scroll_chat_down():
 func send_chat_message():
 	if chat_line_edit.text.length() == 0:
 		return
-	IM.send_chat_message(chat_line_edit.text)
+	NET.send_chat_message(chat_line_edit.text)
 	chat_line_edit.text = ""
 	update_chat()
 	scroll_chat_down()
@@ -52,11 +52,11 @@ func _on_chat_message_text_submitted(_new_text):
 #region Server Admin Buttons
 
 func stop_server():
-	IM.server_close()
+	NET.server_close()
 
 
 func kick_all_players():
-	IM.server_kick_all()
+	NET.server_kick_all()
 
 
 func _on_button_stop_pressed():

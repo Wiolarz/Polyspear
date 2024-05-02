@@ -66,12 +66,12 @@ func try_to_take_slot(index : int) -> bool:
 	var slots = IM.game_setup_info.slots
 	if index < 0 or index > slots.size():
 		return false
-	if IM.get_client():
-		IM.get_client().queue_take_slot(index)
+	if NET.client:
+		NET.client.queue_take_slot(index)
 		return false # we will change this after server responds
 	slots[index].occupier = current_player_to_set
-	if IM.get_server():
-		IM.get_server().broadcast_full_game_setup(IM.game_setup_info)
+	if NET.server:
+		NET.server.broadcast_full_game_setup(IM.game_setup_info)
 	return true
 
 
@@ -81,12 +81,12 @@ func try_to_leave_slot(index : int) -> bool:
 		return false
 	if slots[index].occupier != current_player_to_set:
 		return false
-	if IM.get_client():
-		IM.get_client().queue_leave_slot(index)
+	if NET.client:
+		NET.client.queue_leave_slot(index)
 		return false # we will change this after server responds
 	slots[index].occupier = 0 # set basic computer here
-	if IM.get_server():
-		IM.get_server().broadcast_full_game_setup(IM.game_setup_info)
+	if NET.server:
+		NET.server.broadcast_full_game_setup(IM.game_setup_info)
 	return true
 
 # TODO move to input manager or somewhere
@@ -94,8 +94,8 @@ func try_to_cycle_color_slot(index : int, backwards : bool) -> bool:
 	var slots = IM.game_setup_info.slots
 	if index < 0 or index > slots.size():
 		return false
-	if IM.get_client():
-		IM.get_client().queue_cycle_color(index, backwards)
+	if NET.client:
+		NET.client.queue_cycle_color(index, backwards)
 		return false # we will change this after server responds
 	var new_color_index = slots[index].color
 	var diff : int = 1 if not backwards else -1
@@ -111,8 +111,8 @@ func try_to_cycle_color_slot(index : int, backwards : bool) -> bool:
 		if is_color_unique.call():
 			slots[index].color = new_color_index
 			break
-	if IM.get_server():
-		IM.get_server().broadcast_full_game_setup(IM.game_setup_info)
+	if NET.server:
+		NET.server.broadcast_full_game_setup(IM.game_setup_info)
 	return true
 
 
@@ -121,24 +121,24 @@ func try_to_cycle_faction_slot(index : int, backwards : bool) -> bool:
 	if index < 0 or index > slots.size():
 		return false
 	var diff : int = 1 if not backwards else -1
-	if IM.get_client():
-		IM.get_client().queue_cycle_faction(index, backwards)
+	if NET.client:
+		NET.client.queue_cycle_faction(index, backwards)
 		return false # we will change this after server responds
 	var faction_index = CFG.FACTIONS_LIST.find(slots[index].faction)
 	var new_faction_index = \
 		(faction_index + diff) % CFG.FACTIONS_LIST.size()
 	slots[index].faction = CFG.FACTIONS_LIST[new_faction_index]
 	print("faction: ",index," --> ",slots[index].faction.get_network_id())
-	if IM.get_server():
-		IM.get_server().broadcast_full_game_setup(IM.game_setup_info)
+	if NET.server:
+		NET.server.broadcast_full_game_setup(IM.game_setup_info)
 	return true
 
 
 func try_to_set_world_map_name(map_name : String) -> bool:
 	# drut
 	IM.game_setup_info.world_map = load("%s/%s" % [ CFG.WORLD_MAPS_PATH, map_name ])
-	if IM.get_server():
-		IM.get_server().broadcast_full_game_setup(IM.game_setup_info)
+	if NET.server:
+		NET.server.broadcast_full_game_setup(IM.game_setup_info)
 	# TODO here load this map and adjust slot number
 	return true
 

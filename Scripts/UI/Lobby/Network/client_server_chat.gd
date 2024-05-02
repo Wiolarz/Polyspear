@@ -11,25 +11,25 @@ extends Control
 
 
 func disconnect_from_server():
-	IM.client_logout_and_disconnect()
+	NET.client_logout_and_disconnect()
 
 
 func send_chat_message():
 	if chat_line_edit.text.length() == 0:
 		return
-	IM.send_chat_message(chat_line_edit.text)
+	NET.send_chat_message(chat_line_edit.text)
 	chat_line_edit.text = ""
 	scroll_chat_down()
 
 
 func update_chat():
-	chat_container.get_node("Log").text = IM.chat_log
+	chat_container.get_node("Log").text = NET.chat_log
 
 
 func update_connection_info():
 	var label_content = "client does not exist"
 	var label = $MarginContainer/VBoxContainer/ConnectionInfo/Log
-	var client = IM.get_client()
+	var client = NET.client
 	if client:
 			label_content = "client exists"
 			if client.peer:

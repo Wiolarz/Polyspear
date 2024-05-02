@@ -24,6 +24,7 @@ WM="*res://Scripts/World/world_manager.gd"
 CFG="*res://Scripts/General/config_manager.gd"
 B_GRID="*res://Scripts/Battle/battle_grid.gd"
 BM="*res://Scripts/Battle/battle_manager.gd"
+NET="*res://Scripts/Multiplayer/NET_manager.gd"
 
 [debug]
 
