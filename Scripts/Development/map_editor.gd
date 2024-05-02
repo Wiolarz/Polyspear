@@ -48,6 +48,8 @@ func _create_button(box : BoxContainer, map_tile : String):
 
 #region Tools
 
+## Called when user presses on the map tile
+## Replaces target map tile with currently selected "brush" (map tile type)
 func grid_input(coord : Vector2i) -> void:
 	if current_map_type == MapType.WORLD:
 		W_GRID.tile_grid[coord.x][coord.y].type = current_brush.type
@@ -69,6 +71,7 @@ func _set_grid_type(new_type : MapType) -> void:
 	# pick first tile as a default tile
 	tile_buttons_box.get_child(0).pressed.emit()
 
+
 func _mark_button(selected_type : MapType):
 	if selected_type == MapType.WORLD:
 		$MenuContainer/NewWorldMap.modulate = Color.FIREBRICK
@@ -76,6 +79,7 @@ func _mark_button(selected_type : MapType):
 	else:
 		$MenuContainer/NewBattleMap.modulate = Color.FIREBRICK
 		$MenuContainer/NewWorldMap.modulate = Color.WHITE
+
 
 func _optimize_grid_size(local_tile_grid : Array) -> Array:
 	"""
@@ -121,12 +125,6 @@ func _optimize_grid_size(local_tile_grid : Array) -> Array:
 func open_draw_menu():
 	visible = true
 	_on_new_world_map_pressed()
-
-func hide_draw_menu():
-	visible = false
-
-func _toggle_menu_status():
-	visible = not visible
 
 #endregion
 
@@ -205,7 +203,6 @@ func _generate_empty_map(size_x : int = 5, size_y : int = 5) -> Array: # -> Arra
 	return grid_data
 
 
-
 func _on_new_world_map_pressed():
 	_set_grid_type(MapType.WORLD)
 	map_file_name_input.text = "new_world"
@@ -238,8 +235,6 @@ func _on_new_battle_map_pressed():
 	B_GRID.generate_grid(new_map)
 
 
-#endregion
-
 func _on_open_button_pressed():
 	$FileDialog.root_subfolder = CFG.WORLD_MAPS_PATH \
 			if current_map_type == MapType.WORLD else CFG.BATTLE_MAPS_PATH
@@ -250,6 +245,9 @@ func _on_file_dialog_file_selected(path : String):
 	map_file_name_input.text = path.get_file().trim_suffix(".tres")
 	_on_load_map_pressed()
 
+
 func _on_back_button_pressed():
 	hide()
 	IM.go_to_main_menu()
+
+#endregion
