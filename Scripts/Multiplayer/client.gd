@@ -12,6 +12,7 @@ var incoming_commands : Dictionary = {
 		AllTheCommands.client_replay_game_move),
 	"chat": Command.create_on_client(AllTheCommands.client_chat),
 	"fill_game_setup": Command.create_on_client(AllTheCommands.client_fill_game_setup),
+	StartGameCommand.COMMAND_NAME: Command.create_on_client(StartGameCommand.process_command)
 }
 
 @onready var enet_network : ENetConnection = null

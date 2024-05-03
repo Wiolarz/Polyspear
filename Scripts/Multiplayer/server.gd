@@ -179,6 +179,10 @@ func broadcast_full_game_setup(game_setup : GameSetupInfo):
 	broadcast(packet)
 
 
+func broadcast_start_game():
+	broadcast(StartGameCommand.create_packet())
+
+
 func send_additional_callbacks_to_logging_client(peer : ENetPacketPeer):
 	if true: # game is being set up
 		var game_setup = IM.game_setup_info

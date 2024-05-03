@@ -153,6 +153,8 @@ func start_game():
 		_start_game_world()
 	if game_setup_info.is_in_mode_battle():
 		_start_game_battle()
+	if NET.server:
+		NET.server.broadcast_start_game()
 
 
 func _start_game_world():
