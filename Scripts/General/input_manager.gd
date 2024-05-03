@@ -165,6 +165,7 @@ func _start_game_world():
 
 
 func get_player_settings() -> Array[PresetPlayer]:
+	# TODO: drut, replace with reading game_setup_info
 	var elf = PresetPlayer.new();
 	elf.faction = CFG.FACTION_ELVES
 	elf.player_name = "elf"
