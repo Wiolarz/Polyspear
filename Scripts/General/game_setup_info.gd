@@ -8,16 +8,31 @@ extends RefCounted
 ## WARNING not a resource because we refer to players, sessions
 ## and other temporary objects that should not be saved
 
-# var mode_is_battle : bool = false
-# var battle_map : DataBattleMap # used only in battle game
-var world_map : DataWorldMap # used only in full world game
-var slots : Array[Slot]
+enum GameMode {
+	UNKNOWN, ## forces to initialize
+	WORLD, ## full map with heroes and economy
+	BATTLE, ## single battle only, no economy
+	MAP_EDITOR, ## special mode only for map editing
+}
+
+var game_mode : GameMode = GameMode.WORLD
+var world_map : DataWorldMap ## used only in full world mode
+var battle_map : DataBattleMap ## used only in battle mode
+var slots : Array[Slot] ## slot for each player color on the map picked
+
+func is_in_mode_world():
+	return game_mode == GameMode.WORLD
+
+func is_in_mode_battle():
+	return game_mode == GameMode.BATTLE
 
 
 func to_dictionary(local_username : String = "") -> Dictionary:
 	var result = {
-		"slots": [],
+		"game_mode": game_mode_to_str(),
 		"world_map": DataWorldMap.get_network_id(world_map),
+		"battle_map": DataBattleMap.get_network_id(battle_map),
+		"slots": [],
 	}
 	for slot in slots:
 		result["slots"].append({
@@ -28,11 +43,16 @@ func to_dictionary(local_username : String = "") -> Dictionary:
 		})
 	return result
 
+
 static func from_dictionary(dict : Dictionary, \
 		local_username : String = "") -> GameSetupInfo:
 	var result = GameSetupInfo.new()
+	if "game_mode" in dict and dict["game_mode"] is String:
+		result.game_mode = GameSetupInfo.game_mode_from_str(dict["game_mode"])
 	if "world_map" in dict and dict["world_map"] is String:
 		result.world_map = DataWorldMap.from_network_id(dict["world_map"])
+	if "battle_map" in dict and dict["battle_map"] is String:
+		result.battle_map = DataBattleMap.from_network_id(dict["battle_map"])
 	if "slots" in dict and dict["slots"] is Array:
 		for read_slot in dict["slots"]:
 			var new_slot : Slot = Slot.new()
@@ -46,6 +66,19 @@ static func from_dictionary(dict : Dictionary, \
 				new_slot.color = read_slot["color"]
 			result.slots.append(new_slot)
 	return result
+
+
+func game_mode_to_str() -> String:
+	return GameMode.keys()[game_mode].to_lower()
+
+
+static func game_mode_from_str(mode_as_str : String) -> GameMode:
+	mode_as_str = mode_as_str.to_lower()
+	for mode in GameMode.keys():
+		if mode.to_lower() == mode_as_str:
+			return GameMode[mode]
+	push_error("Unknown game mode: \"%s\"" % mode_as_str)
+	return GameMode.UNKNOWN
 
 
 static func occupier_prepare_for_network(occupier, local_username : String):

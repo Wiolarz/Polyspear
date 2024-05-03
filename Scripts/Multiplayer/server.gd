@@ -129,11 +129,13 @@ func close():
 func send_to_peer(peer : ENetPacketPeer, command_dictionary : Dictionary):
 	if not command_dictionary is Dictionary:
 		return
+	print("server - send to peer ", command_dictionary["name"])
 	var content : PackedByteArray = var_to_bytes(command_dictionary)
 	peer.send(0, content, ENetPacketPeer.FLAG_RELIABLE)
 
 
 func broadcast(command_dictionary : Dictionary):
+	print("server - broadcast ", command_dictionary["name"])
 	if not command_dictionary is Dictionary or enet_network == null:
 		return
 	var content : PackedByteArray = var_to_bytes(command_dictionary)
@@ -216,12 +218,12 @@ func roll() -> void:
 			ENetConnection.EventType.EVENT_RECEIVE:
 				var packet : PackedByteArray = peer.get_packet()
 				if channel != 0:
-					print(("Peer %x sent something on different channel " + \
+					push_error(("Peer %x sent something on different channel " + \
 						"than 0 -- ignoring") % peer.get_instance_id())
 					break
 				var decoded = MultiCommon.decode_packet(packet)
 				if not decoded:
-					print("Peer %x sent something not being a command" % \
+					push_error("Peer %x sent something not being a command" % \
 						peer.get_instance_id())
 					break
 				var command_name = decoded["name"]

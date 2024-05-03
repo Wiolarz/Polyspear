@@ -39,8 +39,10 @@ func start_game():
 	UI.go_to_main_menu()
 	BM.start_battle(armies, map_data)
 
+
 func is_bot(player_idx : int) -> bool:
 	return player_slot_panels[player_idx].is_bot()
+
 
 func create_player(player_idx : int) -> Player:
 	if player_idx == 0:
@@ -57,6 +59,7 @@ func create_player(player_idx : int) -> Player:
 	orc.use_bot(is_bot(player_idx))
 	orc.goods = CFG.get_start_goods()
 	return orc
+
 
 func create_army(player_idx : int, player : Player) -> Army:
 	var army = Army.new()

@@ -7,19 +7,29 @@ extends Control
 
 @export var client_side : bool
 
-@onready var button_battle = \
+@onready var button_world : Button = \
+	$MarginContainer/VBoxContainer/ModeChoice/ButtonWorld
+@onready var button_battle : Button = \
 	$MarginContainer/VBoxContainer/ModeChoice/ButtonBattle
-@onready var button_full_scenario = \
-	$MarginContainer/VBoxContainer/ModeChoice/ButtonFullScenario
 @onready var container : Control = \
 	$MarginContainer/VBoxContainer/SetupContainer
 
 
-@onready var multi_world_setup = load("res://Scenes/UI/Lobby/WorldSetup.tscn")
-@onready var multi_battle_setup = load("res://Scenes/UI/Lobby/BattleSetup.tscn")
+@onready var multi_world_setup_scene = load("res://Scenes/UI/Lobby/WorldSetup.tscn")
+@onready var multi_battle_setup_scene = load("res://Scenes/UI/Lobby/BattleSetup.tscn")
 
 
 var current_player_to_set : String = "" # if empty we select for us
+
+
+func _ready():
+	IM.game_setup_info_changed.connect(refresh_after_connection_change)
+	## button/world toggle buttons, default world
+	button_battle.button_pressed = true
+	button_battle.button_group = button_world.button_group
+	if client_side:
+		button_battle.disabled = true
+		button_world.disabled = true
 
 
 func clear_container():
@@ -27,12 +37,18 @@ func clear_container():
 		container.remove_child(child)
 
 
-func select_full_scenario():
-	_select_setup_page(multi_world_setup)
+func select_world():
+	IM.game_setup_info.game_mode = GameSetupInfo.GameMode.WORLD
+	_select_setup_page(multi_world_setup_scene)
+	if NET.server:
+		NET.server.broadcast_full_game_setup(IM.game_setup_info)
 
 
 func select_battle():
-	_select_setup_page(multi_battle_setup)
+	IM.game_setup_info.game_mode = GameSetupInfo.GameMode.BATTLE
+	_select_setup_page(multi_battle_setup_scene)
+	if NET.server:
+		NET.server.broadcast_full_game_setup(IM.game_setup_info)
 
 
 func _select_setup_page(page):
@@ -45,7 +61,15 @@ func _select_setup_page(page):
 	setup.refresh()
 
 
-func refresh_after_conenction_change():
+func refresh_after_connection_change():
+	if IM.game_setup_info.is_in_mode_world() and not button_world.button_pressed:
+		print("to world")
+		button_world.button_pressed = true
+		# select_world()
+	if IM.game_setup_info.is_in_mode_battle() and not button_battle.button_pressed:
+		print("to battle")
+		button_battle.button_pressed = true
+		# select_battle()
 	# this refresh is to change our username when we start or stop server ;)
 	if container.get_child_count() == 1:
 		var setup = container.get_child(0)
@@ -59,7 +83,6 @@ func force_full_rebuild():
 		if setup is MultiBattleSetup or setup is WorldSetup:
 			setup.rebuild()
 			setup.refresh()
-
 
 
 func try_to_take_slot(index : int) -> bool:
@@ -143,20 +166,14 @@ func try_to_set_world_map_name(map_name : String) -> bool:
 	return true
 
 
-func _on_button_full_scenario_toggled(toggled_on : bool):
+func _on_button_world_toggled(toggled_on : bool):
 	if toggled_on:
-		select_full_scenario()
+		select_world()
 
 
 func _on_button_battle_toggled(toggled_on : bool):
 	if toggled_on:
 		select_battle()
-
-
-func _ready():
-	IM.game_setup_info_changed.connect(refresh_after_conenction_change)
-	button_battle.button_pressed = true
-	button_battle.button_group = button_full_scenario.button_group
 
 
 func _on_button_confirm_pressed():

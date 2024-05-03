@@ -39,7 +39,7 @@ func show_server_info_and_chat():
 
 
 func refresh_after_connection_change():
-	multi_game_setup.refresh_after_conenction_change()
+	multi_game_setup.refresh_after_connection_change()
 
 
 func _ready():

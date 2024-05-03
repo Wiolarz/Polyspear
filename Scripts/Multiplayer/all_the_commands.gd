@@ -207,7 +207,7 @@ static func client_fill_game_setup(_c : Client, params : Dictionary) -> int:
 		NET.get_current_login())
 	IM.game_setup_info = setup
 	IM.game_setup_info_changed.emit()
-	print("Client: %s" % params)
+	print("Client - fill_game_setup: \n %s" % params)
 	return OK
 
 #endregion

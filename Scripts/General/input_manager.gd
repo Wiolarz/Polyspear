@@ -26,9 +26,6 @@ signal game_setup_info_changed
 
 enum CameraPosition {WORLD, BATTLE}
 
-
-## TODO clean up, this lobby setup is used only in networking,
-## it should be universal
 var game_setup_info : GameSetupInfo
 
 var players : Array[Player] :
@@ -99,6 +96,9 @@ func _physics_process(_delta):
 		print("anim speed - fast")
 		CFG.animation_speed_frames = CFG.AnimationSpeed.INSTANT
 		CFG.bot_speed_frames = CFG.BotSpeed.FAST
+
+func init_game_setup():
+	game_setup_info = GameSetupInfo.create_empty(4)
 
 # called from TileForm mouse detection
 func grid_smooth_input_listener(coord : Vector2i):
@@ -180,16 +180,6 @@ func hide_in_game_menu():
 	set_game_paused(false)
 
 #endregion
-
-
-#region Network
-
-func set_default_game_setup_info() -> void:
-	game_setup_info = GameSetupInfo.create_empty(4)
-
-
-# endregion
-
 
 
 #region Technical
