@@ -98,6 +98,8 @@ func unit_in_army_changed(selected_index, unit_index):
 	IM.game_setup_info.set_unit(slot_index, unit_index, unit_data)
 	if NET.server:
 		NET.server.broadcast_full_game_setup(IM.game_setup_info)
+	if NET.client:
+		NET.client.queue_lobby_set_unit(slot_index, unit_index, unit_data)
 
 
 func apply_army_preset(army : PresetArmy):

@@ -100,6 +100,11 @@ func queue_leave_slot(slot_index : int):
 	}
 	queue_message_to_server(packet)
 
+func queue_lobby_set_unit(slot_index:int, unit_index:int, unit_data:DataUnit):
+	queue_message_to_server( \
+			LobbySetUnitCommand.create_packet( \
+				slot_index, unit_index, unit_data \
+			))
 
 func logout_if_needed() -> void:
 	if username == "":

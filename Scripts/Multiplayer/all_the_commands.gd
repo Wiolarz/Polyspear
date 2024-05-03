@@ -158,8 +158,6 @@ static func server_leave_slot(server : Server, peer : ENetPacketPeer, \
 	IM.game_setup_info_changed.emit()
 	return OK
 
-
-
 #endregion
 
 
