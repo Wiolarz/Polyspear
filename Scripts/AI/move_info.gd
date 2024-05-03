@@ -1,15 +1,13 @@
 class_name MoveInfo
 extends Resource
 
+const TYPE_MOVE = "move"
+const TYPE_SUMMON = "summon"
 
 @export var move_type: String = ""
 @export var summon_unit: DataUnit
 @export var move_source: Vector2i
 @export var target_tile_coord: Vector2i
-
-const TYPE_MOVE = "move"
-const TYPE_SUMMON = "summon"
-
 
 static func make_move(src : Vector2i, dst : Vector2i) -> MoveInfo:
 	var result:MoveInfo = MoveInfo.new()

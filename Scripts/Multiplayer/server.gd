@@ -1,29 +1,35 @@
 class_name Server
 extends Node
 
-
-var incoming_commands : Dictionary = { # Dictionary[String -> Command]
-	"login": Command.create_on_server(AllTheCommands.server_login),
-	"logout": Command.create_on_server(AllTheCommands.server_logout),
-	"join_game": Command.create_on_server(AllTheCommands.server_join_game),
-	"order_game_move": Command.create_on_server( \
-		AllTheCommands.server_order_game_move),
-	"say": Command.create_on_server(AllTheCommands.server_say),
-	"request_color_cycle": Command.create_on_server( \
-		AllTheCommands.server_request_color_cycle),
-	"request_faction_cycle": Command.create_on_server( \
-		AllTheCommands.server_request_faction_cycle),
-	"take_slot": Command.create_on_server(AllTheCommands.server_take_slot),
-	"leave_slot": Command.create_on_server(AllTheCommands.server_leave_slot),
-	LobbySetUnitCommand.COMMAND_NAME : \
-		Command.create_on_server(LobbySetUnitCommand.process_command),
-}
+ # Dictionary[String -> Command]
+var incoming_commands : Dictionary = {}
 
 
 var server_username : String = ""
 @onready var sessions : Array = []
 @onready var enet_network : ENetConnection = null
 
+func _init():
+	incoming_commands["login"] = Command.create_on_server( \
+			AllTheCommands.server_login)
+	incoming_commands["logout"] = Command.create_on_server( \
+			AllTheCommands.server_logout)
+	incoming_commands["join_game"] = Command.create_on_server( \
+			AllTheCommands.server_join_game)
+	incoming_commands["order_game_move"] = Command.create_on_server( \
+			AllTheCommands.server_order_game_move)
+	incoming_commands["say"] = Command.create_on_server(\
+			AllTheCommands.server_say)
+	incoming_commands["request_color_cycle"] = Command.create_on_server( \
+			AllTheCommands.server_request_color_cycle)
+	incoming_commands["request_faction_cycle"] = Command.create_on_server( \
+			AllTheCommands.server_request_faction_cycle)
+	incoming_commands["take_slot"] = Command.create_on_server( \
+			AllTheCommands.server_take_slot)
+	incoming_commands["leave_slot"] = Command.create_on_server( \
+			AllTheCommands.server_leave_slot)
+	LobbySetUnitCommand.register(incoming_commands)
+	ClientRequestedMoveCommand.register(incoming_commands)
 
 func _process(_delta):
 	roll()
@@ -181,6 +187,10 @@ func broadcast_full_game_setup(game_setup : GameSetupInfo):
 
 func broadcast_start_game():
 	broadcast(StartGameCommand.create_packet())
+
+
+func broadcast_move(move : MoveInfo):
+	broadcast(MakeMoveCommand.create_packet(move))
 
 
 func send_additional_callbacks_to_logging_client(peer : ENetPacketPeer):

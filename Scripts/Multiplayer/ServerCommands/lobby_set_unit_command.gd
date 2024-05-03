@@ -2,6 +2,10 @@ class_name LobbySetUnitCommand
 
 const COMMAND_NAME = "lobby_set_unit"
 
+static func register(commands : Dictionary):
+	commands[COMMAND_NAME] = \
+			Command.create_on_server(LobbySetUnitCommand.process_command)
+
 static func create_packet(slot_index:int, unit_index:int, unit_data:DataUnit):
 	return {
 		"name": COMMAND_NAME,
