@@ -147,11 +147,78 @@ func add_player(player_name:String) -> Player:
 	add_child(p)
 	return p
 
-func start_game(map_name : String, player_settings : Array[PresetPlayer]):
-	var map_data: DataWorldMap = load(CFG.WORLD_MAPS_PATH + map_name)
-	var new_players = player_settings.map( func (setting) : return setting.create_player() )
+## starts game based on game_setup_info
+func start_game():
+	if game_setup_info.is_in_mode_world():
+		_start_game_world()
+	if game_setup_info.is_in_mode_battle():
+		_start_game_battle()
+
+
+func _start_game_world():
+	var new_players = get_player_settings().map( func (setting) : return setting.create_player() )
+	UI.go_to_main_menu()
 	players.assign(new_players)
-	WM.start_world(map_data)
+	WM.start_world(game_setup_info.world_map)
+
+
+func get_player_settings() -> Array[PresetPlayer]:
+	var elf = PresetPlayer.new();
+	elf.faction = CFG.FACTION_ELVES
+	elf.player_name = "elf"
+	elf.player_type =  E.PlayerType.HUMAN
+	elf.goods = CFG.get_start_goods()
+
+	var orc = PresetPlayer.new()
+	orc.faction = CFG.FACTION_ORCS
+	orc.player_name = "orc"
+	orc.player_type =  E.PlayerType.HUMAN
+	orc.goods = CFG.get_start_goods()
+
+	return [ elf, orc ]
+
+
+func _start_game_battle():
+	var map_data = game_setup_info.battle_map
+	var new_players : Array[Player] = []
+	var armies : Array[Army] = []
+
+	for player_idx in range(2):
+		var player = create_player(player_idx)
+		new_players.append(player)
+		armies.append(create_army(player_idx, player))
+	IM.players = new_players
+
+	UI.go_to_main_menu()
+	BM.start_battle(armies, map_data)
+
+
+func is_bot(player_idx : int) -> bool:
+	return game_setup_info.is_bot(player_idx)
+
+
+func create_army(player_idx : int, player : Player) -> Army:
+	var army = Army.new()
+	army.controller = player
+	army.units_data = game_setup_info.get_units_data_for_battle(player_idx)
+	return army
+
+
+func create_player(player_idx : int) -> Player:
+	if player_idx == 0:
+		var elf = Player.new();
+		elf.faction = CFG.FACTION_ELVES
+		elf.player_name = "elf"
+		elf.use_bot(is_bot(player_idx))
+		elf.goods = CFG.get_start_goods()
+		return elf
+
+	var orc = Player.new()
+	orc.faction = CFG.FACTION_ORCS
+	orc.player_name = "orc"
+	orc.use_bot(is_bot(player_idx))
+	orc.goods = CFG.get_start_goods()
+	return orc
 
 #endregion
 

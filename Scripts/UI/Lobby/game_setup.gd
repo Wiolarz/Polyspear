@@ -13,7 +13,8 @@ extends Control
 	$MarginContainer/VBoxContainer/ModeChoice/ButtonBattle
 @onready var container : Control = \
 	$MarginContainer/VBoxContainer/SetupContainer
-
+@onready var button_confirm : Button = \
+	$MarginContainer/VBoxContainer/ButtonConfirm
 
 @onready var multi_world_setup_scene = load("res://Scenes/UI/Lobby/WorldSetup.tscn")
 @onready var multi_battle_setup_scene = load("res://Scenes/UI/Lobby/BattleSetup.tscn")
@@ -30,6 +31,7 @@ func _ready():
 	if client_side:
 		button_battle.disabled = true
 		button_world.disabled = true
+		button_confirm.disabled = true
 
 
 func clear_container():
@@ -73,14 +75,14 @@ func refresh_after_connection_change():
 	# this refresh is to change our username when we start or stop server ;)
 	if container.get_child_count() == 1:
 		var setup = container.get_child(0)
-		if setup is MultiBattleSetup or setup is WorldSetup:
+		if setup is BattleSetup or setup is WorldSetup:
 			setup.refresh()
 
 
 func force_full_rebuild():
 	if container.get_child_count() == 1:
 		var setup = container.get_child(0)
-		if setup is MultiBattleSetup or setup is WorldSetup:
+		if setup is BattleSetup or setup is WorldSetup:
 			setup.rebuild()
 			setup.refresh()
 
@@ -177,4 +179,4 @@ func _on_button_battle_toggled(toggled_on : bool):
 
 
 func _on_button_confirm_pressed():
-	container.get_child(0).start_game() # mały drucik
+	IM.start_game()

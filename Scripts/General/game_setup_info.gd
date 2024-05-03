@@ -26,6 +26,18 @@ func is_in_mode_world():
 func is_in_mode_battle():
 	return game_mode == GameMode.BATTLE
 
+func is_bot(player_index : int) -> bool:
+	return slots[player_index].is_bot()
+
+func has_slot(player_index : int) -> bool:
+	return player_index >= 0 and player_index < slots.size()
+
+func get_units_data_for_battle(_player_index : int) -> Array[DataUnit]:
+	return [
+		load("res://Resources/Battle/Units/Classic/orc1.tres"),
+		load("res://Resources/Battle/Units/Classic/orc2.tres"),
+		load("res://Resources/Battle/Units/Classic/orc3.tres"),
+	]
 
 func to_dictionary(local_username : String = "") -> Dictionary:
 	var result = {
@@ -114,11 +126,14 @@ class Slot extends RefCounted: # check if this is good base
 	## `String == ""` -> we (local player) [br]
 	## `String != ""` -> remote player with specified network name [br]
 	## `int` -> AI level eg. 1
-	var occupier = 0
+	var occupier = ""
 
 	## index of color see `CFG.TEAM_COLORS`
 	var color : int = 0
 
 	var faction : DataFaction = null
+
+	func is_bot() -> bool:
+		return occupier is int
 
 	## TODO: add army setup for single battle

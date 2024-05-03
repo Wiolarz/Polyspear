@@ -1,9 +1,11 @@
-class_name MultiBattleSetup
+class_name BattleSetup
 extends Control
 
 var game_setup : GameSetup
 
 var player_slot_panels = []
+
+var client_side_map_label : Label
 
 @onready var player_list = \
 	$Slots/ColorRect/PlayerList
@@ -21,51 +23,14 @@ func _ready():
 
 
 func make_client_side():
-	pass # interface function
-
-
-func start_game():
-	var map_name = maps_list.get_item_text(maps_list.selected)
-	var map_data = load(CFG.BATTLE_MAPS_PATH + "/" + map_name)
-	var players : Array[Player] = []
-	var armies : Array[Army] = []
-
-	for player_idx in range(2):
-		var player = create_player(player_idx)
-		players.append(player)
-		armies.append(create_army(player_idx, player))
-	IM.players = players
-
-	UI.go_to_main_menu()
-	BM.start_battle(armies, map_data)
-
-
-func is_bot(player_idx : int) -> bool:
-	return player_slot_panels[player_idx].is_bot()
-
-
-func create_player(player_idx : int) -> Player:
-	if player_idx == 0:
-		var elf = Player.new();
-		elf.faction = CFG.FACTION_ELVES
-		elf.player_name = "elf"
-		elf.use_bot(is_bot(player_idx))
-		elf.goods = CFG.get_start_goods()
-		return elf
-
-	var orc = Player.new()
-	orc.faction = CFG.FACTION_ORCS
-	orc.player_name = "orc"
-	orc.use_bot(is_bot(player_idx))
-	orc.goods = CFG.get_start_goods()
-	return orc
-
-
-func create_army(player_idx : int, player : Player) -> Army:
-	var army = Army.new()
-	army.controller = player
-	army.units_data = player_slot_panels[player_idx].get_units_data()
-	return army
+	$MapSelect/Label.text = "Selected map"
+	$MapSelect/ColorRect.remove_child(maps_list)
+	maps_list.queue_free()
+	maps_list = null
+	client_side_map_label = Label.new()
+	client_side_map_label.text = "some map"
+	$MapSelect/ColorRect.add_child(client_side_map_label)
+	remove_child($PresetSelect)
 
 
 func refresh():
@@ -74,12 +39,13 @@ func refresh():
 
 
 func refresh_slot(index : int):
-	if not index in range(player_slot_panels.size()):
+	if index < 0 or index >= player_slot_panels.size():
+		push_error("no ui slot to refresh on index ", index)
 		return
+
 	var ui_slot : BattlePlayerSlotPanel = player_slot_panels[index]
 	var logic_slot : GameSetupInfo.Slot = \
-		IM.game_setup_info.slots[index] if index in \
-				range(IM.game_setup_info.slots.size()) \
+		IM.game_setup_info.slots[index] if IM.game_setup_info.has_slot(index) \
 			else null
 	var color : Color = CFG.DEFAULT_TEAM_COLOR
 	var username : String = ""
@@ -88,6 +54,7 @@ func refresh_slot(index : int):
 		BattlePlayerSlotPanel.TakeLeaveButtonState.GHOST
 	if logic_slot:
 		if logic_slot.occupier is String:
+			ui_slot.button_ai.text = "HUMAN"
 			if logic_slot.occupier == "":
 				username = NET.get_current_login()
 				take_leave_button_state = \
@@ -97,6 +64,7 @@ func refresh_slot(index : int):
 				take_leave_button_state = \
 					BattlePlayerSlotPanel.TakeLeaveButtonState.TAKEN_BY_OTHER
 		else:
+			ui_slot.button_ai.text = "AI"
 			username = "Computer\nlevel %d" % logic_slot.occupier
 			take_leave_button_state = \
 				BattlePlayerSlotPanel.TakeLeaveButtonState.FREE
@@ -151,6 +119,22 @@ func cycle_faction_slot(slot : BattlePlayerSlotPanel, backwards : bool) -> bool:
 		refresh_slot(index)
 	return changed
 
+func cycle_ai_slot(slot : BattlePlayerSlotPanel, _backwards : bool):
+	if NET.client:
+		return
+	var index : int = slot_to_index(slot)
+	if not IM.game_setup_info.has_slot(index):
+		push_error("cycle_ai_slot no slot on index", index)
+		return
+	var logic_slot = IM.game_setup_info.slots[index]
+	if logic_slot.is_bot():
+		logic_slot.occupier = ""
+	else:
+		logic_slot.occupier = 1
+	refresh_slot(index)
+	if NET.server:
+		NET.server.broadcast_full_game_setup(IM.game_setup_info)
+
 
 func rebuild():
 	player_slot_panels = []
@@ -181,6 +165,7 @@ func _on_preset_list_item_selected(index):
 			load(CFG.BATTLE_PRESETS_PATH + "/" + preset_file)
 	apply_preset(preset_data)
 
+
 func apply_preset(preset : PresetBattle):
 	var map_name = preset.battle_map.resource_path
 	for i in range(maps_list.item_count):
@@ -189,4 +174,3 @@ func apply_preset(preset : PresetBattle):
 	for player_idx in preset.armies.size():
 		var army = preset.armies[player_idx]
 		player_slot_panels[player_idx].apply_army_preset(army)
-

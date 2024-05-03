@@ -23,27 +23,6 @@ func _ready():
 	# fill_maps_list()
 
 
-func start_game():
-	var map_name = maps_list.get_item_text(maps_list.selected)
-	UI.go_to_main_menu()
-	IM.start_game(map_name, get_player_settings())
-
-
-func get_player_settings() -> Array[PresetPlayer]:
-	var elf = PresetPlayer.new();
-	elf.faction = CFG.FACTION_ELVES
-	elf.player_name = "elf"
-	elf.player_type =  E.PlayerType.HUMAN
-	elf.goods = CFG.get_start_goods()
-
-	var orc = PresetPlayer.new()
-	orc.faction = CFG.FACTION_ORCS
-	orc.player_name = "orc"
-	orc.player_type =  E.PlayerType.HUMAN
-	orc.goods = CFG.get_start_goods()
-
-	return [ elf, orc ]
-
 func refresh():
 	fill_maps_list()
 	# drut?

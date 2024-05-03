@@ -73,7 +73,7 @@ func _on_button_kick_all_pressed():
 func update_server_info():
 	var label_content = "server does not exist"
 	var label = $MarginContainer/VBoxContainer/ServerInfo/Log
-	var server = IM.get_node_or_null("TheServer")
+	var server = NET.server
 	if server:
 		if server.enet_network:
 			label_content = \

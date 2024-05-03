@@ -15,8 +15,7 @@ enum AiButtonState {
 
 const EMPTY_UNIT_TEXT = " - empty - "
 
-var setup_ui = null # TODO some base class for MultiBattleSetup and
-					# MultiScenarioSetup
+var setup_ui : BattleSetup = null
 var button_take_leave_state : TakeLeaveButtonState = TakeLeaveButtonState.FREE
 var button_ai_state : AiButtonState = AiButtonState.HUMAN
 
@@ -50,14 +49,10 @@ func cycle_color(backwards : bool = false):
 	setup_ui.cycle_color_slot(self, backwards)
 
 
-func is_bot() -> bool:
-	return button_ai_state == AiButtonState.AI
-
-
 func cycle_ai(backwards : bool = false):
-	var new_state = button_ai_state + (-1 if backwards else 1)
-	button_ai_state = wrapi(new_state, 0, AiButtonState.size()) as AiButtonState
-	button_ai.text = AiButtonState.keys()[button_ai_state]
+	if not setup_ui:
+		return
+	setup_ui.cycle_ai_slot(self, backwards)
 
 
 func set_visible_color(c : Color):
