@@ -77,7 +77,7 @@ func load_replay(path : String):
 	for m in replay.moves:
 		if not battle_is_ongoing:
 			return # terminating battle while watching
-		perform_ai_move(m, current_participant)
+		perform_ai_move(m)
 		await replay_move_delay()
 
 func replay_move_delay():
@@ -125,22 +125,30 @@ func grid_input(coord : Vector2i) -> void:
 		return
 
 	selected_unit.set_selected(false)
-	_replay.record_move(MoveInfo.make_move(selected_unit.coord, coord))
+	var move_info = MoveInfo.make_move(selected_unit.coord, coord)
+	if NET.client:
+		NET.client.queue_request_move(move_info)
+		return # dont perform move, send it to server
+	_replay.record_move(move_info)
 	_replay.save()
+	if NET.server:
+		NET.server.broadcast_move(move_info)
 	move_unit(selected_unit, coord, side)
 	switch_participant_turn()
 
-func perform_ai_move( move :MoveInfo,  _me: Player):
-	_replay.record_move(move)
+func perform_ai_move(move_info : MoveInfo):
+	_replay.record_move(move_info)
 	_replay.save()
-	if move.move_type == MoveInfo.TYPE_MOVE:
-		var unit = B_GRID.get_unit(move.move_source)
-		var dir = GridManager.adjacent_side_direction(unit.coord, move.target_tile_coord)
-		move_unit(unit, move.target_tile_coord, dir)
+	if NET.server:
+		NET.server.broadcast_move(move_info)
+	if move_info.move_type == MoveInfo.TYPE_MOVE:
+		var unit = B_GRID.get_unit(move_info.move_source)
+		var dir = GridManager.adjacent_side_direction(unit.coord, move_info.target_tile_coord)
+		move_unit(unit, move_info.target_tile_coord, dir)
 		switch_participant_turn()
 		return
-	if move.move_type == MoveInfo.TYPE_SUMMON:
-		summon_unit(move.summon_unit, move.target_tile_coord)
+	if move_info.move_type == MoveInfo.TYPE_SUMMON:
+		summon_unit(move_info.summon_unit, move_info.target_tile_coord)
 		switch_participant_turn()
 		return
 	assert(false, "Move move_type not supported in perform")
@@ -421,11 +429,19 @@ func _grid_input_summon(coord : Vector2i):
 	if battle_ui.selected_unit == null:
 		return # no unit selected
 
-	if is_legal_summon_coord(coord, current_participant):
-		_replay.record_move(MoveInfo.make_summon(battle_ui.selected_unit, coord))
-		_replay.save()
-		summon_unit(battle_ui.selected_unit, coord)
-		switch_participant_turn()
+	if not is_legal_summon_coord(coord, current_participant):
+		return
+
+	var move_info = MoveInfo.make_summon(battle_ui.selected_unit, coord)
+	if NET.client:
+		NET.client.queue_request_move(move_info)
+		return # dont perform move, send it to server
+	_replay.record_move(move_info)
+	_replay.save()
+	if NET.server:
+		NET.server.broadcast_move(move_info)
+	summon_unit(battle_ui.selected_unit, coord)
+	switch_participant_turn()
 
 
 func is_legal_summon_coord(coord : Vector2i, player: Player) -> bool:

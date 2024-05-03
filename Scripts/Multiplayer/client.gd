@@ -5,18 +5,24 @@ extends Node
 var username : String = ""
 var peer : ENetPacketPeer = null
 var send_queue : Array = []
-var incoming_commands : Dictionary = {
-	"set_session": Command.create_on_client(AllTheCommands.client_set_session),
-	"kicked": Command.create_on_client(AllTheCommands.client_kicked),
-	"replay_game_move": Command.create_on_client( \
-		AllTheCommands.client_replay_game_move),
-	"chat": Command.create_on_client(AllTheCommands.client_chat),
-	"fill_game_setup": Command.create_on_client(AllTheCommands.client_fill_game_setup),
-	StartGameCommand.COMMAND_NAME: Command.create_on_client(StartGameCommand.process_command)
-}
+var incoming_commands : Dictionary = {}
 
 @onready var enet_network : ENetConnection = null
 
+
+func _init():
+	incoming_commands["set_session"] = Command.create_on_client( \
+			AllTheCommands.client_set_session)
+	incoming_commands["kicked"] = Command.create_on_client( \
+			AllTheCommands.client_kicked)
+	incoming_commands["replay_game_move"] = Command.create_on_client( \
+			AllTheCommands.client_replay_game_move)
+	incoming_commands["chat"] = Command.create_on_client( \
+			AllTheCommands.client_chat)
+	incoming_commands["fill_game_setup"] = Command.create_on_client( \
+			AllTheCommands.client_fill_game_setup)
+	StartGameCommand.register(incoming_commands)
+	MakeMoveCommand.register(incoming_commands)
 
 func _process(_delta):
 	roll()
@@ -101,11 +107,17 @@ func queue_leave_slot(slot_index : int):
 	}
 	queue_message_to_server(packet)
 
+
 func queue_lobby_set_unit(slot_index:int, unit_index:int, unit_data:DataUnit):
 	queue_message_to_server( \
 			LobbySetUnitCommand.create_packet( \
 				slot_index, unit_index, unit_data \
 			))
+
+
+func queue_request_move(move : MoveInfo):
+	queue_message_to_server(ClientRequestedMoveCommand.create_packet(move))
+
 
 func logout_if_needed() -> void:
 	if username == "":

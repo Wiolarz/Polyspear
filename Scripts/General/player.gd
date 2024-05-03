@@ -29,6 +29,8 @@ func your_turn():
 	#UI stuff to let player know its his turn,
 	# in case play is AI, call his decision maker
 
+	if NET.client: # AI is simulated on server only
+		return
 
 	if bot_engine != null:
 		bot_engine.play_move()
