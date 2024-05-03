@@ -105,3 +105,4 @@ layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_4gp8n")
 
 [connection signal="item_selected" from="PresetSelect/ColorRect/PresetList" to="." method="_on_preset_list_item_selected"]
+[connection signal="item_selected" from="MapSelect/ColorRect/MapList" to="." method="_on_map_list_item_selected"]

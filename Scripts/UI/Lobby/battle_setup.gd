@@ -37,6 +37,10 @@ func refresh():
 	for index in range(player_slot_panels.size()):
 		refresh_slot(index)
 
+	if client_side_map_label:
+		var map_name = DataBattleMap.get_network_id(IM.game_setup_info.battle_map)
+		client_side_map_label.text = map_name
+
 
 func refresh_slot(index : int):
 	if index < 0 or index >= player_slot_panels.size():
@@ -167,10 +171,22 @@ func _on_preset_list_item_selected(index):
 
 
 func apply_preset(preset : PresetBattle):
-	var map_name = preset.battle_map.resource_path
+	var map_name = preset.battle_map.resource_path.get_file()
 	for i in range(maps_list.item_count):
 		if maps_list.get_item_text(i) == map_name:
 			maps_list.select(i)
+			_on_map_list_item_selected(i)
 	for player_idx in preset.armies.size():
 		var army = preset.armies[player_idx]
 		player_slot_panels[player_idx].apply_army_preset(army)
+
+	if NET.server:
+		NET.server.broadcast_full_game_setup(IM.game_setup_info)
+
+
+func _on_map_list_item_selected(index):
+	var map_name = maps_list.get_item_text(index)
+	var map = load(CFG.BATTLE_MAPS_PATH + "/" + map_name)
+	IM.game_setup_info.battle_map = map
+	if NET.server:
+		NET.server.broadcast_full_game_setup(IM.game_setup_info)
