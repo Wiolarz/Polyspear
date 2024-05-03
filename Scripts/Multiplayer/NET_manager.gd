@@ -70,13 +70,12 @@ func client_connection() -> bool:
 	return client and client.enet_network
 
 
-func get_current_login() -> String: # TODO rename to get_current_username
+func get_current_login() -> String: # TODO rename username to login
 	if server_connection():
 		return server.server_username
 	if client_connection():
 		return client.username
-	return CFG.DEFAULT_USER_NAME # TODO rename to PLACEHOLDER_USER_NAME
-
+	return CFG.DEFAULT_USER_NAME # TODO rename to PLACEHOLDER_LOGIN
 
 func send_chat_message(message : String) -> void:
 	if not client:
