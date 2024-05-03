@@ -3,7 +3,7 @@ extends Control
 
 var game_setup : GameSetup
 
-var player_slot_panels = []
+var player_slot_panels: Array[BattlePlayerSlotPanel]= []
 
 var client_side_map_label : Label
 
@@ -57,6 +57,7 @@ func refresh_slot(index : int):
 	var take_leave_button_state : BattlePlayerSlotPanel.TakeLeaveButtonState =\
 		BattlePlayerSlotPanel.TakeLeaveButtonState.GHOST
 	if logic_slot:
+		ui_slot.set_army(logic_slot.units_list)
 		if logic_slot.occupier is String:
 			ui_slot.button_ai.text = "HUMAN"
 			if logic_slot.occupier == "":
@@ -143,6 +144,7 @@ func cycle_ai_slot(slot : BattlePlayerSlotPanel, _backwards : bool):
 func rebuild():
 	player_slot_panels = []
 	for slot in player_list.get_children():
+		slot.setup_ui = self
 		player_slot_panels.append(slot)
 	# don't want to refresh here -- we want to be able to build this widget
 	# without real data

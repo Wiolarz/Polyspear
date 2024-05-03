@@ -32,12 +32,16 @@ func is_bot(player_index : int) -> bool:
 func has_slot(player_index : int) -> bool:
 	return player_index >= 0 and player_index < slots.size()
 
-func get_units_data_for_battle(_player_index : int) -> Array[DataUnit]:
-	return [
-		load("res://Resources/Battle/Units/Classic/orc1.tres"),
-		load("res://Resources/Battle/Units/Classic/orc2.tres"),
-		load("res://Resources/Battle/Units/Classic/orc3.tres"),
-	]
+func set_unit(slot_index:int, unit_index:int, unit_data:DataUnit):
+	slots[slot_index].units_list[unit_index] = unit_data
+
+func get_units_data_for_battle(player_index : int) -> Array[DataUnit]:
+	var non_empty : Array[DataUnit] = []
+	for u in slots[player_index].units_list:
+		if not u:
+			continue
+		non_empty.append(u)
+	return non_empty
 
 func to_dictionary(local_username : String = "") -> Dictionary:
 	var result = {
@@ -52,6 +56,8 @@ func to_dictionary(local_username : String = "") -> Dictionary:
 					slot.occupier, local_username),
 			"faction": slot.faction.get_network_id(),
 			"color": slot.color,
+			"units_list": GameSetupInfo.units_list_prepare_for_network( \
+					slot.units_list),
 		})
 	return result
 
@@ -76,6 +82,9 @@ static func from_dictionary(dict : Dictionary, \
 					DataFaction.from_network_id(read_slot["faction"])
 			if "color" in read_slot and read_slot["color"] is int:
 				new_slot.color = read_slot["color"]
+			if "units_list" in read_slot and read_slot["units_list"] is Array:
+				new_slot.units_list = \
+						GameSetupInfo.units_list_receive_from_network(read_slot["units_list"])
 			result.slots.append(new_slot)
 	return result
 
@@ -107,6 +116,20 @@ static func occupier_receive_from_network(occupier, local_username : String):
 	push_error("invalid occupier received ", occupier)
 
 
+static func units_list_prepare_for_network(to_serialize: Array[DataUnit]) -> Array[String]:
+	var result : Array[String] = []
+	for u in to_serialize:
+		result.append(DataUnit.get_network_id(u))
+	return result
+
+
+static func units_list_receive_from_network(serialized: Array) -> Array[DataUnit]:
+	var result :Array[DataUnit] = []
+	for s in serialized:
+		result.append(DataUnit.from_network_id(s))
+	return result
+
+
 static func create_empty(slot_count : int) -> GameSetupInfo:
 	var result = GameSetupInfo.new()
 	result.slots.resize(slot_count)
@@ -133,7 +156,7 @@ class Slot extends RefCounted: # check if this is good base
 
 	var faction : DataFaction = null
 
+	var units_list : Array[DataUnit] = [null,null,null,null,null]
+
 	func is_bot() -> bool:
 		return occupier is int
-
-	## TODO: add army setup for single battle

@@ -173,6 +173,7 @@ func broadcast_full_game_setup(game_setup : GameSetupInfo):
 		"name": "fill_game_setup",
 		"setup" : game_setup.to_dictionary(server_username)
 	}
+	# print("sending \n", packet)
 	broadcast(packet)
 
 

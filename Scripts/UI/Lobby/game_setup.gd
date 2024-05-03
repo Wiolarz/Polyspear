@@ -56,8 +56,8 @@ func select_battle():
 func _select_setup_page(page):
 	clear_container()
 	var setup = page.instantiate()
-	container.add_child(setup)
 	setup.game_setup = self
+	container.add_child(setup)
 	if client_side:
 		setup.make_client_side()
 	setup.refresh()
