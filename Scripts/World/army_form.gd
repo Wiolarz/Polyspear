@@ -1,7 +1,7 @@
 class_name ArmyForm
 extends Node2D
 
-var entity: Army
+var entity : Army
 
 var coord:
 	get: return entity.coord
@@ -19,7 +19,7 @@ func _process(_delta):
 
 
 static func create_hero_army(player : Player, hero_data : DataHero) -> ArmyForm:
-	var result = CFG.DEFAULT_ARMY_FORM.instantiate()
+	var result : ArmyForm = CFG.DEFAULT_ARMY_FORM.instantiate()
 	result.entity = Army.new()
 	result.entity.hero = Hero.new()
 
@@ -29,6 +29,16 @@ static func create_hero_army(player : Player, hero_data : DataHero) -> ArmyForm:
 	result.entity.hero.controller = player
 	result.get_node("sprite_unit").texture = \
 		load(hero_data.data_unit.texture_path)
+	return result
+
+static func create_neutral_army(army_preset : PresetArmy) -> ArmyForm:
+	var result : ArmyForm = CFG.DEFAULT_ARMY_FORM.instantiate()
+	result.entity = Army.create_army_from_preset(army_preset)
+
+	result.get_node("sprite_unit").texture = \
+		load(army_preset.units[0].texture_path)
+	
+	result.entity.controller = WM.players[0] # TODO ADD NEUTRAL PLAYER
 	return result
 
 

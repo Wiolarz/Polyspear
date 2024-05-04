@@ -87,8 +87,26 @@ func get_start_goods() -> Goods:
 
 #region Neutral Units armies
 
-const HUNT_WOOD_PATH : String = "res://Resources/Presets/Army/hunt_wood/" 
-const HUNT_IRON_PATH : String = "res://Resources/Presets/Army/hunt_iron/" 
+const HUNT_WOOD_PATH : String = "res://Resources/Presets/Army/hunt_wood/"
+const HUNT_IRON_PATH : String = "res://Resources/Presets/Army/hunt_iron/"
 const HUNT_RUBY_PATH : String = "res://Resources/Presets/Army/hunt_ruby/"
+
+#const HUNT_PATHS : Array[String] = [HUNT_WOOD_PATH, HUNT_IRON_PATH, HUNT_RUBY_PATH]
+
+#endregion
+
+#region World Map properties
+
+const WORLD_MOVEABLE_TILES = [
+	"empty",
+	"iron_mine",
+	"sawmill",
+	"ruby_cave",
+	"wood_hunt",
+	"iron_hunt",
+	"ruby_hunt",
+	]
+
+
 
 #endregion

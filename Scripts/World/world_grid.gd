@@ -35,12 +35,7 @@ func remove_hero(hero):
 #region Coordinates Tools
 
 func is_moveable(coord : Vector2i):
-	return get_tile_type(coord) in [ \
-		"empty",
-		"iron_mine",
-		"sawmill",
-		"ruby_cave",
-	]
+	return get_tile_type(coord) in CFG.WORLD_MOVEABLE_TILES
 
 
 func get_tile_controller(coord : Vector2i) -> Player:

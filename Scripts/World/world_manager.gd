@@ -37,11 +37,21 @@ func set_selected_hero(new_hero : ArmyForm):
 	if selected_hero:
 		selected_hero.set_selected(true)
 
+func spawn_neutral_army(army_preset : PresetArmy, coord : Vector2i) -> ArmyForm:
+	print("neutral army spawn on: ", str(coord))
+	var army_for_world_map : ArmyForm = \
+		ArmyForm.create_neutral_army(army_preset)
+
+	add_child(army_for_world_map)
+
+	W_GRID.place_army(army_for_world_map, coord)
+	return army_for_world_map
+
+
 #endregion # helpers
 
 
 #region Main functions
-
 
 func next_player_turn():
 	set_selected_hero(null)
@@ -54,8 +64,10 @@ func next_player_turn():
 	else:
 		current_player = players[player_idx + 1]
 
+
 func _end_of_turn_callbacks(player : Player):
 	W_GRID.end_of_turn_callbacks(player)
+
 
 func _end_of_day_callbacks() -> void:
 	for column in W_GRID.places:
@@ -63,6 +75,7 @@ func _end_of_day_callbacks() -> void:
 			if place == null:
 				continue
 			place.on_end_of_turn()
+
 #endregion
 
 
@@ -150,7 +163,7 @@ func trade_armies(_second_army : ArmyForm):
 #region City Management
 
 
-func trade_city(city : City, hero : ArmyForm ):
+func trade_city(city : City, hero : ArmyForm):
 	print("trade_city")
 	selected_city = city
 	world_ui.show_trade_ui(city, hero)
@@ -162,7 +175,7 @@ func recruit_hero(player : Player, hero_data : DataHero, coord : Vector2i) -> vo
 
 	add_child(army_for_world_map)
 
-	army_for_world_map.entity.units_data.append(army_for_world_map.entity.hero.data_unit)
+	army_for_world_map.entity.units_data.append(army_for_world_map.entity.hero.data_unit) # adding hero to unit roster
 	W_GRID.place_army(army_for_world_map, coord)
 
 #endregion
