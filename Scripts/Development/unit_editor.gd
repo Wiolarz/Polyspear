@@ -107,8 +107,8 @@ func _load_units_dir_recursive(dir : DirAccess, parent : TreeItem):
 
 		browser_tree_id_to_unit_path[next_unit_id] = \
 				dir.get_current_dir() + "/" + file
-		print("loaded ", browser_tree_id_to_unit_path[next_unit_id], \
-				" on id ", next_unit_id)
+		#print("loaded ", browser_tree_id_to_unit_path[next_unit_id], \
+				#" on id ", next_unit_id)
 
 		next_unit_id += 1
 
