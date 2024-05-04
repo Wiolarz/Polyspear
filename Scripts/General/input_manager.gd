@@ -26,9 +26,6 @@ signal game_setup_info_changed
 
 enum CameraPosition {WORLD, BATTLE}
 
-
-## TODO clean up, this lobby setup is used only in networking,
-## it should be universal
 var game_setup_info : GameSetupInfo
 
 var players : Array[Player] :
@@ -50,26 +47,20 @@ var raging_battle : bool
 
 var current_camera_position = CameraPosition.WORLD
 
-## TODO move to some chat class
-var chat_log : String
-
 var _players : Array[Player] = []
 
 
 #region Input Support
 
-"""
-ESC - Return to the previous menu interface
-~ - Game Menu
-F1 - Exit Game
-F2 - maximize window
-F3 - toggle cheat mode
-F4 - toggle visibility of collision shapes
-
-F5 - Save
-F6 - Load
-"""
-
+## ESC - Return to the previous menu interface
+## ~ - Game Menu
+## F1 - Exit Game
+## F2 - maximize window
+## F3 - toggle cheat mode
+## F4 - toggle visibility of collision shapes
+##
+## F5 - Save
+## F6 - Load
 func _process(_delta):
 	## fastest response time to player input
 	if Input.is_action_just_pressed("KEY_EXIT_GAME"):
@@ -92,7 +83,7 @@ func _process(_delta):
 
 
 func _physics_process(_delta):
-	## To prevent desync when animating + enemy bot gameplay
+	## physics to prevent desync when animating + enemy bot gameplay
 	if Input.is_action_just_pressed("KEY_BOT_SPEED_SLOW"):
 		print("anim speed - slow")
 		CFG.animation_speed_frames = CFG.AnimationSpeed.NORMAL
@@ -105,6 +96,9 @@ func _physics_process(_delta):
 		print("anim speed - fast")
 		CFG.animation_speed_frames = CFG.AnimationSpeed.INSTANT
 		CFG.bot_speed_frames = CFG.BotSpeed.FAST
+
+func init_game_setup():
+	game_setup_info = GameSetupInfo.create_empty(4)
 
 # called from TileForm mouse detection
 func grid_smooth_input_listener(coord : Vector2i):
@@ -153,11 +147,81 @@ func add_player(player_name:String) -> Player:
 	add_child(p)
 	return p
 
-func start_game(map_name : String, player_settings : Array[PresetPlayer]):
-	var map_data: DataWorldMap = load(CFG.WORLD_MAPS_PATH + map_name)
-	var new_players = player_settings.map( func (setting) : return setting.create_player() )
+## starts game based on game_setup_info
+func start_game():
+	if game_setup_info.is_in_mode_world():
+		_start_game_world()
+	if game_setup_info.is_in_mode_battle():
+		_start_game_battle()
+	if NET.server:
+		NET.server.broadcast_start_game()
+
+
+func _start_game_world():
+	var new_players = get_player_settings().map( func (setting) : return setting.create_player() )
+	UI.go_to_main_menu()
 	players.assign(new_players)
-	WM.start_world(map_data)
+	WM.start_world(game_setup_info.world_map)
+
+
+func get_player_settings() -> Array[PresetPlayer]:
+	# TODO: drut, replace with reading game_setup_info
+	var elf = PresetPlayer.new();
+	elf.faction = CFG.FACTION_ELVES
+	elf.player_name = "elf"
+	elf.player_type =  E.PlayerType.HUMAN
+	elf.goods = CFG.get_start_goods()
+
+	var orc = PresetPlayer.new()
+	orc.faction = CFG.FACTION_ORCS
+	orc.player_name = "orc"
+	orc.player_type =  E.PlayerType.HUMAN
+	orc.goods = CFG.get_start_goods()
+
+	return [ elf, orc ]
+
+
+func _start_game_battle():
+	var map_data = game_setup_info.battle_map
+	var new_players : Array[Player] = []
+	var armies : Array[Army] = []
+
+	for player_idx in range(2):
+		var player = create_player(player_idx)
+		new_players.append(player)
+		armies.append(create_army(player_idx, player))
+	IM.players = new_players
+
+	UI.go_to_main_menu()
+	BM.start_battle(armies, map_data)
+
+
+func is_bot(player_idx : int) -> bool:
+	return game_setup_info.is_bot(player_idx)
+
+
+func create_army(player_idx : int, player : Player) -> Army:
+	var army = Army.new()
+	army.controller = player
+	army.units_data = game_setup_info.get_units_data_for_battle(player_idx)
+	return army
+
+
+func create_player(player_idx : int) -> Player:
+	if player_idx == 0:
+		var elf = Player.new();
+		elf.faction = CFG.FACTION_ELVES
+		elf.player_name = "elf"
+		elf.use_bot(is_bot(player_idx))
+		elf.goods = CFG.get_start_goods()
+		return elf
+
+	var orc = Player.new()
+	orc.faction = CFG.FACTION_ORCS
+	orc.player_name = "orc"
+	orc.use_bot(is_bot(player_idx))
+	orc.goods = CFG.get_start_goods()
+	return orc
 
 #endregion
 
@@ -186,152 +250,6 @@ func hide_in_game_menu():
 	set_game_paused(false)
 
 #endregion
-
-
-#region Network
-
-func set_default_game_setup_info() -> void:
-	game_setup_info = GameSetupInfo.create_empty(4)
-
-
-func make_server():
-	var node = get_node_or_null("TheServer")
-	if node != null:
-		return
-	var client = get_node_or_null("TheClient")
-	if client:
-		client.close()
-		client.queue_free()
-		remove_child(client)
-	node = Server.new()
-	node.name = "TheServer"
-	add_child(node)
-
-
-func make_client() -> void:
-	var node = get_node_or_null("TheClient")
-	if node != null:
-		return
-	var server = get_node_or_null("TheServer")
-	if server:
-		server.close()
-		server.queue_free()
-		remove_child(server)
-	node = Client.new()
-	node.name = "TheClient"
-	add_child(node)
-
-
-func server_listen(address : String, port : int, username : String):
-	make_server()
-	get_server().listen(address, port, username)
-
-
-func server_close():
-	if not get_server():
-		return
-	get_server().close()
-
-
-func server_kick_all():
-	if not get_server():
-		return
-	get_server().kick_all()
-
-
-func client_connect_and_login(address : String, port : int, username : String):
-	make_client()
-	get_client().connect_to_server(address, port)
-	get_client().queue_login(username)
-
-
-func client_logout_and_disconnect():
-	if not get_client():
-		return
-	get_client().logout_if_needed()
-	get_client().close()
-
-
-func get_server() -> Server:
-	var server = get_node_or_null("TheServer")
-	if server is Server:
-		return server
-	return null
-
-
-func get_client() -> Client:
-	var client = get_node_or_null("TheClient")
-	if client is Client:
-		return client
-	return null
-
-
-func server_connection() -> bool:
-	return get_server() and get_server().enet_network
-
-
-func client_connection() -> bool:
-	return get_client() and get_client().enet_network
-
-
-func get_current_name() -> String: # TODO rename to get_current_username
-	if server_connection():
-		return get_server().server_username
-	if client_connection():
-		return get_client().username
-	return CFG.DEFAULT_USER_NAME # TODO rename to PLACEHOLDER_USER_NAME
-
-
-func send_chat_message(message : String) -> void:
-	var server = get_server()
-	var client = get_client()
-	if not client:
-		append_message_to_local_chat_log(message, get_current_name())
-	if server:
-		server.broadcast_say(message)
-	elif client:
-		client.queue_say(message)
-
-
-func append_message_to_local_chat_log(message : String, \
-		author : String) -> void:
-	append_to_local_chat_log("%s: %s" % [ author, message ])
-
-
-func append_to_local_chat_log(line : String) -> void:
-	chat_log += line + '\n'
-
-
-func clear_local_chat_log() -> void:
-	chat_log = ""
-
-
-func multiplayer_send(movement : MoveInfo):
-	# CLIENT -> server
-	var client : Client = get_client()
-	if not client:
-		return
-	client.queue_movement(movement)
-
-
-func multiplayer_receive():
-	# client -> SERVER
-	pass
-
-
-func multiplayer_broadcast_send(movement : MoveInfo):
-	# SERVER -> clients
-	var server : Server = get_server()
-	if not server:
-		return
-	server.broadcast_movement(movement)
-
-func multiplayer_broadcast_receive():
-	# server -> CLIENT
-	pass
-
-# endregion
-
 
 
 #region Technical

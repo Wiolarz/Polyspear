@@ -40,8 +40,8 @@ func get_username():
 
 
 func connect_to_server():
-	IM.clear_local_chat_log()
-	IM.client_connect_and_login(get_address(), get_port(), get_username())
+	NET.clear_local_chat_log()
+	NET.client_connect_and_login(get_address(), get_port(), get_username())
 
 
 func _on_button_listen_pressed():

@@ -12,6 +12,7 @@ var incoming_commands : Dictionary = {
 		AllTheCommands.client_replay_game_move),
 	"chat": Command.create_on_client(AllTheCommands.client_chat),
 	"fill_game_setup": Command.create_on_client(AllTheCommands.client_fill_game_setup),
+	StartGameCommand.COMMAND_NAME: Command.create_on_client(StartGameCommand.process_command)
 }
 
 @onready var enet_network : ENetConnection = null
@@ -100,6 +101,11 @@ func queue_leave_slot(slot_index : int):
 	}
 	queue_message_to_server(packet)
 
+func queue_lobby_set_unit(slot_index:int, unit_index:int, unit_data:DataUnit):
+	queue_message_to_server( \
+			LobbySetUnitCommand.create_packet( \
+				slot_index, unit_index, unit_data \
+			))
 
 func logout_if_needed() -> void:
 	if username == "":

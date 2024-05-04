@@ -22,8 +22,8 @@ func _ready():
 
 
 func start_server():
-	IM.clear_local_chat_log()
-	IM.server_listen(get_address(), get_port(), get_username_server())
+	NET.clear_local_chat_log()
+	NET.server_listen(get_address(), get_port(), get_username_server())
 	host_menu.refresh_after_connection_change()
 
 

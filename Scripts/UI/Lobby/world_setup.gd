@@ -23,27 +23,6 @@ func _ready():
 	# fill_maps_list()
 
 
-func start_game():
-	var map_name = maps_list.get_item_text(maps_list.selected)
-	UI.go_to_main_menu()
-	IM.start_game(map_name, get_player_settings())
-
-
-func get_player_settings() -> Array[PresetPlayer]:
-	var elf = PresetPlayer.new();
-	elf.faction = CFG.FACTION_ELVES
-	elf.player_name = "elf"
-	elf.player_type =  E.PlayerType.HUMAN
-	elf.goods = CFG.get_start_goods()
-
-	var orc = PresetPlayer.new()
-	orc.faction = CFG.FACTION_ORCS
-	orc.player_name = "orc"
-	orc.player_type =  E.PlayerType.HUMAN
-	orc.goods = CFG.get_start_goods()
-
-	return [ elf, orc ]
-
 func refresh():
 	fill_maps_list()
 	# drut?
@@ -80,7 +59,7 @@ func refresh_slot(index : int):
 	if logic_slot:
 		if logic_slot.occupier is String:
 			if logic_slot.occupier == "":
-				username = IM.get_current_name()
+				username = NET.get_current_login()
 				take_leave_button_state = \
 					WorldPlayerSlotPanel.TakeLeaveButtonState.TAKEN_BY_YOU
 			else:
@@ -160,7 +139,7 @@ func make_client_side():
 	client_side_map_label = Label.new()
 	client_side_map_label.text = "some map"
 	map_select.get_node("ColorRect").add_child(client_side_map_label)
-
+	$V.remove_child($V/PresetSelect)
 
 func fill_maps_list():
 	if not maps_list:

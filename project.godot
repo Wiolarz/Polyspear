@@ -17,13 +17,14 @@ config/icon="res://Art/world_map/ruby_cave.png"
 
 [autoload]
 
-UI="*res://Scripts/UI/ui_manager.gd"
-IM="*res://Scripts/General/input_manager.gd"
-W_GRID="*res://Scripts/World/world_grid.gd"
-WM="*res://Scripts/World/world_manager.gd"
 CFG="*res://Scripts/General/config_manager.gd"
+W_GRID="*res://Scripts/World/world_grid.gd"
 B_GRID="*res://Scripts/Battle/battle_grid.gd"
+WM="*res://Scripts/World/world_manager.gd"
 BM="*res://Scripts/Battle/battle_manager.gd"
+IM="*res://Scripts/General/input_manager.gd"
+NET="*res://Scripts/Multiplayer/NET_manager.gd"
+UI="*res://Scripts/UI/ui_manager.gd"
 
 [debug]
 

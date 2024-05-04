@@ -15,6 +15,8 @@ var incoming_commands : Dictionary = { # Dictionary[String -> Command]
 		AllTheCommands.server_request_faction_cycle),
 	"take_slot": Command.create_on_server(AllTheCommands.server_take_slot),
 	"leave_slot": Command.create_on_server(AllTheCommands.server_leave_slot),
+	LobbySetUnitCommand.COMMAND_NAME : \
+		Command.create_on_server(LobbySetUnitCommand.process_command),
 }
 
 
@@ -129,11 +131,13 @@ func close():
 func send_to_peer(peer : ENetPacketPeer, command_dictionary : Dictionary):
 	if not command_dictionary is Dictionary:
 		return
+	print("server - send to peer ", command_dictionary["name"])
 	var content : PackedByteArray = var_to_bytes(command_dictionary)
 	peer.send(0, content, ENetPacketPeer.FLAG_RELIABLE)
 
 
 func broadcast(command_dictionary : Dictionary):
+	print("server - broadcast ", command_dictionary["name"])
 	if not command_dictionary is Dictionary or enet_network == null:
 		return
 	var content : PackedByteArray = var_to_bytes(command_dictionary)
@@ -171,7 +175,12 @@ func broadcast_full_game_setup(game_setup : GameSetupInfo):
 		"name": "fill_game_setup",
 		"setup" : game_setup.to_dictionary(server_username)
 	}
+	# print("sending \n", packet)
 	broadcast(packet)
+
+
+func broadcast_start_game():
+	broadcast(StartGameCommand.create_packet())
 
 
 func send_additional_callbacks_to_logging_client(peer : ENetPacketPeer):
@@ -216,12 +225,12 @@ func roll() -> void:
 			ENetConnection.EventType.EVENT_RECEIVE:
 				var packet : PackedByteArray = peer.get_packet()
 				if channel != 0:
-					print(("Peer %x sent something on different channel " + \
+					push_error(("Peer %x sent something on different channel " + \
 						"than 0 -- ignoring") % peer.get_instance_id())
 					break
 				var decoded = MultiCommon.decode_packet(packet)
 				if not decoded:
-					print("Peer %x sent something not being a command" % \
+					push_error("Peer %x sent something not being a command" % \
 						peer.get_instance_id())
 					break
 				var command_name = decoded["name"]

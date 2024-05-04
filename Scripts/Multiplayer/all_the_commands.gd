@@ -158,8 +158,6 @@ static func server_leave_slot(server : Server, peer : ENetPacketPeer, \
 	IM.game_setup_info_changed.emit()
 	return OK
 
-
-
 #endregion
 
 
@@ -197,17 +195,18 @@ static func client_chat(client : Client, params : Dictionary) -> int:
 		return FAILED
 	var message = params["content"]
 	var author = params["author"]
-	IM.append_message_to_local_chat_log(message, author)
+	NET.append_message_to_local_chat_log(message, author)
 	return OK
 
+
 static func client_fill_game_setup(_c : Client, params : Dictionary) -> int:
+	print("Client - fill_game_setup: \n %s" % params)
 	if not "setup" in params or not params["setup"] is Dictionary:
 		return FAILED
 	var setup = GameSetupInfo.from_dictionary(params["setup"], \
-		IM.get_current_name())
+		NET.get_current_login())
 	IM.game_setup_info = setup
 	IM.game_setup_info_changed.emit()
-	print("Client: %s" % params)
 	return OK
 
 #endregion

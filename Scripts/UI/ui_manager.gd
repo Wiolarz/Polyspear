@@ -10,7 +10,7 @@ var client_lobby
 
 func _ready():
 
-	IM.set_default_game_setup_info() # drut
+	IM.init_game_setup() # drut
 
 	in_game_menu = load("res://Scenes/UI/GameMenu.tscn").instantiate()
 	main_menu    = load("res://Scenes/UI/MainMenu.tscn").instantiate()
