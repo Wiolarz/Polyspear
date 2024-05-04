@@ -37,7 +37,12 @@ func set_selected_hero(new_hero : ArmyForm):
 	if selected_hero:
 		selected_hero.set_selected(true)
 
+
 func spawn_neutral_army(army_preset : PresetArmy, coord : Vector2i) -> ArmyForm:
+	var player_army_presence = W_GRID.get_army(coord)
+	if player_army_presence != null:
+		printerr("neutral army attacking player has not been implemented") # TODO FIX
+
 	print("neutral army spawn on: ", str(coord))
 	var army_for_world_map : ArmyForm = \
 		ArmyForm.create_neutral_army(army_preset)
@@ -46,7 +51,6 @@ func spawn_neutral_army(army_preset : PresetArmy, coord : Vector2i) -> ArmyForm:
 
 	W_GRID.place_army(army_for_world_map, coord)
 	return army_for_world_map
-
 
 #endregion # helpers
 
