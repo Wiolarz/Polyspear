@@ -11,16 +11,10 @@ var incoming_commands : Dictionary = {}
 
 
 func _init():
-	incoming_commands["set_session"] = Command.create_on_client( \
-			AllTheCommands.client_set_session)
-	incoming_commands["kicked"] = Command.create_on_client( \
-			AllTheCommands.client_kicked)
-	incoming_commands["replay_game_move"] = Command.create_on_client( \
-			AllTheCommands.client_replay_game_move)
-	incoming_commands["chat"] = Command.create_on_client( \
-			AllTheCommands.client_chat)
-	incoming_commands["fill_game_setup"] = Command.create_on_client( \
-			AllTheCommands.client_fill_game_setup)
+	SetSessionCommand.register(incoming_commands)
+	KickedCommand.register(incoming_commands)
+	ChatCommand.register(incoming_commands)
+	FillGameSetupCommand.register(incoming_commands)
 	StartGameCommand.register(incoming_commands)
 	MakeMoveCommand.register(incoming_commands)
 
@@ -48,63 +42,34 @@ func connect_to_server(address : String, port : int) -> void:
 
 
 func queue_login(desired_username : String) -> void:
-	var packet : Dictionary = {
-		"name": "login",
-		"username": desired_username,
-	}
+	var packet : Dictionary = LoginCommand.create_packet(desired_username)
 	queue_message_to_server(packet)
 
 
-func queue_movement(movement : MoveInfo):
-	var message : Dictionary = {
-		"name": "order_game_move",
-		"type": movement.move_type,
-		"summon_unit": movement.summon_unit,
-		"source": movement.move_source,
-		"target": movement.target_tile_coord,
-	}
-	queue_message_to_server(message)
-
-
 func queue_say(message : String):
-	var packet : Dictionary = {
-		"name": "say",
-		"content": message,
-	}
+	var packet : Dictionary = SayCommand.create_packet(message)
 	queue_message_to_server(packet)
 
 
 func queue_cycle_color(slot_index : int, backwards : bool = false):
-	var packet : Dictionary = {
-		"name": "request_color_cycle",
-		"slot": slot_index,
-		"backwards": backwards,
-	}
+	var packet : Dictionary = \
+		RequestColorCycleCommand.create_packet(slot_index, backwards)
 	queue_message_to_server(packet)
 
 
 func queue_cycle_faction(slot_index : int, backwards : bool = false):
-	var packet : Dictionary = {
-		"name": "request_faction_cycle",
-		"slot": slot_index,
-		"backwards": backwards,
-	}
+	var packet : Dictionary = \
+		RequestFactionCycleCommand.create_packet(slot_index, backwards)
 	queue_message_to_server(packet)
 
 
 func queue_take_slot(slot_index : int):
-	var packet : Dictionary = {
-		"name": "take_slot",
-		"slot": slot_index,
-	}
+	var packet : Dictionary = TakeSlotCommand.create_packet(slot_index)
 	queue_message_to_server(packet)
 
 
 func queue_leave_slot(slot_index : int):
-	var packet : Dictionary = {
-		"name": "leave_slot",
-		"slot": slot_index,
-	}
+	var packet : Dictionary = LeaveSlotCommand.create_packet(slot_index)
 	queue_message_to_server(packet)
 
 
@@ -122,9 +87,7 @@ func queue_request_move(move : MoveInfo):
 func logout_if_needed() -> void:
 	if username == "":
 		return
-	var packet : Dictionary = {
-		"name": "logout"
-	}
+	var packet : Dictionary = LogoutCommand.create_packet()
 	username = ""
 	send_message_to_server_immediately(packet)
 	# TODO consider unrealiable packet send here

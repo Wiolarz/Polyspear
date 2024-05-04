@@ -10,24 +10,13 @@ var server_username : String = ""
 @onready var enet_network : ENetConnection = null
 
 func _init():
-	incoming_commands["login"] = Command.create_on_server( \
-			AllTheCommands.server_login)
-	incoming_commands["logout"] = Command.create_on_server( \
-			AllTheCommands.server_logout)
-	incoming_commands["join_game"] = Command.create_on_server( \
-			AllTheCommands.server_join_game)
-	incoming_commands["order_game_move"] = Command.create_on_server( \
-			AllTheCommands.server_order_game_move)
-	incoming_commands["say"] = Command.create_on_server(\
-			AllTheCommands.server_say)
-	incoming_commands["request_color_cycle"] = Command.create_on_server( \
-			AllTheCommands.server_request_color_cycle)
-	incoming_commands["request_faction_cycle"] = Command.create_on_server( \
-			AllTheCommands.server_request_faction_cycle)
-	incoming_commands["take_slot"] = Command.create_on_server( \
-			AllTheCommands.server_take_slot)
-	incoming_commands["leave_slot"] = Command.create_on_server( \
-			AllTheCommands.server_leave_slot)
+	LoginCommand.register(incoming_commands)
+	LogoutCommand.register(incoming_commands)
+	SayCommand.register(incoming_commands)
+	RequestColorCycleCommand.register(incoming_commands)
+	RequestFactionCycleCommand.register(incoming_commands)
+	TakeSlotCommand.register(incoming_commands)
+	LeaveSlotCommand.register(incoming_commands)
 	LobbySetUnitCommand.register(incoming_commands)
 	ClientRequestedMoveCommand.register(incoming_commands)
 
@@ -99,10 +88,7 @@ func kick_peer(peer : ENetPacketPeer, reason : String) -> void:
 	var session = get_session_by_peer(peer)
 	if session:
 		sessions.erase(session)
-	var message = {
-		"name": "kicked",
-		"reason": reason,
-	}
+	var message = KickedCommand.create_packet(reason)
 	send_to_peer(peer, message)
 	peer.peer_disconnect_later()
 
@@ -113,7 +99,7 @@ func kick_all() -> void:
 		if session.peer != null:
 			peers.append(session.peer)
 	for peer in peers:
-		kick_peer(peer, "no reason")
+		kick_peer(peer, "kicked all peers")
 
 
 func close():
@@ -150,23 +136,8 @@ func broadcast(command_dictionary : Dictionary):
 	enet_network.broadcast(0, content, ENetPacketPeer.FLAG_RELIABLE)
 
 
-func broadcast_movement(movement : MoveInfo):
-	var message : Dictionary = {
-		"name": "replay_game_move",
-		"type": movement.move_type,
-		"summon_unit": movement.summon_unit,
-		"source": movement.move_source,
-		"target": movement.target_tile_coord,
-	}
-	broadcast(message)
-
-
 func broadcast_chat_message(message : String, author : String):
-	var packet : Dictionary = {
-		"name": "chat",
-		"content": message,
-		"author": author,
-	}
+	var packet : Dictionary = ChatCommand.create_packet(message, author)
 	broadcast(packet)
 
 
@@ -177,10 +148,8 @@ func broadcast_say(message : String):
 func broadcast_full_game_setup(game_setup : GameSetupInfo):
 	if game_setup == null:
 		game_setup = IM.game_setup_info
-	var packet : Dictionary = {
-		"name": "fill_game_setup",
-		"setup" : game_setup.to_dictionary(server_username)
-	}
+	var packet : Dictionary = \
+		FillGameSetupCommand.create_packet(game_setup, server_username)
 	# print("sending \n", packet)
 	broadcast(packet)
 
@@ -196,10 +165,8 @@ func broadcast_move(move : MoveInfo):
 func send_additional_callbacks_to_logging_client(peer : ENetPacketPeer):
 	if true: # game is being set up
 		var game_setup = IM.game_setup_info
-		var packet : Dictionary = {
-			"name": "fill_game_setup",
-			"setup" : game_setup.to_dictionary(server_username)
-		}
+		var packet : Dictionary = \
+			FillGameSetupCommand.create_packet(game_setup, server_username)
 		send_to_peer(peer, packet)
 	if false: # game is in progress
 		pass
