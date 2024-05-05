@@ -63,6 +63,10 @@ func get_shot_target(start_coord : Vector2i, side : int) -> UnitForm:
 
 #region Generate Grid
 
+
+func on_tile_spawned(tile: TileForm) -> void:
+	tile.grid_type = GameSetupInfo.GameMode.BATTLE
+
 func is_clear() -> bool:
 	var clearness = tile_grid.size() == 0 and unit_grid.size() == 0 and summon_tiles.size() == 0
 	if not clearness:

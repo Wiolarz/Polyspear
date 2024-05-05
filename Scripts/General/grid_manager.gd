@@ -175,8 +175,11 @@ func spawn_tile(x : int, y : int) -> TileForm:
 
 	# Debug information
 	new_tile.name = new_tile.type + "_TileForm_" + str(new_tile.coord)
+	on_tile_spawned(new_tile)
 	return new_tile
 
+func on_tile_spawned(_tile: TileForm) -> void:
+	pass
 
 func generate_special_tiles() -> void:
 	pass

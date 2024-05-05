@@ -105,12 +105,12 @@ func init_game_setup():
 	game_setup_info = GameSetupInfo.create_empty(4)
 
 # called from TileForm mouse detection
-func grid_smooth_input_listener(coord : Vector2i):
+func grid_smooth_input_listener(coord : Vector2i, _tile_type : GameSetupInfo.GameMode):
 	if draw_mode:
 		UI.map_editor.grid_input(coord)
 
 # called from TileForm mouse detection
-func grid_input_listener(coord : Vector2i):
+func grid_input_listener(tile_coord : Vector2i, tile_type : GameSetupInfo.GameMode):
 	#print("tile ",coord)
 	#if WM.current_player.bot_engine != null:
 	#    return # its a bot turn
@@ -118,9 +118,10 @@ func grid_input_listener(coord : Vector2i):
 		return
 
 	if raging_battle:
-		BM.grid_input(coord)
+		if tile_type == GameSetupInfo.GameMode.BATTLE:
+			BM.grid_input(tile_coord)
 	else:
-		WM.grid_input(coord)
+		WM.grid_input(tile_coord)
 
 
 #endregion
