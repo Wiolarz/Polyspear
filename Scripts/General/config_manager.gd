@@ -82,5 +82,10 @@ var DEFAULT_BATTLE_MAP : DataBattleMap = \
 	load("res://Resources/Battle/Battle_Maps/basic5x5.tres")
 const DEFAULT_ARMY_FORM = preload("res://Scenes/Form/ArmyForm.tscn")
 
+## URL for trying to determine external IP
+## must support plain GET request
+## that returns address as a single text line in the response body
+const FETCH_EXTERNAL_IP_GET_URL = "https://api.ipify.org"
+
 func get_start_goods() -> Goods:
 	return Goods.new(10,5,1)

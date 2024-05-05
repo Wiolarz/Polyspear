@@ -9,7 +9,7 @@ var server_username : String = ""
 @onready var sessions : Array = []
 @onready var enet_network : ENetConnection = null
 var server_local_address : String = ""
-var server_external_address : String = "unknown"
+var server_external_address : String = "-needs fetch-"
 
 func _init():
 	LoginCommand.register(incoming_commands)
@@ -22,17 +22,9 @@ func _init():
 	LobbySetUnitCommand.register(incoming_commands)
 	ClientRequestedMoveCommand.register(incoming_commands)
 
-func _ready():
-	var request = HTTPRequest.new()
-	add_child(request)
-	request.request_completed.connect(self.onRequestCompleted)
-	request.request("https://api.ipify.org")
 
 func _process(_delta):
 	roll()
-
-func onRequestCompleted(_result, _response_code, _headers, body):
-	server_external_address = body.get_string_from_utf8()
 
 
 #region Connection

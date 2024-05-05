@@ -17,6 +17,10 @@ var host_menu : HostMenu = null
 @onready var server_status_label = \
 	$MarginContainer/VBoxContainer/ServerInfo/Log
 
+func _ready():
+	$MarginContainer/VBoxContainer/ButtonsRow2/ButtonPollIp.text = \
+			"Fetch external ip by calling '%s'"%[CFG.FETCH_EXTERNAL_IP_GET_URL]
+
 func _process(_delta):
 	update_server_info()
 	update_chat()
@@ -82,11 +86,12 @@ func get_server_status_string() -> String:
 	if not NET.server.enet_network:
 		return "connection is not active"
 
-	var result = "server is listening on %s:%d\n"% \
+	var result = ""
+	result += "EXTERNAL address %s (guess)\n"% \
+		[NET.server.server_external_address]
+	result += "LOCAL address %s:%d\n"% \
 		[NET.server.server_local_address,
 			NET.server.enet_network.get_local_port()]
-	result += "external address %s\n"% \
-		[NET.server.server_external_address]
 	result += "host login: %s\n" % NET.server.server_username
 	for peer in NET.server.enet_network.get_peers():
 		result += describe_peer(peer) + "\n"
@@ -124,3 +129,9 @@ func describe_peer_state(peer:ENetPacketPeer) -> String:
 			return "disconnected"
 		_:
 			return "unknown (%d)" % peer.get_state()
+
+
+func _on_button_poll_ip_pressed():
+	var external_ip = await NET.fetch_external_address_guess()
+	if NET.server:
+		NET.server.server_external_address = external_ip
