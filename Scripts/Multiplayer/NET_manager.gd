@@ -98,3 +98,19 @@ func append_to_local_chat_log(line : String) -> void:
 func clear_local_chat_log() -> void:
 	chat_log = ""
 
+## tries to determine probable address by witch a server running on this
+## machine could be reached, usually by making a call to an external
+## HTTP service that will check where request came from
+func fetch_external_address_guess() -> String:
+	var request = HTTPRequest.new()
+	add_child(request)
+	var url = CFG.FETCH_EXTERNAL_IP_GET_URL
+	request.request(url)
+	var results = await request.request_completed
+	# results = [_result, _response_code, _headers, body]
+	var external_address = results[3].get_string_from_utf8();
+	remove_child(request)
+	request.queue_free()
+	print("external address from '", url, "' is : ", external_address)
+	return external_address
+

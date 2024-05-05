@@ -8,6 +8,8 @@ var incoming_commands : Dictionary = {}
 var server_username : String = ""
 @onready var sessions : Array = []
 @onready var enet_network : ENetConnection = null
+var server_local_address : String = ""
+var server_external_address : String = "-needs fetch-"
 
 func _init():
 	var server_command_paths = FileSystemHelpers.list_files_in_folder( \
@@ -20,8 +22,10 @@ func _init():
 				"dulicated server command: '%s'" % script.COMMAND_NAME)
 		script.register(incoming_commands)
 
+
 func _process(_delta):
 	roll()
+
 
 #region Connection
 
@@ -30,9 +34,11 @@ func listen(address : String, port : int, username : String):
 	if enet_network != null:
 		print("Server was listening -- stopping it first")
 		close()
+	server_local_address = ""
 	enet_network = ENetConnection.new()
 	var error = enet_network.create_host_bound(address, port, 32, 0, 0, 0)
 	if error == OK:
+		server_local_address = address
 		server_username = username
 		print("Server successfully started to listen on %s:%d" % [ \
 			address, port ])

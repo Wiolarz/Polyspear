@@ -8,6 +8,8 @@ layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_right = -13.0
+offset_bottom = 4.0
 grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 3
@@ -44,6 +46,15 @@ layout_mode = 2
 size_flags_horizontal = 3
 text = "Kick all players"
 
+[node name="ButtonsRow2" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="ButtonPollIp" type="Button" parent="MarginContainer/VBoxContainer/ButtonsRow2"]
+layout_mode = 2
+size_flags_horizontal = 3
+shortcut = ExtResource("2_x5rgd")
+text = "Poll external IP (http call)"
+
 [node name="ServerInfo" type="ScrollContainer" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
@@ -52,8 +63,10 @@ horizontal_scroll_mode = 0
 vertical_scroll_mode = 2
 
 [node name="Log" type="Label" parent="MarginContainer/VBoxContainer/ServerInfo"]
+custom_minimum_size = Vector2(900, 0)
 layout_mode = 2
-text = "server info"
+text = "server info asd as das das das das das das server info asd as das das dadsa as dass das das das server info asd as das das das das das das server info asd as das das das das das das server info asd as das das das das das das "
+autowrap_mode = 3
 
 [node name="Chat" type="VBoxContainer" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
@@ -86,5 +99,6 @@ text = "Send"
 
 [connection signal="pressed" from="MarginContainer/VBoxContainer/Buttons/ButtonStop" to="." method="_on_button_stop_pressed"]
 [connection signal="pressed" from="MarginContainer/VBoxContainer/Buttons/ButtonKickAll" to="." method="_on_button_kick_all_pressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/ButtonsRow2/ButtonPollIp" to="." method="_on_button_poll_ip_pressed"]
 [connection signal="text_submitted" from="MarginContainer/VBoxContainer/Chat/Writing/ChatMessage" to="." method="_on_chat_message_text_submitted"]
 [connection signal="pressed" from="MarginContainer/VBoxContainer/Chat/Writing/ButtonSend" to="." method="_on_button_send_pressed"]
