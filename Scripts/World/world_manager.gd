@@ -193,15 +193,15 @@ func start_combat(coord : Vector2i):
 func end_of_battle():
 	#TODO get result from Battle Manager
 	IM.raging_battle = false
-	var result : bool = BM.get_battle_result()
+	var result : bool = BM.get_battle_result() == BM.ATTACKER_WIN
 	if result:
 		print("you won")
 		kill_army(W_GRID.get_army(combat_tile)) # clear the tile of enemy presence
 		hero_move(selected_hero, combat_tile)
 	else:
+		kill_army(selected_hero)  # clear the tile where selected_hero was
 		set_selected_hero(null)
 		print("hero died")
-		kill_army(selected_hero)  # clear the tile where selected_hero was
 	UI.go_to_custom_ui(world_ui)
 
 func kill_army(army : ArmyForm):
