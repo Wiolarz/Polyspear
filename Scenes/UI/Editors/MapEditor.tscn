@@ -49,9 +49,9 @@ color = Color(0, 0.670588, 0.67451, 0.588235)
 [node name="Scroll" type="ScrollContainer" parent="."]
 offset_left = 22.0
 offset_top = 12.0
-offset_right = 7482.0
-offset_bottom = 702.0
-scale = Vector2(0.25, 0.25)
+offset_right = 1909.0
+offset_bottom = 180.0
+vertical_scroll_mode = 0
 
 [node name="TilesPickerBox" type="HBoxContainer" parent="Scroll"]
 layout_mode = 2
@@ -59,16 +59,25 @@ size_flags_vertical = 0
 theme_override_constants/separation = 20
 
 [node name="Example1" type="TextureButton" parent="Scroll/TilesPickerBox"]
+custom_minimum_size = Vector2(130, 160)
 layout_mode = 2
 texture_normal = ExtResource("3_jrkaq")
+ignore_texture_size = true
+stretch_mode = 4
 
 [node name="Example2" type="TextureButton" parent="Scroll/TilesPickerBox"]
+custom_minimum_size = Vector2(130, 160)
 layout_mode = 2
 texture_normal = ExtResource("3_jrkaq")
+ignore_texture_size = true
+stretch_mode = 4
 
 [node name="Example3" type="TextureButton" parent="Scroll/TilesPickerBox"]
+custom_minimum_size = Vector2(130, 160)
 layout_mode = 2
 texture_normal = ExtResource("3_jrkaq")
+ignore_texture_size = true
+stretch_mode = 4
 
 [node name="OpenButton" type="Button" parent="."]
 offset_left = 8.0

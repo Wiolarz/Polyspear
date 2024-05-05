@@ -31,7 +31,9 @@ func _create_button(box : BoxContainer, map_tile : String):
 
 	var new_button = TextureButton.new()
 	new_button.texture_normal = ResourceLoader.load(tile.texture_path)
-
+	new_button.stretch_mode = TextureButton.STRETCH_KEEP_ASPECT
+	new_button.ignore_texture_size = true
+	new_button.custom_minimum_size = Vector2(130,160)
 	box.add_child(new_button)
 	var lambda = func on_click():
 		if current_button != null:
