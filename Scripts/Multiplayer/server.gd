@@ -8,6 +8,8 @@ var incoming_commands : Dictionary = {}
 var server_username : String = ""
 @onready var sessions : Array = []
 @onready var enet_network : ENetConnection = null
+var server_local_address : String = ""
+var server_external_address : String = "unknown"
 
 func _init():
 	LoginCommand.register(incoming_commands)
@@ -20,8 +22,18 @@ func _init():
 	LobbySetUnitCommand.register(incoming_commands)
 	ClientRequestedMoveCommand.register(incoming_commands)
 
+func _ready():
+	var request = HTTPRequest.new()
+	add_child(request)
+	request.request_completed.connect(self.onRequestCompleted)
+	request.request("https://api.ipify.org")
+
 func _process(_delta):
 	roll()
+
+func onRequestCompleted(_result, _response_code, _headers, body):
+	server_external_address = body.get_string_from_utf8()
+
 
 #region Connection
 
@@ -30,9 +42,11 @@ func listen(address : String, port : int, username : String):
 	if enet_network != null:
 		print("Server was listening -- stopping it first")
 		close()
+	server_local_address = ""
 	enet_network = ENetConnection.new()
 	var error = enet_network.create_host_bound(address, port, 32, 0, 0, 0)
 	if error == OK:
+		server_local_address = address
 		server_username = username
 		print("Server successfully started to listen on %s:%d" % [ \
 			address, port ])

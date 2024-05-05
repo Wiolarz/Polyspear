@@ -8,6 +8,8 @@ layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_right = -13.0
+offset_bottom = 4.0
 grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 3
@@ -52,8 +54,10 @@ horizontal_scroll_mode = 0
 vertical_scroll_mode = 2
 
 [node name="Log" type="Label" parent="MarginContainer/VBoxContainer/ServerInfo"]
+custom_minimum_size = Vector2(900, 0)
 layout_mode = 2
-text = "server info"
+text = "server info asd as das das das das das das server info asd as das das dadsa as dass das das das server info asd as das das das das das das server info asd as das das das das das das server info asd as das das das das das das "
+autowrap_mode = 3
 
 [node name="Chat" type="VBoxContainer" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
