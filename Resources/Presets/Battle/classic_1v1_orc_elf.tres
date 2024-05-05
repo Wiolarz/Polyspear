@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="PresetBattle" load_steps=14 format=3 uid="uid://ric4ls3qb7r1"]
+
+[ext_resource type="Script" path="res://Resources/Presets/preset_army.gd" id="1_7htvr"]
+[ext_resource type="Resource" uid="uid://i6rd1k4pejbh" path="res://Resources/Battle/Units/Classic/elf1.tres" id="2_l0c82"]
+[ext_resource type="Resource" uid="uid://b1t0ae1k1lr1q" path="res://Resources/Battle/Units/Classic/elf2.tres" id="3_tnget"]
+[ext_resource type="Resource" uid="uid://bi52epalmva1y" path="res://Resources/Battle/Units/Classic/elf3.tres" id="4_c545r"]
+[ext_resource type="Resource" uid="uid://byn1wnmhj0wac" path="res://Resources/Battle/Units/Classic/orc1.tres" id="5_gvce0"]
+[ext_resource type="Resource" uid="uid://wg6n0n7ufoxh" path="res://Resources/Battle/Units/Classic/orc2.tres" id="5_gvce1"]
+[ext_resource type="Resource" uid="uid://cyw7ujcmsbdq2" path="res://Resources/Battle/Units/Classic/orc3.tres" id="5_gvce2"]
+[ext_resource type="Resource" uid="uid://drtyybrqkoq45" path="res://Resources/Battle/Battle_Maps/basic5x5.tres" id="6_5gsrf"]
+[ext_resource type="Resource" uid="uid://dm2jeuv4bo4lw" path="res://Resources/Presets/Player/human_elf.tres" id="7_cr1oh"]
+[ext_resource type="Resource" uid="uid://dkgrcmar25cmi" path="res://Resources/Presets/Player/human_orc.tres" id="8_trjfq"]
+[ext_resource type="Script" path="res://Resources/Presets/preset_battle.gd" id="9_omlcl"]
+
+[sub_resource type="Resource" id="Resource_8gfw6"]
+script = ExtResource("1_7htvr")
+units = Array[Resource("res://Resources/Battle/data_unit.gd")]([ExtResource("2_l0c82"), ExtResource("3_tnget"), ExtResource("4_c545r")])
+
+[sub_resource type="Resource" id="Resource_renb5"]
+script = ExtResource("1_7htvr")
+units = Array[Resource("res://Resources/Battle/data_unit.gd")]([ExtResource("5_gvce0"), ExtResource("5_gvce1"), ExtResource("5_gvce2")])
+
+[resource]
+script = ExtResource("9_omlcl")
+player_settings = Array[Resource("res://Resources/Presets/preset_player.gd")]([ExtResource("7_cr1oh"), ExtResource("8_trjfq")])
+armies = Array[ExtResource("1_7htvr")]([SubResource("Resource_8gfw6"), SubResource("Resource_renb5")])
+battle_map = ExtResource("6_5gsrf")
