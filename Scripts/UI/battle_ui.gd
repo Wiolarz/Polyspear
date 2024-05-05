@@ -79,7 +79,10 @@ func load_armies(army_list : Array[Army]):
 	for army in army_list:
 		# create player buttons
 		var n = Button.new()
-		n.text = "Player " + army.controller.player_name
+		if army.controller != null:
+			n.text = "Player " + army.controller.player_name
+		else:
+			n.text = "Player " + "Neutral" #TEMP
 		n.pressed.connect(func p1(): on_player_selected(army.controller, true))
 		players_box.add_child(n)
 

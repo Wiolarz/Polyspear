@@ -103,7 +103,10 @@ func switch_participant_turn():
 	battle_ui.on_player_selected(current_participant)
 
 	if battle_is_ongoing:
-		current_participant.your_turn()
+		if current_participant != null:
+			current_participant.your_turn()
+		else:
+			print("neutral player turn") #TEMP
 
 
 func grid_input(coord : Vector2i) -> void:
@@ -403,7 +406,10 @@ func end_of_battle() -> void:
 			battling_armies[army_idx].alive = false
 
 	var winner_army = battling_armies[armies_left_alive[0]]
-	print(winner_army.controller.player_name + " won")
+	if winner_army.controller != null:
+		print(winner_army.controller.player_name + " won")
+	else:
+		print("netural player" + " won")
 
 	close_battle()
 	if WM.selected_hero == null:
