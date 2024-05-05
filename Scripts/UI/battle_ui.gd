@@ -5,6 +5,8 @@ extends CanvasLayer
 
 @onready var units_box : BoxContainer = $Units
 
+@onready var camera_button : Button = $SwitchCamera
+
 var armies : Array[Army] = []
 
 var selected_unit : DataUnit = null
@@ -66,6 +68,7 @@ func _copy(army_list : Array[Army]):
 	return result
 
 func load_armies(army_list : Array[Army]):
+	camera_button.disabled = IM.game_setup_info.game_mode != GameSetupInfo.GameMode.WORLD
 	# save armies
 	armies = _copy(army_list)
 
@@ -98,6 +101,8 @@ func unit_summoned(summon_phase_end : bool, unit : DataUnit):
 
 func _on_switch_camera_pressed():
 	IM.switch_camera()
+	camera_button.text = "Show Battle" if \
+			IM.current_camera_position == E.CameraPosition.WORLD else "Show World"
 
 func _on_menu_pressed():
 	IM.show_in_game_menu()
