@@ -1,127 +1,127 @@
-[gd_resource type="Resource" script_class="BattleMap" load_steps=23 format=3]
+[gd_resource type="Resource" script_class="DataBattleMap" load_steps=23 format=3 uid="uid://qgyujuswhjf2"]
 
 [ext_resource type="Script" path="res://Resources/data_tile.gd" id="1_5nc6c"]
 [ext_resource type="Script" path="res://Resources/Battle/data_battle_map.gd" id="2_i30r3"]
 
 [sub_resource type="Resource" id="Resource_cu33l"]
 script = ExtResource("1_5nc6c")
+type = "blue_spawn"
 texture_path = "res://Art/battle_map/blue_player_spawn.png"
 flip_horizontal = false
-type = "blue_spawn"
 
 [sub_resource type="Resource" id="Resource_soej8"]
 script = ExtResource("1_5nc6c")
+type = "empty"
 texture_path = "res://Art/battle_map/grass.png"
 flip_horizontal = false
-type = "empty"
 
 [sub_resource type="Resource" id="Resource_pnm7a"]
 script = ExtResource("1_5nc6c")
+type = "hole"
 texture_path = "res://Art/battle_map/hole.png"
 flip_horizontal = false
-type = "hole"
 
 [sub_resource type="Resource" id="Resource_bv1ck"]
 script = ExtResource("1_5nc6c")
+type = "empty"
 texture_path = "res://Art/battle_map/grass.png"
 flip_horizontal = false
-type = "empty"
 
 [sub_resource type="Resource" id="Resource_17mmk"]
 script = ExtResource("1_5nc6c")
+type = "blue_spawn"
 texture_path = "res://Art/battle_map/blue_player_spawn.png"
 flip_horizontal = false
-type = "blue_spawn"
 
 [sub_resource type="Resource" id="Resource_0ca4w"]
 script = ExtResource("1_5nc6c")
+type = "empty"
 texture_path = "res://Art/battle_map/grass.png"
 flip_horizontal = false
-type = "empty"
 
 [sub_resource type="Resource" id="Resource_0r4q1"]
 script = ExtResource("1_5nc6c")
+type = "empty"
 texture_path = "res://Art/battle_map/grass.png"
 flip_horizontal = false
-type = "empty"
 
 [sub_resource type="Resource" id="Resource_0ma8u"]
 script = ExtResource("1_5nc6c")
+type = "empty"
 texture_path = "res://Art/battle_map/grass.png"
 flip_horizontal = false
-type = "empty"
 
 [sub_resource type="Resource" id="Resource_cthru"]
 script = ExtResource("1_5nc6c")
+type = "hole"
 texture_path = "res://Art/battle_map/hole.png"
 flip_horizontal = false
-type = "hole"
 
 [sub_resource type="Resource" id="Resource_0tciw"]
 script = ExtResource("1_5nc6c")
+type = "blue_spawn"
 texture_path = "res://Art/battle_map/blue_player_spawn.png"
 flip_horizontal = false
-type = "blue_spawn"
 
 [sub_resource type="Resource" id="Resource_66idi"]
 script = ExtResource("1_5nc6c")
+type = "red_spawn"
 texture_path = "res://Art/battle_map/red_player_spawn.png"
 flip_horizontal = false
-type = "red_spawn"
 
 [sub_resource type="Resource" id="Resource_y2tcr"]
 script = ExtResource("1_5nc6c")
+type = "empty"
 texture_path = "res://Art/battle_map/grass.png"
 flip_horizontal = false
-type = "empty"
 
 [sub_resource type="Resource" id="Resource_r7khe"]
 script = ExtResource("1_5nc6c")
+type = "hole"
 texture_path = "res://Art/battle_map/hole.png"
 flip_horizontal = false
-type = "hole"
 
 [sub_resource type="Resource" id="Resource_mdagn"]
 script = ExtResource("1_5nc6c")
+type = "blue_spawn"
 texture_path = "res://Art/battle_map/blue_player_spawn.png"
 flip_horizontal = false
-type = "blue_spawn"
 
 [sub_resource type="Resource" id="Resource_p1djk"]
 script = ExtResource("1_5nc6c")
+type = "empty"
 texture_path = "res://Art/battle_map/grass.png"
 flip_horizontal = false
-type = "empty"
 
 [sub_resource type="Resource" id="Resource_ruf3d"]
 script = ExtResource("1_5nc6c")
+type = "empty"
 texture_path = "res://Art/battle_map/grass.png"
 flip_horizontal = false
-type = "empty"
 
 [sub_resource type="Resource" id="Resource_i14kp"]
 script = ExtResource("1_5nc6c")
+type = "empty"
 texture_path = "res://Art/battle_map/grass.png"
 flip_horizontal = false
-type = "empty"
 
 [sub_resource type="Resource" id="Resource_xbuuv"]
 script = ExtResource("1_5nc6c")
+type = "red_spawn"
 texture_path = "res://Art/battle_map/red_player_spawn.png"
 flip_horizontal = false
-type = "red_spawn"
 
 [sub_resource type="Resource" id="Resource_xf71u"]
 script = ExtResource("1_5nc6c")
+type = "red_spawn"
 texture_path = "res://Art/battle_map/red_player_spawn.png"
 flip_horizontal = false
-type = "red_spawn"
 
 [sub_resource type="Resource" id="Resource_foij0"]
 script = ExtResource("1_5nc6c")
+type = "red_spawn"
 texture_path = "res://Art/battle_map/red_player_spawn.png"
 flip_horizontal = false
-type = "red_spawn"
 
 [resource]
 script = ExtResource("2_i30r3")
