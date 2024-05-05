@@ -11,12 +11,15 @@ var incoming_commands : Dictionary = {}
 
 
 func _init():
-	SetSessionCommand.register(incoming_commands)
-	KickedCommand.register(incoming_commands)
-	ChatCommand.register(incoming_commands)
-	FillGameSetupCommand.register(incoming_commands)
-	StartGameCommand.register(incoming_commands)
-	MakeMoveCommand.register(incoming_commands)
+	var client_command_paths = FileSystemHelpers.list_files_in_folder( \
+			"res://Scripts/Multiplayer/ClientCommands/", true)
+	for path in client_command_paths:
+		var script = load(path)
+		print("registering command '", script.COMMAND_NAME, \
+				"' from file ", path.get_file())
+		assert( not incoming_commands.has(script.COMMAND_NAME), \
+				"dulicated server command: '%s'" % script.COMMAND_NAME)
+		script.register(incoming_commands)
 
 func _process(_delta):
 	roll()

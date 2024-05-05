@@ -12,7 +12,7 @@ static func create_packet(game_setup : GameSetupInfo, server_username : String):
 		"setup" : game_setup.to_dictionary(server_username)
 	}
 
-static func process_command(client : Client, params : Dictionary) -> int:
+static func process_command(_client : Client, params : Dictionary) -> int:
 	print("Client - fill_game_setup: \n %s" % params)
 	if not "setup" in params or not params["setup"] is Dictionary:
 		return FAILED

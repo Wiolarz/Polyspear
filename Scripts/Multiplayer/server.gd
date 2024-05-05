@@ -10,15 +10,15 @@ var server_username : String = ""
 @onready var enet_network : ENetConnection = null
 
 func _init():
-	LoginCommand.register(incoming_commands)
-	LogoutCommand.register(incoming_commands)
-	SayCommand.register(incoming_commands)
-	RequestColorCycleCommand.register(incoming_commands)
-	RequestFactionCycleCommand.register(incoming_commands)
-	TakeSlotCommand.register(incoming_commands)
-	LeaveSlotCommand.register(incoming_commands)
-	LobbySetUnitCommand.register(incoming_commands)
-	ClientRequestedMoveCommand.register(incoming_commands)
+	var server_command_paths = FileSystemHelpers.list_files_in_folder( \
+			"res://Scripts/Multiplayer/ServerCommands/", true)
+	for path in server_command_paths:
+		var script = load(path)
+		print("registering command '", script.COMMAND_NAME, \
+				"' from file ", path.get_file())
+		assert( not incoming_commands.has(script.COMMAND_NAME), \
+				"dulicated server command: '%s'" % script.COMMAND_NAME)
+		script.register(incoming_commands)
 
 func _process(_delta):
 	roll()
@@ -236,4 +236,3 @@ func roll() -> void:
 class Session:
 	var username : String = ""
 	var peer : ENetPacketPeer = null
-	var seats : Dictionary = {} # Dictionary[int -> int]

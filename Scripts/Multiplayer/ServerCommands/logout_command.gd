@@ -12,7 +12,7 @@ static func create_packet():
 	}
 
 static func process_command(server : Server, peer : ENetPacketPeer, \
-		params : Dictionary) -> int:
+		_params : Dictionary) -> int:
 	var session : Server.Session = server.get_session_by_peer(peer)
 	if session == null:
 		return OK
