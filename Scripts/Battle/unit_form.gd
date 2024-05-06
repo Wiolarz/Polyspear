@@ -58,7 +58,7 @@ func move(target : TileForm, summon : bool = false):
 		return
 
 	_target_tile = target
-	_move_speed = (target.position - position).length() / CFG.animation_speed_frames
+	_move_speed = (target.global_position - global_position).length() / CFG.animation_speed_frames
 
 
 func _animate_rotation():
@@ -80,9 +80,9 @@ func _animate_movement():
 	if CFG.animation_speed_frames == CFG.AnimationSpeed.INSTANT:
 		position = _target_tile.position
 	else:
-		position = position.move_toward(_target_tile.position, _move_speed)
-	if (position - _target_tile.position).length_squared() < 0.01:
-		position = _target_tile.position
+		global_position = global_position.move_toward(_target_tile.global_position, _move_speed)
+	if (global_position - _target_tile.global_position).length_squared() < 0.01:
+		global_position = _target_tile.global_position
 		_target_tile = null
 
 

@@ -9,6 +9,7 @@ var city_on_ui : City
 func _process(_delta):
 	good_label.text = WM.current_player.goods.to_string()
 
+
 func refresh_player_buttons():
 	var player_buttons = $Players.get_children()
 	for i in range(player_buttons.size() - 1):
@@ -32,10 +33,6 @@ func close_city_ui() -> void:
 
 func _on_menu_pressed():
 	IM.show_in_game_menu()
-
-
-func _on_switch_camera_pressed():
-	print("not implemented")
 
 
 func _refresh_heroes_to_buy(city : City):

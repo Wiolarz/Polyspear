@@ -14,6 +14,12 @@ var host_menu : HostMenu = null
 @onready var chat_container = \
 	$MarginContainer/VBoxContainer/Chat/LogScroll
 
+@onready var server_status_label = \
+	$MarginContainer/VBoxContainer/ServerInfo/Log
+
+func _ready():
+	$MarginContainer/VBoxContainer/ButtonsRow2/ButtonPollIp.text = \
+			"Fetch external ip by calling '%s'"%[CFG.FETCH_EXTERNAL_IP_GET_URL]
 
 func _process(_delta):
 	update_server_info()
@@ -71,43 +77,61 @@ func _on_button_kick_all_pressed():
 
 
 func update_server_info():
-	var label_content = "server does not exist"
-	var label = $MarginContainer/VBoxContainer/ServerInfo/Log
-	var server = NET.server
-	if server:
-		if server.enet_network:
-			label_content = \
-				"server is listening\nusername: %s" % server.server_username
-			for peer in server.enet_network.get_peers():
-				var session = server.get_session_by_peer(peer)
-				var connection_state : String = ""
-				match peer.get_state():
-					ENetPacketPeer.PeerState.STATE_CONNECTED:
-						connection_state = "connected"
-					ENetPacketPeer.PeerState.STATE_CONNECTING, \
-					ENetPacketPeer.PeerState.STATE_ACKNOWLEDGING_CONNECT, \
-					ENetPacketPeer.PeerState.STATE_CONNECTION_PENDING, \
-					ENetPacketPeer.PeerState.STATE_CONNECTION_SUCCEEDED:
-						connection_state = "connecting"
-					ENetPacketPeer.PeerState.STATE_DISCONNECT_LATER, \
-					ENetPacketPeer.PeerState.STATE_DISCONNECTING, \
-					ENetPacketPeer.PeerState.STATE_ACKNOWLEDGING_DISCONNECT, \
-					ENetPacketPeer.PeerState.STATE_ZOMBIE:
-						connection_state = "disconnecting"
-					ENetPacketPeer.PeerState.STATE_DISCONNECTED:
-						connection_state = "disconnected"
-				if session:
-					label_content += "\n%s from %s:%d as %s" % [ \
-						connection_state, peer.get_remote_address(), \
-						peer.get_remote_port(), session.username ]
-				else:
-					label_content += "\n%s from %s:%d not logged" % [ \
-						connection_state, peer.get_remote_address(), \
-						peer.get_remote_port() ]
-			for session in server.sessions:
-				if session.peer == null:
-					label_content += \
-						"\ndisconnected session of %s" % session.username
-		else:
-			label_content = "server is off"
-	label.text = label_content
+	server_status_label.text = get_server_status_string()
+
+func get_server_status_string() -> String:
+	if not NET.server:
+		return "server is turned off"
+
+	if not NET.server.enet_network:
+		return "connection is not active"
+
+	var result = ""
+	result += "EXTERNAL address %s (guess)\n"% \
+		[NET.server.server_external_address]
+	result += "LOCAL address %s:%d\n"% \
+		[NET.server.server_local_address,
+			NET.server.enet_network.get_local_port()]
+	result += "host login: %s\n" % NET.server.server_username
+	for peer in NET.server.enet_network.get_peers():
+		result += describe_peer(peer) + "\n"
+	for session in NET.server.sessions:
+		if session.peer == null:
+			result += " - %s - session disconnected\n" % session.username
+	return result
+
+func describe_peer(peer : ENetPacketPeer):
+	var connection_state : String = describe_peer_state(peer)
+	var session = NET.server.get_session_by_peer(peer)
+	if not session:
+		return " - (no session) [%s] from %s:%d " % [ \
+			connection_state, \
+			peer.get_remote_address(), peer.get_remote_port() ]
+	return "- %s [%s] from %s:%d" % [ \
+			session.username, connection_state, \
+			peer.get_remote_address(), peer.get_remote_port()]
+
+func describe_peer_state(peer:ENetPacketPeer) -> String:
+	match peer.get_state():
+		ENetPacketPeer.PeerState.STATE_CONNECTED:
+			return "connected"
+		ENetPacketPeer.PeerState.STATE_CONNECTING, \
+		ENetPacketPeer.PeerState.STATE_ACKNOWLEDGING_CONNECT, \
+		ENetPacketPeer.PeerState.STATE_CONNECTION_PENDING, \
+		ENetPacketPeer.PeerState.STATE_CONNECTION_SUCCEEDED:
+			return "connecting"
+		ENetPacketPeer.PeerState.STATE_DISCONNECT_LATER, \
+		ENetPacketPeer.PeerState.STATE_DISCONNECTING, \
+		ENetPacketPeer.PeerState.STATE_ACKNOWLEDGING_DISCONNECT, \
+		ENetPacketPeer.PeerState.STATE_ZOMBIE:
+			return "disconnecting"
+		ENetPacketPeer.PeerState.STATE_DISCONNECTED:
+			return "disconnected"
+		_:
+			return "unknown (%d)" % peer.get_state()
+
+
+func _on_button_poll_ip_pressed():
+	var external_ip = await NET.fetch_external_address_guess()
+	if NET.server:
+		NET.server.server_external_address = external_ip

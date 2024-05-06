@@ -20,6 +20,8 @@ enum AnimationSpeed
 ## so unit move takes between X and 2X
 var animation_speed_frames : AnimationSpeed = AnimationSpeed.NORMAL
 
+## battle map is placed this far to the right after world map bounds
+const MAPS_OFFSET_X = 7000
 
 const BATTLE_MAPS_PATH = "res://Resources/Battle/Battle_Maps/"
 const UNITS_PATH = "res://Resources/Battle/Units/"
@@ -81,6 +83,11 @@ func get_team_color_at(index : int) -> Color:
 var DEFAULT_BATTLE_MAP : DataBattleMap = \
 	load("res://Resources/Battle/Battle_Maps/basic5x5.tres")
 const DEFAULT_ARMY_FORM = preload("res://Scenes/Form/ArmyForm.tscn")
+
+## URL for trying to determine external IP
+## must support plain GET request
+## that returns address as a single text line in the response body
+const FETCH_EXTERNAL_IP_GET_URL = "https://api.ipify.org"
 
 func get_start_goods() -> Goods:
 	return Goods.new(10,5,1)
