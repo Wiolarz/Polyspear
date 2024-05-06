@@ -113,6 +113,9 @@ func get_distant_coord(start_coord : Vector2i, side : int, distance : int) -> Ve
 	return start_coord
 
 func get_bounds_global_position() -> Rect2:
+	if tile_grid.size() == 0 or tile_grid[0].size() == 0:
+		push_warning("asking not initialized grid for camera bounding box")
+		return Rect2(0, 0, 0, 0)
 	var top_left = get_tile(Vector2i(0,0)).global_position
 	var bottom_right = get_tile(Vector2i(grid_width-1,grid_height-1)).global_position
 	return Rect2(top_left, bottom_right - top_left)

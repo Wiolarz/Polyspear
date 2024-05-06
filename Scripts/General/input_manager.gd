@@ -259,8 +259,8 @@ func set_camera(pos : E.CameraPosition) -> void:
 
 func go_to_main_menu():
 	draw_mode = false
-	WM.close_world()
 	BM.close_battle()
+	WM.close_world()
 	UI.go_to_main_menu()
 
 func show_in_game_menu():
