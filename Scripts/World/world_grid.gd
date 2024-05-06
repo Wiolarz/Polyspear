@@ -35,12 +35,7 @@ func remove_hero(hero):
 #region Coordinates Tools
 
 func is_moveable(coord : Vector2i):
-	return get_tile_type(coord) in [ \
-		"empty",
-		"iron_mine",
-		"sawmill",
-		"ruby_cave",
-	]
+	return get_tile_type(coord) in CFG.WORLD_MOVEABLE_TILES
 
 
 func get_tile_controller(coord : Vector2i) -> Player:
@@ -81,9 +76,10 @@ func get_hero(coord : Vector2i):
 
 
 func is_enemy_present(coord : Vector2i, player : Player) -> bool:
-	if get_tile_controller(coord) == player:
+	var army = get_army(coord)
+	if army == null:
 		return false
-	if get_army(coord) == null:
+	if army.controller == WM.current_player: #TEMP should check for allies
 		return false
 	return true
 
@@ -126,6 +122,8 @@ func generate_special_tiles() -> void:
 			var place : Place = Place.create_place(data_tile, coord)
 			places[coord.x][coord.y] = place
 			W_GRID.get_tile(coord).place = place
+			if place:
+				place.on_game_started()
 
 func end_of_turn_callbacks(player : Player) -> void:
 	#TODO make it nicer

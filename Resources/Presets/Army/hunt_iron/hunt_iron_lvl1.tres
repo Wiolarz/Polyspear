@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="PresetArmy" load_steps=3 format=3 uid="uid://bo6617ilqjcwt"]
+
+[ext_resource type="Script" path="res://Resources/Presets/preset_army.gd" id="1_w12me"]
+[ext_resource type="Resource" uid="uid://lrugffw7y5h5" path="res://Resources/Battle/Units/Neutral/iron_golem.tres" id="2_g306w"]
+
+[resource]
+script = ExtResource("1_w12me")
+units = Array[Resource("res://Resources/Battle/data_unit.gd")]([ExtResource("2_g306w")])
