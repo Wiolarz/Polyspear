@@ -52,7 +52,6 @@ layout_mode = 2
 [node name="ButtonPollIp" type="Button" parent="MarginContainer/VBoxContainer/ButtonsRow2"]
 layout_mode = 2
 size_flags_horizontal = 3
-shortcut = ExtResource("2_x5rgd")
 text = "Poll external IP (http call)"
 
 [node name="ServerInfo" type="ScrollContainer" parent="MarginContainer/VBoxContainer"]
