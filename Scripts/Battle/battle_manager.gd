@@ -8,7 +8,13 @@ const DEFENDER = 1
 
 const MOVE_IS_INVALID = -1
 
+const ONGOING = "ongoing"
+const ATTACKER_WIN = "attacker_win"
+const DEFENDER_WIN = "defender_win"
+const NO_BATTLE = "no_battle"
+
 var battle_is_ongoing : bool = false
+var battle_result : String = ONGOING
 ## count units for transition between summon and battle steps
 var unsummoned_units_counter : int
 
@@ -40,6 +46,7 @@ func start_battle(new_armies : Array[Army], battle_map : DataBattleMap, \
 	UI.go_to_custom_ui(battle_ui)
 	IM.raging_battle = true
 	battle_is_ongoing = true
+	battle_result = ONGOING
 	unsummoned_units_counter = 0
 	battling_armies = new_armies
 
@@ -381,10 +388,10 @@ func unit_action(unit : UnitForm) -> void:
 
 #region End Battle
 
-func get_battle_result() -> bool:
+func get_battle_result() -> String:
 	# TODO TEMP
 	# Add option to return "ongoing"
-	return true
+	return battle_result
 
 
 func close_battle() -> void:
@@ -394,6 +401,7 @@ func close_battle() -> void:
 
 	B_GRID.reset_data()
 	battle_is_ongoing =  false
+	battle_result = NO_BATTLE
 	current_participant = null
 	for child in get_children():
 		child.queue_free()
@@ -409,7 +417,10 @@ func end_of_battle() -> void:
 			battling_armies[army_idx].alive = false
 
 	var winner_army = battling_armies[armies_left_alive[0]]
-	print(winner_army.controller.player_name + " won")
+	var winner_player = winner_army.controller
+	print(winner_player.player_name + " won")
+	battle_result = ATTACKER_WIN if winner_player == participants[ATTACKER] \
+			else DEFENDER_WIN
 
 	close_battle()
 	if WM.selected_hero == null:
