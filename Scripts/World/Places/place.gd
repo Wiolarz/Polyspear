@@ -9,7 +9,7 @@ extends Node
 @export var coord : Vector2i
 
 
-static func _inner_create_place(new_data_tile : DataTile, coord : Vector2i) -> Place:
+static func _inner_create_place(new_data_tile : DataTile) -> Place:
 	match new_data_tile.type:
 		# city:
 		"elf_city", "orc_city":
@@ -25,20 +25,20 @@ static func _inner_create_place(new_data_tile : DataTile, coord : Vector2i) -> P
 
 		# resource hunt spots
 		"wood_hunt":
-			return HuntSpot.new(coord, CFG.HUNT_WOOD_PATH, [Goods.new(3,0,0), Goods.new(6,0,0)])
+			return HuntSpot.new(CFG.HUNT_WOOD_PATH, [Goods.new(3,0,0), Goods.new(6,0,0)])
 		"iron_hunt":
-			return HuntSpot.new(coord, CFG.HUNT_IRON_PATH, [Goods.new(0,3,0), Goods.new(0,6,0)])
+			return HuntSpot.new(CFG.HUNT_IRON_PATH, [Goods.new(0,3,0), Goods.new(0,6,0)])
 		"ruby_hunt":
-			return HuntSpot.new(coord, CFG.HUNT_RUBY_PATH, [Goods.new(0,0,3), Goods.new(0,0,6)])
+			return HuntSpot.new(CFG.HUNT_RUBY_PATH, [Goods.new(0,0,3), Goods.new(0,0,6)])
 
 		_:#"sentinel", "wall", "empty"
 			return null
 
 
 static func create_place(new_data_tile : DataTile, \
-		new_coord : Vector2i) -> Place:
-	var new_place = _inner_create_place(new_data_tile, new_coord)
-	if new_place != null:
+			new_coord : Vector2i) -> Place:
+	var new_place = _inner_create_place(new_data_tile)
+	if new_place:
 		new_place.coord = new_coord
 
 	return new_place

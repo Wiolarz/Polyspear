@@ -79,7 +79,7 @@ func is_enemy_present(coord : Vector2i, player : Player) -> bool:
 	var army = get_army(coord)
 	if army == null:
 		return false
-	if army.controller == WM.current_player: #TEMP should check for allies
+	if army.controller == player: #TEMP should check for allies
 		return false
 	return true
 

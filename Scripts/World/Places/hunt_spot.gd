@@ -27,13 +27,12 @@ var _alive_army : ArmyForm
 var _time_left_for_respawn : int = 0
 
 
-func _init(new_coord : Vector2i, units_sets_folder : String, new_material_rewards : Array[Goods]):
+func _init(units_sets_folder : String, new_material_rewards : Array[Goods]):
 	print("hunt spot created")
-	coord = new_coord
-	# TODO verify if there is a need of a deep copy?
 	neutral_armies = HuntSpot.get_hunt_army_presets(units_sets_folder)
 	material_rewards = new_material_rewards
 
+	# TODO verify if there is a need of a deep copy?
 	_present_goods = material_rewards[0].duplicate()
 
 

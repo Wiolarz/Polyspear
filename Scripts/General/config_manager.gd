@@ -112,8 +112,6 @@ const WORLD_MOVEABLE_TILES = [
 	"wood_hunt",
 	"iron_hunt",
 	"ruby_hunt",
-	]
-
-
+]
 
 #endregion
