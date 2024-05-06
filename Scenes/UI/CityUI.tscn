@@ -1,0 +1,148 @@
+[gd_scene load_steps=5 format=3 uid="uid://dm3oqhffhprfy"]
+
+[ext_resource type="Script" path="res://Scripts/UI/city_ui.gd" id="1_f0888"]
+[ext_resource type="Texture2D" uid="uid://bul31ap566nua" path="res://Art/world_heroes/elf_druid.png" id="1_wb616"]
+[ext_resource type="Texture2D" uid="uid://cm7cmywivoyey" path="res://Art/world_heroes/elf_stalker.png" id="3_iev4l"]
+[ext_resource type="Texture2D" uid="uid://c6xx0gugwhq82" path="res://Art/world_heroes/elf_noble.png" id="4_jhtcp"]
+
+[node name="CityUi" type="Control"]
+layout_mode = 3
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = -500.0
+offset_right = 900.0
+grow_vertical = 0
+script = ExtResource("1_f0888")
+
+[node name="BuildingsButtons" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = -142.0
+offset_right = 661.0
+grow_vertical = 0
+
+[node name="ShowRecruitHeroesUI" type="Button" parent="BuildingsButtons"]
+layout_mode = 2
+text = "Recruit Heroes"
+
+[node name="ShowRecruitUnitsUI" type="Button" parent="BuildingsButtons"]
+layout_mode = 2
+text = "Recruit Units"
+
+[node name="ShowBuildUi" type="Button" parent="BuildingsButtons"]
+layout_mode = 2
+text = "Build"
+
+[node name="HeroRecruitment" type="HBoxContainer" parent="."]
+layout_mode = 0
+offset_left = 74.0
+offset_top = -270.0
+offset_right = 750.0
+offset_bottom = 238.0
+
+[node name="RecruitHeroLayout" type="VBoxContainer" parent="HeroRecruitment"]
+layout_mode = 2
+
+[node name="HeroImage" type="TextureRect" parent="HeroRecruitment/RecruitHeroLayout"]
+layout_mode = 2
+texture = ExtResource("1_wb616")
+expand_mode = 5
+
+[node name="BuyHeroButton" type="Button" parent="HeroRecruitment/RecruitHeroLayout"]
+layout_mode = 2
+size_flags_vertical = 8
+text = "Buy Hero
+0 🪓| 0 ⛏️| 0 💎"
+
+[node name="RecruitHeroLayout2" type="VBoxContainer" parent="HeroRecruitment"]
+layout_mode = 2
+
+[node name="HeroImage" type="TextureRect" parent="HeroRecruitment/RecruitHeroLayout2"]
+layout_mode = 2
+texture = ExtResource("3_iev4l")
+expand_mode = 5
+
+[node name="BuyHeroButton" type="Button" parent="HeroRecruitment/RecruitHeroLayout2"]
+layout_mode = 2
+size_flags_vertical = 8
+text = "Buy Hero
+0 🪓| 0 ⛏️| 0 💎"
+
+[node name="RecruitHeroLayout3" type="VBoxContainer" parent="HeroRecruitment"]
+layout_mode = 2
+
+[node name="HeroImage" type="TextureRect" parent="HeroRecruitment/RecruitHeroLayout3"]
+layout_mode = 2
+texture = ExtResource("4_jhtcp")
+expand_mode = 5
+
+[node name="BuyHeroButton" type="Button" parent="HeroRecruitment/RecruitHeroLayout3"]
+layout_mode = 2
+size_flags_vertical = 8
+text = "Buy Hero
+0 🪓| 0 ⛏️| 0 💎"
+
+[node name="RecruitUnitsUI" type="VBoxContainer" parent="."]
+layout_mode = 2
+offset_left = 90.0
+offset_top = -174.0
+offset_right = 203.0
+offset_bottom = 82.0
+
+[node name="Label" type="Label" parent="RecruitUnitsUI"]
+layout_mode = 2
+text = "Buy:
+"
+
+[node name="Button" type="Button" parent="RecruitUnitsUI"]
+layout_mode = 2
+text = "Unit1"
+
+[node name="Button2" type="Button" parent="RecruitUnitsUI"]
+layout_mode = 2
+text = "Unit2"
+
+[node name="Button3" type="Button" parent="RecruitUnitsUI"]
+layout_mode = 2
+text = "Unit3"
+
+[node name="Army" type="VBoxContainer" parent="."]
+layout_mode = 2
+offset_left = 384.0
+offset_top = -178.0
+offset_right = 588.0
+offset_bottom = 212.0
+
+[node name="Label" type="Label" parent="Army"]
+layout_mode = 2
+text = "Army:"
+
+[node name="Button" type="Button" parent="Army"]
+layout_mode = 2
+text = "Spearman"
+
+[node name="Button2" type="Button" parent="Army"]
+layout_mode = 2
+text = "Archer"
+
+[node name="Button3" type="Button" parent="Army"]
+layout_mode = 2
+text = "Dryad
+"
+
+[node name="Button4" type="Button" parent="Army"]
+layout_mode = 2
+text = "Dryad
+"
+
+[node name="Button5" type="Button" parent="Army"]
+layout_mode = 2
+text = "Dryad
+"
+
+[connection signal="pressed" from="HeroRecruitment/RecruitHeroLayout/BuyHeroButton" to="." method="_on_buy_hero_button_pressed"]
+[connection signal="pressed" from="HeroRecruitment/RecruitHeroLayout2/BuyHeroButton" to="." method="_on_buy_hero_button_pressed"]
+[connection signal="pressed" from="HeroRecruitment/RecruitHeroLayout3/BuyHeroButton" to="." method="_on_buy_hero_button_pressed"]

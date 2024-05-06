@@ -1,6 +1,7 @@
 # Singleton - WM
 extends Node
 
+
 #region Setup Parameters
 """
 Current simplifications:
@@ -21,7 +22,6 @@ var current_player : Player
 
 ## Only army that has a hero can move (army can only have a single hero)
 var selected_hero : ArmyForm
-var selected_city : City
 var combat_tile : Vector2i
 
 #endregion
@@ -62,7 +62,6 @@ func spawn_neutral_army(army_preset : PresetArmy, coord : Vector2i) -> ArmyForm:
 
 func next_player_turn():
 	set_selected_hero(null)
-	world_ui.close_city_ui()
 	_end_of_turn_callbacks(current_player)
 	var player_idx = players.find(current_player)
 	if player_idx + 1 == players.size():
@@ -70,6 +69,8 @@ func next_player_turn():
 		current_player = players[0]
 	else:
 		current_player = players[player_idx + 1]
+	world_ui.show_trade_ui(current_player.capital_city, null)
+
 
 
 func _end_of_turn_callbacks(player : Player):
@@ -105,18 +106,13 @@ func grid_input(coord : Vector2i):
 
 	try_interact(selected_hero, coord)
 
-## Tries to Select owned Hero / City
+## Tries to Select owned Hero
 func input_try_select(coord) -> void:  #TODO "nothing is selected try to select stuff"
 	var selected_spot_type : String = W_GRID.get_interactable_type(coord)
 	if selected_spot_type == "army":
 		var army_form : ArmyForm = W_GRID.get_army(coord)
 		if current_player == army_form.entity.controller:
 			set_selected_hero(army_form)
-	elif selected_spot_type == "city":
-		var city = W_GRID.get_city(coord)
-		if city.controller == current_player:
-			selected_city = city
-			world_ui.show_trade_ui(city, null)
 
 
 func try_interact(hero : ArmyForm, coord : Vector2i):
@@ -148,7 +144,6 @@ func try_interact(hero : ArmyForm, coord : Vector2i):
 		if not hero.has_movement_points():
 			print("not enough movement points")
 			return
-		world_ui.close_city_ui()
 		print("moving ", hero," to ",coord)
 		hero_move(hero, coord)
 		hero.spend_movement_point()
@@ -172,7 +167,6 @@ func trade_armies(_second_army : ArmyForm):
 
 func trade_city(city : City, hero : ArmyForm):
 	print("trade_city")
-	selected_city = city
 	world_ui.show_trade_ui(city, hero)
 
 
@@ -274,11 +268,16 @@ func start_world(world_map : DataWorldMap) -> void:
 	for player_id in range(players.size()):
 		spawn_player(spawn_location[player_id], players[player_id])
 
+	world_ui.show_trade_ui(current_player.capital_city, null)
+
 
 func spawn_player(coord : Vector2i, player : Player):
+	
 	var fixed_coord =  W_GRID.to_bordered_coords(coord)
 	recruit_hero(player, player.faction.heroes[0], fixed_coord)
-
-	W_GRID.get_city(fixed_coord).controller = player
+	
+	var capital_city = W_GRID.get_city(fixed_coord)
+	capital_city.controller = player
+	player.cities.append(capital_city)
 
 #endregion

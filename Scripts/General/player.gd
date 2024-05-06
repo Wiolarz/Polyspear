@@ -11,8 +11,19 @@ var faction : DataFaction
 var goods : Goods = Goods.new()
 
 # UI
-var cities : Array[City] = []
+var capital_city : City:
+	get:
+		if cities.size() == 0:
+			return null
+		return cities[0]
+	set(_wrong_value):
+		assert(false, "attempt to modify read only value of player capital_city")
+
+var cities : Array[City]
+
 var heroes : Array[Hero] = []
+
+
 
 
 func use_bot(bot_enabled : bool):

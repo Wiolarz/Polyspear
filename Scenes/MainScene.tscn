@@ -10,3 +10,5 @@ func _ready():
 
 [node name="MainScene" type="Node2D"]
 script = SubResource("GDScript_6tss0")
+
+[node name="Node" type="Node" parent="."]
