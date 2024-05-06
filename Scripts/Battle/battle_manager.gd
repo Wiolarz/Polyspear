@@ -404,7 +404,6 @@ func close_battle() -> void:
 
 	B_GRID.reset_data()
 	battle_is_ongoing =  false
-	battle_result = NO_BATTLE
 	current_participant = null
 	for child in get_children():
 		child.queue_free()
@@ -420,17 +419,18 @@ func end_of_battle() -> void:
 			battling_armies[army_idx].alive = false
 
 	var winner_army = battling_armies[armies_left_alive[0]]
+	var winner_player = winner_army.controller
 
-  var winner_player = winner_army.controller
 	if winner_player != null:
 		print(winner_player.player_name + " won")
 	else:
 		print("netural player" + " won")
 
-  if winner_player == participants[ATTACKER]:
-	  battle_result = ATTACKER_WIN
+	if winner_player == participants[ATTACKER]:
+		battle_result = ATTACKER_WIN
 	else:
-    battle_result = DEFENDER_WIN
+		battle_result = DEFENDER_WIN
+	print("battle_result = ", battle_result)
 
 	close_battle()
 	if WM.selected_hero == null:

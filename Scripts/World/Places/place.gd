@@ -11,6 +11,10 @@ extends Node
 
 static func _inner_create_place(new_data_tile : DataTile, coord : Vector2i) -> Place:
 	match new_data_tile.type:
+		# city:
+		"elf_city", "orc_city":
+			return City.new()
+
 		# Resource Outposts
 		"sawmill":
 			return Deposit.new(Goods.new(5,0,0), Goods.new(1,0,0))
@@ -18,10 +22,8 @@ static func _inner_create_place(new_data_tile : DataTile, coord : Vector2i) -> P
 			return Deposit.new(Goods.new(0,5,0), Goods.new(0,1,0))
 		"ruby_cave":
 			return Deposit.new(Goods.new(0,0,5), Goods.new(0,0,1))
-		
-		# city:
-		"elf_city", "orc_city":
-			return City.new()
+
+		# resource hunt spots
 		"wood_hunt":
 			return HuntSpot.new(coord, CFG.HUNT_WOOD_PATH, [Goods.new(3,0,0), Goods.new(6,0,0)])
 		"iron_hunt":
@@ -40,6 +42,10 @@ static func create_place(new_data_tile : DataTile, \
 		new_place.coord = new_coord
 
 	return new_place
+
+
+func on_game_started() -> void:
+	pass
 
 
 func interact(army : ArmyForm) -> void:

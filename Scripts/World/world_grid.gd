@@ -122,6 +122,8 @@ func generate_special_tiles() -> void:
 			var place : Place = Place.create_place(data_tile, coord)
 			places[coord.x][coord.y] = place
 			W_GRID.get_tile(coord).place = place
+			if place:
+				place.on_game_started()
 
 func end_of_turn_callbacks(player : Player) -> void:
 	#TODO make it nicer

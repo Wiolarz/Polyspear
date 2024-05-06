@@ -11,17 +11,17 @@ var material_rewards : Array[Goods]
 var army_respawn_timer : int = 1 # in turns
 
 ## local variables
-var _level_manager : int = 0
+var _current_level_backing : int = 0
 var _present_goods : Goods
 
 var current_level : int:
 	get:
-		return _level_manager
+		return _current_level_backing
 	set(new_var):
-		if 0 < new_var and new_var < neutral_armies.size():
-			_level_manager = new_var
-		else:
+		if new_var < 0 or new_var >= neutral_armies.size():
 			printerr("hunt spot: attempt to assign incorrect level value: " + str(new_var))
+			return
+		_current_level_backing = new_var
 
 var _alive_army : ArmyForm
 var _time_left_for_respawn : int = 0
@@ -34,9 +34,11 @@ func _init(new_coord : Vector2i, units_sets_folder : String, new_material_reward
 	neutral_armies = HuntSpot.get_hunt_army_presets(units_sets_folder)
 	material_rewards = new_material_rewards
 
-	_alive_army = WM.spawn_neutral_army(neutral_armies[0], coord)
-
 	_present_goods = material_rewards[0].duplicate()
+
+
+func on_game_started():
+	_alive_army = WM.spawn_neutral_army(neutral_armies[0], coord)
 
 
 func interact(army : ArmyForm):
@@ -44,20 +46,27 @@ func interact(army : ArmyForm):
 
 
 func on_end_of_turn():
-	if _alive_army == null: # neutral army is dead
-		if _time_left_for_respawn == 0: # it was killed this turn -> start of respawn timer
-			_time_left_for_respawn = army_respawn_timer
-		else:
-			_time_left_for_respawn -= 1
-			if _time_left_for_respawn == 0: # respawn finished
-				respawn()
+	if _alive_army != null: # neutral army is dead
+		return
+	if _time_left_for_respawn == 0:
+		#  army was killed this turn -> start of respawn timer
+		_time_left_for_respawn = army_respawn_timer
+		return
+	if _time_left_for_respawn == 1: # respawn timer finished
+		try_respawn()
+		return
+	_time_left_for_respawn -= 1
 
 
-func respawn():
-	current_level += 1
+func try_respawn():
+	if W_GRID.get_army(coord):
+		print("respawn failed @ ", coord)
+		return
+	if current_level < neutral_armies.size()-1:
+		current_level += 1
 	_alive_army = WM.spawn_neutral_army(neutral_armies[current_level], coord)
 	_present_goods = material_rewards[current_level].duplicate()
-	
+
 
 func get_map_description() -> String:
 	return _present_goods.to_string_short("empty")
