@@ -20,6 +20,8 @@ enum AnimationSpeed
 ## so unit move takes between X and 2X
 var animation_speed_frames : AnimationSpeed = AnimationSpeed.NORMAL
 
+## battle map is placed this far to the right after world map bounds
+const MAPS_OFFSET_X = 7000
 
 const BATTLE_MAPS_PATH = "res://Resources/Battle/Battle_Maps/"
 const UNITS_PATH = "res://Resources/Battle/Units/"

@@ -24,7 +24,7 @@ extends Node
 ## notifies when `game_setup_info` is modified
 signal game_setup_info_changed
 
-enum CameraPosition {WORLD, BATTLE}
+var camera : PolyCamera
 
 var game_setup_info : GameSetupInfo
 
@@ -37,6 +37,7 @@ var players : Array[Player] :
 			remove_child(p)
 		for p in value:
 			print("adding player ", p)
+			p.name = "Player_"+p.player_name
 			add_child(p)
 		_players = value
 
@@ -45,7 +46,7 @@ var draw_mode : bool = false
 
 var raging_battle : bool
 
-var current_camera_position = CameraPosition.WORLD
+var current_camera_position = E.CameraPosition.WORLD
 
 var _players : Array[Player] = []
 
@@ -61,7 +62,7 @@ var _players : Array[Player] = []
 ##
 ## F5 - Save
 ## F6 - Load
-func _process(_delta):
+func _process(delta):
 	## fastest response time to player input
 	if Input.is_action_just_pressed("KEY_EXIT_GAME"):
 		quit_game()
@@ -80,6 +81,9 @@ func _process(_delta):
 
 	if Input.is_action_just_pressed("KEY_LOAD_GAME"):
 		print("quick load is not yet supported")
+
+	if camera:
+		camera.process_camera(delta)
 
 
 func _physics_process(_delta):
@@ -101,12 +105,12 @@ func init_game_setup():
 	game_setup_info = GameSetupInfo.create_empty(4)
 
 # called from TileForm mouse detection
-func grid_smooth_input_listener(coord : Vector2i):
+func grid_smooth_input_listener(coord : Vector2i, _tile_type : GameSetupInfo.GameMode):
 	if draw_mode:
 		UI.map_editor.grid_input(coord)
 
 # called from TileForm mouse detection
-func grid_input_listener(coord : Vector2i):
+func grid_input_listener(tile_coord : Vector2i, tile_type : GameSetupInfo.GameMode):
 	#print("tile ",coord)
 	#if WM.current_player.bot_engine != null:
 	#    return # its a bot turn
@@ -114,9 +118,10 @@ func grid_input_listener(coord : Vector2i):
 		return
 
 	if raging_battle:
-		BM.grid_input(coord)
+		if tile_type == GameSetupInfo.GameMode.BATTLE:
+			BM.grid_input(tile_coord)
 	else:
-		WM.grid_input(coord)
+		WM.grid_input(tile_coord)
 
 
 #endregion
@@ -149,10 +154,17 @@ func add_player(player_name:String) -> Player:
 
 ## starts game based on game_setup_info
 func start_game():
+	if not camera:
+		camera = PolyCamera.new()
+		camera.name = "PolyCamera"
+		add_child(camera)
 	if game_setup_info.is_in_mode_world():
 		_start_game_world()
+		B_GRID.position.x = WM.get_bounds_global_position().end.x + CFG.MAPS_OFFSET_X
+		set_camera(E.CameraPosition.WORLD)
 	if game_setup_info.is_in_mode_battle():
 		_start_game_battle()
+		set_camera(E.CameraPosition.BATTLE)
 	if NET.server:
 		NET.server.broadcast_start_game()
 
@@ -193,7 +205,7 @@ func _start_game_battle():
 	IM.players = new_players
 
 	UI.go_to_main_menu()
-	BM.start_battle(armies, map_data)
+	BM.start_battle(armies, map_data, 0)
 
 
 func is_bot(player_idx : int) -> bool:
@@ -228,17 +240,27 @@ func create_player(player_idx : int) -> Player:
 
 #region Gameplay UI
 
-func switch_camera():
-	## TODO implement actual camera switches
-	if current_camera_position == CameraPosition.WORLD:
-		current_camera_position = CameraPosition.BATTLE
+func switch_camera() -> void:
+	if current_camera_position == E.CameraPosition.WORLD:
+		if raging_battle:
+			set_camera(E.CameraPosition.BATTLE)
 	else:
-		current_camera_position = CameraPosition.WORLD
+		if game_setup_info.game_mode == GameSetupInfo.GameMode.WORLD:
+			set_camera(E.CameraPosition.WORLD)
+
+
+func set_camera(pos : E.CameraPosition) -> void:
+	current_camera_position = pos
+	if pos == E.CameraPosition.BATTLE:
+		camera.set_bounds(BM.get_bounds_global_position())
+	else :
+		camera.set_bounds(WM.get_bounds_global_position())
+
 
 func go_to_main_menu():
 	draw_mode = false
-	WM.close_world()
 	BM.close_battle()
+	WM.close_world()
 	UI.go_to_main_menu()
 
 func show_in_game_menu():

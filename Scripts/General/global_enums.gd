@@ -31,6 +31,8 @@ enum PlayerType
 	BOT,
 }
 
+enum CameraPosition {WORLD, BATTLE}
+
 enum WorldMapTiles
 {
 	SENTINEL,

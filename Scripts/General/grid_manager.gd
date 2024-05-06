@@ -1,5 +1,5 @@
 class_name GridManager
-extends Node
+extends Node2D
 
 
 # Hex Sprite draw gaps
@@ -112,6 +112,13 @@ func get_distant_coord(start_coord : Vector2i, side : int, distance : int) -> Ve
 
 	return start_coord
 
+func get_bounds_global_position() -> Rect2:
+	if tile_grid.size() == 0 or tile_grid[0].size() == 0:
+		push_warning("asking not initialized grid for camera bounding box")
+		return Rect2(0, 0, 0, 0)
+	var top_left = get_tile(Vector2i(0,0)).global_position
+	var bottom_right = get_tile(Vector2i(grid_width-1,grid_height-1)).global_position
+	return Rect2(top_left, bottom_right - top_left)
 #endregion
 
 #region Generate Grid
@@ -160,7 +167,7 @@ func spawn_tile(x : int, y : int) -> TileForm:
 	tile_grid[x][y] = new_tile
 	new_tile.set_coord(coord)
 	# setting a new tile node visual location
-	new_tile.global_position = GridManager.coord_to_global_position(coord)
+	new_tile.position = GridManager.coord_to_global_position(coord)
 
 	# applying sentinel border correction to data files coords
 	var data_x = x - SENTINEL_BORDER_SIZE
@@ -171,8 +178,11 @@ func spawn_tile(x : int, y : int) -> TileForm:
 
 	# Debug information
 	new_tile.name = new_tile.type + "_TileForm_" + str(new_tile.coord)
+	on_tile_spawned(new_tile)
 	return new_tile
 
+func on_tile_spawned(_tile: TileForm) -> void:
+	pass
 
 func generate_special_tiles() -> void:
 	pass

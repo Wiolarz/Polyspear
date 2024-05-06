@@ -33,7 +33,8 @@ func _ready():
 
 #region Main Functions
 
-func start_battle(new_armies : Array[Army], battle_map : DataBattleMap) -> void:
+func start_battle(new_armies : Array[Army], battle_map : DataBattleMap, \
+		x_offset : float) -> void:
 	_replay = BattleReplay.create(new_armies, battle_map)
 	_replay.save()
 	UI.go_to_custom_ui(battle_ui)
@@ -43,6 +44,7 @@ func start_battle(new_armies : Array[Army], battle_map : DataBattleMap) -> void:
 	battling_armies = new_armies
 
 	B_GRID.generate_grid(battle_map)
+	B_GRID.position.x = x_offset
 	participants = []
 	for army in battling_armies:
 		participants.append(army.controller)
@@ -73,7 +75,7 @@ func load_replay(path : String):
 		a.controller = IM.players[player_idx]
 		armies.append(a)
 		player_idx += 1
-	start_battle(armies, map)
+	start_battle(armies, map, 0)
 	for m in replay.moves:
 		if not battle_is_ongoing:
 			return # terminating battle while watching
@@ -159,6 +161,10 @@ func perform_ai_move(move_info : MoveInfo):
 
 
 #region Tools
+
+
+func get_bounds_global_position() -> Rect2:
+	return B_GRID.get_bounds_global_position()
 
 func get_units(player : Player) -> Array[UnitForm]:
 	for army_idx in range(fighting_units.size()):

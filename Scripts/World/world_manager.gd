@@ -29,6 +29,9 @@ var combat_tile : Vector2i
 
 #region helpers
 
+func get_bounds_global_position() -> Rect2:
+	return W_GRID.get_bounds_global_position()
+
 func set_selected_hero(new_hero : ArmyForm):
 	print("selected ", new_hero)
 	if selected_hero:
@@ -179,15 +182,15 @@ func start_combat(coord : Vector2i):
 
 	combat_tile = coord
 
-	IM.switch_camera()
-
 	var armies : Array[Army] = [
 		selected_hero.entity,
 		W_GRID.get_army(combat_tile).entity,
 	]
 	var battle_map : DataBattleMap = W_GRID.get_battle_map(combat_tile)
 
-	BM.start_battle(armies, battle_map)
+	var x_offset = get_bounds_global_position().end.x + CFG.MAPS_OFFSET_X
+	BM.start_battle(armies, battle_map, x_offset)
+	IM.switch_camera()
 
 
 func end_of_battle():
