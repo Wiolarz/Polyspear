@@ -1,8 +1,13 @@
 class_name CityUi
 extends Control
 
+@onready var hero_recruit = $HeroRecruitment
+@onready var unit_recruit = $RecruitUnits
+@onready var buildings = $Buildings
+
 var viewed_city : City
 var visiting_hero : ArmyForm
+
 
 func show_trade_ui(city : City, hero : ArmyForm):
 	viewed_city = city
@@ -24,7 +29,7 @@ func _refresh_heroes_to_buy():
 
 func _refresh_units_to_buy():
 	var units = viewed_city.get_units_to_buy()
-	var buy_children = $RecruitUnitsUI.get_children()
+	var buy_children = $RecruitUnits/UnitsToBuy.get_children()
 	for i in range(buy_children.size()-1):
 		var b = buy_children[i+1] as Button
 		b.text = "-empty-"
@@ -39,7 +44,7 @@ func _refresh_units_to_buy():
 
 func _refresh_army_display():
 	#TODO CLEAN
-	var army_children : Array = $Army.get_children()
+	var army_children : Array = $RecruitUnits/VisitingHeroArmy.get_children()
 	for i in range(army_children.size()-1):
 		var b = army_children[i+1] as Button
 		b.text = "-empty-"
@@ -52,7 +57,7 @@ func _buy_unit(unit):
 	print("trying to buy ", unit.unit_name)
 
 	if visiting_hero.entity.units_data.size() >= \
-			$Army.get_child_count() - 1 :
+			$RecruitUnits/VisitingHeroArmy.get_child_count() - 1 :
 		print("army size limit")
 		return
 
@@ -62,6 +67,7 @@ func _buy_unit(unit):
 
 	visiting_hero.entity.units_data.append(unit)
 	_refresh_army_display()
+
 
 func _on_buy_hero_button_pressed():
 	print("trying to buy a hero ")
@@ -75,3 +81,21 @@ func _on_buy_hero_button_pressed():
 	WM.recruit_hero(viewed_city.controller, hero, viewed_city.coord)
 
 	_refresh_heroes_to_buy()
+
+
+func _on_show_recruit_heroes_ui_pressed():
+	unit_recruit.hide()
+	buildings.hide()
+	hero_recruit.visible = not hero_recruit.visible
+
+
+func _on_show_recruit_units_ui_pressed():
+	hero_recruit.hide()
+	buildings.hide()
+	unit_recruit.visible = not unit_recruit.visible
+
+
+func _on_show_build_ui_pressed():
+	hero_recruit.hide()
+	unit_recruit.hide()
+	buildings.visible = not buildings.visible

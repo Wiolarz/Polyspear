@@ -272,10 +272,10 @@ func start_world(world_map : DataWorldMap) -> void:
 
 
 func spawn_player(coord : Vector2i, player : Player):
-	
+
 	var fixed_coord =  W_GRID.to_bordered_coords(coord)
 	recruit_hero(player, player.faction.heroes[0], fixed_coord)
-	
+
 	var capital_city = W_GRID.get_city(fixed_coord)
 	capital_city.controller = player
 	player.cities.append(capital_city)

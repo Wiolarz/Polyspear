@@ -37,6 +37,7 @@ func _ready():
 		button_confirm.disabled = true
 	else:
 		if CFG.AUTO_START_GAME:
+			await get_tree().create_timer(0.1).timeout
 			button_confirm.pressed.emit()
 
 
