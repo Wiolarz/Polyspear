@@ -13,7 +13,7 @@ Complete Faction data:
 
 @export var heroes : Array[DataHero]
 
-@export var city : Resource # TODO City_Data
+@export var buildings : Array[DataBuilding]
 
 func get_network_id() -> String:
 	return resource_path

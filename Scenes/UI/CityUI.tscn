@@ -10,18 +10,22 @@ layout_mode = 3
 anchors_preset = 2
 anchor_top = 1.0
 anchor_bottom = 1.0
-offset_top = -500.0
-offset_right = 900.0
+offset_top = -135.0
+offset_right = 754.0
 grow_vertical = 0
 script = ExtResource("1_f0888")
 
 [node name="HeroRecruitment" type="HBoxContainer" parent="."]
 visible = false
-layout_mode = 0
-offset_left = 74.0
-offset_top = -270.0
-offset_right = 750.0
-offset_bottom = 238.0
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 32.0
+offset_top = -654.0
+offset_right = 1048.0
+offset_bottom = -146.0
+grow_vertical = 0
 
 [node name="RecruitHeroLayout" type="VBoxContainer" parent="HeroRecruitment"]
 layout_mode = 2
@@ -66,11 +70,16 @@ text = "Buy Hero
 0 🪓| 0 ⛏️| 0 💎"
 
 [node name="RecruitUnits" type="HBoxContainer" parent="."]
-layout_mode = 2
-offset_left = 101.0
-offset_top = -194.0
-offset_right = 447.0
-offset_bottom = 199.0
+visible = false
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 29.0
+offset_top = -590.0
+offset_right = 375.0
+offset_bottom = -197.0
+grow_vertical = 0
 
 [node name="UnitsToBuy" type="VBoxContainer" parent="RecruitUnits"]
 layout_mode = 2
@@ -132,11 +141,15 @@ text = "Dryad
 
 [node name="Buildings" type="VBoxContainer" parent="."]
 visible = false
-layout_mode = 2
-offset_left = 57.0
-offset_top = -170.0
-offset_right = 170.0
-offset_bottom = 86.0
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 29.0
+offset_top = -702.0
+offset_right = 327.0
+offset_bottom = -159.0
+grow_vertical = 0
 
 [node name="Label" type="Label" parent="Buildings"]
 layout_mode = 2
@@ -145,22 +158,30 @@ text = "Buy:
 
 [node name="Button" type="Button" parent="Buildings"]
 layout_mode = 2
-text = "Woodmill"
+text = "Woodmill
+asd"
 
 [node name="Button2" type="Button" parent="Buildings"]
 layout_mode = 2
-text = "Coal mine"
+text = "Coal mine
+asd"
 
 [node name="Button3" type="Button" parent="Buildings"]
 layout_mode = 2
-text = "Farmers village"
+text = "Farmers village
+asd"
+
+[node name="Button4" type="Button" parent="Buildings"]
+layout_mode = 2
+text = "Troll village
+asd"
 
 [node name="OpenButtons" type="HBoxContainer" parent="."]
 layout_mode = 1
 anchors_preset = 2
 anchor_top = 1.0
 anchor_bottom = 1.0
-offset_top = -142.0
+offset_top = -126.0
 offset_right = 663.0
 grow_vertical = 0
 
@@ -174,11 +195,8 @@ text = "Recruit Units"
 
 [node name="ShowBuildUi" type="Button" parent="OpenButtons"]
 layout_mode = 2
-text = "Build"
+text = "Buildings"
 
-[connection signal="pressed" from="HeroRecruitment/RecruitHeroLayout/BuyHeroButton" to="." method="_on_buy_hero_button_pressed"]
-[connection signal="pressed" from="HeroRecruitment/RecruitHeroLayout2/BuyHeroButton" to="." method="_on_buy_hero_button_pressed"]
-[connection signal="pressed" from="HeroRecruitment/RecruitHeroLayout3/BuyHeroButton" to="." method="_on_buy_hero_button_pressed"]
 [connection signal="pressed" from="OpenButtons/ShowRecruitHeroesUI" to="." method="_on_show_recruit_heroes_ui_pressed"]
 [connection signal="pressed" from="OpenButtons/ShowRecruitUnitsUI" to="." method="_on_show_recruit_units_ui_pressed"]
 [connection signal="pressed" from="OpenButtons/ShowBuildUi" to="." method="_on_show_build_ui_pressed"]
