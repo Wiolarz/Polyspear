@@ -15,4 +15,4 @@ script = ExtResource("1_7snke")
 faction = ExtResource("1_n2gcd")
 player_type = 1
 player_name = "human_orc"
-goods = SubResource("Resource_p8fwr")
+starting_goods = SubResource("Resource_p8fwr")
