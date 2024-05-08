@@ -114,7 +114,20 @@ const WORLD_MOVEABLE_TILES = [
 	"ruby_hunt",
 ]
 
-const DEFAULT_MODE_IS_BATTLE = false
-const AUTO_START_GAME = true
+var DEFAULT_MODE_IS_BATTLE : bool : 
+	get: return player_options.use_default_battle
+var AUTO_START_GAME : bool : 
+	get: return player_options.autostart_map
 
 #endregion
+
+const PLAYER_OPTIONS_PATH = "user://player_options.tres"
+var player_options : PlayerOptions
+
+func _init():
+	player_options = load(PLAYER_OPTIONS_PATH)
+	if not player_options:
+		player_options = PlayerOptions.new()
+
+func save_player_options():
+	ResourceSaver.save(player_options, PLAYER_OPTIONS_PATH)
