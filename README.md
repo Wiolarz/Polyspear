@@ -53,9 +53,10 @@ Other
 
 ## Git branches
 
-- `main` - "Production playable" release, updated after completing some milestone and testing
- - `Polyspear` - main development branch, shouldn't contain major bugs
-- `polyspear_X` - feature branches, waitinng to be merged to Polyspear
+- `main` - main Polyspear development branch, shouldn't contain major bugs
+- `release/polyspear` - "Production playable" release, updated after completing some milestone and testing
+- `polyspear_Xyz` - feature branches, waitinng to be merged to Polyspear
+- `otherProjectName` - there are other projects like brawler, shmup, etc.
 
 ## Aletrnative implementations
 
