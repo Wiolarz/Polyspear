@@ -24,7 +24,7 @@ func _ready():
 	add_child(unit_editor)
 	add_child(host_lobby)
 	add_child(client_lobby)
-	add_child(in_game_menu)
+	add_child(in_game_menu, false, Node.INTERNAL_MODE_BACK)
 
 	_hide_all()
 
@@ -40,7 +40,7 @@ func go_to_custom_ui(custom_ui : CanvasLayer):
 
 
 func _hide_all():
-	for c in get_children():
+	for c in get_children(true):
 		c.hide()
 
 
