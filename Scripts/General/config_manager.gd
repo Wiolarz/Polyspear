@@ -114,4 +114,7 @@ const WORLD_MOVEABLE_TILES = [
 	"ruby_hunt",
 ]
 
+const DEFAULT_MODE_IS_BATTLE = false
+const AUTO_START_GAME = true
+
 #endregion

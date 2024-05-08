@@ -1,18 +1,27 @@
 class_name Player
 extends Node
 
+
 var player_name : String = ""
 
 var bot_engine : AIInterface
 
+# Gameplay
 var faction : DataFaction
-
-# Player resources
 var goods : Goods = Goods.new()
 
 # UI
-var cities : Array[City] = []
-var heroes : Array[Hero] = []
+var capital_city : City:
+	get:
+		if cities.size() == 0:
+			return null
+		return cities[0]
+	set(_wrong_value):
+		assert(false, "attempt to modify read only value of player capital_city")
+
+var cities : Array[City]
+
+var heroes : Array[ArmyForm] = []
 
 
 func use_bot(bot_enabled : bool):
@@ -24,6 +33,7 @@ func use_bot(bot_enabled : bool):
 	else:
 		bot_engine = ExampleBot.new(self)
 		add_child(bot_engine)
+
 
 func your_turn():
 	#UI stuff to let player know its his turn,
@@ -37,9 +47,11 @@ func your_turn():
 
 	print("your move " + player_name)
 
+## Checks if player has enough goods for purchase
 func has_enough(cost : Goods) -> bool:
 	return goods.has_enough(cost)
 
+## If there are sufficient goods -> true + goods are subtracted
 func purchase(cost : Goods) -> bool:
 	if goods.has_enough(cost):
 		goods.subtract(cost)

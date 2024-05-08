@@ -26,12 +26,19 @@ var current_player_to_set : String = "" # if empty we select for us
 func _ready():
 	IM.game_setup_info_changed.connect(refresh_after_connection_change)
 	## button/world toggle buttons, default world
-	button_battle.button_pressed = true
 	button_battle.button_group = button_world.button_group
+	if CFG.DEFAULT_MODE_IS_BATTLE:
+		button_battle.button_pressed = true
+	else:
+		button_world.button_pressed = true
 	if client_side:
 		button_battle.disabled = true
 		button_world.disabled = true
 		button_confirm.disabled = true
+	else:
+		if CFG.AUTO_START_GAME:
+			await get_tree().create_timer(0.1).timeout  # Waits for the Main menu UI to properly load, so it can be closed
+			button_confirm.pressed.emit()
 
 
 func clear_container():

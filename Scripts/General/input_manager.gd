@@ -28,18 +28,18 @@ var camera : PolyCamera
 
 var game_setup_info : GameSetupInfo
 
-var players : Array[Player] :
+var players : Array[Player] = [] : 
 	get:
-		return _players
+		return players
 	set(value):
-		for p in _players:
+		for p in players:
 			print("removing player ", p)
 			remove_child(p)
 		for p in value:
 			print("adding player ", p)
 			p.name = "Player_"+p.player_name
 			add_child(p)
-		_players = value
+		players = value
 
 ## flag for MAP EDITOR
 var draw_mode : bool = false
@@ -47,8 +47,6 @@ var draw_mode : bool = false
 var raging_battle : bool
 
 var current_camera_position = E.CameraPosition.WORLD
-
-var _players : Array[Player] = []
 
 
 #region Input Support
@@ -182,13 +180,13 @@ func get_player_settings() -> Array[PresetPlayer]:
 	elf.faction = CFG.FACTION_ELVES
 	elf.player_name = "elf"
 	elf.player_type =  E.PlayerType.HUMAN
-	elf.goods = CFG.get_start_goods()
+	elf.starting_goods = CFG.get_start_goods()
 
 	var orc = PresetPlayer.new()
 	orc.faction = CFG.FACTION_ORCS
 	orc.player_name = "orc"
 	orc.player_type =  E.PlayerType.HUMAN
-	orc.goods = CFG.get_start_goods()
+	orc.starting_goods = CFG.get_start_goods()
 
 	return [ elf, orc ]
 

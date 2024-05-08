@@ -11,17 +11,16 @@ var material_rewards : Array[Goods]
 var army_respawn_timer : int = 1 # in turns
 
 ## local variables
-var _current_level_backing : int = 0
 var _present_goods : Goods
 
-var current_level : int:
+var current_level : int = 0:
 	get:
-		return _current_level_backing
+		return current_level
 	set(new_var):
 		if new_var < 0 or new_var >= neutral_armies.size():
 			printerr("hunt spot: attempt to assign incorrect level value: " + str(new_var))
 			return
-		_current_level_backing = new_var
+		current_level = new_var
 
 var _alive_army : ArmyForm
 var _time_left_for_respawn : int = 0

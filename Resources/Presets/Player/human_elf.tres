@@ -15,4 +15,4 @@ script = ExtResource("2_volil")
 faction = ExtResource("1_qabat")
 player_type = 1
 player_name = "human_elf"
-goods = SubResource("Resource_rofx3")
+starting_goods = SubResource("Resource_rofx3")
