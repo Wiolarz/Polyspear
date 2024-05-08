@@ -16,7 +16,6 @@ grow_vertical = 0
 script = ExtResource("1_f0888")
 
 [node name="HeroRecruitment" type="HBoxContainer" parent="."]
-visible = false
 layout_mode = 1
 anchors_preset = 2
 anchor_top = 1.0
@@ -28,6 +27,7 @@ offset_bottom = -146.0
 grow_vertical = 0
 
 [node name="RecruitHeroLayout" type="VBoxContainer" parent="HeroRecruitment"]
+custom_minimum_size = Vector2(350, 0)
 layout_mode = 2
 
 [node name="HeroImage" type="TextureRect" parent="HeroRecruitment/RecruitHeroLayout"]
@@ -39,9 +39,10 @@ expand_mode = 5
 layout_mode = 2
 size_flags_vertical = 8
 text = "Buy Hero
-0 🪓| 0 ⛏️| 0 💎"
+✔"
 
 [node name="RecruitHeroLayout2" type="VBoxContainer" parent="HeroRecruitment"]
+custom_minimum_size = Vector2(350, 0)
 layout_mode = 2
 
 [node name="HeroImage" type="TextureRect" parent="HeroRecruitment/RecruitHeroLayout2"]
@@ -56,6 +57,7 @@ text = "Buy Hero
 0 🪓| 0 ⛏️| 0 💎"
 
 [node name="RecruitHeroLayout3" type="VBoxContainer" parent="HeroRecruitment"]
+custom_minimum_size = Vector2(350, 0)
 layout_mode = 2
 
 [node name="HeroImage" type="TextureRect" parent="HeroRecruitment/RecruitHeroLayout3"]

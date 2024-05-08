@@ -62,6 +62,8 @@ func spawn_neutral_army(army_preset : PresetArmy, coord : Vector2i) -> ArmyForm:
 
 func next_player_turn():
 	set_selected_hero(null)
+	world_ui.show_trade_ui(current_player.capital_city, null)
+
 	_end_of_turn_callbacks(current_player)
 	var player_idx = players.find(current_player)
 	if player_idx + 1 == players.size():
@@ -137,7 +139,6 @@ func try_interact(hero : ArmyForm, coord : Vector2i):
 		else:
 			# CITY SIEGE
 			print ("siege not implemented")
-			pass
 		return
 
 	if W_GRID.is_moveable(coord):
@@ -151,6 +152,7 @@ func try_interact(hero : ArmyForm, coord : Vector2i):
 
 func hero_move(hero : ArmyForm, coord : Vector2i):
 	W_GRID.change_hero_position(hero, coord)
+	world_ui.show_trade_ui(current_player.capital_city, null)
 	var place = W_GRID.places[coord.x][coord.y]
 	if place != null:
 		place.interact(hero)
@@ -175,8 +177,12 @@ func recruit_hero(player : Player, hero_data : DataHero, coord : Vector2i) -> vo
 		ArmyForm.create_hero_army(player, hero_data)
 
 	add_child(army_for_world_map)
+	player.heroes.append(army_for_world_map)
 
-	army_for_world_map.entity.units_data.append(army_for_world_map.entity.hero.data_unit) # adding hero to unit roster
+	# FIXME drut, adding hero unit to the army
+	var hero_unit = army_for_world_map.entity.hero.data_unit
+	army_for_world_map.entity.units_data.append(hero_unit)
+
 	W_GRID.place_army(army_for_world_map, coord)
 
 #endregion

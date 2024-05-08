@@ -21,7 +21,7 @@ var capital_city : City:
 
 var cities : Array[City]
 
-var heroes : Array[Hero] = []
+var heroes : Array[ArmyForm] = []
 
 
 func use_bot(bot_enabled : bool):
@@ -51,7 +51,7 @@ func your_turn():
 func has_enough(cost : Goods) -> bool:
 	return goods.has_enough(cost)
 
-## If there are sufficient goods -> true + goods are substracted
+## If there are sufficient goods -> true + goods are subtracted
 func purchase(cost : Goods) -> bool:
 	if goods.has_enough(cost):
 		goods.subtract(cost)
