@@ -30,7 +30,9 @@ func make_client_side():
 	client_side_map_label = Label.new()
 	client_side_map_label.text = "some map"
 	$MapSelect/ColorRect.add_child(client_side_map_label)
-	remove_child($PresetSelect)
+	var presets = $PresetSelect
+	remove_child(presets)
+	presets.queue_free()
 
 
 func refresh():

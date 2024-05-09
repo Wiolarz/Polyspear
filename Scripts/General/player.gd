@@ -29,6 +29,7 @@ func use_bot(bot_enabled : bool):
 		return
 	if not bot_enabled:
 		remove_child(bot_engine)
+		bot_engine.queue_free()
 		bot_engine = null
 	else:
 		bot_engine = ExampleBot.new(self)
