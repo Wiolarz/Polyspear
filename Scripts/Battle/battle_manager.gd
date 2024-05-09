@@ -318,8 +318,6 @@ func kill_unit(target) -> void:
 	for army_idx in range(fighting_units.size()):
 		if fighting_units[army_idx].size() > 0:
 			armies_left_alive.append(army_idx)
-		else:
-			battling_armies[army_idx].alive = false
 
 
 	if armies_left_alive.size() < 2:
@@ -415,9 +413,7 @@ func end_of_battle() -> void:
 	for army_idx in range(fighting_units.size()):
 		if fighting_units[army_idx].size() > 0:
 			armies_left_alive.append(army_idx)
-		else:
-			battling_armies[army_idx].alive = false
-
+		
 	var winner_army = battling_armies[armies_left_alive[0]]
 	var winner_player = winner_army.controller
 

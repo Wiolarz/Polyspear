@@ -11,8 +11,6 @@ var controller : Player
 
 var coord : Vector2i
 
-var alive : bool = true
-
 
 func destroy_army():
 	if hero != null:
