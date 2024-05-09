@@ -1,19 +1,23 @@
 class_name AIHelpers extends Object
 
 
-static func get_all_legal_moves(my_units : Array, me:Player, bm: BattleManager = BM) -> Array[MoveInfo]:
+static func get_all_legal_moves(me:Player, bm: BattleManager = BM) -> Array[MoveInfo]:
 	"""
 	Compares every possible directions for all units using:
 	1 Check for friendly units placements
 	2 Sentinel Tiles
 	3 GameplayManager -> LegalMove()
 	"""
+
+	if bm.is_during_summoning_phase():
+		return get_all_spawn_moves(me, bm)
+
 	var legal_moves : Array[MoveInfo] = []
 
-	for unit in my_units:
+	for unit in bm.get_units(me):
 		for side in range(6):
 			var new_move = unit.coord + bm.grid.DIRECTIONS[side]
-			var neighbour : Unit = bm.grid.get_unit(new_move)
+			var neighbour : UnitForm = bm.grid.get_unit(new_move)
 			if (neighbour != null and neighbour.controller == me): # 1
 				continue
 

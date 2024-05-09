@@ -31,7 +31,7 @@ func use_bot(bot_enabled : bool):
 		remove_child(bot_engine)
 		bot_engine = null
 	else:
-		bot_engine = ExampleBot.new(self)
+		bot_engine = AIBattleBotMCTS.new(self)
 		add_child(bot_engine)
 
 

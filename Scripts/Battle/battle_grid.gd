@@ -2,11 +2,11 @@
 class_name BattleGrid extends GridManager
 
 
-var max_player_number : int
+@export var max_player_number : int
 
 ## Array[Array[TileForm]] player, index -> TileForm
 ## lists all tiles that can be used to summon units for a given player
-var summon_tiles : Array = []
+@export var summon_tiles : Array = []
 
 @onready var bm: BattleManager = BM
 

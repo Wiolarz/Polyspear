@@ -22,13 +22,13 @@ const DIRECTIONS = [ \
 
 const TILES_NOT_ADJACENT = -1
 
-var map_information : DataGenericMap
+@export var map_information : DataGenericMap
 
-var grid_width : int
-var	grid_height : int
+@export var grid_width : int
+@export var	grid_height : int
 
-var tile_grid : Array = []  # Array[Array[TileForm]]
-var unit_grid : Array = [] # Array[Array[UnitForm/ArmyForm]]
+@export var tile_grid : Array = []  # Array[Array[TileForm]]
+@export var unit_grid : Array = [] # Array[Array[UnitForm/ArmyForm]]
 
 #region Coordinate Tools
 

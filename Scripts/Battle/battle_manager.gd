@@ -12,10 +12,10 @@ const STATE_SUMMONNING = "summonning"
 const STATE_FIGHTING = "fighting"
 const STATE_BATTLE_FINISHED = "battle_finished"
 
-var battle_is_ongoing : bool = false
-var state : String = ""
-var army_in_battle_states : Array[ArmyInBattleState] = []
-var current_army_index : int = ATTACKER
+@export var battle_is_ongoing : bool = false
+@export var state : String = ""
+@export var army_in_battle_states : Array[ArmyInBattleState] = []
+@export var current_army_index : int = ATTACKER
 
 var battle_ui : BattleUI = null
 var selected_unit : UnitForm = null
@@ -65,6 +65,8 @@ func get_current_player() -> Player:
 
 
 func notify_current_player_your_turn() -> void:
+	if self != BM: # cloned for game simulations
+		return
 	if not battle_is_ongoing:
 		return
 	battle_ui.start_player_turn(current_army_index)
@@ -209,10 +211,15 @@ func perform_ai_move(move_info : MoveInfo) -> void:
 
 func cloned() -> BattleManager:
 	var new = duplicate()
-	print(new.grid, grid)
 	new.grid = grid.duplicate()
+	new.grid.bm = self
 	new._replay = null
-	
+
+	for unit in new.grid.unit_grid:
+		if unit != null:
+			unit = unit.duplicate()
+
+	new.selected_unit = null
 	return new
 #endregion
 
@@ -424,7 +431,8 @@ func reset_battle_manager() -> void:
 	while _replay_is_playing:
 		await get_tree().create_timer(0.1).timeout
 
-	battle_ui.hide()
+	if battle_ui:
+		battle_ui.hide()
 	IM.switch_camera()
 
 	# delete all data related to battle
@@ -503,7 +511,8 @@ func summon_unit(unit_data : DataUnit, coord : Vector2i) -> void:
 	if current_army_index == ATTACKER:
 		unit.turn(3, true) # start turned right, default is left
 
-	battle_ui.unit_summoned(not is_during_summoning_phase(), unit_data)
+	if battle_ui:
+		battle_ui.unit_summoned(not is_during_summoning_phase(), unit_data)
 
 #endregion
 
@@ -565,7 +574,7 @@ func force_surrender():
 #endregion
 
 
-class ArmyInBattleState:
+class ArmyInBattleState extends Node:
 	var army_reference : Army
 	var units_to_summon : Array[DataUnit] = []
 	var units : Array[UnitForm] = []
