@@ -511,9 +511,8 @@ func get_not_summoned_units(player:Player) -> Array[DataUnit]:
 func get_summon_tiles(player : Player) -> Array[TileForm]:
 	var result: Array[TileForm] = []
 	for c in B_GRID.get_all_field_coords():
-		if not is_legal_summon_coord(c, player):
-			continue
-		result.append(B_GRID.get_tile(c))
+		if is_legal_summon_coord(c, player):
+			result.append(B_GRID.get_tile(c))
 	return result
 
 #endregion
