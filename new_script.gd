@@ -1,19 +1,25 @@
-var knight_equipment = {"sword": {"name": "Iron Sword", "damage": 10,
-"durability": 100}, "shield": {"name": "Wooden Shield", "defense": 5, "durability": 50}}
+var knight_equipment = {
+	"sword": {"name": "Iron Sword", "damage": 10, "durability": 100},
+	"shield": {"name": "Wooden Shield", "defense": 5, "durability": 50}
+}
+
 
 func _ready():
 	print("Welcome, blacksmith! You are in charge of managing your knight's equipment.")
 
-func _process(delta):
+
+func _process(_delta):
 	var input = get_input()
 	if input:
 		process_input(input)
 
+
 func get_input():
-	var input = "test" # input
+	var input = "test"  # input
 	if input != "":
 		return input.strip().lower()
 	return null
+
 
 func process_input(input):
 	var args = input.split(" ")
@@ -29,12 +35,14 @@ func process_input(input):
 	else:
 		print("Invalid command. Type 'help' for a list of commands.")
 
+
 func print_help():
 	print("Commands:")
 	print("equip [item] - equip an item from your inventory")
 	print("repair [item] - repair an item in your inventory")
 	print("stats - show the current stats of your knight's equipment")
 	print("help - show this help message")
+
 
 func equip_item(args):
 	if args.length() < 2:
@@ -46,6 +54,7 @@ func equip_item(args):
 	else:
 		print("Invalid item.")
 
+
 func repair_item(args):
 	if args.length() < 2:
 		print("Please specify an item to repair.")
@@ -56,6 +65,7 @@ func repair_item(args):
 		print("Repaired " + knight_equipment[item]["name"])
 	else:
 		print("Invalid item.")
+
 
 func print_stats():
 	print("Knight's Equipment Stats:")

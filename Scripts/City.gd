@@ -5,8 +5,8 @@ signal player_death
 
 # loading player, and enemy characters objects
 # TODO research if ONREADY here is neccesary
-var player_charater_scene = load("res://Kings_Hunt/player_character.tscn")  
-var guard_charater_scene = load("res://Kings_Hunt/guard_character.tscn") 
+var player_charater_scene = load("res://Scenes/player_character.tscn")
+var guard_charater_scene = load("res://Scenes/guard_character.tscn")
 
 
 var player_deaths = 2
@@ -29,23 +29,22 @@ func city_creation():
 	var number_of_locations = 3
 	for i in range(number_of_locations):
 		city.append([])
-	
-	var player_character = generate_player()
-	
-	print(player_character.get_node("EQ_System").levels)
+
+	var player = generate_player()
+
+	print(player.get_node("EQ_System").levels)
 	#add_child(player_character)
-	city[0].append(player_character)
-	
-	
+	city[0].append(player)
+
 	var guard_character = guard_charater_scene.instantiate()
 	#add_child(guard_character)
-	
+
 	#var city = get_children()
 	for i in range(number_of_locations - 1):
 		city[i + 1].append(guard_character.duplicate())
-	
+
 	print(city)
-#	print(player_character)
+#	print(player)
 	#print(city[0].get_node("Health_System").light_points)
 #	for i in range(10):
 #		var random_target = randi_range(0, city.size() - 1)
@@ -56,20 +55,20 @@ func city_creation():
 	var random_target = 0
 	city[0][random_target].get_node("Health_System").light_damage(10)
 	removing_dead(city)
-	player_character.die()
-	print(player_character.get_node("EQ_System").levels)
+	player.die()
+	print(player.get_node("EQ_System").levels)
 	print(city[0][random_target].get_node("EQ_System").levels)
 	print(city)
 
 
 func generate_player():
-	var player_character = player_charater_scene.instantiate()
-	add_child(player_character)
+	var node = player_charater_scene.instantiate()
+	add_child(node)
 	var random_rewards = ["food", "iron", "gold"]
 	for i in range(player_deaths):
 		var reward = random_rewards.pick_random()
-		player_character.get_node("EQ_System").level_up(reward)
-	return player_character
+		node.get_node("EQ_System").level_up(reward)
+	return node
 
 
 
@@ -86,11 +85,11 @@ func removing_dead(city):
 					emit_signal("player_death")  # testing if neccesary
 					player_deaths += 1
 					city[0].append(generate_player())
-					
+
 				to_be_killed.append(i)
-		
+
 		var modifier = 0
 		for value in to_be_killed:
 			location.remove_at(value - modifier)
 			modifier += 1
-			
+
