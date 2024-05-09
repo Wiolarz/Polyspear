@@ -22,6 +22,7 @@ func go_back():
 func clear_management():
 	for child in server_management.get_children():
 		server_management.remove_child(child)
+		child.queue_free()
 
 
 func show_server_creator():

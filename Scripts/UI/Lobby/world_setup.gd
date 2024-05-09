@@ -139,7 +139,9 @@ func make_client_side():
 	client_side_map_label = Label.new()
 	client_side_map_label.text = "some map"
 	map_select.get_node("ColorRect").add_child(client_side_map_label)
-	$V.remove_child($V/PresetSelect)
+	var presets = $V/PresetSelect
+	$V.remove_child(presets)
+	presets.queue_free()
 
 func fill_maps_list():
 	if not maps_list:
