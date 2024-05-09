@@ -141,7 +141,7 @@ func _on_load_map_pressed():
 	var map_to_load = load(map_path)
 	assert(map_to_load != null, "there is no selected map to be loaded")
 	WM.close_world()
-	BM.close_battle()
+	BM.reset_battle_manager()
 	if map_to_load is DataWorldMap:
 		_set_grid_type(MapType.WORLD)
 		W_GRID.generate_grid(map_to_load)
@@ -191,7 +191,7 @@ func _on_save_map_pressed():
 
 func _generate_empty_map(size_x : int = 5, size_y : int = 5) -> Array: # -> Array[Array[DataTile]]
 	WM.close_world()
-	BM.close_battle()
+	BM.reset_battle_manager()
 	var grid_data = []
 
 	for tile_column in range(size_x):

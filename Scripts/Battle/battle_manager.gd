@@ -30,7 +30,7 @@ func _ready():
 	UI.add_custom_screen(battle_ui)
 
 
-#region Main Functions
+#region Battle Setup
 
 func start_battle(new_armies : Array[Army], battle_map : DataBattleMap, \
 		x_offset : float) -> void:
@@ -51,14 +51,18 @@ func start_battle(new_armies : Array[Army], battle_map : DataBattleMap, \
 	selected_unit = null
 	battle_ui.load_armies(army_in_battle_states)
 
-	notyfy_current_player_your_turn()
+	notify_current_player_your_turn()
 
+#endregion
+
+
+#region Main Functions
 
 func get_current_player() -> Player:
 	return army_in_battle_states[current_army_index].army_reference.controller
 
 
-func notyfy_current_player_your_turn() -> void:
+func notify_current_player_your_turn() -> void:
 	if not battle_is_ongoing:
 		return
 	battle_ui.start_player_turn(current_army_index)
@@ -69,7 +73,7 @@ func notyfy_current_player_your_turn() -> void:
 		print("uncontrolled army's turn")
 
 
-func perform_replay(path : String):
+func perform_replay(path : String) -> void:
 	var replay = load(path) as BattleReplay
 	assert(replay != null)
 	_replay_is_playing = true
@@ -95,7 +99,7 @@ func perform_replay(path : String):
 	_replay_is_playing = false
 
 
-func replay_move_delay():
+func replay_move_delay() -> void:
 	await get_tree().create_timer(CFG.bot_speed_frames/60).timeout
 	while IM.is_game_paused() or CFG.bot_speed_frames == CFG.BotSpeed.FREEZE:
 		await get_tree().create_timer(0.1).timeout
@@ -103,7 +107,7 @@ func replay_move_delay():
 			return # terminating battle while watching
 
 
-func switch_participant_turn():
+func switch_participant_turn() -> void:
 	current_army_index += 1
 	current_army_index %= army_in_battle_states.size()
 
@@ -118,10 +122,10 @@ func switch_participant_turn():
 			if skip_count == army_in_battle_states.size():
 				end_summoning_state()
 				break
-		notyfy_current_player_your_turn()
+		notify_current_player_your_turn()
 
 	elif state == STATE_FIGHTING:
-		notyfy_current_player_your_turn()
+		notify_current_player_your_turn()
 
 
 func end_summoning_state() -> void:
@@ -180,7 +184,7 @@ func perform_move_fighting(unit : UnitForm, coord : Vector2i, direction : int):
 	move_unit(unit, coord, direction)
 
 
-func perform_ai_move(move_info : MoveInfo):
+func perform_ai_move(move_info : MoveInfo) -> void:
 	if not battle_is_ongoing:
 		return
 	_replay.record_move(move_info)
@@ -199,12 +203,102 @@ func perform_ai_move(move_info : MoveInfo):
 		return
 	assert(false, "Move move_type not supported in perform")
 
+#endregion
+
+
+#region Symbols
+
+## returns true when unit should stop processing further steps
+## it died or battle ended
+func process_symbols(unit : UnitForm) -> bool:
+	if should_die_to_counter_attack(unit):
+		kill_unit(unit)
+		return true
+	process_offensive_symbols(unit)
+	if not battle_is_ongoing:
+		return true
+	return false
+
+
+func should_die_to_counter_attack(unit : UnitForm) -> bool:
+	# Returns true if Enemy counter_attack can kill the target
+	var adjacent = B_GRID.adjacent_units(unit.coord)
+
+	for side in range(6):
+		if not adjacent[side]:
+			continue # no unit
+		if adjacent[side].controller == unit.controller:
+			continue # no friendly fire
+		if unit.get_symbol(side) == E.Symbols.SHIELD:
+			continue # we have a shield
+		if adjacent[side].get_symbol(side + 3) == E.Symbols.SPEAR:
+			return true # enemy has a counter_attack
+	return false
+
+
+func process_bow(unit : UnitForm, side : int) -> void:
+	var target = B_GRID.get_shot_target(unit.coord, side)
+
+	if target == null:
+		return # no target
+	if target.controller == unit.controller:
+		return # no friendly fire
+	if target.get_symbol(side + 3) == E.Symbols.SHIELD:
+		return  # blocked by shield
+
+	kill_unit(target)
+
+
+func process_offensive_symbols(unit : UnitForm) -> void:
+	var adjacent = B_GRID.adjacent_units(unit.coord)
+
+	for side in range(6):
+		var unit_weapon = unit.get_symbol(side)
+		if unit_weapon in [E.Symbols.EMPTY, E.Symbols.SHIELD]:
+			continue # We don't have any weapon
+		if unit_weapon == E.Symbols.BOW:
+			process_bow(unit, side)
+			continue # bow is special case
+		if not adjacent[side]:
+			continue # nothing to interact with
+		if adjacent[side].controller == unit.controller:
+			continue # no friendly fire
+
+		var enemy = adjacent[side]
+		if unit_weapon == E.Symbols.PUSH:
+			push_enemy(enemy, side)
+			continue # push is special case
+		if enemy.get_symbol(side + 3) == E.Symbols.SHIELD:
+			continue # enemy defended
+		kill_unit(enemy)
+
+
+func push_enemy(enemy : UnitForm, direction : int) -> void:
+	var target_coord = B_GRID.get_distant_coord(enemy.coord, direction, 1)
+
+	var target_tile_type = B_GRID.get_tile_type(target_coord)
+	if target_tile_type == "sentinel":
+		# Pushing outside the map
+		kill_unit(enemy)
+		return
+
+	var target = B_GRID.get_unit(target_coord)
+	if target != null:
+		# Spot isn't empty
+		kill_unit(enemy)
+		return
+
+	# MOVE (no rotate)
+	B_GRID.change_unit_coord(enemy, target_coord)
+
+	# check for counter_attacks
+	if should_die_to_counter_attack(enemy):
+		kill_unit(enemy)
 
 #endregion
 
 
 #region Tools
-
 
 func get_bounds_global_position() -> Rect2:
 	return B_GRID.get_bounds_global_position()
@@ -284,43 +378,12 @@ func move_unit(unit : UnitForm, end_coord : Vector2i, direction: int) -> void:
 		return
 
 
-## returns true when unit should stop processing further steps
-## it died or battle ended
-func process_symbols(unit : UnitForm):
-	if should_die_to_spear(unit):
-		die_to_spear(unit)
-		return true
-	process_offensive_symbols(unit)
-	if not battle_is_ongoing:
-		return true
-	return false
-
-
-func die_to_spear(unit : UnitForm):
-	kill_unit(unit)
-
-
-func should_die_to_spear(unit : UnitForm) -> bool:
-	# Returns true is Enemy spear can kill the target
-	var adjacent = B_GRID.adjacent_units(unit.coord)
-
-	for side in range(6):
-		if not adjacent[side]:
-			continue # no unit
-		if adjacent[side].controller == unit.controller:
-			continue # no friendly fire
-		if unit.get_symbol(side) == E.Symbols.SHIELD:
-			continue # we have a shield
-		if adjacent[side].get_symbol(side + 3) == E.Symbols.SPEAR:
-			return true # enemy has a spear
-	return false
-
-
-func get_army_for_player(player : Player):
-	for a in army_in_battle_states:
-		if a.army_reference.controller == player:
-			return a
+func get_army_for_player(player : Player) -> ArmyInBattleState:
+	for army in army_in_battle_states:
+		if army.army_reference.controller == player:
+			return army
 	assert(false, "No army for player " + str(player))
+	return null
 
 
 func kill_unit(target : UnitForm) -> void:
@@ -330,7 +393,7 @@ func kill_unit(target : UnitForm) -> void:
 	check_battle_end()
 
 
-func check_battle_end():
+func check_battle_end() -> void:
 	var armies_alive = 0
 	for a in army_in_battle_states:
 		if a.can_fight():
@@ -340,74 +403,12 @@ func check_battle_end():
 		state = STATE_BATTLE_FINISHED
 		end_the_battle()
 
-
-func process_bow(unit : UnitForm, side:int):
-	var target = B_GRID.get_shot_target(unit.coord, side)
-
-	if target == null:
-		return # no target
-	if target.controller == unit.controller:
-		return # no friendly fire
-	if target.get_symbol(side + 3) == E.Symbols.SHIELD:
-		return  # blocked by shield
-
-	kill_unit(target)
-
-
-func process_offensive_symbols(unit : UnitForm) -> void:
-	var adjacent = B_GRID.adjacent_units(unit.coord)
-
-	for side in range(6):
-		var unit_weapon = unit.get_symbol(side)
-		if unit_weapon in [E.Symbols.EMPTY, E.Symbols.SHIELD]:
-			continue # We don't have any weapon
-		if unit_weapon == E.Symbols.BOW:
-			process_bow(unit, side)
-			continue # bow is special case
-		if not adjacent[side]:
-			continue # nothing to interact with
-		if adjacent[side].controller == unit.controller:
-			continue # no friendly fire
-
-		var enemy = adjacent[side]
-		if unit_weapon == E.Symbols.PUSH:
-			push_enemy(enemy, side)
-			continue # push is special case
-		if enemy.get_symbol(side + 3) == E.Symbols.SHIELD:
-			continue # enemy defended
-		kill_unit(enemy)
-
-
-func push_enemy(enemy : UnitForm, direction : int):
-	var target_coord = B_GRID.get_distant_coord(enemy.coord, direction, 1)
-
-	var target_tile_type = B_GRID.get_tile_type(target_coord)
-	if target_tile_type == "sentinel":
-		# Pushing outside the map
-		kill_unit(enemy)
-		return
-
-	var target = B_GRID.get_unit(target_coord)
-	if target != null:
-		# Spot isn't empty
-		kill_unit(enemy)
-		return
-
-	# MOVE (no rotate)
-	B_GRID.change_unit_coord(enemy, target_coord)
-
-	# check for spears
-	if should_die_to_spear(enemy):
-		kill_unit(enemy)
-
-
 #endregion
 
 
 #region End Battle
 
-
-func close_battle() -> void:
+func reset_battle_manager() -> void:
 	battle_is_ongoing = false
 	while _replay_is_playing:
 		await get_tree().create_timer(0.1).timeout
@@ -425,11 +426,9 @@ func end_the_battle() -> void:
 	if not battle_is_ongoing:
 		return
 
-	battle_is_ongoing = false
+	await get_tree().create_timer(1).timeout # TEMP, instead
 
-	await get_tree().create_timer(1).timeout
-
-	close_battle()
+	reset_battle_manager()
 
 	if WM.selected_hero == null:
 		print("end of test battle")
@@ -447,7 +446,7 @@ func is_during_summoning_phase() -> bool:
 	return state == STATE_SUMMONNING
 
 
-func _grid_input_summon(coord : Vector2i):
+func _grid_input_summon(coord : Vector2i) -> void:
 	"""
 	* Units are placed by the players in subsequent order on their chosen "Starting Locations"
 	* inside the area of the gameplay board.
@@ -521,7 +520,7 @@ func get_units(player : Player) -> Array[UnitForm]:
 	return army_in_battle_states[idx].units
 
 
-func find_army_idx(player : Player):
+func find_army_idx(player : Player) -> int:
 	for idx in range(army_in_battle_states.size()):
 		if army_in_battle_states[idx].army_reference.controller == player:
 			return idx
@@ -531,27 +530,28 @@ func find_army_idx(player : Player):
 #endregion
 
 
-#region Battle Setup
+#region cheats
+
+func kill_army(army_idx : int):
+	for unit in army_in_battle_states[army_idx].units:
+		kill_unit(unit)
 
 
-#endregion
-
-#region cheats/decurrent_army_index
 func force_win_battle():
-	for idx in range(army_in_battle_states.size()):
-		if idx == current_army_index:
+	for army_idx in range(army_in_battle_states.size()):
+		if army_idx == current_army_index:
 			continue
-		for unit in army_in_battle_states[idx].units:
-			kill_unit(unit)
+		kill_army(army_idx)
 
 
 func force_surrender():
-	for idx in range(army_in_battle_states.size()):
-		if idx != current_army_index:
+	for army_idx in range(army_in_battle_states.size()):
+		if army_idx != current_army_index:
 			continue
-		for unit in army_in_battle_states[idx].units:
-			kill_unit(unit)
+		kill_army(army_idx)
+
 #endregion
+
 
 class ArmyInBattleState:
 	var army_reference : Army
@@ -568,7 +568,7 @@ class ArmyInBattleState:
 		return result
 
 
-	func unit_died(target : UnitForm):
+	func unit_died(target : UnitForm) -> void:
 		units.erase(target)
 		dead_units.append(target.unit_stats)
 
@@ -584,4 +584,3 @@ class ArmyInBattleState:
 		unit.controller = army_reference.controller
 		units.append(unit)
 		return unit
-
