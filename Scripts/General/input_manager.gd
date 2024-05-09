@@ -168,13 +168,15 @@ func start_game():
 
 
 func _start_game_world():
-	var new_players = get_player_settings().map( func (setting) : return setting.create_player() )
+	var new_players : Array[Player] = []
+	for player_preset in get_player_presets():
+		new_players.append(player_preset.create_player())
 	UI.go_to_main_menu()
 	players.assign(new_players)
 	WM.start_world(game_setup_info.world_map)
 
 
-func get_player_settings() -> Array[PresetPlayer]:
+func get_player_presets() -> Array[PresetPlayer]:
 	# TODO: drut, replace with reading game_setup_info
 	var elf = PresetPlayer.new();
 	elf.faction = CFG.FACTION_ELVES

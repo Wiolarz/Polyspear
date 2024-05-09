@@ -15,16 +15,20 @@ var selected_unit_army_idx : int = -1
 
 var current_player : Player = null
 
+
 func _ready():
 	pass
 
+
 func get_army(player: Player) -> Army:
-	var currentArmy = armies.filter(
-		func controlledBy(a : Army):
-			return a.controller == player
-			)
-	assert(currentArmy.size() == 1)
-	return currentArmy[0]
+	var matching_armies : Array[Army] = []
+	for a in armies:
+		if a.controller == player:
+			matching_armies.append(a)
+
+	assert(matching_armies.size() == 1)
+	return matching_armies[0]
+
 
 func on_player_selected(selectedPlayer : Player, preview : bool = false):
 	if not preview:
@@ -57,6 +61,7 @@ func on_player_selected(selectedPlayer : Player, preview : bool = false):
 			selected_unit_army_idx = unitId
 			b.modulate = Color.RED
 		b.pressed.connect(lambda)
+
 
 func _copy(army_list : Array[Army]):
 	var result : Array[Army] = []

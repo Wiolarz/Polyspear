@@ -508,13 +508,12 @@ func get_not_summoned_units(player:Player) -> Array[DataUnit]:
 	return battle_ui.get_army(player).units_data
 
 
-func get_summon_tiles(player:Player) -> Array[TileForm]:
-	var summon_tiles = B_GRID.get_all_field_coords()\
-		.filter(func isOk(coord) : return is_legal_summon_coord(coord, player))\
-		.map(func getTile(coord) : return B_GRID.get_tile(coord))
-	var typed:Array[TileForm] = []
-	typed.assign(summon_tiles)
-	return typed
+func get_summon_tiles(player : Player) -> Array[TileForm]:
+	var result: Array[TileForm] = []
+	for c in B_GRID.get_all_field_coords():
+		if is_legal_summon_coord(c, player):
+			result.append(B_GRID.get_tile(c))
+	return result
 
 #endregion
 
