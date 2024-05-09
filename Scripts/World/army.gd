@@ -1,11 +1,9 @@
 class_name Army
 extends Node
 
-var hero : Hero
-
 var units_data : Array[DataUnit]
 
-var units : Array[UnitForm]
+var hero : Hero
 
 var controller : Player
 

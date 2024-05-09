@@ -20,7 +20,7 @@ static func get_all_legal_moves(my_units : Array, me:Player) -> Array[MoveInfo]:
 			if B_GRID.get_tile_type(new_move) == "sentinel": # 2
 				continue
 
-			if BM.is_legal_move(new_move, unit) == -1:
+			if BM.get_move_direction_if_valid(unit, new_move) == BM.MOVE_IS_INVALID:
 				continue
 
 			legal_moves.append(MoveInfo.make_move(unit.coord, new_move))

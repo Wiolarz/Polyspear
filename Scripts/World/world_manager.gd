@@ -198,27 +198,23 @@ func start_combat(attacking_army : ArmyForm, coord : Vector2i):
 	Starts a battle using Battle Manager (BM)
 	"""
 	print("start_combat")
-	IM.raging_battle = true
 
 	combat_tile = coord
-
 	var armies : Array[Army] = [
 		attacking_army.entity,
 		W_GRID.get_army(combat_tile).entity,
 	]
 	var battle_map : DataBattleMap = W_GRID.get_battle_map(combat_tile)
-
 	var x_offset = get_bounds_global_position().end.x + CFG.MAPS_OFFSET_X
+
 	BM.start_battle(armies, battle_map, x_offset)
 	IM.switch_camera()
 
 
-func end_of_battle():
+func end_of_battle(battle_results : Array[BM.ArmyInBattleState]):
 	#TODO get result from Battle Manager
-	IM.raging_battle = false
-	var result : bool = BM.get_battle_result() == BM.ATTACKER_WIN
-	if result:
-		print("you won")
+	if battle_results[BM.ATTACKER].can_fight():
+		print("attacker won")
 		kill_army(W_GRID.get_army(combat_tile)) # clear the tile of enemy presence
 		hero_move(selected_hero, combat_tile)
 	else:
@@ -258,6 +254,7 @@ func spawn_world_ui():
 
 
 func start_world(world_map : DataWorldMap) -> void:
+	BM.battle_is_ongoing = false
 
 	var spawn_location = world_map.get_spawn_locations()
 
@@ -273,8 +270,6 @@ func start_world(world_map : DataWorldMap) -> void:
 		spawn_world_ui()
 	UI.go_to_custom_ui(world_ui)
 	world_ui.refresh_player_buttons()
-
-	IM.raging_battle = false
 
 	W_GRID.generate_grid(world_map)
 

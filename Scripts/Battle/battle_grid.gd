@@ -15,6 +15,8 @@ func change_unit_coord(unit : UnitForm, coord : Vector2i):
 	unit_grid[unit.coord.x][unit.coord.y] = null # clean your previous location
 	unit_grid[coord.x][coord.y] = unit # unit_grid Update
 
+	unit.coord = coord
+
 	# Move visuals of the unit
 	unit.move(get_tile(coord), BM.is_during_summoning_phase())
 
