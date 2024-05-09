@@ -24,53 +24,41 @@ extends Node
 ## notifies when `game_setup_info` is modified
 signal game_setup_info_changed
 
-enum CameraPosition {WORLD, BATTLE}
+var camera : PolyCamera
 
-
-## TODO clean up, this lobby setup is used only in networking,
-## it should be universal
 var game_setup_info : GameSetupInfo
 
-var players : Array[Player] :
+var players : Array[Player] = [] :
 	get:
-		return _players
+		return players
 	set(value):
-		for p in _players:
+		for p in players:
 			print("removing player ", p)
 			remove_child(p)
 		for p in value:
 			print("adding player ", p)
+			p.name = "Player_"+p.player_name
 			add_child(p)
-		_players = value
+		players = value
 
 ## flag for MAP EDITOR
 var draw_mode : bool = false
 
-var raging_battle : bool
-
-var current_camera_position = CameraPosition.WORLD
-
-## TODO move to some chat class
-var chat_log : String
-
-var _players : Array[Player] = []
+var current_camera_position = E.CameraPosition.WORLD
 
 
 #region Input Support
 
-"""
-ESC - Return to the previous menu interface
-~ - Game Menu
-F1 - Exit Game
-F2 - maximize window
-F3 - toggle cheat mode
-F4 - toggle visibility of collision shapes
-
-F5 - Save
-F6 - Load
-"""
-
-func _process(_delta):
+## ESC - Return to the previous menu interface
+## ~ - Game Menu
+## F1 - Exit Game
+## F2 - maximize window
+## F3 - toggle cheat mode
+## F4 - toggle visibility of collision shapes
+##
+## F5 - Save
+## F6 - Load
+func _process(delta):
 	## fastest response time to player input
 	if Input.is_action_just_pressed("KEY_EXIT_GAME"):
 		quit_game()
@@ -90,9 +78,12 @@ func _process(_delta):
 	if Input.is_action_just_pressed("KEY_LOAD_GAME"):
 		print("quick load is not yet supported")
 
+	if camera:
+		camera.process_camera(delta)
+
 
 func _physics_process(_delta):
-	## To prevent desync when animating + enemy bot gameplay
+	## physics to prevent desync when animating + enemy bot gameplay
 	if Input.is_action_just_pressed("KEY_BOT_SPEED_SLOW"):
 		print("anim speed - slow")
 		CFG.animation_speed_frames = CFG.AnimationSpeed.NORMAL
@@ -106,23 +97,27 @@ func _physics_process(_delta):
 		CFG.animation_speed_frames = CFG.AnimationSpeed.INSTANT
 		CFG.bot_speed_frames = CFG.BotSpeed.FAST
 
-# called from HexTile mouse detection
-func grid_smooth_input_listener(coord : Vector2i):
+func init_game_setup():
+	game_setup_info = GameSetupInfo.create_empty(4)
+
+# called from TileForm mouse detection
+func grid_smooth_input_listener(coord : Vector2i, _tile_type : GameSetupInfo.GameMode):
 	if draw_mode:
 		UI.map_editor.grid_input(coord)
 
-# called from HexTile mouse detection
-func grid_input_listener(coord : Vector2i):
+# called from TileForm mouse detection
+func grid_input_listener(tile_coord : Vector2i, tile_type : GameSetupInfo.GameMode):
 	#print("tile ",coord)
 	#if WM.current_player.bot_engine != null:
 	#    return # its a bot turn
 	if draw_mode:
 		return
 
-	if raging_battle:
-		BM.grid_input(coord)
+	if BM.battle_is_ongoing:
+		if tile_type == GameSetupInfo.GameMode.BATTLE:
+			BM.grid_input(tile_coord)
 	else:
-		WM.grid_input(coord)
+		WM.grid_input(tile_coord)
 
 
 #endregion
@@ -130,10 +125,10 @@ func grid_input_listener(coord : Vector2i):
 #region Game setup
 
 func get_world_maps_list() -> Array[String]:
-	return TestTools.list_files_in_folder(CFG.WORLD_MAPS_PATH)
+	return FileSystemHelpers.list_files_in_folder(CFG.WORLD_MAPS_PATH)
 
 func get_battle_maps_list() -> Array[String]:
-	return TestTools.list_files_in_folder(CFG.BATTLE_MAPS_PATH)
+	return FileSystemHelpers.list_files_in_folder(CFG.BATTLE_MAPS_PATH)
 
 
 func get_active_players() -> Array[Player]:
@@ -153,28 +148,117 @@ func add_player(player_name:String) -> Player:
 	add_child(p)
 	return p
 
-func start_game(map_name : String, player_settings : Array[PresetPlayer]):
-	var map_data: DataWorldMap = load(CFG.WORLD_MAPS_PATH + map_name)
-	var new_players = player_settings.map( func (setting) : return setting.create_player() )
+## starts game based on game_setup_info
+func start_game():
+	if not camera:
+		camera = PolyCamera.new()
+		camera.name = "PolyCamera"
+		add_child(camera)
+	if game_setup_info.is_in_mode_world():
+		_start_game_world()
+		B_GRID.position.x = WM.get_bounds_global_position().end.x + CFG.MAPS_OFFSET_X
+		set_camera(E.CameraPosition.WORLD)
+	if game_setup_info.is_in_mode_battle():
+		_start_game_battle()
+		set_camera(E.CameraPosition.BATTLE)
+	if NET.server:
+		NET.server.broadcast_start_game()
+
+
+func _start_game_world():
+	var new_players : Array[Player] = []
+	for player_preset in get_player_presets():
+		new_players.append(player_preset.create_player())
+	UI.go_to_main_menu()
 	players.assign(new_players)
-	WM.start_world(map_data)
+	WM.start_world(game_setup_info.world_map)
+
+
+func get_player_presets() -> Array[PresetPlayer]:
+	# TODO: drut, replace with reading game_setup_info
+	var elf = PresetPlayer.new();
+	elf.faction = CFG.FACTION_ELVES
+	elf.player_name = "elf"
+	elf.player_type =  E.PlayerType.HUMAN
+	elf.starting_goods = CFG.get_start_goods()
+
+	var orc = PresetPlayer.new()
+	orc.faction = CFG.FACTION_ORCS
+	orc.player_name = "orc"
+	orc.player_type =  E.PlayerType.HUMAN
+	orc.starting_goods = CFG.get_start_goods()
+
+	return [ elf, orc ]
+
+
+func _start_game_battle():
+	var map_data = game_setup_info.battle_map
+	var new_players : Array[Player] = []
+	var armies : Array[Army] = []
+
+	for player_idx in range(2):
+		var player = create_player(player_idx)
+		new_players.append(player)
+		armies.append(create_army(player_idx, player))
+	IM.players = new_players
+
+	UI.go_to_main_menu()
+	BM.start_battle(armies, map_data, 0)
+
+
+func is_bot(player_idx : int) -> bool:
+	return game_setup_info.is_bot(player_idx)
+
+
+func create_army(player_idx : int, player : Player) -> Army:
+	var army = Army.new()
+	army.controller = player
+	army.units_data = game_setup_info.get_units_data_for_battle(player_idx)
+	return army
+
+
+func create_player(player_idx : int) -> Player:
+	if player_idx == 0:
+		var elf = Player.new();
+		elf.faction = CFG.FACTION_ELVES
+		elf.player_name = "elf"
+		elf.use_bot(is_bot(player_idx))
+		elf.goods = CFG.get_start_goods()
+		return elf
+
+	var orc = Player.new()
+	orc.faction = CFG.FACTION_ORCS
+	orc.player_name = "orc"
+	orc.use_bot(is_bot(player_idx))
+	orc.goods = CFG.get_start_goods()
+	return orc
 
 #endregion
 
 
 #region Gameplay UI
 
-func switch_camera():
-	## TODO implement actual camera switches
-	if current_camera_position == CameraPosition.WORLD:
-		current_camera_position = CameraPosition.BATTLE
+func switch_camera() -> void:
+	if current_camera_position == E.CameraPosition.WORLD:
+		if BM.battle_is_ongoing:
+			set_camera(E.CameraPosition.BATTLE)
 	else:
-		current_camera_position = CameraPosition.WORLD
+		if game_setup_info.game_mode == GameSetupInfo.GameMode.WORLD:
+			set_camera(E.CameraPosition.WORLD)
+
+
+func set_camera(pos : E.CameraPosition) -> void:
+	current_camera_position = pos
+	if pos == E.CameraPosition.BATTLE:
+		camera.set_bounds(BM.get_bounds_global_position())
+	else :
+		camera.set_bounds(WM.get_bounds_global_position())
+
 
 func go_to_main_menu():
 	draw_mode = false
+	BM.reset_battle_manager()
 	WM.close_world()
-	BM.close_battle()
 	UI.go_to_main_menu()
 
 func show_in_game_menu():
@@ -186,152 +270,6 @@ func hide_in_game_menu():
 	set_game_paused(false)
 
 #endregion
-
-
-#region Network
-
-func set_default_game_setup_info() -> void:
-	game_setup_info = GameSetupInfo.create_empty(4)
-
-
-func make_server():
-	var node = get_node_or_null("TheServer")
-	if node != null:
-		return
-	var client = get_node_or_null("TheClient")
-	if client:
-		client.close()
-		client.queue_free()
-		remove_child(client)
-	node = Server.new()
-	node.name = "TheServer"
-	add_child(node)
-
-
-func make_client() -> void:
-	var node = get_node_or_null("TheClient")
-	if node != null:
-		return
-	var server = get_node_or_null("TheServer")
-	if server:
-		server.close()
-		server.queue_free()
-		remove_child(server)
-	node = Client.new()
-	node.name = "TheClient"
-	add_child(node)
-
-
-func server_listen(address : String, port : int, username : String):
-	make_server()
-	get_server().listen(address, port, username)
-
-
-func server_close():
-	if not get_server():
-		return
-	get_server().close()
-
-
-func server_kick_all():
-	if not get_server():
-		return
-	get_server().kick_all()
-
-
-func client_connect_and_login(address : String, port : int, username : String):
-	make_client()
-	get_client().connect_to_server(address, port)
-	get_client().queue_login(username)
-
-
-func client_logout_and_disconnect():
-	if not get_client():
-		return
-	get_client().logout_if_needed()
-	get_client().close()
-
-
-func get_server() -> Server:
-	var server = get_node_or_null("TheServer")
-	if server is Server:
-		return server
-	return null
-
-
-func get_client() -> Client:
-	var client = get_node_or_null("TheClient")
-	if client is Client:
-		return client
-	return null
-
-
-func server_connection() -> bool:
-	return get_server() and get_server().enet_network
-
-
-func client_connection() -> bool:
-	return get_client() and get_client().enet_network
-
-
-func get_current_name() -> String: # TODO rename to get_current_username
-	if server_connection():
-		return get_server().server_username
-	if client_connection():
-		return get_client().username
-	return CFG.DEFAULT_USER_NAME # TODO rename to PLACEHOLDER_USER_NAME
-
-
-func send_chat_message(message : String) -> void:
-	var server = get_server()
-	var client = get_client()
-	if not client:
-		append_message_to_local_chat_log(message, get_current_name())
-	if server:
-		server.broadcast_say(message)
-	elif client:
-		client.queue_say(message)
-
-
-func append_message_to_local_chat_log(message : String, \
-		author : String) -> void:
-	append_to_local_chat_log("%s: %s" % [ author, message ])
-
-
-func append_to_local_chat_log(line : String) -> void:
-	chat_log += line + '\n'
-
-
-func clear_local_chat_log() -> void:
-	chat_log = ""
-
-
-func multiplayer_send(movement : MoveInfo):
-	# CLIENT -> server
-	var client : Client = get_client()
-	if not client:
-		return
-	client.queue_movement(movement)
-
-
-func multiplayer_receive():
-	# client -> SERVER
-	pass
-
-
-func multiplayer_broadcast_send(movement : MoveInfo):
-	# SERVER -> clients
-	var server : Server = get_server()
-	if not server:
-		return
-	server.broadcast_movement(movement)
-
-func multiplayer_broadcast_receive():
-	# server -> CLIENT
-	pass
-
-# endregion
-
 
 
 #region Technical

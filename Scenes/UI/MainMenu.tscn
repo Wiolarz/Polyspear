@@ -68,6 +68,7 @@ file_mode = 0
 access = 1
 root_subfolder = "replays/"
 
+[connection signal="visibility_changed" from="." to="." method="_on_visibility_changed"]
 [connection signal="id_pressed" from="Control/MenuBar/Editors Menu" to="." method="_on_editors_menu_id_pressed"]
 [connection signal="pressed" from="Control/VBoxContainer/Host" to="." method="_on_host_pressed"]
 [connection signal="pressed" from="Control/VBoxContainer/Join" to="." method="_on_join_pressed"]

@@ -1,7 +1,8 @@
-[gd_resource type="Resource" script_class="DataUnit" load_steps=6 format=3 uid="uid://cn8b63tln0enm"]
+[gd_resource type="Resource" script_class="DataUnit" load_steps=7 format=3 uid="uid://cn8b63tln0enm"]
 
 [ext_resource type="Script" path="res://Resources/Battle/data_unit.gd" id="1_exjyy"]
-[ext_resource type="Script" path="res://Scripts/World/goods.gd" id="1_glgq7"]
+[ext_resource type="Script" path="res://Scripts/World/Economy/goods.gd" id="1_glgq7"]
+[ext_resource type="Resource" uid="uid://4to52cd5bq7w" path="res://Resources/Factions/Buildings/Barracks_3.tres" id="2_dml52"]
 [ext_resource type="Resource" uid="uid://o4rlmfc33rsh" path="res://Resources/Battle/Symbols/empty.tres" id="3_bfjrc"]
 [ext_resource type="Resource" uid="uid://bp747guikipcb" path="res://Resources/Battle/Symbols/spear.tres" id="3_d02y5"]
 
@@ -17,3 +18,4 @@ unit_name = "Swordsmen"
 texture_path = "res://Art/units/elf/elf_swordsmen.png"
 symbols = Array[Resource("res://Resources/Battle/data_symbol.gd")]([ExtResource("3_d02y5"), ExtResource("3_d02y5"), ExtResource("3_bfjrc"), ExtResource("3_bfjrc"), ExtResource("3_bfjrc"), ExtResource("3_d02y5")])
 cost = SubResource("Resource_6r5q3")
+required_building = ExtResource("2_dml52")

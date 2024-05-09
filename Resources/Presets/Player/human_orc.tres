@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://Resources/Presets/preset_player.gd" id="1_7snke"]
 [ext_resource type="Resource" uid="uid://blmlq31auuhh0" path="res://Resources/Factions/orc.tres" id="1_n2gcd"]
-[ext_resource type="Script" path="res://Scripts/World/goods.gd" id="2_g18br"]
+[ext_resource type="Script" path="res://Scripts/World/Economy/goods.gd" id="2_g18br"]
 
 [sub_resource type="Resource" id="Resource_p8fwr"]
 script = ExtResource("2_g18br")
@@ -15,4 +15,4 @@ script = ExtResource("1_7snke")
 faction = ExtResource("1_n2gcd")
 player_type = 1
 player_name = "human_orc"
-goods = SubResource("Resource_p8fwr")
+starting_goods = SubResource("Resource_p8fwr")

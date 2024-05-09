@@ -18,7 +18,7 @@ var open_button_texture : Texture2D
 @onready var currently_edited_label : RichTextLabel = $UnitName
 
 ## unit form for preview and storing unsaved changes temporarily
-@onready var unit_preview_form : Unit = $UnitPreview
+@onready var unit_preview_form : UnitForm = $UnitPreview
 
 ## try display for selecting unit to edit
 @onready var unit_browser_tree : Tree = $UnitBrowserTree
@@ -107,8 +107,8 @@ func _load_units_dir_recursive(dir : DirAccess, parent : TreeItem):
 
 		browser_tree_id_to_unit_path[next_unit_id] = \
 				dir.get_current_dir() + "/" + file
-		print("loaded ", browser_tree_id_to_unit_path[next_unit_id], \
-				" on id ", next_unit_id)
+		#print("loaded ", browser_tree_id_to_unit_path[next_unit_id], \
+				#" on id ", next_unit_id)
 
 		next_unit_id += 1
 

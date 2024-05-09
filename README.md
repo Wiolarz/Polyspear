@@ -25,6 +25,16 @@ Available as branches on this repo:
 
  - [Schmup](https://github.com/Wiolarz/Krong/tree/Shmup)
 
+ - [Kings Hunt](https://github.com/Wiolarz/Krong/tree/King's_Hunt_development)
+ 
+ - [Krąg season 2: Text game](https://github.com/Wiolarz/Krong/tree/K2TextGame1)
+
+ - [Krąg season 2: Sealth](https://github.com/Wiolarz/Krong/tree/K2CrowdStealth)
+
+ - [Krąg season 1](https://github.com/Wiolarz/Krong/tree/season_1)
+
+ - [Project template](https://github.com/Wiolarz/Krong/tree/Project_Template)
+
 
 ## Polyspear key bindings
 
@@ -53,9 +63,10 @@ Other
 
 ## Git branches
 
-- `main` - "Production playable" release, updated after completing some milestone and testing
- - `Polyspear` - main development branch, shouldn't contain major bugs
-- `polyspear_X` - feature branches, waitinng to be merged to Polyspear
+- `main` - main Polyspear development branch, shouldn't contain major bugs
+- `release/polyspear` - "Production playable" release, updated after completing some milestone and testing
+- `polyspear_Xyz` - feature branches, waitinng to be merged to Polyspear
+- `otherProjectName` - there are other projects like brawler, shmup, etc.
 
 ## Aletrnative implementations
 

@@ -1,223 +1,223 @@
-[gd_resource type="Resource" script_class="DataWorldMap" load_steps=39 format=3]
+[gd_resource type="Resource" script_class="DataWorldMap" load_steps=39 format=3 uid="uid://vk0x5apv475r"]
 
 [ext_resource type="Script" path="res://Resources/data_tile.gd" id="1_cxy7t"]
 [ext_resource type="Script" path="res://Resources/World/data_world_map.gd" id="2_0hn7b"]
 
 [sub_resource type="Resource" id="Resource_wcv1p"]
 script = ExtResource("1_cxy7t")
+type = "wall"
 texture_path = "res://Art/world_map/mountains.png"
 flip_horizontal = false
-type = "wall"
 
 [sub_resource type="Resource" id="Resource_ju875"]
 script = ExtResource("1_cxy7t")
+type = "wall"
 texture_path = "res://Art/world_map/mountains.png"
 flip_horizontal = false
-type = "wall"
 
 [sub_resource type="Resource" id="Resource_h64i0"]
 script = ExtResource("1_cxy7t")
+type = "wall"
 texture_path = "res://Art/world_map/mountains.png"
 flip_horizontal = false
-type = "wall"
 
 [sub_resource type="Resource" id="Resource_iaui0"]
 script = ExtResource("1_cxy7t")
+type = "sentinel"
 texture_path = "res://Art/world_map/sentinel.png"
 flip_horizontal = false
-type = "sentinel"
 
 [sub_resource type="Resource" id="Resource_r5mxc"]
 script = ExtResource("1_cxy7t")
+type = "sentinel"
 texture_path = "res://Art/world_map/sentinel.png"
 flip_horizontal = false
-type = "sentinel"
 
 [sub_resource type="Resource" id="Resource_1hdx0"]
 script = ExtResource("1_cxy7t")
+type = "sentinel"
 texture_path = "res://Art/world_map/sentinel.png"
 flip_horizontal = false
-type = "sentinel"
 
 [sub_resource type="Resource" id="Resource_e0egc"]
 script = ExtResource("1_cxy7t")
+type = "wall"
 texture_path = "res://Art/world_map/mountains.png"
 flip_horizontal = false
-type = "wall"
 
 [sub_resource type="Resource" id="Resource_st6xq"]
 script = ExtResource("1_cxy7t")
+type = "elf_city"
 texture_path = "res://Art/world_map/elven_city.png"
 flip_horizontal = false
-type = "elf_city"
 
 [sub_resource type="Resource" id="Resource_jpe4c"]
 script = ExtResource("1_cxy7t")
+type = "empty"
 texture_path = "res://Art/world_map/grass_basic.png"
 flip_horizontal = false
-type = "empty"
 
 [sub_resource type="Resource" id="Resource_x1g75"]
 script = ExtResource("1_cxy7t")
+type = "sawmill"
 texture_path = "res://Art/world_map/sawmill.png"
 flip_horizontal = false
-type = "sawmill"
 
 [sub_resource type="Resource" id="Resource_nye0h"]
 script = ExtResource("1_cxy7t")
+type = "sentinel"
 texture_path = "res://Art/world_map/sentinel.png"
 flip_horizontal = false
-type = "sentinel"
 
 [sub_resource type="Resource" id="Resource_6n3gt"]
 script = ExtResource("1_cxy7t")
+type = "sentinel"
 texture_path = "res://Art/world_map/sentinel.png"
 flip_horizontal = false
-type = "sentinel"
 
 [sub_resource type="Resource" id="Resource_hguov"]
 script = ExtResource("1_cxy7t")
+type = "wall"
 texture_path = "res://Art/world_map/mountains.png"
 flip_horizontal = false
-type = "wall"
 
 [sub_resource type="Resource" id="Resource_fu8ha"]
 script = ExtResource("1_cxy7t")
+type = "sentinel"
 texture_path = "res://Art/world_map/sentinel.png"
 flip_horizontal = false
-type = "sentinel"
 
 [sub_resource type="Resource" id="Resource_o8m7w"]
 script = ExtResource("1_cxy7t")
+type = "empty"
 texture_path = "res://Art/world_map/grass_basic.png"
 flip_horizontal = false
-type = "empty"
 
 [sub_resource type="Resource" id="Resource_n1fyn"]
 script = ExtResource("1_cxy7t")
+type = "sentinel"
 texture_path = "res://Art/world_map/sentinel.png"
 flip_horizontal = false
-type = "sentinel"
 
 [sub_resource type="Resource" id="Resource_ubklt"]
 script = ExtResource("1_cxy7t")
+type = "sentinel"
 texture_path = "res://Art/world_map/sentinel.png"
 flip_horizontal = false
-type = "sentinel"
 
 [sub_resource type="Resource" id="Resource_cn3yw"]
 script = ExtResource("1_cxy7t")
+type = "sentinel"
 texture_path = "res://Art/world_map/sentinel.png"
 flip_horizontal = false
-type = "sentinel"
 
 [sub_resource type="Resource" id="Resource_t7jdc"]
 script = ExtResource("1_cxy7t")
+type = "sentinel"
 texture_path = "res://Art/world_map/sentinel.png"
 flip_horizontal = false
-type = "sentinel"
 
 [sub_resource type="Resource" id="Resource_uoqfu"]
 script = ExtResource("1_cxy7t")
+type = "iron_mine"
 texture_path = "res://Art/world_map/iron_mine.png"
 flip_horizontal = false
-type = "iron_mine"
 
 [sub_resource type="Resource" id="Resource_lp1fj"]
 script = ExtResource("1_cxy7t")
+type = "empty"
 texture_path = "res://Art/world_map/road_straight.png"
 flip_horizontal = false
-type = "empty"
 
 [sub_resource type="Resource" id="Resource_sw560"]
 script = ExtResource("1_cxy7t")
+type = "empty"
 texture_path = "res://Art/world_map/grass_basic.png"
 flip_horizontal = false
-type = "empty"
 
 [sub_resource type="Resource" id="Resource_841ij"]
 script = ExtResource("1_cxy7t")
+type = "empty"
 texture_path = "res://Art/world_map/grass_basic.png"
 flip_horizontal = false
-type = "empty"
 
 [sub_resource type="Resource" id="Resource_vexu6"]
 script = ExtResource("1_cxy7t")
+type = "wall"
 texture_path = "res://Art/world_map/mountains.png"
 flip_horizontal = false
-type = "wall"
 
 [sub_resource type="Resource" id="Resource_jck15"]
 script = ExtResource("1_cxy7t")
+type = "sentinel"
 texture_path = "res://Art/world_map/sentinel.png"
 flip_horizontal = false
-type = "sentinel"
 
 [sub_resource type="Resource" id="Resource_r14t6"]
 script = ExtResource("1_cxy7t")
+type = "sentinel"
 texture_path = "res://Art/world_map/sentinel.png"
 flip_horizontal = false
-type = "sentinel"
 
 [sub_resource type="Resource" id="Resource_ysguc"]
 script = ExtResource("1_cxy7t")
+type = "ruby_cave"
 texture_path = "res://Art/world_map/ruby_cave.png"
 flip_horizontal = false
-type = "ruby_cave"
 
 [sub_resource type="Resource" id="Resource_2llu6"]
 script = ExtResource("1_cxy7t")
+type = "sentinel"
 texture_path = "res://Art/world_map/sentinel.png"
 flip_horizontal = false
-type = "sentinel"
 
 [sub_resource type="Resource" id="Resource_x6uh0"]
 script = ExtResource("1_cxy7t")
+type = "orc_city"
 texture_path = "res://Art/world_map/orc_city.png"
 flip_horizontal = false
-type = "orc_city"
 
 [sub_resource type="Resource" id="Resource_qp6bg"]
 script = ExtResource("1_cxy7t")
+type = "wall"
 texture_path = "res://Art/world_map/mountains.png"
 flip_horizontal = false
-type = "wall"
 
 [sub_resource type="Resource" id="Resource_jxo5r"]
 script = ExtResource("1_cxy7t")
+type = "sentinel"
 texture_path = "res://Art/world_map/sentinel.png"
 flip_horizontal = false
-type = "sentinel"
 
 [sub_resource type="Resource" id="Resource_xst4a"]
 script = ExtResource("1_cxy7t")
+type = "sentinel"
 texture_path = "res://Art/world_map/sentinel.png"
 flip_horizontal = false
-type = "sentinel"
 
 [sub_resource type="Resource" id="Resource_1hq5o"]
 script = ExtResource("1_cxy7t")
+type = "sentinel"
 texture_path = "res://Art/world_map/sentinel.png"
 flip_horizontal = false
-type = "sentinel"
 
 [sub_resource type="Resource" id="Resource_jc6fx"]
 script = ExtResource("1_cxy7t")
+type = "wall"
 texture_path = "res://Art/world_map/mountains.png"
 flip_horizontal = false
-type = "wall"
 
 [sub_resource type="Resource" id="Resource_x78g6"]
 script = ExtResource("1_cxy7t")
+type = "wall"
 texture_path = "res://Art/world_map/mountains.png"
 flip_horizontal = false
-type = "wall"
 
 [sub_resource type="Resource" id="Resource_404pv"]
 script = ExtResource("1_cxy7t")
+type = "wall"
 texture_path = "res://Art/world_map/mountains.png"
 flip_horizontal = false
-type = "wall"
 
 [resource]
 script = ExtResource("2_0hn7b")

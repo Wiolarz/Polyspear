@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=3 uid="uid://dunktaeebf6f1"]
 
-[ext_resource type="Script" path="res://Scripts/UI/client_connector.gd" id="1_axf84"]
+[ext_resource type="Script" path="res://Scripts/UI/Lobby/Network/client_connector.gd" id="1_axf84"]
 [ext_resource type="Shortcut" uid="uid://fuvss5hfg4q2" path="res://Resources/Shortcuts/go_back.tres" id="2_qqtls"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_avfjo"]
@@ -35,14 +35,8 @@ script = ExtResource("1_axf84")
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
 layout_mode = 1
-anchors_preset = 14
-anchor_top = 0.5
-anchor_right = 1.0
-anchor_bottom = 0.5
-offset_top = -216.5
-offset_bottom = 216.5
-grow_horizontal = 2
-grow_vertical = 2
+offset_right = 945.0
+offset_bottom = 928.0
 theme_override_constants/margin_left = 30
 theme_override_constants/margin_top = 30
 theme_override_constants/margin_right = 30
@@ -84,10 +78,10 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_avfjo")
 [node name="Label" type="Label" parent="MarginContainer/VBoxContainer/ServerList/ColorRect"]
 custom_minimum_size = Vector2(0, 20)
 layout_mode = 2
-text = "Beautiful list of servers will go here.
-
-Also, when we select some server here, the big bottom button will get new label: CONNECT TO SELECTED SERVER. Probably manual connection inputs will be grayed out."
-horizontal_alignment = 1
+text = "Beautiful list of servers will go here. NOT IMPLEMENTED
+Example dummies:
+[host1] host1.my.servers.net:12123 - fast games only
+[host2] 12.34.56.78:12123 - elves or feed"
 vertical_alignment = 1
 autowrap_mode = 2
 
@@ -145,20 +139,31 @@ layout_mode = 2
 [node name="ButtonConnect" type="Button" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 60
-text = "CONNECT TO ENTERED ADDRESS"
+text = "CONNECT"
 
 [node name="ButtonBack" type="Button" parent="."]
 layout_mode = 1
-anchors_preset = -1
-anchor_top = 1.0
-anchor_bottom = 1.0
-offset_left = 57.0
-offset_top = -124.0
-offset_right = 322.0
-offset_bottom = -10.0
-grow_vertical = 0
+offset_left = 32.0
+offset_top = 931.0
+offset_right = 219.0
+offset_bottom = 1045.0
 shortcut = ExtResource("2_qqtls")
 text = "Back"
+
+[node name="RichTextLabel" type="RichTextLabel" parent="."]
+layout_mode = 0
+offset_left = 244.0
+offset_top = 913.0
+offset_right = 936.0
+offset_bottom = 1051.0
+theme_override_font_sizes/normal_font_size = 30
+bbcode_enabled = true
+text = "INSTRUCTION
+If you are not on the same local network (LAN) make sure to ask host for [color=red]EXTERNAL ip and port[/color].
+So you can connect to hosts router.
+Due to NAT (network address translation) and PORT FORWARDING adress and port might be different.
+Some internet providers dont even assign EXTERNAL ips to routers, so you cant connect to them.
+If you cant find a good host consider services like HAMACHI to create a virtual network that simulates LAN over internet."
 
 [connection signal="pressed" from="MarginContainer/VBoxContainer/ButtonConnect" to="." method="_on_button_listen_pressed"]
 [connection signal="pressed" from="ButtonBack" to="." method="_on_button_back_pressed"]

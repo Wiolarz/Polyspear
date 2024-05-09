@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=3 uid="uid://l0kojvcxbfky"]
+[gd_scene load_steps=4 format=3 uid="uid://l0kojvcxbfky"]
 
 [ext_resource type="Script" path="res://Scripts/Development/map_editor.gd" id="1_y7q6u"]
 [ext_resource type="Shortcut" uid="uid://fuvss5hfg4q2" path="res://Resources/Shortcuts/go_back.tres" id="3_a1hl2"]
+[ext_resource type="Texture2D" uid="uid://boa1b3papyx4r" path="res://Art/world_map/elven_city.png" id="3_jrkaq"]
 
 [node name="MapEditor" type="CanvasLayer" node_paths=PackedStringArray("map_file_name_input")]
 process_mode = 3
@@ -19,11 +20,11 @@ text = "editor_test_map"
 [node name="MenuContainer" type="VBoxContainer" parent="."]
 light_mask = 2
 visibility_layer = 2
-offset_left = 20.0
-offset_top = 16.0
-offset_right = 201.0
-offset_bottom = 257.0
-scale = Vector2(1.5, 1.5)
+offset_left = 5.0
+offset_top = 198.0
+offset_right = 330.0
+offset_bottom = 447.0
+theme_override_constants/separation = 20
 
 [node name="NewWorldMap" type="Button" parent="MenuContainer"]
 layout_mode = 2
@@ -33,30 +34,50 @@ text = "New World Map"
 layout_mode = 2
 text = "New Battle Map"
 
-[node name="LoadMap" type="Button" parent="MenuContainer"]
-visible = false
-layout_mode = 2
-text = "Load Map"
-
 [node name="SaveMap" type="Button" parent="MenuContainer"]
 layout_mode = 2
 text = "Save Map
 "
 
-[node name="HBattleBox" type="HBoxContainer" parent="."]
-offset_left = 518.0
-offset_top = 24.0
-offset_right = 3594.0
-offset_bottom = 693.0
-scale = Vector2(0.2, 0.2)
+[node name="Scroll_BG" type="ColorRect" parent="."]
+offset_left = 3.0
+offset_top = 3.0
+offset_right = 1919.0
+offset_bottom = 176.0
+color = Color(0, 0.670588, 0.67451, 0.588235)
 
-[node name="HWorldBox" type="HBoxContainer" parent="."]
-visible = false
-offset_left = 522.0
-offset_top = 27.0
-offset_right = 3598.0
-offset_bottom = 696.0
-scale = Vector2(0.2, 0.2)
+[node name="Scroll" type="ScrollContainer" parent="."]
+offset_left = 22.0
+offset_top = 12.0
+offset_right = 1909.0
+offset_bottom = 180.0
+vertical_scroll_mode = 0
+
+[node name="TilesPickerBox" type="HBoxContainer" parent="Scroll"]
+layout_mode = 2
+size_flags_vertical = 0
+theme_override_constants/separation = 20
+
+[node name="Example1" type="TextureButton" parent="Scroll/TilesPickerBox"]
+custom_minimum_size = Vector2(130, 160)
+layout_mode = 2
+texture_normal = ExtResource("3_jrkaq")
+ignore_texture_size = true
+stretch_mode = 4
+
+[node name="Example2" type="TextureButton" parent="Scroll/TilesPickerBox"]
+custom_minimum_size = Vector2(130, 160)
+layout_mode = 2
+texture_normal = ExtResource("3_jrkaq")
+ignore_texture_size = true
+stretch_mode = 4
+
+[node name="Example3" type="TextureButton" parent="Scroll/TilesPickerBox"]
+custom_minimum_size = Vector2(130, 160)
+layout_mode = 2
+texture_normal = ExtResource("3_jrkaq")
+ignore_texture_size = true
+stretch_mode = 4
 
 [node name="OpenButton" type="Button" parent="."]
 offset_left = 8.0
@@ -64,14 +85,6 @@ offset_top = 996.0
 offset_right = 101.0
 offset_bottom = 1065.0
 text = "📁"
-
-[node name="FileDialog" type="FileDialog" parent="."]
-title = "Open a File"
-initial_position = 2
-size = Vector2i(900, 900)
-ok_button_text = "Open"
-file_mode = 0
-filters = PackedStringArray("*.tres")
 
 [node name="BackButton" type="Button" parent="."]
 offset_left = 9.0
@@ -81,10 +94,17 @@ offset_bottom = 941.0
 shortcut = ExtResource("3_a1hl2")
 text = "◀"
 
+[node name="FileDialog" type="FileDialog" parent="."]
+title = "Open a File"
+initial_position = 2
+size = Vector2i(900, 900)
+ok_button_text = "Open"
+file_mode = 0
+filters = PackedStringArray("*.tres")
+
 [connection signal="pressed" from="MenuContainer/NewWorldMap" to="." method="_on_new_world_map_pressed"]
 [connection signal="pressed" from="MenuContainer/NewBattleMap" to="." method="_on_new_battle_map_pressed"]
-[connection signal="pressed" from="MenuContainer/LoadMap" to="." method="_on_load_map_pressed"]
 [connection signal="pressed" from="MenuContainer/SaveMap" to="." method="_on_save_map_pressed"]
 [connection signal="pressed" from="OpenButton" to="." method="_on_open_button_pressed"]
-[connection signal="file_selected" from="FileDialog" to="." method="_on_file_dialog_file_selected"]
 [connection signal="pressed" from="BackButton" to="." method="_on_back_button_pressed"]
+[connection signal="file_selected" from="FileDialog" to="." method="_on_file_dialog_file_selected"]

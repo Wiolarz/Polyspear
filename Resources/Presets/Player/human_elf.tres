@@ -1,7 +1,7 @@
 [gd_resource type="Resource" script_class="PresetPlayer" load_steps=5 format=3 uid="uid://dm2jeuv4bo4lw"]
 
 [ext_resource type="Resource" uid="uid://3ni121kxkl5l" path="res://Resources/Factions/elf.tres" id="1_qabat"]
-[ext_resource type="Script" path="res://Scripts/World/goods.gd" id="2_educ7"]
+[ext_resource type="Script" path="res://Scripts/World/Economy/goods.gd" id="2_educ7"]
 [ext_resource type="Script" path="res://Resources/Presets/preset_player.gd" id="2_volil"]
 
 [sub_resource type="Resource" id="Resource_rofx3"]
@@ -15,4 +15,4 @@ script = ExtResource("2_volil")
 faction = ExtResource("1_qabat")
 player_type = 1
 player_name = "human_elf"
-goods = SubResource("Resource_rofx3")
+starting_goods = SubResource("Resource_rofx3")

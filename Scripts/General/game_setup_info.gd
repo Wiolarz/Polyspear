@@ -8,16 +8,47 @@ extends RefCounted
 ## WARNING not a resource because we refer to players, sessions
 ## and other temporary objects that should not be saved
 
-# var mode_is_battle : bool = false
-# var battle_map : DataBattleMap # used only in battle game
-var world_map : DataWorldMap # used only in full world game
-var slots : Array[Slot]
+enum GameMode {
+	UNKNOWN, ## forces to initialize
+	WORLD, ## full map with heroes and economy
+	BATTLE, ## single battle only, no economy
+	MAP_EDITOR, ## special mode only for map editing
+}
 
+var game_mode : GameMode = GameMode.WORLD
+var world_map : DataWorldMap ## used only in full world mode
+var battle_map : DataBattleMap ## used only in battle mode
+var slots : Array[Slot] ## slot for each player color on the map picked
+
+func is_in_mode_world():
+	return game_mode == GameMode.WORLD
+
+func is_in_mode_battle():
+	return game_mode == GameMode.BATTLE
+
+func is_bot(player_index : int) -> bool:
+	return slots[player_index].is_bot()
+
+func has_slot(player_index : int) -> bool:
+	return player_index >= 0 and player_index < slots.size()
+
+func set_unit(slot_index:int, unit_index:int, unit_data:DataUnit):
+	slots[slot_index].units_list[unit_index] = unit_data
+
+func get_units_data_for_battle(player_index : int) -> Array[DataUnit]:
+	var non_empty : Array[DataUnit] = []
+	for u in slots[player_index].units_list:
+		if not u:
+			continue
+		non_empty.append(u)
+	return non_empty
 
 func to_dictionary(local_username : String = "") -> Dictionary:
 	var result = {
-		"slots": [],
+		"game_mode": game_mode_to_str(),
 		"world_map": DataWorldMap.get_network_id(world_map),
+		"battle_map": DataBattleMap.get_network_id(battle_map),
+		"slots": [],
 	}
 	for slot in slots:
 		result["slots"].append({
@@ -25,14 +56,21 @@ func to_dictionary(local_username : String = "") -> Dictionary:
 					slot.occupier, local_username),
 			"faction": slot.faction.get_network_id(),
 			"color": slot.color,
+			"units_list": GameSetupInfo.units_list_prepare_for_network( \
+					slot.units_list),
 		})
 	return result
+
 
 static func from_dictionary(dict : Dictionary, \
 		local_username : String = "") -> GameSetupInfo:
 	var result = GameSetupInfo.new()
+	if "game_mode" in dict and dict["game_mode"] is String:
+		result.game_mode = GameSetupInfo.game_mode_from_str(dict["game_mode"])
 	if "world_map" in dict and dict["world_map"] is String:
 		result.world_map = DataWorldMap.from_network_id(dict["world_map"])
+	if "battle_map" in dict and dict["battle_map"] is String:
+		result.battle_map = DataBattleMap.from_network_id(dict["battle_map"])
 	if "slots" in dict and dict["slots"] is Array:
 		for read_slot in dict["slots"]:
 			var new_slot : Slot = Slot.new()
@@ -44,8 +82,24 @@ static func from_dictionary(dict : Dictionary, \
 					DataFaction.from_network_id(read_slot["faction"])
 			if "color" in read_slot and read_slot["color"] is int:
 				new_slot.color = read_slot["color"]
+			if "units_list" in read_slot and read_slot["units_list"] is Array:
+				new_slot.units_list = \
+						GameSetupInfo.units_list_receive_from_network(read_slot["units_list"])
 			result.slots.append(new_slot)
 	return result
+
+
+func game_mode_to_str() -> String:
+	return GameMode.keys()[game_mode].to_lower()
+
+
+static func game_mode_from_str(mode_as_str : String) -> GameMode:
+	mode_as_str = mode_as_str.to_lower()
+	for mode in GameMode.keys():
+		if mode.to_lower() == mode_as_str:
+			return GameMode[mode]
+	push_error("Unknown game mode: \"%s\"" % mode_as_str)
+	return GameMode.UNKNOWN
 
 
 static func occupier_prepare_for_network(occupier, local_username : String):
@@ -60,6 +114,20 @@ static func occupier_receive_from_network(occupier, local_username : String):
 	if occupier is String or occupier is int:
 		return occupier
 	push_error("invalid occupier received ", occupier)
+
+
+static func units_list_prepare_for_network(to_serialize: Array[DataUnit]) -> Array[String]:
+	var result : Array[String] = []
+	for u in to_serialize:
+		result.append(DataUnit.get_network_id(u))
+	return result
+
+
+static func units_list_receive_from_network(serialized: Array) -> Array[DataUnit]:
+	var result :Array[DataUnit] = []
+	for s in serialized:
+		result.append(DataUnit.from_network_id(s))
+	return result
 
 
 static func create_empty(slot_count : int) -> GameSetupInfo:
@@ -81,11 +149,14 @@ class Slot extends RefCounted: # check if this is good base
 	## `String == ""` -> we (local player) [br]
 	## `String != ""` -> remote player with specified network name [br]
 	## `int` -> AI level eg. 1
-	var occupier = 0
+	var occupier = ""
 
 	## index of color see `CFG.TEAM_COLORS`
 	var color : int = 0
 
 	var faction : DataFaction = null
 
-	## TODO: add army setup for single battle
+	var units_list : Array[DataUnit] = [null,null,null,null,null]
+
+	func is_bot() -> bool:
+		return occupier is int

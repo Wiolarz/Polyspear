@@ -20,7 +20,7 @@ static func get_all_legal_moves(my_units : Array, me:Player, bm: BattleManager =
 			if bm.grid.get_tile_type(new_move) == "sentinel": # 2
 				continue
 
-			if bm.is_legal_move(new_move, unit) == -1:
+			if bm.get_move_direction_if_valid(unit, new_move) == bm.MOVE_IS_INVALID:
 				continue
 
 			legal_moves.append(MoveInfo.make_move(unit.coord, new_move))
@@ -51,13 +51,13 @@ static func is_kill_move(move : MoveInfo, me : Player, bm: BattleManager = BM) -
 		return true
 
 	# BOW
-	var move_direction = GridManager.adjacent_side( \
+	var move_direction = GridManager.adjacent_side_direction( \
 			move.move_source, move.target_tile_coord);
 	for side in range(6):
 		if bm.grid.get_unit(move.move_source).get_symbol(side) != E.Symbols.BOW:
 			continue
 		var shoot_direction = (move_direction + side) % 6
-		var target : Unit = bm.grid.get_shot_target(move.move_source, shoot_direction)
+		var target : UnitForm = bm.grid.get_shot_target(move.move_source, shoot_direction)
 		if  target != null and target.controller != me:
 			return true
 	return false

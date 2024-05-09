@@ -44,7 +44,7 @@ func play_move() -> void:
 	var move = current_state.choose_move(legal_moves)
 
 	await ai_thinking_delay() # moving too fast feels weird
-	BM.perform_ai_move( move, me )
+	BM.perform_ai_move( move )
 
 
 func ai_thinking_delay() -> void:
@@ -58,5 +58,5 @@ func _get_possible_moves() -> Array[MoveInfo]:
 	if BM.is_during_summoning_phase():
 		return AIHelpers.get_all_spawn_moves(me)
 
-	var my_units : Array[Unit] = BM.get_units(me)
+	var my_units : Array[UnitForm] = BM.get_units(me)
 	return AIHelpers.get_all_legal_moves(my_units, me)

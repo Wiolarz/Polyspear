@@ -1,10 +1,11 @@
-[gd_resource type="Resource" script_class="DataUnit" load_steps=7 format=3]
+[gd_resource type="Resource" script_class="DataUnit" load_steps=8 format=3 uid="uid://fewqs1k7eitf"]
 
 [ext_resource type="Script" path="res://Resources/Battle/data_unit.gd" id="1_4uymu"]
-[ext_resource type="Script" path="res://Scripts/World/goods.gd" id="1_r6wh8"]
-[ext_resource type="Resource" path="res://Resources/Battle/Symbols/push.tres" id="3_jw75l"]
-[ext_resource type="Resource" path="res://Resources/Battle/Symbols/empty.tres" id="4_xn1r0"]
-[ext_resource type="Resource" path="res://Resources/Battle/Symbols/sword.tres" id="5_fihog"]
+[ext_resource type="Script" path="res://Scripts/World/Economy/goods.gd" id="1_r6wh8"]
+[ext_resource type="Resource" uid="uid://4to52cd5bq7w" path="res://Resources/Factions/Buildings/Barracks_3.tres" id="2_ww81b"]
+[ext_resource type="Resource" uid="uid://cmgmw6atlub6f" path="res://Resources/Battle/Symbols/push.tres" id="3_jw75l"]
+[ext_resource type="Resource" uid="uid://o4rlmfc33rsh" path="res://Resources/Battle/Symbols/empty.tres" id="4_xn1r0"]
+[ext_resource type="Resource" uid="uid://cngonnqsgsd6e" path="res://Resources/Battle/Symbols/sword.tres" id="5_fihog"]
 
 [sub_resource type="Resource" id="Resource_h1m34"]
 script = ExtResource("1_r6wh8")
@@ -18,3 +19,4 @@ unit_name = "Champion"
 texture_path = "res://Art/units/orc/orc_champion.png"
 symbols = Array[Resource("res://Resources/Battle/data_symbol.gd")]([ExtResource("5_fihog"), ExtResource("3_jw75l"), ExtResource("4_xn1r0"), ExtResource("4_xn1r0"), ExtResource("4_xn1r0"), ExtResource("3_jw75l")])
 cost = SubResource("Resource_h1m34")
+required_building = ExtResource("2_ww81b")

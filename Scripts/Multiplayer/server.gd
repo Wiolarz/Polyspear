@@ -1,30 +1,31 @@
 class_name Server
 extends Node
 
-
-var incoming_commands : Dictionary = { # Dictionary[String -> Command]
-	"login": Command.create_on_server(AllTheCommands.server_login),
-	"logout": Command.create_on_server(AllTheCommands.server_logout),
-	"join_game": Command.create_on_server(AllTheCommands.server_join_game),
-	"order_game_move": Command.create_on_server( \
-		AllTheCommands.server_order_game_move),
-	"say": Command.create_on_server(AllTheCommands.server_say),
-	"request_color_cycle": Command.create_on_server( \
-		AllTheCommands.server_request_color_cycle),
-	"request_faction_cycle": Command.create_on_server( \
-		AllTheCommands.server_request_faction_cycle),
-	"take_slot": Command.create_on_server(AllTheCommands.server_take_slot),
-	"leave_slot": Command.create_on_server(AllTheCommands.server_leave_slot),
-}
+ # Dictionary[String -> Command]
+var incoming_commands : Dictionary = {}
 
 
 var server_username : String = ""
 @onready var sessions : Array = []
 @onready var enet_network : ENetConnection = null
+var server_local_address : String = ""
+var server_external_address : String = "-needs fetch-"
+
+func _init():
+	var server_command_paths = FileSystemHelpers.list_files_in_folder( \
+			"res://Scripts/Multiplayer/ServerCommands/", true)
+	for path in server_command_paths:
+		var script = load(path)
+		print("registering command '", script.COMMAND_NAME, \
+				"' from file ", path.get_file())
+		assert( not incoming_commands.has(script.COMMAND_NAME), \
+				"dulicated server command: '%s'" % script.COMMAND_NAME)
+		script.register(incoming_commands)
 
 
 func _process(_delta):
 	roll()
+
 
 #region Connection
 
@@ -33,9 +34,11 @@ func listen(address : String, port : int, username : String):
 	if enet_network != null:
 		print("Server was listening -- stopping it first")
 		close()
+	server_local_address = ""
 	enet_network = ENetConnection.new()
 	var error = enet_network.create_host_bound(address, port, 32, 0, 0, 0)
 	if error == OK:
+		server_local_address = address
 		server_username = username
 		print("Server successfully started to listen on %s:%d" % [ \
 			address, port ])
@@ -91,10 +94,7 @@ func kick_peer(peer : ENetPacketPeer, reason : String) -> void:
 	var session = get_session_by_peer(peer)
 	if session:
 		sessions.erase(session)
-	var message = {
-		"name": "kicked",
-		"reason": reason,
-	}
+	var message = KickedCommand.create_packet(reason)
 	send_to_peer(peer, message)
 	peer.peer_disconnect_later()
 
@@ -105,7 +105,7 @@ func kick_all() -> void:
 		if session.peer != null:
 			peers.append(session.peer)
 	for peer in peers:
-		kick_peer(peer, "no reason")
+		kick_peer(peer, "kicked all peers")
 
 
 func close():
@@ -129,34 +129,21 @@ func close():
 func send_to_peer(peer : ENetPacketPeer, command_dictionary : Dictionary):
 	if not command_dictionary is Dictionary:
 		return
+	print("server - send to peer ", command_dictionary["name"])
 	var content : PackedByteArray = var_to_bytes(command_dictionary)
 	peer.send(0, content, ENetPacketPeer.FLAG_RELIABLE)
 
 
 func broadcast(command_dictionary : Dictionary):
+	print("server - broadcast ", command_dictionary["name"])
 	if not command_dictionary is Dictionary or enet_network == null:
 		return
 	var content : PackedByteArray = var_to_bytes(command_dictionary)
 	enet_network.broadcast(0, content, ENetPacketPeer.FLAG_RELIABLE)
 
 
-func broadcast_movement(movement : MoveInfo):
-	var message : Dictionary = {
-		"name": "replay_game_move",
-		"type": movement.move_type,
-		"summon_unit": movement.summon_unit,
-		"source": movement.move_source,
-		"target": movement.target_tile_coord,
-	}
-	broadcast(message)
-
-
 func broadcast_chat_message(message : String, author : String):
-	var packet : Dictionary = {
-		"name": "chat",
-		"content": message,
-		"author": author,
-	}
+	var packet : Dictionary = ChatCommand.create_packet(message, author)
 	broadcast(packet)
 
 
@@ -167,20 +154,25 @@ func broadcast_say(message : String):
 func broadcast_full_game_setup(game_setup : GameSetupInfo):
 	if game_setup == null:
 		game_setup = IM.game_setup_info
-	var packet : Dictionary = {
-		"name": "fill_game_setup",
-		"setup" : game_setup.to_dictionary(server_username)
-	}
+	var packet : Dictionary = \
+		FillGameSetupCommand.create_packet(game_setup, server_username)
+	# print("sending \n", packet)
 	broadcast(packet)
+
+
+func broadcast_start_game():
+	broadcast(StartGameCommand.create_packet())
+
+
+func broadcast_move(move : MoveInfo):
+	broadcast(MakeMoveCommand.create_packet(move))
 
 
 func send_additional_callbacks_to_logging_client(peer : ENetPacketPeer):
 	if true: # game is being set up
 		var game_setup = IM.game_setup_info
-		var packet : Dictionary = {
-			"name": "fill_game_setup",
-			"setup" : game_setup.to_dictionary(server_username)
-		}
+		var packet : Dictionary = \
+			FillGameSetupCommand.create_packet(game_setup, server_username)
 		send_to_peer(peer, packet)
 	if false: # game is in progress
 		pass
@@ -216,12 +208,12 @@ func roll() -> void:
 			ENetConnection.EventType.EVENT_RECEIVE:
 				var packet : PackedByteArray = peer.get_packet()
 				if channel != 0:
-					print(("Peer %x sent something on different channel " + \
+					push_error(("Peer %x sent something on different channel " + \
 						"than 0 -- ignoring") % peer.get_instance_id())
 					break
 				var decoded = MultiCommon.decode_packet(packet)
 				if not decoded:
-					print("Peer %x sent something not being a command" % \
+					push_error("Peer %x sent something not being a command" % \
 						peer.get_instance_id())
 					break
 				var command_name = decoded["name"]
@@ -250,4 +242,3 @@ func roll() -> void:
 class Session:
 	var username : String = ""
 	var peer : ENetPacketPeer = null
-	var seats : Dictionary = {} # Dictionary[int -> int]

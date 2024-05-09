@@ -4,17 +4,15 @@ extends GridManager
 
 var max_player_number : int
 
-var cities: Array[City] = [] # TODO remove
 var places : Array = [] # Array[Array[Place]]
 
 
 #region Tools
 
 func place_army(army : ArmyForm, coord : Vector2i):
-	assert(unit_grid[coord.x][coord.y] == null, "can't place 2 armies on the same field")
-	army.entity.coord = coord
+	assert(get_unit(coord) == null, "can't place 2 armies on the same field")
 	unit_grid[coord.x][coord.y] = army
-	army.position = tile_at(coord).position
+	army.place_on(get_tile(coord))
 
 
 func change_hero_position(hero, coord : Vector2i):
@@ -22,7 +20,7 @@ func change_hero_position(hero, coord : Vector2i):
 	unit_grid[coord.x][coord.y] = hero
 
 	# Move visuals of the unit
-	hero.move(tile_grid[coord.x][coord.y])
+	hero.move(get_tile(coord))
 
 
 func remove_hero(hero):
@@ -37,12 +35,7 @@ func remove_hero(hero):
 #region Coordinates Tools
 
 func is_moveable(coord : Vector2i):
-	return tile_grid[coord.x][coord.y].type in [ \
-		"empty",
-		"iron_mine",
-		"sawmill",
-		"ruby_cave",
-	]
+	return get_tile_type(coord) in CFG.WORLD_MOVEABLE_TILES
 
 
 func get_tile_controller(coord : Vector2i) -> Player:
@@ -58,16 +51,21 @@ func get_tile_controller(coord : Vector2i) -> Player:
 func get_battle_map(_coord : Vector2i) -> DataBattleMap:
 	return CFG.DEFAULT_BATTLE_MAP
 
+
 func get_army(coord : Vector2i) -> ArmyForm:
 	return unit_grid[coord.x][coord.y]
 
 
-func is_city(coord : Vector2i) -> bool: #TODO
+func is_city(coord : Vector2i) -> bool:
 	return get_city(coord) != null
 
 
 func get_city(coord : Vector2i) -> City:
-	return places[coord.x][coord.y] as City
+	return get_place(coord) as City
+
+
+func get_place(coord : Vector2i) -> Place:
+	return places[coord.x][coord.y] as Place
 
 
 func get_hero(coord : Vector2i):
@@ -78,9 +76,10 @@ func get_hero(coord : Vector2i):
 
 
 func is_enemy_present(coord : Vector2i, player : Player) -> bool:
-	if get_tile_controller(coord) == player:
+	var army = get_army(coord)
+	if army == null:
 		return false
-	if get_army(coord) == null:
+	if army.controller == player: #TEMP should check for allies
 		return false
 	return true
 
@@ -100,7 +99,8 @@ func get_interactable_type(coord : Vector2i) -> String:
 #region Generate Grid
 
 func is_clear() -> bool:
-	return tile_grid.size() == 0 and unit_grid.size() == 0
+	return tile_grid.size() == 0 and unit_grid.size() == 0 \
+			and places.size() == 0
 
 
 func init_tile_grid() -> void:
@@ -117,14 +117,13 @@ func init_tile_grid() -> void:
 func generate_special_tiles() -> void:
 	for x in map_information.grid_data.size():
 		for y in map_information.grid_data[0].size():
-			var coord = Vector2i( \
-				x + W_GRID.border_size, \
-				y + W_GRID.border_size)
-			var place : Place = Place.create_place( \
-				map_information.grid_data[x][y],
-				coord)
+			var data_tile = map_information.grid_data[x][y]
+			var coord = to_bordered_coords(Vector2i(x,y))
+			var place : Place = Place.create_place(data_tile, coord)
 			places[coord.x][coord.y] = place
-			W_GRID.tile_at(coord).place = place
+			W_GRID.get_tile(coord).place = place
+			if place:
+				place.on_game_started()
 
 func end_of_turn_callbacks(player : Player) -> void:
 	#TODO make it nicer
@@ -135,6 +134,7 @@ func end_of_turn_callbacks(player : Player) -> void:
 				a.on_end_of_turn(player)
 
 func reset_data() -> void:
+	places = []
 	super.reset_data()
 
 #endregion

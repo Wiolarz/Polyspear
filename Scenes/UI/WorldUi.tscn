@@ -2,18 +2,10 @@
 
 [ext_resource type="Script" path="res://Scripts/UI/world_ui.gd" id="1_kic0v"]
 [ext_resource type="Shortcut" uid="uid://fuvss5hfg4q2" path="res://Resources/Shortcuts/go_back.tres" id="2_nfb7t"]
-[ext_resource type="Texture2D" uid="uid://bul31ap566nua" path="res://Art/world_heroes/elf_druid.png" id="3_sv68c"]
+[ext_resource type="PackedScene" uid="uid://dm3oqhffhprfy" path="res://Scenes/UI/CityUI.tscn" id="3_nvhgh"]
 
 [node name="WorldUi" type="CanvasLayer"]
 script = ExtResource("1_kic0v")
-
-[node name="SwitchCamera" type="Button" parent="."]
-offset_left = 289.0
-offset_top = 25.0
-offset_right = 526.0
-offset_bottom = 88.0
-scale = Vector2(2.04, 2.04)
-text = "Show Battle"
 
 [node name="Menu" type="Button" parent="."]
 offset_left = 20.0
@@ -65,82 +57,7 @@ offset_bottom = 80.0
 layout_mode = 2
 text = "0 🪓| 0 ⛏️| 0 💎"
 
-[node name="CityUi" type="Window" parent="."]
-title = "City 1"
-position = Vector2i(200, 200)
-size = Vector2i(900, 500)
-visible = false
+[node name="CityUi" parent="." instance=ExtResource("3_nvhgh")]
 
-[node name="HBoxContainer" type="HBoxContainer" parent="CityUi"]
-offset_right = 40.0
-offset_bottom = 40.0
-
-[node name="VBoxContainer" type="VBoxContainer" parent="CityUi/HBoxContainer"]
-layout_mode = 2
-
-[node name="HeroImage" type="TextureRect" parent="CityUi/HBoxContainer/VBoxContainer"]
-layout_mode = 2
-texture = ExtResource("3_sv68c")
-expand_mode = 5
-
-[node name="BuyHeroButton" type="Button" parent="CityUi/HBoxContainer/VBoxContainer"]
-layout_mode = 2
-size_flags_vertical = 8
-text = "Buy Hero
-0 🪓| 0 ⛏️| 0 💎"
-
-[node name="Buy" type="VBoxContainer" parent="CityUi/HBoxContainer"]
-layout_mode = 2
-
-[node name="Label" type="Label" parent="CityUi/HBoxContainer/Buy"]
-layout_mode = 2
-text = "Buy:
-"
-
-[node name="Button" type="Button" parent="CityUi/HBoxContainer/Buy"]
-layout_mode = 2
-text = "Unit1"
-
-[node name="Button2" type="Button" parent="CityUi/HBoxContainer/Buy"]
-layout_mode = 2
-text = "Unit2"
-
-[node name="Button3" type="Button" parent="CityUi/HBoxContainer/Buy"]
-layout_mode = 2
-text = "Unit3"
-
-[node name="Army" type="VBoxContainer" parent="CityUi/HBoxContainer"]
-layout_mode = 2
-
-[node name="Label" type="Label" parent="CityUi/HBoxContainer/Army"]
-layout_mode = 2
-text = "Army:"
-
-[node name="Button" type="Button" parent="CityUi/HBoxContainer/Army"]
-layout_mode = 2
-text = "Spearman"
-
-[node name="Button2" type="Button" parent="CityUi/HBoxContainer/Army"]
-layout_mode = 2
-text = "Archer"
-
-[node name="Button3" type="Button" parent="CityUi/HBoxContainer/Army"]
-layout_mode = 2
-text = "Dryad
-"
-
-[node name="Button4" type="Button" parent="CityUi/HBoxContainer/Army"]
-layout_mode = 2
-text = "Dryad
-"
-
-[node name="Button5" type="Button" parent="CityUi/HBoxContainer/Army"]
-layout_mode = 2
-text = "Dryad
-"
-
-[connection signal="pressed" from="SwitchCamera" to="." method="_on_switch_camera_pressed"]
 [connection signal="pressed" from="Menu" to="." method="_on_menu_pressed"]
 [connection signal="pressed" from="End Turn" to="." method="_on_end_turn_pressed"]
-[connection signal="close_requested" from="CityUi" to="." method="_on_city_ui_close_requested"]
-[connection signal="pressed" from="CityUi/HBoxContainer/VBoxContainer/BuyHeroButton" to="." method="_on_buy_hero_button_pressed"]
