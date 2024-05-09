@@ -120,7 +120,10 @@ func input_try_select(coord) -> void:  #TODO "nothing is selected try to select 
 func try_interact(hero : ArmyForm, coord : Vector2i):
 
 	if W_GRID.is_enemy_present(coord, current_player):
-		start_combat(coord)
+		if not hero.has_movement_points():
+			print("not enough movement points")
+			return
+		start_combat(hero, coord)
 
 	var selected_spot_type : String = W_GRID.get_interactable_type(coord)
 
@@ -177,7 +180,7 @@ func recruit_hero(player : Player, hero_data : DataHero, coord : Vector2i) -> vo
 		ArmyForm.create_hero_army(player, hero_data)
 
 	add_child(army_for_world_map)
-	player.heroes.append(army_for_world_map)
+	player.hero_recruited(army_for_world_map)
 
 	# FIXME drut, adding hero unit to the army
 	var hero_unit = army_for_world_map.entity.hero.data_unit
@@ -190,7 +193,7 @@ func recruit_hero(player : Player, hero_data : DataHero, coord : Vector2i) -> vo
 
 #region Battles
 
-func start_combat(coord : Vector2i):
+func start_combat(attacking_army : ArmyForm, coord : Vector2i):
 	"""
 	Starts a battle using Battle Manager (BM)
 	"""
@@ -200,7 +203,7 @@ func start_combat(coord : Vector2i):
 	combat_tile = coord
 
 	var armies : Array[Army] = [
-		selected_hero.entity,
+		attacking_army.entity,
 		W_GRID.get_army(combat_tile).entity,
 	]
 	var battle_map : DataBattleMap = W_GRID.get_battle_map(combat_tile)
@@ -224,9 +227,13 @@ func end_of_battle():
 		print("hero died")
 	UI.go_to_custom_ui(world_ui)
 
+
 func kill_army(army : ArmyForm):
+	if army.entity.hero:
+		army.controller.hero_died(army.entity.hero)
 	W_GRID.unit_grid[army.coord.x][army.coord.y] = null  # there can only be one army at a single tile
 	army.queue_free()
+	world_ui.city_ui._refresh_all()
 
 # endregion
 
@@ -280,10 +287,9 @@ func start_world(world_map : DataWorldMap) -> void:
 func spawn_player(coord : Vector2i, player : Player):
 
 	var fixed_coord =  W_GRID.to_bordered_coords(coord)
-	recruit_hero(player, player.faction.heroes[0], fixed_coord)
+	# recruit_hero(player, player.faction.heroes[0], fixed_coord)
 
 	var capital_city = W_GRID.get_city(fixed_coord)
-	capital_city.controller = player
-	player.cities.append(capital_city)
+	player.set_capital(capital_city)
 
 #endregion
