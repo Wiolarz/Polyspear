@@ -1,5 +1,5 @@
 # Singleton - BM
-extends Node
+class_name BattleManager extends Node
 
 #region variables
 
@@ -24,6 +24,8 @@ var fighting_units : Array = [[],[]] # Array[Array[Unit]]
 var battle_ui : BattleUI = null
 var _replay : BattleReplay
 
+@onready var grid: BattleGrid = B_GRID
+
 #endregion
 
 func _ready():
@@ -42,7 +44,7 @@ func start_battle(new_armies : Array[Army], battle_map : DataBattleMap) -> void:
 	unsummoned_units_counter = 0
 	battling_armies = new_armies
 
-	B_GRID.generate_grid(battle_map)
+	grid.generate_grid(battle_map)
 	participants = []
 	for army in battling_armies:
 		participants.append(army.controller)
@@ -125,16 +127,18 @@ func grid_input(coord : Vector2i) -> void:
 		return
 
 	selected_unit.set_selected(false)
-	_replay.record_move(MoveInfo.make_move(selected_unit.coord, coord))
-	_replay.save()
+	if _replay != null:
+		_replay.record_move(MoveInfo.make_move(selected_unit.coord, coord))
+		_replay.save()
 	move_unit(selected_unit, coord, side)
 	switch_participant_turn()
 
 func perform_ai_move( move :MoveInfo,  _me: Player):
-	_replay.record_move(move)
-	_replay.save()
+	if _replay != null:
+		_replay.record_move(move)
+		_replay.save()
 	if move.move_type == MoveInfo.TYPE_MOVE:
-		var unit = B_GRID.get_unit(move.move_source)
+		var unit = grid.get_unit(move.move_source)
 		var dir = GridManager.adjacent_side(unit.coord, move.target_tile_coord)
 		move_unit(unit, move.target_tile_coord, dir)
 		switch_participant_turn()
@@ -145,7 +149,13 @@ func perform_ai_move( move :MoveInfo,  _me: Player):
 		return
 	assert(false, "Move move_type not supported in perform")
 
-
+func cloned() -> BattleManager:
+	var new = duplicate()
+	print(new.grid, grid)
+	new.grid = grid.duplicate()
+	new._replay = null
+	
+	return new
 
 #endregion
 
@@ -168,7 +178,7 @@ func select_unit(coord : Vector2i) -> bool:
 	* @return true if unit has been selected in this operation
 	"""
 
-	var new_selection : Unit = B_GRID.get_unit(coord)
+	var new_selection : Unit = grid.get_unit(coord)
 	if (new_selection != null && new_selection.controller == current_participant):
 		if selected_unit:
 			selected_unit.set_selected(false)
@@ -202,7 +212,7 @@ func is_legal_move(coord : Vector2i, bot_unit : Unit = null) -> int:
 
 	#print(move_direction)
 	# 2
-	var enemy_unit = B_GRID.get_unit(coord)
+	var enemy_unit = grid.get_unit(coord)
 	if enemy_unit == null:  # Is there a Unit in this spot?
 		return move_direction
 
@@ -252,7 +262,7 @@ func move_unit(unit, end_coord : Vector2i, side: int) -> void:
 		end_of_battle()
 		return
 
-	B_GRID.change_unit_coord(unit, end_coord)
+	grid.change_unit_coord(unit, end_coord)
 
 	if counter_attack_damage(unit):
 		kill_unit(unit)
@@ -269,7 +279,7 @@ func move_unit(unit, end_coord : Vector2i, side: int) -> void:
 
 func counter_attack_damage(target : Unit) -> bool:
 	# Returns true is Enemy spear can kill the target
-	var units = B_GRID.adjacent_units(target.coord)
+	var units = grid.adjacent_units(target.coord)
 
 	for side in range(6):
 		if (units[side] != null && units[side].controller != target.controller):
@@ -288,7 +298,7 @@ func kill_unit(target) -> void:
 			units.erase(target)
 			break
 
-	B_GRID.remove_unit(target)
+	grid.remove_unit(target)
 
 	var armies_left_alive : Array[int] = []
 	for army_idx in range(fighting_units.size()):
@@ -303,7 +313,7 @@ func kill_unit(target) -> void:
 
 
 func unit_action(unit : Unit) -> void:
-	var units = B_GRID.adjacent_units(unit.coord)
+	var units = grid.adjacent_units(unit.coord)
 
 	for side in range(6):
 		var unit_weapon = unit.get_symbol(side)
@@ -312,7 +322,7 @@ func unit_action(unit : Unit) -> void:
 			E.Symbols.EMPTY, E.Symbols.SHIELD:
 				continue # We don't have any weapon
 			E.Symbols.BOW:
-				var target = B_GRID.get_shot_target(unit.coord, side)
+				var target = grid.get_shot_target(unit.coord, side)
 				if target == null:
 					continue # no target
 
@@ -335,7 +345,7 @@ func unit_action(unit : Unit) -> void:
 		if unit_weapon == E.Symbols.PUSH:
 
 			# PUSH LOGIC
-			var distant_tile_type = B_GRID.get_distant_tile_type(unit.coord, side, 2)
+			var distant_tile_type = grid.get_distant_tile_type(unit.coord, side, 2)
 
 			if distant_tile_type == "sentinel":  # Pushing outside the map
 				# Kill
@@ -343,13 +353,13 @@ func unit_action(unit : Unit) -> void:
 				continue
 
 
-			var target = B_GRID.get_distant_unit(unit.coord, side, 2)
+			var target = grid.get_distant_unit(unit.coord, side, 2)
 
 			if target != null: # Spot isn't empty
 				kill_unit(enemy_unit)
 				continue
 
-			B_GRID.change_unit_coord(enemy_unit, B_GRID.get_distant_coord(unit.coord, side, 2))
+			grid.change_unit_coord(enemy_unit, grid.get_distant_coord(unit.coord, side, 2))
 			if counter_attack_damage(enemy_unit): # Simple push
 				kill_unit(enemy_unit)
 			continue
@@ -378,7 +388,7 @@ func close_battle() -> void:
 	IM.switch_camera()
 	battle_ui.hide()
 
-	B_GRID.reset_data()
+	grid.reset_data()
 	battle_is_ongoing =  false
 	current_participant = null
 	for child in get_children():
@@ -422,19 +432,20 @@ func _grid_input_summon(coord : Vector2i):
 		return # no unit selected
 
 	if is_legal_summon_coord(coord, current_participant):
-		_replay.record_move(MoveInfo.make_summon(battle_ui.selected_unit, coord))
-		_replay.save()
+		if _replay:
+			_replay.record_move(MoveInfo.make_summon(battle_ui.selected_unit, coord))
+			_replay.save()
 		summon_unit(battle_ui.selected_unit, coord)
 		switch_participant_turn()
 
 
 func is_legal_summon_coord(coord : Vector2i, player: Player) -> bool:
-	var coord_tile_type = B_GRID.get_tile_type(coord)
+	var coord_tile_type = grid.get_tile_type(coord)
 	var idx = participants.find(player)
 	var is_correct_spawn =\
 		(coord_tile_type == "red_spawn" && idx == 0) or \
 		(coord_tile_type == "blue_spawn"&& idx == 1)
-	return is_correct_spawn and B_GRID.get_unit(coord) == null
+	return is_correct_spawn and grid.get_unit(coord) == null
 
 
 func summon_unit(unit_data : DataUnit, coord : Vector2i) -> void:
@@ -443,14 +454,14 @@ func summon_unit(unit_data : DataUnit, coord : Vector2i) -> void:
 
 		@param coord coordinate, on which Unit will be summoned
 	"""
-	#B_GRID.change_unit_coord(selected_unit, coord)
+	#grid.change_unit_coord(selected_unit, coord)
 	var unit : Unit = CFG.UNIT_FORM_SCENE.instantiate()
 	unit.apply_template(unit_data)
 	unit.controller = current_participant
 
 	fighting_units[participant_idx].append(unit)
 	add_child(unit)
-	B_GRID.change_unit_coord(unit, coord)
+	grid.change_unit_coord(unit, coord)
 
 	if participant_idx == ATTACKER:
 		unit.turn(3, true)
@@ -466,9 +477,9 @@ func get_not_summoned_units(player:Player) -> Array[DataUnit]:
 
 
 func get_summon_tiles(player:Player) -> Array[HexTile]:
-	var summon_tiles = B_GRID.get_all_field_coords()\
+	var summon_tiles = grid.get_all_field_coords()\
 		.filter(func isOk(coord) : return is_legal_summon_coord(coord, player))\
-		.map(func getTile(coord) : return B_GRID.tile_at(coord))
+		.map(func getTile(coord) : return grid.tile_at(coord))
 	var typed:Array[HexTile] = []
 	typed.assign(summon_tiles)
 	return typed

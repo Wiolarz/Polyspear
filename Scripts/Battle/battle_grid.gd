@@ -1,5 +1,5 @@
 # Singleton B-GRID
-extends GridManager
+class_name BattleGrid extends GridManager
 
 
 var max_player_number : int
@@ -9,7 +9,7 @@ var max_player_number : int
 var summon_tiles : Array = []
 
 var current_spawn : String = "sentinel"
-
+@onready var bm: BattleManager = BM
 
 #region Tools
 
@@ -29,7 +29,7 @@ func change_unit_coord(unit : Unit, coord : Vector2i):
 	unit.coord = coord# update unit Index
 
 	# Move visuals of the unit
-	if BM.is_during_summoning_phase():
+	if bm.is_during_summoning_phase():
 		unit.global_position = tile_grid[coord.x][coord.y].global_position
 	else:
 		unit.move(tile_grid[coord.x][coord.y])
