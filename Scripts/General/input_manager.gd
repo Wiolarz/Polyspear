@@ -171,7 +171,7 @@ func _start_game_world():
 	for player_preset in get_player_presets():
 		new_players.append(player_preset.create_player())
 	UI.go_to_main_menu()
-	players.assign(new_players)
+	players = new_players
 	WM.start_world(game_setup_info.world_map)
 
 

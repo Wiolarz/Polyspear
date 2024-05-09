@@ -10,6 +10,9 @@ var coord:
 var controller:
 	get: return entity.controller
 
+func _init():
+	name = "ArmyForm"
+
 func _process(_delta):
 	var hero = entity.hero
 	if hero:
