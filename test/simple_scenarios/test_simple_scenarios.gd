@@ -16,7 +16,7 @@ func test_map_start_and_close() -> void:
 	start_game_button.pressed.emit()
 
 	gut.p("click 'Full game' in lobby")
-	var full_game_button = $"/root/UI/HostLobby/HostMenu/PanelContainer/GameSetup/MarginContainer/VBoxContainer/ModeChoice/ButtonFullScenario"
+	var full_game_button = $"/root/UI/HostLobby/HostMenu/PanelContainer/GameSetup/MarginContainer/VBoxContainer/ModeChoice/ButtonWorld"
 	assert_true( full_game_button.is_visible_in_tree(), \
 		"Full Game button not visible")
 	full_game_button.toggled.emit(true)
