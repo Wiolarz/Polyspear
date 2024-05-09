@@ -18,6 +18,6 @@ func play_move():
 
 
 #func is_my_move() -> bool:
-	#if IM.raging_battle:
+	#if BM.battle_is_ongoing:
 		#return BM.current_participant == me
 	#return WM.current_player == me

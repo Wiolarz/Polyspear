@@ -98,6 +98,7 @@ func set_selected(is_selected : bool):
 	var c = Color.RED if is_selected else Color.WHITE
 	$sprite_unit.modulate = c
 
+
 func apply_template(data_template : DataUnit):
 	unit_stats = data_template
 	get_node("sprite_unit").texture = load(data_template.texture_path)
@@ -116,6 +117,31 @@ func apply_template(data_template : DataUnit):
 
 func destroy():
 	queue_free()
+
+## can i kill this enemy in melee if i attack in specified direction
+func can_kill(enemy : UnitForm, attack_direction : int):
+	# - attacker has no attack symbol on front
+	# - attacker has push symbol on front (no current unit has it)
+	# - attacker has some attack symbol
+	#   - defender has shield
+
+	match symbols[0]: # front symbol
+		E.Symbols.EMPTY:
+			# can't deal with enemy_unit
+			return false
+		E.Symbols.SHIELD:
+			# can't deal with enemy_unit
+			return false
+		E.Symbols.PUSH:
+			# push ignores enemy_unit shields etc
+			return true
+		_:
+			# assume other attack symbol
+			# Does enemy_unit has a shield?
+			if enemy.get_symbol(attack_direction + 3) == E.Symbols.SHIELD:
+				return false
+			# no shield, attack ok
+			return true
 
 
 ## WARNING: only for UNIT EDITOR

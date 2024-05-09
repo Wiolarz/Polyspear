@@ -28,7 +28,7 @@ var camera : PolyCamera
 
 var game_setup_info : GameSetupInfo
 
-var players : Array[Player] = [] : 
+var players : Array[Player] = [] :
 	get:
 		return players
 	set(value):
@@ -43,8 +43,6 @@ var players : Array[Player] = [] :
 
 ## flag for MAP EDITOR
 var draw_mode : bool = false
-
-var raging_battle : bool
 
 var current_camera_position = E.CameraPosition.WORLD
 
@@ -115,7 +113,7 @@ func grid_input_listener(tile_coord : Vector2i, tile_type : GameSetupInfo.GameMo
 	if draw_mode:
 		return
 
-	if raging_battle:
+	if BM.battle_is_ongoing:
 		if tile_type == GameSetupInfo.GameMode.BATTLE:
 			BM.grid_input(tile_coord)
 	else:
@@ -242,7 +240,7 @@ func create_player(player_idx : int) -> Player:
 
 func switch_camera() -> void:
 	if current_camera_position == E.CameraPosition.WORLD:
-		if raging_battle:
+		if BM.battle_is_ongoing:
 			set_camera(E.CameraPosition.BATTLE)
 	else:
 		if game_setup_info.game_mode == GameSetupInfo.GameMode.WORLD:
@@ -259,7 +257,7 @@ func set_camera(pos : E.CameraPosition) -> void:
 
 func go_to_main_menu():
 	draw_mode = false
-	BM.close_battle()
+	BM.reset_battle_manager()
 	WM.close_world()
 	UI.go_to_main_menu()
 

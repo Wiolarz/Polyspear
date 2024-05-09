@@ -13,7 +13,7 @@ ruby = 0
 
 [resource]
 script = ExtResource("2_fe6q4")
-unit_name = ""
+unit_name = "elf_1"
 texture_path = "res://Art/units/elf/elf_spearmen.png"
 symbols = Array[Resource("res://Resources/Battle/data_symbol.gd")]([ExtResource("3_0fmkg"), ExtResource("4_4yv01"), ExtResource("4_4yv01"), ExtResource("4_4yv01"), ExtResource("4_4yv01"), ExtResource("4_4yv01")])
 cost = SubResource("Resource_k8g4u")
