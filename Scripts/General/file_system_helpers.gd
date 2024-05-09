@@ -19,8 +19,8 @@ static func list_files_in_folder(
 			var subdir_files = list_files_in_folder(\
 				dir.get_current_dir() + "/" + subdir, return_full_path, true)
 			if not return_full_path:
-				subdir_files = subdir_files.map(\
-					func add_prefix(file_name): return subdir + "/" + file_name)
+				for i in range(subdir_files.size()):
+					subdir_files[i] = subdir + "/" + subdir_files[i]
 			result.append_array(subdir_files)
 	return result
 

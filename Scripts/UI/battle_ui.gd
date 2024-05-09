@@ -19,12 +19,14 @@ func _ready():
 	pass
 
 func get_army(player: Player) -> Army:
-	var currentArmy = armies.filter(
-		func controlledBy(a : Army):
-			return a.controller == player
-			)
-	assert(currentArmy.size() == 1)
-	return currentArmy[0]
+	var current_armies : Array[Army] = []
+	for a in armies:
+		if a.controller != player:
+			continue
+		current_armies.append(a)
+
+	assert(current_armies.size() == 1)
+	return current_armies[0]
 
 func on_player_selected(selectedPlayer : Player, preview : bool = false):
 	if not preview:
