@@ -1,16 +1,14 @@
 class_name Player
 extends Node
 
-
 var player_name : String = ""
 
 var bot_engine : AIInterface
 
-# Gameplay
 var faction : DataFaction
+
 var goods : Goods = Goods.new()
 
-# UI
 var capital_city : City:
 	get:
 		if cities.size() == 0:
@@ -21,7 +19,9 @@ var capital_city : City:
 
 var cities : Array[City]
 
-var heroes : Array[ArmyForm] = []
+var hero_armies : Array[ArmyForm] = []
+
+var dead_heroes: Array[Hero] = []
 
 
 func use_bot(bot_enabled : bool):
@@ -35,26 +35,58 @@ func use_bot(bot_enabled : bool):
 		add_child(bot_engine)
 
 
+## let player know its his turn,
+## in case play is AI, call his decision maker
 func your_turn():
-	#UI stuff to let player know its his turn,
-	# in case play is AI, call his decision maker
+	print("your move " + player_name)
 
-	if NET.client: # AI is simulated on server only
-		return
-
-	if bot_engine != null:
+	if bot_engine != null and not NET.client: # AI is simulated on server only
 		bot_engine.play_move()
 
-	print("your move " + player_name)
+
+func set_capital(capital : City):
+	capital.controller = self
+	cities.append(capital)
+
 
 ## Checks if player has enough goods for purchase
 func has_enough(cost : Goods) -> bool:
 	return goods.has_enough(cost)
 
-## If there are sufficient goods -> true + goods are subtracted
+
+## If there are sufficient goods returns true + goods are subtracted
 func purchase(cost : Goods) -> bool:
 	if goods.has_enough(cost):
 		goods.subtract(cost)
 		return true
 	print("not enough money")
+	return false
+
+
+func hero_recruited(hero : ArmyForm):
+	hero_armies.append(hero)
+
+
+func hero_died(hero : Hero):
+	var i = 0
+	while i < hero_armies.size():
+		if hero_armies[i].entity.hero == hero:
+			hero_armies.remove_at(i)
+		else:
+			i += 1
+
+	dead_heroes.append(hero)
+
+
+func has_hero(data_hero: DataHero):
+	for ha in hero_armies:
+		if ha.entity.hero.template == data_hero:
+			return true
+	return false
+
+
+func has_dead_hero(data_hero: DataHero):
+	for dh in dead_heroes:
+		if dh.template == data_hero:
+			return true
 	return false

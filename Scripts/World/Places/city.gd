@@ -16,15 +16,16 @@ func get_heroes_to_buy() -> Array[DataHero]:
 	return result
 
 
-func owner_has_hero(hero: DataHero) -> bool:
-	for h in controller.heroes:
-		if h.entity.hero.template == hero:
-			return true
-	return false
+func get_cost_description(hero: DataHero) -> String:
+	if controller.has_hero(hero):
+		return "✔"
+	if controller.has_dead_hero(hero):
+		return "Ressurect\n"+str(hero.cost)
+	return str(hero.cost)
 
 
 func can_buy_hero(hero: DataHero) -> bool:
-	if owner_has_hero(hero):
+	if controller.has_hero(hero):
 		return false
 	if W_GRID.get_army(coord):
 		return false
@@ -46,6 +47,7 @@ func can_buy_unit(unit: DataUnit, hero_army : ArmyForm) -> bool:
 	if not unit_has_required_building(unit):
 		return false
 	return controller.has_enough(unit.cost)
+
 
 func unit_has_required_building(unit : DataUnit):
 	return not unit.required_building or unit.required_building in buildings

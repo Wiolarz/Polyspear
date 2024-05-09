@@ -35,15 +35,12 @@ func _refresh_heroes_to_buy():
 			load(heroes[i].data_unit.texture_path)
 
 		var button = hero_panel.get_node("BuyHeroButton")
-		var description = str(hero_to_buy.cost)
-		if city.owner_has_hero(hero_to_buy):
-			description = "✔"
+		var description = city.get_cost_description(hero_to_buy)
 		button.text = "Buy %s\n%s" % [hero_to_buy.hero_name, description]
 		button.disabled = not city.can_buy_hero(heroes[i])
 		for s in button.pressed.get_connections():
 			button.pressed.disconnect(s["callable"])
 		button.pressed.connect(_on_buy_hero_button_pressed.bind(i))
-
 
 
 func _refresh_units_to_buy():
