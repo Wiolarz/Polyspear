@@ -485,6 +485,7 @@ func summon_unit(unit_data : DataUnit, coord : Vector2i) -> void:
 		@param coord coordinate, on which UnitForm will be summoned
 	"""
 	var unit = army_in_battle_states[current_army_index].summon_unit_form(unit_data)
+	unit.name = unit_data.unit_name
 	add_child(unit)
 	B_GRID.change_unit_coord(unit, coord)
 
