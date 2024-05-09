@@ -14,11 +14,12 @@ const STATE_BATTLE_FINISHED = "battle_finished"
 
 var battle_is_ongoing : bool = false
 var state : String = ""
-var army_in_battle_states : Array[ArmyInBattleState] = []
+var armies_in_battle_state : Array[ArmyInBattleState] = []
 var current_army_index : int = ATTACKER
+var turn_counter : int = 0
 
-var battle_ui : BattleUI = null
-var selected_unit : UnitForm = null
+var battle_ui : BattleUI
+var selected_unit : UnitForm
 
 var _replay : BattleReplay
 var _replay_is_playing : bool = false
@@ -40,38 +41,29 @@ func start_battle(new_armies : Array[Army], battle_map : DataBattleMap, \
 
 	battle_is_ongoing = true
 	state = STATE_SUMMONNING
-	army_in_battle_states = []
+	armies_in_battle_state = []
 	for a in new_armies:
-		army_in_battle_states.append(ArmyInBattleState.create_from(a))
+		armies_in_battle_state.append(ArmyInBattleState.create_from(a))
 	current_army_index = ATTACKER
 
 	B_GRID.generate_grid(battle_map)
 	B_GRID.position.x = x_offset
 
 	selected_unit = null
-	battle_ui.load_armies(army_in_battle_states)
-
+	battle_ui.load_armies(armies_in_battle_state)
+	
+	turn_counter = 0
+	
 	notify_current_player_your_turn()
+
+## Camera bounds
+func get_bounds_global_position() -> Rect2:
+	return B_GRID.get_bounds_global_position()
 
 #endregion
 
 
-#region Main Functions
-
-func get_current_player() -> Player:
-	return army_in_battle_states[current_army_index].army_reference.controller
-
-
-func notify_current_player_your_turn() -> void:
-	if not battle_is_ongoing:
-		return
-	battle_ui.start_player_turn(current_army_index)
-	var army_controller = get_current_player()
-	if army_controller:
-		army_controller.your_turn()
-	else:
-		print("uncontrolled army's turn")
-
+#region Replay
 
 func perform_replay(path : String) -> void:
 	var replay = load(path) as BattleReplay
@@ -106,20 +98,39 @@ func replay_move_delay() -> void:
 		if not battle_is_ongoing:
 			return # terminating battle while watching
 
+#endregion
+
+
+#region Input Functions
+
+func get_current_player() -> Player:
+	return armies_in_battle_state[current_army_index].army_reference.controller
+
+## Currently only used for AI
+func notify_current_player_your_turn() -> void:
+	if not battle_is_ongoing:
+		return
+	battle_ui.start_player_turn(current_army_index)
+	var army_controller = get_current_player()
+	if army_controller:
+		army_controller.your_turn()
+	else:
+		print("uncontrolled army's turn")
+
 
 func switch_participant_turn() -> void:
 	current_army_index += 1
-	current_army_index %= army_in_battle_states.size()
+	current_army_index %= armies_in_battle_state.size()
 
 	if state == STATE_SUMMONNING:
 		var skip_count = 0
 		# skip players with nothing to summon
-		while army_in_battle_states[current_army_index].units_to_summon.size() == 0:
+		while armies_in_battle_state[current_army_index].units_to_summon.size() == 0:
 			current_army_index += 1
-			current_army_index %= army_in_battle_states.size()
+			current_army_index %= armies_in_battle_state.size()
 			skip_count += 1
 			# no player has anything to summon, go to next phase
-			if skip_count == army_in_battle_states.size():
+			if skip_count == armies_in_battle_state.size():
 				end_summoning_state()
 				break
 		notify_current_player_your_turn()
@@ -127,10 +138,6 @@ func switch_participant_turn() -> void:
 	elif state == STATE_FIGHTING:
 		notify_current_player_your_turn()
 
-
-func end_summoning_state() -> void:
-	state = STATE_FIGHTING
-	current_army_index = ATTACKER
 
 ## user clicked battle tile on given coordinates
 func grid_input(coord : Vector2i) -> void:
@@ -142,7 +149,8 @@ func grid_input(coord : Vector2i) -> void:
 		print("battle finished, input ignored")
 		return
 
-	if get_current_player() and  get_current_player().bot_engine:
+	var current_player : Player = get_current_player()
+	if current_player != null and current_player.bot_engine:
 		print("ai playing, input ignored")
 		return
 
@@ -172,16 +180,52 @@ func _grid_input_fighting(coord : Vector2i) -> void:
 	switch_participant_turn()
 
 
-func perform_move_fighting(unit : UnitForm, coord : Vector2i, direction : int):
-	var move_info = MoveInfo.make_move(unit.coord, coord)
-	if NET.client:
-		NET.client.queue_request_move(move_info)
-		return # dont perform move, send it to server
-	_replay.record_move(move_info)
-	_replay.save()
-	if NET.server:
-		NET.server.broadcast_move(move_info)
-	move_unit(unit, coord, direction)
+## Select friendly UnitForm on a given coord
+## returns true if unit was selected
+func try_select_unit(coord : Vector2i) -> bool:
+	var new_unit : UnitForm = B_GRID.get_unit(coord)
+	if not new_unit:
+		return false
+	if new_unit.controller != get_current_player():
+		return false
+
+	# deselect visually old unit if selected
+	if selected_unit:
+		selected_unit.set_selected(false)
+
+	selected_unit = new_unit
+	new_unit.set_selected(true)
+	return true
+
+
+## Returns `MOVE_IS_INVALID` if move is incorrect
+## or a turn direction `E.GridDirections` if move is correct
+func get_move_direction_if_valid(unit : UnitForm, coord : Vector2i) -> int:
+	"""
+		Function checks 2 things:
+		1 Target coord is a Neighbor of a selected_unit
+		2a Target coord is empty
+		2b Target coord contains unit that can be killed
+
+		@param unit to move
+		@param coord target coord for selected_unit to move to
+		@return MOVE_IS_INVALID (-1) if move is illegal, direction otherwise
+	"""
+
+	var move_direction = GridManager.adjacent_side_direction(unit.coord, coord)
+	# not adjacent
+	if move_direction == null:
+		return MOVE_IS_INVALID
+
+	var enemy_unit = B_GRID.get_unit(coord)
+	# empty field
+	if not enemy_unit:
+		return move_direction
+
+	if not unit.can_kill(enemy_unit, move_direction):
+		return MOVE_IS_INVALID
+
+	return move_direction
 
 
 func perform_ai_move(move_info : MoveInfo) -> void:
@@ -298,58 +342,18 @@ func push_enemy(enemy : UnitForm, direction : int) -> void:
 #endregion
 
 
-#region Tools
+#region Gameplay actions
 
-func get_bounds_global_position() -> Rect2:
-	return B_GRID.get_bounds_global_position()
-
-
-## Select friendly UnitForm on a given coord
-## returns true if unit was selected
-func try_select_unit(coord : Vector2i) -> bool:
-	var new_unit : UnitForm = B_GRID.get_unit(coord)
-	if not new_unit:
-		return false
-	if new_unit.controller != get_current_player():
-		return false
-
-	# deselect visually old unit if selected
-	if selected_unit:
-		selected_unit.set_selected(false)
-
-	selected_unit = new_unit
-	new_unit.set_selected(true)
-	return true
-
-
-## Returns `MOVE_IS_INVALID` if move is incorrect
-## or a turn direction `E.GridDirections` if move is correct
-func get_move_direction_if_valid(unit : UnitForm, coord : Vector2i) -> int:
-	"""
-		Function checks 2 things:
-		1 Target coord is a Neighbor of a selected_unit
-		2a Target coord is empty
-		2b Target coord contains unit that can be killed
-
-		@param unit to move
-		@param coord target coord for selected_unit to move to
-		@return MOVE_IS_INVALID (-1) if move is illegal, direction otherwise
-	"""
-
-	var move_direction = GridManager.adjacent_side_direction(unit.coord, coord)
-	# not adjacent
-	if move_direction == null:
-		return MOVE_IS_INVALID
-
-	var enemy_unit = B_GRID.get_unit(coord)
-	# empty field
-	if not enemy_unit:
-		return move_direction
-
-	if not unit.can_kill(enemy_unit, move_direction):
-		return MOVE_IS_INVALID
-
-	return move_direction
+func perform_move_fighting(unit : UnitForm, coord : Vector2i, direction : int):
+	var move_info = MoveInfo.make_move(unit.coord, coord)
+	if NET.client:
+		NET.client.queue_request_move(move_info)
+		return # dont perform move, send it to server
+	_replay.record_move(move_info)
+	_replay.save()
+	if NET.server:
+		NET.server.broadcast_move(move_info)
+	move_unit(unit, coord, direction)
 
 
 func move_unit(unit : UnitForm, end_coord : Vector2i, direction: int) -> void:
@@ -376,10 +380,14 @@ func move_unit(unit : UnitForm, end_coord : Vector2i, direction: int) -> void:
 	B_GRID.change_unit_coord(unit, end_coord)
 	if process_symbols(unit):
 		return
+	
+	turn_counter += 1
+	check_battle_end() 
 
 
-func get_army_for_player(player : Player) -> ArmyInBattleState:
-	for army in army_in_battle_states:
+
+func get_player_army(player : Player) -> ArmyInBattleState:
+	for army in armies_in_battle_state:
 		if army.army_reference.controller == player:
 			return army
 	assert(false, "No army for player " + str(player))
@@ -387,26 +395,44 @@ func get_army_for_player(player : Player) -> ArmyInBattleState:
 
 
 func kill_unit(target : UnitForm) -> void:
-	get_army_for_player(target.controller).unit_died(target)
+	get_player_army(target.controller).unit_died(target)
 	B_GRID.remove_unit(target)
 
 	check_battle_end()
 
+#endregion
+
+
+#region End Battle
+
+func kill_army(army_idx : int):
+	for unit_idx in range(armies_in_battle_state[army_idx].units.size() - 1, -1, -1):
+		kill_unit(armies_in_battle_state[army_idx].units[unit_idx])
+
+## TEMP: After 50 turns Defender wins
+func end_stalemate():
+	for army_idx in range(armies_in_battle_state.size()):
+		if army_idx == DEFENDER:
+			continue
+		kill_army(army_idx)
+
 
 func check_battle_end() -> void:
 	var armies_alive = 0
-	for a in army_in_battle_states:
+	for a in armies_in_battle_state:
 		if a.can_fight():
 			armies_alive += 1
 
 	if armies_alive < 2:
 		state = STATE_BATTLE_FINISHED
 		end_the_battle()
+		return
+	
+	# TEMP
+	if turn_counter == 50:
+		turn_counter += 1  # XD
+		end_stalemate()
 
-#endregion
-
-
-#region End Battle
 
 func reset_battle_manager() -> void:
 	battle_is_ongoing = false
@@ -425,7 +451,7 @@ func reset_battle_manager() -> void:
 func end_the_battle() -> void:
 	if not battle_is_ongoing:
 		return
-
+	print("turns passed: ", turn_counter)
 	await get_tree().create_timer(1).timeout # TEMP, instead
 
 	reset_battle_manager()
@@ -435,7 +461,7 @@ func end_the_battle() -> void:
 		IM.go_to_main_menu()
 		return
 
-	WM.end_of_battle(army_in_battle_states)
+	WM.end_of_battle(armies_in_battle_state)
 
 #endregion
 
@@ -483,7 +509,7 @@ func summon_unit(unit_data : DataUnit, coord : Vector2i) -> void:
 
 		@param coord coordinate, on which UnitForm will be summoned
 	"""
-	var unit = army_in_battle_states[current_army_index].summon_unit_form(unit_data)
+	var unit = armies_in_battle_state[current_army_index].summon_unit_form(unit_data)
 	unit.name = unit_data.unit_name
 	add_child(unit)
 	B_GRID.change_unit_coord(unit, coord)
@@ -492,6 +518,11 @@ func summon_unit(unit_data : DataUnit, coord : Vector2i) -> void:
 		unit.turn(3, true) # start turned right, default is left
 
 	battle_ui.unit_summoned(not is_during_summoning_phase(), unit_data)
+
+
+func end_summoning_state() -> void:
+	state = STATE_FIGHTING
+	current_army_index = ATTACKER
 
 #endregion
 
@@ -508,7 +539,7 @@ func get_summon_tiles(player : Player) -> Array[TileForm]:
 
 
 func get_not_summoned_units(player : Player) -> Array[DataUnit]:
-	for a in army_in_battle_states:
+	for a in armies_in_battle_state:
 		if a.army_reference.controller == player:
 			return a.units_to_summon.duplicate()
 	assert(false, "ai asked for units to summon but it doesnt control any army")
@@ -517,12 +548,12 @@ func get_not_summoned_units(player : Player) -> Array[DataUnit]:
 
 func get_units(player : Player) -> Array[UnitForm]:
 	var idx = find_army_idx(player)
-	return army_in_battle_states[idx].units
+	return armies_in_battle_state[idx].units
 
 
 func find_army_idx(player : Player) -> int:
-	for idx in range(army_in_battle_states.size()):
-		if army_in_battle_states[idx].army_reference.controller == player:
+	for idx in range(armies_in_battle_state.size()):
+		if armies_in_battle_state[idx].army_reference.controller == player:
 			return idx
 	assert(false, "ai asked for summon tiles but it doesnt control any army")
 	return -1
@@ -532,20 +563,15 @@ func find_army_idx(player : Player) -> int:
 
 #region cheats
 
-func kill_army(army_idx : int):
-	for unit in army_in_battle_states[army_idx].units:
-		kill_unit(unit)
-
-
 func force_win_battle():
-	for army_idx in range(army_in_battle_states.size()):
+	for army_idx in range(armies_in_battle_state.size()):
 		if army_idx == current_army_index:
 			continue
 		kill_army(army_idx)
 
 
 func force_surrender():
-	for army_idx in range(army_in_battle_states.size()):
+	for army_idx in range(armies_in_battle_state.size()):
 		if army_idx != current_army_index:
 			continue
 		kill_army(army_idx)
