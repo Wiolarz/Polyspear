@@ -4,7 +4,7 @@ extends Node
 
 @export var type : E.WorldMapTiles = E.WorldMapTiles.EMPTY
 @export var controller : Player
-@export var defender_army : Army
+var defender_army : Army
 @export var battle_map : DataBattleMap
 @export var coord : Vector2i
 
@@ -40,6 +40,7 @@ static func create_place(new_data_tile : DataTile, \
 	var new_place = _inner_create_place(new_data_tile)
 	if new_place:
 		new_place.coord = new_coord
+		#new_place.name  = new_data_tile.type
 
 	return new_place
 

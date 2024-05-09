@@ -11,6 +11,7 @@ var incoming_commands : Dictionary = {}
 
 
 func _init():
+	name = "Client"
 	var client_command_paths = FileSystemHelpers.list_files_in_folder( \
 			"res://Scripts/Multiplayer/ClientCommands/", true)
 	for path in client_command_paths:

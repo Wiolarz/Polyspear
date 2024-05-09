@@ -1,5 +1,5 @@
 class_name Army
-extends Node
+extends RefCounted
 
 var units_data : Array[DataUnit]
 
@@ -16,7 +16,7 @@ func destroy_army():
 	else:
 		WM.grid[coord.x][coord.y].army = null
 
-	queue_free()
+	free()
 
 
 func get_units_list():
@@ -25,6 +25,7 @@ func get_units_list():
 
 static func create_army_from_preset(army_preset : PresetArmy) -> Army:
 	var new_army = Army.new()
+	# new_army.name = "Army_" + army_preset.resource_path.get_file()
 	new_army.units_data = army_preset.units
 	#new_army.hero = army_preset.hero  # TODO ARMY PRESET HERO
 	return new_army

@@ -12,6 +12,8 @@ var server_local_address : String = ""
 var server_external_address : String = "-needs fetch-"
 
 func _init():
+	name = "Server"
+
 	var server_command_paths = FileSystemHelpers.list_files_in_folder( \
 			"res://Scripts/Multiplayer/ServerCommands/", true)
 	for path in server_command_paths:

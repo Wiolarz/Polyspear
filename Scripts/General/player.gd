@@ -23,6 +23,9 @@ var hero_armies : Array[ArmyForm] = []
 
 var dead_heroes: Array[Hero] = []
 
+func _init():
+	name = "Player"
+
 
 func use_bot(bot_enabled : bool):
 	if bot_enabled == (bot_engine != null):
