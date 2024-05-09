@@ -21,6 +21,14 @@ func get_filename() -> String:
 	return timestamp.replace(":", "_") + ".tres"
 
 func save():
-	DirAccess.make_dir_recursive_absolute("user://replays/")
-	ResourceSaver.save(self, "user://replays/" + get_filename())
+	BattleReplay.prepare_replay_directory()
+	ResourceSaver.save(self, CFG.REPLAY_DIRECTORY + get_filename())
 
+static func prepare_replay_directory():
+	DirAccess.make_dir_recursive_absolute(CFG.REPLAY_DIRECTORY)
+
+static func has_replays():
+	if not DirAccess.dir_exists_absolute(CFG.REPLAY_DIRECTORY):
+		return false
+	var replays = DirAccess.get_files_at(CFG.REPLAY_DIRECTORY)
+	return replays.size() > 0

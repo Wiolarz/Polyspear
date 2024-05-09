@@ -32,8 +32,13 @@ const BATTLE_MAP_TILES_PATH = "res://Resources/Battle/Battle_tiles/"
 const WORLD_MAP_TILES_PATH = "res://Resources/World/World_tiles/"
 const SYMBOLS_PATH = "res://Resources/Battle/Symbols/"
 
+const REPLAY_DIRECTORY = "user://replays/"
+const PLAYER_OPTIONS_PATH = "user://player_options.tres"
+
 var FACTION_ELVES : DataFaction = load("res://Resources/Factions/elf.tres")
 var FACTION_ORCS : DataFaction = load("res://Resources/Factions/orc.tres")
+
+
 
 var FACTIONS_LIST : Array[DataFaction] = [
 	FACTION_ELVES,
@@ -121,13 +126,14 @@ var AUTO_START_GAME : bool :
 
 #endregion
 
-const PLAYER_OPTIONS_PATH = "user://player_options.tres"
 var player_options : PlayerOptions
 
 func _init():
-	player_options = load(PLAYER_OPTIONS_PATH)
+	if FileAccess.file_exists(PLAYER_OPTIONS_PATH):
+		player_options = load(PLAYER_OPTIONS_PATH)
 	if not player_options:
 		player_options = PlayerOptions.new()
+		save_player_options()
 
 func save_player_options():
 	ResourceSaver.save(player_options, PLAYER_OPTIONS_PATH)
