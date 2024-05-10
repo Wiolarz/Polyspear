@@ -1,5 +1,5 @@
 class_name Place
-# (default) extends RefCounted
+extends RefCounted # RefCounted is default
 
 var type : E.WorldMapTiles = E.WorldMapTiles.EMPTY
 var controller : Player

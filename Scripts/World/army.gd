@@ -1,5 +1,5 @@
 class_name Army
-# (default) extends RefCounted
+extends RefCounted # RefCounted is default
 
 var units_data : Array[DataUnit]
 
