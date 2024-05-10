@@ -178,13 +178,13 @@ func _grid_input_fighting(coord : Vector2i) -> void:
 
 func perform_move_fighting(unit : UnitForm, coord : Vector2i, direction : int):
 	var move_info = MoveInfo.make_move(unit.coord, coord)
-	if NET.client:
+	if NET.client and self == BM:
 		NET.client.queue_request_move(move_info)
 		return # dont perform move, send it to server
 	if _replay != null:
 		_replay.record_move(move_info)
 		_replay.save()
-	if NET.server:
+	if NET.server and self == BM:
 		NET.server.broadcast_move(move_info)
 	move_unit(unit, coord, direction)
 
@@ -195,7 +195,7 @@ func perform_ai_move(move_info : MoveInfo) -> void:
 	if _replay != null:
 		_replay.record_move(move_info)
 		_replay.save()
-	if NET.server:
+	if NET.server and self == BM:
 		NET.server.broadcast_move(move_info)
 	if move_info.move_type == MoveInfo.TYPE_MOVE:
 		var unit = grid.get_unit(move_info.move_source)
@@ -209,16 +209,26 @@ func perform_ai_move(move_info : MoveInfo) -> void:
 		return
 	assert(false, "Move move_type not supported in perform")
 
+## Returns an independent clone of itself
 func cloned() -> BattleManager:
 	var new = duplicate()
 	new.grid = grid.duplicate()
 	new.grid.bm = self
 	new._replay = null
 
-	for unit in new.grid.unit_grid:
-		if unit != null:
-			unit = unit.duplicate()
-
+	for unit_pos in new.grid.get_all_field_coords():
+		var unit = new.grid.get_unit(unit_pos)
+		if unit:
+			new.grid.unit_grid[unit_pos.x][unit_pos.y] = unit.duplicate()
+	
+	for army_idx in range(new.army_in_battle_states.size()):
+		var army = new.army_in_battle_states[army_idx].duplicate()
+		new.army_in_battle_states[army_idx] = army
+		
+		for unit_idx in range(army.units.size()):
+			var xd = army.units[unit_idx].coord
+			army.units[unit_idx] = new.grid.get_unit(army.units[unit_idx].coord)
+	
 	new.selected_unit = null
 	return new
 #endregion
@@ -575,10 +585,10 @@ func force_surrender():
 
 
 class ArmyInBattleState extends Node:
-	var army_reference : Army
-	var units_to_summon : Array[DataUnit] = []
-	var units : Array[UnitForm] = []
-	var dead_units : Array[DataUnit] = []
+	@export var army_reference : Army
+	@export var units_to_summon : Array[DataUnit] = []
+	@export var units : Array[UnitForm] = []
+	@export var dead_units : Array[DataUnit] = []
 
 
 	static func create_from(army : Army) -> ArmyInBattleState:

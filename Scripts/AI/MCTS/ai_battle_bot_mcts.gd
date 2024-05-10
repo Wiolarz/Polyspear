@@ -43,9 +43,10 @@ func iterate():
 func play_move() -> void:
 	super.play_move()
 
-	root = MCTSNode.new()
-	root.playout = BM.cloned()
-	
-	var moves = AIHelpers.get_all_legal_moves(me, root.playout).back()
-	root.playout.perform_ai_move(moves)
+	for i in range(100):
+		root = MCTSNode.new()
+		root.playout = BM.cloned()
+		
+		var moves = AIHelpers.get_all_legal_moves(me, root.playout).back()
+		root.playout.perform_ai_move(moves)
 

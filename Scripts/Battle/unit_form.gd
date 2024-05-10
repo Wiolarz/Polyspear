@@ -4,21 +4,21 @@ extends Node2D
 
 @export var unit_stats : DataUnit
 
-var unit_rotation : int
-var coord : Vector2i
-var controller : Player
+@export var unit_rotation : int
+@export var coord : Vector2i
+@export var controller : Player
 
 ## based on specific UnitForm scene in _ready() symbols get placed into their spots
-var symbols : Array[E.Symbols] = [
+@export var symbols : Array[E.Symbols] = [
 	E.Symbols.EMPTY, E.Symbols.EMPTY, E.Symbols.EMPTY,
 	E.Symbols.EMPTY, E.Symbols.EMPTY, E.Symbols.EMPTY,
 ]
 
-var _target_tile : TileForm
-var _move_speed : float
+@export var _target_tile : TileForm
+@export var _move_speed : float
 
-var _target_rotation_degrees : float
-var _rotation_speed : float
+@export var _target_rotation_degrees : float
+@export var _rotation_speed : float
 
 
 
