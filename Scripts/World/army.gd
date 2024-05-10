@@ -1,5 +1,4 @@
 class_name Army
-extends RefCounted
 
 var units_data : Array[DataUnit]
 
