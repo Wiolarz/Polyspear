@@ -172,6 +172,7 @@ func trade_armies(_second_army : ArmyForm):
 
 func trade_city(city : City, hero : ArmyForm):
 	print("trade_city")
+	hero.entity.heal_in_city()
 	world_ui.show_trade_ui(city, hero)
 
 
@@ -217,10 +218,13 @@ func end_of_battle(battle_results : Array[BM.ArmyInBattleState]):
 		print("attacker won")
 		kill_army(W_GRID.get_army(combat_tile)) # clear the tile of enemy presence
 		hero_move(selected_hero, combat_tile)
+		selected_hero.apply_losses(battle_results[BM.ATTACKER].dead_units)
 	else:
 		kill_army(selected_hero)  # clear the tile where selected_hero was
 		set_selected_hero(null)
 		print("hero died")
+		var defender_army = W_GRID.get_army(combat_tile)
+		defender_army.apply_losses(battle_results[BM.DEFENDER].dead_units)
 	UI.go_to_custom_ui(world_ui)
 
 

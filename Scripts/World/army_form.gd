@@ -72,3 +72,7 @@ func on_end_of_turn(player : Player):
 
 func set_selected(is_selected : bool) -> void:
 	$sprite_color.modulate = Color.RED if is_selected else Color.WHITE
+
+
+func apply_losses(losses : Array[DataUnit]):
+	entity.apply_losses(losses)
