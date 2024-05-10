@@ -19,7 +19,6 @@ func go_back():
 
 func clear_management():
 	for child in connection_management.get_children():
-		connection_management.remove_child(child)
 		child.queue_free()
 
 

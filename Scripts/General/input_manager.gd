@@ -34,7 +34,6 @@ var players : Array[Player] = [] :
 	set(value):
 		for p in players:
 			print("removing player ", p)
-			remove_child(p)
 			p.queue_free()
 		for p in value:
 			print("adding player ", p)
