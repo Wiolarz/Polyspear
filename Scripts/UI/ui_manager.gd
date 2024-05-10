@@ -55,7 +55,6 @@ func go_to_unit_editor():
 
 
 func go_to_map_editor():
-	IM.draw_mode = true
 	_hide_all()
 	map_editor.open_draw_menu()
 

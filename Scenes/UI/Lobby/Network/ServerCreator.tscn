@@ -1,7 +1,6 @@
-[gd_scene load_steps=3 format=3 uid="uid://dv7ndu5dc7rex"]
+[gd_scene load_steps=2 format=3 uid="uid://dv7ndu5dc7rex"]
 
 [ext_resource type="Script" path="res://Scripts/UI/Lobby/Network/server_creator.gd" id="1_5bd3v"]
-[ext_resource type="Shortcut" uid="uid://fuvss5hfg4q2" path="res://Resources/Shortcuts/go_back.tres" id="2_rcid6"]
 
 [node name="ServerCreator" type="Control"]
 layout_mode = 3
@@ -97,8 +96,8 @@ text = "START SERVER"
 layout_mode = 0
 offset_left = 43.0
 offset_top = 507.0
-offset_right = 896.0
-offset_bottom = 870.0
+offset_right = 898.0
+offset_bottom = 989.0
 theme_override_font_sizes/normal_font_size = 30
 theme_override_font_sizes/bold_font_size = 30
 theme_override_font_sizes/italics_font_size = 30
@@ -136,18 +135,4 @@ It is needed for server to know what network card to use
 Your local port, make sure router you are using has proper port forwarding
 "
 
-[node name="ButtonBack" type="Button" parent="."]
-layout_mode = 1
-anchors_preset = -1
-anchor_top = 1.0
-anchor_bottom = 1.0
-offset_left = 83.0
-offset_top = -197.0
-offset_right = 356.0
-offset_bottom = -60.0
-grow_vertical = 0
-shortcut = ExtResource("2_rcid6")
-text = "Back"
-
 [connection signal="pressed" from="MarginContainer/VBoxContainer/ButtonListen" to="." method="_on_button_listen_pressed"]
-[connection signal="pressed" from="ButtonBack" to="." method="_on_button_back_pressed"]

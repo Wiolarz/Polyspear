@@ -1,31 +1,21 @@
-[gd_scene load_steps=2 format=3 uid="uid://b4ndp6v0ts1on"]
+[gd_scene load_steps=4 format=3 uid="uid://b4ndp6v0ts1on"]
 
 [ext_resource type="Script" path="res://Scripts/UI/main_menu.gd" id="1_iln2i"]
+[ext_resource type="PackedScene" uid="uid://b3dmmym31kdbx" path="res://Scenes/UI/Lobby/HostLobby.tscn" id="2_eyp7f"]
+[ext_resource type="PackedScene" uid="uid://biy1n2dqeqrox" path="res://Scenes/UI/Lobby/ClientLobby.tscn" id="3_rshoh"]
 
 [node name="MainMenu" type="CanvasLayer"]
 script = ExtResource("1_iln2i")
 
-[node name="Control" type="Control" parent="."]
-layout_mode = 3
-anchors_preset = 15
+[node name="MenuBar" type="MenuBar" parent="."]
+anchors_preset = 10
 anchor_right = 1.0
-anchor_bottom = 1.0
+offset_right = -1741.0
+offset_bottom = 69.0
 grow_horizontal = 2
-grow_vertical = 2
-size_flags_horizontal = 3
-size_flags_vertical = 3
+prefer_global_menu = false
 
-[node name="MenuBar" type="MenuBar" parent="Control"]
-layout_mode = 2
-anchor_left = 1.003
-anchor_right = 1.003
-offset_left = -1787.76
-offset_top = 29.0
-offset_right = -1245.76
-offset_bottom = 176.0
-scale = Vector2(2, 2)
-
-[node name="Editors Menu" type="PopupMenu" parent="Control/MenuBar"]
+[node name="Editors" type="PopupMenu" parent="MenuBar"]
 size = Vector2i(238, 126)
 item_count = 2
 item_0/text = "Map Editor"
@@ -33,31 +23,44 @@ item_0/id = 0
 item_1/text = "Unit Editor"
 item_1/id = 1
 
-[node name="VBoxContainer" type="VBoxContainer" parent="Control"]
-layout_mode = 1
-anchors_preset = 1
-anchor_left = 1.0
+[node name="MenuBar2" type="MenuBar" parent="."]
+anchors_preset = 10
 anchor_right = 1.0
-offset_left = -825.0
-offset_top = 143.0
-offset_right = -286.0
-offset_bottom = 625.0
-grow_horizontal = 0
-scale = Vector2(1.5, 1.5)
-theme_override_constants/separation = 30
+offset_left = 203.0
+offset_right = -1551.0
+offset_bottom = 69.0
+grow_horizontal = 2
+prefer_global_menu = false
 
-[node name="Host" type="Button" parent="Control/VBoxContainer"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 40
-text = "Start Game 🪐"
+[node name="Replays" type="PopupMenu" parent="MenuBar2"]
+size = Vector2i(243, 100)
+item_count = 1
+item_0/text = "Run Replay"
+item_0/id = 0
 
-[node name="Join" type="Button" parent="Control/VBoxContainer"]
-layout_mode = 2
-text = "Join a server 🙌"
+[node name="MenuBar3" type="MenuBar" parent="."]
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 435.0
+offset_right = -1244.0
+offset_bottom = 69.0
+grow_horizontal = 2
+prefer_global_menu = false
 
-[node name="Replay" type="Button" parent="Control/VBoxContainer"]
-layout_mode = 2
-text = "Replay 🎥"
+[node name="Multiplayer" type="PopupMenu" parent="MenuBar3"]
+size = Vector2i(247, 126)
+item_count = 2
+item_0/text = "Host server"
+item_0/id = 0
+item_1/text = "Join"
+item_1/id = 1
+
+[node name="HostLobby" parent="." instance=ExtResource("2_eyp7f")]
+offset_top = 73.0
+
+[node name="ClientLobby" parent="." instance=ExtResource("3_rshoh")]
+visible = false
+offset_top = 73.0
 
 [node name="FileDialogReplay" type="FileDialog" parent="."]
 title = "Open a File"
@@ -69,8 +72,7 @@ access = 1
 root_subfolder = "replays/"
 
 [connection signal="visibility_changed" from="." to="." method="_on_visibility_changed"]
-[connection signal="id_pressed" from="Control/MenuBar/Editors Menu" to="." method="_on_editors_menu_id_pressed"]
-[connection signal="pressed" from="Control/VBoxContainer/Host" to="." method="_on_host_pressed"]
-[connection signal="pressed" from="Control/VBoxContainer/Join" to="." method="_on_join_pressed"]
-[connection signal="pressed" from="Control/VBoxContainer/Replay" to="." method="_on_replay_pressed"]
+[connection signal="id_pressed" from="MenuBar/Editors" to="." method="_on_editors_menu_id_pressed"]
+[connection signal="id_pressed" from="MenuBar2/Replays" to="." method="_on_replays_id_pressed"]
+[connection signal="id_pressed" from="MenuBar3/Multiplayer" to="." method="_on_multiplayer_id_pressed"]
 [connection signal="file_selected" from="FileDialogReplay" to="." method="_on_file_dialog_replay_file_selected"]

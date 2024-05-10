@@ -1,7 +1,6 @@
-[gd_scene load_steps=5 format=3 uid="uid://dunktaeebf6f1"]
+[gd_scene load_steps=4 format=3 uid="uid://dunktaeebf6f1"]
 
 [ext_resource type="Script" path="res://Scripts/UI/Lobby/Network/client_connector.gd" id="1_axf84"]
-[ext_resource type="Shortcut" uid="uid://fuvss5hfg4q2" path="res://Resources/Shortcuts/go_back.tres" id="2_qqtls"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_avfjo"]
 bg_color = Color(0, 0.6, 0, 1)
@@ -27,6 +26,7 @@ layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_bottom = -87.0
 grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 3
@@ -44,7 +44,7 @@ theme_override_constants/margin_bottom = 30
 
 [node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
 layout_mode = 2
-theme_override_constants/separation = 25
+theme_override_constants/separation = 10
 
 [node name="UserName" type="VBoxContainer" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
@@ -141,21 +141,12 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 60
 text = "CONNECT"
 
-[node name="ButtonBack" type="Button" parent="."]
-layout_mode = 1
-offset_left = 32.0
-offset_top = 931.0
-offset_right = 219.0
-offset_bottom = 1045.0
-shortcut = ExtResource("2_qqtls")
-text = "Back"
-
 [node name="RichTextLabel" type="RichTextLabel" parent="."]
 layout_mode = 0
-offset_left = 244.0
-offset_top = 913.0
+offset_left = 31.0
+offset_top = 877.0
 offset_right = 936.0
-offset_bottom = 1051.0
+offset_bottom = 1003.0
 theme_override_font_sizes/normal_font_size = 30
 bbcode_enabled = true
 text = "INSTRUCTION
@@ -166,4 +157,3 @@ Some internet providers dont even assign EXTERNAL ips to routers, so you cant co
 If you cant find a good host consider services like HAMACHI to create a virtual network that simulates LAN over internet."
 
 [connection signal="pressed" from="MarginContainer/VBoxContainer/ButtonConnect" to="." method="_on_button_listen_pressed"]
-[connection signal="pressed" from="ButtonBack" to="." method="_on_button_back_pressed"]

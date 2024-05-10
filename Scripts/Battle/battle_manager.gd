@@ -51,9 +51,9 @@ func start_battle(new_armies : Array[Army], battle_map : DataBattleMap, \
 
 	selected_unit = null
 	battle_ui.load_armies(armies_in_battle_state)
-	
+
 	turn_counter = 0
-	
+
 	notify_current_player_your_turn()
 
 ## Camera bounds
@@ -380,9 +380,9 @@ func move_unit(unit : UnitForm, end_coord : Vector2i, direction: int) -> void:
 	B_GRID.change_unit_coord(unit, end_coord)
 	if process_symbols(unit):
 		return
-	
+
 	turn_counter += 1
-	check_battle_end() 
+	check_battle_end()
 
 
 
@@ -427,7 +427,7 @@ func check_battle_end() -> void:
 		state = STATE_BATTLE_FINISHED
 		end_the_battle()
 		return
-	
+
 	# TEMP
 	if turn_counter == 50:
 		turn_counter += 1  # XD
