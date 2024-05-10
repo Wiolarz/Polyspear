@@ -43,7 +43,7 @@ func _ready():
 
 func clear_container():
 	for child in container.get_children():
-		container.remove_child(child)
+		child.queue_free()
 
 
 func select_world():

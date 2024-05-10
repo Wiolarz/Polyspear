@@ -12,7 +12,6 @@ func make_server():
 	if client:
 		client.close()
 		client.queue_free()
-		remove_child(client)
 		client = null
 	server = Server.new()
 	server.name = "TheServer"
@@ -25,7 +24,6 @@ func make_client() -> void:
 	if server:
 		server.close()
 		server.queue_free()
-		remove_child(server)
 		server = null
 	client = Client.new()
 	client.name = "TheClient"
@@ -109,7 +107,6 @@ func fetch_external_address_guess() -> String:
 	var results = await request.request_completed
 	# results = [_result, _response_code, _headers, body]
 	var external_address = results[3].get_string_from_utf8();
-	remove_child(request)
 	request.queue_free()
 	print("external address from '", url, "' is : ", external_address)
 	return external_address

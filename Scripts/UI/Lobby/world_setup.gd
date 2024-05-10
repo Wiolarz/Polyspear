@@ -133,13 +133,13 @@ func rebuild():
 
 func make_client_side():
 	map_select.get_node("Label").text = "Selected map"
-	map_select.get_node("ColorRect").remove_child(maps_list)
 	maps_list.queue_free()
 	maps_list = null
 	client_side_map_label = Label.new()
 	client_side_map_label.text = "some map"
 	map_select.get_node("ColorRect").add_child(client_side_map_label)
-	$V.remove_child($V/PresetSelect)
+	var presets = $V/PresetSelect
+	presets.queue_free()
 
 func fill_maps_list():
 	if not maps_list:

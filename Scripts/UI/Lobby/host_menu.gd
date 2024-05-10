@@ -5,10 +5,10 @@ extends Control
 Manager scripts that displays specific UI
 """
 
-@onready var server_creator = \
-	load("res://Scenes/UI/Lobby/Network/ServerCreator.tscn").instantiate()
-@onready var server_info_and_chat = \
-	load("res://Scenes/UI/Lobby/Network/ServerInfoAndChat.tscn").instantiate()
+var server_creator_scene : PackedScene = load("res://Scenes/UI/Lobby/Network/ServerCreator.tscn")
+
+var server_info_and_chat_scene : PackedScene = \
+		load("res://Scenes/UI/Lobby/Network/ServerInfoAndChat.tscn")
 
 
 @onready var server_management = $ServerManagement
@@ -21,11 +21,12 @@ func go_back():
 
 func clear_management():
 	for child in server_management.get_children():
-		server_management.remove_child(child)
+		child.queue_free()
 
 
 func show_server_creator():
 	clear_management()
+	var server_creator = server_creator_scene.instantiate()
 	server_management.add_child(server_creator)
 	server_creator.name = "ServerCreator"
 	server_creator.host_menu = self
@@ -33,6 +34,8 @@ func show_server_creator():
 
 func show_server_info_and_chat():
 	clear_management()
+
+	var server_info_and_chat = server_info_and_chat_scene.instantiate()
 	server_management.add_child(server_info_and_chat)
 	server_info_and_chat.name = "ServerInfoAndChat"
 	server_info_and_chat.host_menu = self

@@ -10,6 +10,9 @@ var coord:
 var controller:
 	get: return entity.controller
 
+func _init():
+	name = "ArmyForm"
+
 func _process(_delta):
 	var hero = entity.hero
 	if hero:
@@ -34,6 +37,8 @@ static func create_hero_army(player : Player, hero_data : DataHero) -> ArmyForm:
 static func create_neutral_army(army_preset : PresetArmy) -> ArmyForm:
 	var result : ArmyForm = CFG.DEFAULT_ARMY_FORM.instantiate()
 	result.entity = Army.create_army_from_preset(army_preset)
+	result.name = "Neutral_"+army_preset.resource_path.get_file()
+
 
 	result.get_node("sprite_unit").texture = \
 		load(army_preset.units[0].texture_path)

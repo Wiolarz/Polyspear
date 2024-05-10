@@ -34,7 +34,7 @@ var players : Array[Player] = [] :
 	set(value):
 		for p in players:
 			print("removing player ", p)
-			remove_child(p)
+			p.queue_free()
 		for p in value:
 			print("adding player ", p)
 			p.name = "Player_"+p.player_name
@@ -170,7 +170,7 @@ func _start_game_world():
 	for player_preset in get_player_presets():
 		new_players.append(player_preset.create_player())
 	UI.go_to_main_menu()
-	players.assign(new_players)
+	players = new_players
 	WM.start_world(game_setup_info.world_map)
 
 

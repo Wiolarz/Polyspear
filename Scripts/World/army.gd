@@ -1,5 +1,5 @@
 class_name Army
-extends Node
+extends RefCounted # RefCounted is default
 
 var units_data : Array[DataUnit]
 
@@ -16,7 +16,7 @@ func destroy_army():
 	else:
 		WM.grid[coord.x][coord.y].army = null
 
-	queue_free()
+	free()
 
 
 func get_units_list():

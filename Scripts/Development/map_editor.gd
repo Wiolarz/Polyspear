@@ -66,7 +66,6 @@ func _set_grid_type(new_type : MapType) -> void:
 	_mark_button(new_type)
 	var tile_set = tiles_world if new_type == MapType.WORLD else tiles_battle
 	for b in tile_buttons_box.get_children():
-		tile_buttons_box.remove_child(b)
 		b.queue_free()
 	for tile_path in tile_set:
 		_create_button(tile_buttons_box, tile_path)
