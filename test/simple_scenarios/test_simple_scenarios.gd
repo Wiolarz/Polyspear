@@ -1,50 +1,61 @@
 extends GutTest
 
+const MAIN_MENU_UI_PATH = "/root/UI/MainMenu"
+const WORLD_MODE_BUTTON_PATH = "/root/UI/MainMenu/HostLobby/HostMenu/" + \
+		"PanelContainer/GameSetup/MarginContainer/VBoxContainer/ModeChoice/ButtonWorld"
+const START_GAME_BUTTON_PATH = "/root/UI/MainMenu/HostLobby/HostMenu/" + \
+		"PanelContainer/GameSetup/MarginContainer/VBoxContainer/ButtonConfirm"
+
+const WORLD_UI_PATH = "/root/UI/WorldUi"
+const DEFAULT_MAP_TILES_COUNT = 14*10
+const OPEN_IN_GAME_MENU_PATH = "/root/UI/WorldUi/Menu"
+const IN_GAME_MENU_PATH = "/root/UI/InGameMenu"
+const IN_GAME_MENU_BACK_TO_MAIN_MENU_PATH = "/root/UI/InGameMenu/MenuContainer/ReturnToMainMenu"
+
+
 func before_all():
 	gut.p("INIT - go to main menu (as MainScene does)")
+	CFG.AUTO_START_GAME = false # disable autostart cheat
 	IM.go_to_main_menu()
+
 
 func after_all():
 	gut.p("INIT - hide main menu (restore state)")
 	UI._hide_all()
 
-func test_map_start_and_close() -> void:
-	gut.p("click 'Start Game' in main menu")
-	var start_game_button = $"/root/UI/MainMenu/Control/VBoxContainer/Host"
-	assert_true( start_game_button.is_visible_in_tree(), \
-		"Start Game button not visible")
-	start_game_button.pressed.emit()
 
+func test_map_start_and_close() -> void:
 	gut.p("click 'Full game' in lobby")
-	var full_game_button = $"/root/UI/HostLobby/HostMenu/PanelContainer/GameSetup/MarginContainer/VBoxContainer/ModeChoice/ButtonWorld"
+	var full_game_button = get_node(WORLD_MODE_BUTTON_PATH)
 	assert_true( full_game_button.is_visible_in_tree(), \
 		"Full Game button not visible")
 	full_game_button.toggled.emit(true)
 
 	gut.p("click 'Start' button in lobby")
-	var lobby_start_button = $/root/UI/HostLobby/HostMenu/PanelContainer/GameSetup/MarginContainer/VBoxContainer/ButtonConfirm
+	var lobby_start_button = get_node(START_GAME_BUTTON_PATH)
 	assert_true( lobby_start_button.is_visible_in_tree(), \
 		"Lobby Start button not visible")
 	lobby_start_button.pressed.emit()
 
 	gut.p("simple check if map loaded correctly")
-	var world_ui = $/root/UI/WorldUi
+	var world_ui = get_node(WORLD_UI_PATH)
 	assert_is(world_ui, CanvasLayer, "World UI not a CanvasLayer")
 	assert_true(world_ui.visible, "World UI not visible")
 	# TODO: stabilize default map so that this test doesnt need to be updated
 	# when new map is added and happens to be picked as first
-	assert_eq(W_GRID.get_child_count(),14*10, "Map spawned, but tiles count not 14*10")
+	assert_eq(W_GRID.get_child_count(), DEFAULT_MAP_TILES_COUNT, \
+		"Map spawned, but tiles count not 14*10")
 	assert_is(W_GRID.get_child(0), TileForm, "Map spawned, but tiles are not TileForm")
 
 	gut.p("open in game menu")
-	var open_menu_button = $/root/UI/WorldUi/Menu
+	var open_menu_button = get_node(OPEN_IN_GAME_MENU_PATH)
 	open_menu_button.pressed.emit()
 
-	var in_game_menu = $/root/UI/InGameMenu
+	var in_game_menu = get_node(IN_GAME_MENU_PATH)
 	assert_true(in_game_menu.visible, "In game menu not visible")
 
 	gut.p("press 'back to main menu' button")
-	var quit_to_main_button =  $/root/UI/InGameMenu/MenuContainer/ReturnToMainMenu
+	var quit_to_main_button =  get_node(IN_GAME_MENU_BACK_TO_MAIN_MENU_PATH)
 	assert_true(quit_to_main_button.is_visible_in_tree(), \
 		"back to main menu button not visible")
 
@@ -54,7 +65,7 @@ func test_map_start_and_close() -> void:
 	gut.p("check that main menu looks ok")
 	assert_false(world_ui.visible, "World UI still visible")
 	assert_eq(W_GRID.get_child_count(), 0, "Map should be cleared")
-	assert_true( $"/root/UI/MainMenu".visible, \
+	assert_true( get_node(MAIN_MENU_UI_PATH).visible, \
 		"main menu is not visible")
-	assert_true( start_game_button.is_visible_in_tree(), \
+	assert_true( get_node(START_GAME_BUTTON_PATH).is_visible_in_tree(), \
 		"Start Game button is not visible")
