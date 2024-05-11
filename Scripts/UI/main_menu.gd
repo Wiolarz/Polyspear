@@ -7,6 +7,9 @@ func _init():
 
 func _ready():
 	refresh_replays_disabled()
+	if CFG.AUTO_START_GAME:
+		await get_tree().create_timer(0.1).timeout  # Waits for the Main menu UI to properly load, so it can be closed
+		IM.start_game()
 
 
 func refresh_replays_disabled():
