@@ -51,9 +51,9 @@ func start_battle(new_armies : Array[Army], battle_map : DataBattleMap, \
 
 	selected_unit = null
 	battle_ui.load_armies(armies_in_battle_state)
-	
+
 	turn_counter = 0
-	
+
 	notify_current_player_your_turn()
 
 ## Camera bounds
@@ -380,9 +380,9 @@ func move_unit(unit : UnitForm, end_coord : Vector2i, direction: int) -> void:
 	B_GRID.change_unit_coord(unit, end_coord)
 	if process_symbols(unit):
 		return
-	
+
 	turn_counter += 1
-	check_battle_end() 
+	check_battle_end()
 
 
 
@@ -427,22 +427,19 @@ func check_battle_end() -> void:
 		state = STATE_BATTLE_FINISHED
 		end_the_battle()
 		return
-	
+
 	# TEMP
 	if turn_counter == 50:
 		turn_counter += 1  # XD
 		end_stalemate()
 
 
-func reset_battle_manager() -> void:
-	battle_is_ongoing = false
-	while _replay_is_playing:
-		await get_tree().create_timer(0.1).timeout
-
+func turn_off_battle_ui() -> void:
 	battle_ui.hide()
 	IM.switch_camera()
 
-	# delete all data related to battle
+
+func reset_grid_and_unit_forms() -> void:
 	B_GRID.reset_data()
 	for child in get_children():
 		child.queue_free()
@@ -451,10 +448,16 @@ func reset_battle_manager() -> void:
 func end_the_battle() -> void:
 	if not battle_is_ongoing:
 		return
-	print("turns passed: ", turn_counter)
-	await get_tree().create_timer(1).timeout # TEMP, instead
+	battle_is_ongoing = false
 
-	reset_battle_manager()
+	print("turns passed: ", turn_counter)
+
+	await get_tree().create_timer(1).timeout # TEMP, don't exit immediately
+	while _replay_is_playing:
+		await get_tree().create_timer(0.1).timeout
+
+	turn_off_battle_ui()
+	reset_grid_and_unit_forms()
 
 	if WM.selected_hero == null:
 		print("end of test battle")
