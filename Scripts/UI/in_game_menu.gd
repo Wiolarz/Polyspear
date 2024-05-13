@@ -5,7 +5,7 @@ func _ready():
 	$MenuContainer/ToggleBattleDefault.button_pressed = CFG.DEFAULT_MODE_IS_BATTLE
 
 func _on_back_to_game_pressed():
-	IM.hide_in_game_menu()
+	IM.toggle_in_game_menu()
 
 
 func _on_full_screen_pressed():
@@ -27,7 +27,7 @@ func _on_surrender_pressed():
 
 
 func _on_return_to_main_menu_pressed():
-	IM.hide_in_game_menu()
+	IM.toggle_in_game_menu()
 	IM.go_to_main_menu()
 
 

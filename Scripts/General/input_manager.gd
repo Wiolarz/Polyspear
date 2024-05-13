@@ -47,6 +47,10 @@ var draw_mode : bool = false
 var current_camera_position = E.CameraPosition.WORLD
 
 
+func _ready():
+	process_mode = Node.PROCESS_MODE_ALWAYS
+
+
 #region Input Support
 
 ## ESC - Return to the previous menu interface
@@ -67,7 +71,7 @@ func _process(delta):
 		toggle_fullscreen()
 
 	if Input.is_action_just_pressed("KEY_MENU"):
-		show_in_game_menu()
+		toggle_in_game_menu()
 
 	if Input.is_action_just_pressed("KEY_DEBUG_COLLISION_SHAPES"):
 		toggle_collision_debug()
@@ -78,7 +82,8 @@ func _process(delta):
 	if Input.is_action_just_pressed("KEY_LOAD_GAME"):
 		print("quick load is not yet supported")
 
-	if camera:
+	# we do not want to process camera when game is paused
+	if camera and not get_tree().paused:
 		camera.process_camera(delta)
 
 
@@ -269,13 +274,10 @@ func go_to_main_menu():
 	WM.close_world()
 	UI.go_to_main_menu()
 
-func show_in_game_menu():
-	set_game_paused(true)
-	UI.show_in_game_menu()
 
-func hide_in_game_menu():
-	UI.hide_in_game_menu()
-	set_game_paused(false)
+func toggle_in_game_menu():
+	UI.toggle_in_game_menu()
+	set_game_paused(UI.requests_pause())
 
 #endregion
 

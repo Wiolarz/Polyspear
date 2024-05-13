@@ -27,7 +27,7 @@ func close_city_ui() -> void:
 
 
 func _on_menu_pressed():
-	IM.show_in_game_menu()
+	IM.toggle_in_game_menu()
 
 
 func _on_end_turn_pressed():

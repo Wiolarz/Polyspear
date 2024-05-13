@@ -61,3 +61,16 @@ func show_in_game_menu():
 
 func hide_in_game_menu():
 	in_game_menu.hide()
+
+
+## Toggles visibility of in-game menu \
+## Disabled in main menu
+func toggle_in_game_menu():
+	if main_menu.visible or in_game_menu.visible:
+		hide_in_game_menu()
+	else:
+		show_in_game_menu()
+
+
+func requests_pause():
+	return in_game_menu.visible
