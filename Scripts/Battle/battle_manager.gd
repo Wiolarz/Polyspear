@@ -440,6 +440,7 @@ func turn_off_battle_ui() -> void:
 
 
 func reset_grid_and_unit_forms() -> void:
+	battle_is_ongoing = false
 	B_GRID.reset_data()
 	for child in get_children():
 		child.queue_free()
