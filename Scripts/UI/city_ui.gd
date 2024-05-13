@@ -14,6 +14,8 @@ func show_trade_ui(viewed_city : City, visiting_hero : ArmyForm):
 	city = viewed_city
 	hero_army = visiting_hero
 	_refresh_all()
+	if not unit_panels.visible and visiting_hero:
+		_on_show_recruit_units_ui_pressed()
 
 
 func _refresh_all():
@@ -99,6 +101,7 @@ func _on_buy_hero_button_pressed(hero_index : int):
 
 	WM.recruit_hero(city.controller, hero_to_buy, city.coord)
 	_refresh_all()
+	_on_show_recruit_heroes_ui_pressed() # hide
 
 
 func _refresh_buildings_display():
@@ -124,16 +127,19 @@ func _refresh_buildings_display():
 func _on_show_recruit_heroes_ui_pressed():
 	unit_panels.hide()
 	building_buttons.hide()
+	_refresh_heroes_to_buy()
 	hero_panels.visible = not hero_panels.visible
 
 
 func _on_show_recruit_units_ui_pressed():
 	hero_panels.hide()
 	building_buttons.hide()
+	_refresh_units_to_buy()
 	unit_panels.visible = not unit_panels.visible
 
 
 func _on_show_build_ui_pressed():
 	hero_panels.hide()
 	unit_panels.hide()
+	_refresh_buildings_display()
 	building_buttons.visible = not building_buttons.visible

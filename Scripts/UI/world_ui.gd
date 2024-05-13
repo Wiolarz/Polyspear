@@ -33,3 +33,10 @@ func _on_menu_pressed():
 func _on_end_turn_pressed():
 	WM.next_player_turn()
 	refresh_player_buttons()
+
+
+func _on_line_edit_text_submitted(new_text : String):
+	if new_text.strip_edges().to_lower() == "showmethemoney":
+		WM.current_player.goods.add(Goods.new(100,100,100))
+		print("moeny cheat")
+	($ChatLineEdit as LineEdit).clear()
