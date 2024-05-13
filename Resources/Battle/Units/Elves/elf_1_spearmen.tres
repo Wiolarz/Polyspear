@@ -19,3 +19,4 @@ texture_path = "res://Art/units/elf/elf_spearmen.png"
 symbols = Array[Resource("res://Resources/Battle/data_symbol.gd")]([ExtResource("5_r8p1y"), ExtResource("3_ep7sl"), ExtResource("3_ep7sl"), ExtResource("3_ep7sl"), ExtResource("3_ep7sl"), ExtResource("3_ep7sl")])
 cost = SubResource("Resource_8qfgt")
 required_building = ExtResource("2_wwywa")
+level = 1

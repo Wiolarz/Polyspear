@@ -119,9 +119,9 @@ const WORLD_MOVEABLE_TILES = [
 	"ruby_hunt",
 ]
 
-var DEFAULT_MODE_IS_BATTLE : bool : 
+var DEFAULT_MODE_IS_BATTLE : bool :
 	get: return player_options.use_default_battle
-var AUTO_START_GAME : bool : 
+var AUTO_START_GAME : bool :
 	get: return player_options.autostart_map
 
 #endregion

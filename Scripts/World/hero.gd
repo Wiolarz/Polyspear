@@ -22,6 +22,8 @@ var max_army_size : int
 var max_movement_points = 3
 var movement_points = 3
 
+var xp = 0
+var level = 1
 
 static func create_hero(data_hero : DataHero) -> Hero:
 	var new_hero = Hero.new()

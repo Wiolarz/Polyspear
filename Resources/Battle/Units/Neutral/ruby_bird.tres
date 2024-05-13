@@ -18,3 +18,4 @@ unit_name = "Ruby Bird"
 texture_path = "res://Art/units/neutral/ruby_bird.png"
 symbols = Array[Resource("res://Resources/Battle/data_symbol.gd")]([ExtResource("3_awb53"), ExtResource("4_ysvxh"), ExtResource("5_munug"), ExtResource("5_munug"), ExtResource("5_munug"), ExtResource("4_ysvxh")])
 cost = SubResource("Resource_6r5q3")
+level = 3

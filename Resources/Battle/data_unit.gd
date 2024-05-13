@@ -8,6 +8,7 @@ extends Resource
 @export var symbols : Array[DataSymbol] = [null,null,null,null,null,null]
 @export var cost : Goods = Goods.new()
 @export var required_building : DataBuilding = null
+@export var level : int = 1
 
 func apply_data(_unit : UnitForm) -> void:
 	pass
