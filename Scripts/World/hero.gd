@@ -29,16 +29,17 @@ static func create_hero(data_hero : DataHero, player : Player) -> Hero:
 	for dead_hero in player.dead_heroes:
 		if dead_hero.template == data_hero:
 			dead_hero.revive()
+			dead_hero.controller = player
 			return dead_hero
 
 	var new_hero = Hero.new()
 	new_hero.template = data_hero
-	new_hero.name = "Hero_" + data_hero.hero_name
 	new_hero.hero_name = data_hero.hero_name
+	new_hero.name = "Hero_" + data_hero.hero_name
+	new_hero.controller = player
 	new_hero.data_unit = data_hero.data_unit
 	new_hero.max_army_size = data_hero.max_army_size
 	new_hero.max_movement_points = data_hero.max_movement_points
-
 	return new_hero
 
 
