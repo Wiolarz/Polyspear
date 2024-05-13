@@ -26,7 +26,7 @@ var current_button: TextureButton
 
 #region Setup
 
-func _create_button(box : BoxContainer, map_tile : String):
+func _create_button(map_tile : String) -> TextureButton:
 	var tile = load(map_tile)
 
 	var new_button = TextureButton.new()
@@ -34,7 +34,7 @@ func _create_button(box : BoxContainer, map_tile : String):
 	new_button.stretch_mode = TextureButton.STRETCH_KEEP_ASPECT
 	new_button.ignore_texture_size = true
 	new_button.custom_minimum_size = Vector2(130,160)
-	box.add_child(new_button)
+
 	var lambda = func on_click():
 		if current_button != null:
 			current_button.modulate = Color.WHITE
@@ -43,7 +43,7 @@ func _create_button(box : BoxContainer, map_tile : String):
 		current_button.modulate = Color.DIM_GRAY
 
 	new_button.pressed.connect(lambda)  # self._button_pressed
-
+	return new_button
 
 #endregion
 
@@ -67,10 +67,13 @@ func _set_grid_type(new_type : MapType) -> void:
 	var tile_set = tiles_world if new_type == MapType.WORLD else tiles_battle
 	for b in tile_buttons_box.get_children():
 		b.queue_free()
+	var new_buttons = []
 	for tile_path in tile_set:
-		_create_button(tile_buttons_box, tile_path)
+		new_buttons.append(_create_button(tile_path))
+	for b in new_buttons:
+		tile_buttons_box.add_child(b)
 	# pick first tile as a default tile
-	tile_buttons_box.get_child(0).pressed.emit()
+	new_buttons[0].pressed.emit()
 
 
 func _mark_button(selected_type : MapType):
@@ -140,7 +143,7 @@ func _on_load_map_pressed():
 	var map_to_load = load(map_path)
 	assert(map_to_load != null, "there is no selected map to be loaded")
 	WM.close_world()
-	BM.reset_battle_manager()
+	BM.reset_grid_and_unit_forms()
 	if map_to_load is DataWorldMap:
 		_set_grid_type(MapType.WORLD)
 		W_GRID.generate_grid(map_to_load)
@@ -190,7 +193,7 @@ func _on_save_map_pressed():
 
 func _generate_empty_map(size_x : int = 5, size_y : int = 5) -> Array: # -> Array[Array[DataTile]]
 	WM.close_world()
-	BM.reset_battle_manager()
+	BM.reset_grid_and_unit_forms()
 	var grid_data = []
 
 	for tile_column in range(size_x):
