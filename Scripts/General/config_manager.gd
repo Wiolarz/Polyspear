@@ -94,6 +94,8 @@ const DEFAULT_ARMY_FORM = preload("res://Scenes/Form/ArmyForm.tscn")
 ## that returns address as a single text line in the response body
 const FETCH_EXTERNAL_IP_GET_URL = "https://api.ipify.org"
 
+const HERO_LEVEL_CAP = 7
+
 func get_start_goods() -> Goods:
 	return Goods.new(10,5,1)
 
@@ -119,9 +121,9 @@ const WORLD_MOVEABLE_TILES = [
 	"ruby_hunt",
 ]
 
-var DEFAULT_MODE_IS_BATTLE : bool : 
+var DEFAULT_MODE_IS_BATTLE : bool :
 	get: return player_options.use_default_battle
-var AUTO_START_GAME : bool : 
+var AUTO_START_GAME : bool :
 	get: return player_options.autostart_map
 
 #endregion

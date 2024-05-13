@@ -214,6 +214,14 @@ func start_combat(attacking_army : ArmyForm, coord : Vector2i):
 
 func end_of_battle(battle_results : Array[BM.ArmyInBattleState]):
 	#TODO get result from Battle Manager
+
+	var attack_hero  = battle_results[BM.ATTACKER].army_reference.hero
+	var defence_hero = battle_results[BM.DEFENDER].army_reference.hero
+	if attack_hero:
+		attack_hero.add_xp_for_casualties(battle_results[BM.DEFENDER].dead_units, defence_hero)
+	if defence_hero:
+		defence_hero.add_xp_for_casualties(battle_results[BM.ATTACKER].dead_units, attack_hero)
+
 	if battle_results[BM.ATTACKER].can_fight():
 		print("attacker won")
 		kill_army(W_GRID.get_army(combat_tile)) # clear the tile of enemy presence

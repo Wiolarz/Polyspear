@@ -14,7 +14,7 @@ texture = ExtResource("2_n0tp8")
 [node name="sprite_unit" type="Sprite2D" parent="."]
 texture = ExtResource("3_dockw")
 
-[node name="Label" type="Label" parent="."]
+[node name="DescriptionLabel" type="Label" parent="."]
 offset_left = -242.0
 offset_top = 38.0
 offset_right = -109.0
