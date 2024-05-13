@@ -94,6 +94,7 @@ text = "Quit"
 layout_mode = 2
 text = "Return To Main Menu"
 
+[connection signal="visibility_changed" from="." to="." method="_on_visibility_changed"]
 [connection signal="pressed" from="MenuContainer/BackToGame" to="." method="_on_back_to_game_pressed"]
 [connection signal="pressed" from="MenuContainer/WinBattle" to="." method="_on_win_battle_pressed"]
 [connection signal="pressed" from="MenuContainer/Surrender" to="." method="_on_surrender_pressed"]

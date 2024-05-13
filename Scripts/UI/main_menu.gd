@@ -13,7 +13,7 @@ func _ready():
 
 
 func refresh_replays_disabled():
-	$MenuBar2/Replays.set_item_disabled(0, not BattleReplay.has_replays())
+	$MainContainer/TopMenu/ReplaysMenuBar/Replays.set_item_disabled(0, not BattleReplay.has_replays())
 
 
 func _on_replays_id_pressed(_id):
@@ -38,9 +38,17 @@ func _on_visibility_changed():
 func _on_multiplayer_id_pressed(id):
 	match id:
 		0:
-			$HostLobby.show()
-			$ClientLobby.hide()
+			$MainContainer/HostLobby.show()
+			$MainContainer/ClientLobby.hide()
+			$MainContainer/SettingsMenu.hide()
 		1:
-			$HostLobby.hide()
-			$ClientLobby.show()
+			$MainContainer/HostLobby.hide()
+			$MainContainer/ClientLobby.show()
+			$MainContainer/SettingsMenu.hide()
 		_: pass
+
+
+func _on_settings_button_pressed():
+	$MainContainer/HostLobby.hide()
+	$MainContainer/ClientLobby.hide()
+	$MainContainer/SettingsMenu.show()

@@ -1,8 +1,15 @@
 extends CanvasLayer
 
+
 func _ready():
 	$MenuContainer/ToggleAutoStart.button_pressed = CFG.AUTO_START_GAME
 	$MenuContainer/ToggleBattleDefault.button_pressed = CFG.DEFAULT_MODE_IS_BATTLE
+
+
+func refresh():
+	$MenuContainer/ToggleAutoStart.button_pressed = CFG.AUTO_START_GAME
+	$MenuContainer/ToggleBattleDefault.button_pressed = CFG.DEFAULT_MODE_IS_BATTLE
+
 
 func _on_back_to_game_pressed():
 	IM.toggle_in_game_menu()
@@ -42,3 +49,8 @@ func _on_toggle_battle_default_pressed():
 	CFG.player_options.use_default_battle = not CFG.player_options.use_default_battle
 	CFG.save_player_options()
 	$MenuContainer/ToggleBattleDefault.button_pressed = CFG.DEFAULT_MODE_IS_BATTLE
+
+
+func _on_visibility_changed():
+	if visible:
+		refresh()

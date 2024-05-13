@@ -1,21 +1,38 @@
-[gd_scene load_steps=4 format=3 uid="uid://b4ndp6v0ts1on"]
+[gd_scene load_steps=6 format=3 uid="uid://b4ndp6v0ts1on"]
 
 [ext_resource type="Script" path="res://Scripts/UI/main_menu.gd" id="1_iln2i"]
 [ext_resource type="PackedScene" uid="uid://b3dmmym31kdbx" path="res://Scenes/UI/Lobby/HostLobby.tscn" id="2_eyp7f"]
 [ext_resource type="PackedScene" uid="uid://biy1n2dqeqrox" path="res://Scenes/UI/Lobby/ClientLobby.tscn" id="3_rshoh"]
+[ext_resource type="PackedScene" uid="uid://b6eoph2qpu0d" path="res://Scenes/UI/SettingsMenu.tscn" id="4_f2bj7"]
+
+[sub_resource type="StyleBoxLine" id="StyleBoxLine_3lov4"]
+color = Color(0.701961, 0.701961, 0.701961, 1)
+grow_begin = 0.0
+grow_end = 0.0
+thickness = 38
+vertical = true
 
 [node name="MainMenu" type="CanvasLayer"]
 script = ExtResource("1_iln2i")
 
-[node name="MenuBar" type="MenuBar" parent="."]
-anchors_preset = 10
+[node name="MainContainer" type="VBoxContainer" parent="."]
+anchors_preset = 15
 anchor_right = 1.0
-offset_right = -1741.0
-offset_bottom = 69.0
+anchor_bottom = 1.0
 grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+
+[node name="TopMenu" type="HBoxContainer" parent="MainContainer"]
+layout_mode = 2
+size_flags_vertical = 0
+
+[node name="EditorsMenuBar" type="MenuBar" parent="MainContainer/TopMenu"]
+layout_mode = 2
+theme_override_constants/h_separation = 0
 prefer_global_menu = false
 
-[node name="Editors" type="PopupMenu" parent="MenuBar"]
+[node name="Editors" type="PopupMenu" parent="MainContainer/TopMenu/EditorsMenuBar"]
 size = Vector2i(238, 126)
 item_count = 2
 item_0/text = "Map Editor"
@@ -23,31 +40,21 @@ item_0/id = 0
 item_1/text = "Unit Editor"
 item_1/id = 1
 
-[node name="MenuBar2" type="MenuBar" parent="."]
-anchors_preset = 10
-anchor_right = 1.0
-offset_left = 203.0
-offset_right = -1551.0
-offset_bottom = 69.0
-grow_horizontal = 2
+[node name="ReplaysMenuBar" type="MenuBar" parent="MainContainer/TopMenu"]
+layout_mode = 2
 prefer_global_menu = false
 
-[node name="Replays" type="PopupMenu" parent="MenuBar2"]
+[node name="Replays" type="PopupMenu" parent="MainContainer/TopMenu/ReplaysMenuBar"]
 size = Vector2i(243, 100)
 item_count = 1
 item_0/text = "Run Replay"
 item_0/id = 0
 
-[node name="MenuBar3" type="MenuBar" parent="."]
-anchors_preset = 10
-anchor_right = 1.0
-offset_left = 435.0
-offset_right = -1244.0
-offset_bottom = 69.0
-grow_horizontal = 2
+[node name="MultiplayerMenuBar" type="MenuBar" parent="MainContainer/TopMenu"]
+layout_mode = 2
 prefer_global_menu = false
 
-[node name="Multiplayer" type="PopupMenu" parent="MenuBar3"]
+[node name="Multiplayer" type="PopupMenu" parent="MainContainer/TopMenu/MultiplayerMenuBar"]
 size = Vector2i(247, 126)
 item_count = 2
 item_0/text = "Host server"
@@ -55,12 +62,26 @@ item_0/id = 0
 item_1/text = "Join"
 item_1/id = 1
 
-[node name="HostLobby" parent="." instance=ExtResource("2_eyp7f")]
-offset_top = 73.0
+[node name="VSeparator" type="VSeparator" parent="MainContainer/TopMenu"]
+layout_mode = 2
+theme_override_constants/separation = 92
+theme_override_styles/separator = SubResource("StyleBoxLine_3lov4")
 
-[node name="ClientLobby" parent="." instance=ExtResource("3_rshoh")]
+[node name="SettingsButton" type="Button" parent="MainContainer/TopMenu"]
+layout_mode = 2
+text = "Settings"
+
+[node name="HostLobby" parent="MainContainer" instance=ExtResource("2_eyp7f")]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="ClientLobby" parent="MainContainer" instance=ExtResource("3_rshoh")]
 visible = false
-offset_top = 73.0
+layout_mode = 2
+
+[node name="SettingsMenu" parent="MainContainer" instance=ExtResource("4_f2bj7")]
+visible = false
+layout_mode = 2
 
 [node name="FileDialogReplay" type="FileDialog" parent="."]
 title = "Open a File"
@@ -72,7 +93,8 @@ access = 1
 root_subfolder = "replays/"
 
 [connection signal="visibility_changed" from="." to="." method="_on_visibility_changed"]
-[connection signal="id_pressed" from="MenuBar/Editors" to="." method="_on_editors_menu_id_pressed"]
-[connection signal="id_pressed" from="MenuBar2/Replays" to="." method="_on_replays_id_pressed"]
-[connection signal="id_pressed" from="MenuBar3/Multiplayer" to="." method="_on_multiplayer_id_pressed"]
+[connection signal="id_pressed" from="MainContainer/TopMenu/EditorsMenuBar/Editors" to="." method="_on_editors_menu_id_pressed"]
+[connection signal="id_pressed" from="MainContainer/TopMenu/ReplaysMenuBar/Replays" to="." method="_on_replays_id_pressed"]
+[connection signal="id_pressed" from="MainContainer/TopMenu/MultiplayerMenuBar/Multiplayer" to="." method="_on_multiplayer_id_pressed"]
+[connection signal="pressed" from="MainContainer/TopMenu/SettingsButton" to="." method="_on_settings_button_pressed"]
 [connection signal="file_selected" from="FileDialogReplay" to="." method="_on_file_dialog_replay_file_selected"]

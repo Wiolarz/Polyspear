@@ -101,5 +101,5 @@ func _on_switch_camera_pressed():
 
 
 func _on_menu_pressed():
-	IM.show_in_game_menu()
+	IM.toggle_in_game_menu()
 
