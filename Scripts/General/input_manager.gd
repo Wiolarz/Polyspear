@@ -117,7 +117,8 @@ func grid_input_listener(tile_coord : Vector2i, tile_type : GameSetupInfo.GameMo
 		if tile_type == GameSetupInfo.GameMode.BATTLE:
 			BM.grid_input(tile_coord)
 	else:
-		WM.grid_input(tile_coord)
+		if tile_type == GameSetupInfo.GameMode.WORLD:
+			WM.grid_input(tile_coord)
 
 
 #endregion
