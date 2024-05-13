@@ -16,14 +16,10 @@ func _ready():
 	main_menu    = load("res://Scenes/UI/MainMenu.tscn").instantiate()
 	map_editor   = load("res://Scenes/UI/Editors/MapEditor.tscn").instantiate()
 	unit_editor  = load("res://Scenes/UI/Editors/UnitEditor.tscn").instantiate()
-	host_lobby   = load("res://Scenes/UI/Lobby/HostLobby.tscn").instantiate()
-	client_lobby = load("res://Scenes/UI/Lobby/ClientLobby.tscn").instantiate()
 
 	add_child(main_menu)
 	add_child(map_editor)
 	add_child(unit_editor)
-	add_child(host_lobby)
-	add_child(client_lobby)
 	add_child(in_game_menu, false, Node.INTERNAL_MODE_BACK)
 
 	_hide_all()
@@ -55,19 +51,8 @@ func go_to_unit_editor():
 
 
 func go_to_map_editor():
-	IM.draw_mode = true
 	_hide_all()
 	map_editor.open_draw_menu()
-
-
-func go_to_host_lobby():
-	_hide_all()
-	host_lobby.show()
-
-
-func go_to_client_lobby():
-	_hide_all()
-	client_lobby.show()
 
 
 func show_in_game_menu():

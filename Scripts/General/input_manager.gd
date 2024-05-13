@@ -164,6 +164,13 @@ func start_game():
 	if NET.server:
 		NET.server.broadcast_start_game()
 
+func go_to_map_editor():
+	if not camera:
+		camera = PolyCamera.new()
+		camera.name = "PolyCamera"
+		add_child(camera)
+	draw_mode = true
+	UI.go_to_map_editor()
 
 func _start_game_world():
 	var new_players : Array[Player] = []
