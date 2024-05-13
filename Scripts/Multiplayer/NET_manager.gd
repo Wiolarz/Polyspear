@@ -6,6 +6,15 @@ var client : Client
 
 var chat_log : String
 
+
+func get_role_name() -> String:
+	if server:
+		return "server"
+	if client:
+		return "client"
+	return "singleplayer"
+
+
 func make_server():
 	if server != null:
 		return

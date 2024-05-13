@@ -86,7 +86,7 @@ func perform_replay(path : String) -> void:
 	for m in replay.moves:
 		if not battle_is_ongoing:
 			return # terminating battle while watching
-		perform_ai_move(m)
+		perform_replay_move(m)
 		await replay_move_delay()
 	_replay_is_playing = false
 
@@ -121,6 +121,7 @@ func notify_current_player_your_turn() -> void:
 func switch_participant_turn() -> void:
 	current_army_index += 1
 	current_army_index %= armies_in_battle_state.size()
+	print(NET.get_role_name(), " switch_participant_turn ", current_army_index)
 
 	if state == STATE_SUMMONNING:
 		var skip_count = 0
@@ -175,10 +176,14 @@ func _grid_input_fighting(coord : Vector2i) -> void:
 		return
 
 	selected_unit.set_selected(false)
-	perform_move_fighting(selected_unit, coord, direction)
+	var move_info = MoveInfo.make_move(selected_unit.coord, coord)
 	selected_unit = null
-	switch_participant_turn()
 
+	if NET.client:
+		NET.client.queue_request_move(move_info)
+		return # dont perform move, send it to server
+
+	perform_move_info(move_info)
 
 ## Select friendly UnitForm on a given coord
 ## returns true if unit was selected
@@ -228,9 +233,22 @@ func get_move_direction_if_valid(unit : UnitForm, coord : Vector2i) -> int:
 	return move_direction
 
 
+func perform_network_move(move_info : MoveInfo) -> void:
+	perform_move_info(move_info)
+
+
+func perform_replay_move(move_info : MoveInfo) -> void:
+	perform_move_info(move_info)
+
+
 func perform_ai_move(move_info : MoveInfo) -> void:
+	perform_move_info(move_info)
+
+
+func perform_move_info(move_info : MoveInfo) -> void:
 	if not battle_is_ongoing:
 		return
+	print(NET.get_role_name(), " performing move ", move_info.move_type)
 	_replay.record_move(move_info)
 	_replay.save()
 	if NET.server:
@@ -238,11 +256,11 @@ func perform_ai_move(move_info : MoveInfo) -> void:
 	if move_info.move_type == MoveInfo.TYPE_MOVE:
 		var unit = B_GRID.get_unit(move_info.move_source)
 		var dir = GridManager.adjacent_side_direction(unit.coord, move_info.target_tile_coord)
-		move_unit(unit, move_info.target_tile_coord, dir)
+		move_info_move_unit(unit, move_info.target_tile_coord, dir)
 		switch_participant_turn()
 		return
 	if move_info.move_type == MoveInfo.TYPE_SUMMON:
-		summon_unit(move_info.summon_unit, move_info.target_tile_coord)
+		move_info_summon_unit(move_info.summon_unit, move_info.target_tile_coord)
 		switch_participant_turn()
 		return
 	assert(false, "Move move_type not supported in perform")
@@ -344,19 +362,7 @@ func push_enemy(enemy : UnitForm, direction : int) -> void:
 
 #region Gameplay actions
 
-func perform_move_fighting(unit : UnitForm, coord : Vector2i, direction : int):
-	var move_info = MoveInfo.make_move(unit.coord, coord)
-	if NET.client:
-		NET.client.queue_request_move(move_info)
-		return # dont perform move, send it to server
-	_replay.record_move(move_info)
-	_replay.save()
-	if NET.server:
-		NET.server.broadcast_move(move_info)
-	move_unit(unit, coord, direction)
-
-
-func move_unit(unit : UnitForm, end_coord : Vector2i, direction: int) -> void:
+func move_info_move_unit(unit : UnitForm, end_coord : Vector2i, direction: int) -> void:
 	# Move General function
 	"""
 		Turns unit to @side then Moves unit to end_coord
@@ -383,7 +389,6 @@ func move_unit(unit : UnitForm, end_coord : Vector2i, direction: int) -> void:
 
 	turn_counter += 1
 	check_battle_end()
-
 
 
 func get_player_army(player : Player) -> ArmyInBattleState:
@@ -487,16 +492,13 @@ func _grid_input_summon(coord : Vector2i) -> void:
 	if not is_legal_summon_coord(coord, current_army_index):
 		return
 
+	print(NET.get_role_name(), " input - summoning unit")
 	var move_info = MoveInfo.make_summon(battle_ui.selected_unit, coord)
 	if NET.client:
 		NET.client.queue_request_move(move_info)
 		return # dont perform move, send it to server
-	_replay.record_move(move_info)
-	_replay.save()
-	if NET.server:
-		NET.server.broadcast_move(move_info)
-	summon_unit(battle_ui.selected_unit, coord)
-	switch_participant_turn()
+	perform_move_info(move_info)
+
 
 
 func is_legal_summon_coord(coord : Vector2i, army_idx: int) -> bool:
@@ -507,7 +509,7 @@ func is_legal_summon_coord(coord : Vector2i, army_idx: int) -> bool:
 	return is_correct_spawn and B_GRID.get_unit(coord) == null
 
 
-func summon_unit(unit_data : DataUnit, coord : Vector2i) -> void:
+func move_info_summon_unit(unit_data : DataUnit, coord : Vector2i) -> void:
 	"""
 		Summon currently selected unit to a Gameplay Board
 
