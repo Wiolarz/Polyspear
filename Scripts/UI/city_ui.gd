@@ -95,8 +95,9 @@ func _on_buy_hero_button_pressed(hero_index : int):
 
 	var hero_to_buy : DataHero = city.controller.faction.heroes[hero_index]
 
-	if not city.controller.purchase(hero_to_buy.cost):
-		print("not enough cash, needed ", hero_to_buy.cost)
+	var cost = city.controller.get_hero_cost(hero_to_buy)
+	if not city.controller.purchase(cost):
+		print("not enough cash, needed ", cost)
 		return
 
 	WM.recruit_hero(city.controller, hero_to_buy, city.coord)

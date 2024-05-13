@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="DataHero" load_steps=5 format=3 uid="uid://c38l6fj56u5fp"]
+[gd_resource type="Resource" script_class="DataHero" load_steps=6 format=3 uid="uid://c38l6fj56u5fp"]
 
 [ext_resource type="Script" path="res://Scripts/World/Economy/goods.gd" id="1_p2dpe"]
 [ext_resource type="Resource" uid="uid://dn8mkfui6aqtf" path="res://Resources/Battle/Units/Orcs/orc_unit_hero_crusader.tres" id="2_ov8fl"]
@@ -10,10 +10,17 @@ wood = 2
 iron = 1
 ruby = 0
 
+[sub_resource type="Resource" id="Resource_gy75k"]
+script = ExtResource("1_p2dpe")
+wood = 1
+iron = 1
+ruby = 0
+
 [resource]
 script = ExtResource("3_4xv61")
 hero_name = "crusader"
 cost = SubResource("Resource_jcp01")
+revive_cost = SubResource("Resource_gy75k")
 data_unit = ExtResource("2_ov8fl")
 max_army_size = 3
 max_movement_points = 3

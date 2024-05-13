@@ -94,3 +94,9 @@ func has_dead_hero(data_hero: DataHero):
 		if dh.template == data_hero:
 			return true
 	return false
+
+
+func get_hero_cost(data_hero: DataHero):
+	if has_dead_hero(data_hero):
+		return data_hero.revive_cost
+	return data_hero.cost

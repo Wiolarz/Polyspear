@@ -25,14 +25,20 @@ var movement_points = 3
 var xp = 0
 var level = 1
 
-static func create_hero(data_hero : DataHero) -> Hero:
+static func create_hero(data_hero : DataHero, player : Player) -> Hero:
+	for dead_hero in player.dead_heroes:
+		if dead_hero.template == data_hero:
+			dead_hero.revive()
+			return dead_hero
+
 	var new_hero = Hero.new()
 	new_hero.template = data_hero
-	new_hero.name = "Hero_"+data_hero.hero_name
+	new_hero.name = "Hero_" + data_hero.hero_name
 	new_hero.hero_name = data_hero.hero_name
 	new_hero.data_unit = data_hero.data_unit
 	new_hero.max_army_size = data_hero.max_army_size
 	new_hero.max_movement_points = data_hero.max_movement_points
+
 	return new_hero
 
 
@@ -74,3 +80,6 @@ func level_up() -> void:
 	max_movement_points =  3 + (level / 2)
 	movement_points += max_movement_points - old_max_move
 
+
+func revive():
+	movement_points = max_movement_points
