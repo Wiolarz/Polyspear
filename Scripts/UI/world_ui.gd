@@ -34,16 +34,3 @@ func _on_end_turn_pressed():
 	WM.next_player_turn()
 	refresh_player_buttons()
 
-
-func _on_line_edit_text_submitted(new_text : String):
-	var cheat = new_text.strip_edges().to_lower()
-	if cheat == "money":
-		WM.current_player.goods.add(Goods.new(100,100,100))
-		print("moeny cheat")
-	if cheat == "fast":
-		if WM.selected_hero:
-			WM.selected_hero.entity.hero.movement_points += 100
-			print("travel cheat")
-
-
-	($ChatLineEdit as LineEdit).clear()
