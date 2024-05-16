@@ -56,7 +56,7 @@ func refresh_short_log():
 		return
 	const max_messages = 9
 	for child in short_log.get_children():
-		remove_child(child)
+		short_log.remove_child(child)
 		child.queue_free()
 	var index : int = max(0, entries.size() - max_messages)
 	while index < entries.size():
