@@ -7,6 +7,10 @@ var client : Client
 var chat_log : String
 
 
+signal chat_message_arrived(content : String)
+signal chat_log_cleared
+
+
 func get_role_name() -> String:
 	if server:
 		return "server"
@@ -100,10 +104,12 @@ func append_message_to_local_chat_log(message : String, \
 
 func append_to_local_chat_log(line : String) -> void:
 	chat_log += line + '\n'
+	chat_message_arrived.emit(line)
 
 
 func clear_local_chat_log() -> void:
 	chat_log = ""
+	chat_log_cleared.emit()
 
 ## tries to determine probable address by witch a server running on this
 ## machine could be reached, usually by making a call to an external
