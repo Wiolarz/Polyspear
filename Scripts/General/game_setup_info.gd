@@ -171,3 +171,11 @@ class Slot extends RefCounted: # check if this is good base
 				continue
 			non_empty.append(u)
 		return non_empty
+
+	## for replays
+	func set_units(new_units : Array[DataUnit]) -> void:
+		for idx in range(units_list.size()):
+			if idx >= new_units.size():
+				units_list[idx] = null
+				continue
+			units_list[idx] = new_units[idx]

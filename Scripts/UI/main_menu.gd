@@ -21,7 +21,7 @@ func _on_replays_id_pressed(_id):
 
 
 func _on_file_dialog_replay_file_selected(path):
-	BM.perform_replay(path)
+	IM.perform_replay(path)
 
 
 func _on_editors_menu_id_pressed(id):

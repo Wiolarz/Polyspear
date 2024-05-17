@@ -52,6 +52,25 @@ func start_game():
 		NET.server.broadcast_start_game()
 
 
+func perform_replay(path):
+	var replay = load(path) as BattleReplay
+	assert(replay != null)
+
+	game_setup_info.game_mode = GameSetupInfo.GameMode.BATTLE
+	game_setup_info.battle_map = replay.battle_map
+
+	assert(game_setup_info.slots.size() == replay.units_at_start.size(), \
+			"for now only 1v1 implemented")
+	for slot_id in range(replay.units_at_start.size()):
+		var slot = game_setup_info.slots[slot_id]
+		var units_array = replay.units_at_start[slot_id]
+		slot.occupier = ""
+		slot.set_units(units_array)
+
+	start_game()
+	BM.perform_replay(replay)
+
+
 func go_to_map_editor():
 	UI.ensure_camera_is_spawned()
 	draw_mode = true

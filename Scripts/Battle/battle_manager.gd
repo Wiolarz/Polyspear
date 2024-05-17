@@ -70,24 +70,9 @@ func get_bounds_global_position() -> Rect2:
 
 #region Replay
 
-func perform_replay(path : String) -> void:
-	var replay = load(path) as BattleReplay
-	assert(replay != null)
+func perform_replay(replay:BattleReplay) -> void:
 	_replay_is_playing = true
-	var map = replay.battle_map
-	var armies: Array[Army] = []
-	var player_idx = 0
-	while (IM.players.size() < replay.units_at_start.size()):
-		IM.add_player("Replay_"+str(IM.players.size()))
-	for p in IM.players:
-		p.use_bot(false)
-	for u in replay.units_at_start:
-		var a = Army.new()
-		a.units_data = u
-		a.controller = IM.players[player_idx]
-		armies.append(a)
-		player_idx += 1
-	start_battle(armies, map, 0)
+
 	for m in replay.moves:
 		if not battle_is_ongoing:
 			return # terminating battle while watching
