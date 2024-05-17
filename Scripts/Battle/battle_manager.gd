@@ -266,7 +266,8 @@ func perform_move_info(move_info : MoveInfo) -> void:
 	if move_info.move_type == MoveInfo.TYPE_MOVE:
 		var unit = B_GRID.get_unit(move_info.move_source)
 		var dir = GridManager.adjacent_side_direction(unit.coord, move_info.target_tile_coord)
-		assert(not _waiting_for_action_to_finish, "cant trigger awaitable action while a different aone is processing")
+		assert(not _waiting_for_action_to_finish, \
+				"cant trigger awaitable action while a different action is processing")
 		_waiting_for_action_to_finish = true
 		await move_info_move_unit(unit, move_info.target_tile_coord, dir)
 		_waiting_for_action_to_finish = false
@@ -423,7 +424,8 @@ func kill_unit(target : Unit) -> void:
 #region End Battle
 
 func kill_army(army_idx : int):
-	assert(not _waiting_for_action_to_finish, "cant trigger awaitable action while a different aone is processing")
+	assert(not _waiting_for_action_to_finish, \
+			"cant trigger awaitable action while a different action is processing")
 	_waiting_for_action_to_finish = true
 	for unit_idx in range(armies_in_battle_state[army_idx].units.size() - 1, -1, -1):
 		await kill_unit(armies_in_battle_state[army_idx].units[unit_idx])
