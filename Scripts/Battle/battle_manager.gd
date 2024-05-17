@@ -430,6 +430,9 @@ func kill_army(army_idx : int):
 
 ## TEMP: After 50 turns Defender wins
 func end_stalemate():
+	# HACK, end_stalemate can happen during processing of a move
+	# and it's fine
+	_waiting_for_action_to_finish = false
 	for army_idx in range(armies_in_battle_state.size()):
 		if army_idx == DEFENDER:
 			continue
