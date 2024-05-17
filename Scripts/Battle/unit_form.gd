@@ -12,7 +12,7 @@ var _rotation_speed : float
 var _play_death_anim : bool
 
 
-static func crete(new_unit : Unit) -> UnitForm:
+static func create(new_unit : Unit) -> UnitForm:
 	var result = CFG.UNIT_FORM_SCENE.instantiate()
 	result.name = new_unit.template.unit_name
 	result.unit = new_unit

@@ -413,8 +413,8 @@ func get_player_army(player : Player) -> ArmyInBattleState:
 
 
 func kill_unit(target : Unit) -> void:
-	await get_player_army(target.controller).unit_died(target)
-	B_GRID.remove_unit(target)
+	await get_player_army(target.controller).unit_died(target)  # deletes visuals
+	B_GRID.remove_unit(target)  # kills gameplay unit
 	check_battle_end()
 
 #endregion
@@ -627,7 +627,7 @@ class ArmyInBattleState:
 	func summon_unit(battle_manager, unit_data : DataUnit, coord:Vector2i, rotation:int) -> Unit:
 		units_to_summon.erase(unit_data)
 		var result = Unit.create(army_reference.controller, unit_data, coord, rotation)
-		var form := UnitForm.crete(result)
+		var form := UnitForm.create(result)
 		battle_manager.add_child(form)
 		units.append(result)
 		return result
