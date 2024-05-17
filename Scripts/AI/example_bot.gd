@@ -59,4 +59,4 @@ func _get_possible_moves() -> Array[MoveInfo]:
 		return AIHelpers.get_all_spawn_moves(me)
 
 	var my_units : Array[Unit] = BM.get_units(me)
-	return AIHelpers.get_all_legal_moves(my_units, me)
+	return AIHelpers.get_all_legal_moves(me)

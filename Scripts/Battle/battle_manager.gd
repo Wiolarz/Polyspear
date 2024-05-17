@@ -26,6 +26,8 @@ var _replay_is_playing : bool = false
 
 var _waiting_for_action_to_finish : bool
 
+@onready var grid = B_GRID
+
 #endregion
 
 func _ready():

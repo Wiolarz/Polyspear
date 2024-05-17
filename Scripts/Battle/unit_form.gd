@@ -6,6 +6,9 @@ var unit : Unit
 @export var _target_tile : TileForm
 @export var _move_speed : float
 
+var _target_rotation_degrees: float
+var _rotation_speed: float
+
 var _play_death_anim : bool
 
 
