@@ -2,10 +2,10 @@ class_name ClientMenu
 extends Control
 
 
-@onready var client_connector = \
-	load("res://Scenes/UI/Lobby/Network/ClientConnector.tscn").instantiate()
-@onready var client_server_chat = \
-	load("res://Scenes/UI/Lobby/Network/ClientServerChat.tscn").instantiate()
+var client_connector_scene = \
+	load("res://Scenes/UI/Lobby/Network/ClientConnector.tscn")
+var client_server_chat_scene = \
+	load("res://Scenes/UI/Lobby/Network/ClientServerChat.tscn")
 
 @onready var multi_game_setup : GameSetup = $PanelContainer/GameSetup
 
@@ -16,13 +16,15 @@ extends Control
 func go_back():
 	IM.go_to_main_menu()
 
+
 func clear_management():
 	for child in connection_management.get_children():
-		connection_management.remove_child(child)
+		child.queue_free()
 
 
 func show_client_connector():
 	clear_management()
+	var client_connector = client_connector_scene.instantiate()
 	connection_management.add_child(client_connector)
 	client_connector.name = "ClientConnector"
 	client_connector.client_menu = self
@@ -30,6 +32,7 @@ func show_client_connector():
 
 func show_client_server_chat():
 	clear_management()
+	var client_server_chat = client_server_chat_scene.instantiate()
 	connection_management.add_child(client_server_chat)
 	client_server_chat.name = "ClientServerChat"
 

@@ -1,13 +1,11 @@
 class_name Place
-extends Node
+extends RefCounted # RefCounted is default
 
-
-@export var type : E.WorldMapTiles = E.WorldMapTiles.EMPTY
-@export var controller : Player
-@export var defender_army : Army
-@export var battle_map : DataBattleMap
-@export var coord : Vector2i
-
+var type : E.WorldMapTiles = E.WorldMapTiles.EMPTY
+var controller : Player
+var defender_army : Army
+var battle_map : DataBattleMap
+var coord : Vector2i
 
 static func _inner_create_place(new_data_tile : DataTile) -> Place:
 	match new_data_tile.type:

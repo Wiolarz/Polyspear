@@ -26,7 +26,7 @@ static func process_command(_client : Client, params : Dictionary) -> int:
 	if not "summon_unit" in params or not params["summon_unit"] is String:
 		return FAILED
 	var move_info = MakeMoveCommand.create_from(params)
-	BM.perform_ai_move(move_info)
+	BM.perform_network_move(move_info)
 	return OK
 
 static func create_from(params : Dictionary) -> MoveInfo:

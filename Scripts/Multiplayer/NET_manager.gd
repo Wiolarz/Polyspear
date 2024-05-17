@@ -6,13 +6,25 @@ var client : Client
 
 var chat_log : String
 
+
+signal chat_message_arrived(content : String)
+signal chat_log_cleared
+
+
+func get_role_name() -> String:
+	if server:
+		return "server"
+	if client:
+		return "client"
+	return "singleplayer"
+
+
 func make_server():
 	if server != null:
 		return
 	if client:
 		client.close()
 		client.queue_free()
-		remove_child(client)
 		client = null
 	server = Server.new()
 	server.name = "TheServer"
@@ -25,7 +37,6 @@ func make_client() -> void:
 	if server:
 		server.close()
 		server.queue_free()
-		remove_child(server)
 		server = null
 	client = Client.new()
 	client.name = "TheClient"
@@ -93,10 +104,12 @@ func append_message_to_local_chat_log(message : String, \
 
 func append_to_local_chat_log(line : String) -> void:
 	chat_log += line + '\n'
+	chat_message_arrived.emit(line)
 
 
 func clear_local_chat_log() -> void:
 	chat_log = ""
+	chat_log_cleared.emit()
 
 ## tries to determine probable address by witch a server running on this
 ## machine could be reached, usually by making a call to an external
@@ -109,7 +122,6 @@ func fetch_external_address_guess() -> String:
 	var results = await request.request_completed
 	# results = [_result, _response_code, _headers, body]
 	var external_address = results[3].get_string_from_utf8();
-	remove_child(request)
 	request.queue_free()
 	print("external address from '", url, "' is : ", external_address)
 	return external_address

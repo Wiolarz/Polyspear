@@ -70,11 +70,11 @@ func get_random_username() -> String:
 const DEFAULT_USER_NAME : String = "(( you ))"
 
 const TEAM_COLORS : Array[Dictionary] = [
-	{ "name": "red", "color": Color(1.0, 0.0, 0.0) },
-	{ "name": "blue", "color": Color(0.0, 0.4, 1.0) },
+	{ "name": "purple", "color": Color(0.9, 0.2, 0.85) },
 	{ "name": "green", "color": Color(0.0, 0.9, 0.0) },
 	{ "name": "yellow", "color": Color(0.9, 0.8, 0.0) },
-	{ "name": "purple", "color": Color(0.9, 0.2, 0.85) },
+	{ "name": "red", "color": Color(1.0, 0.0, 0.0) },
+	{ "name": "blue", "color": Color(0.0, 0.4, 1.0) },
 	{ "name": "orange", "color": Color(0.9, 0.5, 0.0) },
 ]
 
@@ -93,6 +93,8 @@ const DEFAULT_ARMY_FORM = preload("res://Scenes/Form/ArmyForm.tscn")
 ## must support plain GET request
 ## that returns address as a single text line in the response body
 const FETCH_EXTERNAL_IP_GET_URL = "https://api.ipify.org"
+
+const HERO_LEVEL_CAP = 7
 
 func get_start_goods() -> Goods:
 	return Goods.new(10,5,1)
@@ -119,9 +121,9 @@ const WORLD_MOVEABLE_TILES = [
 	"ruby_hunt",
 ]
 
-var DEFAULT_MODE_IS_BATTLE : bool : 
+var DEFAULT_MODE_IS_BATTLE : bool :
 	get: return player_options.use_default_battle
-var AUTO_START_GAME : bool : 
+var AUTO_START_GAME : bool :
 	get: return player_options.autostart_map
 
 #endregion

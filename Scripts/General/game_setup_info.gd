@@ -32,16 +32,10 @@ func is_bot(player_index : int) -> bool:
 func has_slot(player_index : int) -> bool:
 	return player_index >= 0 and player_index < slots.size()
 
+
 func set_unit(slot_index:int, unit_index:int, unit_data:DataUnit):
 	slots[slot_index].units_list[unit_index] = unit_data
 
-func get_units_data_for_battle(player_index : int) -> Array[DataUnit]:
-	var non_empty : Array[DataUnit] = []
-	for u in slots[player_index].units_list:
-		if not u:
-			continue
-		non_empty.append(u)
-	return non_empty
 
 func to_dictionary(local_username : String = "") -> Dictionary:
 	var result = {
@@ -130,13 +124,14 @@ static func units_list_receive_from_network(serialized: Array) -> Array[DataUnit
 	return result
 
 
-static func create_empty(slot_count : int) -> GameSetupInfo:
+static func create_empty() -> GameSetupInfo:
+	var slot_count = 2
 	var result = GameSetupInfo.new()
 	result.slots.resize(slot_count)
 	for i in range(slot_count):
 		result.slots[i] = GameSetupInfo.Slot.new()
 		result.slots[i].occupier = 0
-		result.slots[i].faction = CFG.FACTIONS_LIST[0]
+		result.slots[i].faction = CFG.FACTIONS_LIST[i]
 		result.slots[i].color = i
 	return result
 
@@ -146,9 +141,9 @@ class Slot extends RefCounted: # check if this is good base
 
 	## occupier identifies who uses this slot [br]
 	## its an `int` or a `String` [br]
+	## `int` -> AI level eg. 1 [br]
 	## `String == ""` -> we (local player) [br]
 	## `String != ""` -> remote player with specified network name [br]
-	## `int` -> AI level eg. 1
 	var occupier = ""
 
 	## index of color see `CFG.TEAM_COLORS`
@@ -156,7 +151,23 @@ class Slot extends RefCounted: # check if this is good base
 
 	var faction : DataFaction = null
 
+	## for battle only mode
 	var units_list : Array[DataUnit] = [null,null,null,null,null]
+
 
 	func is_bot() -> bool:
 		return occupier is int
+
+
+	func is_local() -> bool:
+		return occupier.is_empty()
+
+
+	## ignores empty values in units_list
+	func get_units_list() -> Array[DataUnit]:
+		var non_empty : Array[DataUnit] = []
+		for u in units_list:
+			if not u:
+				continue
+			non_empty.append(u)
+		return non_empty

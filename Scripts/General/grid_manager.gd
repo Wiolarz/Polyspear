@@ -27,8 +27,8 @@ const TILES_NOT_ADJACENT = -1
 @export var grid_width : int
 @export var	grid_height : int
 
-@export var tile_grid : Array = []  # Array[Array[TileForm]]
-@export var unit_grid : Array = [] # Array[Array[UnitForm/ArmyForm]]
+var tile_grid : Array = []  # Array[Array[TileForm]]
+var unit_grid : Array = [] # Array[Array[Unit/ArmyForm]]
 
 #region Coordinate Tools
 

@@ -3,6 +3,7 @@ extends Resource
 
 @export var hero_name : String
 @export var cost : Goods
+@export var revive_cost : Goods
 
 # COMBAT
 @export var data_unit : DataUnit  # TODO

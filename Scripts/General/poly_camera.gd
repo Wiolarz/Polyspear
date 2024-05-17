@@ -1,44 +1,58 @@
 class_name PolyCamera
 extends Camera2D
 
+const ZOOM_SPEED = 2.0
+const MOVE_SPEED = 40.0
+
 var last_mouse_position : Vector2
 var target_zoom : Vector2 = Vector2(0.5, 0.5)
 var bounds : Rect2 = Rect2(0,0,10000,10000)
 
+var direction_actions = ["KEY_LEFT", "KEY_RIGHT", "KEY_UP", "KEY_DOWN"]
+var directions_pressed = [false, false, false, false]
 
-func process_camera(_delta):
-	if Input.is_action_just_pressed("KEY_ZOOM_OUT"):
+func process_input_event(event : InputEvent) -> void:
+	if event.is_action_pressed("KEY_ZOOM_OUT"):
 		if target_zoom.x > 0.11: # float precision
 			target_zoom.x -= 0.1
 			target_zoom.y -= 0.1
-
-	elif Input.is_action_just_pressed("KEY_ZOOM_IN"):
+	elif event.is_action_pressed("KEY_ZOOM_IN"):
 		if target_zoom.x < 1:
 			target_zoom.x += 0.1
 			target_zoom.y += 0.1
 
-	zoom = zoom.move_toward(target_zoom, _delta)
+	for i in range(direction_actions.size()):
+		var action = direction_actions[i]
+		if not event.is_action(action):
+			continue
+		directions_pressed[i] = event.is_pressed()
+
+func get_camera_move() -> Vector2:
+	var result = Vector2(0,0)
+	if (directions_pressed[0]): result.x -= 1
+	if (directions_pressed[1]): result.x += 1
+	if (directions_pressed[2]): result.y -= 1
+	if (directions_pressed[3]): result.y += 1
+	return result.normalized()
+
+
+func process_camera(delta):
+	zoom = zoom.move_toward(target_zoom, delta * ZOOM_SPEED)
 
 	if Input.is_action_pressed("KEY_DRAG_CAMERA"):
-		var current_mouse_position = get_viewport().get_mouse_position()
-		if Input.is_action_just_pressed("KEY_DRAG_CAMERA"):
-			last_mouse_position = current_mouse_position
-		var diff = current_mouse_position - last_mouse_position
-		position -= diff / zoom
-		last_mouse_position = current_mouse_position
+		process_camera_drag()
 
-	var input_direction = Input.get_vector("KEY_LEFT", "KEY_RIGHT", "KEY_UP", "KEY_DOWN")
-	if input_direction.x < 0:
-		position.x -= 40
-	elif input_direction.x > 0:
-		position.x += 40
-
-	if input_direction.y < 0:
-		position.y -= 40
-	elif input_direction.y > 0:
-		position.y += 40
-
+	position += MOVE_SPEED * get_camera_move()
 	position = position.clamp(bounds.position, bounds.end)
+
+
+func process_camera_drag():
+	var current_mouse_position = get_viewport().get_mouse_position()
+	if Input.is_action_just_pressed("KEY_DRAG_CAMERA"):
+		last_mouse_position = current_mouse_position
+	var diff = current_mouse_position - last_mouse_position
+	position -= diff / zoom
+	last_mouse_position = current_mouse_position
 
 
 ## set camera bounds

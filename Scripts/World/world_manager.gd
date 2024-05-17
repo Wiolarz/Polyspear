@@ -172,6 +172,7 @@ func trade_armies(_second_army : ArmyForm):
 
 func trade_city(city : City, hero : ArmyForm):
 	print("trade_city")
+	hero.entity.heal_in_city()
 	world_ui.show_trade_ui(city, hero)
 
 
@@ -208,19 +209,30 @@ func start_combat(attacking_army : ArmyForm, coord : Vector2i):
 	var x_offset = get_bounds_global_position().end.x + CFG.MAPS_OFFSET_X
 
 	BM.start_battle(armies, battle_map, x_offset)
-	IM.switch_camera()
+	UI.switch_camera()
 
 
 func end_of_battle(battle_results : Array[BM.ArmyInBattleState]):
 	#TODO get result from Battle Manager
+
+	var attack_hero  = battle_results[BM.ATTACKER].army_reference.hero
+	var defence_hero = battle_results[BM.DEFENDER].army_reference.hero
+	if attack_hero:
+		attack_hero.add_xp_for_casualties(battle_results[BM.DEFENDER].dead_units, defence_hero)
+	if defence_hero:
+		defence_hero.add_xp_for_casualties(battle_results[BM.ATTACKER].dead_units, attack_hero)
+
 	if battle_results[BM.ATTACKER].can_fight():
 		print("attacker won")
 		kill_army(W_GRID.get_army(combat_tile)) # clear the tile of enemy presence
 		hero_move(selected_hero, combat_tile)
+		selected_hero.apply_losses(battle_results[BM.ATTACKER].dead_units)
 	else:
 		kill_army(selected_hero)  # clear the tile where selected_hero was
 		set_selected_hero(null)
 		print("hero died")
+		var defender_army = W_GRID.get_army(combat_tile)
+		defender_army.apply_losses(battle_results[BM.DEFENDER].dead_units)
 	UI.go_to_custom_ui(world_ui)
 
 
@@ -238,6 +250,8 @@ func kill_army(army : ArmyForm):
 
 func close_world():
 	selected_hero = null
+	current_player = null
+
 	for hero in get_children():
 		hero.queue_free()
 
@@ -261,7 +275,7 @@ func start_world(world_map : DataWorldMap) -> void:
 	for coord in spawn_location:
 		print("spawn: ",  W_GRID.to_bordered_coords(coord))
 
-	players = IM.get_active_players()
+	players = IM.players
 
 	assert(players.size() != 0, "ERROR WM.players is empty")
 
@@ -280,10 +294,7 @@ func start_world(world_map : DataWorldMap) -> void:
 
 
 func spawn_player(coord : Vector2i, player : Player):
-
 	var fixed_coord =  W_GRID.to_bordered_coords(coord)
-	# recruit_hero(player, player.faction.heroes[0], fixed_coord)
-
 	var capital_city = W_GRID.get_city(fixed_coord)
 	player.set_capital(capital_city)
 

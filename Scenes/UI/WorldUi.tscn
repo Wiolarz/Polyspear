@@ -1,8 +1,9 @@
-[gd_scene load_steps=4 format=3 uid="uid://c7521eme06u5v"]
+[gd_scene load_steps=5 format=3 uid="uid://c7521eme06u5v"]
 
 [ext_resource type="Script" path="res://Scripts/UI/world_ui.gd" id="1_kic0v"]
 [ext_resource type="Shortcut" uid="uid://fuvss5hfg4q2" path="res://Resources/Shortcuts/go_back.tres" id="2_nfb7t"]
 [ext_resource type="PackedScene" uid="uid://dm3oqhffhprfy" path="res://Scenes/UI/CityUI.tscn" id="3_nvhgh"]
+[ext_resource type="PackedScene" uid="uid://c2tjldwjynnry" path="res://Scenes/UI/GameChat.tscn" id="4_b7mj1"]
 
 [node name="WorldUi" type="CanvasLayer"]
 script = ExtResource("1_kic0v")
@@ -17,10 +18,10 @@ shortcut = ExtResource("2_nfb7t")
 text = "Menu"
 
 [node name="End Turn" type="Button" parent="."]
-offset_left = 1510.0
-offset_top = 893.0
-offset_right = 1683.0
-offset_bottom = 956.0
+offset_left = 1548.0
+offset_top = 21.0
+offset_right = 1721.0
+offset_bottom = 84.0
 scale = Vector2(2.04, 2.04)
 text = "End turn"
 
@@ -28,10 +29,10 @@ text = "End turn"
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -274.0
-offset_top = 18.0
-offset_right = -16.0
-offset_bottom = 498.0
+offset_left = -290.0
+offset_top = 169.0
+offset_right = -32.0
+offset_bottom = 358.0
 grow_horizontal = 0
 
 [node name="Label" type="Label" parent="Players"]
@@ -58,6 +59,18 @@ layout_mode = 2
 text = "0 🪓| 0 ⛏️| 0 💎"
 
 [node name="CityUi" parent="." instance=ExtResource("3_nvhgh")]
+
+[node name="GameChat" parent="." instance=ExtResource("4_b7mj1")]
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -750.0
+offset_top = -400.0
+offset_right = 0.0
+grow_horizontal = 0
+grow_vertical = 0
 
 [connection signal="pressed" from="Menu" to="." method="_on_menu_pressed"]
 [connection signal="pressed" from="End Turn" to="." method="_on_end_turn_pressed"]

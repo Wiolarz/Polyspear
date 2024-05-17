@@ -1,0 +1,13 @@
+[gd_resource type="Theme" format=3 uid="uid://cxft16v20dg2s"]
+
+[resource]
+default_base_scale = 1.0
+default_font_size = 24
+Button/font_sizes/font_size = 24
+Label/font_sizes/font_size = 24
+LineEdit/font_sizes/font_size = 24
+MenuBar/font_sizes/font_size = 24
+PopupMenu/font_sizes/font_separator_size = 16
+PopupMenu/font_sizes/font_size = 24
+TextEdit/font_sizes/font_size = 24
+Tree/font_sizes/font_size = 24

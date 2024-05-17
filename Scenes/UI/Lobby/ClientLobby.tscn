@@ -3,9 +3,18 @@
 [ext_resource type="Script" path="res://Scripts/UI/Lobby/client_menu.gd" id="1_li74l"]
 [ext_resource type="PackedScene" uid="uid://dev0nuoeb5bbv" path="res://Scenes/UI/Lobby/GameSetup.tscn" id="2_hvdur"]
 
-[node name="ClientLobby" type="CanvasLayer"]
+[node name="ClientLobby" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
 
 [node name="ClientMenu" type="HBoxContainer" parent="."]
+layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0

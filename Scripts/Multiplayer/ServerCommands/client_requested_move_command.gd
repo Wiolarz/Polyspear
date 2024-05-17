@@ -28,7 +28,7 @@ static func process_command(_server : Server, _peer : ENetPacketPeer, \
 		return FAILED
 	var move_info = MakeMoveCommand.create_from(params)
 	# TODO check move legality before performing on server
-	BM.perform_ai_move(move_info)
+	BM.perform_network_move(move_info)
 	return OK
 
 static func create_from(params : Dictionary) -> MoveInfo:

@@ -14,6 +14,8 @@ func show_trade_ui(viewed_city : City, visiting_hero : ArmyForm):
 	city = viewed_city
 	hero_army = visiting_hero
 	_refresh_all()
+	if not unit_panels.visible and visiting_hero:
+		_on_show_recruit_units_ui_pressed()
 
 
 func _refresh_all():
@@ -91,18 +93,20 @@ func _buy_unit(unit):
 func _on_buy_hero_button_pressed(hero_index : int):
 	print("trying to buy a hero ")
 
-	var hero_to_buy : DataHero = city.controller.faction.heroes[hero_index]
+	var hero_to_buy : DataHero = city.controller.get_faction().heroes[hero_index]
 
-	if not city.controller.purchase(hero_to_buy.cost):
-		print("not enough cash, needed ", hero_to_buy.cost)
+	var cost = city.controller.get_hero_cost(hero_to_buy)
+	if not city.controller.purchase(cost):
+		print("not enough cash, needed ", cost)
 		return
 
 	WM.recruit_hero(city.controller, hero_to_buy, city.coord)
 	_refresh_all()
+	_on_show_recruit_heroes_ui_pressed() # hide
 
 
 func _refresh_buildings_display():
-	var buildings_data = city.controller.faction.buildings
+	var buildings_data = city.controller.get_faction().buildings
 	for i in range(buildings_data.size()):
 		var building_data = buildings_data[i]
 		var b_button = building_buttons.get_child(i+1) as Button
@@ -124,16 +128,19 @@ func _refresh_buildings_display():
 func _on_show_recruit_heroes_ui_pressed():
 	unit_panels.hide()
 	building_buttons.hide()
+	_refresh_heroes_to_buy()
 	hero_panels.visible = not hero_panels.visible
 
 
 func _on_show_recruit_units_ui_pressed():
 	hero_panels.hide()
 	building_buttons.hide()
+	_refresh_units_to_buy()
 	unit_panels.visible = not unit_panels.visible
 
 
 func _on_show_build_ui_pressed():
 	hero_panels.hide()
 	unit_panels.hide()
+	_refresh_buildings_display()
 	building_buttons.visible = not building_buttons.visible

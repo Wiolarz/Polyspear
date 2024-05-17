@@ -16,6 +16,14 @@ bg_color = Color(0.0401178, 0.126136, 0.355491, 1)
 process_mode = 3
 script = ExtResource("1_4iw1x")
 
+[node name="Background" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.392157)
+
 [node name="MenuContainer" type="VBoxContainer" parent="."]
 light_mask = 2
 visibility_layer = 2
@@ -86,6 +94,7 @@ text = "Quit"
 layout_mode = 2
 text = "Return To Main Menu"
 
+[connection signal="visibility_changed" from="." to="." method="_on_visibility_changed"]
 [connection signal="pressed" from="MenuContainer/BackToGame" to="." method="_on_back_to_game_pressed"]
 [connection signal="pressed" from="MenuContainer/WinBattle" to="." method="_on_win_battle_pressed"]
 [connection signal="pressed" from="MenuContainer/Surrender" to="." method="_on_surrender_pressed"]

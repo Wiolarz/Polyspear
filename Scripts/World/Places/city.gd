@@ -11,7 +11,7 @@ func _init():
 
 func get_heroes_to_buy() -> Array[DataHero]:
 	var result : Array[DataHero] = []
-	for hero_data : DataHero in controller.faction.heroes:
+	for hero_data : DataHero in controller.get_faction().heroes:
 		result.append(hero_data)
 	return result
 
@@ -19,9 +19,10 @@ func get_heroes_to_buy() -> Array[DataHero]:
 func get_cost_description(hero: DataHero) -> String:
 	if controller.has_hero(hero):
 		return "✔"
+	var cost_string = str(controller.get_hero_cost(hero))
 	if controller.has_dead_hero(hero):
-		return "Ressurect\n"+str(hero.cost)
-	return str(hero.cost)
+		return "Ressurect\n" + cost_string
+	return cost_string
 
 
 func can_buy_hero(hero: DataHero) -> bool:
@@ -29,12 +30,13 @@ func can_buy_hero(hero: DataHero) -> bool:
 		return false
 	if W_GRID.get_army(coord):
 		return false
-	return controller.has_enough(hero.cost)
+	var cost = controller.get_hero_cost(hero)
+	return controller.has_enough(cost)
 
 
 func get_units_to_buy() -> Array[DataUnit]:
 	var units : Array[DataUnit] = []
-	for unit_data : DataUnit in controller.faction.units_data:
+	for unit_data : DataUnit in controller.get_faction().units_data:
 		units.append(unit_data)
 	return units
 

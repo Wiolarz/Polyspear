@@ -12,11 +12,13 @@ var grid_type : GameSetupInfo.GameMode = GameSetupInfo.GameMode.WORLD
 
 
 func _on_input_event(_viewport : Node, event : InputEvent, _shape_idx : int):
-	if event.is_action_pressed("KEY_SELECT"): # normal gameplay
-		IM.grid_input_listener(coord, grid_type)
+	# normal gameplay - on click
+	if event.is_action_pressed("KEY_SELECT"):
+		UI.grid_input_listener(coord, grid_type, false)
 
-	if Input.is_action_pressed("KEY_SELECT"): # for map draw
-		IM.grid_smooth_input_listener(coord, grid_type)
+	# for map editor - on mouse move while button pressed
+	if Input.is_action_pressed("KEY_SELECT"):
+		UI.grid_input_listener(coord, grid_type, true)
 
 
 func set_coord(c:Vector2i)->void:
