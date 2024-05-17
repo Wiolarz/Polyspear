@@ -10,7 +10,7 @@ var summon_tiles : Array = []
 #region Tools
 
 func spawn_unit_at_coord(unit : Unit, coord : Vector2i):
-	assert(get_unit(coord) == null, "error, spawningg onto a non empty field")
+	assert(get_unit(coord) == null, "error, spawning onto a non empty field")
 	unit_grid[coord.x][coord.y] = unit # unit_grid Update
 
 
