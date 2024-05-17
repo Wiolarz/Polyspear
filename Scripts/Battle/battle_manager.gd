@@ -24,7 +24,7 @@ var selected_unit : Unit
 var _replay : BattleReplay
 var _replay_is_playing : bool = false
 
-var waiting_for_action_to_finish : bool
+var _waiting_for_action_to_finish : bool
 
 #endregion
 
@@ -42,7 +42,7 @@ func start_battle(new_armies : Array[Army], battle_map : DataBattleMap, \
 	UI.go_to_custom_ui(battle_ui)
 
 	battle_is_ongoing = true
-	waiting_for_action_to_finish = false
+	_waiting_for_action_to_finish = false
 
 	state = STATE_SUMMONNING
 	armies_in_battle_state = []
@@ -154,7 +154,7 @@ func grid_input(coord : Vector2i) -> void:
 		print("battle finished, input ignored")
 		return
 
-	if waiting_for_action_to_finish:
+	if _waiting_for_action_to_finish:
 		print("anim playing, input ignored")
 		return
 
@@ -265,10 +265,10 @@ func perform_move_info(move_info : MoveInfo) -> void:
 	if move_info.move_type == MoveInfo.TYPE_MOVE:
 		var unit = B_GRID.get_unit(move_info.move_source)
 		var dir = GridManager.adjacent_side_direction(unit.coord, move_info.target_tile_coord)
-		assert(not waiting_for_action_to_finish, "cant trigger awaitable action while a different aone is processing")
-		waiting_for_action_to_finish = true
+		assert(not _waiting_for_action_to_finish, "cant trigger awaitable action while a different aone is processing")
+		_waiting_for_action_to_finish = true
 		await move_info_move_unit(unit, move_info.target_tile_coord, dir)
-		waiting_for_action_to_finish = false
+		_waiting_for_action_to_finish = false
 		switch_participant_turn()
 		return
 	if move_info.move_type == MoveInfo.TYPE_SUMMON:
@@ -413,8 +413,7 @@ func get_player_army(player : Player) -> ArmyInBattleState:
 
 
 func kill_unit(target : Unit) -> void:
-	await get_player_army(target.controller).unit_died(target)  # deletes visuals
-	B_GRID.remove_unit(target)  # kills gameplay unit
+	await get_player_army(target.controller).kill_unit(target)
 	check_battle_end()
 
 #endregion
@@ -423,11 +422,11 @@ func kill_unit(target : Unit) -> void:
 #region End Battle
 
 func kill_army(army_idx : int):
-	assert(not waiting_for_action_to_finish, "cant trigger awaitable action while a different aone is processing")
-	waiting_for_action_to_finish = true
+	assert(not _waiting_for_action_to_finish, "cant trigger awaitable action while a different aone is processing")
+	_waiting_for_action_to_finish = true
 	for unit_idx in range(armies_in_battle_state[army_idx].units.size() - 1, -1, -1):
 		await kill_unit(armies_in_battle_state[army_idx].units[unit_idx])
-	waiting_for_action_to_finish = false
+	_waiting_for_action_to_finish = false
 
 ## TEMP: After 50 turns Defender wins
 func end_stalemate():
@@ -614,9 +613,10 @@ class ArmyInBattleState:
 		return result
 
 
-	func unit_died(target : Unit) -> void:
+	func kill_unit(target : Unit) -> void:
 		units.erase(target)
 		dead_units.append(target.template)
+		B_GRID.remove_unit(target)
 		await target.die()
 
 
