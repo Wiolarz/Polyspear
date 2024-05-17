@@ -28,7 +28,7 @@ var grid_width : int
 var	grid_height : int
 
 var tile_grid : Array = []  # Array[Array[TileForm]]
-var unit_grid : Array = [] # Array[Array[UnitForm/ArmyForm]]
+var unit_grid : Array = [] # Array[Array[Unit/ArmyForm]]
 
 #region Coordinate Tools
 

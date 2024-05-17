@@ -13,7 +13,7 @@ static func get_all_legal_moves(my_units : Array, me:Player) -> Array[MoveInfo]:
 	for unit in my_units:
 		for side in range(6):
 			var new_move = unit.coord + B_GRID.DIRECTIONS[side]
-			var neighbour : UnitForm = B_GRID.get_unit(new_move)
+			var neighbour : Unit = B_GRID.get_unit(new_move)
 			if (neighbour != null and neighbour.controller == me): # 1
 				continue
 
@@ -57,7 +57,7 @@ static func is_kill_move(move : MoveInfo, me : Player) -> bool:
 		if B_GRID.get_unit(move.move_source).get_symbol(side) != E.Symbols.BOW:
 			continue
 		var shoot_direction = (move_direction + side) % 6
-		var target : UnitForm = B_GRID.get_shot_target(move.move_source, shoot_direction)
+		var target : Unit = B_GRID.get_shot_target(move.move_source, shoot_direction)
 		if  target != null and target.controller != me:
 			return true
 	return false
