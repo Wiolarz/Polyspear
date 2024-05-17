@@ -93,8 +93,8 @@ func unit_summoned(summon_phase_end : bool, _unit : DataUnit):
 
 
 func _on_switch_camera_pressed():
-	IM.switch_camera()
-	if IM.current_camera_position == E.CameraPosition.WORLD:
+	UI.switch_camera()
+	if UI.current_camera_position == E.CameraPosition.WORLD:
 		camera_button.text = "Show Battle"
 	else :
 		camera_button.text = "Show World"

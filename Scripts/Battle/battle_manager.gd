@@ -441,7 +441,7 @@ func check_battle_end() -> void:
 
 func turn_off_battle_ui() -> void:
 	battle_ui.hide()
-	IM.switch_camera()
+	UI.switch_camera()
 
 
 func reset_grid_and_unit_forms() -> void:
