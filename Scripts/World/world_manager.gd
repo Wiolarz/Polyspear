@@ -273,7 +273,7 @@ func start_world(world_map : DataWorldMap) -> void:
 	for coord in spawn_location:
 		print("spawn: ",  W_GRID.to_bordered_coords(coord))
 
-	players = IM.get_active_players()
+	players = IM.players
 
 	assert(players.size() != 0, "ERROR WM.players is empty")
 
@@ -292,10 +292,7 @@ func start_world(world_map : DataWorldMap) -> void:
 
 
 func spawn_player(coord : Vector2i, player : Player):
-
 	var fixed_coord =  W_GRID.to_bordered_coords(coord)
-	# recruit_hero(player, player.faction.heroes[0], fixed_coord)
-
 	var capital_city = W_GRID.get_city(fixed_coord)
 	player.set_capital(capital_city)
 

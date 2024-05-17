@@ -17,6 +17,13 @@ var current_player : int = 0
 func _ready():
 	pass
 
+func get_text_for(controller : Player, selected : bool):
+	var prefix = " > " if selected else ""
+	var player_name = "Neutral"
+	if controller:
+		player_name = controller.get_player_name()
+	return prefix + "Player " + player_name
+
 
 func load_armies(army_list : Array[BM.ArmyInBattleState]):
 	camera_button.disabled = IM.game_setup_info.game_mode != GameSetupInfo.GameMode.WORLD
@@ -36,10 +43,11 @@ func load_armies(army_list : Array[BM.ArmyInBattleState]):
 		var controller = army.army_reference.controller
 		# create player buttons
 		var n = Button.new()
+		n.text = get_text_for(controller, idx == 0)
 		if controller:
-			n.text = "Player " + controller.player_name
+			n.modulate = controller.get_player_color()
 		else:
-			n.text = "Player Neutral" #TEMP
+			n.modulate = Color.GRAY
 		n.pressed.connect(func select(): on_player_selected(idx, true))
 		players_box.add_child(n)
 		idx += 1
@@ -57,8 +65,11 @@ func on_player_selected(army_index : int, preview : bool = false):
 		current_player = army_index
 
 	for i in range(armies_reference.size()):
-		var c = Color.WHITE if i != current_player else Color.RED
-		players_box.get_child(i + 1).modulate = c
+		var is_currently_active := (i == current_player)
+		var controller = armies_reference[i].army_reference.controller
+		var button := players_box.get_child(i + 1) as Button
+		button.text = get_text_for(controller, is_currently_active)
+
 
 	# clean bottom row
 	for old_buttons in units_box.get_children():

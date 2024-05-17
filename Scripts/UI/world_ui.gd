@@ -12,10 +12,14 @@ func _process(_delta):
 func refresh_player_buttons():
 	var player_buttons = $Players.get_children()
 	for i in range(player_buttons.size() - 1):
-		var selected = WM.players[i] == WM.current_player
+		var player := WM.players[i]
+		var selected = player == WM.current_player
 		var button = player_buttons[i+1] as Button
-		button.text = WM.players[i].player_name
-		button.modulate = Color.RED if selected else Color.WHITE
+		var text = player.get_player_name()
+		if selected:
+			text = " > " + text
+		button.text = text
+		button.modulate = player.get_player_color()
 
 
 func show_trade_ui(city : City, hero : ArmyForm):

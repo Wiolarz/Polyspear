@@ -93,7 +93,7 @@ func _buy_unit(unit):
 func _on_buy_hero_button_pressed(hero_index : int):
 	print("trying to buy a hero ")
 
-	var hero_to_buy : DataHero = city.controller.faction.heroes[hero_index]
+	var hero_to_buy : DataHero = city.controller.get_faction().heroes[hero_index]
 
 	var cost = city.controller.get_hero_cost(hero_to_buy)
 	if not city.controller.purchase(cost):
@@ -106,7 +106,7 @@ func _on_buy_hero_button_pressed(hero_index : int):
 
 
 func _refresh_buildings_display():
-	var buildings_data = city.controller.faction.buildings
+	var buildings_data = city.controller.get_faction().buildings
 	for i in range(buildings_data.size()):
 		var building_data = buildings_data[i]
 		var b_button = building_buttons.get_child(i+1) as Button
