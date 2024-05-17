@@ -6,7 +6,8 @@ extends CanvasLayer
 
 
 func _process(_delta):
-	good_label.text = WM.current_player.goods.to_string()
+	if WM.current_player:
+		good_label.text = WM.current_player.goods.to_string()
 
 
 func refresh_player_buttons():

@@ -250,6 +250,8 @@ func kill_army(army : ArmyForm):
 
 func close_world():
 	selected_hero = null
+	current_player = null
+
 	for hero in get_children():
 		hero.queue_free()
 
