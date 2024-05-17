@@ -21,7 +21,6 @@ extends Node2D
 @export var _rotation_speed : float
 
 
-
 func _physics_process(_delta):
 	if 0.1 < abs(fmod(rotation_degrees, 360) - _target_rotation_degrees):
 		_animate_rotation()

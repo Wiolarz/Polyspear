@@ -226,12 +226,47 @@ func cloned() -> BattleManager:
 		new.army_in_battle_states[army_idx] = army
 		
 		for unit_idx in range(army.units.size()):
-			var xd = army.units[unit_idx].coord
 			army.units[unit_idx] = new.grid.get_unit(army.units[unit_idx].coord)
 	
 	new.selected_unit = null
 	return new
 #endregion
+
+func cloned_as_fast() -> BattleManagerFast:
+	var new = BattleManagerFast.new()
+	var tgrid = TileGridFast.new()
+	
+	tgrid.set_map_size(Vector2i(grid.grid_width, grid.grid_height))
+	
+	for i in grid.get_all_field_coords():
+		tgrid.set_tile(i, grid.get_tile(i).type)
+	
+	new.set_tile_grid(tgrid)
+	
+	# TODO more armies
+	for army_idx in range(2):
+		var army = army_in_battle_states[army_idx]
+		new.set_army_team(army_idx,army_idx)
+		
+		var import_units_to_fast = func(unit_container: String, is_summoning: bool):
+			for unit_idx in range(army.get(unit_container).size()):
+				var unit = army.get(unit_container)[unit_idx]
+				new.insert_unit(army_idx, unit_idx, unit.coord, unit.unit_rotation, is_summoning)
+				for i in range(6):
+					new.set_unit_symbol(army_idx, unit_idx, i, unit.symbols[i])
+		
+		import_units_to_fast.call("units", false)
+		import_units_to_fast.call("units_to_summon", true)
+	
+	return new
+
+func compare(bm: BattleManagerFast) -> bool:
+	for army in army_in_battle_states:
+		for unit_normal in army.units:
+			pass
+	
+	# TODO
+	return false
 
 
 #region Symbols

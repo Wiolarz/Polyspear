@@ -7,55 +7,19 @@
 
 #include "godot_cpp/classes/node.hpp"
 #include "godot_cpp/core/class_db.hpp"
+#include "godot_cpp/variant/vector2i.hpp"
 #include <stdint.h>
 #include <array>
 #include <vector>
+
+#include "data.hpp"
+#include "tile_grid_fast.hpp"
 
 
 using namespace godot;
 
 
-struct Position {
-    uint8_t x;
-    uint8_t y;
-
-    inline Position() : x(0), y(0) {};
-    inline Position(uint8_t x, uint8_t y) : x(x), y(y) {};
-    inline Position operator+(const Position& other) {
-        return Position(x + other.x, y + other.y);
-    }
-    inline bool operator==(const Position& other) {
-        return x == other.x && y == other.y;
-    }
-};
-
-
-enum class Symbol: uint8_t {
-    EMPTY,
-    ATTACK_WITH_COUNTER,
-    ATTACK,
-    SHIELD,
-    BOW,
-    PUSH
-};
-
-enum class UnitStatus: uint8_t {
-    SUMMONING,
-    ALIVE,
-    DEAD
-};
-
-enum class BattleState: uint8_t {
-    SUMMONING,
-    ONGOING,
-    FINISHED
-};
-
-enum class Tile: uint8_t {
-    PASSABLE,
-    IMPASSABLE
-};
-
+class BattleManagerFast;
 
 struct Unit {
     UnitStatus status;
@@ -80,36 +44,42 @@ struct Army {
 };
 
 using ArmyList = std::array<Army, 2>;
-using TileList = std::vector<Tile>;
 
 
-struct MoveResult {
-    int winner; /// -1 - no winner, nonzero - winner id
+struct Move {
+    unsigned unit;
+    Vector2i pos;
 };
 
+class MoveIterator {
+    const BattleManagerFast* bm;
+    unsigned unit = 0;
+    unsigned side = 0;
+public:
+    inline MoveIterator(const BattleManagerFast* bm) : bm(bm) {}
+    Move* operator++();
 
-const std::array<Position, 6> DIRECTIONS = {
-	Position(-1, 0),
-	Position(0, -1),
-	Position(1, -1),
-	Position(1, 0),
-	Position(0, 1),
-	Position(-1, 1),
+    inline Move* begin() {return ++(*this);}
+    inline Move* end() {return nullptr;}
 };
 
-
+// idea - BattleManagerFastWrapper as multiple inheritance of internal BattleManagerFast and godot Node if it turns out that Node itself is expensive
 class BattleManagerFast : public Node {
     GDCLASS(BattleManagerFast, Node);
 
     int x,y;
     int current_participant;
-    ArmyList army;
-    std::vector<Tile> tiles;
+    BattleState state;
+    ArmyList armies;
+    TileGridFast* tiles;
 
-    Unit* get_unit(Position coord, int team = -1);
+    Unit* get_unit(Position coord);
     Tile* get_tile(Position coord);
 
-    int process_kills(unsigned unit);
+    int process_unit(Unit& unit, bool process_kills = true);
+    int process_bow(Unit& unit, Army& enemy_army);
+
+    friend class MoveIterator;
 
 protected:
     static void _bind_methods();
@@ -117,14 +87,32 @@ protected:
 public:
     ~BattleManagerFast() = default;
 
-    void add_unit();
-    void add_unit_symbol();
-    void set_tile();
-    void set_map_size(unsigned x, unsigned y);
-
-    inline int get_current_participant() {return current_participant;};
-    MoveResult play_move(unsigned unit, Position pos);
+    void insert_unit(int army, int idx, Vector2i pos, int rotation, bool is_summoning); /// Add a unit in a summoning state
+    void set_army_team(int army, int team); /// Set army's team - required
+    void set_unit_symbol(int army, int unit, int symbol, int symbol_id); /// Add symbol for a specified unit
+    void set_tile_grid(TileGridFast* tilegrid);
+    void set_current_participant(int army);
     
+    int play_move(unsigned unit, Vector2i move);
+
+    BattleManagerFast duplicate() const;
+
+    /// Get legal moves iterator for current participant
+    MoveIterator get_legal_moves() const;
+
+    // Getters, primarily for testing correctness with regular BattleManager
+    inline Vector2i get_unit_position(int army, int unit) const {
+        auto p = armies[army].units[unit].pos; 
+        return Vector2i(p.x, p.y);
+    }
+
+    inline int get_unit_rotation(int army, int unit) const {
+        return armies[army].units[unit].rotation;
+    }
+
+    inline int get_current_participant() const {
+        return current_participant;
+    }
 };
 
 

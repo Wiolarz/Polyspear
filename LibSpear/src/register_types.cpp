@@ -9,6 +9,7 @@ void libspear_initialize(ModuleInitializationLevel level) {
         return;
 
     ClassDB::register_class<BattleManagerFast>();
+    ClassDB::register_class<TileGridFast>();
 }
 
 void libspear_terminate(ModuleInitializationLevel level) {

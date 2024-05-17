@@ -18,3 +18,4 @@ mono_crash.*.json
 #GDExtension
 LibSpear/.sconsign.dblite
 LibSpear/compile_commands.json
+LibSpear/src/**.os

@@ -24,6 +24,16 @@ func set_coord(c:Vector2i)->void:
 	$CoordLabel.text = str(coord)
 
 
+func to_battle_grid_enum() -> int:
+	match type:
+		"sentinel":   return 1
+		"wall":      return 1
+		"":      return 1 # IMPASSABLE
+		"blue_spawn": return 0
+		"red_spawn":  return 0
+		"empty":      return 0
+	return 1
+
 func _process(_delta):
 	$PlaceLabel.text = ""
 	if place != null: #TEMP
