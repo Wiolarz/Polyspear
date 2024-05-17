@@ -162,7 +162,7 @@ class Slot extends RefCounted: # check if this is good base
 	func is_local() -> bool:
 		return occupier.is_empty()
 
-
+	## for "Custom battles" unit list creation
 	## ignores empty values in units_list
 	func get_units_list() -> Array[DataUnit]:
 		var non_empty : Array[DataUnit] = []

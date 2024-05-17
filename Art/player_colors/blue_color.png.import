@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bk2kh6hia3f42"
-path="res://.godot/imported/orc_brigand.png-b3703d0200fd18a5219e67de214a92fd.ctex"
+uid="uid://coy3foxku7ypp"
+path="res://.godot/imported/blue_color.png-31d8bc724e6a7084076d2f2e8fa11f40.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Art/units/orc/orc_brigand.png"
-dest_files=["res://.godot/imported/orc_brigand.png-b3703d0200fd18a5219e67de214a92fd.ctex"]
+source_file="res://Art/player_colors/blue_color.png"
+dest_files=["res://.godot/imported/blue_color.png-31d8bc724e6a7084076d2f2e8fa11f40.ctex"]
 
 [params]
 

@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://Scripts/UI/world_ui.gd" id="1_kic0v"]
 [ext_resource type="Shortcut" uid="uid://fuvss5hfg4q2" path="res://Resources/Shortcuts/go_back.tres" id="2_nfb7t"]
 [ext_resource type="PackedScene" uid="uid://dm3oqhffhprfy" path="res://Scenes/UI/CityUI.tscn" id="3_nvhgh"]
-[ext_resource type="PackedScene" uid="uid://c2tjldwjynnry" path="res://Scenes/UI/GameChat.tscn" id="4_b7mj1"]
+[ext_resource type="PackedScene" path="res://Scenes/UI/GameChat.tscn" id="4_b7mj1"]
 
 [node name="WorldUi" type="CanvasLayer"]
 script = ExtResource("1_kic0v")
