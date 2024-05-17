@@ -1,11 +1,9 @@
 class_name Player
 extends Node
 
-var player_name : String = ""
+var slot: GameSetupInfo.Slot
 
 var bot_engine : AIInterface
-
-var faction : DataFaction
 
 var goods : Goods = Goods.new()
 
@@ -23,26 +21,46 @@ var hero_armies : Array[ArmyForm] = []
 
 var dead_heroes: Array[Hero] = []
 
+
+static func create(new_slot : GameSetupInfo.Slot) -> Player:
+	var result := Player.new()
+	result.slot = new_slot
+
+	if new_slot.is_bot():
+		result.bot_engine = ExampleBot.new(result)
+		result.add_child(result.bot_engine)
+	result.name = "Player_"+result.get_player_name()
+	result.goods = CFG.get_start_goods()
+
+	return result
+
+
 func _init():
 	name = "Player"
 
 
-func use_bot(bot_enabled : bool):
-	if bot_enabled == (bot_engine != null):
-		return
-	if not bot_enabled:
+func get_player_name() -> String:
+	if slot.is_bot():
+		return "AI"
+	if slot.is_local():
+		return "LOCAL"
+	# network login
+	return slot.occupier
 
-		bot_engine.queue_free()
-		bot_engine = null
-	else:
-		bot_engine = ExampleBot.new(self)
-		add_child(bot_engine)
+
+func get_player_color() -> Color:
+	return CFG.TEAM_COLORS[slot.color].color
+
+
+func get_faction() -> DataFaction:
+	return slot.faction
 
 
 ## let player know its his turn,
 ## in case play is AI, call his decision maker
 func your_turn():
-	print("your move " + player_name)
+	var color_name = CFG.TEAM_COLORS[slot.color].name
+	print("your move %s - %s" % [get_player_name(), color_name])
 
 	if bot_engine != null and not NET.client: # AI is simulated on server only
 		bot_engine.play_move()

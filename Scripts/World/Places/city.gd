@@ -11,7 +11,7 @@ func _init():
 
 func get_heroes_to_buy() -> Array[DataHero]:
 	var result : Array[DataHero] = []
-	for hero_data : DataHero in controller.faction.heroes:
+	for hero_data : DataHero in controller.get_faction().heroes:
 		result.append(hero_data)
 	return result
 
@@ -36,7 +36,7 @@ func can_buy_hero(hero: DataHero) -> bool:
 
 func get_units_to_buy() -> Array[DataUnit]:
 	var units : Array[DataUnit] = []
-	for unit_data : DataUnit in controller.faction.units_data:
+	for unit_data : DataUnit in controller.get_faction().units_data:
 		units.append(unit_data)
 	return units
 

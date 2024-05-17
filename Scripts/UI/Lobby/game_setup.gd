@@ -120,7 +120,7 @@ func try_to_leave_slot(index : int) -> bool:
 # TODO move to input manager or somewhere
 func try_to_cycle_color_slot(index : int, backwards : bool) -> bool:
 	var slots = IM.game_setup_info.slots
-	if index < 0 or index > slots.size():
+	if index < 0 or index >= slots.size():
 		return false
 	if NET.client:
 		NET.client.queue_cycle_color(index, backwards)
@@ -146,7 +146,7 @@ func try_to_cycle_color_slot(index : int, backwards : bool) -> bool:
 
 func try_to_cycle_faction_slot(index : int, backwards : bool) -> bool:
 	var slots = IM.game_setup_info.slots
-	if index < 0 or index > slots.size():
+	if index < 0 or index >= slots.size():
 		return false
 	var diff : int = 1 if not backwards else -1
 	if NET.client:
