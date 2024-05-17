@@ -209,7 +209,7 @@ func start_combat(attacking_army : ArmyForm, coord : Vector2i):
 	var x_offset = get_bounds_global_position().end.x + CFG.MAPS_OFFSET_X
 
 	BM.start_battle(armies, battle_map, x_offset)
-	IM.switch_camera()
+	UI.switch_camera()
 
 
 func end_of_battle(battle_results : Array[BM.ArmyInBattleState]):

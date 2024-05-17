@@ -24,8 +24,6 @@ extends Node
 ## notifies when `game_setup_info` is modified
 signal game_setup_info_changed
 
-var camera : PolyCamera
-
 var game_setup_info : GameSetupInfo
 
 var players : Array[Player] = [] :
@@ -44,86 +42,8 @@ var players : Array[Player] = [] :
 ## flag for MAP EDITOR
 var draw_mode : bool = false
 
-var current_camera_position = E.CameraPosition.WORLD
-
-
-func _ready():
-	process_mode = Node.PROCESS_MODE_ALWAYS
-
-
-#region Input Support
-
-## ESC - Return to the previous menu interface
-## ~ - Game Menu
-## F1 - Exit Game
-## F2 - maximize window
-## F3 - toggle cheat mode
-## F4 - toggle visibility of collision shapes
-##
-## F5 - Save
-## F6 - Load
-func _process(delta):
-	## fastest response time to player input
-	if Input.is_action_just_pressed("KEY_EXIT_GAME"):
-		quit_game()
-
-	if Input.is_action_just_pressed("KEY_MAXIMIZE_WINDOW"):
-		toggle_fullscreen()
-
-	if Input.is_action_just_pressed("KEY_MENU"):
-		toggle_in_game_menu()
-
-	if Input.is_action_just_pressed("KEY_DEBUG_COLLISION_SHAPES"):
-		toggle_collision_debug()
-
-	if Input.is_action_just_pressed("KEY_SAVE_GAME"):
-		print("quick save is not yet supported")
-
-	if Input.is_action_just_pressed("KEY_LOAD_GAME"):
-		print("quick load is not yet supported")
-
-	# we do not want to process camera when game is paused
-	if camera and not get_tree().paused:
-		camera.process_camera(delta)
-
-
-func _physics_process(_delta):
-	## physics to prevent desync when animating + enemy bot gameplay
-	if Input.is_action_just_pressed("KEY_BOT_SPEED_SLOW"):
-		print("anim speed - slow")
-		CFG.animation_speed_frames = CFG.AnimationSpeed.NORMAL
-		CFG.bot_speed_frames = CFG.BotSpeed.FREEZE
-	elif Input.is_action_just_pressed("KEY_BOT_SPEED_MEDIUM"):
-		print("anim speed - medium")
-		CFG.animation_speed_frames = CFG.AnimationSpeed.NORMAL
-		CFG.bot_speed_frames = CFG.BotSpeed.NORMAL
-	elif Input.is_action_just_pressed("KEY_BOT_SPEED_FAST"):
-		print("anim speed - fast")
-		CFG.animation_speed_frames = CFG.AnimationSpeed.INSTANT
-		CFG.bot_speed_frames = CFG.BotSpeed.FAST
-
 func init_game_setup():
 	game_setup_info = GameSetupInfo.create_empty(4)
-
-# called from TileForm mouse detection
-func grid_smooth_input_listener(coord : Vector2i, _tile_type : GameSetupInfo.GameMode):
-	if draw_mode:
-		UI.map_editor.grid_input(coord)
-
-# called from TileForm mouse detection
-func grid_input_listener(tile_coord : Vector2i, tile_type : GameSetupInfo.GameMode):
-	#print("tile ",coord)
-	#if WM.current_player.bot_engine != null:
-	#    return # its a bot turn
-	if draw_mode:
-		return
-
-	if BM.battle_is_ongoing:
-		if tile_type == GameSetupInfo.GameMode.BATTLE:
-			BM.grid_input(tile_coord)
-	else:
-		if tile_type == GameSetupInfo.GameMode.WORLD:
-			WM.grid_input(tile_coord)
 
 
 #endregion
@@ -156,25 +76,19 @@ func add_player(player_name:String) -> Player:
 
 ## starts game based on game_setup_info
 func start_game():
-	if not camera:
-		camera = PolyCamera.new()
-		camera.name = "PolyCamera"
-		add_child(camera)
+	UI.ensure_camera_is_spawned()
 	if game_setup_info.is_in_mode_world():
 		_start_game_world()
 		B_GRID.position.x = WM.get_bounds_global_position().end.x + CFG.MAPS_OFFSET_X
-		set_camera(E.CameraPosition.WORLD)
+		UI.set_camera(E.CameraPosition.WORLD)
 	if game_setup_info.is_in_mode_battle():
 		_start_game_battle()
-		set_camera(E.CameraPosition.BATTLE)
+		UI.set_camera(E.CameraPosition.BATTLE)
 	if NET.server:
 		NET.server.broadcast_start_game()
 
 func go_to_map_editor():
-	if not camera:
-		camera = PolyCamera.new()
-		camera.name = "PolyCamera"
-		add_child(camera)
+	UI.ensure_camera_is_spawned()
 	draw_mode = true
 	UI.go_to_map_editor()
 
@@ -251,22 +165,6 @@ func create_player(player_idx : int) -> Player:
 
 #region Gameplay UI
 
-func switch_camera() -> void:
-	if current_camera_position == E.CameraPosition.WORLD:
-		if BM.battle_is_ongoing:
-			set_camera(E.CameraPosition.BATTLE)
-	else:
-		if game_setup_info.game_mode == GameSetupInfo.GameMode.WORLD:
-			set_camera(E.CameraPosition.WORLD)
-
-
-func set_camera(pos : E.CameraPosition) -> void:
-	current_camera_position = pos
-	if pos == E.CameraPosition.BATTLE:
-		camera.set_bounds(BM.get_bounds_global_position())
-	else :
-		camera.set_bounds(WM.get_bounds_global_position())
-
 
 func go_to_main_menu():
 	draw_mode = false
@@ -296,41 +194,5 @@ func set_game_paused(is_paused : bool):
 
 func quit_game():
 	get_tree().quit()
-
-
-## NOTE: fullscreen uses old style exclusive fullscreen because of Godot bug
-func toggle_fullscreen():
-	if DisplayServer.window_get_mode() == DisplayServer.WINDOW_MODE_WINDOWED:
-		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_EXCLUSIVE_FULLSCREEN)
-		# DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
-		# TODO: change to borderless when Godot bug is fixed
-		# https://github.com/godotengine/godot/issues/63500
-		# there is a grey border around the screen
-	else:
-		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
-
-#endregion
-
-
-#region Debug
-
-## Toggle of default godot Debug tool - visible collision shapes
-func toggle_collision_debug():
-
-	var tree := get_tree()
-	tree.debug_collisions_hint = not tree.debug_collisions_hint
-
-	# Traverse tree to call queue_redraw on instances of
-	# CollisionShape2D and CollisionPolygon2D.
-	var node_stack: Array[Node] = [tree.get_root()]
-	while not node_stack.is_empty():
-		var node: Node = node_stack.pop_back()
-		if is_instance_valid(node):
-			if node is CollisionShape2D or node is CollisionPolygon2D:
-				node.queue_redraw()
-			if node is TileMap:
-				node.collision_visibility_mode = TileMap.VISIBILITY_MODE_FORCE_HIDE
-				node.collision_visibility_mode = TileMap.VISIBILITY_MODE_DEFAULT
-			node_stack.append_array(node.get_children())
 
 #endregion
