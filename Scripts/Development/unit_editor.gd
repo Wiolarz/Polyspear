@@ -2,8 +2,10 @@ extends CanvasLayer
 
 ## currently edited unit data
 ## WARNING: do not change this until save is clicked
-## not saved changes are kept on unit_preview_form.unit_stats
+## not saved changes are kept on `dirty_changes`
 var edited_unit : DataUnit
+
+var dirty_changes : DataUnit
 
 ## order of symbols here is the same order as in symbol pickers
 var all_data_symbols : Array[DataSymbol] = []
@@ -139,11 +141,13 @@ func _on_browser_item_activated():
 func load_unit(path : String):
 	var data = load(path)
 	edited_unit = data as DataUnit
+	dirty_changes = edited_unit.duplicate()
+
 	currently_edited_label.text = edited_unit.resource_path
 
-	unit_preview_form.apply_template(data)
+	unit_preview_form.apply_graphics(dirty_changes)
 	for dir in range(0,6):
-		_set_symbol_picker(dir, data.symbols[dir])
+		_set_symbol_picker(dir, dirty_changes.symbols[dir])
 
 
 ## chooses specified symbol on a specified picker
@@ -159,8 +163,8 @@ func on_symbol_selected(dir : int, picker_index : int):
 			[dir, E.direction_to_name(dir as E.GridDirections), \
 			picked_symbol.type, E.symbol_to_name(picked_symbol.type)])
 
-	unit_preview_form.unit_stats.symbols[dir] = picked_symbol
 	unit_preview_form._apply_symbol_sprite(dir, picked_symbol.texture_path)
+	dirty_changes.symbols[dir] = picked_symbol
 
 
 ## shows art picking dialog
@@ -170,7 +174,7 @@ func _on_pick_art_button_pressed():
 
 ## applies new art to `unit_preview_form`
 func _on_pick_art_dialog_file_selected(path):
-	unit_preview_form.unit_stats.texture_path = path
+	dirty_changes.texture_path = path
 	unit_preview_form._apply_unit_texture(load(path))
 
 
@@ -179,7 +183,12 @@ func _on_save_pressed():
 	if edited_unit == null or edited_unit.resource_path.is_empty():
 		push_error("can only edit existing units, open a unit first")
 		return
-	ResourceSaver.save(unit_preview_form.unit_stats, edited_unit.resource_path)
+	edited_unit.texture_path = dirty_changes.texture_path
+	for i in range(6):
+		edited_unit.symbols[i] = dirty_changes.symbols[i]
+	ResourceSaver.save(edited_unit, edited_unit.resource_path)
+	# WARNING clears uids
+	# see https://github.com/godotengine/godot/issues/83259
 
 
 ## return to main menu

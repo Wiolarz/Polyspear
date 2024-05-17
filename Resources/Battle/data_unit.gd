@@ -10,8 +10,6 @@ extends Resource
 @export var required_building : DataBuilding = null
 @export var level : int = 1
 
-func apply_data(_unit : UnitForm) -> void:
-	pass
 
 static func get_network_id(unit : DataUnit) -> String:
 	if not unit:

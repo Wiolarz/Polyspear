@@ -1,18 +1,7 @@
 class_name UnitForm
-
 extends Node2D
 
-@export var unit_stats : DataUnit
-
-var unit_rotation : int
-var coord : Vector2i
-var controller : Player
-
-## based on specific UnitForm scene in _ready() symbols get placed into their spots
-var symbols : Array[E.Symbols] = [
-	E.Symbols.EMPTY, E.Symbols.EMPTY, E.Symbols.EMPTY,
-	E.Symbols.EMPTY, E.Symbols.EMPTY, E.Symbols.EMPTY,
-]
+var unit : Unit
 
 var _target_tile : TileForm
 var _move_speed : float
@@ -20,48 +9,75 @@ var _move_speed : float
 var _target_rotation_degrees : float
 var _rotation_speed : float
 
+var _play_death_anim : bool
 
 
-func _physics_process(_delta):
-	if 0.1 < abs(fmod(rotation_degrees, 360) - _target_rotation_degrees):
-		_animate_rotation()
-		return # so that unit first rotates then moves
+static func create(new_unit : Unit) -> UnitForm:
+	var result = CFG.UNIT_FORM_SCENE.instantiate()
+	result.name = new_unit.template.unit_name
+	result.unit = new_unit
+	new_unit.waits_for_form = true
+	new_unit.unit_turned.connect(result.on_unit_turned)
+	new_unit.unit_moved.connect(result.on_unit_moved)
+	new_unit.unit_died.connect(result.on_unit_died)
+	new_unit.select_request.connect(result.set_selected)
 
-	if _target_tile != null:
-		_animate_movement()
+	result.apply_graphics(new_unit.template)
+
+	result.global_position = B_GRID.get_tile(new_unit.coord).global_position
+	result.rotation_degrees = new_unit.unit_rotation * 60
+	result.get_node("sprite_unit").rotation = -result.rotation
 
 
-func turn(side : int, skip_animation = false):
-	"""
-	360 / 6 = 60  degrees needed to rotate unit
+	return result
 
-	param UnitForm - Reference to the object we are rotating
-	param Direction
-	"""
-	unit_rotation = side
+## HACK, this is for visuals only for summon UI
+## no underlying Unit exists
+static func create_for_summon_ui(template: DataUnit) -> UnitForm:
+	var result = CFG.UNIT_FORM_SCENE.instantiate()
+	result.apply_graphics(template)
+	return result
 
-	_target_rotation_degrees = (60 * (side))
-	if skip_animation \
-			or CFG.animation_speed_frames == CFG.AnimationSpeed.INSTANT:
-		rotation_degrees = _target_rotation_degrees
-		$sprite_unit.rotation = -rotation
+
+func _physics_process(delta):
+	if _animate_rotation():
 		return
+	if _animate_movement():
+		return
+	_animate_death(delta)
+
+
+func on_unit_turned():
+	var new_side = unit.unit_rotation
+	_target_rotation_degrees = (60 * (new_side))
+
 	var current_rotation_degrees = fmod(rotation_degrees + 360, 360)
 	var relative_rotation = _target_rotation_degrees - current_rotation_degrees
 	_rotation_speed = abs(relative_rotation) / CFG.animation_speed_frames
 
 
-func move(target : TileForm, summon : bool = false):
-	coord = target.coord
-	if summon:
-		global_position = target.global_position
-		return
+func on_unit_moved():
+	var new_coord = unit.coord
+	var tile = B_GRID.get_tile(new_coord)
 
-	_target_tile = target
-	_move_speed = (target.global_position - global_position).length() / CFG.animation_speed_frames
+	_target_tile = tile
+	_move_speed = (tile.global_position - global_position).length() / CFG.animation_speed_frames
 
 
-func _animate_rotation():
+func on_unit_died():
+	_play_death_anim = true
+
+
+func _animate_rotation() -> bool:
+	if abs(fmod(rotation_degrees, 360) - _target_rotation_degrees) < 0.1:
+		return false
+
+	if CFG.animation_speed_frames == CFG.AnimationSpeed.INSTANT:
+		rotation_degrees = _target_rotation_degrees
+		$sprite_unit.rotation = -rotation
+		unit.anim_end.emit()
+		return true
+
 	var current_rotation_degrees = fmod(rotation_degrees + 360, 360)
 	var relative_rotation = _target_rotation_degrees - current_rotation_degrees
 	#print(relative_rotation, "  ", p_direction, "   ", current_rotation)
@@ -72,26 +88,41 @@ func _animate_rotation():
 	var this_frame_rotation = clamp(relative_rotation, -1, 1) * _rotation_speed
 	if abs(relative_rotation) < abs(this_frame_rotation):
 		rotation = deg_to_rad(_target_rotation_degrees)
+		unit.anim_end.emit()
 	else:
 		rotation += deg_to_rad(this_frame_rotation)
 	$sprite_unit.rotation = -rotation
+	return true
 
-func _animate_movement():
+
+func _animate_movement() -> bool:
+	if _target_tile == null:
+		return false
+
 	if CFG.animation_speed_frames == CFG.AnimationSpeed.INSTANT:
 		position = _target_tile.position
-	else:
-		global_position = global_position.move_toward(_target_tile.global_position, _move_speed)
+		unit.anim_end.emit()
+		return true
+
+	global_position = global_position.move_toward(_target_tile.global_position, _move_speed)
 	if (global_position - _target_tile.global_position).length_squared() < 0.01:
 		global_position = _target_tile.global_position
 		_target_tile = null
+		unit.anim_end.emit()
+	return true
 
 
-func can_defend(side : int) -> bool:
-	return get_symbol(side) == E.Symbols.SHIELD
+func _animate_death(delta) -> bool:
+	if not _play_death_anim:
+		return false
 
-
-func get_symbol(side : int) -> E.Symbols:
-	return symbols[(side - unit_rotation) % 6]
+	scale.x -= 3 * delta
+	if scale.x < 0:
+		scale.x = 0
+		_play_death_anim = false
+		unit.anim_end.emit()
+	scale.y = scale.x
+	return true
 
 
 func set_selected(is_selected : bool):
@@ -99,52 +130,15 @@ func set_selected(is_selected : bool):
 	$sprite_unit.modulate = c
 
 
-func apply_template(data_template : DataUnit):
-	unit_stats = data_template
-	get_node("sprite_unit").texture = load(data_template.texture_path)
+func apply_graphics(template : DataUnit):
+	var unit_texture = load(template.texture_path) as Texture2D
+	_apply_unit_texture(unit_texture)
 	for dir in range(0,6):
-		symbols[dir] = unit_stats.symbols[dir].type
-		#print("dir ",dir," template ",unit_stats.symbols[dir].type, " set ",Symbols[dir] )
-		var symbol_sprite = get_node("Symbols")\
-			.get_children()[dir].get_child(0).get_child(0)
-		var tex = unit_stats.symbols[dir].texture_path
-		if ( tex == null or tex == ""):
-			symbol_sprite.hide()
-		else:
-			symbol_sprite.texture = load(tex)
-			symbol_sprite.show()
+		var symbol_texture = template.symbols[dir].texture_path
+		_apply_symbol_sprite(dir, symbol_texture)
 
 
-func destroy():
-	queue_free()
-
-## can i kill this enemy in melee if i attack in specified direction
-func can_kill(enemy : UnitForm, attack_direction : int):
-	# - attacker has no attack symbol on front
-	# - attacker has push symbol on front (no current unit has it)
-	# - attacker has some attack symbol
-	#   - defender has shield
-
-	match symbols[0]: # front symbol
-		E.Symbols.EMPTY:
-			# can't deal with enemy_unit
-			return false
-		E.Symbols.SHIELD:
-			# can't deal with enemy_unit
-			return false
-		E.Symbols.PUSH:
-			# push ignores enemy_unit shields etc
-			return true
-		_:
-			# assume other attack symbol
-			# Does enemy_unit has a shield?
-			if enemy.get_symbol(attack_direction + 3) == E.Symbols.SHIELD:
-				return false
-			# no shield, attack ok
-			return true
-
-
-## WARNING: only for UNIT EDITOR
+## WARNING: called directly in UNIT EDITOR
 func _apply_symbol_sprite(dir : int, texture_path : String) -> void:
 	var symbol_sprite = $"Symbols".get_children()[dir].get_child(0).get_child(0)
 	if texture_path == null or texture_path.is_empty():
@@ -155,6 +149,6 @@ func _apply_symbol_sprite(dir : int, texture_path : String) -> void:
 	symbol_sprite.show()
 
 
-## WARNING: only for UNIT EDITOR
+## WARNING: called directly in UNIT EDITOR
 func _apply_unit_texture(texture : Texture2D) -> void:
 	$sprite_unit.texture = texture

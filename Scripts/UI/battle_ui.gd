@@ -67,10 +67,11 @@ func on_player_selected(army_index : int, preview : bool = false):
 	for unit in armies_reference[army_index].units_to_summon:
 		var b = TextureButton.new()
 		b.texture_normal = CFG.SUMMON_BUTTON_TEXTURE
-		var unit_scene : UnitForm = CFG.UNIT_FORM_SCENE.instantiate()
-		unit_scene.position = b.texture_normal.get_size()/2
-		unit_scene.apply_template(unit)
-		b.add_child(unit_scene)
+
+		var unit_display := UnitForm.create_for_summon_ui(unit)
+		unit_display.position = b.texture_normal.get_size()/2
+		b.add_child(unit_display)
+
 		units_box.add_child(b)
 		var lambda = func on_click():
 			if (current_player != army_index):

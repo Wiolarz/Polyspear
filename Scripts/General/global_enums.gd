@@ -49,12 +49,24 @@ enum WorldMapTiles
 	DEPOSIT,
 }
 
+const DIRECTION_FRONT = GridDirections.LEFT
+
+
+static func rotate_clockwise(direction : GridDirections, sides : int) -> GridDirections:
+	return (direction + sides) % 6 as GridDirections
+
+
+static func opposite_direction(direction : GridDirections) -> GridDirections:
+	return rotate_clockwise(direction, 3)
+
 
 static func symbol_to_name(s : Symbols) -> String:
 	return Symbols.keys()[s]
 
+
 static func direction_to_name(d : GridDirections) -> String:
 	return GridDirections.keys()[d]
+
 
 static func player_type_to_name(pt : PlayerType) -> String:
 	return PlayerType.keys()[pt].to_lower()

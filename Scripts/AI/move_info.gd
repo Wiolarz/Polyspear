@@ -23,3 +23,8 @@ static func make_summon(unit : DataUnit, dst : Vector2i) -> MoveInfo:
 	result.summon_unit = unit
 	result.target_tile_coord = dst
 	return result
+
+func _to_string() -> String:
+	if move_type == TYPE_SUMMON:
+		return TYPE_SUMMON + " " + str(target_tile_coord) + " " + summon_unit.unit_name
+	return move_type + " " + str(target_tile_coord) + " from " + str(move_source)

@@ -1,7 +1,6 @@
 # Singleton B-GRID
 extends GridManager
 
-
 var max_player_number : int
 
 ## Array[Array[TileForm]] player, index -> TileForm
@@ -10,22 +9,22 @@ var summon_tiles : Array = []
 
 #region Tools
 
-func change_unit_coord(unit : UnitForm, coord : Vector2i):
+func spawn_unit_at_coord(unit : Unit, coord : Vector2i):
+	assert(get_unit(coord) == null, "error, spawning onto a non empty field")
+	unit_grid[coord.x][coord.y] = unit # unit_grid Update
 
+
+func change_unit_coord(unit : Unit, coord : Vector2i):
+	assert(get_unit(unit.coord) == unit, "error, desync on unit coord")
+	assert(get_unit(coord) == null, "error, moving into a non empty field")
 	unit_grid[unit.coord.x][unit.coord.y] = null # clean your previous location
 	unit_grid[coord.x][coord.y] = unit # unit_grid Update
 
-	unit.coord = coord
 
-	# Move visuals of the unit
-	unit.move(get_tile(coord), BM.is_during_summoning_phase())
-
-
-func remove_unit(unit : UnitForm):
-
+func remove_unit(unit : Unit):
 	var coord : Vector2i = unit.coord
+	assert(get_unit(coord) == unit, "error, desync on unit coord")
 	unit_grid[coord.x][coord.y] = null # Remove unit from gameplay grid
-	unit.destroy()
 
 #endregion
 
@@ -33,7 +32,7 @@ func remove_unit(unit : UnitForm):
 #region Coordinates tools
 
 
-func get_shot_target(start_coord : Vector2i, side : int) -> UnitForm:
+func get_shot_target(start_coord : Vector2i, side : int) -> Unit:
 	var coord_to_check = start_coord
 	while get_tile_type(coord_to_check) != "sentinel":
 		coord_to_check += DIRECTIONS[side]
@@ -68,6 +67,7 @@ func get_shot_target(start_coord : Vector2i, side : int) -> UnitForm:
 
 func on_tile_spawned(tile: TileForm) -> void:
 	tile.grid_type = GameSetupInfo.GameMode.BATTLE
+
 
 func is_clear() -> bool:
 	var clearness = tile_grid.size() == 0 and unit_grid.size() == 0 and summon_tiles.size() == 0
