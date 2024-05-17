@@ -39,6 +39,7 @@ func start_battle(new_armies : Array[Army], battle_map : DataBattleMap, \
 		x_offset : float) -> void:
 	_replay = BattleReplay.create(new_armies, battle_map)
 	_replay.save()
+	UI.ensure_camera_is_spawned()
 	UI.go_to_custom_ui(battle_ui)
 
 	battle_is_ongoing = true
@@ -257,7 +258,7 @@ func perform_ai_move(move_info : MoveInfo) -> void:
 func perform_move_info(move_info : MoveInfo) -> void:
 	if not battle_is_ongoing:
 		return
-	print(NET.get_role_name(), " performing move ", move_info.move_type)
+	print(NET.get_role_name(), " performing move ", move_info)
 	_replay.record_move(move_info)
 	_replay.save()
 	if NET.server:
@@ -401,7 +402,7 @@ func move_info_move_unit(unit : Unit, end_coord : Vector2i, direction: int) -> v
 		return
 
 	turn_counter += 1
-	check_battle_end()
+	await check_battle_end()
 
 
 func get_player_army(player : Player) -> ArmyInBattleState:
@@ -414,7 +415,7 @@ func get_player_army(player : Player) -> ArmyInBattleState:
 
 func kill_unit(target : Unit) -> void:
 	await get_player_army(target.controller).kill_unit(target)
-	check_battle_end()
+	await check_battle_end()
 
 #endregion
 
@@ -430,13 +431,14 @@ func kill_army(army_idx : int):
 
 ## TEMP: After 50 turns Defender wins
 func end_stalemate():
+	print("ending stalemate")
 	# HACK, end_stalemate can happen during processing of a move
 	# and it's fine
 	_waiting_for_action_to_finish = false
 	for army_idx in range(armies_in_battle_state.size()):
 		if army_idx == DEFENDER:
 			continue
-		kill_army(army_idx)
+		await kill_army(army_idx)
 
 
 func check_battle_end() -> void:
@@ -453,7 +455,7 @@ func check_battle_end() -> void:
 	# TEMP
 	if turn_counter == 50:
 		turn_counter += 1  # XD
-		end_stalemate()
+		await end_stalemate()
 
 
 func turn_off_battle_ui() -> void:
@@ -617,6 +619,7 @@ class ArmyInBattleState:
 
 
 	func kill_unit(target : Unit) -> void:
+		print("killing ", target.coord, " ",target.template.unit_name)
 		units.erase(target)
 		dead_units.append(target.template)
 		B_GRID.remove_unit(target)
