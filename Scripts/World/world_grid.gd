@@ -1,32 +1,72 @@
 # Singleton - W_GRID
 extends GridManager
 
-
 var max_player_number : int
 
-var places : Array = [] # Array[Array[Place]]
+var grid_width : int
+var	grid_height : int
 
+var tile_grid : GenericHexGrid # Grid<TileForm>
+var unit_grid : GenericHexGrid # Grid<ArmyForm>
+var places_grid : GenericHexGrid # Grid<Place>
+
+func load_map(world_map : DataWorldMap) -> void:
+	assert(is_clear(), "cannot load map, map already loaded")
+	grid_width = world_map.grid_width
+	grid_height = world_map.grid_height
+	tile_grid = GenericHexGrid.new(grid_width, grid_height, null)
+	unit_grid = GenericHexGrid.new(grid_width, grid_height, null)
+	places_grid = GenericHexGrid.new(grid_width, grid_height, null)
+
+	for x in range(grid_width):
+		for y in range(grid_height):
+			var coord = Vector2i(x, y)
+			var data = world_map.grid_data[x][y] as DataTile
+			var place : Place = Place.create_place(data, coord)
+			var tile_form = TileForm.create_world_tile(data, coord, place)
+			tile_form.position = to_position(coord)
+			add_child(tile_form)
+
+			tile_grid.set_hex(coord, tile_form)
+			places_grid.set_hex(coord, place)
+			if place:
+				place.on_game_started()
 
 #region Tools
 
-func place_army(army : ArmyForm, coord : Vector2i):
-	assert(get_unit(coord) == null, "can't place 2 armies on the same field")
-	unit_grid[coord.x][coord.y] = army
-	army.place_on(get_tile(coord))
+
+func place_army(army : ArmyForm, coord : Vector2i) -> void:
+	assert(not unit_grid.get_hex(coord), "can't place 2 armies on the same field")
+	unit_grid.set_hex(coord, army)
+	var tile = tile_grid.get_hex(coord)
+	assert(tile, "can't place armies on non existing tile " + str(coord))
+	army.place_on(tile)
 
 
-func change_hero_position(hero, coord : Vector2i):
-	unit_grid[hero.coord.x][hero.coord.y] = null # clean your previous location
-	unit_grid[coord.x][coord.y] = hero
+func get_army(coord : Vector2i) -> ArmyForm:
+	return unit_grid.get_hex(coord)
 
+
+func get_hero(coord : Vector2i) -> Hero:
+	var army = get_army(coord)
+	if army != null and army.entity.hero != null:
+		return army
+	return null
+
+
+func change_hero_position(hero : ArmyForm, coord : Vector2i) -> void:
+	assert(unit_grid.get_hex(hero.coord) == hero, "hero coord desync")
+	unit_grid.set_hex(hero.coord, null) # clean your previous location
+	unit_grid.set_hex(coord, hero)
 	# Move visuals of the unit
-	hero.move(get_tile(coord))
+	var tile = tile_grid.get_hex(coord)
+	assert(tile, "can't place armies on non existing tile " + str(coord))
+	hero.move(tile)
 
 
-func remove_hero(hero):
-	var coord : Vector2i = hero.coord
-	unit_grid[coord.x][coord.y] = null # Remove unit from gameplay grid
-
+func remove_hero(hero : ArmyForm) -> void:
+	assert(unit_grid.get_hex(hero.coord) == hero, "hero coord desync")
+	unit_grid.set_hex(hero.coord, null)
 	hero.destroy()
 
 #endregion
@@ -35,25 +75,22 @@ func remove_hero(hero):
 #region Coordinates Tools
 
 func is_moveable(coord : Vector2i):
-	return get_tile_type(coord) in CFG.WORLD_MOVEABLE_TILES
+	var tile = tile_grid.get_hex(coord)
+	return tile.type in CFG.WORLD_MOVEABLE_TILES
 
 
 func get_tile_controller(coord : Vector2i) -> Player:
 	var hero = get_hero(coord)
-	if hero != null:
+	if hero:
 		return hero.controller
-	var place = places[coord.x][coord.y]
-	if place != null:
+	var place = get_place(coord)
+	if place:
 		return place.controller
 	return null
 
 
 func get_battle_map(_coord : Vector2i) -> DataBattleMap:
 	return CFG.DEFAULT_BATTLE_MAP
-
-
-func get_army(coord : Vector2i) -> ArmyForm:
-	return unit_grid[coord.x][coord.y]
 
 
 func is_city(coord : Vector2i) -> bool:
@@ -65,19 +102,12 @@ func get_city(coord : Vector2i) -> City:
 
 
 func get_place(coord : Vector2i) -> Place:
-	return places[coord.x][coord.y] as Place
-
-
-func get_hero(coord : Vector2i):
-	var army = get_army(coord)
-	if army != null and army.entity.hero != null:
-		return army
-	return null
+	return places_grid.get_hex(coord) as Place
 
 
 func is_enemy_present(coord : Vector2i, player : Player) -> bool:
 	var army = get_army(coord)
-	if army == null:
+	if not army:
 		return false
 	if army.controller == player: #TEMP should check for allies
 		return false
@@ -99,42 +129,33 @@ func get_interactable_type(coord : Vector2i) -> String:
 #region Generate Grid
 
 func is_clear() -> bool:
-	return tile_grid.size() == 0 and unit_grid.size() == 0 \
-			and places.size() == 0
+	return not tile_grid and not unit_grid and not places_grid
 
-
-func init_tile_grid() -> void:
-	for i in range(grid_width):
-		tile_grid.append([])
-		unit_grid.append([])
-		places.append([])
-		for j in range(grid_height):
-			unit_grid[i].append(null)
-			tile_grid[i].append(null)
-			places[i].append(null)
-
-
-func generate_special_tiles() -> void:
-	for x in map_information.grid_data.size():
-		for y in map_information.grid_data[0].size():
-			var data_tile = map_information.grid_data[x][y]
-			var coord = to_bordered_coords(Vector2i(x,y))
-			var place : Place = Place.create_place(data_tile, coord)
-			places[coord.x][coord.y] = place
-			W_GRID.get_tile(coord).place = place
-			if place:
-				place.on_game_started()
 
 func end_of_turn_callbacks(player : Player) -> void:
 	#TODO make it nicer
 	for x in range(grid_width):
 		for y in range(grid_height):
-			var a = get_army(Vector2i(x,y))
-			if a != null:
+			var coord = Vector2i(x,y)
+			var a = get_army(coord)
+			if a:
 				a.on_end_of_turn(player)
 
+
+## for map editor only
+func paint(coord : Vector2i, brush : DataTile) -> void:
+	var tile = tile_grid.get_hex(coord) as TileForm
+	tile.paint(brush)
+
+
 func reset_data() -> void:
-	places = []
-	super.reset_data()
+	for c in get_children():
+		c.queue_free()
+		remove_child(c)
+	tile_grid = null
+	unit_grid = null
+	places_grid = null
+	grid_height = 0
+	grid_height = 0
 
 #endregion

@@ -51,10 +51,11 @@ func start_battle(new_armies : Array[Army], battle_map : DataBattleMap, \
 		armies_in_battle_state.append(ArmyInBattleState.create_from(a))
 	current_army_index = ATTACKER
 
+	# GAMEPLAY GRID:
 	_battle_grid = BattleHexGrid.create(battle_map)
 
-	# GRAPHICS:
-	B_GRID.generate_grid(battle_map)
+	# GRAPHICS GRID:
+	B_GRID.load_map(battle_map)
 	B_GRID.position.x = x_offset
 
 	selected_unit = null
@@ -224,7 +225,7 @@ func perform_move_info(move_info : MoveInfo) -> void:
 		NET.server.broadcast_move(move_info)
 	if move_info.move_type == MoveInfo.TYPE_MOVE:
 		var unit = _battle_grid.get_unit(move_info.move_source)
-		var dir = GridManager.adjacent_side_direction(unit.coord, move_info.target_tile_coord)
+		var dir = GenericHexGrid.direction_to_adjacent(unit.coord, move_info.target_tile_coord)
 		assert(not _waiting_for_action_to_finish, \
 				"cant trigger awaitable action while a different action is processing")
 		_waiting_for_action_to_finish = true

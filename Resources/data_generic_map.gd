@@ -12,6 +12,3 @@ extends Resource
 func is_on_grid(coord : Vector2i):
 	return coord.x >= 0 and coord.y >= 0 \
 		and coord.x < grid_width and coord.y < grid_height
-
-func apply_data() -> void:
-	pass

@@ -20,16 +20,7 @@ func get_spawn_locations() -> Array[Vector2i]:
 		for y in range(grid_data[x].size()):
 			if grid_data[x][y].is_spawn_tile():
 				spawn_locations.append(Vector2i(x, y))
-
-
 	return spawn_locations
-
-
-func apply_data() -> void:
-	W_GRID.map_information = self  # : DataGenericMap : DataWorldMap
-	W_GRID.max_player_number = max_player_number
-	W_GRID.grid_width = grid_width
-	W_GRID.grid_height = grid_height
 
 
 static func get_network_id(world_map : DataWorldMap) -> String:

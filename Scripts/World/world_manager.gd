@@ -102,7 +102,7 @@ func grid_input(coord : Vector2i):
 		return
 
 	#TEMP in future there will be pathfiding here
-	if not GridManager.is_adjacent(selected_hero.coord, coord):
+	if not GenericHexGrid.is_adjacent(selected_hero.coord, coord):
 		set_selected_hero(null)
 		return
 
@@ -285,7 +285,7 @@ func start_world(world_map : DataWorldMap) -> void:
 	UI.go_to_custom_ui(world_ui)
 	world_ui.refresh_player_buttons()
 
-	W_GRID.generate_grid(world_map)
+	W_GRID.load_map(world_map)
 
 	for player_id in range(players.size()):
 		spawn_player(spawn_location[player_id], players[player_id])

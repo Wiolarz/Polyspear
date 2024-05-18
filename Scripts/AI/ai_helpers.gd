@@ -43,12 +43,12 @@ static func is_kill_move(move : MoveInfo, me : Player) -> bool:
 		return true
 
 	# BOW
-	var move_direction = GridManager.adjacent_side_direction( \
+	var move_direction = GenericHexGrid.direction_to_adjacent( \
 			move.move_source, move.target_tile_coord);
 	for side in range(6):
 		if BM._battle_grid.get_unit(move.move_source).get_symbol(side) != E.Symbols.BOW:
 			continue
-		var shoot_direction = (move_direction + side) % 6
+		var shoot_direction = GenericHexGrid.rotate_clockwise(move_direction, side)
 		var target : Unit = BM._battle_grid.get_shot_target(move.move_source, shoot_direction)
 		if  target != null and target.controller != me:
 			return true
