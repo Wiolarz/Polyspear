@@ -99,3 +99,7 @@ func can_kill(enemy : Unit, attack_direction : int):
 			# no shield, attack ok
 			return true
 
+func get_player_color_dictionary() -> Dictionary:
+	if not controller:
+		return CFG.NEUTRAL_COLOR
+	return controller.get_player_color_dictionary()

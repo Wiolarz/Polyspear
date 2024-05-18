@@ -22,7 +22,8 @@ static func create(new_unit : Unit) -> UnitForm:
 	new_unit.unit_died.connect(result.on_unit_died)
 	new_unit.select_request.connect(result.set_selected)
 
-	result.apply_graphics(new_unit.template)
+	result.apply_graphics(new_unit.template,
+			new_unit.get_player_color_dictionary().name)
 
 	result.global_position = B_GRID.get_tile(new_unit.coord).global_position
 	result.rotation_degrees = new_unit.unit_rotation * 60
@@ -33,9 +34,9 @@ static func create(new_unit : Unit) -> UnitForm:
 
 ## HACK, this is for visuals only for summon UI
 ## no underlying Unit exists
-static func create_for_summon_ui(template: DataUnit) -> UnitForm:
+static func create_for_summon_ui(template: DataUnit, color_name: String) -> UnitForm:
 	var result = CFG.UNIT_FORM_SCENE.instantiate()
-	result.apply_graphics(template)
+	result.apply_graphics(template, color_name)
 	return result
 
 
@@ -130,9 +131,10 @@ func set_selected(is_selected : bool):
 	$sprite_unit.modulate = c
 
 
-func apply_graphics(template : DataUnit):
+func apply_graphics(template : DataUnit, color_name : String):
 	var unit_texture = load(template.texture_path) as Texture2D
 	_apply_unit_texture(unit_texture)
+	_apply_color_texture(color_name)
 	for dir in range(0,6):
 		var symbol_texture = template.symbols[dir].texture_path
 		_apply_symbol_sprite(dir, symbol_texture)
@@ -152,3 +154,10 @@ func _apply_symbol_sprite(dir : int, texture_path : String) -> void:
 ## WARNING: called directly in UNIT EDITOR
 func _apply_unit_texture(texture : Texture2D) -> void:
 	$sprite_unit.texture = texture
+
+func _apply_color_texture(color_name : String) -> void:
+	var path = "res://Art/player_colors/%s_color.png" % color_name
+	var texture = load(path) as Texture2D
+	assert(texture, "failed to load background " + path)
+	$sprite_color.texture = texture
+

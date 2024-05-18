@@ -145,7 +145,7 @@ func load_unit(path : String):
 
 	currently_edited_label.text = edited_unit.resource_path
 
-	unit_preview_form.apply_graphics(dirty_changes)
+	unit_preview_form.apply_graphics(dirty_changes, CFG.NEUTRAL_COLOR.name)
 	for dir in range(0,6):
 		_set_symbol_picker(dir, dirty_changes.symbols[dir])
 
