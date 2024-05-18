@@ -76,7 +76,7 @@ func on_player_selected(army_index : int, preview : bool = false):
 		old_buttons.queue_free()
 
 	var units_controller : Player = armies_reference[army_index].army_reference.controller
-	var bg_color : StringName = CFG.NEUTRAL_COLOR.name
+	var bg_color : String = CFG.NEUTRAL_COLOR.name
 	if units_controller:
 		bg_color = units_controller.get_player_color_dictionary().name
 	for unit in armies_reference[army_index].units_to_summon:
