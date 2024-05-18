@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://bxv0ekarao7c"
-path="res://.godot/imported/teal_color.png-708d12775894f4b38fae11834b86c00f.ctex"
+path="res://.godot/imported/green_color.png-2237fc7a18057e58071310476b41a0b4.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Art/player_colors/teal_color.png"
-dest_files=["res://.godot/imported/teal_color.png-708d12775894f4b38fae11834b86c00f.ctex"]
+source_file="res://Art/player_colors/green_color.png"
+dest_files=["res://.godot/imported/green_color.png-2237fc7a18057e58071310476b41a0b4.ctex"]
 
 [params]
 

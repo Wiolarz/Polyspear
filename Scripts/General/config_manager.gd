@@ -78,6 +78,8 @@ const TEAM_COLORS : Array[Dictionary] = [
 	{ "name": "orange", "color": Color(0.9, 0.5, 0.0) },
 ]
 
+const NEUTRAL_COLOR = { "name": "gray", "color":  Color(0.5, 0.5, 0.5, 1.0) }
+
 const DEFAULT_TEAM_COLOR = Color(0.5, 0.5, 0.5, 1.0)
 
 func get_team_color_at(index : int) -> Color:
