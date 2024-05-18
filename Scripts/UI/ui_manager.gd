@@ -130,6 +130,9 @@ func grid_input_listener(tile_coord : Vector2i, \
 			map_editor.grid_input(tile_coord)
 		return
 
+	if mouse_drag:
+		return
+
 	if BM.battle_is_ongoing:
 		if tile_type == GameSetupInfo.GameMode.BATTLE:
 			BM.grid_input(tile_coord)

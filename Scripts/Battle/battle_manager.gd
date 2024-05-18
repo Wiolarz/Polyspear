@@ -136,7 +136,6 @@ func switch_participant_turn() -> void:
 
 ## user clicked battle tile on given coordinates
 func grid_input(coord : Vector2i) -> void:
-	coord = coord - Vector2i(1,1)
 	if _replay_is_playing:
 		print("replay playing, input ignored")
 		return
@@ -309,7 +308,7 @@ func process_offensive_symbols(unit : Unit) -> void:
 
 
 func push_enemy(enemy : Unit, direction : int) -> void:
-	var target_coord = _battle_grid.get_distant_coord(enemy.coord, direction, 1)
+	var target_coord = GenericHexGrid.distant_coord(enemy.coord, direction, 1)
 
 	if not _battle_grid.is_movable(target_coord):
 		# Pushing outside the map

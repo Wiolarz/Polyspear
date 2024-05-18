@@ -67,7 +67,7 @@ func next_player_turn():
 	_end_of_turn_callbacks(current_player)
 	var player_idx = players.find(current_player)
 	if player_idx + 1 == players.size():
-		_end_of_day_callbacks()
+		_end_of_round_callbacks()
 		current_player = players[0]
 	else:
 		current_player = players[player_idx + 1]
@@ -79,12 +79,8 @@ func _end_of_turn_callbacks(player : Player):
 	W_GRID.end_of_turn_callbacks(player)
 
 
-func _end_of_day_callbacks() -> void:
-	for column in W_GRID.places:
-		for place : Place in column:
-			if place == null:
-				continue
-			place.on_end_of_turn()
+func _end_of_round_callbacks() -> void:
+	W_GRID._end_of_round_callbacks()
 
 #endregion
 
@@ -156,8 +152,8 @@ func try_interact(hero : ArmyForm, coord : Vector2i):
 func hero_move(hero : ArmyForm, coord : Vector2i):
 	W_GRID.change_hero_position(hero, coord)
 	world_ui.show_trade_ui(current_player.capital_city, null)
-	var place = W_GRID.places[coord.x][coord.y]
-	if place != null:
+	var place = W_GRID.get_place(coord)
+	if place:
 		place.interact(hero)
 
 func trade_armies(_second_army : ArmyForm):
@@ -239,7 +235,7 @@ func end_of_battle(battle_results : Array[BM.ArmyInBattleState]):
 func kill_army(army : ArmyForm):
 	if army.entity.hero:
 		army.controller.hero_died(army.entity.hero)
-	W_GRID.unit_grid[army.coord.x][army.coord.y] = null  # there can only be one army at a single tile
+	W_GRID.remove_army(army) # there can only be one army at a single tile
 	army.queue_free()
 	world_ui.city_ui._refresh_all()
 
@@ -273,7 +269,7 @@ func start_world(world_map : DataWorldMap) -> void:
 	var spawn_location = world_map.get_spawn_locations()
 
 	for coord in spawn_location:
-		print("spawn: ",  W_GRID.to_bordered_coords(coord))
+		print("spawn: ",  coord)
 
 	players = IM.players
 
@@ -294,8 +290,7 @@ func start_world(world_map : DataWorldMap) -> void:
 
 
 func spawn_player(coord : Vector2i, player : Player):
-	var fixed_coord =  W_GRID.to_bordered_coords(coord)
-	var capital_city = W_GRID.get_city(fixed_coord)
+	var capital_city = W_GRID.get_city(coord)
 	player.set_capital(capital_city)
 
 #endregion

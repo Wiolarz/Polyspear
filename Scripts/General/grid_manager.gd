@@ -15,3 +15,8 @@ func to_position(coord : Vector2i) -> Vector2:
 	horizontal += coord.y * TILE_OFFSET_HORIZONTAL_PER_Y
 	var vertical = coord.y * TILE_OFFSET_VERTICAL_PER_Y
 	return Vector2(horizontal, vertical)
+
+
+func get_bounds_global_position() -> Rect2:
+	assert(false, "get_bounds_global_position not implemented")
+	return Rect2()

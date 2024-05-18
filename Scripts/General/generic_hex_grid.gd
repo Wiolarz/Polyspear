@@ -86,5 +86,5 @@ static func adjacent_coord(coord : Vector2i, side : int) -> Vector2i:
 	return coord + DIRECTION_TO_OFFSET[side]
 
 
-static func adjacent_coord_distant(coord : Vector2i, side : int, distance:int) -> Vector2i:
+static func distant_coord(coord : Vector2i, side : int, distance:int) -> Vector2i:
 	return coord + distance * DIRECTION_TO_OFFSET[side]

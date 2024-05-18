@@ -47,6 +47,11 @@ func get_army(coord : Vector2i) -> ArmyForm:
 	return unit_grid.get_hex(coord)
 
 
+func remove_army(army : ArmyForm) -> void:
+	assert(unit_grid.get_hex(army.coord) == army, "army coord desync")
+	unit_grid.set_hex(army.coord, null)
+
+
 func get_hero(coord : Vector2i) -> Hero:
 	var army = get_army(coord)
 	if army != null and army.entity.hero != null:
@@ -62,12 +67,6 @@ func change_hero_position(hero : ArmyForm, coord : Vector2i) -> void:
 	var tile = tile_grid.get_hex(coord)
 	assert(tile, "can't place armies on non existing tile " + str(coord))
 	hero.move(tile)
-
-
-func remove_hero(hero : ArmyForm) -> void:
-	assert(unit_grid.get_hex(hero.coord) == hero, "hero coord desync")
-	unit_grid.set_hex(hero.coord, null)
-	hero.destroy()
 
 #endregion
 
@@ -104,6 +103,16 @@ func get_city(coord : Vector2i) -> City:
 func get_place(coord : Vector2i) -> Place:
 	return places_grid.get_hex(coord) as Place
 
+
+func get_all_places() -> Array[Place]:
+	var result:Array[Place] = []
+	for x in range(grid_width):
+		for y in range(grid_height):
+			var coord = Vector2i(x, y)
+			var place = get_place(coord)
+			if place:
+				result.append(place)
+	return result
 
 func is_enemy_present(coord : Vector2i, player : Player) -> bool:
 	var army = get_army(coord)
@@ -142,6 +151,12 @@ func end_of_turn_callbacks(player : Player) -> void:
 				a.on_end_of_turn(player)
 
 
+func _end_of_round_callbacks() -> void:
+	for place in get_all_places():
+		place.on_end_of_turn()
+
+
+
 ## for map editor only
 func paint(coord : Vector2i, brush : DataTile) -> void:
 	var tile = tile_grid.get_hex(coord) as TileForm
@@ -156,6 +171,15 @@ func reset_data() -> void:
 	unit_grid = null
 	places_grid = null
 	grid_height = 0
-	grid_height = 0
+	grid_width = 0
+
+
+func get_bounds_global_position() -> Rect2:
+	if is_clear():
+		push_warning("asking not initialized grid for camera bounding box")
+		return Rect2(0, 0, 0, 0)
+	var top_left = tile_grid.get_hex(Vector2i(0,0)).global_position
+	var bottom_right = tile_grid.get_hex(Vector2i(grid_width-1,grid_height-1)).global_position
+	return Rect2(top_left, bottom_right - top_left)
 
 #endregion

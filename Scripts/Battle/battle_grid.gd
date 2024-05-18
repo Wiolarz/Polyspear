@@ -27,7 +27,20 @@ func reset_data():
 		remove_child(c)
 
 
+func get_tile(coord : Vector2i) -> TileForm:
+	return tile_grid.get_hex(coord)
+
+
 ## for map editor only
 func paint(coord : Vector2i, brush : DataTile) -> void:
-	var tile = tile_grid.get_hex(coord) as TileForm
-	tile.paint(brush)
+	get_tile(coord).paint(brush)
+
+
+func get_bounds_global_position() -> Rect2:
+	if is_clear():
+		push_warning("asking not initialized grid for camera bounding box")
+		return Rect2(0, 0, 0, 0)
+	var top_left = tile_grid.get_hex(Vector2i(0,0)).global_position
+	var bottom_right_coord = Vector2i(tile_grid.width-1,tile_grid.height-1)
+	var bottom_right = tile_grid.get_hex(bottom_right_coord).global_position
+	return Rect2(top_left, bottom_right - top_left)
