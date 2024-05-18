@@ -34,9 +34,9 @@ static func create(new_unit : Unit) -> UnitForm:
 
 ## HACK, this is for visuals only for summon UI
 ## no underlying Unit exists
-static func create_for_summon_ui(template: DataUnit, color: String) -> UnitForm:
+static func create_for_summon_ui(template: DataUnit, color_name: String) -> UnitForm:
 	var result = CFG.UNIT_FORM_SCENE.instantiate()
-	result.apply_graphics(template, color)
+	result.apply_graphics(template, color_name)
 	return result
 
 
@@ -155,9 +155,9 @@ func _apply_symbol_sprite(dir : int, texture_path : String) -> void:
 func _apply_unit_texture(texture : Texture2D) -> void:
 	$sprite_unit.texture = texture
 
-func _apply_color_texture(color_name) -> void:
+func _apply_color_texture(color_name : String) -> void:
 	var path = "res://Art/player_colors/%s_color.png" % color_name
 	var texture = load(path) as Texture2D
-	assert(texture, "failed to load background "+path)
+	assert(texture, "failed to load background " + path)
 	$sprite_color.texture = texture
 
