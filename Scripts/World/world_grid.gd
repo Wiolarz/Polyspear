@@ -4,7 +4,7 @@ extends GridManager
 var max_player_number : int
 
 var grid_width : int
-var	grid_height : int
+var grid_height : int
 
 var tile_grid : GenericHexGrid # Grid<TileForm>
 var unit_grid : GenericHexGrid # Grid<ArmyForm>
