@@ -27,7 +27,7 @@ var dead : bool
 static func create(new_controller : Player, \
 		new_template : DataUnit, \
 		new_coord : Vector2i, \
-		new_rotation : E.GridDirections) -> Unit:
+		new_rotation : GenericHexGrid.GridDirections) -> Unit:
 	var result = Unit.new()
 	result.controller = new_controller
 	result.template = new_template
@@ -37,7 +37,7 @@ static func create(new_controller : Player, \
 
 
 ## turns unit front to a given side, can be awaited see waits_for_form
-func turn(side : E.GridDirections):
+func turn(side : GenericHexGrid.GridDirections):
 	unit_rotation = side
 	if waits_for_form:
 		unit_turned.emit()
@@ -65,11 +65,12 @@ func can_defend(side : int) -> bool:
 
 
 func get_symbol(side_world : int) -> E.Symbols:
-	var side_local : int = E.rotate_clockwise(side_world as E.GridDirections, -unit_rotation)
+	var side_local : int = GenericHexGrid.rotate_clockwise( \
+			side_world as GenericHexGrid.GridDirections, -unit_rotation)
 	return template.symbols[side_local].type
 
 func get_front_symbol() -> E.Symbols:
-	return template.symbols[E.DIRECTION_FRONT].type
+	return template.symbols[GenericHexGrid.DIRECTION_FRONT].type
 
 ## can i kill this enemy in melee if i attack in specified direction
 func can_kill(enemy : Unit, attack_direction : int):
@@ -91,7 +92,7 @@ func can_kill(enemy : Unit, attack_direction : int):
 		_:
 			# assume other attack symbol
 			# Does enemy_unit has a shield?
-			var defense_direction = E.opposite_direction(attack_direction)
+			var defense_direction = GenericHexGrid.opposite_direction(attack_direction)
 			var defense_symbol = enemy.get_symbol(defense_direction)
 
 			if defense_symbol == E.Symbols.SHIELD:
