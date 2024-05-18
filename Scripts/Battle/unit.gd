@@ -73,11 +73,14 @@ func get_front_symbol() -> E.Symbols:
 	return template.symbols[GenericHexGrid.DIRECTION_FRONT].type
 
 ## can i kill this enemy in melee if i attack in specified direction
-func can_kill(enemy : Unit, attack_direction : int):
+func can_kill(other_unit : Unit, attack_direction : int):
 	# - attacker has no attack symbol on front
 	# - attacker has push symbol on front (no current unit has it)
 	# - attacker has some attack symbol
 	#   - defender has shield
+
+	if other_unit.controller == controller:
+		return false
 
 	match get_front_symbol():
 		E.Symbols.EMPTY:
@@ -93,7 +96,7 @@ func can_kill(enemy : Unit, attack_direction : int):
 			# assume other attack symbol
 			# Does enemy_unit has a shield?
 			var defense_direction = GenericHexGrid.opposite_direction(attack_direction)
-			var defense_symbol = enemy.get_symbol(defense_direction)
+			var defense_symbol = other_unit.get_symbol(defense_direction)
 
 			if defense_symbol == E.Symbols.SHIELD:
 				return false

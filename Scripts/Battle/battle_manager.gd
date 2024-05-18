@@ -6,8 +6,6 @@ extends Node
 const ATTACKER = 0
 const DEFENDER = 1
 
-const MOVE_IS_INVALID = -1
-
 const STATE_SUMMONNING = "summonning"
 const STATE_FIGHTING = "fighting"
 const STATE_BATTLE_FINISHED = "battle_finished"
@@ -137,6 +135,7 @@ func switch_participant_turn() -> void:
 
 ## user clicked battle tile on given coordinates
 func grid_input(coord : Vector2i) -> void:
+	coord = coord - Vector2i(1,1)
 	if _replay_is_playing:
 		print("replay playing, input ignored")
 		return
@@ -171,8 +170,8 @@ func _grid_input_fighting(coord : Vector2i) -> void:
 
 	# get_move_direction() returns MOVE_IS_INVALID on impossible moves
 	# detects if spot is empty or there is an enemy that can be killed by the move
-	var direction : int = get_move_direction_if_valid(selected_unit, coord)
-	if direction == MOVE_IS_INVALID:
+	var direction : int = _battle_grid.get_move_direction_if_valid(selected_unit, coord)
+	if direction == BattleHexGrid.MOVE_IS_INVALID:
 		return
 
 	selected_unit.select_request.emit(false)
@@ -201,36 +200,6 @@ func try_select_unit(coord : Vector2i) -> bool:
 	selected_unit = new_unit
 	new_unit.select_request.emit(true)
 	return true
-
-
-## Returns `MOVE_IS_INVALID` if move is incorrect
-## or a turn direction `E.GridDirections` if move is correct
-func get_move_direction_if_valid(unit : Unit, coord : Vector2i) -> int:
-	"""
-		Function checks 2 things:
-		1 Target coord is a Neighbor of a selected_unit
-		2a Target coord is empty
-		2b Target coord contains unit that can be killed
-
-		@param unit to move
-		@param coord target coord for selected_unit to move to
-		@return MOVE_IS_INVALID (-1) if move is illegal, direction otherwise
-	"""
-
-	var move_direction = GridManager.adjacent_side_direction(unit.coord, coord)
-	# not adjacent
-	if move_direction == null:
-		return MOVE_IS_INVALID
-
-	var enemy_unit = _battle_grid.get_unit(coord)
-	# empty field
-	if not enemy_unit:
-		return move_direction
-
-	if not unit.can_kill(enemy_unit, move_direction):
-		return MOVE_IS_INVALID
-
-	return move_direction
 
 
 func perform_network_move(move_info : MoveInfo) -> void:
@@ -526,7 +495,8 @@ func move_info_summon_unit(unit_data : DataUnit, coord : Vector2i) -> void:
 	if current_army_index == ATTACKER:
 		rotation = GenericHexGrid.GridDirections.RIGHT
 
-	var unit = armies_in_battle_state[current_army_index].summon_unit(self, unit_data, coord, rotation)
+	var army_state = armies_in_battle_state[current_army_index]
+	var unit = army_state.summon_unit(self, unit_data, coord, rotation)
 	_battle_grid.spawn_unit_at_coord(unit, coord)
 
 	battle_ui.unit_summoned(not is_during_summoning_phase(), unit_data)
