@@ -16,6 +16,8 @@ var capital_city : City:
 		assert(false, "attempt to modify read only value of player capital_city")
 
 var cities : Array[City]
+var outposts : Array[Outpost]
+var outpost_buildings : Array[DataBuilding]
 
 var hero_armies : Array[ArmyForm] = []
 
@@ -39,6 +41,8 @@ func _init():
 	name = "Player"
 
 
+#region Getters
+
 func get_player_name() -> String:
 	if slot.is_bot():
 		return "AI"
@@ -54,6 +58,8 @@ func get_player_color() -> DataPlayerColor:
 
 func get_faction() -> DataFaction:
 	return slot.faction
+
+#endregion
 
 
 ## let player know its his turn,
@@ -84,6 +90,8 @@ func purchase(cost : Goods) -> bool:
 	print("not enough money")
 	return false
 
+
+#region Heroes
 
 func hero_recruited(hero : ArmyForm):
 	hero_armies.append(hero)
@@ -118,3 +126,35 @@ func get_hero_cost(data_hero: DataHero):
 	if has_dead_hero(data_hero):
 		return data_hero.revive_cost
 	return data_hero.cost
+
+#endregion
+
+
+#region Outposts
+
+func outpost_add(outpost : Outpost) -> void:
+	outposts.append(outpost)
+
+func outpost_remove(outpost : Outpost) -> void:
+	assert(outpost in outposts, "attempt to remove outpost that wasnt assigned to the player")
+	
+	outposts.erase(outpost)
+
+	if not outpost_requirement(outpost.outpost_type):
+		outpost_demolish(outpost.outpost_type)
+
+func outpost_requirement(outpost_type_needed : String) -> bool:
+	if outpost_type_needed == "":
+		return true
+	for outpost in outposts:
+		if outpost.outpost_type == outpost_type_needed:
+			return true
+	return false
+
+func outpost_demolish(demolish_type : String):
+	for building_idx in range(outpost_buildings.size() -1, -1, -1):
+		if outpost_buildings[building_idx].outpost_requirement == demolish_type:
+			outpost_buildings.pop_at(building_idx)
+
+
+#endregion

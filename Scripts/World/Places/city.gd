@@ -51,25 +51,34 @@ func can_buy_unit(unit: DataUnit, hero_army : ArmyForm) -> bool:
 	return controller.has_enough(unit.cost)
 
 
-func unit_has_required_building(unit : DataUnit):
-	return not unit.required_building or unit.required_building in buildings
+func unit_has_required_building(unit : DataUnit) -> bool:
+	if not unit.required_building:
+		return true
+	return has_built(unit.required_building)
 
 
-func build(building : DataBuilding):
+func build(building : DataBuilding) -> void:
 	if not can_build(building):
 		return
 	if controller.purchase(building.cost):
-		buildings.append(building)
+		if building.outpost_requirement == "":
+			buildings.append(building)
+		else:
+			controller.outpost_buildings.append(building)
 
 
-func has_build(building : DataBuilding):
-	return building in buildings
+func has_built(building : DataBuilding) -> bool:
+	return building in buildings or building in controller.outpost_buildings
 
 
-func can_build(building : DataBuilding):
-	if has_build(building):
+func can_build(building : DataBuilding)-> bool:
+	if has_built(building):
 		return false
 	if not controller.has_enough(building.cost):
 		return false
+	
+	if not controller.outpost_requirement(building.outpost_requirement):
+		return false
+
 	return building.requirements \
-		.all(func b_present(b:DataBuilding): return has_build(b))
+		.all(func b_present(b:DataBuilding): return has_built(b))

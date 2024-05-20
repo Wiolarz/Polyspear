@@ -113,7 +113,7 @@ func _refresh_buildings_display():
 		if not b_button:
 			continue
 		var description = str(building_data.cost)
-		if city.has_build(building_data):
+		if city.has_built(building_data):
 			description = "✔"
 		b_button.text = "%s\n%s" % [building_data.name, description]
 		b_button.disabled = not city.can_build(building_data)

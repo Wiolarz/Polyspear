@@ -1,6 +1,8 @@
 class_name Place
 extends RefCounted # RefCounted is default
 
+signal controller_changed()
+
 var type : E.WorldMapTiles = E.WorldMapTiles.EMPTY
 var controller : Player
 var defender_army : Army
@@ -15,11 +17,11 @@ static func _inner_create_place(new_data_tile : DataTile) -> Place:
 
 		# Resource Outposts
 		"sawmill":
-			return Deposit.new(Goods.new(5,0,0), Goods.new(1,0,0))
+			return Outpost.new(Goods.new(1,0,0), new_data_tile.type)
 		"iron_mine":
-			return Deposit.new(Goods.new(0,5,0), Goods.new(0,1,0))
+			return Outpost.new(Goods.new(0,1,0), new_data_tile.type)
 		"ruby_cave":
-			return Deposit.new(Goods.new(0,0,5), Goods.new(0,0,1))
+			return Outpost.new(Goods.new(0,0,1), new_data_tile.type)
 
 		# resource hunt spots
 		"wood_hunt":
@@ -56,3 +58,7 @@ func on_end_of_turn() -> void:
 
 func get_map_description() -> String:
 	return ""
+
+func change_controler(player : Player):
+	controller = player
+	controller_changed.emit()

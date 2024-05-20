@@ -7,6 +7,8 @@ extends Resource
 
 @export var requirements : Array[DataBuilding]
 
+@export var outpost_requirement : String
+
 
 # func get_network_id() -> String:
 # 	return resource_path
