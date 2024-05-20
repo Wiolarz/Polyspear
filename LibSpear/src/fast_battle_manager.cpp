@@ -112,25 +112,41 @@ int BattleManagerFast::process_unit(Unit& unit, int current_army, bool process_k
         }
         
         auto unit_symbol = unit.symbol_at_side(rot_unit_to_neighbor);
-        auto neighbor_symbol = unit.symbol_at_side(rot_neighbor_to_unit);
+        auto neighbor_symbol = neighbor.symbol_at_side(rot_neighbor_to_unit);
 
-        printf("pos: u %d,%d, n %d %d, rotations: u -%d+%d, n -%d+%d, symbols: u %d%d%d, n %d%d%d\n", 
+        printf("pos: u %d,%d, n %d %d, rotations: u -%d+%d, n -%d+%d\n",
                unit.pos.x, unit.pos.y, neighbor.pos.x, neighbor.pos.y, 
-               unit.rotation, rot_unit_to_neighbor, neighbor.rotation, rot_neighbor_to_unit,
-               unit_symbol.get_attack_force(), unit_symbol.get_counter_force(), unit_symbol.get_defense_force(), 
-               neighbor_symbol.get_attack_force(), neighbor_symbol.get_counter_force(), neighbor_symbol.get_defense_force()
+               unit.rotation, rot_unit_to_neighbor, neighbor.rotation, rot_neighbor_to_unit
         );
+
+        printf("unit symbols: ");
+        for(int i = 0; i < 6; i++) {
+            unit.sides[i].print();
+            printf("->");
+            unit.symbol_at_side(i).print();
+            printf(" ");
+        }
+        
+        printf("\nneighbor symbols: ");
+
+        for(int i = 0; i < 6; i++) {
+            neighbor.sides[i].print();
+            printf("->");
+            neighbor.symbol_at_side(i).print();
+            printf(" ");
+        }
+        printf("\n");
 
         // counter
         if(neighbor_symbol.get_counter_force() > 0 && unit_symbol.get_defense_force() < neighbor_symbol.get_counter_force()) {
-            printf("%d %d dead by counter\n", unit.pos.x, unit.pos.y);
+            printf("%d %d dead by counter (ud %d, nc %d)\n", unit.pos.x, unit.pos.y, unit_symbol.get_defense_force(), neighbor_symbol.get_counter_force());
             unit.status = UnitStatus::DEAD;
             return 0;
         }
 
         if(process_kills) {
             if(unit_symbol.get_attack_force() > 0 && neighbor_symbol.get_defense_force() < unit_symbol.get_attack_force()) {
-                printf("%d %d dead by attack\n", neighbor.pos.x, neighbor.pos.y);
+                printf("%d %d dead by attack (ua %d, nd %d)\n", neighbor.pos.x, neighbor.pos.y, unit_symbol.get_attack_force(), neighbor_symbol.get_defense_force());
                 neighbor.status = UnitStatus::DEAD;
             }
 

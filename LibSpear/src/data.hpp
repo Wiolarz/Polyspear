@@ -93,6 +93,10 @@ public:
     inline int pushes() {
         return type == Symbol::Type::PUSH;
     }
+
+    inline void print() {
+        printf("%d%d%d", get_attack_force(), get_counter_force(), get_defense_force());
+    }
 };
 
 enum class UnitStatus: uint8_t {
