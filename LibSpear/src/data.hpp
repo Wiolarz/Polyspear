@@ -121,35 +121,37 @@ class Tile {
 
 public:
     Tile() : type(Type::FORBIDDEN) {}
-    Tile(godot::String& str) {
-        if(str == "sentinel") {
+    Tile(godot::String& gstr) {
+        auto stru8 = gstr.utf8();
+        auto str = stru8.ptr();
+        if(strcmp(str, "sentinel") == 0) {
             type = Tile::Type::SENTINEL;
         }
-        if(str == "blue_spawn") {
+        else if(strcmp(str, "blue_spawn") == 0) {
             type = Tile::Type::BLUE_SPAWN;
         }
-        if(str == "empty") {
+        else if(strcmp(str, "empty") == 0) {
             type = Tile::Type::EMPTY;
         }
-        if(str == "red_spawn") {
+        else if(strcmp(str, "red_spawn") == 0) {
             type = Tile::Type::RED_SPAWN;
         }
-        if(str == "wall") {
+        else if(strcmp(str, "wall") == 0) {
             type = Tile::Type::WALL;
         }
-        if(str == "swamp") {
+        else if(strcmp(str, "swamp") == 0) {
             type = Tile::Type::SWAMP;
         }
-        if(str == "hole") {
+        else if(strcmp(str, "hole") == 0) {
             type = Tile::Type::HOLE;
         }
-        //printf("WARNING - unknown tile type %s\n", str.c_str());
-        printf("WARNING - unknown tile type");
-        type = Tile::Type::FORBIDDEN;
+        else {
+            printf("WARNING - unknown tile type %s\n", str);
+            type = Tile::Type::FORBIDDEN;
+        }
     }
     
     inline bool is_passable() {
-        printf("TILE IS %d\n", type);
         switch(type) {
             case Tile::Type::WALL:
             case Tile::Type::SENTINEL:
@@ -161,7 +163,6 @@ public:
     }
 
     inline bool is_wall() {
-        printf("TILE iswall IS %d\n", type);
         switch(type) {
             case Tile::Type::WALL:
             case Tile::Type::SENTINEL:
