@@ -25,6 +25,7 @@ var _replay : BattleReplay
 var _replay_is_playing : bool = false
 
 var _waiting_for_action_to_finish : bool
+var debug_check_fast_bm_integrity: bool = true
 
 @onready var grid = B_GRID
 
@@ -258,6 +259,12 @@ func perform_ai_move(move_info : MoveInfo) -> void:
 
 
 func perform_move_info(move_info : MoveInfo) -> void:
+	var old_army_index = current_army_index
+	var bmfast: BattleManagerFast
+	if debug_check_fast_bm_integrity:
+		bmfast = cloned_as_fast()
+		assert(compare(bmfast) == true, "BMFast Integrity check failed before move")
+	
 	if not battle_is_ongoing:
 		return
 	print(NET.get_role_name(), " performing move ", move_info)
@@ -274,6 +281,12 @@ func perform_move_info(move_info : MoveInfo) -> void:
 		await move_info_move_unit(unit, move_info.target_tile_coord, dir)
 		_waiting_for_action_to_finish = false
 		switch_participant_turn()
+		
+		if debug_check_fast_bm_integrity and battle_is_ongoing:
+			var unit_id = armies_in_battle_state[old_army_index].units.find(unit)
+			if(unit_id != -1): # should only be false when unit died to spear
+				bmfast.play_move(unit_id, move_info.target_tile_coord)
+				assert(compare(bmfast) == true, "BMFast Integrity check failed after move")
 		return
 	if move_info.move_type == MoveInfo.TYPE_SUMMON:
 		move_info_summon_unit(move_info.summon_unit, move_info.target_tile_coord)
@@ -281,7 +294,6 @@ func perform_move_info(move_info : MoveInfo) -> void:
 		return
 	assert(false, "Move move_type not supported in perform")
 #endregion
-
 
 #region Symbols
 
@@ -586,6 +598,83 @@ func find_army_idx(player : Player) -> int:
 			return idx
 	assert(false, "ai asked for summon tiles but it doesnt control any army")
 	return -1
+
+## Make a BattleManagerFast for MCTS purposes. 
+## Parameter tgrid may be null, in which case TileGridFast is created automatically
+func cloned_as_fast(tgrid: TileGridFast = null) -> BattleManagerFast:
+	var new = BattleManagerFast.new()
+	if tgrid == null:
+		tgrid = TileGridFast.new()
+		
+		tgrid.set_map_size(Vector2i(grid.grid_width, grid.grid_height))
+		
+		for i in grid.get_all_field_coords():
+			tgrid.set_tile(i, grid.get_tile(i).type)
+		
+		new.set_tile_grid(tgrid)
+	
+	new.set_current_participant(current_army_index)
+	
+	if state == STATE_FIGHTING:
+		new.force_battle_ongoing()
+	
+	# TODO more armies
+	for army_idx in range(2):
+		var army = armies_in_battle_state[army_idx]
+		new.set_army_team(army_idx,army_idx)
+		
+		for unit_idx in range(army.units.size()):
+			var unit = army.units[unit_idx]
+			if unit.dead:
+				continue
+			
+			new.insert_unit(army_idx, unit_idx, unit.coord, unit.unit_rotation, false)
+			for i in range(6):
+				new.set_unit_symbol(army_idx, unit_idx, i, unit.template.symbols[i].type)
+	
+		for unit_idx in range(army.units_to_summon.size()):
+			var unit = army.units_to_summon[unit_idx]
+			new.insert_unit(army_idx, unit_idx + army.units.size(), Vector2i.ZERO, 0, true)
+			for i in range(6):
+				new.set_unit_symbol(army_idx, unit_idx + army.units.size(), i, unit.symbols[i].type)
+	
+	return new
+
+func compare(bm: BattleManagerFast) -> bool:
+	assert(armies_in_battle_state.size() <= 2, "TODO support more than 2 armies in fast BM")
+	
+	var ret = true
+	
+	if current_army_index != bm.get_current_participant():
+		push_error("BMFast mismatch - current army: slow ", current_army_index, " fast", bm.get_current_participant())
+		ret = false
+	
+	for army_id in range(2):
+		var units_nr = 5
+		var army = armies_in_battle_state[army_id]
+		
+		assert(army.units.size() + army.units_to_summon.size() <= 5, "No support for more than 5 units in fast BM")
+		for unit_id in range(5):
+			if not bm.is_unit_alive(army_id, unit_id):
+				units_nr -= 1
+				continue # probably no need to check summons/dead
+			
+			var unit: Unit = B_GRID.get_unit(bm.get_unit_position(army_id, unit_id))
+			if unit == null:
+				push_error("BMFast mismatch - unit not present in slow - fast id:", army_id, ".", unit_id, "(@", bm.get_unit_position(army_id, unit_id), ")")
+				ret = false
+				continue
+			if unit.unit_rotation != bm.get_unit_rotation(army_id, unit_id):
+				push_error("BMFast mismsatch - unit: id ", army_id, ".", unit_id, " slow has rotation ", unit.unit_rotation, \
+						   ",  ", " vs fast's rotation ", bm.get_unit_rotation(army_id, unit_id), " (@", unit.coord, ")")
+				ret = false
+				
+		var units_alive_in_army = army.units.filter(func(x): return not x.dead).size()
+		if units_nr != units_alive_in_army:
+			push_error("BMFast mismatch - number of units in army ", army_id, ": slow ", units_alive_in_army, ", fast ", units_nr)
+			ret = false
+		
+	return ret
 
 #endregion
 

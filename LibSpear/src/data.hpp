@@ -115,11 +115,12 @@ class Tile {
         RED_SPAWN,
         WALL,
         SWAMP,
-        HOLE
+        HOLE,
+        FORBIDDEN
     } type;
 
 public:
-    Tile() : type(Type::SENTINEL) {}
+    Tile() : type(Type::FORBIDDEN) {}
     Tile(godot::String& str) {
         if(str == "sentinel") {
             type = Tile::Type::SENTINEL;
@@ -142,11 +143,13 @@ public:
         if(str == "hole") {
             type = Tile::Type::HOLE;
         }
-        //printf("WARNING - unknown tile type %s", str.c_str());
-        type = Tile::Type::SENTINEL;
+        //printf("WARNING - unknown tile type %s\n", str.c_str());
+        printf("WARNING - unknown tile type");
+        type = Tile::Type::FORBIDDEN;
     }
     
     inline bool is_passable() {
+        printf("TILE IS %d\n", type);
         switch(type) {
             case Tile::Type::WALL:
             case Tile::Type::SENTINEL:
@@ -158,10 +161,33 @@ public:
     }
 
     inline bool is_wall() {
+        printf("TILE iswall IS %d\n", type);
         switch(type) {
             case Tile::Type::WALL:
             case Tile::Type::SENTINEL:
+                return true;
+            default:
                 return false;
+        }
+    }
+
+    inline int get_spawning_team() {
+        switch(type) {
+            case Tile::Type::RED_SPAWN:
+                return 0;
+            case Tile::Type::BLUE_SPAWN:
+                return 1;
+            default:
+                return true;
+        }
+    }
+
+    inline int get_spawn_rotation() {
+        switch(type) {
+            case Tile::Type::RED_SPAWN:
+                return 0;
+            case Tile::Type::BLUE_SPAWN:
+                return 3;
             default:
                 return true;
         }

@@ -22,17 +22,17 @@ using namespace godot;
 class BattleManagerFast;
 
 struct Unit {
-    UnitStatus status;
+    UnitStatus status = UnitStatus::DEAD;
     Position pos;
     uint8_t rotation;
     std::array<Symbol, 6> sides;
 
     inline void rotate(int times) {
-        rotation = (rotation + times) % 6;
+        rotation = (6-rotation + times) % 6;
     }
 
-    inline Symbol& symbol_at_side(int side) {
-        return sides[(rotation + side) % 6];
+    inline Symbol symbol_at_side(int side) {
+        return sides[(6-rotation + side) % 6];
     }
 };
 
@@ -41,6 +41,7 @@ struct Army {
     std::array<Unit, 5> units;
 
     Unit* get_unit(Position coord);
+    int find_summon_id(int from = 0);
 };
 
 using ArmyList = std::array<Army, 2>;
@@ -76,7 +77,7 @@ class BattleManagerFast : public Node {
     Unit* get_unit(Position coord);
     Tile* get_tile(Position coord);
 
-    int process_unit(Unit& unit, bool process_kills = true);
+    int process_unit(Unit& unit, int current_army, bool process_kills = true);
     int process_bow(Unit& unit, Army& enemy_army);
 
     friend class MoveIterator;
@@ -92,6 +93,7 @@ public:
     void set_unit_symbol(int army, int unit, int symbol, int symbol_id); /// Add symbol for a specified unit
     void set_tile_grid(TileGridFast* tilegrid);
     void set_current_participant(int army);
+    void force_battle_ongoing();
     
     int play_move(unsigned unit, Vector2i move);
 
@@ -108,6 +110,14 @@ public:
 
     inline int get_unit_rotation(int army, int unit) const {
         return armies[army].units[unit].rotation;
+    }
+
+    inline bool is_unit_alive(int army, int unit) const {
+        return armies[army].units[unit].status == UnitStatus::ALIVE;
+    }
+
+    inline bool is_unit_being_summoned(int army, int unit) const {
+        return armies[army].units[unit].status == UnitStatus::SUMMONING;
     }
 
     inline int get_current_participant() const {
