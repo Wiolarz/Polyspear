@@ -59,7 +59,6 @@ func refresh_slot(index : int):
 	if logic_slot:
 		ui_slot.set_army(logic_slot.units_list)
 		if logic_slot.occupier is String:
-			ui_slot.button_ai.text = "HUMAN"
 			if logic_slot.occupier == "":
 				username = NET.get_current_login()
 				take_leave_button_state = \
@@ -69,7 +68,6 @@ func refresh_slot(index : int):
 				take_leave_button_state = \
 					BattlePlayerSlotPanel.TakeLeaveButtonState.TAKEN_BY_OTHER
 		else:
-			ui_slot.button_ai.text = "AI"
 			username = "Computer\nlevel %d" % logic_slot.occupier
 			take_leave_button_state = \
 				BattlePlayerSlotPanel.TakeLeaveButtonState.FREE
@@ -123,22 +121,6 @@ func cycle_faction_slot(slot : BattlePlayerSlotPanel, backwards : bool) -> bool:
 	if changed:
 		refresh_slot(index)
 	return changed
-
-func cycle_ai_slot(slot : BattlePlayerSlotPanel, _backwards : bool):
-	if NET.client:
-		return
-	var index : int = slot_to_index(slot)
-	if not IM.game_setup_info.has_slot(index):
-		push_error("cycle_ai_slot no slot on index", index)
-		return
-	var logic_slot = IM.game_setup_info.slots[index]
-	if logic_slot.is_bot():
-		logic_slot.occupier = ""
-	else:
-		logic_slot.occupier = 1
-	refresh_slot(index)
-	if NET.server:
-		NET.server.broadcast_full_game_setup(IM.game_setup_info)
 
 
 func rebuild():
