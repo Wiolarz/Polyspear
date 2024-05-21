@@ -38,26 +38,37 @@ static func create(new_controller : Player, \
 
 ## turns unit front to a given side, can be awaited see waits_for_form
 func turn(side : E.GridDirections):
+	if side == unit_rotation:
+		return
 	unit_rotation = side
 	if waits_for_form:
+		print("emit turn [turn]")
 		unit_turned.emit()
+		print("wait for end [turn]")
 		await anim_end
+		print("end received [turn]")
 
 
 ## puts unit to a given coordinate, can be awaited see waits_for_form
 func move(new_coord : Vector2i):
+	var old = coord
 	coord = new_coord
 	if waits_for_form:
+		print("emit move [move] %s %s" % [str(old), str(new_coord)])
 		unit_moved.emit()
+		print("wait for end [move]")
 		await anim_end
-
+		print("end received [move]")
 
 ## kills unit, can be awaited see waits_for_form
 func die():
 	dead = true
 	if waits_for_form:
+		print("emit died [death]")
 		unit_died.emit()
+		print("wait for end [death]")
 		await anim_end
+		print("end received [death]")
 
 
 func can_defend(side : int) -> bool:

@@ -44,7 +44,7 @@ func play_move() -> void:
 	var move = current_state.choose_move(legal_moves)
 
 	await ai_thinking_delay() # moving too fast feels weird
-	BM.perform_ai_move( move )
+	await BM.perform_ai_move( move )
 
 
 func ai_thinking_delay() -> void:
