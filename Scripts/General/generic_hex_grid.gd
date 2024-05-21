@@ -26,7 +26,7 @@ const DIRECTION_TO_OFFSET = [ \
 ]
 
 var width : int
-var	height : int
+var height : int
 var hexes : Array = [] # Array[Array[HexType]]
 var sentinel
 
@@ -46,7 +46,7 @@ func is_on_grid(coord : Vector2i) -> bool:
 		and coord.x < width and coord.y < height
 
 
-func get_hex(coord : Vector2i):
+func get_hex(coord : Vector2i) -> Variant:
 	if not is_on_grid(coord):
 		return sentinel
 	var hex = hexes[coord.x][coord.y]
@@ -55,7 +55,7 @@ func get_hex(coord : Vector2i):
 	return hex
 
 
-func set_hex(coord : Vector2i, value):
+func set_hex(coord : Vector2i, value : Variant) -> void:
 	assert(is_on_grid(coord), "set_hex not on a grid "+str(coord))
 	hexes[coord.x][coord.y] = value
 
