@@ -17,7 +17,7 @@ func load_map(map : DataBattleMap) -> void:
 
 
 func is_clear() -> bool:
-	return get_child_count() == 0 and not tile_grid
+	return get_child_count() == 0 and tile_grid != null
 
 
 func reset_data():
@@ -40,7 +40,7 @@ func get_bounds_global_position() -> Rect2:
 	if is_clear():
 		push_warning("asking not initialized grid for camera bounding box")
 		return Rect2(0, 0, 0, 0)
-	var top_left = tile_grid.get_hex(Vector2i(0,0)).global_position
-	var bottom_right_coord = Vector2i(tile_grid.width-1,tile_grid.height-1)
-	var bottom_right = tile_grid.get_hex(bottom_right_coord).global_position
-	return Rect2(top_left, bottom_right - top_left)
+	var top_left_tile_form := get_tile(Vector2i(0,0))
+	var bottom_right_tile_form := get_tile(Vector2i(tile_grid.width-1, tile_grid.height-1))
+	var size : Vector2 = bottom_right_tile_form.global_position - top_left_tile_form.global_position
+	return Rect2(top_left_tile_form.global_position, size)
