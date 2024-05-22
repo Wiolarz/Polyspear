@@ -17,7 +17,7 @@ func load_map(map : DataBattleMap) -> void:
 
 
 func is_clear() -> bool:
-	return get_child_count() == 0 and tile_grid != null
+	return get_child_count() == 0 and tile_grid == null
 
 
 func reset_data():
