@@ -183,7 +183,7 @@ public:
             case Tile::Type::BLUE_SPAWN:
                 return 1;
             default:
-                return true;
+                return -1;
         }
     }
 

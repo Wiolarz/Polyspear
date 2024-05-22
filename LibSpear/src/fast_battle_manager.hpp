@@ -54,14 +54,16 @@ struct Move {
 
 class MoveIterator {
     const BattleManagerFast* bm;
+    std::vector<Position>::const_iterator spawniter;
     unsigned unit = 0;
     unsigned side = 0;
+    Move buffer;
 public:
     inline MoveIterator(const BattleManagerFast* bm) : bm(bm) {}
-    Move* operator++();
+    const Move* operator++();
 
-    inline Move* begin() {return ++(*this);}
-    inline Move* end() {return nullptr;}
+    inline const Move* begin() {return ++(*this);}
+    inline const Move* end() {return nullptr;}
 };
 
 // idea - BattleManagerFastWrapper as multiple inheritance of internal BattleManagerFast and godot Node if it turns out that Node itself is expensive
@@ -77,7 +79,7 @@ class BattleManagerFast : public Node {
     Unit* get_unit(Position coord);
     Tile* get_tile(Position coord);
 
-    int process_unit(Unit& unit, int current_army, bool process_kills = true);
+    int process_unit(Unit& unit, Army& army, bool process_kills = true);
     int process_bow(Unit& unit, Army& enemy_army);
 
     friend class MoveIterator;
@@ -86,6 +88,7 @@ protected:
     static void _bind_methods();
 
 public:
+    BattleManagerFast() = default;
     ~BattleManagerFast() = default;
 
     void insert_unit(int army, int idx, Vector2i pos, int rotation, bool is_summoning); /// Add a unit in a summoning state
@@ -95,9 +98,8 @@ public:
     void set_current_participant(int army);
     void force_battle_ongoing();
     
-    int play_move(unsigned unit, Vector2i move);
-
-    BattleManagerFast duplicate() const;
+    int play_move(Move move);
+    int play_move_gd(unsigned unit, Vector2i move);
 
     /// Get legal moves iterator for current participant
     MoveIterator get_legal_moves() const;

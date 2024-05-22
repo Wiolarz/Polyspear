@@ -18,7 +18,11 @@
         return val; \
     }
 
-int BattleManagerFast::play_move(unsigned unit_id, Vector2i pos) {
+int BattleManagerFast::play_move(Move move) {
+    return play_move_gd(move.unit, move.pos);
+}
+
+int BattleManagerFast::play_move_gd(unsigned unit_id, Vector2i pos) {
     CHECK_UNIT(unit_id, -1);
     auto& unit = armies[current_participant].units[unit_id];
 
@@ -59,11 +63,11 @@ int BattleManagerFast::play_move(unsigned unit_id, Vector2i pos) {
         }
 
         unit.rotation = rot_new;
-        process_unit(unit, current_participant);
+        process_unit(unit, armies[current_participant]);
         
         if(unit.status == UnitStatus::ALIVE) {
             unit.pos = pos;
-            process_unit(unit, current_participant);
+            process_unit(unit, armies[current_participant]);
         }
         
         current_participant = (current_participant+1) % armies.size();
@@ -94,78 +98,85 @@ int BattleManagerFast::play_move(unsigned unit_id, Vector2i pos) {
 }
 
 
-int BattleManagerFast::process_unit(Unit& unit, int current_army, bool process_kills) {
+int BattleManagerFast::process_unit(Unit& unit, Army& army, bool process_kills) {
 
-    //                  TODO - more than two participants?
-    for(auto& neighbor : armies[!current_army].units) {
-        
-        if(unit.status != UnitStatus::ALIVE) {
+    for(auto& enemy_army : armies) {
+
+        if(enemy_army.team == army.team) {
             continue;
         }
 
-        auto rot_unit_to_neighbor = get_rotation(unit.pos, neighbor.pos);
-        auto rot_neighbor_to_unit = flip(rot_unit_to_neighbor);
+        for(auto& neighbor : enemy_army.units) {
+            
+            if(unit.status != UnitStatus::ALIVE) {
+                continue;
+            }
 
-        // Skip non-neighbors
-        if( rot_unit_to_neighbor == 6 ) {
-            continue;
-        }
-        
-        auto unit_symbol = unit.symbol_at_side(rot_unit_to_neighbor);
-        auto neighbor_symbol = neighbor.symbol_at_side(rot_neighbor_to_unit);
+            auto rot_unit_to_neighbor = get_rotation(unit.pos, neighbor.pos);
+            auto rot_neighbor_to_unit = flip(rot_unit_to_neighbor);
 
-        printf("pos: u %d,%d, n %d %d, rotations: u -%d+%d, n -%d+%d\n",
-               unit.pos.x, unit.pos.y, neighbor.pos.x, neighbor.pos.y, 
-               unit.rotation, rot_unit_to_neighbor, neighbor.rotation, rot_neighbor_to_unit
-        );
+            // Skip non-neighbors
+            if( rot_unit_to_neighbor == 6 ) {
+                continue;
+            }
+            
+            auto unit_symbol = unit.symbol_at_side(rot_unit_to_neighbor);
+            auto neighbor_symbol = neighbor.symbol_at_side(rot_neighbor_to_unit);
 
-        printf("unit symbols: ");
-        for(int i = 0; i < 6; i++) {
-            unit.sides[i].print();
-            printf("->");
-            unit.symbol_at_side(i).print();
-            printf(" ");
-        }
-        
-        printf("\nneighbor symbols: ");
+            printf("pos: u %d,%d, n %d %d, rotations: u -%d+%d, n -%d+%d\n",
+                   unit.pos.x, unit.pos.y, neighbor.pos.x, neighbor.pos.y, 
+                   unit.rotation, rot_unit_to_neighbor, neighbor.rotation, rot_neighbor_to_unit
+            );
 
-        for(int i = 0; i < 6; i++) {
-            neighbor.sides[i].print();
-            printf("->");
-            neighbor.symbol_at_side(i).print();
-            printf(" ");
-        }
-        printf("\n");
+            printf("unit symbols: ");
+            for(int i = 0; i < 6; i++) {
+                unit.sides[i].print();
+                printf("->");
+                unit.symbol_at_side(i).print();
+                printf(" ");
+            }
+            
+            printf("\nneighbor symbols: ");
 
-        // counter
-        if(neighbor_symbol.get_counter_force() > 0 && unit_symbol.get_defense_force() < neighbor_symbol.get_counter_force()) {
-            printf("%d %d dead by counter (ud %d, nc %d)\n", unit.pos.x, unit.pos.y, unit_symbol.get_defense_force(), neighbor_symbol.get_counter_force());
-            unit.status = UnitStatus::DEAD;
-            return 0;
+            for(int i = 0; i < 6; i++) {
+                neighbor.sides[i].print();
+                printf("->");
+                neighbor.symbol_at_side(i).print();
+                printf(" ");
+            }
+            printf("\n");
+
+            // counter
+            if(neighbor_symbol.get_counter_force() > 0 && unit_symbol.get_defense_force() < neighbor_symbol.get_counter_force()) {
+                printf("%d %d dead by counter (ud %d, nc %d)\n", unit.pos.x, unit.pos.y, unit_symbol.get_defense_force(), neighbor_symbol.get_counter_force());
+                unit.status = UnitStatus::DEAD;
+                return 0;
+            }
+
+            if(process_kills) {
+                if(unit_symbol.get_attack_force() > 0 && neighbor_symbol.get_defense_force() < unit_symbol.get_attack_force()) {
+                    printf("%d %d dead by attack (ua %d, nd %d)\n", neighbor.pos.x, neighbor.pos.y, unit_symbol.get_attack_force(), neighbor_symbol.get_defense_force());
+                    neighbor.status = UnitStatus::DEAD;
+                }
+
+                if(unit_symbol.pushes()) {
+                    auto new_pos = neighbor.pos + neighbor.pos - unit.pos;
+                    printf("ffs%d %p\n", tiles->get_tile(new_pos).is_passable(), get_unit(new_pos));
+                    if(!(tiles->get_tile(new_pos).is_passable()) || get_unit(new_pos) != nullptr) {
+                        printf("%d %d dead by smashing into the wall on %d %d\n", neighbor.pos.x, neighbor.pos.y, new_pos.x, new_pos.y);
+                        neighbor.status = UnitStatus::DEAD;
+                    }
+                    neighbor.pos = new_pos;
+                    process_unit(neighbor, enemy_army, false);
+                }
+            }
         }
 
         if(process_kills) {
-            if(unit_symbol.get_attack_force() > 0 && neighbor_symbol.get_defense_force() < unit_symbol.get_attack_force()) {
-                printf("%d %d dead by attack (ua %d, nd %d)\n", neighbor.pos.x, neighbor.pos.y, unit_symbol.get_attack_force(), neighbor_symbol.get_defense_force());
-                neighbor.status = UnitStatus::DEAD;
-            }
-
-            if(unit_symbol.pushes()) {
-                auto new_pos = neighbor.pos + neighbor.pos - unit.pos;
-                printf("ffs%d %p\n", tiles->get_tile(new_pos).is_passable(), get_unit(new_pos));
-                if(!(tiles->get_tile(new_pos).is_passable()) || get_unit(new_pos) != nullptr) {
-                    printf("%d %d dead by smashing into the wall on %d %d\n", neighbor.pos.x, neighbor.pos.y, new_pos.x, new_pos.y);
-                    neighbor.status = UnitStatus::DEAD;
-                }
-                neighbor.pos = new_pos;
-                process_unit(neighbor, !current_army, false);
-            }
+            process_bow(unit, enemy_army);
         }
     }
     
-    if(process_kills) {
-        process_bow(unit, armies[!current_army]);
-    }
 
     // TODO scores
     return 0;
@@ -204,8 +215,51 @@ MoveIterator BattleManagerFast::get_legal_moves() const {
     return MoveIterator(this);
 }
 
-Move* MoveIterator::operator++() {
-    // TODO
+const Move* MoveIterator::operator++() {
+    auto& army = bm->armies[bm->current_participant];
+    auto& spawns = bm->tiles->get_spawns(bm->current_participant);
+
+    if(bm->state == BattleState::SUMMONING) {
+        if(buffer.pos == Vector2i()) { // first iteration
+            spawniter = spawns.begin();
+        }
+        else if(unit == army.units.size()) { // next spawn position
+            ++spawniter;
+            if(spawniter == spawns.end()) {
+                return nullptr;
+            }
+            unit = 0;
+        }
+        else { // next unit
+            unit++;
+        }
+
+        buffer.unit = unit;
+        buffer.pos = Vector2i(spawniter->x, spawniter->y);
+        return &buffer;
+    }
+    else if(bm->state == BattleState::ONGOING){
+
+        if(buffer.pos == Vector2i()) { // first iteration
+            // pass
+        }
+        else if(side == 6) {
+            unit++;
+            if(unit == army.units.size()) { // next spawn position
+                return nullptr;
+            }
+            side = 0;
+        }
+        else {
+            side++;
+        }
+
+        auto pos = army.units[unit].pos + DIRECTIONS[side];
+        buffer.pos = Vector2i(pos.x, pos.y);
+        buffer.unit = unit;
+        return &buffer;
+    }
+
     return nullptr;
 }
 
@@ -259,7 +313,7 @@ void BattleManagerFast::_bind_methods() {
     ClassDB::bind_method(D_METHOD("set_tile_grid"), &BattleManagerFast::set_tile_grid);
     ClassDB::bind_method(D_METHOD("set_current_participant"), &BattleManagerFast::set_current_participant);
     ClassDB::bind_method(D_METHOD("force_battle_ongoing"), &BattleManagerFast::force_battle_ongoing);
-    ClassDB::bind_method(D_METHOD("play_move"), &BattleManagerFast::play_move);
+    ClassDB::bind_method(D_METHOD("play_move"), &BattleManagerFast::play_move_gd);
 
     ClassDB::bind_method(D_METHOD("get_unit_position"), &BattleManagerFast::get_unit_position);
     ClassDB::bind_method(D_METHOD("get_unit_rotation"), &BattleManagerFast::get_unit_rotation);
