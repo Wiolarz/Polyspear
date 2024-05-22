@@ -28,12 +28,12 @@ const DIRECTION_TO_OFFSET = [ \
 var width : int
 var height : int
 var hexes : Array = [] # Array[Array[HexType]]
-var sentinel
+var sentinel : Variant
 
-func _init(new_width:int, new_height:int, new_sentinel):
-	width = new_width
-	height = new_height
-	sentinel = new_sentinel
+func _init(width_ : int, height_ : int, sentinel_ : Variant):
+	width = width_
+	height = height_
+	sentinel = sentinel_
 
 	hexes.resize(width)
 	for x in range(width):

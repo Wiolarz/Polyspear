@@ -150,7 +150,7 @@ func try_interact(hero : ArmyForm, coord : Vector2i):
 
 
 func hero_move(hero : ArmyForm, coord : Vector2i):
-	W_GRID.change_hero_position(hero, coord)
+	W_GRID.change_army_position(hero, coord)
 	world_ui.show_trade_ui(current_player.capital_city, null)
 	var place = W_GRID.get_place(coord)
 	if place:

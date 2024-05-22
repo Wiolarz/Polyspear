@@ -1,5 +1,5 @@
 # Singleton B-GRID
-extends GridManager
+extends GridNode2D
 
 var tile_grid : GenericHexGrid # Grid<TileForm>
 
