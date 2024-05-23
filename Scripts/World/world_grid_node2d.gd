@@ -79,9 +79,9 @@ func change_army_position(army : ArmyForm, coord : Vector2i) -> void:
 
 #region Coordinates Tools
 
-func is_moveable(coord : Vector2i):
+func is_movable(coord : Vector2i):
 	var tile := get_tile_form(coord)
-	return tile.type in CFG.WORLD_MOVEABLE_TILES
+	return tile.type in CFG.WORLD_MOVABLE_TILES
 
 
 func get_tile_controller(coord : Vector2i) -> Player:

@@ -19,7 +19,7 @@ var turn_counter : int = 0
 var battle_ui : BattleUI
 var selected_unit : Unit
 
-var _battle_grid: BattleHexGrid
+var _battle_grid: BattleGridState
 
 var _replay : BattleReplay
 var _replay_is_playing : bool = false
@@ -52,7 +52,7 @@ func start_battle(new_armies : Array[Army], battle_map : DataBattleMap, \
 	current_army_index = ATTACKER
 
 	# GAMEPLAY GRID:
-	_battle_grid = BattleHexGrid.create(battle_map)
+	_battle_grid = BattleGridState.create(battle_map)
 
 	# GRAPHICS GRID:
 	B_GRID.load_map(battle_map)
@@ -171,7 +171,7 @@ func _grid_input_fighting(coord : Vector2i) -> void:
 	# get_move_direction() returns MOVE_IS_INVALID on impossible moves
 	# detects if spot is empty or there is an enemy that can be killed by the move
 	var direction : int = _battle_grid.get_move_direction_if_valid(selected_unit, coord)
-	if direction == BattleHexGrid.MOVE_IS_INVALID:
+	if direction == BattleGridState.MOVE_IS_INVALID:
 		return
 
 	selected_unit.select_request.emit(false)
@@ -572,7 +572,7 @@ class ArmyInBattleState:
 		return result
 
 
-	func kill_unit(target : Unit, grid : BattleHexGrid) -> void:
+	func kill_unit(target : Unit, grid : BattleGridState) -> void:
 		print("killing ", target.coord, " ",target.template.unit_name)
 		units.erase(target)
 		dead_units.append(target.template)

@@ -113,7 +113,7 @@ const HUNT_RUBY_PATH : String = "res://Resources/Presets/Army/hunt_ruby/"
 
 #region World Map properties
 
-const WORLD_MOVEABLE_TILES = [
+const WORLD_MOVABLE_TILES = [
 	"empty",
 	"iron_mine",
 	"sawmill",

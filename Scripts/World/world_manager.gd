@@ -140,7 +140,7 @@ func try_interact(hero : ArmyForm, coord : Vector2i):
 			print ("siege not implemented")
 		return
 
-	if W_GRID.is_moveable(coord):
+	if W_GRID.is_movable(coord):
 		if not hero.has_movement_points():
 			print("not enough movement points")
 			return

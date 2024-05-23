@@ -72,8 +72,8 @@ func get_symbol(side_world : int) -> E.Symbols:
 func get_front_symbol() -> E.Symbols:
 	return template.symbols[GenericHexGrid.DIRECTION_FRONT].type
 
-## can i kill this enemy in melee if i attack in specified direction
-func can_kill(other_unit : Unit, attack_direction : int):
+## can i kill/push this enemy in melee if i attack in specified direction
+func can_kill_or_push(other_unit : Unit, attack_direction : int):
 	# - attacker has no attack symbol on front
 	# - attacker has push symbol on front (no current unit has it)
 	# - attacker has some attack symbol

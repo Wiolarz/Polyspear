@@ -14,7 +14,7 @@ static func get_all_legal_moves(my_units : Array, _me:Player) -> Array[MoveInfo]
 		for side in range(6):
 			var new_coord = GenericHexGrid.adjacent_coord(unit.coord, side)
 			var move_dir = BM._battle_grid.get_move_direction_if_valid(unit, new_coord)
-			if move_dir != BattleHexGrid.MOVE_IS_INVALID:
+			if move_dir != BattleGridState.MOVE_IS_INVALID:
 				legal_moves.append(MoveInfo.make_move(unit.coord, new_coord))
 	return legal_moves
 
