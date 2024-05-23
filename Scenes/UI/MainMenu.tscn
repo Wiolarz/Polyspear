@@ -26,50 +26,41 @@ size_flags_horizontal = 3
 [node name="TopMenu" type="HBoxContainer" parent="MainContainer"]
 layout_mode = 2
 size_flags_vertical = 0
+theme_override_constants/separation = 20
 
-[node name="EditorsMenuBar" type="MenuBar" parent="MainContainer/TopMenu"]
+[node name="HostButton" type="Button" parent="MainContainer/TopMenu"]
+modulate = Color(1, 1, 0, 1)
 layout_mode = 2
-theme_override_constants/h_separation = 0
-prefer_global_menu = false
+text = " >> Host << 
+"
 
-[node name="Editors" type="PopupMenu" parent="MainContainer/TopMenu/EditorsMenuBar"]
-size = Vector2i(238, 126)
-item_count = 2
-item_0/text = "Map Editor"
-item_0/id = 0
-item_1/text = "Unit Editor"
-item_1/id = 1
-
-[node name="ReplaysMenuBar" type="MenuBar" parent="MainContainer/TopMenu"]
+[node name="JoinButton" type="Button" parent="MainContainer/TopMenu"]
 layout_mode = 2
-prefer_global_menu = false
+text = " -- Join -- 
+"
 
-[node name="Replays" type="PopupMenu" parent="MainContainer/TopMenu/ReplaysMenuBar"]
-size = Vector2i(243, 100)
-item_count = 1
-item_0/text = "Run Replay"
-item_0/id = 0
-
-[node name="MultiplayerMenuBar" type="MenuBar" parent="MainContainer/TopMenu"]
+[node name="SettingsButton" type="Button" parent="MainContainer/TopMenu"]
 layout_mode = 2
-prefer_global_menu = false
-
-[node name="Multiplayer" type="PopupMenu" parent="MainContainer/TopMenu/MultiplayerMenuBar"]
-size = Vector2i(247, 126)
-item_count = 2
-item_0/text = "Host server"
-item_0/id = 0
-item_1/text = "Join"
-item_1/id = 1
+text = "Settings"
 
 [node name="VSeparator" type="VSeparator" parent="MainContainer/TopMenu"]
 layout_mode = 2
 theme_override_constants/separation = 92
 theme_override_styles/separator = SubResource("StyleBoxLine_3lov4")
 
-[node name="SettingsButton" type="Button" parent="MainContainer/TopMenu"]
+[node name="ReplaysButton" type="Button" parent="MainContainer/TopMenu"]
 layout_mode = 2
-text = "Settings"
+text = "Replays"
+
+[node name="UnitEditorButton" type="Button" parent="MainContainer/TopMenu"]
+layout_mode = 2
+text = "Unit Editor
+"
+
+[node name="MapEditorButton" type="Button" parent="MainContainer/TopMenu"]
+layout_mode = 2
+text = "Map Editor
+"
 
 [node name="HostLobby" parent="MainContainer" instance=ExtResource("2_eyp7f")]
 layout_mode = 2
@@ -93,8 +84,10 @@ access = 1
 root_subfolder = "replays/"
 
 [connection signal="visibility_changed" from="." to="." method="_on_visibility_changed"]
-[connection signal="id_pressed" from="MainContainer/TopMenu/EditorsMenuBar/Editors" to="." method="_on_editors_menu_id_pressed"]
-[connection signal="id_pressed" from="MainContainer/TopMenu/ReplaysMenuBar/Replays" to="." method="_on_replays_id_pressed"]
-[connection signal="id_pressed" from="MainContainer/TopMenu/MultiplayerMenuBar/Multiplayer" to="." method="_on_multiplayer_id_pressed"]
+[connection signal="pressed" from="MainContainer/TopMenu/HostButton" to="." method="_on_host_button_pressed"]
+[connection signal="pressed" from="MainContainer/TopMenu/JoinButton" to="." method="_on_join_button_pressed"]
 [connection signal="pressed" from="MainContainer/TopMenu/SettingsButton" to="." method="_on_settings_button_pressed"]
+[connection signal="pressed" from="MainContainer/TopMenu/ReplaysButton" to="." method="_on_replays_button_pressed"]
+[connection signal="pressed" from="MainContainer/TopMenu/UnitEditorButton" to="." method="_on_unit_editor_button_pressed"]
+[connection signal="pressed" from="MainContainer/TopMenu/MapEditorButton" to="." method="_on_map_editor_button_pressed"]
 [connection signal="file_selected" from="FileDialogReplay" to="." method="_on_file_dialog_replay_file_selected"]
