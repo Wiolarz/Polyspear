@@ -125,9 +125,12 @@ func _unhandled_input(event : InputEvent) -> void:
 func grid_input_listener(tile_coord : Vector2i, \
 		tile_type : GameSetupInfo.GameMode, mouse_drag : bool):
 	#print("tile ", tile_coord)
-	if mouse_drag:
-		if IM.draw_mode:
+	if IM.draw_mode:
+		if mouse_drag:
 			map_editor.grid_input(tile_coord)
+		return
+
+	if mouse_drag:
 		return
 
 	if BM.battle_is_ongoing:

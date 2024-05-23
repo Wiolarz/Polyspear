@@ -54,11 +54,9 @@ func _create_button(map_tile : String) -> TextureButton:
 ## Replaces target map tile with currently selected "brush" (map tile type)
 func grid_input(coord : Vector2i) -> void:
 	if current_map_type == MapType.WORLD:
-		W_GRID.tile_grid[coord.x][coord.y].type = current_brush.type
-		W_GRID.tile_grid[coord.x][coord.y].get_node("Sprite2D").texture = ResourceLoader.load(current_brush.texture_path)
+		W_GRID.paint(coord, current_brush)
 	else:
-		B_GRID.tile_grid[coord.x][coord.y].type = current_brush.type
-		B_GRID.tile_grid[coord.x][coord.y].get_node("Sprite2D").texture = ResourceLoader.load(current_brush.texture_path)
+		B_GRID.paint(coord, current_brush)
 
 
 func _set_grid_type(new_type : MapType) -> void:
@@ -146,10 +144,10 @@ func _on_load_map_pressed():
 	BM.reset_grid_and_unit_forms()
 	if map_to_load is DataWorldMap:
 		_set_grid_type(MapType.WORLD)
-		W_GRID.generate_grid(map_to_load)
+		W_GRID.load_map(map_to_load)
 	else:
 		_set_grid_type(MapType.BATTLE)
-		B_GRID.generate_grid(map_to_load)
+		B_GRID.load_map(map_to_load)
 
 
 func _on_save_map_pressed():
@@ -161,11 +159,11 @@ func _on_save_map_pressed():
 	var save_path
 	if current_map_type == MapType.WORLD:
 		new_map = DataWorldMap.new()
-		local_tile_grid = W_GRID.tile_grid
+		local_tile_grid = W_GRID.tile_grid.hexes
 		save_path = CFG.WORLD_MAPS_PATH + map_save_name + ".tres"
 	else:
 		new_map = DataBattleMap.new()
-		local_tile_grid = B_GRID.tile_grid
+		local_tile_grid = B_GRID.tile_grid.hexes
 		save_path = CFG.BATTLE_MAPS_PATH + map_save_name + ".tres"
 
 	var grid_data = []
@@ -219,7 +217,7 @@ func _on_new_world_map_pressed():
 	new_map.grid_width = grid_data[0].size()
 	#print(new_map.grid_height, " ", new_map.grid_width)
 	W_GRID.reset_data()
-	W_GRID.generate_grid(new_map)
+	W_GRID.load_map(new_map)
 
 
 func _on_new_battle_map_pressed():
@@ -236,7 +234,7 @@ func _on_new_battle_map_pressed():
 	new_map.grid_width = grid_data[0].size()
 	#print(new_map.grid_height, " ", new_map.grid_width)
 	B_GRID.reset_data()
-	B_GRID.generate_grid(new_map)
+	B_GRID.load_map(new_map)
 
 
 func _on_open_button_pressed():

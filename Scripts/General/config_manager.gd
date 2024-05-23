@@ -46,7 +46,7 @@ var FACTIONS_LIST : Array[DataFaction] = [
 ]
 
 const UNIT_FORM_SCENE = preload("res://Scenes/Form/UnitForm.tscn")
-var HEX_TILE_FORM_SCENE = load("res://Scenes/Form/TileForm.tscn")
+var HEX_TILE_FORM_SCENE := load("res://Scenes/Form/TileForm.tscn") as PackedScene
 const SUMMON_BUTTON_TEXTURE:Texture2D = preload("res://Art/battle_map/grass.png")
 
 const DEFAULT_USER_NAMES : Array[String] = [
@@ -113,7 +113,7 @@ const HUNT_RUBY_PATH : String = "res://Resources/Presets/Army/hunt_ruby/"
 
 #region World Map properties
 
-const WORLD_MOVEABLE_TILES = [
+const WORLD_MOVABLE_TILES = [
 	"empty",
 	"iron_mine",
 	"sawmill",

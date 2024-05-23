@@ -6,8 +6,6 @@ extends Node
 const ATTACKER = 0
 const DEFENDER = 1
 
-const MOVE_IS_INVALID = -1
-
 const STATE_SUMMONNING = "summonning"
 const STATE_FIGHTING = "fighting"
 const STATE_BATTLE_FINISHED = "battle_finished"
@@ -20,6 +18,8 @@ var turn_counter : int = 0
 
 var battle_ui : BattleUI
 var selected_unit : Unit
+
+var _battle_grid: BattleGridState
 
 var _replay : BattleReplay
 var _replay_is_playing : bool = false
@@ -51,7 +51,11 @@ func start_battle(new_armies : Array[Army], battle_map : DataBattleMap, \
 		armies_in_battle_state.append(ArmyInBattleState.create_from(a))
 	current_army_index = ATTACKER
 
-	B_GRID.generate_grid(battle_map)
+	# GAMEPLAY GRID:
+	_battle_grid = BattleGridState.create(battle_map)
+
+	# GRAPHICS GRID:
+	B_GRID.load_map(battle_map)
 	B_GRID.position.x = x_offset
 
 	selected_unit = null
@@ -166,8 +170,8 @@ func _grid_input_fighting(coord : Vector2i) -> void:
 
 	# get_move_direction() returns MOVE_IS_INVALID on impossible moves
 	# detects if spot is empty or there is an enemy that can be killed by the move
-	var direction : int = get_move_direction_if_valid(selected_unit, coord)
-	if direction == MOVE_IS_INVALID:
+	var direction : int = _battle_grid.get_move_direction_if_valid(selected_unit, coord)
+	if direction == BattleGridState.MOVE_IS_INVALID:
 		return
 
 	selected_unit.select_request.emit(false)
@@ -183,7 +187,7 @@ func _grid_input_fighting(coord : Vector2i) -> void:
 ## Select friendly Unit on a given coord
 ## returns true if unit was selected
 func try_select_unit(coord : Vector2i) -> bool:
-	var new_unit : Unit = B_GRID.get_unit(coord)
+	var new_unit : Unit = _battle_grid.get_unit(coord)
 	if not new_unit:
 		return false
 	if new_unit.controller != get_current_player():
@@ -196,36 +200,6 @@ func try_select_unit(coord : Vector2i) -> bool:
 	selected_unit = new_unit
 	new_unit.select_request.emit(true)
 	return true
-
-
-## Returns `MOVE_IS_INVALID` if move is incorrect
-## or a turn direction `E.GridDirections` if move is correct
-func get_move_direction_if_valid(unit : Unit, coord : Vector2i) -> int:
-	"""
-		Function checks 2 things:
-		1 Target coord is a Neighbor of a selected_unit
-		2a Target coord is empty
-		2b Target coord contains unit that can be killed
-
-		@param unit to move
-		@param coord target coord for selected_unit to move to
-		@return MOVE_IS_INVALID (-1) if move is illegal, direction otherwise
-	"""
-
-	var move_direction = GridManager.adjacent_side_direction(unit.coord, coord)
-	# not adjacent
-	if move_direction == null:
-		return MOVE_IS_INVALID
-
-	var enemy_unit = B_GRID.get_unit(coord)
-	# empty field
-	if not enemy_unit:
-		return move_direction
-
-	if not unit.can_kill(enemy_unit, move_direction):
-		return MOVE_IS_INVALID
-
-	return move_direction
 
 
 func perform_network_move(move_info : MoveInfo) -> void:
@@ -249,8 +223,8 @@ func perform_move_info(move_info : MoveInfo) -> void:
 	if NET.server:
 		NET.server.broadcast_move(move_info)
 	if move_info.move_type == MoveInfo.TYPE_MOVE:
-		var unit = B_GRID.get_unit(move_info.move_source)
-		var dir = GridManager.adjacent_side_direction(unit.coord, move_info.target_tile_coord)
+		var unit = _battle_grid.get_unit(move_info.move_source)
+		var dir = GenericHexGrid.direction_to_adjacent(unit.coord, move_info.target_tile_coord)
 		assert(not _waiting_for_action_to_finish, \
 				"cant trigger awaitable action while a different action is processing")
 		_waiting_for_action_to_finish = true
@@ -282,7 +256,7 @@ func process_symbols(unit : Unit) -> bool:
 
 func should_die_to_counter_attack(unit : Unit) -> bool:
 	# Returns true if Enemy counter_attack can kill the target
-	var adjacent = B_GRID.adjacent_units(unit.coord)
+	var adjacent = _battle_grid.adjacent_units(unit.coord)
 
 	for side in range(6):
 		if not adjacent[side]:
@@ -297,7 +271,7 @@ func should_die_to_counter_attack(unit : Unit) -> bool:
 
 
 func process_bow(unit : Unit, side : int) -> void:
-	var target = B_GRID.get_shot_target(unit.coord, side)
+	var target = _battle_grid.get_shot_target(unit.coord, side)
 
 	if target == null:
 		return # no target
@@ -310,7 +284,7 @@ func process_bow(unit : Unit, side : int) -> void:
 
 
 func process_offensive_symbols(unit : Unit) -> void:
-	var adjacent = B_GRID.adjacent_units(unit.coord)
+	var adjacent = _battle_grid.adjacent_units(unit.coord)
 
 	for side in range(6):
 		var unit_weapon = unit.get_symbol(side)
@@ -334,22 +308,21 @@ func process_offensive_symbols(unit : Unit) -> void:
 
 
 func push_enemy(enemy : Unit, direction : int) -> void:
-	var target_coord = B_GRID.get_distant_coord(enemy.coord, direction, 1)
+	var target_coord = GenericHexGrid.distant_coord(enemy.coord, direction, 1)
 
-	var target_tile_type = B_GRID.get_tile_type(target_coord)
-	if target_tile_type == "sentinel":
+	if not _battle_grid.is_movable(target_coord):
 		# Pushing outside the map
 		await kill_unit(enemy)
 		return
 
-	var target = B_GRID.get_unit(target_coord)
+	var target = _battle_grid.get_unit(target_coord)
 	if target != null:
 		# Spot isn't empty
 		await kill_unit(enemy)
 		return
 
 	# MOVE (no rotate)
-	B_GRID.change_unit_coord(enemy, target_coord)
+	_battle_grid.change_unit_coord(enemy, target_coord)
 	await enemy.move(target_coord)
 
 	# check for counter_attacks
@@ -382,7 +355,8 @@ func move_info_move_unit(unit : Unit, end_coord : Vector2i, direction: int) -> v
 		return
 
 	# MOVE
-	B_GRID.change_unit_coord(unit, end_coord)
+
+	_battle_grid.change_unit_coord(unit, end_coord)
 	await unit.move(end_coord)
 	if await process_symbols(unit):
 		return
@@ -400,7 +374,7 @@ func get_player_army(player : Player) -> ArmyInBattleState:
 
 
 func kill_unit(target : Unit) -> void:
-	await get_player_army(target.controller).kill_unit(target)
+	await get_player_army(target.controller).kill_unit(target, _battle_grid)
 	await check_battle_end()
 
 #endregion
@@ -412,7 +386,7 @@ func kill_army(army_idx : int):
 	assert(not _waiting_for_action_to_finish, \
 			"cant trigger awaitable action while a different action is processing")
 	_waiting_for_action_to_finish = true
-	await armies_in_battle_state[army_idx].kill_army()
+	await armies_in_battle_state[army_idx].kill_army(_battle_grid)
 	_waiting_for_action_to_finish = false
 	await check_battle_end()
 
@@ -453,6 +427,7 @@ func turn_off_battle_ui() -> void:
 func reset_grid_and_unit_forms() -> void:
 	battle_is_ongoing = false
 	B_GRID.reset_data()
+	_battle_grid = null
 	for child in get_children():
 		child.queue_free()
 
@@ -508,11 +483,7 @@ func _grid_input_summon(coord : Vector2i) -> void:
 
 
 func is_legal_summon_coord(coord : Vector2i, army_idx: int) -> bool:
-	var coord_tile_type = B_GRID.get_tile_type(coord)
-	var is_correct_spawn =\
-		(coord_tile_type == "red_spawn" && army_idx == 0) or \
-		(coord_tile_type == "blue_spawn"&& army_idx == 1)
-	return is_correct_spawn and B_GRID.get_unit(coord) == null
+	return _battle_grid.can_summon_on(army_idx, coord)
 
 
 func move_info_summon_unit(unit_data : DataUnit, coord : Vector2i) -> void:
@@ -521,12 +492,13 @@ func move_info_summon_unit(unit_data : DataUnit, coord : Vector2i) -> void:
 
 		@param coord coordinate, on which Unit will be summoned
 	"""
-	var rotation = E.GridDirections.LEFT
+	var rotation = GenericHexGrid.GridDirections.LEFT
 	if current_army_index == ATTACKER:
-		rotation = E.GridDirections.RIGHT
+		rotation = GenericHexGrid.GridDirections.RIGHT
 
-	var unit = armies_in_battle_state[current_army_index].summon_unit(self, unit_data, coord, rotation)
-	B_GRID.spawn_unit_at_coord(unit, coord)
+	var army_state = armies_in_battle_state[current_army_index]
+	var unit = army_state.summon_unit(self, unit_data, coord, rotation)
+	_battle_grid.spawn_unit_at_coord(unit, coord)
 
 	battle_ui.unit_summoned(not is_during_summoning_phase(), unit_data)
 
@@ -540,13 +512,9 @@ func end_summoning_state() -> void:
 
 #region AI Helpers
 
-func get_summon_tiles(player : Player) -> Array[TileForm]:
+func get_summon_tiles(player : Player) -> Array[Vector2i]:
 	var idx = find_army_idx(player)
-	var result: Array[TileForm] = []
-	for c in B_GRID.get_all_field_coords():
-		if is_legal_summon_coord(c, idx):
-			result.append(B_GRID.get_tile(c))
-	return result
+	return _battle_grid.get_summon_coords(idx)
 
 
 func get_not_summoned_units(player : Player) -> Array[DataUnit]:
@@ -605,19 +573,19 @@ class ArmyInBattleState:
 		return result
 
 
-	func kill_unit(target : Unit) -> void:
+	func kill_unit(target : Unit, grid : BattleGridState) -> void:
 		print("killing ", target.coord, " ",target.template.unit_name)
 		units.erase(target)
 		dead_units.append(target.template)
-		B_GRID.remove_unit(target)
+		grid.remove_unit(target)
 		await target.die()
 
 
-	func kill_army() -> void:
+	func kill_army(battle_grid : BattleGridState) -> void:
 		dead_units.append_array(units_to_summon)
 		units_to_summon.clear()
 		for unit_idx in range(units.size() - 1, -1, -1):
-			await kill_unit(units[unit_idx])
+			await kill_unit(units[unit_idx], battle_grid)
 
 
 	func can_fight() -> bool:

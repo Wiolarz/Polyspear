@@ -160,7 +160,7 @@ func _set_symbol_picker(dir: int, value: DataSymbol):
 func on_symbol_selected(dir : int, picker_index : int):
 	var picked_symbol = all_data_symbols[picker_index]
 	print("selected dir %d %s - symbol %s - %s" % \
-			[dir, E.direction_to_name(dir as E.GridDirections), \
+			[dir, GenericHexGrid.direction_to_name(dir as GenericHexGrid.GridDirections), \
 			picked_symbol.type, E.symbol_to_name(picked_symbol.type)])
 
 	unit_preview_form._apply_symbol_sprite(dir, picked_symbol.texture_path)

@@ -110,7 +110,8 @@ func _animate_movement() -> bool:
 		return false
 
 	if CFG.animation_speed_frames == CFG.AnimationSpeed.INSTANT:
-		position = _target_tile.position
+		global_position = _target_tile.global_position
+		_target_tile = null
 		print("instant move end")
 		unit.anim_end.emit()
 		return true
