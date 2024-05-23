@@ -13,22 +13,7 @@ func _ready():
 
 
 func refresh_replays_disabled():
-	$MainContainer/TopMenu/ReplaysMenuBar/Replays.set_item_disabled(0, not BattleReplay.has_replays())
-
-
-func _on_replays_id_pressed(_id):
-	$FileDialogReplay.show()
-
-
-func _on_file_dialog_replay_file_selected(path):
-	IM.perform_replay(path)
-
-
-func _on_editors_menu_id_pressed(id):
-	match id:
-		0: IM.go_to_map_editor()
-		1: UI.go_to_unit_editor()
-		_: pass
+	$MainContainer/TopMenu/ReplaysButton.set_disabled(not BattleReplay.has_replays())
 
 
 func _on_visibility_changed():
@@ -59,3 +44,19 @@ func _clear_tabs():
 	$MainContainer/HostLobby.hide()
 	$MainContainer/ClientLobby.hide()
 	$MainContainer/SettingsMenu.hide()
+
+
+func _on_replays_button_pressed():
+	$FileDialogReplay.show()
+
+
+func _on_file_dialog_replay_file_selected(path):
+	IM.perform_replay(path)
+
+
+func _on_unit_editor_button_pressed():
+	UI.go_to_unit_editor()
+
+
+func _on_map_editor_button_pressed():
+	IM.go_to_map_editor()
