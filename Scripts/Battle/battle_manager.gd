@@ -355,7 +355,8 @@ func move_info_move_unit(unit : Unit, end_coord : Vector2i, direction: int) -> v
 		return
 
 	# MOVE
-	B_GRID.change_unit_coord(unit, end_coord)
+
+	_battle_grid.change_unit_coord(unit, end_coord)
 	await unit.move(end_coord)
 	if await process_symbols(unit):
 		return
@@ -385,7 +386,7 @@ func kill_army(army_idx : int):
 	assert(not _waiting_for_action_to_finish, \
 			"cant trigger awaitable action while a different action is processing")
 	_waiting_for_action_to_finish = true
-	await armies_in_battle_state[army_idx].kill_army()
+	await armies_in_battle_state[army_idx].kill_army(_battle_grid)
 	_waiting_for_action_to_finish = false
 	await check_battle_end()
 
@@ -580,11 +581,11 @@ class ArmyInBattleState:
 		await target.die()
 
 
-	func kill_army() -> void:
+	func kill_army(battle_grid : BattleGridState) -> void:
 		dead_units.append_array(units_to_summon)
 		units_to_summon.clear()
 		for unit_idx in range(units.size() - 1, -1, -1):
-			await kill_unit(units[unit_idx])
+			await kill_unit(units[unit_idx], battle_grid)
 
 
 	func can_fight() -> bool:
