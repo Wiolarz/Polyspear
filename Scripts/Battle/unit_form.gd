@@ -27,6 +27,7 @@ static func create(new_unit : Unit) -> UnitForm:
 
 	result.global_position = B_GRID.get_tile(new_unit.coord).global_position
 	result.rotation_degrees = new_unit.unit_rotation * 60
+	result._target_rotation_degrees = result.rotation_degrees
 	result.get_node("sprite_unit").rotation = -result.rotation
 
 
@@ -49,6 +50,7 @@ func _physics_process(delta):
 
 
 func on_unit_turned():
+	print("start turn anim")
 	var new_side = unit.unit_rotation
 	_target_rotation_degrees = (60 * (new_side))
 
@@ -58,24 +60,29 @@ func on_unit_turned():
 
 
 func on_unit_moved():
+	print("start move anim")
+
 	var new_coord = unit.coord
 	var tile = B_GRID.get_tile(new_coord)
 
 	_target_tile = tile
 	_move_speed = (tile.global_position - global_position).length() / CFG.animation_speed_frames
-
+	print(global_position, " to ", tile.global_position, " coord ", new_coord )
 
 func on_unit_died():
+	print("start death anim")
+
 	_play_death_anim = true
 
 
 func _animate_rotation() -> bool:
-	if abs(fmod(rotation_degrees, 360) - _target_rotation_degrees) < 0.1:
+	if abs(fposmod(rotation_degrees, 360) - _target_rotation_degrees) < 0.1:
 		return false
 
 	if CFG.animation_speed_frames == CFG.AnimationSpeed.INSTANT:
 		rotation_degrees = _target_rotation_degrees
 		$sprite_unit.rotation = -rotation
+		print("instant turn end")
 		unit.anim_end.emit()
 		return true
 
@@ -89,10 +96,12 @@ func _animate_rotation() -> bool:
 	var this_frame_rotation = clamp(relative_rotation, -1, 1) * _rotation_speed
 	if abs(relative_rotation) < abs(this_frame_rotation):
 		rotation = deg_to_rad(_target_rotation_degrees)
-		unit.anim_end.emit()
 	else:
 		rotation += deg_to_rad(this_frame_rotation)
 	$sprite_unit.rotation = -rotation
+	if abs(fposmod(rotation_degrees, 360) - _target_rotation_degrees) < 0.1:
+		print("normal turn end")
+		unit.anim_end.emit()
 	return true
 
 
@@ -102,6 +111,7 @@ func _animate_movement() -> bool:
 
 	if CFG.animation_speed_frames == CFG.AnimationSpeed.INSTANT:
 		position = _target_tile.position
+		print("instant move end")
 		unit.anim_end.emit()
 		return true
 
@@ -109,6 +119,7 @@ func _animate_movement() -> bool:
 	if (global_position - _target_tile.global_position).length_squared() < 0.01:
 		global_position = _target_tile.global_position
 		_target_tile = null
+		print("normal move end")
 		unit.anim_end.emit()
 	return true
 
@@ -121,6 +132,7 @@ func _animate_death(delta) -> bool:
 	if scale.x < 0:
 		scale.x = 0
 		_play_death_anim = false
+		print("death anim end")
 		unit.anim_end.emit()
 	scale.y = scale.x
 	return true

@@ -80,7 +80,7 @@ func perform_replay(replay:BattleReplay) -> void:
 	for m in replay.moves:
 		if not battle_is_ongoing:
 			return # terminating battle while watching
-		perform_replay_move(m)
+		await perform_replay_move(m)
 		await replay_move_delay()
 	_replay_is_playing = false
 
@@ -203,15 +203,15 @@ func try_select_unit(coord : Vector2i) -> bool:
 
 
 func perform_network_move(move_info : MoveInfo) -> void:
-	perform_move_info(move_info)
+	await perform_move_info(move_info)
 
 
 func perform_replay_move(move_info : MoveInfo) -> void:
-	perform_move_info(move_info)
+	await perform_move_info(move_info)
 
 
 func perform_ai_move(move_info : MoveInfo) -> void:
-	perform_move_info(move_info)
+	await perform_move_info(move_info)
 
 
 func perform_move_info(move_info : MoveInfo) -> void:
@@ -350,13 +350,13 @@ func move_info_move_unit(unit : Unit, end_coord : Vector2i, direction: int) -> v
 	"""
 
 	# TURN
-	unit.turn(direction)
+	await unit.turn(direction)
 	if await process_symbols(unit):
 		return
 
 	# MOVE
-	_battle_grid.change_unit_coord(unit, end_coord)
-	unit.move(end_coord)
+	B_GRID.change_unit_coord(unit, end_coord)
+	await unit.move(end_coord)
 	if await process_symbols(unit):
 		return
 
@@ -385,9 +385,9 @@ func kill_army(army_idx : int):
 	assert(not _waiting_for_action_to_finish, \
 			"cant trigger awaitable action while a different action is processing")
 	_waiting_for_action_to_finish = true
-	for unit_idx in range(armies_in_battle_state[army_idx].units.size() - 1, -1, -1):
-		await kill_unit(armies_in_battle_state[army_idx].units[unit_idx])
+	await armies_in_battle_state[army_idx].kill_army()
 	_waiting_for_action_to_finish = false
+	await check_battle_end()
 
 ## TEMP: After 50 turns Defender wins
 func end_stalemate():
@@ -578,6 +578,13 @@ class ArmyInBattleState:
 		dead_units.append(target.template)
 		grid.remove_unit(target)
 		await target.die()
+
+
+	func kill_army() -> void:
+		dead_units.append_array(units_to_summon)
+		units_to_summon.clear()
+		for unit_idx in range(units.size() - 1, -1, -1):
+			await kill_unit(units[unit_idx])
 
 
 	func can_fight() -> bool:
