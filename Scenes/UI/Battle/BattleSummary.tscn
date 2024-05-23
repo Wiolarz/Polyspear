@@ -1,0 +1,67 @@
+[gd_scene load_steps=7 format=3 uid="uid://c2nbsmfpf5nbk"]
+
+[ext_resource type="Script" path="res://Scripts/UI/battle_summary.gd" id="1_5cr4m"]
+[ext_resource type="Shader" path="res://Art/UI/player_slot_panel.gdshader" id="1_5w0ft"]
+[ext_resource type="PackedScene" uid="uid://c3fbauwsnspmh" path="res://Scenes/UI/Battle/BattleSummaryPlayerStats.tscn" id="3_kaohm"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_6bk8m"]
+shader = ExtResource("1_5w0ft")
+
+[sub_resource type="InputEventKey" id="InputEventKey_84rvs"]
+device = -1
+keycode = 4194309
+
+[sub_resource type="Shortcut" id="Shortcut_dprme"]
+events = [SubResource("InputEventKey_84rvs")]
+
+[node name="Summary" type="PanelContainer"]
+custom_minimum_size = Vector2(900, 700)
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -454.0
+offset_top = -254.5
+offset_right = 454.0
+offset_bottom = 254.5
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+script = ExtResource("1_5cr4m")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+material = SubResource("ShaderMaterial_6bk8m")
+layout_mode = 2
+color = Color(0.368627, 0.368627, 0.368627, 1)
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="Title" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 100
+text = "Red wins!"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Players" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="PlayerSummary" parent="VBoxContainer/Players" instance=ExtResource("3_kaohm")]
+layout_mode = 2
+
+[node name="PlayerSummary2" parent="VBoxContainer/Players" instance=ExtResource("3_kaohm")]
+layout_mode = 2
+
+[node name="PlayerSummary3" parent="VBoxContainer/Players" instance=ExtResource("3_kaohm")]
+layout_mode = 2
+
+[node name="ButtonContinue" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+shortcut = SubResource("Shortcut_dprme")
+text = "Continue"
+
+[connection signal="pressed" from="VBoxContainer/ButtonContinue" to="." method="_on_button_continue_pressed"]

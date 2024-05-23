@@ -20,7 +20,7 @@ func refresh_player_buttons():
 		if selected:
 			text = " > " + text
 		button.text = text
-		button.modulate = player.get_player_color()
+		button.modulate = player.get_player_color().color
 
 
 func show_trade_ui(city : City, hero : ArmyForm):

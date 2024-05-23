@@ -69,23 +69,26 @@ func get_random_username() -> String:
 
 const DEFAULT_USER_NAME : String = "(( you ))"
 
-const TEAM_COLORS : Array[Dictionary] = [
-	{ "name": "purple", "color": Color(0.9, 0.2, 0.85) },
-	{ "name": "green", "color": Color(0.0, 0.9, 0.0) },
-	{ "name": "yellow", "color": Color(0.9, 0.8, 0.0) },
-	{ "name": "red", "color": Color(1.0, 0.0, 0.0) },
-	{ "name": "blue", "color": Color(0.0, 0.4, 1.0) },
-	{ "name": "orange", "color": Color(0.9, 0.5, 0.0) },
+var TEAM_COLORS : Array[DataPlayerColor] = [
+	DataPlayerColor.create("purple", Color(0.9, 0.2, 0.85)),
+	DataPlayerColor.create("green", Color(0.0, 0.9, 0.0)),
+	DataPlayerColor.create("yellow", Color(0.9, 0.8, 0.0)),
+	DataPlayerColor.create("red", Color(1.0, 0.0, 0.0)),
+	DataPlayerColor.create("blue", Color(0.0, 0.4, 1.0)),
+	DataPlayerColor.create("orange", Color(0.9, 0.5, 0.0)),
 ]
 
-const NEUTRAL_COLOR = { "name": "gray", "color":  Color(0.5, 0.5, 0.5, 1.0) }
+var NEUTRAL_COLOR := \
+	DataPlayerColor.create_with_texture("neutral", Color(0.5, 0.5, 0.5), \
+		"gray_color")
 
-const DEFAULT_TEAM_COLOR = Color(0.5, 0.5, 0.5, 1.0)
+var DEFAULT_TEAM_COLOR := \
+	DataPlayerColor.create("gray", Color(0.5, 0.5, 0.5))
 
-func get_team_color_at(index : int) -> Color:
+func get_team_color_at(index : int) -> DataPlayerColor:
 	if not index in range(TEAM_COLORS.size()):
 		return DEFAULT_TEAM_COLOR
-	return TEAM_COLORS[index]["color"]
+	return TEAM_COLORS[index]
 
 var DEFAULT_BATTLE_MAP : DataBattleMap = \
 	load("res://Resources/Battle/Battle_Maps/basic5x5.tres")

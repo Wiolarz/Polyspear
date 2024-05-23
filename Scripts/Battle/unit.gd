@@ -114,7 +114,7 @@ func can_kill_or_push(other_unit : Unit, attack_direction : int):
 			# no shield, attack ok
 			return true
 
-func get_player_color_dictionary() -> Dictionary:
+func get_player_color() -> DataPlayerColor:
 	if not controller:
 		return CFG.NEUTRAL_COLOR
-	return controller.get_player_color_dictionary()
+	return controller.get_player_color()

@@ -7,6 +7,8 @@ extends CanvasLayer
 
 @onready var camera_button : Button = $SwitchCamera
 
+@onready var summary_container : Container = $SummaryContainer
+
 var armies_reference : Array[BM.ArmyInBattleState]
 
 var selected_unit : DataUnit = null
@@ -45,7 +47,7 @@ func load_armies(army_list : Array[BM.ArmyInBattleState]):
 		var n = Button.new()
 		n.text = get_text_for(controller, idx == 0)
 		if controller:
-			n.modulate = controller.get_player_color()
+			n.modulate = controller.get_player_color().color
 		else:
 			n.modulate = Color.GRAY
 		n.pressed.connect(func select(): on_player_selected(idx, true))
@@ -76,9 +78,9 @@ func on_player_selected(army_index : int, preview : bool = false):
 		old_buttons.queue_free()
 
 	var units_controller : Player = armies_reference[army_index].army_reference.controller
-	var bg_color : String = CFG.NEUTRAL_COLOR.name
+	var bg_color : DataPlayerColor = CFG.NEUTRAL_COLOR
 	if units_controller:
-		bg_color = units_controller.get_player_color_dictionary().name
+		bg_color = units_controller.get_player_color()
 	for unit in armies_reference[army_index].units_to_summon:
 		var b := TextureButton.new()
 		b.texture_normal = CFG.SUMMON_BUTTON_TEXTURE
@@ -107,6 +109,19 @@ func unit_summoned(summon_phase_end : bool, _unit : DataUnit):
 		units_box.hide()
 
 
+func show_summary(info : DataBattleSummary, finalize_callback : Callable):
+	for child in summary_container.get_children():
+		summary_container.remove_child(child)
+		child.queue_free()
+
+	BattleSummary.create(summary_container, info, finalize_callback)
+
+	summary_container.show()
+
+
+func hide_summary():
+	summary_container.hide()
+
 
 func _on_switch_camera_pressed():
 	UI.switch_camera()
@@ -119,3 +134,7 @@ func _on_switch_camera_pressed():
 func _on_menu_pressed():
 	IM.toggle_in_game_menu()
 
+
+func _on_visibility_changed():
+	if visible:
+		hide_summary()

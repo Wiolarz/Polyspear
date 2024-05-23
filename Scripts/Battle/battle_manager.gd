@@ -13,6 +13,7 @@ const STATE_BATTLE_FINISHED = "battle_finished"
 var battle_is_ongoing : bool = false
 var state : String = ""
 var armies_in_battle_state : Array[ArmyInBattleState] = []
+var current_summary : DataBattleSummary = null
 var current_army_index : int = ATTACKER
 var turn_counter : int = 0
 
@@ -46,6 +47,7 @@ func start_battle(new_armies : Array[Army], battle_map : DataBattleMap, \
 	_waiting_for_action_to_finish = false
 
 	state = STATE_SUMMONNING
+	current_summary = null
 	armies_in_battle_state = []
 	for a in new_armies:
 		armies_in_battle_state.append(ArmyInBattleState.create_from(a))
@@ -443,6 +445,11 @@ func end_the_battle() -> void:
 	while _replay_is_playing:
 		await get_tree().create_timer(0.1).timeout
 
+	current_summary = create_summary()
+	battle_ui.show_summary(current_summary, close_battle)
+
+
+func close_battle() -> void:
 	turn_off_battle_ui()
 	reset_grid_and_unit_forms()
 
@@ -557,6 +564,46 @@ func force_surrender():
 
 #endregion
 
+
+#region Battle Summary
+
+
+func get_summary() -> DataBattleSummary:
+	if state != STATE_BATTLE_FINISHED:
+		return null
+	return current_summary
+
+
+func create_summary() -> DataBattleSummary:
+	var summary := DataBattleSummary.new()
+	summary.color = CFG.NEUTRAL_COLOR.color
+	summary.title = "Draw"
+
+	for army_in_battle in armies_in_battle_state:
+		var player_stats := DataBattleSummaryPlayer.new()
+		if army_in_battle.dead_units.size() <= 0:
+			player_stats.losses = "< none >"
+		else:
+			for dead in army_in_battle.dead_units:
+				var unit_description = "%s\n" % dead.unit_name
+				player_stats.losses += unit_description
+
+		var army_controller := army_in_battle.army_reference.controller
+		player_stats.player_description = IM.get_full_player_description(army_controller)
+		if army_in_battle.can_fight():
+			player_stats.state = "winner"
+			var color_description = CFG.NEUTRAL_COLOR
+			if army_controller:
+				color_description = army_controller.get_player_color()
+			summary.color = color_description.color
+			summary.title = "%s wins" % color_description.name
+		else:
+			player_stats.state = "loser"
+		summary.players.append(player_stats)
+	return summary
+
+
+#end region
 
 class ArmyInBattleState:
 	var army_reference : Army

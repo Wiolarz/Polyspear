@@ -48,12 +48,8 @@ func get_player_name() -> String:
 	return slot.occupier
 
 
-func get_player_color_dictionary() -> Dictionary:
+func get_player_color() -> DataPlayerColor:
 	return CFG.TEAM_COLORS[slot.color]
-
-
-func get_player_color() -> Color:
-	return get_player_color_dictionary().color
 
 
 func get_faction() -> DataFaction:

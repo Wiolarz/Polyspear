@@ -80,5 +80,16 @@ offset_right = 0.0
 grow_horizontal = 0
 grow_vertical = 0
 
+[node name="SummaryContainer" type="MarginContainer" parent="."]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[connection signal="visibility_changed" from="." to="." method="_on_visibility_changed"]
 [connection signal="pressed" from="SwitchCamera" to="." method="_on_switch_camera_pressed"]
 [connection signal="pressed" from="Menu" to="." method="_on_menu_pressed"]

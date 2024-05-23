@@ -1,0 +1,38 @@
+[gd_scene load_steps=2 format=3 uid="uid://c3fbauwsnspmh"]
+
+[ext_resource type="Script" path="res://Scripts/UI/battle_summary_player_stats.gd" id="1_6rqn7"]
+
+[node name="PlayerStats" type="VBoxContainer"]
+clip_contents = true
+custom_minimum_size = Vector2(300, 400)
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = -1620.0
+offset_bottom = -680.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 0
+script = ExtResource("1_6rqn7")
+
+[node name="PlayerDescription" type="Label" parent="."]
+layout_mode = 2
+theme_override_font_sizes/font_size = 48
+text = "Red
+Polygonczyk"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="StateLabel" type="Label" parent="."]
+layout_mode = 2
+text = "winner"
+
+[node name="LossesLabel" type="Label" parent="."]
+layout_mode = 2
+text = "Losses:"
+
+[node name="LossesList" type="Label" parent="."]
+layout_mode = 2
+text = "3x ogr
+4x osioł"
