@@ -11,6 +11,7 @@ var _rotation_speed : float
 
 var _play_death_anim : bool
 
+var _symbols_flipped : bool = true  # flag used for unit rotation
 
 static func create(new_unit : Unit) -> UnitForm:
 	var result = CFG.UNIT_FORM_SCENE.instantiate()
@@ -69,16 +70,31 @@ func on_unit_moved():
 	_move_speed = (tile.global_position - global_position).length() / CFG.animation_speed_frames
 	print(global_position, " to ", tile.global_position, " coord ", new_coord )
 
+
 func on_unit_died():
 	print("start death anim")
 
 	_play_death_anim = true
 
 
+func _rotation_symbol_flip():
+	_symbols_flipped = true
+
+	for dir in range(6):
+		var symbol_sprite = $"Symbols".get_children()[dir].get_child(0).get_child(0)
+		if symbol_sprite.texture == null:
+			continue
+		_flip_symbol_sprite(symbol_sprite, dir)
+
+
 func _animate_rotation() -> bool:
 	if abs(fposmod(rotation_degrees, 360) - _target_rotation_degrees) < 0.1:
+		_symbols_flipped = false
 		return false
-
+	
+	if not _symbols_flipped:
+		_rotation_symbol_flip()
+	
 	if CFG.animation_speed_frames == CFG.AnimationSpeed.INSTANT:
 		rotation_degrees = _target_rotation_degrees
 		$sprite_unit.rotation = -rotation
@@ -99,6 +115,8 @@ func _animate_rotation() -> bool:
 	else:
 		rotation += deg_to_rad(this_frame_rotation)
 	$sprite_unit.rotation = -rotation
+	
+	
 	if abs(fposmod(rotation_degrees, 360) - _target_rotation_degrees) < 0.1:
 		print("normal turn end")
 		unit.anim_end.emit()
@@ -161,12 +179,27 @@ func _apply_symbol_sprite(dir : int, texture_path : String) -> void:
 		symbol_sprite.hide()
 		return
 	symbol_sprite.texture = load(texture_path)
+	
+	_flip_symbol_sprite(symbol_sprite, dir)
+		
 	symbol_sprite.show()
+
+
+## Flips ths sprite so that weapons always point to the top of the screen
+func _flip_symbol_sprite(symbol_sprite : Sprite2D, dir : int):
+	var abstract_rotation : int = 0
+	if unit != null:
+		abstract_rotation = (unit.unit_rotation + dir) % 6
+	if abstract_rotation in [0, 1, 5]:  # LEFT
+		symbol_sprite.flip_v = false
+	else:
+		symbol_sprite.flip_v = true
 
 
 ## WARNING: called directly in UNIT EDITOR
 func _apply_unit_texture(texture : Texture2D) -> void:
 	$sprite_unit.texture = texture
+
 
 func _apply_color_texture(color : DataPlayerColor) -> void:
 	var color_texture_name : String = color.hexagon_texture
