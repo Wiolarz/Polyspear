@@ -13,6 +13,7 @@ const EMPTY_UNIT_TEXT = " - empty - "
 var setup_ui : BattleSetup = null
 var button_take_leave_state : TakeLeaveButtonState = TakeLeaveButtonState.FREE
 
+var unit_paths : Array[String]
 
 @onready var button_take_leave = $VBoxContainer/HBoxContainer/ButtonTakeLeave
 @onready var label_name = $VBoxContainer/HBoxContainer/PlayerInfoPanel/Label
@@ -74,14 +75,18 @@ func set_visible_take_leave_button_state(state : TakeLeaveButtonState):
 
 
 func _ready():
-	var unit_paths = FileSystemHelpers.list_files_in_folder(CFG.UNITS_PATH, true, true)
+	unit_paths = FileSystemHelpers.list_files_in_folder(CFG.UNITS_PATH, true, true)
 	for index in buttons_units.size():
-		var b : OptionButton = buttons_units[index]
-		b.clear()
-		b.add_item(EMPTY_UNIT_TEXT)
-		for unit_path in unit_paths:
-			b.add_item(unit_path.trim_prefix(CFG.UNITS_PATH))
-		b.item_selected.connect(unit_in_army_changed.bind(index))
+		var button : OptionButton = buttons_units[index]
+		init_unit_button(button, index)
+		
+
+func init_unit_button(button : OptionButton, index : int):
+	button.clear()
+	button.add_item(EMPTY_UNIT_TEXT)
+	for unit_path in unit_paths:
+		button.add_item(unit_path.trim_prefix(CFG.UNITS_PATH))
+	button.item_selected.connect(unit_in_army_changed.bind(index))
 
 
 func unit_in_army_changed(selected_index, unit_index):
@@ -101,6 +106,8 @@ func apply_army_preset(army : PresetArmy):
 	var slot_index = setup_ui.slot_to_index(self)
 	var idx = 0
 	for u in army.units:
+		if not u:
+			continue
 		set_unit(buttons_units[idx], u)
 		IM.game_setup_info.set_unit(slot_index, idx, u)
 		idx += 1
@@ -113,6 +120,17 @@ func apply_army_preset(army : PresetArmy):
 
 
 func set_army(units_list:Array[DataUnit]):
+	while buttons_units.size() > units_list.size():
+		var b = buttons_units.pop_back()
+		$VBoxContainer.remove_child(b)
+		b.queue_free()
+	while buttons_units.size() < units_list.size():
+		var b := OptionButton.new()
+		init_unit_button(b, buttons_units.size())
+		buttons_units.append(b)
+		$VBoxContainer.add_child(b)
+		b.custom_minimum_size = Vector2(200, 0)
+
 	for index in units_list.size():
 		set_unit(buttons_units[index], units_list[index])
 

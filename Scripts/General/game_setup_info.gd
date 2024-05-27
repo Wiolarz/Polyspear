@@ -33,7 +33,7 @@ func has_slot(player_index : int) -> bool:
 	return player_index >= 0 and player_index < slots.size()
 
 
-func set_unit(slot_index:int, unit_index:int, unit_data:DataUnit):
+func set_unit(slot_index:int, unit_index:int, unit_data : DataUnit):
 	slots[slot_index].units_list[unit_index] = unit_data
 
 
@@ -146,6 +146,9 @@ func set_battle_map(map : DataBattleMap):
 			slot.color += 1
 
 		taken_colors.append(slot.color)
+	
+	for slot_idx in slots.size():
+		slots[slot_idx].set_units_length(map.player_slots[slot_idx + 1])
 
 
 static func create_empty() -> GameSetupInfo:
@@ -185,6 +188,11 @@ class Slot extends RefCounted: # check if this is good base
 
 	func is_local() -> bool:
 		return occupier.is_empty()
+	
+	
+	func set_units_length(value : int) -> void:
+		units_list.resize(value)
+
 
 	## for "Custom battles" unit list creation
 	## ignores empty values in units_list
