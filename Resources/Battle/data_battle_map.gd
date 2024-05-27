@@ -2,6 +2,8 @@ class_name DataBattleMap
 
 extends DataGenericMap
 
+## KEY: PlayerID VALUE: number of summon tiles
+@export var player_slots : Dictionary
 
 static func get_network_id(battle_map : DataBattleMap) -> String:
 	return battle_map.resource_path.get_file() if battle_map else ""

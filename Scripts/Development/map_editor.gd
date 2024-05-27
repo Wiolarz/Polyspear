@@ -83,6 +83,15 @@ func _mark_button(selected_type : MapType):
 		$MenuContainer/NewWorldMap.modulate = Color.WHITE
 
 
+func open_draw_menu():
+	visible = true
+	_on_new_world_map_pressed()
+
+#endregion
+
+
+#region Saving Map
+
 func _optimize_grid_size(local_tile_grid : Array) -> Array:
 	"""
 	checks for the first and last non-sentinel tile placement in each grid row and column.
@@ -124,9 +133,21 @@ func _optimize_grid_size(local_tile_grid : Array) -> Array:
 	return local_tile_grid
 
 
-func open_draw_menu():
-	visible = true
-	_on_new_world_map_pressed()
+func _generate_world_max_player_number(local_tile_grid : Array) -> int:
+	return 2  # TEMP
+
+
+func _generate_battle_players_slots(local_tile_grid : Array) -> Dictionary:
+	var player_slots : Dictionary = {}
+	for tile_column : Array in local_tile_grid:
+		for tile : TileForm in tile_column:
+			if tile.type.substr(1) == "_player_spawn":
+				var player_idx : int = tile.type[0].to_int()
+				if player_idx in player_slots.keys():
+					player_slots[player_idx] += 1
+				else:
+					player_slots[player_idx] = 1
+	return player_slots
 
 #endregion
 
@@ -173,16 +194,23 @@ func _on_save_map_pressed():
 	for tile_column in local_tile_grid:
 		var current_column = []
 		grid_data.append(current_column)
-		for tile in tile_column:
+		for tile : TileForm in tile_column:
 			var new_data_tile = DataTile.create_data_tile(tile)
 
 			current_column.append(new_data_tile)
-
 
 	new_map.grid_data = grid_data
 
 	new_map.grid_height = grid_data[0].size()
 	new_map.grid_width = grid_data.size()
+
+	if current_map_type == MapType.BATTLE:
+		var player_slots =  _generate_battle_players_slots(local_tile_grid)
+		print(player_slots)
+		new_map.player_slots = player_slots
+		new_map.max_player_number = player_slots.keys().size()
+	else:
+		new_map.max_player_number = _generate_world_max_player_number(local_tile_grid)
 
 	ResourceSaver.save(new_map, save_path)
 

@@ -124,6 +124,30 @@ static func units_list_receive_from_network(serialized: Array) -> Array[DataUnit
 	return result
 
 
+func set_battle_map(map : DataBattleMap):
+	assert(game_mode == GameMode.BATTLE, "setting battle map in game mode: " + str(game_mode))
+	battle_map = map
+	while slots.size() > map.player_slots.keys().size():
+		slots.pop_back()
+	
+	var taken_colors = []
+	for slot in slots:
+		taken_colors.append(slot.color)
+	
+	while slots.size() < map.player_slots.keys().size():
+		var slot = GameSetupInfo.Slot.new()
+		slots.append(slot)
+
+		slot.occupier = 0
+		slot.faction = CFG.FACTIONS_LIST[0]
+		slot.color = 0
+		
+		while slot.color in taken_colors:
+			slot.color += 1
+
+		taken_colors.append(slot.color)
+
+
 static func create_empty() -> GameSetupInfo:
 	var slot_count = 2
 	var result = GameSetupInfo.new()

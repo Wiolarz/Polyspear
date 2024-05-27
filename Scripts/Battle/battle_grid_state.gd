@@ -134,11 +134,10 @@ class BattleHex:
 			return null
 		var result = BattleHex.new()
 		result.can_be_moved_to = true
-		match data.type:
-			"red_spawn":
-				result.spawn_point_army_idx = 0
-			"blue_spawn":
-				result.spawn_point_army_idx = 1
+
+		if data.type.substr(1) == "_player_spawn":
+			result.spawn_point_army_idx = data.type[0].to_int() - 1
+
 		return result
 
 	func blocks_shots() -> bool:

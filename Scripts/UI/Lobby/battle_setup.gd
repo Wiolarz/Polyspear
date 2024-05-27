@@ -1,6 +1,8 @@
 class_name BattleSetup
 extends Control
 
+const PLAYER_SLOT_PANEL_PATH = "res://Scenes/UI/Lobby/BattlePlayerSlotPanel.tscn"
+
 var game_setup : GameSetup
 
 var player_slot_panels: Array[BattlePlayerSlotPanel]= []
@@ -16,12 +18,30 @@ var client_side_map_label : Label
 @onready var presets_list : OptionButton = \
 	$PresetSelect/ColorRect/PresetList
 
+
+#region Initial Setup
+
 func _ready():
-	rebuild()
 	fill_maps_list()
 	fill_presets_list()
 
 
+func fill_maps_list():
+	var maps = IM.get_battle_maps_list()
+	for map_name in maps:
+		maps_list.add_item(map_name)
+
+
+func fill_presets_list():
+	var presets = FileSystemHelpers.list_files_in_folder(CFG.BATTLE_PRESETS_PATH, true, true)
+	presets_list.clear()
+	for preset in presets:
+		presets_list.add_item(preset.trim_prefix(CFG.BATTLE_PRESETS_PATH))
+	if presets.size() > 0:
+		_on_preset_list_item_selected(0)
+
+
+## Called upon join, applies changes to the UI to make it Client UI not Host UI
 func make_client_side():
 	$MapSelect/Label.text = "Selected map"
 	maps_list.queue_free()
@@ -32,17 +52,21 @@ func make_client_side():
 	var presets = $PresetSelect
 	presets.queue_free()
 
+#endregion
 
+
+## Updates UI to match GameState in IM
 func refresh():
 	for index in range(player_slot_panels.size()):
-		refresh_slot(index)
+		_refresh_slot(index)
 
 	if client_side_map_label:
 		var map_name = DataBattleMap.get_network_id(IM.game_setup_info.battle_map)
 		client_side_map_label.text = map_name
 
 
-func refresh_slot(index : int):
+## Updates BattlePlayerSlotPanel to match GameState in IM
+func _refresh_slot(index : int):
 	if index < 0 or index >= player_slot_panels.size():
 		push_error("no ui slot to refresh on index ", index)
 		return
@@ -83,69 +107,22 @@ func slot_to_index(slot) -> int:
 	return player_slot_panels.find(slot)
 
 
-func try_to_take_slot(slot) -> bool: # true means something changed
-	if not game_setup:
-		return false
-	var index : int = slot_to_index(slot)
-	var changed = game_setup.try_to_take_slot(index)
-	if changed:
-		refresh_slot(index)
-	return changed
-
-
-func try_to_leave_slot(slot) -> bool:
-	if not game_setup:
-		return false
-	var index : int = slot_to_index(slot)
-	var changed = game_setup.try_to_leave_slot(index)
-	if changed:
-		refresh_slot(index)
-	return changed
-
-
-func cycle_color_slot(slot : BattlePlayerSlotPanel, backwards : bool) -> bool:
-	if not game_setup:
-		return false
-	var index : int = slot_to_index(slot)
-	var changed = game_setup.try_to_cycle_color_slot(index, backwards)
-	if changed:
-		refresh_slot(index)
-	return changed
-
-
-func cycle_faction_slot(slot : BattlePlayerSlotPanel, backwards : bool) -> bool:
-	if not game_setup:
-		return false
-	var index : int = slot_to_index(slot)
-	var changed = game_setup.try_to_cycle_faction_slot(index, backwards)
-	if changed:
-		refresh_slot(index)
-	return changed
-
-
-func rebuild():
+func prepare_player_slots() -> void:
 	player_slot_panels = []
 	for slot in player_list.get_children():
-		slot.setup_ui = self
-		player_slot_panels.append(slot)
-	# don't want to refresh here -- we want to be able to build this widget
-	# without real data
+		player_list.remove_child(slot)
+		slot.queue_free()
+
+	for slot in IM.game_setup_info.slots:
+		var slot_scene : BattlePlayerSlotPanel = load(PLAYER_SLOT_PANEL_PATH).instantiate()
+		player_slot_panels.append(slot_scene)
+		slot_scene.setup_ui = self
+		player_list.add_child(slot_scene)
+
+	refresh()
 
 
-func fill_maps_list():
-	var maps = IM.get_battle_maps_list()
-	for map_name in maps:
-		maps_list.add_item(map_name)
-
-
-func fill_presets_list():
-	var presets = FileSystemHelpers.list_files_in_folder(CFG.BATTLE_PRESETS_PATH, true, true)
-	presets_list.clear()
-	for preset in presets:
-		presets_list.add_item(preset.trim_prefix(CFG.BATTLE_PRESETS_PATH))
-	if presets.size() > 0:
-		_on_preset_list_item_selected(0)
-
+#region Changing settings
 
 func _on_preset_list_item_selected(index):
 	var preset_file = presets_list.get_item_text(index)
@@ -169,8 +146,53 @@ func apply_preset(preset : PresetBattle):
 
 
 func _on_map_list_item_selected(index):
-	var map_name = maps_list.get_item_text(index)
-	var map = load(CFG.BATTLE_MAPS_PATH + "/" + map_name)
-	IM.game_setup_info.battle_map = map
+	var map_name : String = maps_list.get_item_text(index)
+	var map : DataBattleMap = load(CFG.BATTLE_MAPS_PATH + "/" + map_name)
+	IM.game_setup_info.set_battle_map(map)
+
+	prepare_player_slots()
+
 	if NET.server:
 		NET.server.broadcast_full_game_setup(IM.game_setup_info)
+
+
+func try_to_take_slot(slot) -> bool: # true means something changed
+	if not game_setup:
+		return false
+	var index : int = slot_to_index(slot)
+	var changed = game_setup.try_to_take_slot(index)
+	if changed:
+		_refresh_slot(index)
+	return changed
+
+
+func try_to_leave_slot(slot) -> bool:
+	if not game_setup:
+		return false
+	var index : int = slot_to_index(slot)
+	var changed = game_setup.try_to_leave_slot(index)
+	if changed:
+		_refresh_slot(index)
+	return changed
+
+
+func cycle_color_slot(slot : BattlePlayerSlotPanel, backwards : bool) -> bool:
+	if not game_setup:
+		return false
+	var index : int = slot_to_index(slot)
+	var changed = game_setup.try_to_cycle_color_slot(index, backwards)
+	if changed:
+		_refresh_slot(index)
+	return changed
+
+
+func cycle_faction_slot(slot : BattlePlayerSlotPanel, backwards : bool) -> bool:
+	if not game_setup:
+		return false
+	var index : int = slot_to_index(slot)
+	var changed = game_setup.try_to_cycle_faction_slot(index, backwards)
+	if changed:
+		_refresh_slot(index)
+	return changed
+
+#endregion

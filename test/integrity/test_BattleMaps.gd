@@ -2,9 +2,9 @@ extends GutTest
 
 const ALLOWED_BATTLE_TILE_TYPES = {
 	"sentinel" : true,
-	"blue_spawn": true,
+	"2_player_spawn": true,
 	"empty": true,
-	"red_spawn": true,
+	"1_player_spawn": true,
 	"wall": true,
 	"swamp": true,
 	"hole": true,
@@ -47,7 +47,7 @@ func test_battle_maps():
 				if not tile_types_seen.has(tile.type):
 					tile_types_seen[tile.type] = 0
 				tile_types_seen[tile.type] += 1
-		assert_between(tile_types_seen["blue_spawn"], 2,5,"blue_spawn")
-		assert_between(tile_types_seen["red_spawn"], 2,5,"red_spawn")
-		gut.p([tile_types_seen["blue_spawn"], tile_types_seen["red_spawn"]])
+		assert_between(tile_types_seen["2_player_spawn"], 2,5,"2_player_spawn")
+		assert_between(tile_types_seen["1_player_spawn"], 2,5,"1_player_spawn")
+		gut.p([tile_types_seen["2_player_spawn"], tile_types_seen["1_player_spawn"]])
 
