@@ -29,7 +29,7 @@ func refresh():
 	var world_map = DataWorldMap.get_network_id(IM.game_setup_info.world_map)
 	refresh_map_to(world_map)
 	for index in range(player_slot_panels.size()):
-		refresh_slot(index)
+		_refresh_slot(index)
 
 
 func refresh_map_to(world_map : String):
@@ -43,7 +43,7 @@ func refresh_map_to(world_map : String):
 		client_side_map_label.text = world_map
 
 
-func refresh_slot(index : int):
+func _refresh_slot(index : int):
 	if not index in range(player_slot_panels.size()):
 		return
 	var ui_slot : WorldPlayerSlotPanel = player_slot_panels[index]
@@ -99,7 +99,7 @@ func try_to_leave_slot(slot) -> bool:
 	var index : int = slot_to_index(slot)
 	var changed = game_setup.try_to_leave_slot(index)
 	if changed:
-		refresh_slot(index)
+		_refresh_slot(index)
 	return changed
 
 
@@ -109,7 +109,7 @@ func cycle_color_slot(slot : WorldPlayerSlotPanel, backwards : bool) -> bool:
 	var index : int = slot_to_index(slot)
 	var changed = game_setup.try_to_cycle_color_slot(index, backwards)
 	if changed:
-		refresh_slot(index)
+		_refresh_slot(index)
 	return changed
 
 
@@ -119,7 +119,7 @@ func cycle_faction_slot(slot : WorldPlayerSlotPanel, backwards : bool) -> bool:
 	var index : int = slot_to_index(slot)
 	var changed = game_setup.try_to_cycle_faction_slot(index, backwards)
 	if changed:
-		refresh_slot(index)
+		_refresh_slot(index)
 	return changed
 
 

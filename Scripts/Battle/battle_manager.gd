@@ -133,6 +133,10 @@ func switch_participant_turn() -> void:
 		notify_current_player_your_turn()
 
 	elif state == STATE_FIGHTING:
+		while not armies_in_battle_state[current_army_index].can_fight():
+			current_army_index += 1
+			current_army_index %= armies_in_battle_state.size()
+		
 		notify_current_player_your_turn()
 
 

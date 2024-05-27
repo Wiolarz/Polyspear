@@ -4,6 +4,6 @@
 
 [resource]
 script = ExtResource("1_cyjn2")
+type = "empty"
 texture_path = "res://Art/battle_map/red_player_spawn.png"
 flip_horizontal = false
-type = "red_spawn"
