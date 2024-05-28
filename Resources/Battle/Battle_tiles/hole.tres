@@ -5,5 +5,5 @@
 [resource]
 script = ExtResource("1_cyjn2")
 type = "empty"
-texture_path = "res://Art/battle_map/red_player_spawn.png"
+texture_path = "res://Art/battle_map/hole.png"
 flip_horizontal = false
