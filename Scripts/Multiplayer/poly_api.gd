@@ -1,9 +1,10 @@
 class_name PolyApi
 
+
 static func get_servers_list() -> Array[ServerDescription]:
 	var request = HTTPRequest.new()
 	NET.add_child(request)
-	var url = "http://localhost:3001/polyspear/servers"
+	var url = CFG.POLYAPI_BASE_URL + "polyspear/servers"
 	request.request(url)
 	var results = await request.request_completed
 	# results = [_result, _response_code, _headers, body]
@@ -17,6 +18,31 @@ static func get_servers_list() -> Array[ServerDescription]:
 	return result
 
 
+static func post_server(description: ServerDescription) -> void:
+	await delete_server(description.login)
+
+	var request = HTTPRequest.new()
+	NET.add_child(request)
+
+	var url = CFG.POLYAPI_BASE_URL + "polyspear/servers"
+	var body = JSON.stringify(description.to_dictionary())
+
+	request.request(url, ["Content-Type: application/json"], HTTPClient.METHOD_POST, body)
+	await request.request_completed
+	# results = [_result, _response_code, _headers, body]
+
+
+static func delete_server(login: String) -> void:
+	var request = HTTPRequest.new()
+	NET.add_child(request)
+
+	var url = CFG.POLYAPI_BASE_URL + "polyspear/servers/"+login
+	request.request(url, [], HTTPClient.METHOD_DELETE)
+
+	await request.request_completed
+	# results = [_result, _response_code, _headers, body]
+
+
 class ServerDescription:
 	var login : String
 	var address : String
@@ -28,6 +54,14 @@ class ServerDescription:
 		address = d.address
 		port = d.port
 		description = d.description
+
+	func to_dictionary() -> Dictionary:
+		return {
+			"login": login,
+			"address": address,
+			"port": port,
+			"description": description,
+		}
 
 	func _to_string():
 		return "[%s] %s : %d\n%s" % [login, address, port, description]

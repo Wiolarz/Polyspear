@@ -27,6 +27,7 @@ func _process(_delta):
 
 
 #region Chat
+
 func update_chat():
 	chat_container.get_node("Log").text = NET.chat_log
 
@@ -66,8 +67,10 @@ func kick_all_players():
 
 
 func _on_button_stop_pressed():
+	var login = NET.server.server_username
 	stop_server()
 	host_menu.refresh_after_connection_change()
+	await PolyApi.delete_server(login)
 
 
 func _on_button_kick_all_pressed():
@@ -78,6 +81,7 @@ func _on_button_kick_all_pressed():
 
 func update_server_info():
 	server_status_label.text = get_server_status_string()
+
 
 func get_server_status_string() -> String:
 	if not NET.server:
@@ -100,6 +104,7 @@ func get_server_status_string() -> String:
 			result += " - %s - session disconnected\n" % session.username
 	return result
 
+
 func describe_peer(peer : ENetPacketPeer):
 	var connection_state : String = describe_peer_state(peer)
 	var session = NET.server.get_session_by_peer(peer)
@@ -110,6 +115,7 @@ func describe_peer(peer : ENetPacketPeer):
 	return "- %s [%s] from %s:%d" % [ \
 			session.username, connection_state, \
 			peer.get_remote_address(), peer.get_remote_port()]
+
 
 func describe_peer_state(peer:ENetPacketPeer) -> String:
 	match peer.get_state():
@@ -135,3 +141,20 @@ func _on_button_poll_ip_pressed():
 	var external_ip = await NET.fetch_external_address_guess()
 	if NET.server:
 		NET.server.server_external_address = external_ip
+
+
+func _on_is_public_check_box_toggled(toggled_on):
+	if toggled_on:
+		if NET.server.server_external_address == "-needs fetch-":
+			var external_ip = await NET.fetch_external_address_guess()
+			if NET.server:
+				NET.server.server_external_address = external_ip
+		var server_description := PolyApi.ServerDescription.new({
+			login = NET.server.server_username,
+			address = NET.server.server_external_address,
+			port = NET.server.enet_network.get_local_port(),
+			description = "normal server"
+		})
+		await PolyApi.post_server(server_description)
+	else:
+		await PolyApi.delete_server(NET.server.server_username)
