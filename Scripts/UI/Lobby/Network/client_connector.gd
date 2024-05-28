@@ -50,3 +50,27 @@ func _on_button_listen_pressed():
 
 func _on_button_back_pressed():
 	client_menu.go_back()
+
+
+func _on_refresh_servers_button_pressed():
+	var servers_box = $MarginContainer/VBoxContainer/ServerList/ColorRect/VBoxContainer
+	for c in servers_box.get_children():
+		servers_box.remove_child(c)
+		c.queue_free()
+	var loading_label := Label.new()
+	loading_label.text = "loading..."
+	servers_box.add_child(loading_label)
+	var servers = await PolyApi.get_servers_list()
+	servers_box.remove_child(loading_label)
+	loading_label.queue_free()
+	for s in servers:
+		var b := Button.new()
+		b.text = str(s)
+		b.pressed.connect(func on_click():
+			$MarginContainer/VBoxContainer/ManualConnection/ConnectionParameters/H/IPAddress/LineEdit \
+					.text = s.address
+			$MarginContainer/VBoxContainer/ManualConnection/ConnectionParameters/H/Port/LineEdit \
+					.text = str(s.port)
+			($MarginContainer as ScrollContainer).scroll_vertical = 0
+		)
+		servers_box.add_child(b)
