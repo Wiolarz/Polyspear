@@ -79,7 +79,7 @@ func _ready():
 	for index in buttons_units.size():
 		var button : OptionButton = buttons_units[index]
 		init_unit_button(button, index)
-		
+
 
 func init_unit_button(button : OptionButton, index : int):
 	button.clear()

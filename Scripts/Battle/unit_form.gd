@@ -91,10 +91,10 @@ func _animate_rotation() -> bool:
 	if abs(fposmod(rotation_degrees, 360) - _target_rotation_degrees) < 0.1:
 		_symbols_flipped = false
 		return false
-	
+
 	if not _symbols_flipped:
 		_rotation_symbol_flip()
-	
+
 	if CFG.animation_speed_frames == CFG.AnimationSpeed.INSTANT:
 		rotation_degrees = _target_rotation_degrees
 		$sprite_unit.rotation = -rotation
@@ -115,8 +115,8 @@ func _animate_rotation() -> bool:
 	else:
 		rotation += deg_to_rad(this_frame_rotation)
 	$sprite_unit.rotation = -rotation
-	
-	
+
+
 	if abs(fposmod(rotation_degrees, 360) - _target_rotation_degrees) < 0.1:
 		print("normal turn end")
 		unit.anim_end.emit()
@@ -179,9 +179,9 @@ func _apply_symbol_sprite(dir : int, texture_path : String) -> void:
 		symbol_sprite.hide()
 		return
 	symbol_sprite.texture = load(texture_path)
-	
+
 	_flip_symbol_sprite(symbol_sprite, dir)
-		
+
 	symbol_sprite.show()
 
 

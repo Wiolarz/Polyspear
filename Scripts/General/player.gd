@@ -137,7 +137,7 @@ func outpost_add(outpost : Outpost) -> void:
 
 func outpost_remove(outpost : Outpost) -> void:
 	assert(outpost in outposts, "attempt to remove outpost that wasnt assigned to the player")
-	
+
 	outposts.erase(outpost)
 
 	if not outpost_requirement(outpost.outpost_type):

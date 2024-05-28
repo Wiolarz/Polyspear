@@ -133,7 +133,7 @@ func _optimize_grid_size(local_tile_grid : Array) -> Array:
 	return local_tile_grid
 
 
-func _generate_world_max_player_number(local_tile_grid : Array) -> int:
+func _generate_world_max_player_number(_local_tile_grid : Array) -> int:
 	return 2  # TEMP
 
 

@@ -11,7 +11,7 @@ var place : Place :
 		if value:
 			value.connect("controller_changed", controller_changed)
 		place = value
-		
+
 
 var grid_type : GameSetupInfo.GameMode = GameSetupInfo.GameMode.WORLD
 
@@ -53,7 +53,7 @@ func _process(_delta):
 func controller_changed():
 	$ControlerSprite.visible = true
 	var color_name : String = place.controller.get_player_color_dictionary().name
-	
+
 	var path = "res://Art/player_colors/%s_color.png" % color_name
 	var texture = load(path) as Texture2D
 	assert(texture, "failed to load background " + path)
