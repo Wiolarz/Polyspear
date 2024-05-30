@@ -41,7 +41,7 @@ layout_mode = 2
 [node name="Label" type="Label" parent="MarginContainer/VBoxContainer/ServerName"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 30
-text = "Name of hosting Player"
+text = "Host Login (name of player)"
 
 [node name="LineEdit" type="LineEdit" parent="MarginContainer/VBoxContainer/ServerName"]
 custom_minimum_size = Vector2(0, 70)
@@ -60,7 +60,7 @@ size_flags_horizontal = 3
 [node name="Label" type="Label" parent="MarginContainer/VBoxContainer/BindingOptions/IPAddress"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 30
-text = "Address to listen on"
+text = "LOCAL ip address"
 
 [node name="LineEdit" type="LineEdit" parent="MarginContainer/VBoxContainer/BindingOptions/IPAddress"]
 custom_minimum_size = Vector2(0, 70)
@@ -76,7 +76,7 @@ size_flags_horizontal = 3
 [node name="Label" type="Label" parent="MarginContainer/VBoxContainer/BindingOptions/Port"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 30
-text = "Port"
+text = "LOCAL Port"
 
 [node name="LineEdit" type="LineEdit" parent="MarginContainer/VBoxContainer/BindingOptions/Port"]
 custom_minimum_size = Vector2(0, 70)
@@ -104,35 +104,34 @@ theme_override_font_sizes/italics_font_size = 30
 bbcode_enabled = true
 text = "BASIC SERVER SETUP INSTRUCTIONS
 
-[color=red]WARNING[/color]  ip above is [b]your local ip[/b] - usually not visible on the internet
-clients need to know your EXTERNAL ADDRESS to connect
-there is a button to check external address when server is running
-Clients  need to know your EXTERNAL IP to connect to you
-Depending on your internet provider you may not even have a reliable EXTERNAL IP
-read about NAT (network address translation)
+[color=red]WARNING[/color] Server listens on [b]your LOCAL ip and port[/b] - it usually not visible on the internet, unless youre in the same LAN etc.
 
-Also you usually need PORT FORWARDNIG on your router.
-Clients will usually connect to your router first.
-It needs to be set up to allow forwarding connections to your machine
-Forwarding may change port you need to supply clients with.
+Usually clients need to know your EXTERNAL address and port to connect via internet.
+
+Depending on your internet provider you may not even have a reliable EXTERNAL IP, read about NAT (network address translation)
+
+When server is running Clients usually need to know your EXTERNAL IP to connect to you. There is a button to check external address when server is running. This is the IP adress of your router visible form the internet.
+
+Similarly you need EXTERNAL PORT - usually there is a PORT FORWARDNIG setup on your router. But usually port is the same as your local port. 
+Router needs to be set up properly to allow forwarding connections to your machine. Forwarding may change port.
 
 ALTERNATIVES
-No port forwarding or ip translation is needed in local networks.
-For LAN (local network) local ip and port is same as external one.
-It is easier to play with people on the same cables or wifi.
-There are services like HAMACHI that create virtual networks.
-You can try setting them up to play via internet even if you cant host a normal server.
-By creating a virtual LAN over internet.
+No port forwarding or ip translation is needed in local networks. Clients in LAN  (local area network) can connect with your local info. External might not even work in a LAN.
 
-[i]Address to listen on[/i]
+It is easier to play with people on the same LAN or wifi.
+
+There are services like HAMACHI that create virtual LAN networks. You can try setting them up to play via internet even if you cant host a normal server. By creating a virtual LAN over internet.
+
+[i]IP address[/i]
 LOCAL IP on your computer for network card that is conected to the local network
 It is needed for server to know what network card to use
  - localhost (127.0.0.1) is only for testing on the same machine, it is not exposed
  - broadcast (0.0.0.0) sends to all ips on the machine, simple but not always works
- - check your ip in 'ipconfig' or similar tool if broadcast doesnt work
+ - check your ip in 'ipconfig' or similar tool if broadcast 0.0.0.0 doesn't work
+ - check your router EXTERNAL ip and config to make sure people can connect to the sderver via internet and your router
 
 [i]Port[/i]
-Your local port, make sure router you are using has proper port forwarding
+Your local port, make sure router you are using has proper port forwarding for access via internet
 "
 
 [connection signal="pressed" from="MarginContainer/VBoxContainer/ButtonListen" to="." method="_on_button_listen_pressed"]

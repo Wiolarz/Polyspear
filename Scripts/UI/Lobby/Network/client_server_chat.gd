@@ -54,6 +54,7 @@ func update_connection_info():
 
 
 func scroll_chat_down():
+	await get_tree().create_timer(0.1).timeout # needs time to update sizes
 	chat_container.get_v_scroll_bar().ratio = 1
 
 
