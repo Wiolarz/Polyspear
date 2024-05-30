@@ -52,7 +52,7 @@ func _process(_delta):
 
 func controller_changed():
 	$ControlerSprite.visible = true
-	var color_name : String = place.controller.get_player_color_dictionary().name
+	var color_name : String = place.controller.get_player_color().name
 
 	var path = "res://Art/player_colors/%s_color.png" % color_name
 	var texture = load(path) as Texture2D
@@ -69,7 +69,6 @@ func paint(brush : DataTile) -> void:
 func _set_coord(new_coord: Vector2i):
 	coord = new_coord
 	$CoordLabel.text = str(new_coord)
-
 
 func _set_texture(texture: Texture2D):
 	$Sprite2D.texture = texture
