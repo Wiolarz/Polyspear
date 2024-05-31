@@ -44,6 +44,10 @@ func _process(_delta):
 		_anim_queue[0].start()
 	if _anim_queue[0].ended:
 		_anim_queue.pop_front()
+		return
+	if not _anim_queue[0]._unit_form:
+		var broken = _anim_queue.pop_front()
+		push_warning("poping broken animation from the queue " + str(broken))
 
 
 #region old B_GRID
@@ -440,11 +444,13 @@ func create_summary() -> DataBattleSummary:
 class AnimInQueue:
 	var started : bool
 	var ended : bool
+	var debug_name : String
 	var _unit_form : UnitForm
 	var _animate : Callable
 
 	static func create_turn(unit_form_ : UnitForm) -> AnimInQueue:
 		var result = AnimInQueue.new()
+		result.debug_name = "turn_"+unit_form_.unit.template.unit_name
 		result._unit_form = unit_form_
 		unit_form_.anim_end.connect(result.on_anim_end)
 		result._animate = func () : unit_form_.start_turn_anim()
@@ -452,6 +458,7 @@ class AnimInQueue:
 
 	static func create_move(unit_form_ : UnitForm) -> AnimInQueue:
 		var result = AnimInQueue.new()
+		result.debug_name = "move_"+unit_form_.unit.template.unit_name
 		result._unit_form = unit_form_
 		unit_form_.anim_end.connect(result.on_anim_end)
 		result._animate = func () : unit_form_.start_move_anim()
@@ -459,10 +466,12 @@ class AnimInQueue:
 
 	static func create_die(unit_form_ : UnitForm) -> AnimInQueue:
 		var result = AnimInQueue.new()
+		result.debug_name = "die_"+unit_form_.unit.template.unit_name
 		result._unit_form = unit_form_
 		unit_form_.anim_end.connect(result.on_anim_end)
 		result._animate = func () : unit_form_.start_death_anim()
 		return result
+
 
 	func start() -> void:
 		started = true
@@ -472,4 +481,8 @@ class AnimInQueue:
 	func on_anim_end() -> void:
 		ended = true
 		_unit_form.anim_end.disconnect(on_anim_end)
+
+
+	func _to_string():
+		return debug_name
 

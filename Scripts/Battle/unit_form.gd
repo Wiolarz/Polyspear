@@ -8,6 +8,7 @@ var unit : Unit
 var _target_tile : TileForm
 var _move_speed : float
 
+var _play_turn_anim : bool
 var _target_rotation_degrees : float
 var _rotation_speed : float
 
@@ -49,6 +50,7 @@ func _physics_process(delta):
 
 func start_turn_anim():
 	print("start turn anim")
+	_play_turn_anim = true
 	var new_side = unit.unit_rotation
 	_target_rotation_degrees = (60 * (new_side))
 
@@ -84,7 +86,7 @@ func _rotation_symbol_flip():
 
 
 func _animate_rotation() -> bool:
-	if abs(fposmod(rotation_degrees, 360) - _target_rotation_degrees) < 0.1:
+	if not _play_turn_anim:
 		_symbols_flipped = false
 		return false
 
@@ -96,6 +98,7 @@ func _animate_rotation() -> bool:
 		$sprite_unit.rotation = -rotation
 		print("instant turn end")
 		anim_end.emit()
+		_play_turn_anim = false
 		return true
 
 	var current_rotation_degrees = fmod(rotation_degrees + 360, 360)
@@ -116,6 +119,7 @@ func _animate_rotation() -> bool:
 	if abs(fposmod(rotation_degrees, 360) - _target_rotation_degrees) < 0.1:
 		print("normal turn end")
 		anim_end.emit()
+		_play_turn_anim = false
 	return true
 
 
