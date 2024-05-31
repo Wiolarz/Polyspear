@@ -1,13 +1,13 @@
 extends GutTest
 
 const MAIN_MENU_UI_PATH = "/root/UI/MainMenu"
-const WORLD_MODE_BUTTON_PATH = "/root/UI/MainMenu/HostLobby/HostMenu/" + \
+const WORLD_MODE_BUTTON_PATH = "/root/UI/MainMenu/MainContainer/HostLobby/HostMenu/" + \
 		"PanelContainer/GameSetup/MarginContainer/VBoxContainer/ModeChoice/ButtonWorld"
-const START_GAME_BUTTON_PATH = "/root/UI/MainMenu/HostLobby/HostMenu/" + \
+const START_GAME_BUTTON_PATH = "/root/UI/MainMenu/MainContainer/HostLobby/HostMenu/" + \
 		"PanelContainer/GameSetup/MarginContainer/VBoxContainer/ButtonConfirm"
 
 const WORLD_UI_PATH = "/root/UI/WorldUi"
-const DEFAULT_MAP_TILES_COUNT = 14*10
+const DEFAULT_MAP_TILES_COUNT = 12*8
 const OPEN_IN_GAME_MENU_PATH = "/root/UI/WorldUi/Menu"
 const IN_GAME_MENU_PATH = "/root/UI/InGameMenu"
 const IN_GAME_MENU_BACK_TO_MAIN_MENU_PATH = "/root/UI/InGameMenu/MenuContainer/ReturnToMainMenu"
@@ -44,7 +44,7 @@ func test_map_start_and_close() -> void:
 	# TODO: stabilize default map so that this test doesnt need to be updated
 	# when new map is added and happens to be picked as first
 	assert_eq(W_GRID.get_child_count(), DEFAULT_MAP_TILES_COUNT, \
-		"Map spawned, but tiles count not 14*10")
+		"Map spawned, but tiles count not 12*8")
 	assert_is(W_GRID.get_child(0), TileForm, "Map spawned, but tiles are not TileForm")
 
 	gut.p("open in game menu")

@@ -4,6 +4,6 @@
 
 [resource]
 script = ExtResource("1_cyjn2")
-type = "empty"
+type = "hole"
 texture_path = "res://Art/battle_map/hole.png"
 flip_horizontal = false

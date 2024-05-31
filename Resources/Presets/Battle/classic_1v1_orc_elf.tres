@@ -8,7 +8,7 @@
 [ext_resource type="Resource" uid="uid://wg6n0n7ufoxh" path="res://Resources/Battle/Units/Classic/orc2.tres" id="5_gvce1"]
 [ext_resource type="Resource" uid="uid://cyw7ujcmsbdq2" path="res://Resources/Battle/Units/Classic/orc3.tres" id="5_gvce2"]
 [ext_resource type="Resource" uid="uid://dm2jeuv4bo4lw" path="res://Resources/Presets/Player/human_elf.tres" id="7_cr1oh"]
-[ext_resource type="Resource" uid="uid://bgdlkd8c2lvg2" path="res://Resources/Battle/Battle_Maps/classic5x5.tres" id="8_efpev"]
+[ext_resource type="Resource" uid="uid://8gda8ctnlvdv" path="res://Resources/Battle/Battle_Maps/classic5x5.tres" id="8_efpev"]
 [ext_resource type="Resource" uid="uid://dkgrcmar25cmi" path="res://Resources/Presets/Player/human_orc.tres" id="8_trjfq"]
 [ext_resource type="Script" path="res://Resources/Presets/preset_battle.gd" id="9_omlcl"]
 
