@@ -56,7 +56,7 @@ func grid_input(coord : Vector2i) -> void:
 	if current_map_type == MapType.WORLD:
 		W_GRID.paint(coord, current_brush)
 	else:
-		B_GRID.paint(coord, current_brush)
+		BM.paint(coord, current_brush)
 
 
 func _set_grid_type(new_type : MapType) -> void:
@@ -168,7 +168,7 @@ func _on_load_map_pressed():
 		W_GRID.load_map(map_to_load)
 	else:
 		_set_grid_type(MapType.BATTLE)
-		B_GRID.load_map(map_to_load)
+		BM.load_map(map_to_load)
 
 
 func _on_save_map_pressed():
@@ -184,7 +184,7 @@ func _on_save_map_pressed():
 		save_path = CFG.WORLD_MAPS_PATH + map_save_name + ".tres"
 	else:
 		new_map = DataBattleMap.new()
-		local_tile_grid = B_GRID.tile_grid.hexes
+		local_tile_grid = BM.tile_grid.hexes
 		save_path = CFG.BATTLE_MAPS_PATH + map_save_name + ".tres"
 
 	var grid_data = []
@@ -261,8 +261,8 @@ func _on_new_battle_map_pressed():
 	new_map.grid_height = grid_data.size()
 	new_map.grid_width = grid_data[0].size()
 	#print(new_map.grid_height, " ", new_map.grid_width)
-	B_GRID.reset_data()
-	B_GRID.load_map(new_map)
+	BM.reset_data()
+	BM.load_map(new_map)
 
 
 func _on_open_button_pressed():

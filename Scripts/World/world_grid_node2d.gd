@@ -23,7 +23,6 @@ func load_map(world_map : DataWorldMap) -> void:
 			var place : Place = Place.create_place(data, coord)
 			var tile_form := TileForm.create_world_tile(data, coord, place)
 			tile_form.position = to_position(coord)
-			tile_form.name = "Tile_" + data.type + "_" + str(coord)
 			add_child(tile_form)
 
 			tile_grid.set_hex(coord, tile_form)

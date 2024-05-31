@@ -43,7 +43,7 @@ func start_game():
 
 	if game_setup_info.is_in_mode_world():
 		_start_game_world()
-		B_GRID.position.x = WM.get_bounds_global_position().end.x + CFG.MAPS_OFFSET_X
+		BM.position.x = WM.get_bounds_global_position().end.x + CFG.MAPS_OFFSET_X
 		UI.set_camera(E.CameraPosition.WORLD)
 	if game_setup_info.is_in_mode_battle():
 		_start_game_battle()

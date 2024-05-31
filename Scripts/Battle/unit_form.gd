@@ -26,7 +26,7 @@ static func create(new_unit : Unit) -> UnitForm:
 	result.apply_graphics(new_unit.template,
 			new_unit.get_player_color())
 
-	result.global_position = B_GRID.get_tile(new_unit.coord).global_position
+	result.global_position = BM.get_tile(new_unit.coord).global_position
 	result.rotation_degrees = new_unit.unit_rotation * 60
 	result._target_rotation_degrees = result.rotation_degrees
 	result.get_node("sprite_unit").rotation = -result.rotation
@@ -64,7 +64,7 @@ func on_unit_moved():
 	print("start move anim")
 
 	var new_coord = unit.coord
-	var tile = B_GRID.get_tile(new_coord)
+	var tile = BM.get_tile(new_coord)
 
 	_target_tile = tile
 	_move_speed = (tile.global_position - global_position).length() / CFG.animation_speed_frames
