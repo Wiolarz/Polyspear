@@ -341,7 +341,7 @@ func start_combat(attacking_army : ArmyForm, coord : Vector2i):
 	UI.switch_camera()
 
 
-func end_of_battle(battle_results : Array[BM.ArmyInBattleState]):
+func end_of_battle(battle_results : Array[BattleGridState.ArmyInBattleState]):
 	#TODO get result from Battle Manager
 
 	var attack_army : Army = battle_results[BM.ATTACKER].army_reference

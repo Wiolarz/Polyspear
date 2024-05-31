@@ -1,6 +1,8 @@
 class_name UnitForm
 extends Node2D
 
+signal anim_end()
+
 var unit : Unit
 
 var _target_tile : TileForm
@@ -17,11 +19,6 @@ static func create(new_unit : Unit) -> UnitForm:
 	var result = CFG.UNIT_FORM_SCENE.instantiate()
 	result.name = new_unit.template.unit_name
 	result.unit = new_unit
-	new_unit.waits_for_form = true
-	new_unit.unit_turned.connect(result.on_unit_turned)
-	new_unit.unit_moved.connect(result.on_unit_moved)
-	new_unit.unit_died.connect(result.on_unit_died)
-	new_unit.select_request.connect(result.set_selected)
 
 	result.apply_graphics(new_unit.template,
 			new_unit.get_player_color())
@@ -50,7 +47,7 @@ func _physics_process(delta):
 	_animate_death(delta)
 
 
-func on_unit_turned():
+func start_turn_anim():
 	print("start turn anim")
 	var new_side = unit.unit_rotation
 	_target_rotation_degrees = (60 * (new_side))
@@ -60,7 +57,7 @@ func on_unit_turned():
 	_rotation_speed = abs(relative_rotation) / CFG.animation_speed_frames
 
 
-func on_unit_moved():
+func start_move_anim():
 	print("start move anim")
 
 	var new_coord = unit.coord
@@ -71,9 +68,8 @@ func on_unit_moved():
 	print(global_position, " to ", tile.global_position, " coord ", new_coord )
 
 
-func on_unit_died():
+func start_death_anim():
 	print("start death anim")
-
 	_play_death_anim = true
 
 
@@ -99,7 +95,7 @@ func _animate_rotation() -> bool:
 		rotation_degrees = _target_rotation_degrees
 		$sprite_unit.rotation = -rotation
 		print("instant turn end")
-		unit.anim_end.emit()
+		anim_end.emit()
 		return true
 
 	var current_rotation_degrees = fmod(rotation_degrees + 360, 360)
@@ -119,7 +115,7 @@ func _animate_rotation() -> bool:
 
 	if abs(fposmod(rotation_degrees, 360) - _target_rotation_degrees) < 0.1:
 		print("normal turn end")
-		unit.anim_end.emit()
+		anim_end.emit()
 	return true
 
 
@@ -131,7 +127,7 @@ func _animate_movement() -> bool:
 		global_position = _target_tile.global_position
 		_target_tile = null
 		print("instant move end")
-		unit.anim_end.emit()
+		anim_end.emit()
 		return true
 
 	global_position = global_position.move_toward(_target_tile.global_position, _move_speed)
@@ -139,7 +135,7 @@ func _animate_movement() -> bool:
 		global_position = _target_tile.global_position
 		_target_tile = null
 		print("normal move end")
-		unit.anim_end.emit()
+		anim_end.emit()
 	return true
 
 
@@ -152,7 +148,7 @@ func _animate_death(delta) -> bool:
 		scale.x = 0
 		_play_death_anim = false
 		print("death anim end")
-		unit.anim_end.emit()
+		anim_end.emit()
 	scale.y = scale.x
 	return true
 

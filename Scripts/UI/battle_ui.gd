@@ -9,7 +9,7 @@ extends CanvasLayer
 
 @onready var summary_container : Container = $SummaryContainer
 
-var armies_reference : Array[BM.ArmyInBattleState]
+var armies_reference : Array[BattleGridState.ArmyInBattleState]
 
 var selected_unit : DataUnit = null
 var selected_unit_button : TextureButton = null
@@ -27,7 +27,7 @@ func get_text_for(controller : Player, selected : bool):
 	return prefix + "Player " + player_name
 
 
-func load_armies(army_list : Array[BM.ArmyInBattleState]):
+func load_armies(army_list : Array[BattleGridState.ArmyInBattleState]):
 	camera_button.disabled = IM.game_setup_info.game_mode != GameSetupInfo.GameMode.WORLD
 
 	# save armies
