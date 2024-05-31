@@ -23,6 +23,7 @@ static func create_world_tile(data: DataTile, new_coord : Vector2i, \
 	result._set_texture(load(data.texture_path))
 	result.type = data.type
 	result.place = new_place
+	result.name = "Tile_" + str(new_coord) + "_" + data.type
 	return result
 
 
@@ -32,6 +33,7 @@ static func create_battle_tile(data: DataTile, new_coord : Vector2i) -> TileForm
 	result.type = data.type
 	result._set_coord(new_coord)
 	result._set_texture(load(data.texture_path))
+	result.name = "Tile_" + str(new_coord) + "_" + data.type
 	return result
 
 

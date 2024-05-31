@@ -19,7 +19,6 @@ config/icon="res://Art/world_map/ruby_cave.png"
 
 CFG="*res://Scripts/General/config_manager.gd"
 W_GRID="*res://Scripts/World/world_grid_node2d.gd"
-B_GRID="*res://Scripts/Battle/battle_grid_node2d.gd"
 WM="*res://Scripts/World/world_manager.gd"
 BM="*res://Scripts/Battle/battle_manager.gd"
 IM="*res://Scripts/General/input_manager.gd"

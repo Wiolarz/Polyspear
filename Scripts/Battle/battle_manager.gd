@@ -1,5 +1,5 @@
 # Singleton - BM
-extends Node
+extends GridNode2D
 
 #region variables
 
@@ -9,6 +9,11 @@ const DEFENDER = 1
 const STATE_SUMMONNING = "summonning"
 const STATE_FIGHTING = "fighting"
 const STATE_BATTLE_FINISHED = "battle_finished"
+
+var tile_grid : GenericHexGrid # Grid<TileForm>
+
+var grid_tiles_node : Node2D
+var unit_forms_node : Node2D
 
 var battle_is_ongoing : bool = false
 var state : String = ""
@@ -31,8 +36,66 @@ var _waiting_for_action_to_finish : bool
 
 func _ready():
 	battle_ui = load("res://Scenes/UI/BattleUi.tscn").instantiate()
+
+	grid_tiles_node = Node2D.new()
+	grid_tiles_node.name = "GRID"
+	add_child(grid_tiles_node)
+
+	unit_forms_node = Node2D.new()
+	unit_forms_node.name = "UNITS"
+	add_child(unit_forms_node)
+
 	UI.add_custom_screen(battle_ui)
 
+
+
+#region old B_GRID
+
+func load_map(map : DataBattleMap) -> void:
+	assert(is_clear(), "cannot load map, map already loaded")
+	tile_grid = GenericHexGrid.new(map.grid_width, map.grid_height, null)
+	for x in range(map.grid_width):
+		for y in range(map.grid_height):
+			var coord = Vector2i(x, y)
+			var data = map.grid_data[x][y] as DataTile
+			var tile_form = TileForm.create_battle_tile(data, coord)
+			tile_grid.set_hex(coord, tile_form)
+			tile_form.position = to_position(coord)
+			grid_tiles_node.add_child(tile_form)
+
+
+func is_clear() -> bool:
+	return grid_tiles_node.get_child_count() == 0 \
+			and unit_forms_node.get_child_count() == 0 \
+			and tile_grid == null
+
+
+func reset_data():
+	tile_grid = null
+	Helpers.remove_all_children(grid_tiles_node)
+	Helpers.remove_all_children(unit_forms_node)
+
+
+func get_tile(coord : Vector2i) -> TileForm:
+	return tile_grid.get_hex(coord)
+
+
+## for map editor only
+func paint(coord : Vector2i, brush : DataTile) -> void:
+	get_tile(coord).paint(brush)
+
+
+func get_bounds_global_position() -> Rect2:
+	if is_clear():
+		push_warning("asking not initialized grid for camera bounding box")
+		return Rect2(0, 0, 0, 0)
+	var top_left_tile_form := get_tile(Vector2i(0,0))
+	var bottom_right_tile_form := get_tile(Vector2i(tile_grid.width-1, tile_grid.height-1))
+	var size : Vector2 = bottom_right_tile_form.global_position - top_left_tile_form.global_position
+	return Rect2(top_left_tile_form.global_position, size)
+
+
+#endregion
 
 #region Battle Setup
 
@@ -57,8 +120,8 @@ func start_battle(new_armies : Array[Army], battle_map : DataBattleMap, \
 	_battle_grid = BattleGridState.create(battle_map)
 
 	# GRAPHICS GRID:
-	B_GRID.load_map(battle_map)
-	B_GRID.position.x = x_offset
+	load_map(battle_map)
+	grid_tiles_node.position.x = x_offset
 
 	selected_unit = null
 	battle_ui.load_armies(armies_in_battle_state)
@@ -66,10 +129,6 @@ func start_battle(new_armies : Array[Army], battle_map : DataBattleMap, \
 	turn_counter = 0
 
 	notify_current_player_your_turn()
-
-## Camera bounds
-func get_bounds_global_position() -> Rect2:
-	return B_GRID.get_bounds_global_position()
 
 #endregion
 
@@ -432,10 +491,8 @@ func turn_off_battle_ui() -> void:
 
 func reset_grid_and_unit_forms() -> void:
 	battle_is_ongoing = false
-	B_GRID.reset_data()
+	reset_data()
 	_battle_grid = null
-	for child in get_children():
-		child.queue_free()
 
 
 func end_the_battle() -> void:
@@ -503,12 +560,12 @@ func move_info_summon_unit(unit_data : DataUnit, coord : Vector2i) -> void:
 
 		@param coord coordinate, on which Unit will be summoned
 	"""
-	var rotation = GenericHexGrid.GridDirections.LEFT
+	var initial_rotation = GenericHexGrid.GridDirections.LEFT
 	if current_army_index == ATTACKER:
-		rotation = GenericHexGrid.GridDirections.RIGHT
+		initial_rotation = GenericHexGrid.GridDirections.RIGHT
 
 	var army_state = armies_in_battle_state[current_army_index]
-	var unit = army_state.summon_unit(self, unit_data, coord, rotation)
+	var unit = army_state.summon_unit(self, unit_data, coord, initial_rotation)
 	_battle_grid.spawn_unit_at_coord(unit, coord)
 
 	battle_ui.unit_summoned(not is_during_summoning_phase(), unit_data)
@@ -647,6 +704,7 @@ class ArmyInBattleState:
 		units_to_summon.erase(unit_data)
 		var result = Unit.create(army_reference.controller, unit_data, coord, rotation)
 		var form := UnitForm.create(result)
-		battle_manager.add_child(form)
+		battle_manager.unit_forms_node.add_child(form)
+		form.global_position = BM.get_tile(coord).global_position
 		units.append(result)
 		return result
