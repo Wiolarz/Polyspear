@@ -1,8 +1,10 @@
 #include "fast_battle_manager.hpp"
 #include "godot_cpp/core/class_db.hpp"
+#include "battle_mcts.hpp"
  
 #include <algorithm>
 #include <stdlib.h>
+#include <random>
 
 #define CHECK_UNIT(idx, val) \
     if(idx >= 5) { \
@@ -219,50 +221,99 @@ const Move* MoveIterator::operator++() {
     auto& army = bm->armies[bm->current_participant];
     auto& spawns = bm->tiles->get_spawns(bm->current_participant);
 
-    if(bm->state == BattleState::SUMMONING) {
-        if(buffer.pos == Vector2i()) { // first iteration
-            spawniter = spawns.begin();
-        }
-        else if(unit == army.units.size()) { // next spawn position
-            ++spawniter;
-            if(spawniter == spawns.end()) {
-                return nullptr;
+    while(true) {
+        if(bm->state == BattleState::SUMMONING) {
+            if(buffer.pos == Vector2i()) { // first iteration
+                spawniter = spawns.begin();
             }
-            unit = 0;
-        }
-        else { // next unit
-            unit++;
-        }
-
-        buffer.unit = unit;
-        buffer.pos = Vector2i(spawniter->x, spawniter->y);
-        return &buffer;
-    }
-    else if(bm->state == BattleState::ONGOING){
-
-        if(buffer.pos == Vector2i()) { // first iteration
-            // pass
-        }
-        else if(side == 6) {
-            unit++;
-            if(unit == army.units.size()) { // next spawn position
-                return nullptr;
+            else if(unit == army.units.size()) { // next spawn position
+                ++spawniter;
+                if(spawniter == spawns.end()) {
+                    return nullptr;
+                }
+                unit = 0;
             }
-            side = 0;
-        }
-        else {
-            side++;
-        }
+            else { // next unit
+                unit++;
+            }
 
-        auto pos = army.units[unit].pos + DIRECTIONS[side];
-        buffer.pos = Vector2i(pos.x, pos.y);
-        buffer.unit = unit;
-        return &buffer;
+            buffer.unit = unit;
+            buffer.pos = Vector2i(spawniter->x, spawniter->y);
+
+            if(bm->is_occupied(buffer.pos, army.team)) {
+                continue;
+            }
+
+            return &buffer;
+        }
+        else if(bm->state == BattleState::ONGOING){
+
+            if(buffer.pos == Vector2i()) { // first iteration
+                // pass
+            }
+            else if(side == 6) {
+                unit++;
+                if(unit == army.units.size()) { // next spawn position
+                    return nullptr;
+                }
+                side = 0;
+            }
+            else {
+                side++;
+            }
+
+            auto pos = army.units[unit].pos + DIRECTIONS[side];
+            buffer.pos = Vector2i(pos.x, pos.y);
+            buffer.unit = unit;
+
+            if(bm->is_occupied(buffer.pos, army.team)) {
+                continue;
+            }
+
+            return &buffer;
+        }
     }
-
     return nullptr;
 }
 
+Move BattleManagerFast::get_random_move() const {
+    static thread_local std::vector<Move> moves;
+    static thread_local std::mt19937 rand_engine;
+    moves.reserve(30);
+    
+    for(auto& i: get_legal_moves()) {
+        moves.push_back(i);
+    }
+
+    std::uniform_int_distribution dist{0, int(moves.size() - 1)};
+    auto move = moves[dist(rand_engine)];
+
+    moves.clear();
+    return move;
+}
+
+int BattleManagerFast::get_move_count() const {
+    int count = 0;
+    for(auto& _i : get_legal_moves()) {
+        count++;
+    }
+    return count;
+}
+
+bool BattleManagerFast::is_occupied(Position pos, int team) const {
+    for(auto& army : armies) {
+        if(army.team != team) {
+            continue;
+        }
+
+        for(auto& unit : army.units) {
+            if(unit.status == UnitStatus::ALIVE && unit.pos == pos) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
 
 void BattleManagerFast::insert_unit(int army, int idx, Vector2i pos, int rotation, bool is_summoning) {
     CHECK_UNIT(idx,)
@@ -305,6 +356,34 @@ Unit* BattleManagerFast::get_unit(Position coord) {
     }
     return nullptr;
 }
+/*
+void BattleManagerFast::mcts_init() {
+    if(mcts) {
+        delete mcts;
+    }
+    mcts = new BattleMCTSManager();
+    mcts->set_root(this);
+}
+
+void BattleManagerFast::mcts_iterate(int iterations) {
+    mcts->iterate(iterations);
+}
+
+int BattleManagerFast::mcts_get_optimal_move_unit() {
+    return mcts->get_optimal_move_unit();
+}
+
+Vector2i BattleManagerFast::mcts_get_optimal_move_position() {
+    return mcts->get_optimal_move_position();
+}
+
+BattleManagerFast::~BattleManagerFast() {
+    if(mcts) {
+        delete mcts;
+    }
+}
+*/
+
 
 void BattleManagerFast::_bind_methods() {
     ClassDB::bind_method(D_METHOD("insert_unit"), &BattleManagerFast::insert_unit);

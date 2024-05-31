@@ -1,4 +1,5 @@
 #include "fast_battle_manager.hpp"
+#include "battle_mcts.hpp"
 #include <gdextension_interface.h>
 #include <godot_cpp/core/class_db.hpp>
 #include <godot_cpp/core/defs.hpp>
@@ -8,6 +9,7 @@ void libspear_initialize(ModuleInitializationLevel level) {
     if(level != godot::MODULE_INITIALIZATION_LEVEL_SCENE)
         return;
 
+    ClassDB::register_class<BattleMCTSManager>();
     ClassDB::register_class<BattleManagerFast>();
     ClassDB::register_class<TileGridFast>();
 }

@@ -17,12 +17,15 @@
 
 using namespace godot;
 
+
 class TileGridFast : public Node {
     GDCLASS(TileGridFast, Node);
 
     Vector2i dims;
     std::vector<Tile> tiles;
+    std::array<std::vector<Position>, 2> spawns;
 
+    friend class SpawnIterator;
 protected:
     static void _bind_methods();
 
@@ -36,7 +39,10 @@ public:
     inline void set_tile_gd(Vector2i pos, godot::String str) {
         set_tile(Position(pos.x, pos.y), Tile(str));
     }
-};
 
+    constexpr const std::vector<Position>& get_spawns(int army) const {
+        return spawns[army];
+    }
+};
 
 #endif

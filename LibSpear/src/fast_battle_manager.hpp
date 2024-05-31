@@ -11,6 +11,7 @@
 #include <stdint.h>
 #include <array>
 #include <vector>
+#include <algorithm>
 
 #include "data.hpp"
 #include "tile_grid_fast.hpp"
@@ -20,6 +21,7 @@ using namespace godot;
 
 
 class BattleManagerFast;
+class BattleMCTSManager;
 
 struct Unit {
     UnitStatus status = UnitStatus::DEAD;
@@ -50,7 +52,23 @@ using ArmyList = std::array<Army, 2>;
 struct Move {
     unsigned unit;
     Vector2i pos;
+
+    Move() = default;
+    bool operator==(const Move& other) const {
+        return unit == other.unit && pos == other.pos;
+    }
 };
+
+template<>
+struct std::hash<Move> {
+    const std::size_t operator()(const Move& move) const {
+        auto h1 = std::hash<unsigned>{}(move.unit);
+        auto h2 = std::hash<unsigned>{}(move.pos.x);
+        auto h3 = std::hash<unsigned>{}(move.pos.y);
+        return h1 ^ (h2 << 1) ^ (h3 << 2);
+    }
+};
+
 
 class MoveIterator {
     const BattleManagerFast* bm;
@@ -75,6 +93,7 @@ class BattleManagerFast : public Node {
     BattleState state;
     ArmyList armies;
     TileGridFast* tiles;
+    //BattleMCTSManager* mcts;
 
     Unit* get_unit(Position coord);
     Tile* get_tile(Position coord);
@@ -103,6 +122,10 @@ public:
 
     /// Get legal moves iterator for current participant
     MoveIterator get_legal_moves() const;
+    Move get_random_move() const;
+    int get_move_count() const;
+
+    bool is_occupied(Position pos, int team) const;
 
     // Getters, primarily for testing correctness with regular BattleManager
     inline Vector2i get_unit_position(int army, int unit) const {
@@ -124,6 +147,14 @@ public:
 
     inline int get_current_participant() const {
         return current_participant;
+    }
+
+    inline bool is_battle_finished() const {
+        return state == BattleState::FINISHED;
+    }
+
+    inline int get_army_team(int army) const {
+        return armies[army].team;
     }
 };
 
