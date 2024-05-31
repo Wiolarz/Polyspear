@@ -35,6 +35,10 @@ func get_summon_coords(army_idx : int) -> Array[Vector2i]:
 	return result
 
 
+func get_spawn_rotation(coord : Vector2i) -> int:
+	return get_battle_hex(coord).spawn_direction
+
+
 func spawn_unit_at_coord(unit : Unit, coord : Vector2i) -> void:
 	put_unit_on_grid(unit, coord)
 
@@ -122,12 +126,21 @@ class BattleHex:
 	var can_be_moved_to: bool
 	var unit : Unit
 	var spawn_point_army_idx : int
+	var spawn_direction : int
 
 	static var sentinel: BattleHex = BattleHex.new()
 
 	func _init():
 		can_be_moved_to = false
 		spawn_point_army_idx = -1
+
+	static func get_spawn_direction(army_id:int) -> int:
+		match army_id:
+			0: return GenericHexGrid.GridDirections.RIGHT
+			2: return GenericHexGrid.GridDirections.TOP_RIGHT
+			3: return GenericHexGrid.GridDirections.BOTTOM_LEFT
+			_: return GenericHexGrid.GridDirections.LEFT
+
 
 	static func create(data : DataTile):
 		if data.type == "sentinel":
@@ -137,6 +150,7 @@ class BattleHex:
 
 		if data.type.substr(1) == "_player_spawn":
 			result.spawn_point_army_idx = data.type[0].to_int() - 1
+			result.spawn_direction = get_spawn_direction(result.spawn_point_army_idx)
 
 		return result
 
