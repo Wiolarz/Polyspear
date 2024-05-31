@@ -13,6 +13,7 @@ func load_map(map : DataBattleMap) -> void:
 			var tile_form = TileForm.create_battle_tile(data, coord)
 			tile_grid.set_hex(coord, tile_form)
 			tile_form.position = to_position(coord)
+			tile_form.name = "Tile_" + data.type + "_" + str(coord)
 			add_child(tile_form)
 
 
