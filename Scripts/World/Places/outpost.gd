@@ -5,10 +5,18 @@ extends Place
 var per_turn : Goods
 var outpost_type : String
 
+var neutral_army : PresetArmy
 
-func _init(gain_per_turn : Goods, outpost_type_ : String):
+
+func _init(gain_per_turn : Goods, outpost_type_ : String, army_path : String):
 	per_turn = gain_per_turn.duplicate()
 	outpost_type = outpost_type_
+
+	neutral_army = load(army_path)
+
+
+func on_game_started():
+	WM.spawn_neutral_army(neutral_army, coord)
 
 
 func interact(army : ArmyForm):
