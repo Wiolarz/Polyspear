@@ -321,12 +321,15 @@ func kill_army(army_idx : int):
 	check_battle_end()
 
 
-## TEMP: After 50 turns Defender wins
+## TEMP: After 50 turns Defender (army idx 1) wins
+## in case 1 was eliminated last idx alive wins
 func end_stalemate():
 	for army_idx in range(armies_in_battle_state.size()):
-		if army_idx != 0:
+		if army_idx == 1:
 			continue
 		kill_army(army_idx)
+		if not battle_is_ongoing():
+			break
 
 
 func battle_is_ongoing() -> bool:
