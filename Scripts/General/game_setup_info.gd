@@ -129,11 +129,11 @@ func set_battle_map(map : DataBattleMap):
 	battle_map = map
 	while slots.size() > map.player_slots.keys().size():
 		slots.pop_back()
-	
+
 	var taken_colors = []
 	for slot in slots:
 		taken_colors.append(slot.color)
-	
+
 	while slots.size() < map.player_slots.keys().size():
 		var slot = GameSetupInfo.Slot.new()
 		slots.append(slot)
@@ -141,14 +141,42 @@ func set_battle_map(map : DataBattleMap):
 		slot.occupier = 0
 		slot.faction = CFG.FACTIONS_LIST[0]
 		slot.color = 0
-		
+
 		while slot.color in taken_colors:
 			slot.color += 1
 
 		taken_colors.append(slot.color)
-	
+
 	for slot_idx in slots.size():
 		slots[slot_idx].set_units_length(map.player_slots[slot_idx + 1])
+
+
+func set_world_map(map: DataWorldMap):
+	assert(game_mode == GameMode.WORLD, "setting world map in game mode: " + str(game_mode))
+
+	world_map = map
+
+	var map_slots_size = 2
+
+	while slots.size() > map_slots_size:
+		slots.pop_back()
+
+	var taken_colors = []
+	for slot in slots:
+		taken_colors.append(slot.color)
+
+	while slots.size() < map_slots_size:
+		var slot = GameSetupInfo.Slot.new()
+		slots.append(slot)
+		slot.occupier = 0
+		var faction_idx = wrap(slots.size()-1, 0, CFG.FACTIONS_LIST.size())
+		slot.faction = CFG.FACTIONS_LIST[faction_idx]
+		slot.color = 0
+
+		while slot.color in taken_colors:
+			slot.color += 1
+
+		taken_colors.append(slot.color)
 
 
 static func create_empty() -> GameSetupInfo:
@@ -188,8 +216,8 @@ class Slot extends RefCounted: # check if this is good base
 
 	func is_local() -> bool:
 		return occupier.is_empty()
-	
-	
+
+
 	func set_units_length(value : int) -> void:
 		units_list.resize(value)
 

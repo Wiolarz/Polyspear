@@ -117,6 +117,7 @@ func try_to_leave_slot(index : int) -> bool:
 		NET.server.broadcast_full_game_setup(IM.game_setup_info)
 	return true
 
+
 # TODO move to input manager or somewhere
 func try_to_cycle_color_slot(index : int, backwards : bool) -> bool:
 	var slots = IM.game_setup_info.slots
@@ -164,7 +165,7 @@ func try_to_cycle_faction_slot(index : int, backwards : bool) -> bool:
 
 func try_to_set_world_map_name(map_name : String) -> bool:
 	# drut
-	IM.game_setup_info.world_map = load("%s/%s" % [ CFG.WORLD_MAPS_PATH, map_name ])
+	IM.game_setup_info.set_world_map(load("%s/%s" % [ CFG.WORLD_MAPS_PATH, map_name ]))
 	if NET.server:
 		NET.server.broadcast_full_game_setup(IM.game_setup_info)
 	# TODO here load this map and adjust slot number
