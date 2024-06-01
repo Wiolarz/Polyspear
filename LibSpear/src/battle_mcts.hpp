@@ -9,6 +9,7 @@
 #include <optional>
 #include <unordered_map>
 
+const int MAX_SIM_ITERATIONS = 70;
 
 class BattleMCTSManager;
 
@@ -17,7 +18,6 @@ class BattleMCTSNode {
     BattleMCTSNode* parent;
     std::unordered_map<Move, BattleMCTSNode> children;
     BattleManagerFast bm;
-    std::optional<MoveIterator> moveiter;
 
     float reward;
     float visits;
@@ -31,7 +31,7 @@ public:
     void set_bm(BattleManagerFast bm);
 
     float uct() const;
-    bool is_explored() const;
+    bool is_explored();
 
     /// Select the currently best child. May return nullptr as the second return value
     std::pair<Move, BattleMCTSNode*> select();
@@ -39,6 +39,7 @@ public:
     void expand();
     /// Simulate a complete playout until either decided, 
     int simulate();
+    /// Backpropagate the result
     void backpropagate(float new_visit, float new_reward);
 };
 

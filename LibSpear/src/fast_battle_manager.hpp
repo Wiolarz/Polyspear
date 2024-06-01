@@ -50,8 +50,8 @@ using ArmyList = std::array<Army, 2>;
 
 
 struct Move {
-    unsigned unit;
-    Vector2i pos;
+    uint8_t unit;
+    Position pos;
 
     Move() = default;
     bool operator==(const Move& other) const {
@@ -70,38 +70,27 @@ struct std::hash<Move> {
 };
 
 
-class MoveIterator {
-    const BattleManagerFast* bm;
-    std::vector<Position>::const_iterator spawniter;
-    unsigned unit = 0;
-    unsigned side = 0;
-    Move buffer;
-public:
-    inline MoveIterator(const BattleManagerFast* bm) : bm(bm) {}
-    const Move* operator++();
-
-    inline const Move* begin() {return ++(*this);}
-    inline const Move* end() {return nullptr;}
-};
-
 // idea - BattleManagerFastWrapper as multiple inheritance of internal BattleManagerFast and godot Node if it turns out that Node itself is expensive
 class BattleManagerFast : public Node {
     GDCLASS(BattleManagerFast, Node);
 
     int x,y;
     int current_participant;
-    BattleState state;
+    BattleState state = BattleState::SUMMONING;
     ArmyList armies;
     TileGridFast* tiles;
     //BattleMCTSManager* mcts;
+    std::vector<Move> moves;
+    bool moves_dirty = true;
 
-    Unit* get_unit(Position coord);
-    Tile* get_tile(Position coord);
+    Unit* _get_unit(Position coord);
+    Tile* _get_tile(Position coord);
 
-    int process_unit(Unit& unit, Army& army, bool process_kills = true);
-    int process_bow(Unit& unit, Army& enemy_army);
+    int _process_unit(Unit& unit, Army& army, bool process_kills = true);
+    int _process_bow(Unit& unit, Army& enemy_army);
 
-    friend class MoveIterator;
+    void _refresh_legal_moves();
+    int _play_move(unsigned unit, Vector2i move);
 
 protected:
     static void _bind_methods();
@@ -121,9 +110,9 @@ public:
     int play_move_gd(unsigned unit, Vector2i move);
 
     /// Get legal moves iterator for current participant
-    MoveIterator get_legal_moves() const;
-    Move get_random_move() const;
-    int get_move_count() const;
+    const std::vector<Move>& get_legal_moves();
+    Move get_random_move();
+    int get_move_count();
 
     bool is_occupied(Position pos, int team) const;
 

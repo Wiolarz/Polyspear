@@ -21,10 +21,18 @@
     }
 
 int BattleManagerFast::play_move(Move move) {
-    return play_move_gd(move.unit, move.pos);
+    auto ret = play_move_gd(move.unit, Vector2i(move.pos.x, move.pos.y));
+    moves_dirty = true;
+    return ret;
 }
 
 int BattleManagerFast::play_move_gd(unsigned unit_id, Vector2i pos) {
+    auto ret = _play_move(unit_id, pos);
+    moves_dirty = true;
+    return ret;
+}
+
+int BattleManagerFast::_play_move(unsigned unit_id, Vector2i pos) {
     CHECK_UNIT(unit_id, -1);
     auto& unit = armies[current_participant].units[unit_id];
 
@@ -65,11 +73,11 @@ int BattleManagerFast::play_move_gd(unsigned unit_id, Vector2i pos) {
         }
 
         unit.rotation = rot_new;
-        process_unit(unit, armies[current_participant]);
+        _process_unit(unit, armies[current_participant]);
         
         if(unit.status == UnitStatus::ALIVE) {
             unit.pos = pos;
-            process_unit(unit, armies[current_participant]);
+            _process_unit(unit, armies[current_participant]);
         }
         
         current_participant = (current_participant+1) % armies.size();
@@ -95,12 +103,13 @@ int BattleManagerFast::play_move_gd(unsigned unit_id, Vector2i pos) {
             return !i;
         }
     }
+    
 
     return -1;
 }
 
 
-int BattleManagerFast::process_unit(Unit& unit, Army& army, bool process_kills) {
+int BattleManagerFast::_process_unit(Unit& unit, Army& army, bool process_kills) {
 
     for(auto& enemy_army : armies) {
 
@@ -124,7 +133,7 @@ int BattleManagerFast::process_unit(Unit& unit, Army& army, bool process_kills) 
             
             auto unit_symbol = unit.symbol_at_side(rot_unit_to_neighbor);
             auto neighbor_symbol = neighbor.symbol_at_side(rot_neighbor_to_unit);
-
+            /*
             printf("pos: u %d,%d, n %d %d, rotations: u -%d+%d, n -%d+%d\n",
                    unit.pos.x, unit.pos.y, neighbor.pos.x, neighbor.pos.y, 
                    unit.rotation, rot_unit_to_neighbor, neighbor.rotation, rot_neighbor_to_unit
@@ -147,35 +156,35 @@ int BattleManagerFast::process_unit(Unit& unit, Army& army, bool process_kills) 
                 printf(" ");
             }
             printf("\n");
-
+*/
             // counter
             if(neighbor_symbol.get_counter_force() > 0 && unit_symbol.get_defense_force() < neighbor_symbol.get_counter_force()) {
-                printf("%d %d dead by counter (ud %d, nc %d)\n", unit.pos.x, unit.pos.y, unit_symbol.get_defense_force(), neighbor_symbol.get_counter_force());
+                //printf("%d %d dead by counter (ud %d, nc %d)\n", unit.pos.x, unit.pos.y, unit_symbol.get_defense_force(), neighbor_symbol.get_counter_force());
                 unit.status = UnitStatus::DEAD;
                 return 0;
             }
 
             if(process_kills) {
                 if(unit_symbol.get_attack_force() > 0 && neighbor_symbol.get_defense_force() < unit_symbol.get_attack_force()) {
-                    printf("%d %d dead by attack (ua %d, nd %d)\n", neighbor.pos.x, neighbor.pos.y, unit_symbol.get_attack_force(), neighbor_symbol.get_defense_force());
+                    //printf("%d %d dead by attack (ua %d, nd %d)\n", neighbor.pos.x, neighbor.pos.y, unit_symbol.get_attack_force(), neighbor_symbol.get_defense_force());
                     neighbor.status = UnitStatus::DEAD;
                 }
 
                 if(unit_symbol.pushes()) {
                     auto new_pos = neighbor.pos + neighbor.pos - unit.pos;
-                    printf("ffs%d %p\n", tiles->get_tile(new_pos).is_passable(), get_unit(new_pos));
-                    if(!(tiles->get_tile(new_pos).is_passable()) || get_unit(new_pos) != nullptr) {
-                        printf("%d %d dead by smashing into the wall on %d %d\n", neighbor.pos.x, neighbor.pos.y, new_pos.x, new_pos.y);
+                    //printf("ffs%d %p\n", tiles->get_tile(new_pos).is_passable(), _get_unit(new_pos));
+                    if(!(tiles->get_tile(new_pos).is_passable()) || _get_unit(new_pos) != nullptr) {
+                        //printf("%d %d dead by smashing into the wall on %d %d\n", neighbor.pos.x, neighbor.pos.y, new_pos.x, new_pos.y);
                         neighbor.status = UnitStatus::DEAD;
                     }
                     neighbor.pos = new_pos;
-                    process_unit(neighbor, enemy_army, false);
+                    _process_unit(neighbor, enemy_army, false);
                 }
             }
         }
 
         if(process_kills) {
-            process_bow(unit, enemy_army);
+            _process_bow(unit, enemy_army);
         }
     }
     
@@ -185,7 +194,7 @@ int BattleManagerFast::process_unit(Unit& unit, Army& army, bool process_kills) 
 }
 
 // TODO Army -> Unit variant? maybe
-int BattleManagerFast::process_bow(Unit& unit, Army& enemy_army) {
+int BattleManagerFast::_process_bow(Unit& unit, Army& enemy_army) {
     for(int i = 0; i < 6; i++) {
         auto force = unit.symbol_at_side(i).get_bow_force();
         if(force == 0) {
@@ -194,17 +203,15 @@ int BattleManagerFast::process_bow(Unit& unit, Army& enemy_army) {
 
         auto iter = DIRECTIONS[i];
 
-        printf("-- actually checking the bow: pos %d %d, rot %d, %d\n", unit.pos.x, unit.pos.y, unit.rotation, i);
+        //printf("-- actually checking the bow: pos %d %d, rot %d, %d\n", unit.pos.x, unit.pos.y, unit.rotation, i);
 
         auto pos = unit.pos;
-        // wtf this doesnt work, TODO get rid of a hack
-        //for(auto pos = unit.pos; !(tiles->get_tile(pos).is_wall()); pos = pos + iter) {
-        for(int i = 0; i < 10; i++) {
+        for(auto pos = unit.pos; !(tiles->get_tile(pos).is_wall()); pos = pos + iter) {
             pos = pos + iter;
-            printf("aaa checking %d %d\n", pos.x, pos.y);
+            //printf("aaa checking %d %d\n", pos.x, pos.y);
             auto other = enemy_army.get_unit(pos);
             if(other != nullptr && other->symbol_at_side(flip(i)).get_defense_force() < force) {
-                printf("%d %d dead by bow\n", other->pos.x, other->pos.y);
+                //printf("%d %d dead by bow\n", other->pos.x, other->pos.y);
                 other->status = UnitStatus::DEAD;
             }
         }
@@ -213,91 +220,86 @@ int BattleManagerFast::process_bow(Unit& unit, Army& enemy_army) {
     return -1;
 }
 
-MoveIterator BattleManagerFast::get_legal_moves() const {
-    return MoveIterator(this);
+const std::vector<Move>& BattleManagerFast::get_legal_moves() {
+    if(moves_dirty) {
+        _refresh_legal_moves();
+        moves_dirty = false;
+    }
+    return moves;
 }
 
-const Move* MoveIterator::operator++() {
-    auto& army = bm->armies[bm->current_participant];
-    auto& spawns = bm->tiles->get_spawns(bm->current_participant);
-
-    while(true) {
-        if(bm->state == BattleState::SUMMONING) {
-            if(buffer.pos == Vector2i()) { // first iteration
-                spawniter = spawns.begin();
-            }
-            else if(unit == army.units.size()) { // next spawn position
-                ++spawniter;
-                if(spawniter == spawns.end()) {
-                    return nullptr;
-                }
-                unit = 0;
-            }
-            else { // next unit
-                unit++;
-            }
-
-            buffer.unit = unit;
-            buffer.pos = Vector2i(spawniter->x, spawniter->y);
-
-            if(bm->is_occupied(buffer.pos, army.team)) {
-                continue;
-            }
-
-            return &buffer;
-        }
-        else if(bm->state == BattleState::ONGOING){
-
-            if(buffer.pos == Vector2i()) { // first iteration
-                // pass
-            }
-            else if(side == 6) {
-                unit++;
-                if(unit == army.units.size()) { // next spawn position
-                    return nullptr;
-                }
-                side = 0;
-            }
-            else {
-                side++;
-            }
-
-            auto pos = army.units[unit].pos + DIRECTIONS[side];
-            buffer.pos = Vector2i(pos.x, pos.y);
-            buffer.unit = unit;
-
-            if(bm->is_occupied(buffer.pos, army.team)) {
-                continue;
-            }
-
-            return &buffer;
-        }
-    }
-    return nullptr;
-}
-
-Move BattleManagerFast::get_random_move() const {
-    static thread_local std::vector<Move> moves;
-    static thread_local std::mt19937 rand_engine;
-    moves.reserve(30);
-    
-    for(auto& i: get_legal_moves()) {
-        moves.push_back(i);
-    }
-
-    std::uniform_int_distribution dist{0, int(moves.size() - 1)};
-    auto move = moves[dist(rand_engine)];
-
+void BattleManagerFast::_refresh_legal_moves() {
     moves.clear();
-    return move;
+    moves.reserve(64);
+
+    //printf("Refreshing legal moves\n");
+
+    auto& army = armies[current_participant];
+    auto& spawns = tiles->get_spawns(current_participant);
+
+    Move move;
+
+    if(state == BattleState::SUMMONING) {
+        for(auto& spawn : spawns) {
+            if(is_occupied(spawn, army.team)) {
+                continue;
+            }
+
+            for(int i = 0; i < army.units.size(); i++) {
+                if(army.units[i].status != UnitStatus::SUMMONING) {
+                    continue;
+                }
+
+                move.unit = i;
+                move.pos = spawn;
+                moves.push_back(move);
+            }
+        }
+    }
+    else if(state == BattleState::ONGOING) {
+
+        for(int unit_id = 0; unit_id < army.units.size(); unit_id++) {
+            auto& unit = army.units[unit_id];
+            if(unit.status != UnitStatus::ALIVE) {
+                continue;
+            }
+
+            for(int side = 0; side < 6; side++) {
+                move.unit = unit_id;
+                move.pos = unit.pos + DIRECTIONS[side];
+
+                if(!tiles->get_tile(move.pos).is_passable()) {
+                    continue;
+                }
+                
+                if(is_occupied(move.pos, army.team)) {
+                    continue;
+                }
+
+                moves.push_back(move);
+            }
+        }
+    }
 }
 
-int BattleManagerFast::get_move_count() const {
-    int count = 0;
-    for(auto& _i : get_legal_moves()) {
-        count++;
+Move BattleManagerFast::get_random_move() {
+    static thread_local std::mt19937 rand_engine;
+
+    auto moves_arr = get_legal_moves();
+
+    if(moves_arr.size() == 0) {
+		::godot::_err_print_error(FUNCTION_STR, __FILE__, __LINE__, "ERROR - a random move requested, but 0 moves are possible"); \
     }
-    return count;
+    
+    std::uniform_int_distribution dist{0, int(moves_arr.size() - 1)};
+
+    auto move = dist(rand_engine);
+
+    return moves_arr[move];
+}
+
+int BattleManagerFast::get_move_count() {
+    return get_legal_moves().size();
 }
 
 bool BattleManagerFast::is_occupied(Position pos, int team) const {
@@ -347,7 +349,7 @@ void BattleManagerFast::force_battle_ongoing() {
     state = BattleState::ONGOING;
 }
 
-Unit* BattleManagerFast::get_unit(Position coord) {
+Unit* BattleManagerFast::_get_unit(Position coord) {
     for(auto army : armies) {
         auto unit = army.get_unit(coord);
         if(unit != nullptr && unit->pos == coord) {

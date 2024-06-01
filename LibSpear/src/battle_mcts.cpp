@@ -8,7 +8,6 @@
 
 BattleMCTSNode::BattleMCTSNode(BattleManagerFast bm, BattleMCTSManager* manager) 
     : bm(bm),
-      moveiter(bm.get_legal_moves()),
       manager(manager)
 {
     
@@ -63,10 +62,12 @@ int BattleMCTSNode::simulate() {
     BattleManagerFast bmnew = bm;
     int winner_team;
     Move move;
-
+    int i = 0;
+    
     do {
         move = bmnew.get_random_move();
-    } while((winner_team = bmnew.play_move(move)) == -1);
+        i++;
+    } while((winner_team = bmnew.play_move(move)) == -1 && i < MAX_SIM_ITERATIONS);
 
     return winner_team;
 }
@@ -80,7 +81,7 @@ void BattleMCTSNode::backpropagate(float new_visit, float new_reward) {
     }
 }
 
-bool BattleMCTSNode::is_explored() const {
+bool BattleMCTSNode::is_explored() {
     return bm.get_move_count() == children.size();
 }
 
@@ -94,7 +95,7 @@ void BattleMCTSManager::iterate(int iterations) {
 
         node->expand();
         auto winner = node->simulate();
-        auto reward = winner == army ? 1.0f : 0.0f;
+        auto reward = winner == army ? 1.0f : winner == -1 ? 0.5f : 0.0f;
         auto visit = 1.0f;
 
         node->backpropagate(visit, reward);
@@ -106,6 +107,10 @@ Move BattleMCTSManager::get_optimal_move(int nth_best_move) {
     
     if(nth_best_move != 0) {
         ::godot::_err_print_error(FUNCTION_STR, __FILE__, __LINE__, "ERROR - Nth best move is not implemented for BattleMCTSManager yet");
+    }
+
+    for(auto& [move, node] : root->children) {
+        printf("Child %d->%d,%d = %f\n", move.unit, move.pos.x, move.pos.y, node.uct());
     }
 
     return root->select().first;

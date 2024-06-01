@@ -1,52 +1,19 @@
 class_name AIBattleBotMCTS
 extends ExampleBot
 
-
-class MCTSNode:
-	var reward: float
-	var visits: int
-	
-	var parent: MCTSNode
-	var children: Array[MCTSNode]
-	var moves: Array
-	var playout: BattleManager
-	
-	func uct() -> float:
-		const coeff = sqrt(2)
-		return reward/visits + coeff * sqrt(log(parent.visits)/visits)
-	
-	#func is_explored() -> bool:
-
-	
-var root: MCTSNode
-
-func select(node: MCTSNode = self.root) -> MCTSNode:
-	for i: MCTSNode in node.children:
-		if not i.is_explored():
-			return i
-	return node.children.map(func(x): return x.uct()).max()
- 
-func expand(node: MCTSNode):
-	pass
-
-func simulate():
-	pass
-
-func backpropagate():
-	pass
-
-func iterate():
-	var node = select()
-	expand(node)
-	
+@export var iterations = 10000
 
 func play_move() -> void:
+	
+	var bm = BM.cloned_as_fast()
+	var mcts = BattleMCTSManager.new()
+	mcts.set_root(bm)
+	
+	mcts.iterate(iterations)
+	var unit = mcts.get_optimal_move_unit(0)
+	var position = mcts.get_optimal_move_position(0)
+	
+	print("MCTS best move: id ", unit, " -> ", position)
+	
+	# TODO actually use mcts instead of this
 	super.play_move()
-
-	for i in range(100):
-		root = MCTSNode.new()
-		root.playout = BM.cloned()
-		
-		var moves = AIHelpers.get_all_legal_moves(me, root.playout).back()
-		root.playout.perform_ai_move(moves)
-

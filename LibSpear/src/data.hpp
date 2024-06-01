@@ -170,6 +170,7 @@ public:
         switch(type) {
             case Tile::Type::WALL:
             case Tile::Type::SENTINEL:
+            case Tile::Type::FORBIDDEN:
                 return true;
             default:
                 return false;
