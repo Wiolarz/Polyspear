@@ -34,9 +34,10 @@ func load_armies(army_list : Array[BattleGridState.ArmyInBattleState]):
 	armies_reference = army_list
 
 	# removing temp shit
-	var players = players_box.get_children()
-	players[2].queue_free()
-	players[1].queue_free()
+	while players_box.get_child_count() > 1:
+		var c = players_box.get_child(1)
+		c.queue_free()
+		players_box.remove_child(c)
 
 	units_box.show()
 
