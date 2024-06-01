@@ -294,6 +294,7 @@ func on_battle_ended() -> void:
 
 
 func close_battle() -> void:
+	var state_for_world = _battle_grid.armies_in_battle_state
 	turn_off_battle_ui()
 	reset_grid_and_unit_forms()
 
@@ -302,7 +303,7 @@ func close_battle() -> void:
 		IM.go_to_main_menu()
 		return
 
-	WM.end_of_battle(_battle_grid.armies_in_battle_state)
+	WM.end_of_battle(state_for_world)
 
 #endregion
 
