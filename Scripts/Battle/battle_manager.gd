@@ -10,8 +10,6 @@ const STATE_SUMMONNING = "summonning"
 const STATE_FIGHTING = "fighting"
 const STATE_BATTLE_FINISHED = "battle_finished"
 
-var tile_grid : GenericHexGrid # Grid<TileForm>
-
 var grid_tiles_node : Node2D
 var unit_forms_node : Node2D
 
@@ -25,6 +23,7 @@ var turn_counter : int = 0
 var battle_ui : BattleUI
 var selected_unit : Unit
 
+var tile_grid : GenericHexGrid # Grid<TileForm>
 var _battle_grid: BattleGridState
 
 var _replay : BattleReplay
@@ -560,10 +559,7 @@ func move_info_summon_unit(unit_data : DataUnit, coord : Vector2i) -> void:
 
 		@param coord coordinate, on which Unit will be summoned
 	"""
-	var initial_rotation = GenericHexGrid.GridDirections.LEFT
-	if current_army_index == ATTACKER:
-		initial_rotation = GenericHexGrid.GridDirections.RIGHT
-
+	var initial_rotation = _battle_grid.get_spawn_rotation(coord)
 	var army_state = armies_in_battle_state[current_army_index]
 	var unit = army_state.summon_unit(self, unit_data, coord, initial_rotation)
 	_battle_grid.spawn_unit_at_coord(unit, coord)
