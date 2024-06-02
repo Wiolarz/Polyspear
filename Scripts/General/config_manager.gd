@@ -116,6 +116,11 @@ const HUNT_WOOD_PATH : String = "res://Resources/Presets/Army/hunt_wood/"
 const HUNT_IRON_PATH : String = "res://Resources/Presets/Army/hunt_iron/"
 const HUNT_RUBY_PATH : String = "res://Resources/Presets/Army/hunt_ruby/"
 
+const OUTPOST_WOOD_PATH : String = "res://Resources/Presets/Army/outpost_defenders/outpost_wood_defender.tres"
+const OUTPOST_IRON_PATH : String = "res://Resources/Presets/Army/outpost_defenders/outpost_iron_defender.tres"
+const OUTPOST_RUBY_PATH : String = "res://Resources/Presets/Army/outpost_defenders/outpost_ruby_defender.tres"
+
+
 #const HUNT_PATHS : Array[String] = [HUNT_WOOD_PATH, HUNT_IRON_PATH, HUNT_RUBY_PATH]
 
 #endregion

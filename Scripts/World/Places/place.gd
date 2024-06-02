@@ -17,11 +17,11 @@ static func _inner_create_place(new_data_tile : DataTile) -> Place:
 
 		# Resource Outposts
 		"sawmill":
-			return Outpost.new(Goods.new(1,0,0), new_data_tile.type)
+			return Outpost.new(Goods.new(1,0,0), new_data_tile.type, CFG.OUTPOST_WOOD_PATH)
 		"iron_mine":
-			return Outpost.new(Goods.new(0,1,0), new_data_tile.type)
+			return Outpost.new(Goods.new(0,1,0), new_data_tile.type, CFG.OUTPOST_IRON_PATH)
 		"ruby_cave":
-			return Outpost.new(Goods.new(0,0,1), new_data_tile.type)
+			return Outpost.new(Goods.new(0,0,1), new_data_tile.type, CFG.OUTPOST_RUBY_PATH)
 
 		# resource hunt spots
 		"wood_hunt":
