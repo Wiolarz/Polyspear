@@ -17,7 +17,7 @@ offset_right = 1849.0
 offset_bottom = 1069.0
 text = "editor_test_map"
 
-[node name="MenuContainer" type="VBoxContainer" parent="."]
+[node name="LMenuContainer" type="VBoxContainer" parent="."]
 light_mask = 2
 visibility_layer = 2
 offset_left = 5.0
@@ -26,17 +26,37 @@ offset_right = 330.0
 offset_bottom = 447.0
 theme_override_constants/separation = 20
 
-[node name="NewWorldMap" type="Button" parent="MenuContainer"]
+[node name="NewWorldMap" type="Button" parent="LMenuContainer"]
 layout_mode = 2
 text = "New World Map"
 
-[node name="NewBattleMap" type="Button" parent="MenuContainer"]
+[node name="NewBattleMap" type="Button" parent="LMenuContainer"]
 layout_mode = 2
 text = "New Battle Map"
 
-[node name="SaveMap" type="Button" parent="MenuContainer"]
+[node name="SaveMap" type="Button" parent="LMenuContainer"]
 layout_mode = 2
 text = "Save Map
+"
+
+[node name="RMenuContainer" type="VBoxContainer" parent="."]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -325.0
+offset_top = 190.0
+offset_bottom = 322.0
+grow_horizontal = 0
+theme_override_constants/separation = 20
+
+[node name="AddRow" type="Button" parent="RMenuContainer"]
+layout_mode = 2
+text = "Add Row -
+"
+
+[node name="AddColumn" type="Button" parent="RMenuContainer"]
+layout_mode = 2
+text = "Add Column |
 "
 
 [node name="Scroll_BG" type="ColorRect" parent="."]
@@ -102,9 +122,11 @@ ok_button_text = "Open"
 file_mode = 0
 filters = PackedStringArray("*.tres")
 
-[connection signal="pressed" from="MenuContainer/NewWorldMap" to="." method="_on_new_world_map_pressed"]
-[connection signal="pressed" from="MenuContainer/NewBattleMap" to="." method="_on_new_battle_map_pressed"]
-[connection signal="pressed" from="MenuContainer/SaveMap" to="." method="_on_save_map_pressed"]
+[connection signal="pressed" from="LMenuContainer/NewWorldMap" to="." method="_on_new_world_map_pressed"]
+[connection signal="pressed" from="LMenuContainer/NewBattleMap" to="." method="_on_new_battle_map_pressed"]
+[connection signal="pressed" from="LMenuContainer/SaveMap" to="." method="_on_save_map_pressed"]
+[connection signal="pressed" from="RMenuContainer/AddRow" to="." method="_on_add_row_pressed"]
+[connection signal="pressed" from="RMenuContainer/AddColumn" to="." method="_on_add_column_pressed"]
 [connection signal="pressed" from="OpenButton" to="." method="_on_open_button_pressed"]
 [connection signal="pressed" from="BackButton" to="." method="_on_back_button_pressed"]
 [connection signal="file_selected" from="FileDialog" to="." method="_on_file_dialog_file_selected"]
