@@ -170,6 +170,10 @@ func broadcast_move(move : MoveInfo):
 	broadcast(MakeMoveCommand.create_packet(move))
 
 
+func broadcast_world_move(move : WorldMoveInfo):
+	broadcast(MakeWorldMoveCommand.create_packet(move))
+
+
 func send_additional_callbacks_to_logging_client(peer : ENetPacketPeer):
 	if true: # game is being set up
 		var game_setup = IM.game_setup_info
@@ -230,9 +234,10 @@ func roll() -> void:
 					var result = (command.server_callback).call(self, peer, \
 						decoded)
 					if result != 0:
-						print("Peer %x sent us %s command, but we couldn't " + \
-							"process it well" % [ peer.get_instance_id(), \
-							command_name ])
+						var msg = "Peer %x sent us %s command, but we " + \
+							"couldn't process it well" % [ \
+							peer.get_instance_id(), command_name ]
+						print(msg)
 					print("command processed")
 				if command.game_callback:
 					pass

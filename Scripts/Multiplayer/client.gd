@@ -88,6 +88,10 @@ func queue_request_move(move : MoveInfo):
 	queue_message_to_server(ClientRequestedMoveCommand.create_packet(move))
 
 
+func queue_request_world_move(move : WorldMoveInfo):
+	queue_message_to_server(ClientRequestedWorldMoveCommand.create_packet(move))
+
+
 func logout_if_needed() -> void:
 	if username == "":
 		return
