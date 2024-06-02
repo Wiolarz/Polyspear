@@ -1,11 +1,9 @@
 class_name Unit
 extends RefCounted # default
 
-signal select_request(is_selected : bool)
 signal unit_died()
 signal unit_turned()
 signal unit_moved()
-signal anim_end()
 
 var controller : Player
 
@@ -18,11 +16,9 @@ var coord : Vector2i
 ## see E.GridDirections, int for convinience
 var unit_rotation : int
 
-## bool to indicate weather unit synchs with some animations or not
-var waits_for_form : bool
-
-## unit died and waits for kill anim to end
+## unit died
 var dead : bool
+
 
 static func create(new_controller : Player, \
 		new_template : DataUnit, \
@@ -41,34 +37,22 @@ func turn(side : GenericHexGrid.GridDirections):
 	if side == unit_rotation:
 		return
 	unit_rotation = side
-	if waits_for_form:
-		print("emit turn [turn]")
-		unit_turned.emit()
-		print("wait for end [turn]")
-		await anim_end
-		print("end received [turn]")
+	print("emit turn [turn]")
+	unit_turned.emit()
 
 
 ## puts unit to a given coordinate, can be awaited see waits_for_form
 func move(new_coord : Vector2i):
 	var old = coord
 	coord = new_coord
-	if waits_for_form:
-		print("emit move [move] %s %s" % [str(old), str(new_coord)])
-		unit_moved.emit()
-		print("wait for end [move]")
-		await anim_end
-		print("end received [move]")
+	print("emit move [move] %s %s" % [str(old), str(new_coord)])
+	unit_moved.emit()
+
 
 ## kills unit, can be awaited see waits_for_form
-func die():
+func unit_killed():
 	dead = true
-	if waits_for_form:
-		print("emit died [death]")
-		unit_died.emit()
-		print("wait for end [death]")
-		await anim_end
-		print("end received [death]")
+	unit_died.emit()
 
 
 func can_defend(side : int) -> bool:
@@ -79,6 +63,7 @@ func get_symbol(side_world : int) -> E.Symbols:
 	var side_local : int = GenericHexGrid.rotate_clockwise( \
 			side_world as GenericHexGrid.GridDirections, -unit_rotation)
 	return template.symbols[side_local].type
+
 
 func get_front_symbol() -> E.Symbols:
 	return template.symbols[GenericHexGrid.DIRECTION_FRONT].type
@@ -113,6 +98,7 @@ func can_kill_or_push(other_unit : Unit, attack_direction : int):
 				return false
 			# no shield, attack ok
 			return true
+
 
 func get_player_color() -> DataPlayerColor:
 	if not controller:

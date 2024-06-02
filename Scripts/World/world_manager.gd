@@ -341,30 +341,32 @@ func start_combat(attacking_army : ArmyForm, coord : Vector2i):
 	UI.switch_camera()
 
 
-func end_of_battle(battle_results : Array[BM.ArmyInBattleState]):
+func end_of_battle(battle_results : Array[BattleGridState.ArmyInBattleState]):
 	#TODO get result from Battle Manager
+	const ATTACKER = 0
+	const DEFENDER = 1
 
-	var attack_army : Army = battle_results[BM.ATTACKER].army_reference
-	var defence_army : Army = battle_results[BM.DEFENDER].army_reference
+	var attack_army : Army = battle_results[ATTACKER].army_reference
+	var defence_army : Army = battle_results[DEFENDER].army_reference
 	var attack_hero = attack_army.hero
 	var defence_hero = defence_army.hero
 	var attack_army_form = W_GRID.get_army(attack_army.coord)
 	if attack_hero:
-		attack_hero.add_xp_for_casualties(battle_results[BM.DEFENDER].dead_units, defence_hero)
+		attack_hero.add_xp_for_casualties(battle_results[DEFENDER].dead_units, defence_hero)
 	if defence_hero:
-		defence_hero.add_xp_for_casualties(battle_results[BM.ATTACKER].dead_units, attack_hero)
+		defence_hero.add_xp_for_casualties(battle_results[ATTACKER].dead_units, attack_hero)
 
-	if battle_results[BM.ATTACKER].can_fight():
+	if battle_results[ATTACKER].can_fight():
 		print("attacker won")
 		kill_army(W_GRID.get_army(combat_tile)) # clear the tile of enemy presence
 		do_local_hero_move(attack_army_form, combat_tile)
-		attack_army.apply_losses(battle_results[BM.ATTACKER].dead_units)
+		attack_army.apply_losses(battle_results[ATTACKER].dead_units)
 	else:
 		kill_army(attack_army_form)  # clear the tile where attack_army_form was
 		set_selected_hero(null)
 		print("hero died")
 		var defender_army = W_GRID.get_army(combat_tile)
-		defender_army.apply_losses(battle_results[BM.DEFENDER].dead_units)
+		defender_army.apply_losses(battle_results[DEFENDER].dead_units)
 	UI.go_to_custom_ui(world_ui)
 
 
