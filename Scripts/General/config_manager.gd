@@ -99,6 +99,10 @@ const DEFAULT_ARMY_FORM = preload("res://Scenes/Form/ArmyForm.tscn")
 ## that returns address as a single text line in the response body
 const FETCH_EXTERNAL_IP_GET_URL = "https://api.ipify.org"
 
+const POLYAPI_BASE_URL = "https://polyserver.onrender.com/"
+# for tests:
+# const POLYAPI_BASE_URL = "http://localhost:3001/"
+
 const HERO_LEVEL_CAP = 7
 
 func get_start_goods() -> Goods:

@@ -5,22 +5,15 @@
 
 [node name="ClientServerChat" type="Control"]
 layout_mode = 3
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-size_flags_horizontal = 3
-size_flags_vertical = 3
+anchors_preset = 0
+size_flags_horizontal = 0
+size_flags_vertical = 0
 script = ExtResource("1_b8j0j")
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
 layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
+offset_right = 990.0
+offset_bottom = 995.0
 theme_override_constants/margin_left = 30
 theme_override_constants/margin_top = 30
 theme_override_constants/margin_right = 30
@@ -66,8 +59,10 @@ horizontal_scroll_mode = 0
 vertical_scroll_mode = 2
 
 [node name="Log" type="Label" parent="MarginContainer/VBoxContainer/Chat/LogScroll"]
+custom_minimum_size = Vector2(900, 0)
 layout_mode = 2
 text = "Server Moderator: BAN"
+autowrap_mode = 3
 
 [node name="Writing" type="HBoxContainer" parent="MarginContainer/VBoxContainer/Chat"]
 layout_mode = 2
