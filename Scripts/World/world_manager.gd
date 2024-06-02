@@ -360,7 +360,7 @@ func end_of_battle(battle_results : Array[BattleGridState.ArmyInBattleState]):
 		print("attacker won")
 		kill_army(W_GRID.get_army(combat_tile)) # clear the tile of enemy presence
 		do_local_hero_move(attack_army_form, combat_tile)
-		attack_army.apply_losses(battle_results[BM.ATTACKER].dead_units)
+		attack_army.apply_losses(battle_results[ATTACKER].dead_units)
 	else:
 		kill_army(attack_army_form)  # clear the tile where attack_army_form was
 		set_selected_hero(null)
