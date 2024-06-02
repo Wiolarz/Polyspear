@@ -235,7 +235,7 @@ func perform_world_move_info(world_move_info : WorldMoveInfo) -> void:
 
 
 func perform_network_move(world_move_info : WorldMoveInfo) -> void:
-	await perform_world_move_info(world_move_info)
+	perform_world_move_info(world_move_info)
 
 
 #endregion

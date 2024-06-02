@@ -103,9 +103,11 @@ func _optimize_grid_size(local_tile_grid : Array) -> Array:
 	var right_pos : int = 0
 	var top_pos : int = local_tile_grid[0].size()
 	var bot_pos : int = 0
+	var found_any_tiles = false
 	for x in local_tile_grid.size():
 		for y in local_tile_grid[0].size():
 			if local_tile_grid[x][y].type != "sentinel":
+				found_any_tiles = true
 				if left_pos > x:
 					left_pos = x
 				elif right_pos < x:
@@ -114,6 +116,10 @@ func _optimize_grid_size(local_tile_grid : Array) -> Array:
 					top_pos = y
 				if bot_pos < y:
 					bot_pos = y
+	if not found_any_tiles:
+		push_warning("map without any tiles...")
+		return [[]]
+
 	for right in range(max(local_tile_grid.size() - right_pos - 1, 0)):
 		local_tile_grid.pop_back()
 
