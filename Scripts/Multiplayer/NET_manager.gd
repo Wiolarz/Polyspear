@@ -43,6 +43,13 @@ func make_client() -> void:
 	add_child(client)
 
 
+func desync() -> void:
+	push_error("desync")
+	if client:
+		# TODO request whole state from server to sync again
+		IM.quit_game()
+
+
 func server_listen(address : String, port : int, username : String):
 	make_server()
 	server.listen(address, port, username)

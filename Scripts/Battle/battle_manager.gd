@@ -513,7 +513,7 @@ func close_battle() -> void:
 	turn_off_battle_ui()
 	reset_grid_and_unit_forms()
 
-	if WM.selected_hero == null:
+	if not WM.world_game_is_active():
 		print("end of test battle")
 		IM.go_to_main_menu()
 		return

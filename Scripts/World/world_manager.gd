@@ -26,8 +26,14 @@ var combat_tile : Vector2i
 
 #endregion
 
+signal world_move_done
 
 #region helpers
+
+
+func world_game_is_active() -> bool:
+	return players.size() > 0
+
 
 func get_bounds_global_position() -> Rect2:
 	return W_GRID.get_bounds_global_position()
@@ -60,7 +66,27 @@ func spawn_neutral_army(army_preset : PresetArmy, coord : Vector2i) -> ArmyForm:
 
 #region Main functions
 
+
+func get_player_index(player : Player) -> int:
+	for i in range(players.size()):
+		if player == players[i]:
+			return i
+	return -1
+
+
+func get_player_by_index(index : int) -> Player:
+	return players[index]
+
+
 func next_player_turn():
+	var world_move_info = WorldMoveInfo.make_end_turn()
+	if not NET.client:
+		perform_world_move_info(world_move_info)
+	else:
+		NET.client.queue_request_world_move(world_move_info)
+
+
+func do_local_end_the_turn():
 	set_selected_hero(null)
 	world_ui.show_trade_ui(current_player.capital_city, null)
 
@@ -72,7 +98,6 @@ func next_player_turn():
 	else:
 		current_player = players[player_idx + 1]
 	world_ui.show_trade_ui(current_player.capital_city, null)
-
 
 
 func _end_of_turn_callbacks(player : Player):
@@ -115,50 +140,103 @@ func input_try_select(coord) -> void:  #TODO "nothing is selected try to select 
 
 func try_interact(hero : ArmyForm, coord : Vector2i):
 
-	if W_GRID.is_enemy_present(coord, current_player):
-		if not hero.has_movement_points():
-			print("not enough movement points")
-			return
-		start_combat(hero, coord)
-
-	var selected_spot_type : String = W_GRID.get_interactable_type(coord)
-
-	if selected_spot_type == "army":
-		var army = W_GRID.get_army(coord)
-		if current_player == army.controller:
-			# ARMY TRADE
-			trade_armies(army)
-		return
-
-	if selected_spot_type == "city":
-		var city = W_GRID.get_city(coord)
-		if city.controller == current_player:
-			# CITY TRADE
-			trade_city(city, hero)
-		else:
-			# CITY SIEGE
-			print ("siege not implemented")
-		return
-
-	if W_GRID.is_movable(coord):
-		if not hero.has_movement_points():
-			print("not enough movement points")
-			return
-		print("moving ", hero," to ",coord)
-		hero_move(hero, coord)
-		hero.spend_movement_point()
+	var start_coords = hero.coord
+	var world_move_info := \
+		WorldMoveInfo.make_world_move(start_coords, coord)
+	if not NET.client:
+		perform_world_move_info(world_move_info)
+	else:
+		NET.client.queue_request_world_move(world_move_info)
 
 
-func hero_move(hero : ArmyForm, coord : Vector2i):
+
+func do_local_hero_move(hero : ArmyForm, coord : Vector2i):
 	W_GRID.change_army_position(hero, coord)
 	world_ui.show_trade_ui(current_player.capital_city, null)
 	var place = W_GRID.get_place(coord)
 	if place:
 		place.interact(hero)
 
+
 func trade_armies(_second_army : ArmyForm):
 	#TODO
 	print("trading armies")
+
+
+func perform_world_move_info(world_move_info : WorldMoveInfo) -> void:
+	print(NET.get_role_name(), " performing world move ", world_move_info)
+	# TODO replay.record_move
+	# TODO replay.save
+	if NET.server:
+		NET.server.broadcast_world_move(world_move_info)
+	if world_move_info.move_type == WorldMoveInfo.TYPE_MOVE:
+		var hero : ArmyForm = W_GRID.get_army(world_move_info.move_source)
+		# TODO if there is no hero trigger desync
+		if not hero:
+			push_error("no hero")
+			NET.desync() # TODO should be only on client xd
+
+		var player = hero.controller
+		var coord = world_move_info.target_tile_coord
+
+		if W_GRID.is_enemy_present(coord, player):
+			if not hero.has_movement_points():
+				print("not enough movement points")
+				return
+			start_combat(hero, coord)
+
+		var selected_spot_type : String = W_GRID.get_interactable_type(coord)
+
+		if selected_spot_type == "army":
+			var army = W_GRID.get_army(coord)
+			if current_player == army.controller:
+				# ARMY TRADE
+				trade_armies(army)
+			return
+
+		if selected_spot_type == "city":
+			var city = W_GRID.get_city(coord)
+			if city.controller == current_player:
+				# CITY TRADE
+				trade_city(city, hero)
+			else:
+				# CITY SIEGE
+				print ("siege not implemented")
+			return
+
+		if W_GRID.is_movable(coord):
+			if not hero.has_movement_points():
+				print("not enough movement points")
+				return
+			print("moving ", hero," to ",coord)
+			do_local_hero_move(hero, coord)
+			hero.spend_movement_point()
+
+	elif world_move_info.move_type == WorldMoveInfo.TYPE_RECRUIT_HERO:
+		var player : Player = get_player_by_index(world_move_info.recruit_hero_info.player_index)
+		var hero_data : DataHero = world_move_info.recruit_hero_info.data_hero
+		var coord : Vector2i = world_move_info.target_tile_coord
+		# TODO check values and make desync when something is wrong
+		do_local_recruit_hero(player, hero_data, coord)
+	elif world_move_info.move_type == WorldMoveInfo.TYPE_RECRUIT_UNIT:
+		var coord : Vector2i = world_move_info.target_tile_coord
+		var unit : DataUnit = world_move_info.data
+		do_local_recruit_unit(coord, unit)
+	elif world_move_info.move_type == WorldMoveInfo.TYPE_BUILD:
+		var city_coord : Vector2i = world_move_info.target_tile_coord
+		var building : DataBuilding = world_move_info.data
+		do_local_build(city_coord, building)
+	elif world_move_info.move_type == WorldMoveInfo.TYPE_END_TURN:
+		do_local_end_the_turn()
+	else:
+		assert(false, "Move %s not supported in perform_world_move_info" % \
+			world_move_info.move_type)
+	world_move_done.emit()
+
+
+func perform_network_move(world_move_info : WorldMoveInfo) -> void:
+	await perform_world_move_info(world_move_info)
+
 
 #endregion
 
@@ -172,9 +250,44 @@ func trade_city(city : City, hero : ArmyForm):
 	world_ui.show_trade_ui(city, hero)
 
 
-func recruit_hero(player : Player, hero_data : DataHero, coord : Vector2i) -> void:
+func request_recruit_unit(hero_army : ArmyForm, unit : DataUnit):
+	var world_move_info = WorldMoveInfo.make_recruit_unit(hero_army.coord, unit)
+
+	if not NET.client:
+		WM.perform_world_move_info(world_move_info)
+	else:
+		NET.client.queue_request_world_move(world_move_info)
+
+
+func request_recruit_hero(player : Player, hero_data : DataHero, \
+		coord : Vector2i) -> void:
+	var world_move_info = WorldMoveInfo.make_recruit_hero( \
+		get_player_index(player),
+		hero_data,
+		coord)
+	if not NET.client:
+		perform_world_move_info(world_move_info)
+	else:
+		NET.client.queue_request_world_move(world_move_info)
+
+
+func request_build(city : City, building_data : DataBuilding) -> void:
+	var world_move_info = WorldMoveInfo.make_build(city.coord, building_data)
+	if not NET.client:
+		perform_world_move_info(world_move_info)
+	else:
+		NET.client.queue_request_world_move(world_move_info)
+
+
+func do_local_recruit_hero(player : Player, hero_data : DataHero, \
+		coord : Vector2i) -> void:
 	var army_for_world_map : ArmyForm = \
 		ArmyForm.create_hero_army(player, hero_data)
+
+	var cost = player.get_hero_cost(hero_data)
+	if not player.purchase(cost):
+		print("not enough cash, needed ", cost)
+		return
 
 	add_child(army_for_world_map)
 	player.hero_recruited(army_for_world_map)
@@ -184,6 +297,26 @@ func recruit_hero(player : Player, hero_data : DataHero, coord : Vector2i) -> vo
 	army_for_world_map.entity.units_data.append(hero_unit)
 
 	W_GRID.place_army(army_for_world_map, coord)
+
+
+func do_local_recruit_unit(coord : Vector2i, unit : DataUnit) -> void:
+	var hero_army : ArmyForm = W_GRID.get_army(coord)
+	if not hero_army or not unit:
+		NET.desync()
+	if hero_army.controller.purchase(unit.cost):
+		hero_army.entity.units_data.append(unit)
+	else:
+		push_error("not enough cash, needed %s" % unit.cost)
+		NET.desync()
+
+
+func do_local_build(city_coord : Vector2i, \
+		building_data : DataBuilding) -> void:
+	var city = W_GRID.get_city(city_coord)
+	if not city:
+		NET.desync()
+	city.build(building_data)
+
 
 #endregion
 
@@ -211,8 +344,11 @@ func start_combat(attacking_army : ArmyForm, coord : Vector2i):
 func end_of_battle(battle_results : Array[BM.ArmyInBattleState]):
 	#TODO get result from Battle Manager
 
-	var attack_hero  = battle_results[BM.ATTACKER].army_reference.hero
-	var defence_hero = battle_results[BM.DEFENDER].army_reference.hero
+	var attack_army : Army = battle_results[BM.ATTACKER].army_reference
+	var defence_army : Army = battle_results[BM.DEFENDER].army_reference
+	var attack_hero = attack_army.hero
+	var defence_hero = defence_army.hero
+	var attack_army_form = W_GRID.get_army(attack_army.coord)
 	if attack_hero:
 		attack_hero.add_xp_for_casualties(battle_results[BM.DEFENDER].dead_units, defence_hero)
 	if defence_hero:
@@ -221,10 +357,10 @@ func end_of_battle(battle_results : Array[BM.ArmyInBattleState]):
 	if battle_results[BM.ATTACKER].can_fight():
 		print("attacker won")
 		kill_army(W_GRID.get_army(combat_tile)) # clear the tile of enemy presence
-		hero_move(selected_hero, combat_tile)
-		selected_hero.apply_losses(battle_results[BM.ATTACKER].dead_units)
+		do_local_hero_move(attack_army_form, combat_tile)
+		attack_army.apply_losses(battle_results[BM.ATTACKER].dead_units)
 	else:
-		kill_army(selected_hero)  # clear the tile where selected_hero was
+		kill_army(attack_army_form)  # clear the tile where attack_army_form was
 		set_selected_hero(null)
 		print("hero died")
 		var defender_army = W_GRID.get_army(combat_tile)

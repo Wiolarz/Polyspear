@@ -25,6 +25,8 @@ const MAPS_OFFSET_X = 7000
 
 const BATTLE_MAPS_PATH = "res://Resources/Battle/Battle_Maps/"
 const UNITS_PATH = "res://Resources/Battle/Units/"
+const HEROES_PATH = "res://Resources/Battle/Heroes/"
+const BUILDINGS_PATH = "res://Resources/Factions/Buildings/"
 const BATTLE_PRESETS_PATH = "res://Resources/Presets/Battle/"
 const WORLD_MAPS_PATH = "res://Resources/World/World_maps/"
 const SENTINEL_TILE_PATH = "res://Resources/World/World_tiles/sentinel.tres"

@@ -10,6 +10,14 @@ var hero_army : ArmyForm
 @onready var building_buttons = $Buildings
 
 
+func _ready():
+	WM.world_move_done.connect(_refresh_all)
+
+
+func _exit_tree():
+	WM.world_move_done.disconnect(_refresh_all)
+
+
 func show_trade_ui(viewed_city : City, visiting_hero : ArmyForm):
 	city = viewed_city
 	hero_army = visiting_hero
@@ -82,12 +90,7 @@ func _refresh_army_display():
 func _buy_unit(unit):
 	print("trying to buy ", unit.unit_name)
 
-	if not hero_army.controller.purchase(unit.cost):
-		print("not enough cash, needed ",unit.cost)
-		return
-
-	hero_army.entity.units_data.append(unit)
-	_refresh_all()
+	WM.request_recruit_unit(hero_army, unit)
 
 
 func _on_buy_hero_button_pressed(hero_index : int):
@@ -95,13 +98,7 @@ func _on_buy_hero_button_pressed(hero_index : int):
 
 	var hero_to_buy : DataHero = city.controller.get_faction().heroes[hero_index]
 
-	var cost = city.controller.get_hero_cost(hero_to_buy)
-	if not city.controller.purchase(cost):
-		print("not enough cash, needed ", cost)
-		return
-
-	WM.recruit_hero(city.controller, hero_to_buy, city.coord)
-	_refresh_all()
+	WM.request_recruit_hero(city.controller, hero_to_buy, city.coord)
 	_on_show_recruit_heroes_ui_pressed() # hide
 
 
@@ -120,8 +117,7 @@ func _refresh_buildings_display():
 		for s in b_button.pressed.get_connections():
 			b_button.pressed.disconnect(s["callable"])
 		b_button.pressed.connect(func build():
-			city.build(building_data)
-			_refresh_all()
+			WM.request_build(city, building_data)
 		)
 
 
