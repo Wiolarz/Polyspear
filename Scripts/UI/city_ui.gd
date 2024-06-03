@@ -1,6 +1,8 @@
 class_name CityUi
 extends Control
 
+signal purchased_hero  # Hero list UI Update
+
 var city : City
 ## currently visiting hero, null if none
 var hero_army : ArmyForm
@@ -100,6 +102,8 @@ func _on_buy_hero_button_pressed(hero_index : int):
 
 	WM.request_recruit_hero(city.controller, hero_to_buy, city.coord)
 	_on_show_recruit_heroes_ui_pressed() # hide
+
+	purchased_hero.emit()
 
 
 func _refresh_buildings_display():

@@ -5,12 +5,15 @@ extends CanvasLayer
 @onready var city_ui : CityUi = $CityUi
 @onready var heroes_list : BoxContainer = $HeroesList
 
+func _ready():
+	city_ui.purchased_hero.connect(refresh_heroes)
+
 func _process(_delta):
 	if WM.current_player:
 		good_label.text = WM.current_player.goods.to_string()
 
 
-func refresh_heroes(player : Player):
+func refresh_heroes(player : Player = WM.current_player):
 	Helpers.remove_all_children(heroes_list)
 	for hf in player.hero_armies:
 		var button := TextureButton.new()
