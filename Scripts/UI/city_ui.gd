@@ -23,6 +23,11 @@ func _exit_tree():
 func show_trade_ui(viewed_city : City, visiting_hero : ArmyForm):
 	city = viewed_city
 	hero_army = visiting_hero
+	if visiting_hero == null:
+		var army := W_GRID.get_army(viewed_city.coord)
+		if army and army.entity.hero:
+			hero_army = army
+
 	_refresh_all()
 	if not unit_panels.visible and visiting_hero:
 		_on_show_recruit_units_ui_pressed()

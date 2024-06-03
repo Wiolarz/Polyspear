@@ -125,10 +125,12 @@ func is_enemy_present(coord : Vector2i, player : Player) -> bool:
 		return false
 	return true
 
+func has_army(coord : Vector2i) -> bool:
+	return get_army(coord) != null
+
 
 func get_interactable_type(coord : Vector2i) -> String:
-	var army := get_army(coord)
-	if army != null:
+	if has_army(coord):
 		return "army"
 
 	if is_city(coord):
