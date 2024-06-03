@@ -5,6 +5,7 @@ extends CanvasLayer
 @onready var city_ui : CityUi = $CityUi
 @onready var heroes_list : BoxContainer = $HeroesList
 
+
 func _ready():
 	city_ui.purchased_hero.connect(refresh_heroes)
 
@@ -17,6 +18,7 @@ func _process(_delta):
 func game_started():
 	refresh_player_buttons()
 	$YouWinPanel.hide()
+
 
 func refresh_heroes(player : Player = WM.current_player):
 	Helpers.remove_all_children(heroes_list)
@@ -77,4 +79,3 @@ func _on_end_turn_pressed():
 	WM.next_player_turn()
 	refresh_player_buttons()
 	refresh_heroes(WM.current_player)
-
