@@ -56,7 +56,7 @@ func spawn_neutral_army(army_preset : PresetArmy, coord : Vector2i) -> ArmyForm:
 	var army_for_world_map : ArmyForm = \
 		ArmyForm.create_neutral_army(army_preset)
 
-	add_child(army_for_world_map)
+	add_child(army_for_world_map, true)
 
 	W_GRID.place_army(army_for_world_map, coord)
 	return army_for_world_map
