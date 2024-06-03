@@ -46,6 +46,10 @@ func process_camera(delta):
 	position = position.clamp(bounds.position, bounds.end)
 
 
+func center_camera(node: Node2D):
+	position = node.position
+
+
 func process_camera_drag():
 	var current_mouse_position = get_viewport().get_mouse_position()
 	if Input.is_action_just_pressed("KEY_DRAG_CAMERA"):

@@ -3,11 +3,35 @@ extends CanvasLayer
 
 @onready var good_label : Label = $HBoxContainer/GoodsLabel
 @onready var city_ui : CityUi = $CityUi
+@onready var heroes_list : BoxContainer = $HeroesList
 
+func _ready():
+	city_ui.purchased_hero.connect(refresh_heroes)
 
 func _process(_delta):
 	if WM.current_player:
 		good_label.text = WM.current_player.goods.to_string()
+
+
+func refresh_heroes(player : Player = WM.current_player):
+	Helpers.remove_all_children(heroes_list)
+	for hf in player.hero_armies:
+		var button := TextureButton.new()
+		var hero_texture = hf.entity.hero.template.data_unit.texture_path
+		button.texture_normal = load(hero_texture)
+		button.ignore_texture_size = true
+		button.stretch_mode = TextureButton.STRETCH_KEEP_ASPECT_CENTERED
+		button.custom_minimum_size = Vector2(200,200)
+		if hf.entity.hero.movement_points == 0:
+			button.modulate = Color.DIM_GRAY
+		if WM.selected_hero == hf:
+			button.modulate = Color.FIREBRICK
+		button.pressed.connect(func ():
+			if hf.controller == WM.current_player:
+				WM.set_selected_hero(hf)
+				UI.camera.center_camera(hf)
+		)
+		heroes_list.add_child(button)
 
 
 func refresh_player_buttons():
@@ -38,4 +62,5 @@ func _on_menu_pressed():
 func _on_end_turn_pressed():
 	WM.next_player_turn()
 	refresh_player_buttons()
+	refresh_heroes(WM.current_player)
 
