@@ -35,9 +35,9 @@ func get_map_description() -> String:
 func _take_control(player : Player):
 	if controller:
 		controller.outpost_remove(self)
-	
+
 	change_controler(player)
 
 	player.outpost_add(self)
 
-	
+

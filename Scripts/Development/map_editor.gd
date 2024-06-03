@@ -315,13 +315,13 @@ func _on_add_column_pressed():
 		var new_map := get_world_map(false)
 		new_map.grid_data.append(create_empty_row(new_map.grid_height))
 		new_map.grid_width += 1
-		W_GRID.reset_data()
+		WM.close_world()
 		W_GRID.load_map(new_map)
 	else:
 		var new_map := get_battle_map(false)
 		new_map.grid_data.append(create_empty_row(new_map.grid_height))
 		new_map.grid_width += 1
-		BM.reset_data()
+		BM.reset_grid_and_unit_forms()
 		BM.load_map(new_map)
 
 
@@ -338,12 +338,12 @@ func _on_add_row_pressed():
 		for row in new_map.grid_data:
 			row.append(create_empty_tile())
 		new_map.grid_height += 1
-		W_GRID.reset_data()
+		WM.close_world()
 		W_GRID.load_map(new_map)
 	else:
 		var new_map := get_battle_map(false)
 		for row in new_map.grid_data:
 			row.append(create_empty_tile())
 		new_map.grid_height += 1
-		BM.reset_data()
+		BM.reset_grid_and_unit_forms()
 		BM.load_map(new_map)
