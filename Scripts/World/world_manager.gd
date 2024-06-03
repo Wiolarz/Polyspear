@@ -45,6 +45,7 @@ func set_selected_hero(new_hero : ArmyForm):
 	selected_hero = new_hero
 	if selected_hero:
 		selected_hero.set_selected(true)
+	world_ui.refresh_heroes(current_player)
 
 
 func spawn_neutral_army(army_preset : PresetArmy, coord : Vector2i) -> ArmyForm:
@@ -88,6 +89,7 @@ func next_player_turn():
 
 func do_local_end_the_turn():
 	set_selected_hero(null)
+	world_ui.refresh_heroes(current_player)
 	world_ui.show_trade_ui(current_player.capital_city, null)
 
 	_end_of_turn_callbacks(current_player)
@@ -425,6 +427,7 @@ func start_world(world_map : DataWorldMap) -> void:
 		spawn_player(spawn_location[player_id], players[player_id])
 
 	world_ui.show_trade_ui(current_player.capital_city, null)
+	world_ui.refresh_heroes(current_player)
 
 
 func spawn_player(coord : Vector2i, player : Player):
