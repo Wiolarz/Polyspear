@@ -55,6 +55,15 @@ func close_city_ui() -> void:
 	pass
 
 
+func show_you_win(player : Player):
+	var style_box = ($YouWinPanel as Panel).get_theme_stylebox("panel")
+	if not style_box is StyleBoxFlat:
+		return
+	var style_box_flat = style_box as StyleBoxFlat
+	style_box_flat.bg_color = player.get_player_color().color
+	$YouWinPanel.show()
+
+
 func _on_menu_pressed():
 	IM.toggle_in_game_menu()
 

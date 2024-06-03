@@ -203,6 +203,7 @@ func perform_world_move_info(world_move_info : WorldMoveInfo) -> void:
 				trade_city(city, hero)
 			else:
 				# CITY SIEGE
+				world_ui.show_you_win(current_player)
 				print ("siege not implemented")
 			return
 
