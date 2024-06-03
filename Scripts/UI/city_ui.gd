@@ -125,6 +125,11 @@ func _refresh_buildings_display():
 		)
 
 
+func show_recruit_heroes():
+	if not hero_panels.visible:
+		_on_show_recruit_heroes_ui_pressed()
+
+
 func _on_show_recruit_heroes_ui_pressed():
 	unit_panels.hide()
 	building_buttons.hide()

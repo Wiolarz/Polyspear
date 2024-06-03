@@ -136,9 +136,15 @@ func grid_input(coord : Vector2i):
 func input_try_select(coord) -> void:  #TODO "nothing is selected try to select stuff"
 	var selected_spot_type : String = W_GRID.get_interactable_type(coord)
 	if selected_spot_type == "army":
-		var army_form : ArmyForm = W_GRID.get_army(coord)
+		var army_form := W_GRID.get_army(coord)
 		if current_player == army_form.entity.controller:
 			set_selected_hero(army_form)
+
+	if selected_spot_type == "city":
+		var city := W_GRID.get_city(coord)
+		if city.controller == current_player:
+			world_ui.city_ui.show_recruit_heroes()
+
 
 
 func try_interact(hero : ArmyForm, coord : Vector2i):
