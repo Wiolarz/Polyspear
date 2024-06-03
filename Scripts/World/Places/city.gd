@@ -9,6 +9,11 @@ func _init():
 	type = E.WorldMapTiles.CITY
 
 
+func interact(army : ArmyForm) -> void:
+	if controller != army.controller:
+		WM.win_game(army.controller)
+
+
 func get_heroes_to_buy() -> Array[DataHero]:
 	var result : Array[DataHero] = []
 	for hero_data : DataHero in controller.get_faction().heroes:
@@ -76,7 +81,7 @@ func can_build(building : DataBuilding)-> bool:
 		return false
 	if not controller.has_enough(building.cost):
 		return false
-	
+
 	if not controller.outpost_requirement(building.outpost_requirement):
 		return false
 

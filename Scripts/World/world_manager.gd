@@ -210,13 +210,7 @@ func perform_world_move_info(world_move_info : WorldMoveInfo) -> void:
 				else:
 					# CITY TRADE
 					trade_city(city, hero)
-			else:
-				if not hero.has_movement_points():
-					print("not enough movement points")
 					return
-				# CITY SIEGE
-				world_ui.show_you_win(current_player)
-			return
 
 		if W_GRID.is_movable(coord):
 			if not hero.has_movement_points():
@@ -246,6 +240,10 @@ func perform_world_move_info(world_move_info : WorldMoveInfo) -> void:
 		assert(false, "Move %s not supported in perform_world_move_info" % \
 			world_move_info.move_type)
 	world_move_done.emit()
+
+
+func win_game(player: Player):
+	world_ui.show_you_win(player)
 
 
 func perform_network_move(world_move_info : WorldMoveInfo) -> void:
@@ -373,10 +371,6 @@ func end_of_battle(battle_results : Array[BattleGridState.ArmyInBattleState]):
 	if battle_results[ATTACKER].can_fight():
 		print("attacker won")
 		kill_army(W_GRID.get_army(combat_tile)) # clear the tile of enemy presence
-		if W_GRID.get_interactable_type(combat_tile) == "city":
-			world_ui.show_you_win(attack_army.controller)
-			UI.go_to_custom_ui(world_ui)
-			return
 		do_local_hero_move(attack_army_form, combat_tile)
 		attack_army.apply_losses(battle_results[ATTACKER].dead_units)
 	else:
@@ -435,7 +429,7 @@ func start_world(world_map : DataWorldMap) -> void:
 	if world_ui == null or not is_instance_valid(world_ui):
 		spawn_world_ui()
 	UI.go_to_custom_ui(world_ui)
-	world_ui.refresh_player_buttons()
+	world_ui.game_started()
 
 	W_GRID.load_map(world_map)
 

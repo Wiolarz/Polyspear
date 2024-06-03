@@ -14,6 +14,10 @@ func _process(_delta):
 		good_label.text = WM.current_player.goods.to_string()
 
 
+func game_started():
+	refresh_player_buttons()
+	$YouWinPanel.hide()
+
 func refresh_heroes(player : Player = WM.current_player):
 	Helpers.remove_all_children(heroes_list)
 	for hf in player.hero_armies:
