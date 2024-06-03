@@ -38,6 +38,7 @@ func world_game_is_active() -> bool:
 func get_bounds_global_position() -> Rect2:
 	return W_GRID.get_bounds_global_position()
 
+
 func set_selected_hero(new_hero : ArmyForm):
 	print("selected ", new_hero)
 	if selected_hero:
@@ -199,12 +200,17 @@ func perform_world_move_info(world_move_info : WorldMoveInfo) -> void:
 		if selected_spot_type == "city":
 			var city = W_GRID.get_city(coord)
 			if city.controller == current_player:
-				# CITY TRADE
-				trade_city(city, hero)
-			else:
-				# CITY SIEGE
-				print ("siege not implemented")
-			return
+				if world_move_info.enter_city:
+					if not hero.has_movement_points():
+						print("not enough movement points")
+						return
+					print("moving ", hero," to ",coord)
+					do_local_hero_move(hero, coord)
+					hero.spend_movement_point()
+				else:
+					# CITY TRADE
+					trade_city(city, hero)
+					return
 
 		if W_GRID.is_movable(coord):
 			if not hero.has_movement_points():
@@ -234,6 +240,10 @@ func perform_world_move_info(world_move_info : WorldMoveInfo) -> void:
 		assert(false, "Move %s not supported in perform_world_move_info" % \
 			world_move_info.move_type)
 	world_move_done.emit()
+
+
+func win_game(player: Player):
+	world_ui.show_you_win(player)
 
 
 func perform_network_move(world_move_info : WorldMoveInfo) -> void:
@@ -419,7 +429,7 @@ func start_world(world_map : DataWorldMap) -> void:
 	if world_ui == null or not is_instance_valid(world_ui):
 		spawn_world_ui()
 	UI.go_to_custom_ui(world_ui)
-	world_ui.refresh_player_buttons()
+	world_ui.game_started()
 
 	W_GRID.load_map(world_map)
 

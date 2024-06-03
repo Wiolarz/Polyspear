@@ -4,6 +4,6 @@
 
 [resource]
 script = ExtResource("1_7nhkj")
+type = "elf_city"
 texture_path = "res://Art/world_map/elven_city.png"
 flip_horizontal = false
-type = "elf_city"

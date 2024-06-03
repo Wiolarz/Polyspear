@@ -135,6 +135,8 @@ const WORLD_MOVABLE_TILES = [
 	"wood_hunt",
 	"iron_hunt",
 	"ruby_hunt",
+	"elf_city",
+	"orc_city",
 ]
 
 var DEFAULT_MODE_IS_BATTLE : bool :
