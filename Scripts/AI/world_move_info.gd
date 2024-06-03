@@ -17,12 +17,16 @@ class RecruitHeroInfo extends Resource:
 @export var target_tile_coord: Vector2i
 @export var recruit_hero_info : RecruitHeroInfo = null
 @export var data : Resource = null
+@export var enter_city: bool
 
-static func make_world_move(src : Vector2i, dst : Vector2i) -> WorldMoveInfo:
+#TODO: enter_city_ remove, add other MOVE type for opening city trade
+static func make_world_move(src : Vector2i, dst : Vector2i, \
+		enter_city_ : bool = false) -> WorldMoveInfo:
 	var result : WorldMoveInfo = WorldMoveInfo.new()
 	result.move_type = TYPE_MOVE
 	result.move_source = src
 	result.target_tile_coord = dst
+	result.enter_city = enter_city_
 	return result
 
 

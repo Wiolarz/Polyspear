@@ -38,6 +38,7 @@ func world_game_is_active() -> bool:
 func get_bounds_global_position() -> Rect2:
 	return W_GRID.get_bounds_global_position()
 
+
 func set_selected_hero(new_hero : ArmyForm):
 	print("selected ", new_hero)
 	if selected_hero:
@@ -199,12 +200,22 @@ func perform_world_move_info(world_move_info : WorldMoveInfo) -> void:
 		if selected_spot_type == "city":
 			var city = W_GRID.get_city(coord)
 			if city.controller == current_player:
-				# CITY TRADE
-				trade_city(city, hero)
+				if world_move_info.enter_city:
+					if not hero.has_movement_points():
+						print("not enough movement points")
+						return
+					print("moving ", hero," to ",coord)
+					do_local_hero_move(hero, coord)
+					hero.spend_movement_point()
+				else:
+					# CITY TRADE
+					trade_city(city, hero)
 			else:
+				if not hero.has_movement_points():
+					print("not enough movement points")
+					return
 				# CITY SIEGE
 				world_ui.show_you_win(current_player)
-				print ("siege not implemented")
 			return
 
 		if W_GRID.is_movable(coord):
@@ -362,6 +373,10 @@ func end_of_battle(battle_results : Array[BattleGridState.ArmyInBattleState]):
 	if battle_results[ATTACKER].can_fight():
 		print("attacker won")
 		kill_army(W_GRID.get_army(combat_tile)) # clear the tile of enemy presence
+		if W_GRID.get_interactable_type(combat_tile) == "city":
+			world_ui.show_you_win(attack_army.controller)
+			UI.go_to_custom_ui(world_ui)
+			return
 		do_local_hero_move(attack_army_form, combat_tile)
 		attack_army.apply_losses(battle_results[ATTACKER].dead_units)
 	else:

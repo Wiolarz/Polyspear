@@ -144,3 +144,10 @@ func _on_show_build_ui_pressed():
 	unit_panels.hide()
 	_refresh_buildings_display()
 	building_buttons.visible = not building_buttons.visible
+
+
+func _on_enter_city_pressed():
+	if not hero_army:
+		return
+	var move = WorldMoveInfo.make_world_move(hero_army.coord, city.coord, true)
+	WM.perform_world_move_info(move)

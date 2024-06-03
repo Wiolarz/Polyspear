@@ -8,6 +8,7 @@ extends CanvasLayer
 func _ready():
 	city_ui.purchased_hero.connect(refresh_heroes)
 
+
 func _process(_delta):
 	if WM.current_player:
 		good_label.text = WM.current_player.goods.to_string()
