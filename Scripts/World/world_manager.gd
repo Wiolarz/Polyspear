@@ -43,6 +43,7 @@ func set_selected_hero(new_hero : ArmyForm):
 	print("selected ", new_hero)
 	if selected_hero:
 		selected_hero.set_selected(false)
+		world_ui.show_trade_ui(current_player.capital_city, null)
 	selected_hero = new_hero
 	if selected_hero:
 		selected_hero.set_selected(true)
@@ -136,9 +137,15 @@ func grid_input(coord : Vector2i):
 func input_try_select(coord) -> void:  #TODO "nothing is selected try to select stuff"
 	var selected_spot_type : String = W_GRID.get_interactable_type(coord)
 	if selected_spot_type == "army":
-		var army_form : ArmyForm = W_GRID.get_army(coord)
+		var army_form := W_GRID.get_army(coord)
 		if current_player == army_form.entity.controller:
 			set_selected_hero(army_form)
+
+	if selected_spot_type == "city":
+		var city := W_GRID.get_city(coord)
+		if city.controller == current_player:
+			world_ui.city_ui.show_recruit_heroes()
+
 
 
 func try_interact(hero : ArmyForm, coord : Vector2i):
@@ -188,16 +195,7 @@ func perform_world_move_info(world_move_info : WorldMoveInfo) -> void:
 				return
 			start_combat(hero, coord)
 
-		var selected_spot_type : String = W_GRID.get_interactable_type(coord)
-
-		if selected_spot_type == "army":
-			var army = W_GRID.get_army(coord)
-			if current_player == army.controller:
-				# ARMY TRADE
-				trade_armies(army)
-			return
-
-		if selected_spot_type == "city":
+		if W_GRID.is_city(coord):
 			var city = W_GRID.get_city(coord)
 			if city.controller == current_player:
 				if world_move_info.enter_city:
@@ -211,6 +209,13 @@ func perform_world_move_info(world_move_info : WorldMoveInfo) -> void:
 					# CITY TRADE
 					trade_city(city, hero)
 					return
+
+		if W_GRID.has_army(coord):
+			var army = W_GRID.get_army(coord)
+			if current_player == army.controller:
+				# ARMY TRADE
+				trade_armies(army)
+			return
 
 		if W_GRID.is_movable(coord):
 			if not hero.has_movement_points():
@@ -371,8 +376,9 @@ func end_of_battle(battle_results : Array[BattleGridState.ArmyInBattleState]):
 	if battle_results[ATTACKER].can_fight():
 		print("attacker won")
 		kill_army(W_GRID.get_army(combat_tile)) # clear the tile of enemy presence
-		do_local_hero_move(attack_army_form, combat_tile)
 		attack_army.apply_losses(battle_results[ATTACKER].dead_units)
+		do_local_hero_move(attack_army_form, combat_tile)
+		attack_army_form.spend_movement_point()
 	else:
 		kill_army(attack_army_form)  # clear the tile where attack_army_form was
 		set_selected_hero(null)
