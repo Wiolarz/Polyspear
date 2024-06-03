@@ -38,12 +38,12 @@ int BattleManagerFast::_play_move(unsigned unit_id, Vector2i pos) {
 
     if(state == BattleState::SUMMONING) {
         if(unit.status != UnitStatus::SUMMONING) {
-            printf("WARNING - unit is not in summoning state\n");
+            WARN_PRINT("BMFast - unit is not in summoning state\n");
             return -1;
         }
 
         if(tiles->get_tile(pos).get_spawning_team() != current_participant) {
-            printf("WARNING - target spawn does not belong to army %d, aborting\n", current_participant);
+            WARN_PRINT("BMFast - target spawn does not belong to current army, aborting\n");
             return -1;
         }
 
@@ -68,7 +68,7 @@ int BattleManagerFast::_play_move(unsigned unit_id, Vector2i pos) {
         auto rot_new = get_rotation(unit.pos, pos);
 
         if(rot_new == 6) {
-            printf("WARNING - target position is not a neighbor\n");
+            WARN_PRINT("BMFast - target position is not a neighbor\n");
             return -1;
         }
 
@@ -80,32 +80,17 @@ int BattleManagerFast::_play_move(unsigned unit_id, Vector2i pos) {
             _process_unit(unit, armies[current_participant]);
         }
         
-        current_participant = (current_participant+1) % armies.size();
+        int limit = current_participant;
+        do {
+            current_participant = (current_participant+1) % armies.size();
+        } while(armies[current_participant].is_defeated() && current_participant != limit);
     }
     else {
-        printf("WARNING - battle already ended, did not expect that\n");
+        WARN_PRINT("BMFast - battle already ended, did not expect that\n");
+        return -1;
     }
-    
-    
-    for(int i = 0; i < 2; i++) {
-        auto& army = armies[i];
-        bool defeat = true;
 
-        for(auto& unit: army.units) {
-            if(unit.status == UnitStatus::ALIVE) {
-                defeat = false;
-                break;
-            }
-        }
-
-        if(defeat) {
-            // TODO more teams
-            return !i;
-        }
-    }
-    
-
-    return -1;
+    return get_winner();
 }
 
 
@@ -119,7 +104,7 @@ int BattleManagerFast::_process_unit(Unit& unit, Army& army, bool process_kills)
 
         for(auto& neighbor : enemy_army.units) {
             
-            if(unit.status != UnitStatus::ALIVE) {
+            if(neighbor.status != UnitStatus::ALIVE) {
                 continue;
             }
 
@@ -219,6 +204,46 @@ int BattleManagerFast::_process_bow(Unit& unit, Army& enemy_army) {
     // TODO scores
     return -1;
 }
+
+int BattleManagerFast::get_winner() {
+
+    if(state == BattleState::SUMMONING) {
+        return -1;
+    }
+
+    int last_team_alive = -2;
+    int teams_alive = 4;
+    std::array<int, 4> armies_in_teams_alive = {0,0,0,0};
+
+    for(int i = 0; i < armies.size(); i++) {
+        if(!armies[i].is_defeated()) {
+            armies_in_teams_alive[armies[i].team] += 1;
+        }
+    }
+    
+    for(int i = 0; i < 4; i++) {
+        if(armies_in_teams_alive[i] == 0) {
+            teams_alive--;
+        }
+        else {
+            last_team_alive = i;
+        }
+    }
+
+    if(teams_alive == 0) {
+        ERR_PRINT("C++ Assertion failed: no teams alive after battle, should not be possible");
+        state = BattleState::FINISHED;
+        return -2;
+    }
+
+    if(teams_alive == 1) {
+        state = BattleState::FINISHED;
+        return last_team_alive;
+    }
+
+    return -1;
+}
+
 
 const std::vector<Move>& BattleManagerFast::get_legal_moves() {
     if(moves_dirty) {
@@ -420,4 +445,13 @@ int Army::find_summon_id(int i) {
         }
     }
     return -1;
+}
+
+bool Army::is_defeated() {
+    for(auto& unit: units) {
+        if(unit.status == UnitStatus::ALIVE) {
+            return false;
+        }
+    }
+    return true;
 }

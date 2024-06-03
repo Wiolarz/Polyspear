@@ -25,9 +25,9 @@ class BattleMCTSManager;
 
 struct Unit {
     UnitStatus status = UnitStatus::DEAD;
-    Position pos;
-    uint8_t rotation;
-    std::array<Symbol, 6> sides;
+    Position pos{};
+    uint8_t rotation{};
+    std::array<Symbol, 6> sides{};
 
     inline void rotate(int times) {
         rotation = (6-rotation + times) % 6;
@@ -39,11 +39,12 @@ struct Unit {
 };
 
 struct Army {
-    int team;
-    std::array<Unit, 5> units;
+    int team = -1;
+    std::array<Unit, 5> units{};
 
     Unit* get_unit(Position coord);
     int find_summon_id(int from = 0);
+    bool is_defeated();
 };
 
 using ArmyList = std::array<Army, 2>;
@@ -77,10 +78,10 @@ class BattleManagerFast : public Node {
     int x,y;
     int current_participant;
     BattleState state = BattleState::SUMMONING;
-    ArmyList armies;
+    ArmyList armies{};
     TileGridFast* tiles;
     //BattleMCTSManager* mcts;
-    std::vector<Move> moves;
+    std::vector<Move> moves{};
     bool moves_dirty = true;
 
     Unit* _get_unit(Position coord);
@@ -108,6 +109,8 @@ public:
     
     int play_move(Move move);
     int play_move_gd(unsigned unit, Vector2i move);
+    
+    int get_winner();
 
     /// Get legal moves iterator for current participant
     const std::vector<Move>& get_legal_moves();

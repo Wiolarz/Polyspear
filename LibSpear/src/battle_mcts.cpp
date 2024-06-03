@@ -4,33 +4,45 @@
 #include <assert.h>
 #include <limits>
 #include <utility>
+#include <random>
+
+#include <signal.h>
 
 
-BattleMCTSNode::BattleMCTSNode(BattleManagerFast bm, BattleMCTSManager* manager) 
+BattleMCTSNode::BattleMCTSNode(BattleManagerFast bm, BattleMCTSManager* manager, BattleMCTSNode* parent) 
     : bm(bm),
-      manager(manager)
+      manager(manager),
+      parent(parent)
 {
     
 }
 
 float BattleMCTSNode::uct() const {
-    auto coeff = sqrt(2);
+    const auto coeff = 5*sqrt(2);
 
     if(abs(visits) < 1e-5f) {
-        return -std::numeric_limits<float>::infinity();
+        // not explored, a large number to force exploring it
+        // idea - dither - this + a tiny bit of pseudorandom noise to select a random node vs first/last found
+        return 10000.0f;
     }
-    auto parent_visits = parent ? parent->visits : 0.0;
-    return reward/visits + coeff * sqrt(log2(parent_visits) / visits);
+    auto parent_visits = parent ? parent->visits : visits;
+    auto xd = (reward/visits) + coeff * sqrt(log2(parent_visits) / visits);
+    //printf("xd:%f\n   r%f v%f pv%f, ", xd, reward, visits, parent_visits);
+    return xd;
 }
 
 std::pair<Move, BattleMCTSNode*> BattleMCTSNode::select() {
-    float uct_max = 0.0;
+    if(!is_explored()) {
+        return std::make_pair(Move(), nullptr);
+    }
+
+    float uct_max = -std::numeric_limits<float>::infinity();
     BattleMCTSNode* uct_max_idx = nullptr;
     Move best_move;
 
     for(auto& [move, node] : children) {
         auto uct = node.uct();
-        if(uct > uct_max) {
+        if(uct >= uct_max) {
             uct_max = uct;
             uct_max_idx = &node;
             best_move = move;
@@ -49,14 +61,14 @@ void BattleMCTSNode::expand() {
     auto move = bm.get_random_move();
 
     if(children.count(move) == 0) {
-        children.insert({move, BattleMCTSNode(bm, manager)});
+        children.insert({move, BattleMCTSNode(bm, manager, this)});
         children.at(move).bm.play_move(move);
     }
 }
 
 int BattleMCTSNode::simulate() {
     if(bm.is_battle_finished()) {
-        return -1;
+        return bm.get_winner();
     }
 
     BattleManagerFast bmnew = bm;
@@ -87,19 +99,24 @@ bool BattleMCTSNode::is_explored() {
 
 
 void BattleMCTSManager::iterate(int iterations) {
+    int unknowns = 0;
     for(int i = 0; i < iterations; i++) {
         BattleMCTSNode* node = root, *temp_node;
-        while((temp_node = root->select().second) != nullptr) {
+        int tree_level = 0;
+        while((temp_node = node->select().second) != nullptr) {
             node = temp_node;
+            tree_level++;
         }
 
         node->expand();
         auto winner = node->simulate();
-        auto reward = winner == army ? 1.0f : winner == -1 ? 0.5f : 0.0f;
+        auto reward = winner == army_team ? 1.0f : (winner == -1 ? 0.5f : 0.0f);
+        if(winner == -1) unknowns++;
         auto visit = 1.0f;
 
         node->backpropagate(visit, reward);
     }
+    printf("Unknowns - %d", unknowns);
 }
 
 Move BattleMCTSManager::get_optimal_move(int nth_best_move) {
@@ -110,8 +127,9 @@ Move BattleMCTSManager::get_optimal_move(int nth_best_move) {
     }
 
     for(auto& [move, node] : root->children) {
-        printf("Child %d->%d,%d = %f\n", move.unit, move.pos.x, move.pos.y, node.uct());
+        printf("Child %d->%d,%d = %f (reward: %f, visits: %f)\n", move.unit, move.pos.x, move.pos.y, node.uct(), node.reward, node.visits);
     }
+    printf("\n");
 
     return root->select().first;
 }
@@ -126,8 +144,8 @@ Vector2i BattleMCTSManager::get_optimal_move_position(int nth_best_move) {
 
 
 void BattleMCTSManager::set_root(BattleManagerFast* bm) {
-    root = new BattleMCTSNode(*bm, this);
-    army = bm->get_current_participant();
+    root = new BattleMCTSNode(*bm, this, nullptr);
+    army_team = bm->get_army_team(bm->get_current_participant());
 }
 
 // TODO apparently this crashes godot editor

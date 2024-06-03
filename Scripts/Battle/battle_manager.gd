@@ -262,7 +262,7 @@ func perform_move_info(move_info : MoveInfo) -> void:
 	var old_army_index = current_army_index
 	var bmfast: BattleManagerFast
 	if debug_check_fast_bm_integrity:
-		bmfast = cloned_as_fast()
+		bmfast = cloned_as_fast([])
 		assert(compare(bmfast) == true, "BMFast Integrity check failed before move")
 	
 	if not battle_is_ongoing:
@@ -601,7 +601,7 @@ func find_army_idx(player : Player) -> int:
 
 ## Make a BattleManagerFast for MCTS purposes. 
 ## Parameter tgrid may be null, in which case TileGridFast is created automatically
-func cloned_as_fast(tgrid: TileGridFast = null) -> BattleManagerFast:
+func cloned_as_fast(out_unit_array: Array, tgrid: TileGridFast = null) -> BattleManagerFast:
 	var new = BattleManagerFast.new()
 	if tgrid == null:
 		tgrid = TileGridFast.new()
@@ -618,8 +618,7 @@ func cloned_as_fast(tgrid: TileGridFast = null) -> BattleManagerFast:
 	if state == STATE_FIGHTING:
 		new.force_battle_ongoing()
 	
-	# TODO more armies
-	for army_idx in range(2):
+	for army_idx in range(armies_in_battle_state.size()):
 		var army = armies_in_battle_state[army_idx]
 		new.set_army_team(army_idx,army_idx)
 		
@@ -631,25 +630,27 @@ func cloned_as_fast(tgrid: TileGridFast = null) -> BattleManagerFast:
 			new.insert_unit(army_idx, unit_idx, unit.coord, unit.unit_rotation, false)
 			for i in range(6):
 				new.set_unit_symbol(army_idx, unit_idx, i, unit.template.symbols[i].type)
+			if army_idx == current_army_index:
+				out_unit_array.push_back(unit)
 	
 		for unit_idx in range(army.units_to_summon.size()):
 			var unit = army.units_to_summon[unit_idx]
 			new.insert_unit(army_idx, unit_idx + army.units.size(), Vector2i.ZERO, 0, true)
 			for i in range(6):
 				new.set_unit_symbol(army_idx, unit_idx + army.units.size(), i, unit.symbols[i].type)
+			if army_idx == current_army_index:
+				out_unit_array.push_back(unit)
 	
 	return new
 
 func compare(bm: BattleManagerFast) -> bool:
-	assert(armies_in_battle_state.size() <= 2, "TODO support more than 2 armies in fast BM")
-	
 	var ret = true
 	
 	if current_army_index != bm.get_current_participant():
 		push_error("BMFast mismatch - current army: slow ", current_army_index, " fast", bm.get_current_participant())
 		ret = false
 	
-	for army_id in range(2):
+	for army_id in range(armies_in_battle_state.size()):
 		var units_nr = 5
 		var army = armies_in_battle_state[army_id]
 		

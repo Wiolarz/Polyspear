@@ -14,21 +14,19 @@ const int MAX_SIM_ITERATIONS = 70;
 class BattleMCTSManager;
 
 class BattleMCTSNode {
-    BattleMCTSManager* manager;
-    BattleMCTSNode* parent;
-    std::unordered_map<Move, BattleMCTSNode> children;
+    BattleMCTSManager* manager = nullptr;
+    BattleMCTSNode* parent = nullptr;
+    std::unordered_map<Move, BattleMCTSNode> children{};
     BattleManagerFast bm;
 
-    float reward;
-    float visits;
+    float reward = 0.0f;
+    float visits = 0.0f;
 
     friend class BattleMCTSManager;
 
 public:
-    BattleMCTSNode(BattleManagerFast bm, BattleMCTSManager* manager);
+    BattleMCTSNode(BattleManagerFast bm, BattleMCTSManager* manager, BattleMCTSNode* parent);
     ~BattleMCTSNode() = default;
-
-    void set_bm(BattleManagerFast bm);
 
     float uct() const;
     bool is_explored();
@@ -48,8 +46,8 @@ class BattleMCTSManager : public Node {
     GDCLASS(BattleMCTSManager, Node);
 
     // i wanted it to not be a pointer, but c++ was stronger
-    BattleMCTSNode* root;
-    int army;
+    BattleMCTSNode* root = nullptr;
+    int army_team;
 
     friend class BattleMCTSNode;
     
