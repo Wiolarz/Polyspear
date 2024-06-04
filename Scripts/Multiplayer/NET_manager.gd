@@ -11,6 +11,11 @@ signal chat_message_arrived(content : String)
 signal chat_log_cleared
 
 
+func _process(_delta) -> void:
+	if Input.is_action_just_pressed("FORCE_DESYNC"):
+		desync()
+
+
 func get_role_name() -> String:
 	if server:
 		return "server"
@@ -46,8 +51,7 @@ func make_client() -> void:
 func desync() -> void:
 	push_error("desync")
 	if client:
-		# TODO request whole state from server to sync again
-		IM.quit_game()
+		client.desync()
 
 
 func server_listen(address : String, port : int, username : String):

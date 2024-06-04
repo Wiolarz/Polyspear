@@ -184,6 +184,16 @@ func send_additional_callbacks_to_logging_client(peer : ENetPacketPeer):
 		pass
 
 
+func send_full_state_sync(peer : ENetPacketPeer):
+	var game_setup = IM.game_setup_info
+	var world_state = IM.get_serializable_world_state()
+	var battle_state = IM.get_serializable_battle_state()
+	var packet : Dictionary = \
+		SetFullStateCommand.create_packet(game_setup, world_state, battle_state,
+			server_username)
+	send_to_peer(peer, packet)
+
+
 func roll() -> void:
 	var broken : bool = false
 	if not enet_network:
@@ -234,8 +244,8 @@ func roll() -> void:
 					var result = (command.server_callback).call(self, peer, \
 						decoded)
 					if result != 0:
-						var msg = "Peer %x sent us %s command, but we " + \
-							"couldn't process it well" % [ \
+						var msg = ("Peer %x sent us %s command, but we " + \
+							"couldn't process it well") % [ \
 							peer.get_instance_id(), command_name ]
 						print(msg)
 					print("command processed")
