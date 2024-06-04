@@ -1,9 +1,8 @@
-[gd_resource type="Resource" script_class="DataUnit" load_steps=7 format=3 uid="uid://dmiylc1klejb1"]
+[gd_resource type="Resource" script_class="DataUnit" load_steps=6 format=3 uid="uid://45evuc6v888j"]
 
 [ext_resource type="Script" path="res://Scripts/World/Economy/goods.gd" id="1_k1njf"]
 [ext_resource type="Script" path="res://Resources/Battle/data_unit.gd" id="2_u3lvg"]
 [ext_resource type="Resource" uid="uid://c61kr7bqpyhr0" path="res://Resources/Battle/Symbols/bow.tres" id="3_4ii27"]
-[ext_resource type="Resource" uid="uid://cngonnqsgsd6e" path="res://Resources/Battle/Symbols/sword.tres" id="4_rlgou"]
 [ext_resource type="Resource" uid="uid://o4rlmfc33rsh" path="res://Resources/Battle/Symbols/empty.tres" id="5_e8umv"]
 
 [sub_resource type="Resource" id="Resource_o8yk3"]
@@ -16,6 +15,6 @@ ruby = 1
 script = ExtResource("2_u3lvg")
 unit_name = "stalker_unit"
 texture_path = "res://Art/world_heroes/elf_stalker.png"
-symbols = Array[Resource("res://Resources/Battle/data_symbol.gd")]([ExtResource("3_4ii27"), ExtResource("4_rlgou"), ExtResource("5_e8umv"), ExtResource("5_e8umv"), ExtResource("5_e8umv"), ExtResource("4_rlgou")])
+symbols = Array[Resource("res://Resources/Battle/data_symbol.gd")]([ExtResource("3_4ii27"), ExtResource("5_e8umv"), ExtResource("5_e8umv"), ExtResource("5_e8umv"), ExtResource("5_e8umv"), ExtResource("5_e8umv")])
 cost = SubResource("Resource_o8yk3")
 level = 1

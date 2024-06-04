@@ -7,9 +7,9 @@
 
 [sub_resource type="Resource" id="Resource_5r62w"]
 script = ExtResource("1_feg68")
-wood = 5
-iron = 5
-ruby = 10
+wood = 3
+iron = 3
+ruby = 3
 
 [resource]
 script = ExtResource("2_cbv6a")

@@ -25,11 +25,11 @@ static func _inner_create_place(new_data_tile : DataTile) -> Place:
 
 		# resource hunt spots
 		"wood_hunt":
-			return HuntSpot.new(CFG.HUNT_WOOD_PATH, [Goods.new(3,0,0), Goods.new(6,0,0)])
+			return HuntSpot.new(CFG.HUNT_WOOD_PATH, [Goods.new(3,0,0), Goods.new(6,0,0), Goods.new(9,0,0)])
 		"iron_hunt":
-			return HuntSpot.new(CFG.HUNT_IRON_PATH, [Goods.new(0,3,0), Goods.new(0,6,0)])
+			return HuntSpot.new(CFG.HUNT_IRON_PATH, [Goods.new(0,3,0), Goods.new(0,6,0), Goods.new(0,9,0)])
 		"ruby_hunt":
-			return HuntSpot.new(CFG.HUNT_RUBY_PATH, [Goods.new(0,0,3), Goods.new(0,0,6)])
+			return HuntSpot.new(CFG.HUNT_RUBY_PATH, [Goods.new(0,0,3), Goods.new(0,0,6), Goods.new(0,0,9)])
 
 		_:#"sentinel", "wall", "empty"
 			return null

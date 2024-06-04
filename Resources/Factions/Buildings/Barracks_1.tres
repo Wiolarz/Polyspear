@@ -5,8 +5,8 @@
 
 [sub_resource type="Resource" id="Resource_0inm0"]
 script = ExtResource("1_d368w")
-wood = 1
-iron = 5
+wood = 2
+iron = 0
 ruby = 0
 
 [resource]
@@ -14,4 +14,4 @@ script = ExtResource("2_c01yf")
 name = "barracks level 1"
 cost = SubResource("Resource_0inm0")
 requirements = Array[ExtResource("2_c01yf")]([])
-outpost_requirement = "sawmill"
+outpost_requirement = ""
