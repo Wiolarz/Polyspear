@@ -344,15 +344,25 @@ func start_combat(attacking_army : ArmyForm, coord : Vector2i):
 	"""
 	print("start_combat")
 
-	combat_tile = coord
 	var armies : Array[Army] = [
 		attacking_army.entity,
-		W_GRID.get_army(combat_tile).entity,
+		W_GRID.get_army(coord).entity,
 	]
+	setup_combat(armies, coord, null)
+
+
+func setup_combat( \
+		armies : Array[Army], \
+		combat_coord : Vector2i, \
+		battle_state : SerializableBattleState):
+	# we here assume that world map is already fully initialized and all
 	var battle_map : DataBattleMap = W_GRID.get_battle_map(combat_tile)
 	var x_offset = get_bounds_global_position().end.x + CFG.MAPS_OFFSET_X
-
-	BM.start_battle(armies, battle_map, x_offset)
+	combat_tile = combat_coord
+	if not battle_state:
+		BM.start_battle(armies, battle_map, x_offset)
+	else:
+		BM.force_battle_state(armies, battle_map, battle_state, x_offset)
 	UI.switch_camera()
 
 
@@ -398,6 +408,8 @@ func kill_army(army : ArmyForm):
 #region World End
 
 func close_world():
+	players = []
+	combat_tile = Vector2i.MAX
 	selected_hero = null
 	current_player = null
 
@@ -624,7 +636,7 @@ func get_serializable_state() -> SerializableWorldState:
 		if player.capital_city:
 			state.capital_cities.append(player.capital_city.coord)
 		else:
-			state.capital_cities.append(Vector2i(100000, 0)) # HACK TODO
+			state.capital_cities.append(Vector2i.MAX) # no optional vector :c
 		state.dead_heroes.append([])
 		var dh = state.dead_heroes.back()
 		for dead_hero in player.dead_heroes:

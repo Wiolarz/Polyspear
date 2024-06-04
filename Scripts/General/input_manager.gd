@@ -67,6 +67,13 @@ func start_or_set_game_in_state(world_state : SerializableWorldState, \
 			_setup_game_world(world_state)
 			UI.set_camera(E.CameraPosition.WORLD)
 			UI.go_to_custom_ui(WM.world_ui)
+			if battle_state.valid():
+				var armies : Array[Army] = []
+				for army_coord in battle_state.world_armies:
+					armies.append(W_GRID.get_army_form(army_coord).entity)
+				WM.setup_combat(armies, battle_state.combat_coord, battle_state)
+				UI.go_to_custom_ui(BM.battle_ui)
+
 
 ## starts game based on game_setup_info
 func start_game() -> void:
@@ -210,7 +217,9 @@ func get_full_player_description(player : Player) -> String:
 
 
 func get_serializable_world_state() -> SerializableWorldState:
-	var state := WM.get_serializable_state()
+	var state := SerializableWorldState.new()
+	if WM.world_game_is_active():
+		state = WM.get_serializable_state()
 	return state
 
 
@@ -218,6 +227,10 @@ func get_serializable_battle_state() -> SerializableBattleState:
 	var state := SerializableBattleState.new()
 	if BM.battle_is_ongoing:
 		state.replay = BM.get_ripped_replay()
+		if WM.world_game_is_active():
+			for army in BM._battle_grid.armies_in_battle_state:
+				state.world_armies.append(army.army_reference.coord)
+			state.combat_coord = WM.combat_tile
 	return state
 
 
