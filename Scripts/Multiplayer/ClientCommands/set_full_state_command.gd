@@ -26,8 +26,10 @@ static func process_command(_client : Client, params : Dictionary) -> int:
 		return FAILED
 	var setup = GameSetupInfo.from_dictionary(params["setup"], \
 		NET.get_current_login())
-	var world_state : SerializableWorldState = SerializableWorldState.from_network_serialized(params["world"])
-	var battle_state : SerializableBattleState = SerializableBattleState.from_network_serialized(params["battle"])
+	var world_state : SerializableWorldState = \
+		SerializableWorldState.from_network_serialized(params["world"])
+	var battle_state : SerializableBattleState = \
+		SerializableBattleState.from_network_serialized(params["battle"])
 	IM.game_setup_info = setup
 	IM.force_set_state(world_state, battle_state)
 	return OK

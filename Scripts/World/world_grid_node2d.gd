@@ -7,8 +7,9 @@ var grid_height : int
 var tile_grid : GenericHexGrid # Grid<TileForm>
 var unit_grid : GenericHexGrid # Grid<ArmyForm>
 var places_grid : GenericHexGrid # Grid<Place>
+# TODO make naming consistent -- all in plural form or none
 
-func load_map(world_map : DataWorldMap) -> void:
+func load_map(world_map : DataWorldMap, state_load_mode : bool = false) -> void:
 	assert(is_clear(), "cannot load map, map already loaded")
 	grid_width = world_map.grid_width
 	grid_height = world_map.grid_height
@@ -20,14 +21,16 @@ func load_map(world_map : DataWorldMap) -> void:
 		for y in range(grid_height):
 			var coord := Vector2i(x, y)
 			var data : DataTile = world_map.grid_data[x][y]
-			var place : Place = Place.create_place(data, coord)
+			var place : Place = null
+			if not state_load_mode or true:
+				place = Place.create_place(data, coord)
 			var tile_form := TileForm.create_world_tile(data, coord, place)
 			tile_form.position = to_position(coord)
 			add_child(tile_form)
 
 			tile_grid.set_hex(coord, tile_form)
 			places_grid.set_hex(coord, place)
-			if place:
+			if place and not state_load_mode:
 				place.on_game_started()
 
 
@@ -36,6 +39,9 @@ func load_map(world_map : DataWorldMap) -> void:
 ## TODO rename `get_army_form`
 
 func get_army(coord : Vector2i) -> ArmyForm:
+	return get_army_form(coord)
+
+func get_army_form(coord : Vector2i) -> ArmyForm:
 	return unit_grid.get_hex(coord)
 
 

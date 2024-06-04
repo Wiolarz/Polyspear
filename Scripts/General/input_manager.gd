@@ -59,13 +59,14 @@ func start_or_set_game_in_state(world_state : SerializableWorldState, \
 		if BM.battle_is_ongoing:
 			BM.drop_battle()
 		UI.go_to_main_menu()
-		# TODO also world
 		if game_setup_info.is_in_mode_battle() and battle_state.valid():
 			_setup_game_battle(battle_state)
 			UI.set_camera(E.CameraPosition.BATTLE)
 			UI.go_to_custom_ui(BM.battle_ui)
-			# refresh jakieś UI
-
+		elif game_setup_info.is_in_mode_world() and world_state.valid():
+			_setup_game_world(world_state)
+			UI.set_camera(E.CameraPosition.WORLD)
+			UI.go_to_custom_ui(WM.world_ui)
 
 ## starts game based on game_setup_info
 func start_game() -> void:
@@ -103,8 +104,15 @@ func go_to_map_editor():
 
 
 func _start_game_world():
+	return _setup_game_world(null)
+
+
+func _setup_game_world(world_state : SerializableWorldState):
 	UI.go_to_main_menu()
-	WM.start_world(game_setup_info.world_map)
+	if not world_state:
+		WM.start_world(game_setup_info.world_map)
+	else:
+		WM.force_world_state(game_setup_info.world_map, world_state)
 
 
 func _start_game_battle():
@@ -202,7 +210,8 @@ func get_full_player_description(player : Player) -> String:
 
 
 func get_serializable_world_state() -> SerializableWorldState:
-	return SerializableWorldState.new()
+	var state := WM.get_serializable_state()
+	return state
 
 
 func get_serializable_battle_state() -> SerializableBattleState:

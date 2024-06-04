@@ -82,3 +82,9 @@ func can_build(building : DataBuilding)-> bool:
 
 	return building.requirements \
 		.all(func b_present(b:DataBuilding): return has_built(b))
+
+
+func to_specific_serializable(dict : Dictionary) -> void:
+	dict["buildings"] = []
+	for building in buildings:
+		dict["buildings"].append(DataBuilding.get_network_id(building))
