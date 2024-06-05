@@ -11,7 +11,7 @@ const STATE_BATTLE_FINISHED = "battle_finished"
 
 const MOVE_IS_INVALID = -1
 
-const STALEMATE_TURN_COUNT = 50
+const STALEMATE_TURN_COUNT = 150
 
 var state : String = ""
 var turn_counter : int = 0

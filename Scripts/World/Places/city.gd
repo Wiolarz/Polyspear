@@ -13,6 +13,14 @@ func interact(army : ArmyForm) -> void:
 	if controller != army.controller:
 		WM.win_game(army.controller)
 
+func on_end_of_turn() -> void:
+	controller.goods.add(Goods.new(0, 1, 0))
+	for bulding in buildings:
+		if bulding.name == "sawmill":
+			controller.goods.add(Goods.new(3, 0, 0))
+
+
+#region Heroes
 
 func get_heroes_to_buy() -> Array[DataHero]:
 	var result : Array[DataHero] = []
@@ -38,6 +46,10 @@ func can_buy_hero(hero: DataHero) -> bool:
 	var cost = controller.get_hero_cost(hero)
 	return controller.has_enough(cost)
 
+#endregion
+
+
+#region Units
 
 func get_units_to_buy() -> Array[DataUnit]:
 	var units : Array[DataUnit] = []
@@ -61,6 +73,10 @@ func unit_has_required_building(unit : DataUnit) -> bool:
 		return true
 	return has_built(unit.required_building)
 
+#endregion
+
+
+#region Buildings
 
 func build(building : DataBuilding) -> void:
 	if not can_build(building):
@@ -87,3 +103,5 @@ func can_build(building : DataBuilding)-> bool:
 
 	return building.requirements \
 		.all(func b_present(b:DataBuilding): return has_built(b))
+
+#endregion

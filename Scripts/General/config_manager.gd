@@ -92,8 +92,17 @@ func get_team_color_at(index : int) -> DataPlayerColor:
 		return DEFAULT_TEAM_COLOR
 	return TEAM_COLORS[index]
 
+
+#region Battle maps
+
 var DEFAULT_BATTLE_MAP : DataBattleMap = \
 	load("res://Resources/Battle/Battle_Maps/basic5x5.tres")
+
+var BIGGER_BATTLE_MAP : DataBattleMap = \
+	load("res://Resources/Battle/Battle_Maps/7x7duel_10maxUnits.tres")
+
+#endregion
+
 const DEFAULT_ARMY_FORM = preload("res://Scenes/Form/ArmyForm.tscn")
 
 ## URL for trying to determine external IP
