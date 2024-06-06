@@ -24,6 +24,9 @@ var _anim_queue : Array[AnimInQueue] = []
 
 var _batch_mode : bool = false
 
+# FIXME
+var x_offset : float = 0.0
+
 
 func _ready():
 	battle_ui = load("res://Scenes/UI/BattleUi.tscn").instantiate()
@@ -111,13 +114,12 @@ func get_bounds_global_position() -> Rect2:
 #region Battle Setup
 
 func start_battle(new_armies : Array[Army], battle_map : DataBattleMap, \
-		x_offset : float) -> void:
+		battle_state : SerializableBattleState) -> void:
 	_replay = BattleReplay.create(new_armies, battle_map)
 	_replay.save()
 
-	if not _batch_mode:
-		UI.ensure_camera_is_spawned()
-		UI.go_to_custom_ui(battle_ui)
+	UI.ensure_camera_is_spawned()
+	UI.go_to_custom_ui(battle_ui)
 
 	battle_is_ongoing = true
 	_waiting_for_action_to_finish = false
@@ -136,24 +138,13 @@ func start_battle(new_armies : Array[Army], battle_map : DataBattleMap, \
 	selected_unit = null
 	battle_ui.load_armies(_battle_grid.armies_in_battle_state)
 
-	if not _batch_mode:
+	if not battle_state:
 		on_turn_started(_battle_grid.get_current_player())
-
-
-func force_battle_state(armies : Array[Army], \
-		map_data : DataBattleMap, \
-		battle_state : SerializableBattleState, x_offset : float):
-	_batch_mode = true
-	var replay := battle_state.replay
-	start_battle(armies, map_data, x_offset)
-
-	# TODO here will go connections between world and battle
-
-	_replay_is_playing = true
-	for m in replay.moves:
-		perform_replay_move(m)
-	_replay_is_playing = false
-	_batch_mode = false
+	else:
+		_batch_mode = true
+		for m in battle_state.replay.moves:
+			perform_replay_move(m)
+		_batch_mode = false
 
 
 #endregion
@@ -180,9 +171,10 @@ func replay_move_delay() -> void:
 			return # terminating battle while watching
 
 
+## gets replay of current battle, but containing only moves -- used in
+## serialization of whole game state
 func get_ripped_replay() -> BattleReplay:
 	var result = BattleReplay.new()
-	result.battle_map = _replay.battle_map
 	result.moves = _replay.moves.duplicate()
 	return result
 

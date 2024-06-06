@@ -29,11 +29,7 @@ func get_battle_maps_list() -> Array[String]:
 	return FileSystemHelpers.list_files_in_folder(CFG.BATTLE_MAPS_PATH)
 
 
-func start_or_set_game_in_state(world_state : SerializableWorldState, \
-		battle_state : SerializableBattleState) -> void:
-
-	var force_state : bool = world_state or battle_state
-
+func _prepare_to_start_game() -> void:
 	for p in players:
 		p.queue_free()
 	players = []
@@ -44,45 +40,48 @@ func start_or_set_game_in_state(world_state : SerializableWorldState, \
 
 	UI.ensure_camera_is_spawned()
 
-	if not force_state:
-		if game_setup_info.is_in_mode_world():
-			_start_game_world()
-			BM.position.x = WM.get_bounds_global_position().end.x + CFG.MAPS_OFFSET_X
-			UI.set_camera(E.CameraPosition.WORLD)
-		if game_setup_info.is_in_mode_battle():
-			_start_game_battle()
-			UI.set_camera(E.CameraPosition.BATTLE)
-		if NET.server:
-			NET.server.broadcast_start_game()
-	else:
-		WM.close_world()
-		if BM.battle_is_ongoing:
-			BM.drop_battle()
-		UI.go_to_main_menu()
-		if game_setup_info.is_in_mode_battle() and battle_state.valid():
-			_setup_game_battle(battle_state)
-			UI.set_camera(E.CameraPosition.BATTLE)
-			UI.go_to_custom_ui(BM.battle_ui)
-		elif game_setup_info.is_in_mode_world() and world_state.valid():
-			_setup_game_world(world_state)
-			UI.set_camera(E.CameraPosition.WORLD)
-			UI.go_to_custom_ui(WM.world_ui)
-			if battle_state.valid():
-				var armies : Array[Army] = []
-				for army_coord in battle_state.world_armies:
-					armies.append(W_GRID.get_army_form(army_coord).entity)
-				WM.setup_combat(armies, battle_state.combat_coord, battle_state)
-				UI.go_to_custom_ui(BM.battle_ui)
+	WM.close_world()
+	if BM.battle_is_ongoing:
+		BM.drop_battle()
+	UI.go_to_main_menu()
 
 
-## starts game based on game_setup_info
-func start_game() -> void:
-	return start_or_set_game_in_state(null, null)
+## starts a new game based on game_setup_info
+func start_new_game() -> void:
+
+	_prepare_to_start_game()
+
+	if game_setup_info.is_in_mode_world():
+		_start_game_world(null)
+		BM.position.x = WM.get_bounds_global_position().end.x + CFG.MAPS_OFFSET_X
+		UI.set_camera(E.CameraPosition.WORLD)
+	if game_setup_info.is_in_mode_battle():
+		_start_game_battle(null)
+		UI.set_camera(E.CameraPosition.BATTLE)
+	if NET.server:
+		NET.server.broadcast_start_game()
 
 
-func force_set_state(world_state : SerializableWorldState, \
+## starts a game in some state based on provided states and on game_setup_info
+func start_game_in_state(world_state : SerializableWorldState, \
 		battle_state : SerializableBattleState) -> void:
-	return start_or_set_game_in_state(world_state, battle_state)
+
+	_prepare_to_start_game()
+
+	if game_setup_info.is_in_mode_battle() and battle_state.valid():
+		_start_game_battle(battle_state)
+		UI.set_camera(E.CameraPosition.BATTLE)
+		UI.go_to_custom_ui(BM.battle_ui)
+	elif game_setup_info.is_in_mode_world() and world_state.valid():
+		_start_game_world(world_state)
+		UI.set_camera(E.CameraPosition.WORLD)
+		UI.go_to_custom_ui(WM.world_ui)
+		if battle_state.valid():
+			var armies : Array[Army] = []
+			for army_coord in battle_state.world_armies:
+				armies.append(W_GRID.get_army_form(army_coord).entity)
+			WM.start_combat(armies, battle_state.combat_coord, battle_state)
+			UI.go_to_custom_ui(BM.battle_ui)
 
 
 func perform_replay(path):
@@ -100,7 +99,7 @@ func perform_replay(path):
 		slot.occupier = ""
 		slot.set_units(units_array)
 
-	start_game()
+	start_new_game()
 	BM.perform_replay(replay)
 
 
@@ -110,36 +109,27 @@ func go_to_map_editor():
 	UI.go_to_map_editor()
 
 
-func _start_game_world():
-	return _setup_game_world(null)
-
-
-func _setup_game_world(world_state : SerializableWorldState):
+## new game <=> world_state == null
+func _start_game_world(world_state : SerializableWorldState):
 	UI.go_to_main_menu()
+	var map : DataWorldMap = game_setup_info.world_map
 	if not world_state:
-		WM.start_world(game_setup_info.world_map)
+		WM.start_new_world(map)
 	else:
-		WM.force_world_state(game_setup_info.world_map, world_state)
+		WM.start_world_in_state(map, world_state)
 
-
-func _start_game_battle():
-	return _setup_game_battle(null)
-
-
-func _setup_game_battle(battle_state : SerializableBattleState):
+## new game <=> battle_state == null
+func _start_game_battle(battle_state : SerializableBattleState):
 	var map_data = game_setup_info.battle_map
 	var armies : Array[Army]  = []
 
 	for p in players:
 		armies.append(create_army_for(p))
 
-	var x_offset : float = 0
+	BM.x_offset = 0.0
 
-	if not battle_state:
-		UI.go_to_main_menu()
-		BM.start_battle(armies, map_data, x_offset)
-	else:
-		BM.force_battle_state(armies, map_data, battle_state, x_offset)
+	UI.go_to_main_menu()
+	BM.start_battle(armies, map_data, battle_state)
 
 
 func create_army_for(player : Player) -> Army:

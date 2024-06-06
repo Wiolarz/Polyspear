@@ -38,9 +38,7 @@ static func from_network_serialized(ser : PackedByteArray) \
 	var dict : Dictionary = bytes_to_var(ser)
 
 	# replay
-	if \
-			"moves" in dict and dict["moves"] is Array and \
-			true:
+	if "moves" in dict and dict["moves"] is Array:
 		var breplay = BattleReplay.new()
 		breplay.timestamp = Time.get_datetime_string_from_system()
 		# TODO maybe use create

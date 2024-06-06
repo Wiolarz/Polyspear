@@ -198,7 +198,7 @@ func perform_world_move_info(world_move_info : WorldMoveInfo) -> void:
 			if not hero.has_movement_points():
 				print("not enough movement points")
 				return
-			start_combat(hero, coord)
+			start_combat_by_attack(hero, coord)
 
 		var selected_spot_type : String = W_GRID.get_interactable_type(coord)
 
@@ -338,32 +338,29 @@ func do_local_build(city_coord : Vector2i, \
 
 #region Battles
 
-func start_combat(attacking_army : ArmyForm, coord : Vector2i):
+func start_combat( \
+		armies : Array[Army], \
+		combat_coord : Vector2i, \
+		battle_state : SerializableBattleState):
 	"""
 	Starts a battle using Battle Manager (BM)
 	"""
+	var battle_map : DataBattleMap = W_GRID.get_battle_map(combat_tile)
+	combat_tile = combat_coord
+	BM.x_offset = get_bounds_global_position().end.x + CFG.MAPS_OFFSET_X
+	BM.start_battle(armies, battle_map, battle_state)
+	UI.switch_camera()
+
+
+## shortcut to start battle when one army attacks another
+func start_combat_by_attack(attacking_army : ArmyForm, coord : Vector2i):
 	print("start_combat")
 
 	var armies : Array[Army] = [
 		attacking_army.entity,
 		W_GRID.get_army(coord).entity,
 	]
-	setup_combat(armies, coord, null)
-
-
-func setup_combat( \
-		armies : Array[Army], \
-		combat_coord : Vector2i, \
-		battle_state : SerializableBattleState):
-	# we here assume that world map is already fully initialized and all
-	var battle_map : DataBattleMap = W_GRID.get_battle_map(combat_tile)
-	var x_offset = get_bounds_global_position().end.x + CFG.MAPS_OFFSET_X
-	combat_tile = combat_coord
-	if not battle_state:
-		BM.start_battle(armies, battle_map, x_offset)
-	else:
-		BM.force_battle_state(armies, battle_map, battle_state, x_offset)
-	UI.switch_camera()
+	start_combat(armies, coord, null)
 
 
 func end_of_battle(battle_results : Array[BattleGridState.ArmyInBattleState]):
@@ -428,7 +425,7 @@ func spawn_world_ui():
 	UI.add_custom_screen(world_ui)
 
 
-func start_world(world_map : DataWorldMap) -> void:
+func start_new_world(world_map : DataWorldMap) -> void:
 	BM.battle_is_ongoing = false
 
 	var spawn_location = world_map.get_spawn_locations()
@@ -454,7 +451,8 @@ func start_world(world_map : DataWorldMap) -> void:
 	world_ui.show_trade_ui(current_player.capital_city, null)
 
 
-func force_world_state(world_map : DataWorldMap, \
+# this function probably should be divided into parts
+func start_world_in_state(world_map : DataWorldMap, \
 		world_state : SerializableWorldState) -> void:
 	_batch_mode = true
 

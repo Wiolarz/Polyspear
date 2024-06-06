@@ -31,5 +31,5 @@ static func process_command(_client : Client, params : Dictionary) -> int:
 	var battle_state : SerializableBattleState = \
 		SerializableBattleState.from_network_serialized(params["battle"])
 	IM.game_setup_info = setup
-	IM.force_set_state(world_state, battle_state)
+	IM.start_game_in_state(world_state, battle_state)
 	return OK
