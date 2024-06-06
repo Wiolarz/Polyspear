@@ -58,8 +58,10 @@ func move_info_move_unit(source_tile_coord: Vector2i, target_tile_coord : Vector
 	perform_move(unit, direction, target_tile_coord)
 
 	turn_counter += 1
-	check_battle_end()
-	switch_participant_turn()
+
+	if battle_is_ongoing():
+		check_battle_end()
+		switch_participant_turn()
 
 
 func perform_move(unit : Unit, direction : int, target_tile_coord : Vector2i) -> void:
@@ -375,6 +377,36 @@ func force_surrender():
 			continue
 		kill_army(army_idx)
 
+
+
+#region AI Helpers
+
+func get_summon_tiles(player : Player) -> Array[Vector2i]:
+	var idx = find_army_idx(player)
+	return get_summon_coords(idx)
+
+
+func get_not_summoned_units(player : Player) -> Array[DataUnit]:
+	for a in armies_in_battle_state:
+		if a.army_reference.controller == player:
+			return a.units_to_summon.duplicate()
+	assert(false, "ai asked for units to summon but it doesn't control any army")
+	return []
+
+
+func get_units(player : Player) -> Array[Unit]:
+	var idx = find_army_idx(player)
+	return armies_in_battle_state[idx].units
+
+
+func find_army_idx(player : Player) -> int:
+	for idx in range(armies_in_battle_state.size()):
+		if armies_in_battle_state[idx].army_reference.controller == player:
+			return idx
+	assert(false, "ai asked for army idx for player who doesnt control any army")
+	return -1
+
+#endregion
 
 class BattleHex:
 	var can_be_moved_to: bool

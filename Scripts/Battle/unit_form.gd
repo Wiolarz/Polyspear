@@ -1,11 +1,13 @@
 class_name UnitForm
 extends Node2D
 
+## emitted when anim ends (move, turn, die)
 signal anim_end()
 
 var unit : Unit
 
-var _target_tile : TileForm
+var _play_move_anim : bool
+var _target_global_position : Vector2
 var _move_speed : float
 
 var _play_turn_anim : bool
@@ -24,11 +26,11 @@ static func create(new_unit : Unit) -> UnitForm:
 	result.apply_graphics(new_unit.template,
 			new_unit.get_player_color())
 
-	result.global_position = BM.get_tile(new_unit.coord).global_position
+	result.global_position = BM.get_tile_global_position(new_unit.coord)
+	result._target_global_position = result.global_position
 	result.rotation_degrees = new_unit.unit_rotation * 60
 	result._target_rotation_degrees = result.rotation_degrees
 	result.get_node("sprite_unit").rotation = -result.rotation
-
 
 	return result
 
@@ -61,13 +63,11 @@ func start_turn_anim():
 
 func start_move_anim():
 	print("start move anim")
-
+	_play_move_anim = true
 	var new_coord = unit.coord
-	var tile = BM.get_tile(new_coord)
-
-	_target_tile = tile
-	_move_speed = (tile.global_position - global_position).length() / CFG.animation_speed_frames
-	print(global_position, " to ", tile.global_position, " coord ", new_coord )
+	_target_global_position = BM.get_tile_global_position(new_coord)
+	_move_speed = (_target_global_position - global_position).length() / CFG.animation_speed_frames
+	print("move from ", global_position, " to ", _target_global_position, " coord ", new_coord )
 
 
 func start_death_anim():
@@ -124,20 +124,20 @@ func _animate_rotation() -> bool:
 
 
 func _animate_movement() -> bool:
-	if _target_tile == null:
+	if not _play_move_anim:
 		return false
 
 	if CFG.animation_speed_frames == CFG.AnimationSpeed.INSTANT:
-		global_position = _target_tile.global_position
-		_target_tile = null
+		global_position = _target_global_position
+		_play_move_anim = false
 		print("instant move end")
 		anim_end.emit()
 		return true
 
-	global_position = global_position.move_toward(_target_tile.global_position, _move_speed)
-	if (global_position - _target_tile.global_position).length_squared() < 0.01:
-		global_position = _target_tile.global_position
-		_target_tile = null
+	global_position = global_position.move_toward(_target_global_position, _move_speed)
+	if (global_position - _target_global_position).length_squared() < 0.01:
+		global_position = _target_global_position
+		_play_move_anim = false
 		print("normal move end")
 		anim_end.emit()
 	return true
@@ -207,4 +207,3 @@ func _apply_color_texture(color : DataPlayerColor) -> void:
 	var texture = load(path) as Texture2D
 	assert(texture, "failed to load background " + path)
 	$sprite_color.texture = texture
-

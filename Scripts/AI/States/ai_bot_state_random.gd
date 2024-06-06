@@ -8,8 +8,8 @@ func _init(my_tags : Array[ExampleBot.TAG], my_player:Player ):
 	me = my_player
 
 
-func choose_move(legal_moves : Array[MoveInfo]) -> MoveInfo:
-	var kill_moves = AIHelpers.get_all_kill_moves(legal_moves, me)
+func choose_move( battle_state : BattleGridState, legal_moves : Array[MoveInfo]) -> MoveInfo:
+	var kill_moves = AIHelpers.get_all_kill_moves(battle_state, legal_moves)
 	if kill_moves.size() > 0:
 		return kill_moves[randi_range(0, kill_moves.size() - 1)]
 	return legal_moves[randi_range(0, legal_moves.size() - 1)]

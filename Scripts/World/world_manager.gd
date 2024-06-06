@@ -1,15 +1,9 @@
 # Singleton - WM
 extends Node
 
+signal world_move_done
 
 #region Setup Parameters
-"""
-Current simplifications:
-1 All players are host-seat
-2 Basic same map
-3 Same game parameters set as const
-
-"""
 
 var players : Array[Player] = []
 
@@ -26,7 +20,6 @@ var combat_tile : Vector2i
 
 #endregion
 
-signal world_move_done
 
 #region helpers
 
@@ -121,6 +114,10 @@ func _end_of_round_callbacks() -> void:
 ## City/Heroes -> orders Heroes
 func grid_input(coord : Vector2i):
 	print("world input @", coord)
+
+	if BM.should_block_world_interaction():
+		print("blocked by BM - Battle Manager")
+		return
 
 	if selected_hero == null:
 		input_try_select(coord)
@@ -358,7 +355,6 @@ func start_combat(attacking_army : ArmyForm, coord : Vector2i):
 		var army_size : int = army.units_data.size()
 		if biggest_army_size < army_size:
 			biggest_army_size = army_size
-	
 
 	var battle_map : DataBattleMap = W_GRID.get_battle_map(combat_tile, biggest_army_size)
 	#END TEMP
@@ -430,7 +426,7 @@ func spawn_world_ui():
 
 
 func start_world(world_map : DataWorldMap) -> void:
-	BM.battle_is_ongoing = false
+	BM.world_map_started()
 
 	var spawn_location = world_map.get_spawn_locations()
 

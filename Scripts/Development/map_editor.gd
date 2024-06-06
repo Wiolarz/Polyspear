@@ -168,13 +168,13 @@ func _on_load_map_pressed():
 	var map_to_load = load(map_path)
 	assert(map_to_load != null, "there is no selected map to be loaded")
 	WM.close_world()
-	BM.reset_grid_and_unit_forms()
+	BM.unload_for_editor()
 	if map_to_load is DataWorldMap:
 		_set_grid_type(MapType.WORLD)
 		W_GRID.load_map(map_to_load)
 	else:
 		_set_grid_type(MapType.BATTLE)
-		BM.load_map(map_to_load)
+		BM.load_editor_map(map_to_load)
 
 
 func get_battle_map(trim : bool = true) -> DataBattleMap:
@@ -240,7 +240,7 @@ func _on_save_map_pressed():
 
 func _generate_empty_map(size_x : int = 5, size_y : int = 5) -> Array: # -> Array[Array[DataTile]]
 	WM.close_world()
-	BM.reset_grid_and_unit_forms()
+	BM.unload_for_editor()
 	var grid_data = []
 
 	for tile_column in range(size_x):
@@ -278,8 +278,8 @@ func _on_new_battle_map_pressed():
 	new_map.grid_height = grid_data.size()
 	new_map.grid_width = grid_data[0].size()
 	#print(new_map.grid_height, " ", new_map.grid_width)
-	BM.reset_data()
-	BM.load_map(new_map)
+	BM.unload_for_editor()
+	BM.load_editor_map(new_map)
 
 
 func _on_open_button_pressed():
@@ -321,8 +321,8 @@ func _on_add_column_pressed():
 		var new_map := get_battle_map(false)
 		new_map.grid_data.append(create_empty_row(new_map.grid_height))
 		new_map.grid_width += 1
-		BM.reset_grid_and_unit_forms()
-		BM.load_map(new_map)
+		BM.unload_for_editor()
+		BM.load_editor_map(new_map)
 
 
 func create_empty_row(length : int) -> Array[DataTile]:
@@ -345,5 +345,5 @@ func _on_add_row_pressed():
 		for row in new_map.grid_data:
 			row.append(create_empty_tile())
 		new_map.grid_height += 1
-		BM.reset_grid_and_unit_forms()
-		BM.load_map(new_map)
+		BM.unload_for_editor()
+		BM.load_editor_map(new_map)

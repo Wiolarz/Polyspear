@@ -52,6 +52,7 @@ func _process(_delta):
 	if place != null: #TEMP
 		$PlaceLabel.text = place.get_map_description()
 
+
 func controller_changed():
 	$ControlerSprite.visible = true
 	var color_name : String = place.controller.get_player_color().name

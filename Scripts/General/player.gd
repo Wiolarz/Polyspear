@@ -64,12 +64,12 @@ func get_faction() -> DataFaction:
 
 ## let player know its his turn,
 ## in case play is AI, call his decision maker
-func your_turn():
+func your_turn(battle_state : BattleGridState):
 	var color_name = CFG.TEAM_COLORS[slot.color].name
 	print("your move %s - %s" % [get_player_name(), color_name])
 
 	if bot_engine != null and not NET.client: # AI is simulated on server only
-		bot_engine.play_move()
+		bot_engine.play_move(battle_state)
 
 
 func set_capital(capital : City):

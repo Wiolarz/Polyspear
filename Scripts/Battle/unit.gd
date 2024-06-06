@@ -59,11 +59,16 @@ func can_defend(side : int) -> bool:
 	return get_symbol(side) == E.Symbols.SHIELD
 
 
+## gets symbol facing specified directin on the battle map
 func get_symbol(side_world : int) -> E.Symbols:
-	var side_local : int = GenericHexGrid.rotate_clockwise( \
-			side_world as GenericHexGrid.GridDirections, -unit_rotation)
-	return template.symbols[side_local].type
+	return get_symbol_when_rotated(side_world, unit_rotation)
 
+
+## gets symbol facing specified directin on the battle map, if unit was rotated in given dir
+func get_symbol_when_rotated(side_world : int, hypotetical_rotation : int) -> E.Symbols:
+	var side_local : int = GenericHexGrid.rotate_clockwise( \
+			side_world as GenericHexGrid.GridDirections, -hypotetical_rotation)
+	return template.symbols[side_local].type
 
 func get_front_symbol() -> E.Symbols:
 	return template.symbols[GenericHexGrid.DIRECTION_FRONT].type
