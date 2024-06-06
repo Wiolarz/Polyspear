@@ -1,7 +1,7 @@
 [gd_resource type="Resource" script_class="PresetArmy" load_steps=3 format=3 uid="uid://c4awgc7gfsmhd"]
 
 [ext_resource type="Script" path="res://Resources/Presets/preset_army.gd" id="1_0bfoo"]
-[ext_resource type="Resource" uid="uid://lrugffw7y5h5" path="res://Resources/Battle/Units/Neutral/iron_golem.tres" id="2_a4jp0"]
+[ext_resource type="Resource" uid="uid://dddn4h4ttpirx" path="res://Resources/Battle/Units/Neutral/iron_golem.tres" id="2_a4jp0"]
 
 [resource]
 script = ExtResource("1_0bfoo")
