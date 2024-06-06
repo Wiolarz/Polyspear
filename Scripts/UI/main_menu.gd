@@ -42,9 +42,11 @@ func _clear_tabs():
 	$MainContainer/TopMenu/HostButton.modulate = Color.WHITE
 	$MainContainer/TopMenu/JoinButton.modulate = Color.WHITE
 	$MainContainer/TopMenu/SettingsButton.modulate = Color.WHITE
+	$MainContainer/TopMenu/CreditsButton.modulate = Color.WHITE
 	$MainContainer/HostLobby.hide()
 	$MainContainer/ClientLobby.hide()
 	$MainContainer/SettingsMenu.hide()
+	$MainContainer/CreditsMenu.hide()
 
 
 func _on_replays_button_pressed():
@@ -61,6 +63,12 @@ func _on_unit_editor_button_pressed():
 
 func _on_map_editor_button_pressed():
 	IM.go_to_map_editor()
+
+
+func _on_credits_button_pressed():
+	_clear_tabs()
+	$MainContainer/TopMenu/CreditsButton.modulate = Color.YELLOW
+	$MainContainer/CreditsMenu.show()
 
 
 func _on_exit_button_pressed():
