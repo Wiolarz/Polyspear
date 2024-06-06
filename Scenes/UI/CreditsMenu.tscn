@@ -34,17 +34,17 @@ alignment = 1
 layout_mode = 2
 theme_override_constants/separation = 50
 
-[node name="GameDirector" type="VBoxContainer" parent="MainBoxContainer/CreditsBoxContainer/LeftBoxContainer"]
+[node name="GameDesigner" type="VBoxContainer" parent="MainBoxContainer/CreditsBoxContainer/LeftBoxContainer"]
 layout_mode = 2
 
-[node name="Title" type="Label" parent="MainBoxContainer/CreditsBoxContainer/LeftBoxContainer/GameDirector"]
+[node name="Title" type="Label" parent="MainBoxContainer/CreditsBoxContainer/LeftBoxContainer/GameDesigner"]
 modulate = Color(1, 1, 0, 1)
 layout_mode = 2
 theme_override_font_sizes/font_size = 50
-text = "Game director"
+text = "Game designer"
 horizontal_alignment = 1
 
-[node name="Wiolarz" type="Label" parent="MainBoxContainer/CreditsBoxContainer/LeftBoxContainer/GameDirector"]
+[node name="Wiolarz" type="Label" parent="MainBoxContainer/CreditsBoxContainer/LeftBoxContainer/GameDesigner"]
 layout_mode = 2
 text = "Wiolarz"
 horizontal_alignment = 1
@@ -77,6 +77,11 @@ horizontal_alignment = 1
 [node name="Toksyczna" type="Label" parent="MainBoxContainer/CreditsBoxContainer/LeftBoxContainer/MusicSounds"]
 layout_mode = 2
 text = "Toksyczna"
+horizontal_alignment = 1
+
+[node name="Pierozek" type="Label" parent="MainBoxContainer/CreditsBoxContainer/LeftBoxContainer/MusicSounds"]
+layout_mode = 2
+text = "Pierożek"
 horizontal_alignment = 1
 
 [node name="RightBoxContainer" type="VBoxContainer" parent="MainBoxContainer/CreditsBoxContainer"]
@@ -118,17 +123,17 @@ layout_mode = 2
 text = "Trupen"
 horizontal_alignment = 1
 
-[node name="MusicSounds" type="VBoxContainer" parent="MainBoxContainer/CreditsBoxContainer/RightBoxContainer"]
+[node name="Playtesting" type="VBoxContainer" parent="MainBoxContainer/CreditsBoxContainer/RightBoxContainer"]
 layout_mode = 2
 
-[node name="Title" type="Label" parent="MainBoxContainer/CreditsBoxContainer/RightBoxContainer/MusicSounds"]
+[node name="Title" type="Label" parent="MainBoxContainer/CreditsBoxContainer/RightBoxContainer/Playtesting"]
 modulate = Color(1, 1, 0, 1)
 layout_mode = 2
 theme_override_font_sizes/font_size = 50
 text = "Playtesting"
 horizontal_alignment = 1
 
-[node name="Toksyczna" type="Label" parent="MainBoxContainer/CreditsBoxContainer/RightBoxContainer/MusicSounds"]
+[node name="Toksyczna" type="Label" parent="MainBoxContainer/CreditsBoxContainer/RightBoxContainer/Playtesting"]
 layout_mode = 2
 text = "Polygon community"
 horizontal_alignment = 1
