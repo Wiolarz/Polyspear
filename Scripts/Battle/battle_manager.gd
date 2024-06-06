@@ -317,7 +317,13 @@ func on_battle_ended() -> void:
 		await get_tree().create_timer(0.1).timeout
 
 	current_summary = create_summary()
-	battle_ui.show_summary(current_summary, close_battle)
+	if WM.world_game_is_active():
+		close_battle()
+		UI.ui_overlay.show_summary(current_summary, null)
+	else:
+		UI.ui_overlay.show_summary(current_summary, close_battle)
+
+
 
 
 func close_battle() -> void:
