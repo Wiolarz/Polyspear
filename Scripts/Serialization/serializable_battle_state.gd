@@ -21,9 +21,8 @@ static func get_network_serialized(battle_state : SerializableBattleState) \
 		dict["moves"] = []
 		var moves = dict["moves"]
 		for move in breplay.moves:
-			# HACK FIXME get rid of it and do it pretty
-			var hacked_move = MakeMoveCommand.create_packet(move)
-			moves.append(hacked_move)
+			var serializable_move = move.to_network_serializable()
+			moves.append(serializable_move)
 	if battle_state.world_armies.size() > 0:
 		dict["world_armies"] = battle_state.world_armies
 	if battle_state.combat_coord < Vector2i.MAX:
@@ -43,10 +42,9 @@ static func from_network_serialized(ser : PackedByteArray) \
 		breplay.timestamp = Time.get_datetime_string_from_system()
 		# TODO maybe use create
 		var moves = dict["moves"]
-		for move in moves:
-			# HACK again
-			var hacked_move : MoveInfo = MakeMoveCommand.create_from(move)
-			breplay.moves.append(hacked_move)
+		for serializable_move in moves:
+			var move := MoveInfo.from_network_serializable(serializable_move)
+			breplay.moves.append(move)
 
 		result.replay = breplay
 

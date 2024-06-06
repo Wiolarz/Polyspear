@@ -9,7 +9,8 @@ var defender_army : Army
 var battle_map : DataBattleMap
 var coord : Vector2i
 
-## DEPRECATED TODO rework
+
+# TODO move to other file and rework Place
 static func _inner_create_place(new_data_tile : DataTile) -> Place:
 	match new_data_tile.type:
 		# city:

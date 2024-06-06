@@ -21,9 +21,7 @@ func load_map(world_map : DataWorldMap, state_load_mode : bool = false) -> void:
 		for y in range(grid_height):
 			var coord := Vector2i(x, y)
 			var data : DataTile = world_map.grid_data[x][y]
-			var place : Place = null
-			if not state_load_mode or true:
-				place = Place.create_place(data, coord)
+			var place = Place.create_place(data, coord)
 			var tile_form := TileForm.create_world_tile(data, coord, place)
 			tile_form.position = to_position(coord)
 			add_child(tile_form)

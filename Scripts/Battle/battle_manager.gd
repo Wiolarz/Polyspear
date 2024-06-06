@@ -184,7 +184,7 @@ func get_ripped_replay() -> BattleReplay:
 
 #region Input Functions
 
-## Currently only used for AI -- sure?
+## Currently only used for AI -- TODO better name
 func on_turn_started(player : Player) -> void:
 	if not battle_is_ongoing:
 		return
