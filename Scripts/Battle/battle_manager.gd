@@ -248,7 +248,7 @@ func _grid_input_fighting(coord : Vector2i) -> void:
 	assert(_battle_grid.state == _battle_grid.STATE_FIGHTING, \
 			"_grid_input_fighting called in an incorrect state")
 
-	if try_select_unit(coord) or _selected_unit == null:
+	if _try_select_unit(coord) or _selected_unit == null:
 		# used in scenarios:
 		# - selected a new unit
 		# - clicked a tile with no ally units, when no unit was selected
@@ -277,7 +277,7 @@ func _grid_input_fighting(coord : Vector2i) -> void:
 
 ## Select friendly Unit on a given coord
 ## returns true if unit was selected
-func try_select_unit(coord : Vector2i) -> bool:
+func _try_select_unit(coord : Vector2i) -> bool:
 	var new_unit : Unit = _battle_grid.get_unit(coord)
 	if not new_unit:
 		return false

@@ -69,7 +69,7 @@ func start_game_in_state(world_state : SerializableWorldState, \
 	if game_setup_info.is_in_mode_battle() and battle_state.valid():
 		_start_game_battle(battle_state)
 		UI.set_camera(E.CameraPosition.BATTLE)
-		UI.go_to_custom_ui(BM.battle_ui)
+		UI.go_to_custom_ui(BM._battle_ui)
 	elif game_setup_info.is_in_mode_world() and world_state.valid():
 		_start_game_world(world_state)
 		UI.set_camera(E.CameraPosition.WORLD)
@@ -79,7 +79,7 @@ func start_game_in_state(world_state : SerializableWorldState, \
 			for army_coord in battle_state.world_armies:
 				armies.append(W_GRID.get_army_form(army_coord).entity)
 			WM.start_combat(armies, battle_state.combat_coord, battle_state)
-			UI.go_to_custom_ui(BM.battle_ui)
+			UI.go_to_custom_ui(BM._battle_ui)
 
 
 func perform_replay(path):
