@@ -138,13 +138,13 @@ func start_battle(new_armies : Array[Army], battle_map : DataBattleMap, \
 	selected_unit = null
 	battle_ui.load_armies(_battle_grid.armies_in_battle_state)
 
-	if not battle_state:
-		on_turn_started(_battle_grid.get_current_player())
-	else:
+	if battle_state:
 		_batch_mode = true
 		for m in battle_state.replay.moves:
 			perform_replay_move(m)
 		_batch_mode = false
+
+	on_turn_started(_battle_grid.get_current_player())
 
 
 #endregion
