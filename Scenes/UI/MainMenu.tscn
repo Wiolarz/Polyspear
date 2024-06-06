@@ -62,6 +62,10 @@ layout_mode = 2
 text = "Map Editor
 "
 
+[node name="ExitButton" type="Button" parent="MainContainer/TopMenu"]
+layout_mode = 2
+text = "Exit"
+
 [node name="HostLobby" parent="MainContainer" instance=ExtResource("2_eyp7f")]
 layout_mode = 2
 size_flags_vertical = 3
@@ -90,4 +94,5 @@ root_subfolder = "replays/"
 [connection signal="pressed" from="MainContainer/TopMenu/ReplaysButton" to="." method="_on_replays_button_pressed"]
 [connection signal="pressed" from="MainContainer/TopMenu/UnitEditorButton" to="." method="_on_unit_editor_button_pressed"]
 [connection signal="pressed" from="MainContainer/TopMenu/MapEditorButton" to="." method="_on_map_editor_button_pressed"]
+[connection signal="pressed" from="MainContainer/TopMenu/ExitButton" to="." method="_on_exit_button_pressed"]
 [connection signal="file_selected" from="FileDialogReplay" to="." method="_on_file_dialog_replay_file_selected"]

@@ -18,6 +18,8 @@ var current_player : Player
 var selected_hero : ArmyForm
 var combat_tile : Vector2i
 
+var _batch_mode : bool = false
+
 #endregion
 
 
@@ -71,6 +73,10 @@ func get_player_index(player : Player) -> int:
 
 
 func get_player_by_index(index : int) -> Player:
+	if index < 0:
+		return null
+	if index >= players.size():
+		return null
 	return players[index]
 
 
@@ -182,6 +188,8 @@ func perform_world_move_info(world_move_info : WorldMoveInfo) -> void:
 		if not hero:
 			push_error("no hero")
 			NET.desync() # TODO should be only on client xd
+			# TODO desync or kick clinet who tried illegal move
+			return
 
 		var player = hero.controller
 		var coord = world_move_info.target_tile_coord
@@ -190,7 +198,7 @@ func perform_world_move_info(world_move_info : WorldMoveInfo) -> void:
 			if not hero.has_movement_points():
 				print("not enough movement points")
 				return
-			start_combat(hero, coord)
+			start_combat_by_attack(hero, coord)
 
 		if W_GRID.is_city(coord):
 			var city = W_GRID.get_city(coord)
@@ -337,31 +345,35 @@ func do_local_build(city_coord : Vector2i, \
 
 #region Battles
 
-func start_combat(attacking_army : ArmyForm, coord : Vector2i):
+func start_combat( \
+		armies : Array[Army], \
+		combat_coord : Vector2i, \
+		battle_state : SerializableBattleState):
 	"""
 	Starts a battle using Battle Manager (BM)
 	"""
 	print("start_combat")
-
-	combat_tile = coord
-	var armies : Array[Army] = [
-		attacking_army.entity,
-		W_GRID.get_army(combat_tile).entity,
-	]
-
-	# TEMP
 	var biggest_army_size : int = 0
 	for army in armies:
 		var army_size : int = army.units_data.size()
 		if biggest_army_size < army_size:
 			biggest_army_size = army_size
-
+	combat_tile = combat_coord
 	var battle_map : DataBattleMap = W_GRID.get_battle_map(combat_tile, biggest_army_size)
-	#END TEMP
 	var x_offset = get_bounds_global_position().end.x + CFG.MAPS_OFFSET_X
-
-	BM.start_battle(armies, battle_map, x_offset)
+	BM.start_battle(armies, battle_map, battle_state, x_offset)
 	UI.switch_camera()
+
+
+## shortcut to start battle when one army attacks another
+func start_combat_by_attack(attacking_army : ArmyForm, coord : Vector2i):
+	print("start_combat")
+
+	var armies : Array[Army] = [
+		attacking_army.entity,
+		W_GRID.get_army(coord).entity,
+	]
+	start_combat(armies, coord, null)
 
 
 func end_of_battle(battle_results : Array[BattleGridState.ArmyInBattleState]):
@@ -407,6 +419,8 @@ func kill_army(army : ArmyForm):
 #region World End
 
 func close_world():
+	players = []
+	combat_tile = Vector2i.MAX
 	selected_hero = null
 	current_player = null
 
@@ -425,7 +439,7 @@ func spawn_world_ui():
 	UI.add_custom_screen(world_ui)
 
 
-func start_world(world_map : DataWorldMap) -> void:
+func start_new_world(world_map : DataWorldMap) -> void:
 	BM.world_map_started()
 
 	var spawn_location = world_map.get_spawn_locations()
@@ -443,7 +457,7 @@ func start_world(world_map : DataWorldMap) -> void:
 	UI.go_to_custom_ui(world_ui)
 	world_ui.game_started()
 
-	W_GRID.load_map(world_map)
+	W_GRID.load_map(world_map, false)
 
 	for player_id in range(players.size()):
 		spawn_player(spawn_location[player_id], players[player_id])
@@ -452,8 +466,200 @@ func start_world(world_map : DataWorldMap) -> void:
 	world_ui.refresh_heroes(current_player)
 
 
+# this function probably should be divided into parts
+func start_world_in_state(world_map : DataWorldMap, \
+		world_state : SerializableWorldState) -> void:
+	_batch_mode = true
+
+	BM.world_map_started()
+
+	players = IM.players
+
+	assert(players.size() != 0, "ERROR WM.players is empty")
+
+
+	W_GRID.load_map(world_map, true)
+	for coord in world_state.place_hexes:
+		var ser = world_state.place_hexes[coord]
+
+		# these are a HACK and TEMP
+		# TODO rework Place and make it nice
+		var tile_placed_by_loading_map : TileForm = W_GRID.get_tile_form(coord)
+		var player : Player = get_player_by_index(ser["player"])
+		var place : Place = tile_placed_by_loading_map.place
+		place.controller = player
+		if place is City:
+			var city = place as City
+			for building in ser["buildings"]:
+				var building_data = DataBuilding.from_network_id(building)
+				city.buildings.append(building_data)
+			if player:
+				player.cities.append(city)
+			# we do not add cities yet as they are added at map load
+			# maybe it will change in the future
+		elif place is HuntSpot:
+			var hunt_spot = place as HuntSpot
+			var goods_array = ser["present_goods"]
+			hunt_spot._present_goods = \
+				Goods.new(goods_array[0], goods_array[1], goods_array[2])
+			hunt_spot.current_level = ser["current_level"]
+			hunt_spot._alive_army = W_GRID.get_army_form(coord)
+			hunt_spot._time_left_for_respawn = ser["time_to_respawn"]
+		elif place is Outpost:
+			pass
+		# Deposit is not used anywhere
+
+	for coord in world_state.unit_hexes:
+		var ser = world_state.unit_hexes[coord]
+		var unit : ArmyForm = _deserialize_unit_hex(ser, coord)
+		add_child(unit)
+		W_GRID.place_army(unit, coord)
+		if unit.controller and unit.entity.hero:
+			unit.controller.hero_armies.append(unit)
+		# here we also do a small HACK that if hero is not in town, we he set
+		# him not to be selected -- then he will get his light background back
+		if not W_GRID.get_place(unit.coord) is City and unit.entity.hero:
+			unit.set_selected(false)
+
+	for player_index in players.size():
+		var player : Player = players[player_index]
+		if player.cities.size() > 0:
+			var capital_coord = world_state.capital_cities[player_index]
+			if player.cities[0].coord != capital_coord:
+				# swap
+				var index = player.cities.find(capital_coord)
+				if index > 0:
+					var copy = player.cities[0]
+					player.cities[0] = player.cities[index]
+					player.cities[index] = copy
+		var goods = world_state.goods.slice( \
+			3 * player_index, 3 * (player_index + 1))
+		player.goods = Goods.new(goods[0], goods[1], goods[2])
+		for dead_hero in world_state.dead_heroes[player_index]:
+			var hero := Hero.from_network_serializable(dead_hero, player)
+			player.dead_heroes.append(hero)
+		for outpost_coord in world_state.outposts[player_index]:
+			var outpost : Place = W_GRID.get_place(outpost_coord)
+			assert(outpost is Outpost)
+			player.outposts.append(outpost)
+		for outpost_building in world_state.outpost_buildings[player_index]:
+			var building_data : DataBuilding = \
+				DataBuilding.from_network_id(outpost_building)
+			player.outpost_buildings.append(building_data)
+
+	current_player = players[world_state.current_player]
+
+	# TODO some cheks for these inputs
+
+	if world_ui == null or not is_instance_valid(world_ui):
+		spawn_world_ui()
+	UI.go_to_custom_ui(world_ui)
+	world_ui.refresh_player_buttons()
+
+	world_ui.show_trade_ui(current_player.capital_city, null)
+
+	_batch_mode = false
+
+
 func spawn_player(coord : Vector2i, player : Player):
 	var capital_city = W_GRID.get_city(coord)
 	player.set_capital(capital_city)
 
 #endregion
+
+
+func _get_serializable_unit_hex(hex : ArmyForm) -> Dictionary:
+	var army : Army = hex.entity
+	var army_dict : Dictionary = {}
+	army_dict["player"] = get_player_index(army.controller)
+
+	if army.hero:
+		var hero : Hero = army.hero
+		army_dict["hero"] = hero.to_network_serializable()
+
+	army_dict["units"] = []
+	var unit_array = army_dict["units"]
+	for unit in army.units_data:
+		unit_array.append(DataUnit.get_network_id(unit))
+
+	return army_dict
+
+
+func _get_serializable_place_hex(hex : Place) -> Dictionary:
+	return Place.get_network_serializable(hex)
+
+
+# TODO consider moving to army_form.gd and deduplicate some code
+func _deserialize_unit_hex(hex : Dictionary, coord : Vector2i) -> ArmyForm:
+	var army := Army.new()
+	var army_form := CFG.DEFAULT_ARMY_FORM.instantiate()
+	var player : Player = get_player_by_index(hex["player"])
+	var tile_form = W_GRID.get_tile_form(coord)
+	army.coord = coord
+	army.controller = player
+	army_form.entity = army
+	if "hero" in hex:
+		army.hero = Hero.from_network_serializable(hex["hero"], player)
+	for unit in hex["units"]:
+		var data_unit = DataUnit.from_network_id(unit)
+		army.units_data.append(data_unit)
+	army_form.position = tile_form.position
+	if army.hero:
+		army_form.get_node("sprite_unit").texture = \
+			load(army.hero.template.data_unit.texture_path)
+	else:
+		if army.units_data.size() > 0:
+			var shown_unit : DataUnit = army.units_data[0]
+			var sprite = army_form.get_node("sprite_unit")
+			sprite.texture = load(shown_unit.texture_path)
+			sprite.scale = Vector2(0.9, 0.9)
+			army_form.get_node("MoveLabel").text = ""
+			army_form.get_node("DescriptionLabel").text = ""
+
+	return army_form
+
+
+func get_serializable_state() -> SerializableWorldState:
+	var state := SerializableWorldState.new()
+	if W_GRID.unit_grid:
+		var hexes = W_GRID.unit_grid.hexes
+		for row_index in hexes.size():
+			var row = hexes[row_index]
+			for hex_index in row.size():
+				var hex = row[hex_index]
+				if hex:
+					var ser = _get_serializable_unit_hex(hex)
+					state.unit_hexes[Vector2i(row_index, hex_index)] = ser
+	if W_GRID.places_grid:
+		# TODO this part should probably send networkd IDs of hex tiles and
+		# their current state (things that are not set at start)
+		var hexes = W_GRID.places_grid.hexes
+		for row_index in hexes.size():
+			var row = hexes[row_index]
+			for hex_index in row.size():
+				var hex = row[hex_index]
+				if hex:
+					var ser = _get_serializable_place_hex(hex)
+					state.place_hexes[Vector2i(row_index, hex_index)] = ser
+	for player in players:
+		state.goods.append(player.goods.wood)
+		state.goods.append(player.goods.iron)
+		state.goods.append(player.goods.ruby)
+		if player.capital_city:
+			state.capital_cities.append(player.capital_city.coord)
+		else:
+			state.capital_cities.append(Vector2i.MAX) # no optional vector :c
+		state.dead_heroes.append([])
+		var dh = state.dead_heroes.back()
+		for dead_hero in player.dead_heroes:
+			dh.append(dead_hero.to_network_serializable())
+		state.outposts.append([])
+		var o = state.outposts.back()
+		for outpost in player.outposts:
+			o.append(outpost.coord)
+		state.outpost_buildings.append([])
+		var ob = state.outpost_buildings.back()
+		for outpost_building in player.outpost_buildings:
+			ob.append(DataBuilding.get_network_id(outpost_building))
+	state.current_player = WM.get_player_index(current_player)
+	return state

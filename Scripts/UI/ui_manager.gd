@@ -3,6 +3,7 @@ extends Node
 
 var in_game_menu
 var main_menu
+var ui_overlay
 var map_editor
 var unit_editor
 var host_lobby
@@ -18,12 +19,14 @@ func _ready():
 
 	in_game_menu = load("res://Scenes/UI/GameMenu.tscn").instantiate()
 	main_menu    = load("res://Scenes/UI/MainMenu.tscn").instantiate()
+	ui_overlay   = load("res://Scenes/UI/UIOverlay.tscn").instantiate()
 	map_editor   = load("res://Scenes/UI/Editors/MapEditor.tscn").instantiate()
 	unit_editor  = load("res://Scenes/UI/Editors/UnitEditor.tscn").instantiate()
 
 	add_child(main_menu)
 	add_child(map_editor)
 	add_child(unit_editor)
+	add_child(ui_overlay)
 	add_child(in_game_menu, false, Node.INTERNAL_MODE_BACK)
 
 	_hide_all()
@@ -32,6 +35,11 @@ func _ready():
 func add_custom_screen(custom_ui : CanvasLayer):
 	add_child(custom_ui)
 	custom_ui.hide()
+	# we need them always at the top
+	if ui_overlay:
+		move_child(ui_overlay, -1)
+	if in_game_menu:
+		move_child(in_game_menu, -1)
 
 
 func go_to_custom_ui(custom_ui : CanvasLayer):

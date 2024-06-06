@@ -7,14 +7,10 @@ static func register(commands : Dictionary):
 			Command.create_on_server(ClientRequestedMoveCommand.process_command)
 
 static func create_packet(move: MoveInfo):
-	return {
-		"name": COMMAND_NAME,
+	var dict = move.to_network_serializable()
+	dict["name"] = COMMAND_NAME
+	return dict
 
-		"move_type" : move.move_type,
-		"move_source" : move.move_source,
-		"target_tile_coord": move.target_tile_coord,
-		"summon_unit": DataUnit.get_network_id(move.summon_unit),
-	}
 
 static func process_command(_server : Server, _peer : ENetPacketPeer, \
 		params : Dictionary) -> int:
@@ -32,13 +28,4 @@ static func process_command(_server : Server, _peer : ENetPacketPeer, \
 	return OK
 
 static func create_from(params : Dictionary) -> MoveInfo:
-	match params["move_type"]:
-		MoveInfo.TYPE_SUMMON:
-			return MoveInfo.make_summon( \
-				DataUnit.from_network_id(params["summon_unit"]),\
-					params["target_tile_coord"])
-		MoveInfo.TYPE_MOVE:
-			return MoveInfo.make_move(params["move_source"],
-					params["target_tile_coord"])
-	push_error("move_type not supported: ", params["move_type"])
-	return null
+	return MoveInfo.from_network_serializable(params)

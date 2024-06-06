@@ -12,6 +12,7 @@ static func create_packet():
 	}
 
 static func process_command(_client : Client, _params : Dictionary) -> int:
-	IM.start_game()
+	IM.go_to_main_menu()
+	IM.start_new_game()
 	return OK
 

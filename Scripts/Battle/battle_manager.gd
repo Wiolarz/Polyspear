@@ -20,6 +20,8 @@ var _unit_to_unit_form : Dictionary
 var _replay_data : BattleReplay
 var _replay_is_playing : bool = false
 
+var _batch_mode : bool = false
+
 
 func _ready():
 	_battle_ui = load("res://Scenes/UI/BattleUi.tscn").instantiate()
@@ -44,9 +46,9 @@ func _process(_delta):
 func world_map_started():
 	_battle_is_ongoing = false
 
-
+## x_offset is used to place battle to the right of world map
 func start_battle(new_armies : Array[Army], battle_map : DataBattleMap, \
-		x_offset : float) -> void:
+		battle_state : SerializableBattleState, x_offset : float) -> void:
 
 	assert(_is_clear(), "cannot start battle map, map already loaded")
 
@@ -72,6 +74,12 @@ func start_battle(new_armies : Array[Army], battle_map : DataBattleMap, \
 	_grid_tiles_node.position.x = x_offset
 
 	_battle_ui.load_armies(_battle_grid.armies_in_battle_state)
+
+	if battle_state:
+		_batch_mode = true
+		for m in battle_state.replay.moves:
+			perform_replay_move(m)
+		_batch_mode = false
 
 	# first turn does not get a signal emit
 	_on_turn_started(_battle_grid.get_current_player())
@@ -102,15 +110,24 @@ func get_bounds_global_position() -> Rect2:
 	var size : Vector2 = bottom_right_tile_position - top_left_tile_position
 	return Rect2(top_left_tile_position, size)
 
+
 #endregion
 
 
 #region helpers
 
+## tells if there is battle state that is important and should be serialized
+func battle_is_active() -> bool:
+	return _battle_is_ongoing
+
+
+#TODO: simplify
 func can_show_battla_camera() -> bool:
 	return _battle_is_ongoing
 
 
+#TODO: WM should remember if its waiting for battle to end or not,
+# BM should not care
 func should_block_world_interaction() -> bool:
 	return _battle_is_ongoing
 
@@ -129,7 +146,7 @@ func _is_clear() -> bool:
 #endregion
 
 
-#region ongoing battle
+#region Ongoing battle
 
 func _on_turn_started(player : Player) -> void:
 	if not _battle_is_ongoing:
@@ -295,16 +312,25 @@ func _perform_move_info(move_info : MoveInfo) -> void:
 
 
 func _on_unit_killed(unit: Unit) -> void:
-	_anim_queue.push_back(AnimInQueue.create_die(_unit_to_unit_form[unit]))
+	if _batch_mode:
+		_unit_to_unit_form[unit].update_death_immediately()
+	else:
+		_anim_queue.push_back(AnimInQueue.create_die(_unit_to_unit_form[unit]))
 	_unit_to_unit_form.erase(unit)
 
 
 func _on_unit_turned(unit: Unit) -> void:
-	_anim_queue.push_back(AnimInQueue.create_turn(_unit_to_unit_form[unit]))
+	if _batch_mode:
+		_unit_to_unit_form[unit].update_turn_immediately()
+	else:
+		_anim_queue.push_back(AnimInQueue.create_turn(_unit_to_unit_form[unit]))
 
 
 func _on_unit_moved(unit: Unit) -> void:
-	_anim_queue.push_back(AnimInQueue.create_move(_unit_to_unit_form[unit]))
+	if _batch_mode:
+		_unit_to_unit_form[unit].update_death_immediately()
+	else:
+		_anim_queue.push_back(AnimInQueue.create_move(_unit_to_unit_form[unit]))
 
 
 #endregion
@@ -313,6 +339,7 @@ func _on_unit_moved(unit: Unit) -> void:
 #region Battle End
 
 func close_when_quiting_game() -> void:
+	_clear_anim_queue()
 	_reset_grid_and_unit_forms()
 
 
@@ -328,11 +355,17 @@ func _on_battle_ended() -> void:
 		await get_tree().create_timer(0.1).timeout
 
 	_current_summary = _create_summary()
-	_battle_ui.show_summary(_current_summary, _close_battle)
+	if WM.world_game_is_active():
+		_close_battle()
+		# show battle summary over world map
+		UI.ui_overlay.show_summary(_current_summary, null)
+	else:
+		UI.ui_overlay.show_summary(_current_summary, _close_battle)
 
 
 func _close_battle() -> void:
 	var state_for_world = _battle_grid.armies_in_battle_state
+	_clear_anim_queue()
 	_turn_off_battle_ui()
 	_reset_grid_and_unit_forms()
 
@@ -411,6 +444,14 @@ func _replay_move_delay() -> void:
 		if not _battle_is_ongoing:
 			return # terminating battle while watching
 
+
+## gets replay of current battle, but containing only moves -- used in
+## serialization of whole game state
+func get_ripped_replay() -> BattleReplay:
+	var result = BattleReplay.new()
+	result.moves = _replay_data.moves.duplicate()
+	return result
+
 #endregion
 
 
@@ -458,6 +499,12 @@ func _process_anim_queue() -> void:
 		push_warning("poping broken animation from the queue " + str(broken))
 
 
+func _clear_anim_queue():
+	for anim in _anim_queue:
+		anim.on_anim_end()
+	_anim_queue.clear()
+
+
 class AnimInQueue:
 	var started : bool
 	var ended : bool
@@ -471,7 +518,7 @@ class AnimInQueue:
 		result.debug_name = "turn_"+unit_form_.unit.template.unit_name
 		result._unit_form = unit_form_
 		unit_form_.anim_end.connect(result.on_anim_end)
-		result._animate = func () : unit_form_.start_turn_anim()
+		result._animate = func () : if (unit_form_): unit_form_.start_turn_anim()
 		return result
 
 
@@ -480,7 +527,7 @@ class AnimInQueue:
 		result.debug_name = "move_"+unit_form_.unit.template.unit_name
 		result._unit_form = unit_form_
 		unit_form_.anim_end.connect(result.on_anim_end)
-		result._animate = func () : unit_form_.start_move_anim()
+		result._animate = func () : if (unit_form_): unit_form_.start_move_anim()
 		return result
 
 
@@ -489,7 +536,7 @@ class AnimInQueue:
 		result.debug_name = "die_"+unit_form_.unit.template.unit_name
 		result._unit_form = unit_form_
 		unit_form_.anim_end.connect(result.on_anim_end)
-		result._animate = func () : unit_form_.start_death_anim()
+		result._animate = func () : if (unit_form_): unit_form_.start_death_anim()
 		return result
 
 

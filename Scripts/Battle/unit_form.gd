@@ -75,6 +75,24 @@ func start_death_anim():
 	_play_death_anim = true
 
 
+func update_movement_immediately():
+	var tile_position = BM.get_tile_global_position(unit.coord)
+	global_position = tile_position
+
+
+func update_turn_immediately():
+	var side = unit.unit_rotation
+	_target_rotation_degrees = (60 * (side))
+	rotation_degrees = _target_rotation_degrees
+	$sprite_unit.rotation = -rotation
+	_rotation_symbol_flip()
+
+
+func update_death_immediately():
+	# TODO maybe check if unit is dead??
+	scale = Vector2(0.0, 0.0)
+
+
 func _rotation_symbol_flip():
 	_symbols_flipped = true
 

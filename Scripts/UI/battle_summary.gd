@@ -16,7 +16,8 @@ static func create(parent:Node, info: DataBattleSummary, \
 	var result = load(BATTLE_SUMMARY_SCENE_PATH).instantiate()
 	parent.add_child(result)
 	result.set_visible_state_from_info(info)
-	result.continued.connect(continue_callback)
+	if continue_callback:
+		result.continued.connect(continue_callback)
 	return result
 
 
