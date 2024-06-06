@@ -351,7 +351,17 @@ func start_combat(attacking_army : ArmyForm, coord : Vector2i):
 		attacking_army.entity,
 		W_GRID.get_army(combat_tile).entity,
 	]
-	var battle_map : DataBattleMap = W_GRID.get_battle_map(combat_tile)
+
+	# TEMP
+	var biggest_army_size : int = 0
+	for army in armies:
+		var army_size : int = army.units_data.size()
+		if biggest_army_size < army_size:
+			biggest_army_size = army_size
+	
+
+	var battle_map : DataBattleMap = W_GRID.get_battle_map(combat_tile, biggest_army_size)
+	#END TEMP
 	var x_offset = get_bounds_global_position().end.x + CFG.MAPS_OFFSET_X
 
 	BM.start_battle(armies, battle_map, x_offset)

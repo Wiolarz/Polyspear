@@ -94,7 +94,10 @@ func get_tile_controller(coord : Vector2i) -> Player:
 	return null
 
 
-func get_battle_map(_coord : Vector2i) -> DataBattleMap:
+func get_battle_map(_coord : Vector2i, army_size : int) -> DataBattleMap:
+	if army_size > 5:
+		return CFG.BIGGER_BATTLE_MAP
+	
 	return CFG.DEFAULT_BATTLE_MAP
 
 

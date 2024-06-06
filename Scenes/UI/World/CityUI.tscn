@@ -141,6 +141,16 @@ layout_mode = 2
 text = "Dryad
 "
 
+[node name="Button6" type="Button" parent="RecruitUnits/VisitingHeroArmy"]
+layout_mode = 2
+text = "Dryad
+"
+
+[node name="Button7" type="Button" parent="RecruitUnits/VisitingHeroArmy"]
+layout_mode = 2
+text = "Dryad
+"
+
 [node name="Buildings" type="VBoxContainer" parent="."]
 visible = false
 layout_mode = 1
