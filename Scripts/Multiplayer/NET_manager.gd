@@ -11,11 +11,6 @@ signal chat_message_arrived(content : String)
 signal chat_log_cleared
 
 
-func _process(_delta) -> void:
-	if Input.is_action_just_pressed("FORCE_DESYNC"):
-		desync()
-
-
 func get_role_name() -> String:
 	if server:
 		return "server"

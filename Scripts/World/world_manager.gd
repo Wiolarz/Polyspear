@@ -31,12 +31,6 @@ var _batch_mode : bool = false
 signal world_move_done
 
 
-func _process(_delta):
-	if Input.is_action_just_pressed("PRINT_WORLD_STATE"):
-		print(get_serializable_state())
-		IM.quit_game()
-
-
 #region helpers
 
 
