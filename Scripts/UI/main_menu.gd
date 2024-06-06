@@ -37,6 +37,7 @@ func _on_settings_button_pressed():
 	$MainContainer/TopMenu/SettingsButton.modulate = Color.YELLOW
 	$MainContainer/SettingsMenu.show()
 
+
 func _clear_tabs():
 	$MainContainer/TopMenu/HostButton.modulate = Color.WHITE
 	$MainContainer/TopMenu/JoinButton.modulate = Color.WHITE
@@ -60,3 +61,7 @@ func _on_unit_editor_button_pressed():
 
 func _on_map_editor_button_pressed():
 	IM.go_to_map_editor()
+
+
+func _on_exit_button_pressed():
+	get_tree().quit()
