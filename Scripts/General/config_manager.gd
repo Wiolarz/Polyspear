@@ -99,7 +99,7 @@ var DEFAULT_BATTLE_MAP : DataBattleMap = \
 	load("res://Resources/Battle/Battle_Maps/basic5x5.tres")
 
 var BIGGER_BATTLE_MAP : DataBattleMap = \
-	load("res://Resources/Battle/Battle_Maps/7x7duel_10maxUnits.tres")
+	load("res://Resources/Battle/Battle_Maps/8x7duel_10maxUnits.tres")
 
 #endregion
 
