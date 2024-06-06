@@ -83,3 +83,10 @@ static func get_hunt_army_presets(folder_path : String) -> Array[PresetArmy]:
 		armies.append(load(file))
 
 	return armies
+
+
+func to_specific_serializable(dict : Dictionary) -> void:
+	dict["present_goods"] = _present_goods.to_array()
+	dict["current_level"] = current_level
+	# "alive_army" not needed -- deduced
+	dict["time_to_respawn"] = _time_left_for_respawn

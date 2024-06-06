@@ -41,3 +41,5 @@ func _take_control(player : Player):
 	player.outpost_add(self)
 
 
+func to_specific_serializable(dict : Dictionary) -> void:
+	pass

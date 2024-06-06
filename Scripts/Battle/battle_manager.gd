@@ -22,6 +22,11 @@ var _waiting_for_action_to_finish : bool
 
 var _anim_queue : Array[AnimInQueue] = []
 
+var _batch_mode : bool = false
+
+# FIXME
+var x_offset : float = 0.0
+
 
 func _ready():
 	battle_ui = load("res://Scenes/UI/BattleUi.tscn").instantiate()
@@ -79,6 +84,12 @@ func reset_data():
 	Helpers.remove_all_children(unit_forms_node)
 
 
+func clear_anim():
+	for anim in _anim_queue:
+		anim.on_anim_end()
+	_anim_queue.clear()
+
+
 func get_tile(coord : Vector2i) -> TileForm:
 	return tile_grid.get_hex(coord)
 
@@ -103,7 +114,7 @@ func get_bounds_global_position() -> Rect2:
 #region Battle Setup
 
 func start_battle(new_armies : Array[Army], battle_map : DataBattleMap, \
-		x_offset : float) -> void:
+		battle_state : SerializableBattleState) -> void:
 	_replay = BattleReplay.create(new_armies, battle_map)
 	_replay.save()
 
@@ -127,7 +138,14 @@ func start_battle(new_armies : Array[Army], battle_map : DataBattleMap, \
 	selected_unit = null
 	battle_ui.load_armies(_battle_grid.armies_in_battle_state)
 
+	if battle_state:
+		_batch_mode = true
+		for m in battle_state.replay.moves:
+			perform_replay_move(m)
+		_batch_mode = false
+
 	on_turn_started(_battle_grid.get_current_player())
+
 
 #endregion
 
@@ -152,12 +170,21 @@ func replay_move_delay() -> void:
 		if not battle_is_ongoing:
 			return # terminating battle while watching
 
+
+## gets replay of current battle, but containing only moves -- used in
+## serialization of whole game state
+func get_ripped_replay() -> BattleReplay:
+	var result = BattleReplay.new()
+	result.moves = _replay.moves.duplicate()
+	return result
+
+
 #endregion
 
 
 #region Input Functions
 
-## Currently only used for AI
+## Currently only used for AI -- TODO better name
 func on_turn_started(player : Player) -> void:
 	if not battle_is_ongoing:
 		return
@@ -290,11 +317,18 @@ func on_battle_ended() -> void:
 		await get_tree().create_timer(0.1).timeout
 
 	current_summary = create_summary()
-	battle_ui.show_summary(current_summary, close_battle)
+	if WM.world_game_is_active():
+		close_battle()
+		UI.ui_overlay.show_summary(current_summary, null)
+	else:
+		UI.ui_overlay.show_summary(current_summary, close_battle)
+
+
 
 
 func close_battle() -> void:
 	var state_for_world = _battle_grid.armies_in_battle_state
+	clear_anim()
 	turn_off_battle_ui()
 	reset_grid_and_unit_forms()
 
@@ -304,6 +338,12 @@ func close_battle() -> void:
 		return
 
 	WM.end_of_battle(state_for_world)
+
+
+func drop_battle() -> void:
+	clear_anim()
+	reset_grid_and_unit_forms()
+
 
 #endregion
 
@@ -324,14 +364,24 @@ func on_unit_summoned(unit : Unit) -> void:
 	unit.unit_moved.connect(on_unit_moved.bind(unit))
 
 func on_unit_killed(unit: Unit) -> void:
-	_anim_queue.push_back(AnimInQueue.create_die(unit_to_unit_form[unit]))
+	if not _batch_mode:
+		_anim_queue.push_back(AnimInQueue.create_die(unit_to_unit_form[unit]))
+	else:
+		unit_to_unit_form[unit].update_death_immediately()
 	unit_to_unit_form.erase(unit)
 
 func on_unit_turned(unit: Unit) -> void:
-	_anim_queue.push_back(AnimInQueue.create_turn(unit_to_unit_form[unit]))
+	if not _batch_mode:
+		_anim_queue.push_back(AnimInQueue.create_turn(unit_to_unit_form[unit]))
+	else:
+		unit_to_unit_form[unit].update_turn_immediately()
+
 
 func on_unit_moved(unit: Unit) -> void:
-	_anim_queue.push_back(AnimInQueue.create_move(unit_to_unit_form[unit]))
+	if not _batch_mode:
+		_anim_queue.push_back(AnimInQueue.create_move(unit_to_unit_form[unit]))
+	else:
+		unit_to_unit_form[unit].update_movement_immediately()
 
 
 func _grid_input_summon(coord : Vector2i) -> void:
@@ -454,7 +504,7 @@ class AnimInQueue:
 		result.debug_name = "turn_"+unit_form_.unit.template.unit_name
 		result._unit_form = unit_form_
 		unit_form_.anim_end.connect(result.on_anim_end)
-		result._animate = func () : unit_form_.start_turn_anim()
+		result._animate = func () : if (unit_form_): unit_form_.start_turn_anim()
 		return result
 
 	static func create_move(unit_form_ : UnitForm) -> AnimInQueue:
@@ -462,7 +512,7 @@ class AnimInQueue:
 		result.debug_name = "move_"+unit_form_.unit.template.unit_name
 		result._unit_form = unit_form_
 		unit_form_.anim_end.connect(result.on_anim_end)
-		result._animate = func () : unit_form_.start_move_anim()
+		result._animate = func () : if (unit_form_): unit_form_.start_move_anim()
 		return result
 
 	static func create_die(unit_form_ : UnitForm) -> AnimInQueue:
@@ -470,7 +520,7 @@ class AnimInQueue:
 		result.debug_name = "die_"+unit_form_.unit.template.unit_name
 		result._unit_form = unit_form_
 		unit_form_.anim_end.connect(result.on_anim_end)
-		result._animate = func () : unit_form_.start_death_anim()
+		result._animate = func () : if (unit_form_): unit_form_.start_death_anim()
 		return result
 
 

@@ -9,6 +9,8 @@ var defender_army : Army
 var battle_map : DataBattleMap
 var coord : Vector2i
 
+
+# TODO move to other file and rework Place
 static func _inner_create_place(new_data_tile : DataTile) -> Place:
 	match new_data_tile.type:
 		# city:
@@ -62,3 +64,24 @@ func get_map_description() -> String:
 func change_controler(player : Player):
 	controller = player
 	controller_changed.emit()
+
+
+static func get_network_serializable(place : Place) -> Dictionary:
+	if not place:
+		return {}
+	var dict : Dictionary = {}
+	place.to_specific_serializable(dict)
+	dict["type"] = place.type
+	dict["player"] = WM.get_player_index(place.controller)
+	# defender army will be get from unit_grid
+
+	# var script : String = get_script().resource_path.get_file()
+	# dict["script"] = script
+	return dict
+
+
+## should be overridden by each place
+## but also this is a temporary part of greater refactor which is needed for
+## Place class
+func to_specific_serializable(dict : Dictionary) -> void:
+	dict["not implemented"] = true

@@ -46,8 +46,7 @@ func make_client() -> void:
 func desync() -> void:
 	push_error("desync")
 	if client:
-		# TODO request whole state from server to sync again
-		IM.quit_game()
+		client.desync()
 
 
 func server_listen(address : String, port : int, username : String):

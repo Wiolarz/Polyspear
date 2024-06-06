@@ -29,7 +29,7 @@ static func create_packet(move: WorldMoveInfo):
 		packet["data_unit"] = DataUnit.get_network_id(move.data)
 	if move.move_type == WorldMoveInfo.TYPE_BUILD:
 		packet["target_tile_coord"] = move.target_tile_coord
-		packet["data_building"] = DataUnit.get_network_id(move.data)
+		packet["data_building"] = DataBuilding.get_network_id(move.data)
 	return packet
 
 

@@ -110,20 +110,6 @@ func unit_summoned(summon_phase_end : bool, _unit : DataUnit):
 		units_box.hide()
 
 
-func show_summary(info : DataBattleSummary, finalize_callback : Callable):
-	for child in summary_container.get_children():
-		summary_container.remove_child(child)
-		child.queue_free()
-
-	BattleSummary.create(summary_container, info, finalize_callback)
-
-	summary_container.show()
-
-
-func hide_summary():
-	summary_container.hide()
-
-
 func _on_switch_camera_pressed():
 	UI.switch_camera()
 	if UI.current_camera_position == E.CameraPosition.WORLD:
@@ -134,8 +120,3 @@ func _on_switch_camera_pressed():
 
 func _on_menu_pressed():
 	IM.toggle_in_game_menu()
-
-
-func _on_visibility_changed():
-	if visible:
-		hide_summary()

@@ -175,13 +175,25 @@ func broadcast_world_move(move : WorldMoveInfo):
 
 
 func send_additional_callbacks_to_logging_client(peer : ENetPacketPeer):
-	if true: # game is being set up
+	var game_in_progress : bool = \
+		BM.battle_is_ongoing or WM.world_game_is_active()
+	if not game_in_progress:
 		var game_setup = IM.game_setup_info
 		var packet : Dictionary = \
 			FillGameSetupCommand.create_packet(game_setup, server_username)
 		send_to_peer(peer, packet)
-	if false: # game is in progress
-		pass
+	else:
+		send_full_state_sync(peer)
+
+
+func send_full_state_sync(peer : ENetPacketPeer):
+	var game_setup = IM.game_setup_info
+	var world_state = IM.get_serializable_world_state()
+	var battle_state = IM.get_serializable_battle_state()
+	var packet : Dictionary = \
+		SetFullStateCommand.create_packet(game_setup, world_state, battle_state,
+			server_username)
+	send_to_peer(peer, packet)
 
 
 func roll() -> void:
@@ -234,8 +246,8 @@ func roll() -> void:
 					var result = (command.server_callback).call(self, peer, \
 						decoded)
 					if result != 0:
-						var msg = "Peer %x sent us %s command, but we " + \
-							"couldn't process it well" % [ \
+						var msg = ("Peer %x sent us %s command, but we " + \
+							"couldn't process it well") % [ \
 							peer.get_instance_id(), command_name ]
 						print(msg)
 					print("command processed")

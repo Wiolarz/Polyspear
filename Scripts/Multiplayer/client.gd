@@ -45,6 +45,12 @@ func connect_to_server(address : String, port : int) -> void:
 	print("No errors")
 
 
+#endregion
+
+
+#region Communication
+
+
 func queue_login(desired_username : String) -> void:
 	var packet : Dictionary = LoginCommand.create_packet(desired_username)
 	queue_message_to_server(packet)
@@ -92,6 +98,10 @@ func queue_request_world_move(move : WorldMoveInfo):
 	queue_message_to_server(ClientRequestedWorldMoveCommand.create_packet(move))
 
 
+func queue_request_game_state_sync():
+	queue_message_to_server(RequestedStateSync.create_packet())
+
+
 func logout_if_needed() -> void:
 	if username == "":
 		return
@@ -99,6 +109,11 @@ func logout_if_needed() -> void:
 	username = ""
 	send_message_to_server_immediately(packet)
 	# TODO consider unrealiable packet send here
+
+
+func desync() -> void:
+	queue_request_game_state_sync()
+	# TODO maybe some waiting
 
 
 func close() -> void:
@@ -116,10 +131,6 @@ func close() -> void:
 	username = ""
 	print("Client disconnected")
 
-#endregion
-
-
-#region Communication
 
 func queue_message_to_server(command_dictionary : Dictionary) -> void:
 	if not command_dictionary is Dictionary:

@@ -32,6 +32,11 @@ static func create_hero(data_hero : DataHero, player : Player) -> Hero:
 			dead_hero.controller = player
 			return dead_hero
 
+	return construct_hero(data_hero, player)
+
+
+# TODO change name
+static func construct_hero(data_hero : DataHero, player : Player) -> Hero:
 	var new_hero = Hero.new()
 	new_hero.template = data_hero
 	new_hero.hero_name = data_hero.hero_name
@@ -41,6 +46,7 @@ static func create_hero(data_hero : DataHero, player : Player) -> Hero:
 	new_hero.max_army_size = data_hero.max_army_size
 	new_hero.max_movement_points = data_hero.max_movement_points
 	return new_hero
+
 
 
 func _init():
@@ -84,3 +90,24 @@ func level_up() -> void:
 
 func revive():
 	movement_points = max_movement_points
+
+
+func to_network_serializable() -> Dictionary:
+	var dict : Dictionary = {}
+	dict["data_hero"] = DataHero.get_network_id(template)
+	dict["name"] = hero_name
+	dict["movement_points"] = movement_points
+	dict["xp"] = xp
+	dict["level"] = level
+	return dict
+
+
+static func from_network_serializable(dict : Dictionary, player : Player) \
+		-> Hero:
+	var data_hero = DataHero.from_network_id(dict["data_hero"])
+	var hero : Hero = Hero.construct_hero(data_hero, player)
+	hero.hero_name = dict["name"]
+	hero.movement_points = dict["movement_points"]
+	hero.xp = dict["xp"]
+	hero.level = dict["level"]
+	return hero

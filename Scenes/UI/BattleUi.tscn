@@ -90,6 +90,5 @@ grow_vertical = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[connection signal="visibility_changed" from="." to="." method="_on_visibility_changed"]
 [connection signal="pressed" from="SwitchCamera" to="." method="_on_switch_camera_pressed"]
 [connection signal="pressed" from="Menu" to="." method="_on_menu_pressed"]

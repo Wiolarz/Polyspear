@@ -1,0 +1,13 @@
+[gd_scene load_steps=2 format=3 uid="uid://k6nqj736t85k"]
+
+[ext_resource type="Script" path="res://Scripts/UI/ui_overlay.gd" id="1_nb8iv"]
+
+[node name="UIOverlay" type="CanvasLayer"]
+script = ExtResource("1_nb8iv")
+
+[node name="Container" type="CenterContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2

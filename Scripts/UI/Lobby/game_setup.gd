@@ -183,4 +183,4 @@ func _on_button_battle_toggled(toggled_on : bool):
 
 
 func _on_button_confirm_pressed():
-	IM.start_game()
+	IM.start_new_game()
