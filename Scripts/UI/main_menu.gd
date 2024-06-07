@@ -22,27 +22,25 @@ func _on_visibility_changed():
 
 func _on_host_button_pressed():
 	_clear_tabs()
-	$MainContainer/TopMenu/HostButton.modulate = Color.YELLOW
 	$MainContainer/HostLobby.show()
 
 
 func _on_join_button_pressed():
 	_clear_tabs()
-	$MainContainer/TopMenu/JoinButton.modulate = Color.YELLOW
 	$MainContainer/ClientLobby.show()
 
 
 func _on_settings_button_pressed():
 	_clear_tabs()
-	$MainContainer/TopMenu/SettingsButton.modulate = Color.YELLOW
 	$MainContainer/SettingsMenu.show()
 
 
+func _on_credits_button_pressed():
+	_clear_tabs()
+	$MainContainer/CreditsMenu.show()
+
+
 func _clear_tabs():
-	$MainContainer/TopMenu/HostButton.modulate = Color.WHITE
-	$MainContainer/TopMenu/JoinButton.modulate = Color.WHITE
-	$MainContainer/TopMenu/SettingsButton.modulate = Color.WHITE
-	$MainContainer/TopMenu/CreditsButton.modulate = Color.WHITE
 	$MainContainer/HostLobby.hide()
 	$MainContainer/ClientLobby.hide()
 	$MainContainer/SettingsMenu.hide()
@@ -65,11 +63,14 @@ func _on_map_editor_button_pressed():
 	IM.go_to_map_editor()
 
 
-func _on_credits_button_pressed():
-	_clear_tabs()
-	$MainContainer/TopMenu/CreditsButton.modulate = Color.YELLOW
-	$MainContainer/CreditsMenu.show()
-
-
 func _on_exit_button_pressed():
 	get_tree().quit()
+
+
+func _on_tabs_tab_changed(tab_index:int):
+	match tab_index:
+		0: _on_host_button_pressed()
+		1: _on_join_button_pressed()
+		2: _on_settings_button_pressed()
+		3: _on_credits_button_pressed()
+		_: push_error("_on_tabs_tab_changed index not supported: "+str(tab_index))
