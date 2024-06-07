@@ -34,106 +34,96 @@ alignment = 1
 layout_mode = 2
 theme_override_constants/separation = 50
 
-[node name="GameDesigner" type="VBoxContainer" parent="MainBoxContainer/CreditsBoxContainer/LeftBoxContainer"]
+[node name="Wiolarz" type="VBoxContainer" parent="MainBoxContainer/CreditsBoxContainer/LeftBoxContainer"]
 layout_mode = 2
 
-[node name="Title" type="Label" parent="MainBoxContainer/CreditsBoxContainer/LeftBoxContainer/GameDesigner"]
+[node name="Title" type="Label" parent="MainBoxContainer/CreditsBoxContainer/LeftBoxContainer/Wiolarz"]
 modulate = Color(1, 1, 0, 1)
 layout_mode = 2
 theme_override_font_sizes/font_size = 50
-text = "Game designer"
+text = "Design, Art and Programming"
 horizontal_alignment = 1
 
-[node name="Wiolarz" type="Label" parent="MainBoxContainer/CreditsBoxContainer/LeftBoxContainer/GameDesigner"]
+[node name="Name" type="Label" parent="MainBoxContainer/CreditsBoxContainer/LeftBoxContainer/Wiolarz"]
 layout_mode = 2
 text = "Wiolarz"
 horizontal_alignment = 1
 
-[node name="Art" type="VBoxContainer" parent="MainBoxContainer/CreditsBoxContainer/LeftBoxContainer"]
+[node name="Zephyr" type="VBoxContainer" parent="MainBoxContainer/CreditsBoxContainer/LeftBoxContainer"]
 layout_mode = 2
 
-[node name="Title" type="Label" parent="MainBoxContainer/CreditsBoxContainer/LeftBoxContainer/Art"]
+[node name="Title" type="Label" parent="MainBoxContainer/CreditsBoxContainer/LeftBoxContainer/Zephyr"]
 modulate = Color(1, 1, 0, 1)
 layout_mode = 2
 theme_override_font_sizes/font_size = 50
-text = "Art"
+text = "Programming"
 horizontal_alignment = 1
 
-[node name="Wiolarz" type="Label" parent="MainBoxContainer/CreditsBoxContainer/LeftBoxContainer/Art"]
+[node name="Name" type="Label" parent="MainBoxContainer/CreditsBoxContainer/LeftBoxContainer/Zephyr"]
 layout_mode = 2
-text = "Wiolarz"
+text = "Zephyr"
 horizontal_alignment = 1
 
-[node name="MusicSounds" type="VBoxContainer" parent="MainBoxContainer/CreditsBoxContainer/LeftBoxContainer"]
+[node name="Carcinizer" type="VBoxContainer" parent="MainBoxContainer/CreditsBoxContainer/LeftBoxContainer"]
 layout_mode = 2
 
-[node name="Title" type="Label" parent="MainBoxContainer/CreditsBoxContainer/LeftBoxContainer/MusicSounds"]
+[node name="Title" type="Label" parent="MainBoxContainer/CreditsBoxContainer/LeftBoxContainer/Carcinizer"]
 modulate = Color(1, 1, 0, 1)
 layout_mode = 2
 theme_override_font_sizes/font_size = 50
-text = "Music / Sounds"
+text = "Programming"
 horizontal_alignment = 1
 
-[node name="Toksyczna" type="Label" parent="MainBoxContainer/CreditsBoxContainer/LeftBoxContainer/MusicSounds"]
+[node name="Name" type="Label" parent="MainBoxContainer/CreditsBoxContainer/LeftBoxContainer/Carcinizer"]
 layout_mode = 2
-text = "Toksyczna"
-horizontal_alignment = 1
-
-[node name="Pierozek" type="Label" parent="MainBoxContainer/CreditsBoxContainer/LeftBoxContainer/MusicSounds"]
-layout_mode = 2
-text = "Pierożek"
+text = "Carcinizer"
 horizontal_alignment = 1
 
 [node name="RightBoxContainer" type="VBoxContainer" parent="MainBoxContainer/CreditsBoxContainer"]
 layout_mode = 2
 theme_override_constants/separation = 50
 
-[node name="Programmer" type="VBoxContainer" parent="MainBoxContainer/CreditsBoxContainer/RightBoxContainer"]
+[node name="Trupen" type="VBoxContainer" parent="MainBoxContainer/CreditsBoxContainer/RightBoxContainer"]
 layout_mode = 2
 
-[node name="Title" type="Label" parent="MainBoxContainer/CreditsBoxContainer/RightBoxContainer/Programmer"]
+[node name="Title" type="Label" parent="MainBoxContainer/CreditsBoxContainer/RightBoxContainer/Trupen"]
 modulate = Color(1, 1, 0, 1)
 layout_mode = 2
 theme_override_font_sizes/font_size = 50
-text = "Programmer"
+text = "Programming"
 horizontal_alignment = 1
 
-[node name="Wiolarz" type="Label" parent="MainBoxContainer/CreditsBoxContainer/RightBoxContainer/Programmer"]
-layout_mode = 2
-text = "Wiolarz"
-horizontal_alignment = 1
-
-[node name="Zephyr" type="Label" parent="MainBoxContainer/CreditsBoxContainer/RightBoxContainer/Programmer"]
-layout_mode = 2
-text = "Zephyr"
-horizontal_alignment = 1
-
-[node name="Carcinizer" type="Label" parent="MainBoxContainer/CreditsBoxContainer/RightBoxContainer/Programmer"]
-layout_mode = 2
-text = "Carcinizer"
-horizontal_alignment = 1
-
-[node name="Pierozek" type="Label" parent="MainBoxContainer/CreditsBoxContainer/RightBoxContainer/Programmer"]
-layout_mode = 2
-text = "Pierożek"
-horizontal_alignment = 1
-
-[node name="Trupen" type="Label" parent="MainBoxContainer/CreditsBoxContainer/RightBoxContainer/Programmer"]
+[node name="Name" type="Label" parent="MainBoxContainer/CreditsBoxContainer/RightBoxContainer/Trupen"]
 layout_mode = 2
 text = "Trupen"
 horizontal_alignment = 1
 
-[node name="Playtesting" type="VBoxContainer" parent="MainBoxContainer/CreditsBoxContainer/RightBoxContainer"]
+[node name="Pierozek" type="VBoxContainer" parent="MainBoxContainer/CreditsBoxContainer/RightBoxContainer"]
 layout_mode = 2
 
-[node name="Title" type="Label" parent="MainBoxContainer/CreditsBoxContainer/RightBoxContainer/Playtesting"]
+[node name="Title" type="Label" parent="MainBoxContainer/CreditsBoxContainer/RightBoxContainer/Pierozek"]
 modulate = Color(1, 1, 0, 1)
 layout_mode = 2
 theme_override_font_sizes/font_size = 50
-text = "Playtesting"
+text = "Programming and music"
 horizontal_alignment = 1
 
-[node name="Toksyczna" type="Label" parent="MainBoxContainer/CreditsBoxContainer/RightBoxContainer/Playtesting"]
+[node name="Name" type="Label" parent="MainBoxContainer/CreditsBoxContainer/RightBoxContainer/Pierozek"]
 layout_mode = 2
-text = "Polygon community"
+text = "Pierożek"
+horizontal_alignment = 1
+
+[node name="Toksyczna" type="VBoxContainer" parent="MainBoxContainer/CreditsBoxContainer/RightBoxContainer"]
+layout_mode = 2
+
+[node name="Title" type="Label" parent="MainBoxContainer/CreditsBoxContainer/RightBoxContainer/Toksyczna"]
+modulate = Color(1, 1, 0, 1)
+layout_mode = 2
+theme_override_font_sizes/font_size = 50
+text = "Music"
+horizontal_alignment = 1
+
+[node name="Name" type="Label" parent="MainBoxContainer/CreditsBoxContainer/RightBoxContainer/Toksyczna"]
+layout_mode = 2
+text = "Toksyczna"
 horizontal_alignment = 1
