@@ -1,9 +1,10 @@
-[gd_scene load_steps=6 format=3 uid="uid://b4ndp6v0ts1on"]
+[gd_scene load_steps=7 format=3 uid="uid://b4ndp6v0ts1on"]
 
 [ext_resource type="Script" path="res://Scripts/UI/main_menu.gd" id="1_iln2i"]
 [ext_resource type="PackedScene" uid="uid://b3dmmym31kdbx" path="res://Scenes/UI/Lobby/HostLobby.tscn" id="2_eyp7f"]
 [ext_resource type="PackedScene" uid="uid://biy1n2dqeqrox" path="res://Scenes/UI/Lobby/ClientLobby.tscn" id="3_rshoh"]
 [ext_resource type="PackedScene" uid="uid://b6eoph2qpu0d" path="res://Scenes/UI/SettingsMenu.tscn" id="4_f2bj7"]
+[ext_resource type="PackedScene" uid="uid://iqku7lopk1xl" path="res://Scenes/UI/CreditsMenu.tscn" id="5_bvo4w"]
 
 [sub_resource type="StyleBoxLine" id="StyleBoxLine_3lov4"]
 color = Color(0.701961, 0.701961, 0.701961, 1)
@@ -43,6 +44,10 @@ text = " -- Join --
 layout_mode = 2
 text = "Settings"
 
+[node name="CreditsButton" type="Button" parent="MainContainer/TopMenu"]
+layout_mode = 2
+text = "Credits"
+
 [node name="VSeparator" type="VSeparator" parent="MainContainer/TopMenu"]
 layout_mode = 2
 theme_override_constants/separation = 92
@@ -78,6 +83,10 @@ layout_mode = 2
 visible = false
 layout_mode = 2
 
+[node name="CreditsMenu" parent="MainContainer" instance=ExtResource("5_bvo4w")]
+visible = false
+layout_mode = 2
+
 [node name="FileDialogReplay" type="FileDialog" parent="."]
 title = "Open a File"
 initial_position = 2
@@ -91,6 +100,7 @@ root_subfolder = "replays/"
 [connection signal="pressed" from="MainContainer/TopMenu/HostButton" to="." method="_on_host_button_pressed"]
 [connection signal="pressed" from="MainContainer/TopMenu/JoinButton" to="." method="_on_join_button_pressed"]
 [connection signal="pressed" from="MainContainer/TopMenu/SettingsButton" to="." method="_on_settings_button_pressed"]
+[connection signal="pressed" from="MainContainer/TopMenu/CreditsButton" to="." method="_on_credits_button_pressed"]
 [connection signal="pressed" from="MainContainer/TopMenu/ReplaysButton" to="." method="_on_replays_button_pressed"]
 [connection signal="pressed" from="MainContainer/TopMenu/UnitEditorButton" to="." method="_on_unit_editor_button_pressed"]
 [connection signal="pressed" from="MainContainer/TopMenu/MapEditorButton" to="." method="_on_map_editor_button_pressed"]

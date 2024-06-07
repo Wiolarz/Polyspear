@@ -1,0 +1,129 @@
+[gd_scene format=3 uid="uid://iqku7lopk1xl"]
+
+[node name="CreditsMenu" type="Panel"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="MainBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 10
+
+[node name="Title" type="Label" parent="MainBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 100
+text = "Credits"
+horizontal_alignment = 1
+
+[node name="CreditsBoxContainer" type="HBoxContainer" parent="MainBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_constants/separation = 200
+alignment = 1
+
+[node name="LeftBoxContainer" type="VBoxContainer" parent="MainBoxContainer/CreditsBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 50
+
+[node name="Wiolarz" type="VBoxContainer" parent="MainBoxContainer/CreditsBoxContainer/LeftBoxContainer"]
+layout_mode = 2
+
+[node name="Title" type="Label" parent="MainBoxContainer/CreditsBoxContainer/LeftBoxContainer/Wiolarz"]
+modulate = Color(1, 1, 0, 1)
+layout_mode = 2
+theme_override_font_sizes/font_size = 50
+text = "Design, Art and Programming"
+horizontal_alignment = 1
+
+[node name="Name" type="Label" parent="MainBoxContainer/CreditsBoxContainer/LeftBoxContainer/Wiolarz"]
+layout_mode = 2
+text = "Wiolarz"
+horizontal_alignment = 1
+
+[node name="Zephyr" type="VBoxContainer" parent="MainBoxContainer/CreditsBoxContainer/LeftBoxContainer"]
+layout_mode = 2
+
+[node name="Title" type="Label" parent="MainBoxContainer/CreditsBoxContainer/LeftBoxContainer/Zephyr"]
+modulate = Color(1, 1, 0, 1)
+layout_mode = 2
+theme_override_font_sizes/font_size = 50
+text = "Programming"
+horizontal_alignment = 1
+
+[node name="Name" type="Label" parent="MainBoxContainer/CreditsBoxContainer/LeftBoxContainer/Zephyr"]
+layout_mode = 2
+text = "Zephyr"
+horizontal_alignment = 1
+
+[node name="Carcinizer" type="VBoxContainer" parent="MainBoxContainer/CreditsBoxContainer/LeftBoxContainer"]
+layout_mode = 2
+
+[node name="Title" type="Label" parent="MainBoxContainer/CreditsBoxContainer/LeftBoxContainer/Carcinizer"]
+modulate = Color(1, 1, 0, 1)
+layout_mode = 2
+theme_override_font_sizes/font_size = 50
+text = "Programming"
+horizontal_alignment = 1
+
+[node name="Name" type="Label" parent="MainBoxContainer/CreditsBoxContainer/LeftBoxContainer/Carcinizer"]
+layout_mode = 2
+text = "Carcinizer"
+horizontal_alignment = 1
+
+[node name="RightBoxContainer" type="VBoxContainer" parent="MainBoxContainer/CreditsBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 50
+
+[node name="Trupen" type="VBoxContainer" parent="MainBoxContainer/CreditsBoxContainer/RightBoxContainer"]
+layout_mode = 2
+
+[node name="Title" type="Label" parent="MainBoxContainer/CreditsBoxContainer/RightBoxContainer/Trupen"]
+modulate = Color(1, 1, 0, 1)
+layout_mode = 2
+theme_override_font_sizes/font_size = 50
+text = "Programming"
+horizontal_alignment = 1
+
+[node name="Name" type="Label" parent="MainBoxContainer/CreditsBoxContainer/RightBoxContainer/Trupen"]
+layout_mode = 2
+text = "Trupen"
+horizontal_alignment = 1
+
+[node name="Pierozek" type="VBoxContainer" parent="MainBoxContainer/CreditsBoxContainer/RightBoxContainer"]
+layout_mode = 2
+
+[node name="Title" type="Label" parent="MainBoxContainer/CreditsBoxContainer/RightBoxContainer/Pierozek"]
+modulate = Color(1, 1, 0, 1)
+layout_mode = 2
+theme_override_font_sizes/font_size = 50
+text = "Programming and music"
+horizontal_alignment = 1
+
+[node name="Name" type="Label" parent="MainBoxContainer/CreditsBoxContainer/RightBoxContainer/Pierozek"]
+layout_mode = 2
+text = "Pierożek"
+horizontal_alignment = 1
+
+[node name="Toksyczna" type="VBoxContainer" parent="MainBoxContainer/CreditsBoxContainer/RightBoxContainer"]
+layout_mode = 2
+
+[node name="Title" type="Label" parent="MainBoxContainer/CreditsBoxContainer/RightBoxContainer/Toksyczna"]
+modulate = Color(1, 1, 0, 1)
+layout_mode = 2
+theme_override_font_sizes/font_size = 50
+text = "Music"
+horizontal_alignment = 1
+
+[node name="Name" type="Label" parent="MainBoxContainer/CreditsBoxContainer/RightBoxContainer/Toksyczna"]
+layout_mode = 2
+text = "Toksyczna"
+horizontal_alignment = 1
