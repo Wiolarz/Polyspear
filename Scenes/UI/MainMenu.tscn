@@ -81,18 +81,8 @@ layout_mode = 2
 visible = false
 layout_mode = 2
 
-[node name="FileDialogReplay" type="FileDialog" parent="."]
-title = "Open a File"
-initial_position = 2
-size = Vector2i(1000, 900)
-ok_button_text = "Open"
-file_mode = 0
-access = 1
-root_subfolder = "replays/"
-
 [connection signal="visibility_changed" from="." to="." method="_on_visibility_changed"]
 [connection signal="tab_changed" from="MainContainer/TopMenu/Tabs" to="." method="_on_tabs_tab_changed"]
 [connection signal="pressed" from="MainContainer/TopMenu/UnitEditorButton" to="." method="_on_unit_editor_button_pressed"]
 [connection signal="pressed" from="MainContainer/TopMenu/MapEditorButton" to="." method="_on_map_editor_button_pressed"]
 [connection signal="pressed" from="MainContainer/TopMenu/ExitButton" to="." method="_on_exit_button_pressed"]
-[connection signal="file_selected" from="FileDialogReplay" to="." method="_on_file_dialog_replay_file_selected"]

@@ -52,14 +52,6 @@ func _clear_tabs():
 	$MainContainer/ReplaysMenu.hide()
 
 
-func _on_replays_button_pressed():
-	$FileDialogReplay.show()
-
-
-func _on_file_dialog_replay_file_selected(path):
-	IM.perform_replay(path)
-
-
 func _on_unit_editor_button_pressed():
 	UI.go_to_unit_editor()
 
