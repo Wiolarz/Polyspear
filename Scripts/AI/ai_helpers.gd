@@ -9,9 +9,9 @@ static func get_all_legal_moves(battle_state : BattleGridState) -> Array[MoveInf
 	3 GameplayManager -> LegalMove()
 	"""
 	var legal_moves : Array[MoveInfo] = []
-	var units := battle_state.get_units(battle_state.get_current_player())
+	var my_units := battle_state.get_units(battle_state.get_current_player())
 
-	for unit in units:
+	for unit in my_units:
 		for side in range(6):
 			var new_coord = GenericHexGrid.adjacent_coord(unit.coord, side)
 			var move_dir = battle_state.get_move_direction_if_valid(unit, new_coord)
