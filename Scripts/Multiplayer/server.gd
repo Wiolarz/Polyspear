@@ -176,14 +176,15 @@ func broadcast_world_move(move : WorldMoveInfo):
 
 func send_additional_callbacks_to_logging_client(peer : ENetPacketPeer):
 	var game_in_progress : bool = \
-		BM.battle_is_ongoing or WM.world_game_is_active()
-	if not game_in_progress:
+		BM.battle_is_active() or WM.world_game_is_active()
+	if game_in_progress:
+		send_full_state_sync(peer)
+	else:
+		# sync lobby
 		var game_setup = IM.game_setup_info
 		var packet : Dictionary = \
 			FillGameSetupCommand.create_packet(game_setup, server_username)
 		send_to_peer(peer, packet)
-	else:
-		send_full_state_sync(peer)
 
 
 func send_full_state_sync(peer : ENetPacketPeer):

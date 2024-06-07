@@ -1,15 +1,9 @@
 # Singleton - WM
 extends Node
 
+signal world_move_done
 
 #region Setup Parameters
-"""
-Current simplifications:
-1 All players are host-seat
-2 Basic same map
-3 Same game parameters set as const
-
-"""
 
 var players : Array[Player] = []
 
@@ -27,8 +21,6 @@ var combat_tile : Vector2i
 var _batch_mode : bool = false
 
 #endregion
-
-signal world_move_done
 
 
 #region helpers
@@ -128,6 +120,10 @@ func _end_of_round_callbacks() -> void:
 ## City/Heroes -> orders Heroes
 func grid_input(coord : Vector2i):
 	print("world input @", coord)
+
+	if BM.should_block_world_interaction():
+		print("blocked by BM - Battle Manager")
+		return
 
 	if selected_hero == null:
 		input_try_select(coord)
@@ -356,6 +352,7 @@ func start_combat( \
 	"""
 	Starts a battle using Battle Manager (BM)
 	"""
+	print("start_combat")
 	var biggest_army_size : int = 0
 	for army in armies:
 		var army_size : int = army.units_data.size()
@@ -363,8 +360,8 @@ func start_combat( \
 			biggest_army_size = army_size
 	combat_tile = combat_coord
 	var battle_map : DataBattleMap = W_GRID.get_battle_map(combat_tile, biggest_army_size)
-	BM.x_offset = get_bounds_global_position().end.x + CFG.MAPS_OFFSET_X
-	BM.start_battle(armies, battle_map, battle_state)
+	var x_offset = get_bounds_global_position().end.x + CFG.MAPS_OFFSET_X
+	BM.start_battle(armies, battle_map, battle_state, x_offset)
 	UI.switch_camera()
 
 
@@ -443,7 +440,7 @@ func spawn_world_ui():
 
 
 func start_new_world(world_map : DataWorldMap) -> void:
-	BM.battle_is_ongoing = false
+	BM.world_map_started()
 
 	var spawn_location = world_map.get_spawn_locations()
 
@@ -474,7 +471,7 @@ func start_world_in_state(world_map : DataWorldMap, \
 		world_state : SerializableWorldState) -> void:
 	_batch_mode = true
 
-	BM.battle_is_ongoing = false
+	BM.world_map_started()
 
 	players = IM.players
 
@@ -576,7 +573,6 @@ func _get_serializable_unit_hex(hex : ArmyForm) -> Dictionary:
 	var army_dict : Dictionary = {}
 	army_dict["player"] = get_player_index(army.controller)
 
-	var optional_hero_unit_data : DataUnit = null
 	if army.hero:
 		var hero : Hero = army.hero
 		army_dict["hero"] = hero.to_network_serializable()

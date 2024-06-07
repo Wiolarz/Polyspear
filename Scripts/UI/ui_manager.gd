@@ -36,8 +36,10 @@ func add_custom_screen(custom_ui : CanvasLayer):
 	add_child(custom_ui)
 	custom_ui.hide()
 	# we need them always at the top
-	move_child(ui_overlay, -1)
-	move_child(in_game_menu, -1)
+	if ui_overlay:
+		move_child(ui_overlay, -1)
+	if in_game_menu:
+		move_child(in_game_menu, -1)
 
 
 func go_to_custom_ui(custom_ui : CanvasLayer):
@@ -139,12 +141,10 @@ func grid_input_listener(tile_coord : Vector2i, \
 	if mouse_drag:
 		return
 
-	if BM.battle_is_ongoing:
-		if tile_type == GameSetupInfo.GameMode.BATTLE:
-			BM.grid_input(tile_coord)
-	else:
-		if tile_type == GameSetupInfo.GameMode.WORLD:
-			WM.grid_input(tile_coord)
+	if tile_type == GameSetupInfo.GameMode.BATTLE:
+		BM.grid_input(tile_coord)
+	elif tile_type == GameSetupInfo.GameMode.WORLD:
+		WM.grid_input(tile_coord)
 
 
 func ensure_camera_is_spawned() -> void:
@@ -156,7 +156,7 @@ func ensure_camera_is_spawned() -> void:
 
 func switch_camera() -> void:
 	if current_camera_position == E.CameraPosition.WORLD:
-		if BM.battle_is_ongoing:
+		if BM.can_show_battla_camera():
 			set_camera(E.CameraPosition.BATTLE)
 	else:
 		if IM.game_setup_info.game_mode == GameSetupInfo.GameMode.WORLD:

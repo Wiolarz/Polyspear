@@ -41,8 +41,7 @@ func _prepare_to_start_game() -> void:
 	UI.ensure_camera_is_spawned()
 
 	WM.close_world()
-	if BM.battle_is_ongoing:
-		BM.drop_battle()
+	BM.close_when_quiting_game()
 	UI.go_to_main_menu()
 
 
@@ -53,7 +52,6 @@ func start_new_game() -> void:
 
 	if game_setup_info.is_in_mode_world():
 		_start_game_world(null)
-		BM.position.x = WM.get_bounds_global_position().end.x + CFG.MAPS_OFFSET_X
 		UI.set_camera(E.CameraPosition.WORLD)
 	if game_setup_info.is_in_mode_battle():
 		_start_game_battle(null)
@@ -71,7 +69,7 @@ func start_game_in_state(world_state : SerializableWorldState, \
 	if game_setup_info.is_in_mode_battle() and battle_state.valid():
 		_start_game_battle(battle_state)
 		UI.set_camera(E.CameraPosition.BATTLE)
-		UI.go_to_custom_ui(BM.battle_ui)
+		UI.go_to_custom_ui(BM._battle_ui)
 	elif game_setup_info.is_in_mode_world() and world_state.valid():
 		_start_game_world(world_state)
 		UI.set_camera(E.CameraPosition.WORLD)
@@ -81,7 +79,7 @@ func start_game_in_state(world_state : SerializableWorldState, \
 			for army_coord in battle_state.world_armies:
 				armies.append(W_GRID.get_army_form(army_coord).entity)
 			WM.start_combat(armies, battle_state.combat_coord, battle_state)
-			UI.go_to_custom_ui(BM.battle_ui)
+			UI.go_to_custom_ui(BM._battle_ui)
 
 
 func perform_replay(path):
@@ -126,10 +124,9 @@ func _start_game_battle(battle_state : SerializableBattleState):
 	for p in players:
 		armies.append(create_army_for(p))
 
-	BM.x_offset = 0.0
-
 	UI.go_to_main_menu()
-	BM.start_battle(armies, map_data, battle_state)
+	var x_offset = 0.0
+	BM.start_battle(armies, map_data, battle_state, x_offset)
 
 
 func create_army_for(player : Player) -> Army:
@@ -146,7 +143,7 @@ func create_army_for(player : Player) -> Army:
 
 func go_to_main_menu():
 	draw_mode = false
-	BM.reset_grid_and_unit_forms()
+	BM.close_when_quiting_game()
 	WM.close_world()
 	UI.go_to_main_menu()
 
@@ -215,7 +212,7 @@ func get_serializable_world_state() -> SerializableWorldState:
 
 func get_serializable_battle_state() -> SerializableBattleState:
 	var state := SerializableBattleState.new()
-	if BM.battle_is_ongoing:
+	if BM.battle_is_active():
 		state.replay = BM.get_ripped_replay()
 		if WM.world_game_is_active():
 			for army in BM._battle_grid.armies_in_battle_state:
