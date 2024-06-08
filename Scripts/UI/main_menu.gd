@@ -13,7 +13,7 @@ func _ready():
 
 
 func refresh_replays_disabled():
-	$MainContainer/TopMenu/ReplaysButton.set_disabled(not BattleReplay.has_replays())
+	($MainContainer/TopMenu/Tabs as TabBar).set_tab_disabled(4, not BattleReplay.has_replays())
 
 
 func _on_visibility_changed():
@@ -39,20 +39,17 @@ func _on_credits_button_pressed():
 	_clear_tabs()
 	$MainContainer/CreditsMenu.show()
 
+func _on_replays_tab_pressed():
+	_clear_tabs()
+	$MainContainer/ReplaysMenu.show()
+
 
 func _clear_tabs():
 	$MainContainer/HostLobby.hide()
 	$MainContainer/ClientLobby.hide()
 	$MainContainer/SettingsMenu.hide()
 	$MainContainer/CreditsMenu.hide()
-
-
-func _on_replays_button_pressed():
-	$FileDialogReplay.show()
-
-
-func _on_file_dialog_replay_file_selected(path):
-	IM.perform_replay(path)
+	$MainContainer/ReplaysMenu.hide()
 
 
 func _on_unit_editor_button_pressed():
@@ -73,4 +70,5 @@ func _on_tabs_tab_changed(tab_index:int):
 		1: _on_join_button_pressed()
 		2: _on_settings_button_pressed()
 		3: _on_credits_button_pressed()
+		4: _on_replays_tab_pressed()
 		_: push_error("_on_tabs_tab_changed index not supported: "+str(tab_index))

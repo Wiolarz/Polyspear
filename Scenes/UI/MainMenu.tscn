@@ -1,10 +1,11 @@
-[gd_scene load_steps=7 format=3 uid="uid://b4ndp6v0ts1on"]
+[gd_scene load_steps=8 format=3 uid="uid://b4ndp6v0ts1on"]
 
 [ext_resource type="Script" path="res://Scripts/UI/main_menu.gd" id="1_iln2i"]
 [ext_resource type="PackedScene" uid="uid://b3dmmym31kdbx" path="res://Scenes/UI/Lobby/HostLobby.tscn" id="2_eyp7f"]
 [ext_resource type="PackedScene" uid="uid://biy1n2dqeqrox" path="res://Scenes/UI/Lobby/ClientLobby.tscn" id="3_rshoh"]
 [ext_resource type="PackedScene" uid="uid://b6eoph2qpu0d" path="res://Scenes/UI/SettingsMenu.tscn" id="4_f2bj7"]
 [ext_resource type="PackedScene" uid="uid://iqku7lopk1xl" path="res://Scenes/UI/CreditsMenu.tscn" id="5_bvo4w"]
+[ext_resource type="PackedScene" uid="uid://cs7ibsdnsrn5v" path="res://Scenes/UI/ReplaysMenu.tscn" id="6_lxdjb"]
 
 [sub_resource type="StyleBoxLine" id="StyleBoxLine_3lov4"]
 color = Color(0.701961, 0.701961, 0.701961, 1)
@@ -32,21 +33,18 @@ theme_override_constants/separation = 20
 
 [node name="Tabs" type="TabBar" parent="MainContainer/TopMenu"]
 layout_mode = 2
-tab_count = 4
+tab_count = 5
 clip_tabs = false
 tab_0/title = " >> Host <<"
 tab_1/title = "-- Join --"
 tab_2/title = "Settings"
 tab_3/title = "Credits"
+tab_4/title = "Replays"
 
 [node name="VSeparator" type="VSeparator" parent="MainContainer/TopMenu"]
 layout_mode = 2
 theme_override_constants/separation = 92
 theme_override_styles/separator = SubResource("StyleBoxLine_3lov4")
-
-[node name="ReplaysButton" type="Button" parent="MainContainer/TopMenu"]
-layout_mode = 2
-text = "Replays"
 
 [node name="UnitEditorButton" type="Button" parent="MainContainer/TopMenu"]
 layout_mode = 2
@@ -79,19 +77,12 @@ layout_mode = 2
 visible = false
 layout_mode = 2
 
-[node name="FileDialogReplay" type="FileDialog" parent="."]
-title = "Open a File"
-initial_position = 2
-size = Vector2i(1000, 900)
-ok_button_text = "Open"
-file_mode = 0
-access = 1
-root_subfolder = "replays/"
+[node name="ReplaysMenu" parent="MainContainer" instance=ExtResource("6_lxdjb")]
+visible = false
+layout_mode = 2
 
 [connection signal="visibility_changed" from="." to="." method="_on_visibility_changed"]
 [connection signal="tab_changed" from="MainContainer/TopMenu/Tabs" to="." method="_on_tabs_tab_changed"]
-[connection signal="pressed" from="MainContainer/TopMenu/ReplaysButton" to="." method="_on_replays_button_pressed"]
 [connection signal="pressed" from="MainContainer/TopMenu/UnitEditorButton" to="." method="_on_unit_editor_button_pressed"]
 [connection signal="pressed" from="MainContainer/TopMenu/MapEditorButton" to="." method="_on_map_editor_button_pressed"]
 [connection signal="pressed" from="MainContainer/TopMenu/ExitButton" to="." method="_on_exit_button_pressed"]
-[connection signal="file_selected" from="FileDialogReplay" to="." method="_on_file_dialog_replay_file_selected"]
