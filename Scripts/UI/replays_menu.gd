@@ -29,8 +29,13 @@ func refresh_replays_list():
 		button.pressed.connect(func on_replay_clicked():
 			_replay = load(CFG.REPLAY_DIRECTORY + replay_path)
 			_description.text = replay_path \
-				+ "\n map : "+ DataBattleMap.get_network_id(_replay.battle_map) \
-				+ "\n moves : "+ str(_replay.moves.size())
+				+ "\n map : " + DataBattleMap.get_network_id(_replay.battle_map) \
+				+ "\n moves : " + str(_replay.moves.size())
+			for army in _replay.units_at_start:
+				_description.text += "\n army:"
+				for unit : DataUnit in army:
+					_description.text += "\n  - " + unit.unit_name
+
 			_play_button.disabled = false
 		)
 		_replay_buttons_container.add_child(button)
