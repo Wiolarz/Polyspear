@@ -65,9 +65,6 @@ func start_battle(new_armies : Array[Army], battle_map : DataBattleMap, \
 
 	# GAMEPLAY GRID and Armies state:
 	_battle_grid = BattleGridState.create(battle_map, new_armies)
-	_battle_grid.on_unit_summoned.connect(_on_unit_summoned)
-	_battle_grid.on_battle_ended.connect(_on_battle_ended)
-	_battle_grid.on_turn_started.connect(_on_turn_started)
 
 	# GRAPHICS GRID:
 	_load_map(battle_map)
@@ -302,13 +299,22 @@ func _perform_move_info(move_info : MoveInfo) -> void:
 	_replay_data.save()
 	if NET.server:
 		NET.server.broadcast_move(move_info)
-	if move_info.move_type == MoveInfo.TYPE_MOVE:
-		_battle_grid.move_info_move_unit(move_info.move_source, move_info.target_tile_coord)
-		return
-	if move_info.move_type == MoveInfo.TYPE_SUMMON:
-		_battle_grid.move_info_summon_unit(move_info.summon_unit, move_info.target_tile_coord)
-		return
-	assert(false, "Move move_type not supported in perform")
+
+	match move_info.move_type:
+		MoveInfo.TYPE_MOVE:
+			_battle_grid.move_info_move_unit(move_info.move_source, move_info.target_tile_coord)
+
+		MoveInfo.TYPE_SUMMON:
+			var unit := _battle_grid.move_info_summon_unit(move_info.summon_unit, move_info.target_tile_coord)
+			_on_unit_summoned(unit)
+
+		_ :
+			assert(false, "Move move_type not supported in perform, " + str(move_info.move_type))
+
+	if _battle_grid.battle_is_ongoing():
+		_on_turn_started(_battle_grid.get_current_player())
+	else :
+		_on_battle_ended()
 
 
 func _on_unit_killed(unit: Unit) -> void:
@@ -345,6 +351,7 @@ func close_when_quiting_game() -> void:
 
 ## called when battle simulation decided battle was won
 func _on_battle_ended() -> void:
+	print("ending battle")
 	if not _battle_is_ongoing:
 		assert(false, "battle ended when it was not ongoing...")
 		return
