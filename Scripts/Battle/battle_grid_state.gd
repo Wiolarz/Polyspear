@@ -41,10 +41,10 @@ static func create(map: DataBattleMap, new_armies : Array[Army]) -> BattleGridSt
 #region move_info support
 
 func move_info_summon_unit(unit_data : DataUnit, coord : Vector2i) -> Unit:
-	var initial_rotation := _get_spawn_rotation(coord)
+	var initial_rotation := get_spawn_rotation(coord)
 	var army_state := armies_in_battle_state[current_army_index]
 	var unit := army_state.summon_unit(unit_data, coord, initial_rotation)
-	_put_unit_on_grid(unit, coord)
+	put_unit_on_grid(unit, coord)
 	_switch_participant_turn()
 	return unit
 
