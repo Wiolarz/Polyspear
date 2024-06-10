@@ -298,40 +298,7 @@ func _get_move_direction_if_valid(unit : Unit, coord : Vector2i) -> int:
 	return move_direction
 
 
-
-## can i kill/push this enemy in melee if i attack in specified direction
-func _can_kill_or_push(me : Unit, other_unit : Unit, attack_direction : int):
-	# - attacker has no attack symbol on front
-	# - attacker has push symbol on front (no current unit has it)
-	# - attacker has some attack symbol
-	#   - defender has shield
-
-	if other_unit.controller == me.controller:
-		return false
-
-	match me.get_front_symbol():
-		E.Symbols.EMPTY:
-			# can't deal with enemy_unit
-			return false
-		E.Symbols.SHIELD:
-			# can't deal with enemy_unit
-			return false
-		E.Symbols.PUSH:
-			# push ignores enemy_unit shields etc
-			return true
-		_:
-			# assume other attack symbol
-			# Does enemy_unit has a shield?
-			var defense_direction = GenericHexGrid.opposite_direction(attack_direction)
-			var defense_symbol = other_unit.get_symbol(defense_direction)
-
-			if defense_symbol == E.Symbols.SHIELD:
-				return false
-			# no shield, attack ok
-			return true
-
-
-func _get_player_army(player : Player) -> BattleGridState.ArmyInBattleState:
+func get_player_army(player : Player) -> BattleGridState.ArmyInBattleState:
 	for army in armies_in_battle_state:
 		if army.army_reference.controller == player:
 			return army
@@ -412,26 +379,12 @@ func force_surrender():
 
 #region AI Helpers
 
-
-func get_possible_moves() -> Array[MoveInfo]:
-	if is_during_summoning_phase():
-		return _get_all_spawn_moves()
-
-	return _get_all_unit_moves()
+func get_summon_tiles(player : Player) -> Array[Vector2i]:
+	var idx = find_army_idx(player)
+	return get_summon_coords(idx)
 
 
-func _get_summon_tiles(player : Player) -> Array[Vector2i]:
-	var army_idx = _find_army_idx(player)
-	var result : Array[Vector2i] = []
-	for x in range(width):
-		for y in range(height):
-			var coord := Vector2i(x,y)
-			if _can_summon_on(army_idx, coord):
-				result.append(coord)
-	return result
-
-
-func _get_not_summoned_units(player : Player) -> Array[DataUnit]:
+func get_not_summoned_units(player : Player) -> Array[DataUnit]:
 	for a in armies_in_battle_state:
 		if a.army_reference.controller == player:
 			return a.units_to_summon.duplicate()
