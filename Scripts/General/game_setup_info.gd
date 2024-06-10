@@ -138,7 +138,6 @@ func set_battle_map(map : DataBattleMap):
 		var slot = GameSetupInfo.Slot.new()
 		slots.append(slot)
 
-		slot.occupier = 0
 		slot.faction = CFG.FACTIONS_LIST[0]
 		slot.color = 0
 
@@ -168,7 +167,6 @@ func set_world_map(map: DataWorldMap):
 	while slots.size() < map_slots_size:
 		var slot = GameSetupInfo.Slot.new()
 		slots.append(slot)
-		slot.occupier = 0
 		var faction_idx = wrap(slots.size()-1, 0, CFG.FACTIONS_LIST.size())
 		slot.faction = CFG.FACTIONS_LIST[faction_idx]
 		slot.color = 0
@@ -185,7 +183,6 @@ static func create_empty() -> GameSetupInfo:
 	result.slots.resize(slot_count)
 	for i in range(slot_count):
 		result.slots[i] = GameSetupInfo.Slot.new()
-		result.slots[i].occupier = 0
 		result.slots[i].faction = CFG.FACTIONS_LIST[i]
 		result.slots[i].color = i
 	return result
@@ -208,6 +205,10 @@ class Slot extends RefCounted: # check if this is good base
 
 	## for battle only mode
 	var units_list : Array[DataUnit] = [null,null,null,null,null]
+
+	func _init():
+		if CFG.player_options.use_default_AI_players:
+			occupier = 0
 
 
 	func is_bot() -> bool:

@@ -50,6 +50,18 @@ theme_override_styles/focus = SubResource("StyleBoxFlat_jf720")
 text = "Auto start"
 alignment = 1
 
+[node name="ToggleDefaultAIPlayers" type="CheckButton" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_jf720")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_jf720")
+theme_override_styles/hover = SubResource("StyleBoxFlat_jf720")
+theme_override_styles/hover_pressed = SubResource("StyleBoxFlat_jf720")
+theme_override_styles/focus = SubResource("StyleBoxFlat_jf720")
+text = "Players start as AI"
+alignment = 1
+
 [connection signal="pressed" from="VBoxContainer/ToggleBattleDefault" to="." method="_on_toggle_battle_default_pressed"]
 [connection signal="pressed" from="VBoxContainer/ToggleAutoStart" to="." method="_on_toggle_auto_start_pressed"]
 [connection signal="visibility_changed" from="VBoxContainer/ToggleAutoStart" to="." method="_on_toggle_auto_start_visibility_changed"]
+[connection signal="pressed" from="VBoxContainer/ToggleDefaultAIPlayers" to="." method="_on_toggle_default_ai_players_pressed"]
+[connection signal="visibility_changed" from="VBoxContainer/ToggleDefaultAIPlayers" to="." method="_on_toggle_auto_start_visibility_changed"]
