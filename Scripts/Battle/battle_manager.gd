@@ -3,7 +3,7 @@ extends GridNode2D
 
 var _battle_is_ongoing : bool = false
 
-var _battle_grid: BattleGridState # GAMEPLAY combat state
+var _battle_grid_state: BattleGridState # GAMEPLAY combat state
 
 var _tile_grid : GenericHexGrid # Grid<TileForm> - VISUALs in a grid
 var _unit_to_unit_form : Dictionary # gameplay unit to VISUAL mapping
@@ -65,13 +65,13 @@ func start_battle(new_armies : Array[Army], battle_map : DataBattleMap, \
 	_selected_unit = null
 
 	# GAMEPLAY GRID and Armies state:
-	_battle_grid = BattleGridState.create(battle_map, new_armies)
+	_battle_grid_state = BattleGridState.create(battle_map, new_armies)
 
 	# GRAPHICS GRID:
 	_load_map(battle_map)
 	_grid_tiles_node.position.x = x_offset
 
-	_battle_ui.load_armies(_battle_grid.armies_in_battle_state)
+	_battle_ui.load_armies(_battle_grid_state.armies_in_battle_state)
 
 	if battle_state: # recreate state if present
 		_batch_mode = true
@@ -80,7 +80,7 @@ func start_battle(new_armies : Array[Army], battle_map : DataBattleMap, \
 		_batch_mode = false
 
 	# first turn does not get a signal emit
-	_on_turn_started(_battle_grid.get_current_player())
+	_on_turn_started(_battle_grid_state.get_current_player())
 
 
 func _load_map(map : DataBattleMap) -> void:
@@ -150,13 +150,28 @@ func _on_turn_started(player : Player) -> void:
 	if not _battle_is_ongoing:
 		return
 
-	_battle_ui.start_player_turn(_battle_grid.current_army_index)
+	_battle_ui.start_player_turn(_battle_grid_state.current_army_index)
 
-	if player:
-		# triggers AI analysis
-		player.your_turn(_battle_grid)
-	else:
+	if not player:
 		print("uncontrolled army's turn")
+		return
+	
+	# trigger AI analysis
+	print("your move %s - %s" % [player.get_player_name(), player.get_player_color().name])
+
+	if player.bot_engine and not NET.client: # AI is simulated on server only
+		print("AI starts thinking")
+		var move = player.bot_engine.choose_move(_battle_grid_state)
+		await _ai_thinking_delay() # moving too fast feels weird
+		_perform_ai_move(move)
+
+
+func _ai_thinking_delay() -> void:
+	var seconds = CFG.bot_speed_frames / 60.0
+	print("ai wait %f s" % [seconds])
+	await get_tree().create_timer(seconds).timeout
+	while IM.is_game_paused() or CFG.bot_speed_frames == CFG.BotSpeed.FREEZE:
+		await get_tree().create_timer(0.1).timeout
 
 
 func perform_network_move(move_info : MoveInfo) -> void:
@@ -185,12 +200,12 @@ func grid_input(coord : Vector2i) -> void:
 		print("anim playing, input ignored")
 		return
 
-	var current_player : Player =  _battle_grid.get_current_player()
+	var current_player : Player =  _battle_grid_state.get_current_player()
 	if current_player != null and current_player.bot_engine:
 		print("ai playing, input ignored")
 		return
 
-	if _battle_grid.is_during_summoning_phase(): # Summon phase
+	if _battle_grid_state.is_during_summoning_phase(): # Summon phase
 		_grid_input_summon(coord)
 		return
 
@@ -211,7 +226,7 @@ func _on_unit_summoned(unit : Unit) -> void:
 	# apply correct BM position offset in world battles
 	form.global_position = get_tile_global_position(unit.coord)
 
-	_battle_ui.unit_summoned(not _battle_grid.is_during_summoning_phase(), unit.template)
+	_battle_ui.unit_summoned(not _battle_grid_state.is_during_summoning_phase(), unit.template)
 
 	unit.unit_died.connect(_on_unit_killed.bind(unit))
 	unit.unit_turned.connect(_on_unit_turned.bind(unit))
@@ -220,13 +235,13 @@ func _on_unit_summoned(unit : Unit) -> void:
 
 ## handles player input while during the summoning phase
 func _grid_input_summon(coord : Vector2i) -> void:
-	assert(_battle_grid.state == _battle_grid.STATE_SUMMONNING, \
+	assert(_battle_grid_state.state == _battle_grid_state.STATE_SUMMONNING, \
 			"_grid_input_summon called in an incorrect state")
 
 	if _battle_ui.selected_unit == null:
 		return # no unit selected to summon on ui
 
-	if not _battle_grid.can_summon_on(_battle_grid.current_army_index, coord):
+	if not _battle_grid_state.can_summon_on(_battle_grid_state.current_army_index, coord):
 		return
 
 	print(NET.get_role_name(), " input - summoning unit")
@@ -243,7 +258,7 @@ func _grid_input_summon(coord : Vector2i) -> void:
 #region Fighting Phase
 
 func _grid_input_fighting(coord : Vector2i) -> void:
-	assert(_battle_grid.state == _battle_grid.STATE_FIGHTING, \
+	assert(_battle_grid_state.state == _battle_grid_state.STATE_FIGHTING, \
 			"_grid_input_fighting called in an incorrect state")
 
 	if _try_select_unit(coord) or _selected_unit == null:
@@ -258,7 +273,7 @@ func _grid_input_fighting(coord : Vector2i) -> void:
 	# - spot is not movable (MOVE_IS_INVALID)
 	# - there is an enemy that can be killed by the move (dir)
 	# - there is enemy that cannot be killed by the move (MOVE_IS_INVALID)
-	var direction : int = _battle_grid.get_move_direction_if_valid(_selected_unit, coord)
+	var direction : int = _battle_grid_state.get_move_direction_if_valid(_selected_unit, coord)
 	if direction == BattleGridState.MOVE_IS_INVALID:
 		return
 
@@ -276,10 +291,10 @@ func _grid_input_fighting(coord : Vector2i) -> void:
 ## Select friendly Unit on a given coord
 ## returns true if unit was selected
 func _try_select_unit(coord : Vector2i) -> bool:
-	var new_unit : Unit = _battle_grid.get_unit(coord)
+	var new_unit : Unit = _battle_grid_state.get_unit(coord)
 	if not new_unit:
 		return false
-	if new_unit.controller != _battle_grid.get_current_player():
+	if new_unit.controller != _battle_grid_state.get_current_player():
 		return false
 
 	# deselect visually old unit if new one selected
@@ -303,17 +318,17 @@ func _perform_move_info(move_info : MoveInfo) -> void:
 
 	match move_info.move_type:
 		MoveInfo.TYPE_MOVE:
-			_battle_grid.move_info_move_unit(move_info.move_source, move_info.target_tile_coord)
+			_battle_grid_state.move_info_move_unit(move_info.move_source, move_info.target_tile_coord)
 
 		MoveInfo.TYPE_SUMMON:
-			var unit := _battle_grid.move_info_summon_unit(move_info.summon_unit, move_info.target_tile_coord)
+			var unit := _battle_grid_state.move_info_summon_unit(move_info.summon_unit, move_info.target_tile_coord)
 			_on_unit_summoned(unit)
 
 		_ :
 			assert(false, "Move move_type not supported in perform, " + str(move_info.move_type))
 
-	if _battle_grid.battle_is_ongoing():
-		_on_turn_started(_battle_grid.get_current_player())
+	if _battle_grid_state.battle_is_ongoing():
+		_on_turn_started(_battle_grid_state.get_current_player())
 	else :
 		_on_battle_ended()
 
@@ -372,7 +387,7 @@ func _on_battle_ended() -> void:
 
 
 func _close_battle() -> void:
-	var state_for_world = _battle_grid.armies_in_battle_state
+	var state_for_world = _battle_grid_state.armies_in_battle_state
 	_clear_anim_queue()
 	_turn_off_battle_ui()
 	_reset_grid_and_unit_forms()
@@ -396,7 +411,7 @@ func _reset_grid_and_unit_forms() -> void:
 	_unit_to_unit_form.clear()
 	Helpers.remove_all_children(_grid_tiles_node)
 	Helpers.remove_all_children(_unit_forms_node)
-	_battle_grid = null
+	_battle_grid_state = null
 
 
 func _create_summary() -> DataBattleSummary:
@@ -404,7 +419,7 @@ func _create_summary() -> DataBattleSummary:
 	summary.color = CFG.NEUTRAL_COLOR.color
 	summary.title = "Draw"
 
-	var armies_in_battle_state := _battle_grid.armies_in_battle_state
+	var armies_in_battle_state := _battle_grid_state.armies_in_battle_state
 
 	for army_in_battle in armies_in_battle_state:
 		var player_stats := DataBattleSummaryPlayer.new()
@@ -466,11 +481,11 @@ func get_ripped_replay() -> BattleReplay:
 #region cheats
 
 func force_win_battle():
-	_battle_grid.force_win_battle()
+	_battle_grid_state.force_win_battle()
 
 
 func force_surrender():
-	_battle_grid.force_surrender()
+	_battle_grid_state.force_surrender()
 
 
 #endregion
