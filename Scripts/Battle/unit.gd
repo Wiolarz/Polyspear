@@ -70,39 +70,9 @@ func get_symbol_when_rotated(side_world : int, hypotetical_rotation : int) -> E.
 			side_world as GenericHexGrid.GridDirections, -hypotetical_rotation)
 	return template.symbols[side_local].type
 
+
 func get_front_symbol() -> E.Symbols:
 	return template.symbols[GenericHexGrid.DIRECTION_FRONT].type
-
-## can i kill/push this enemy in melee if i attack in specified direction
-func can_kill_or_push(other_unit : Unit, attack_direction : int):
-	# - attacker has no attack symbol on front
-	# - attacker has push symbol on front (no current unit has it)
-	# - attacker has some attack symbol
-	#   - defender has shield
-
-	if other_unit.controller == controller:
-		return false
-
-	match get_front_symbol():
-		E.Symbols.EMPTY:
-			# can't deal with enemy_unit
-			return false
-		E.Symbols.SHIELD:
-			# can't deal with enemy_unit
-			return false
-		E.Symbols.PUSH:
-			# push ignores enemy_unit shields etc
-			return true
-		_:
-			# assume other attack symbol
-			# Does enemy_unit has a shield?
-			var defense_direction = GenericHexGrid.opposite_direction(attack_direction)
-			var defense_symbol = other_unit.get_symbol(defense_direction)
-
-			if defense_symbol == E.Symbols.SHIELD:
-				return false
-			# no shield, attack ok
-			return true
 
 
 func get_player_color() -> DataPlayerColor:

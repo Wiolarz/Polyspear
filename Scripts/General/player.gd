@@ -69,7 +69,17 @@ func your_turn(battle_state : BattleGridState):
 	print("your move %s - %s" % [get_player_name(), color_name])
 
 	if bot_engine != null and not NET.client: # AI is simulated on server only
-		bot_engine.play_move(battle_state)
+		var move = bot_engine.choose_move(battle_state)
+		await _ai_thinking_delay() # moving too fast feels weird
+		_perform_ai_move(move)
+
+
+func _ai_thinking_delay() -> void:
+	var seconds = CFG.bot_speed_frames / 60.0
+	print("ai wait ", seconds)
+	await get_tree().create_timer(seconds).timeout
+	while IM.is_game_paused() or CFG.bot_speed_frames == CFG.BotSpeed.FREEZE:
+		await get_tree().create_timer(0.1).timeout
 
 
 func set_capital(capital : City):

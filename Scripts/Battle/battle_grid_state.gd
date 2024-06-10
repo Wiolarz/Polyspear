@@ -81,7 +81,7 @@ func _perform_move(unit : Unit, direction : int, target_tile_coord : Vector2i) -
 ## returns true when unit should stop processing further steps
 ## it died or battle ended
 func _process_symbols(unit : Unit) -> bool:
-	if should_die_to_counter_attack(unit):
+	if _should_die_to_counter_attack(unit):
 		_kill_unit(unit)
 		return true
 	_process_offensive_symbols(unit)
@@ -90,7 +90,7 @@ func _process_symbols(unit : Unit) -> bool:
 	return false
 
 
-func should_die_to_counter_attack(unit : Unit) -> bool:
+func _should_die_to_counter_attack(unit : Unit) -> bool:
 	# Returns true if Enemy counter_attack can kill the target
 	var adjacent = adjacent_units(unit.coord)
 
@@ -164,7 +164,7 @@ func _push_enemy(enemy : Unit, direction : int) -> void:
 	enemy.move(target_coord)
 
 	# check for counter_attacks
-	if should_die_to_counter_attack(enemy):
+	if _should_die_to_counter_attack(enemy):
 		_kill_unit(enemy)
 
 #endregion
@@ -296,10 +296,43 @@ func get_move_direction_if_valid(unit : Unit, coord : Vector2i) -> int:
 	if not unit_on_target:
 		return move_direction
 
-	if not unit.can_kill_or_push(unit_on_target, move_direction):
+	if not _can_kill_or_push(unit, unit_on_target, move_direction):
 		return MOVE_IS_INVALID
 
 	return move_direction
+
+
+
+## can i kill/push this enemy in melee if i attack in specified direction
+func _can_kill_or_push(me : Unit, other_unit : Unit, attack_direction : int):
+	# - attacker has no attack symbol on front
+	# - attacker has push symbol on front (no current unit has it)
+	# - attacker has some attack symbol
+	#   - defender has shield
+
+	if other_unit.controller == me.controller:
+		return false
+
+	match me.get_front_symbol():
+		E.Symbols.EMPTY:
+			# can't deal with enemy_unit
+			return false
+		E.Symbols.SHIELD:
+			# can't deal with enemy_unit
+			return false
+		E.Symbols.PUSH:
+			# push ignores enemy_unit shields etc
+			return true
+		_:
+			# assume other attack symbol
+			# Does enemy_unit has a shield?
+			var defense_direction = GenericHexGrid.opposite_direction(attack_direction)
+			var defense_symbol = other_unit.get_symbol(defense_direction)
+
+			if defense_symbol == E.Symbols.SHIELD:
+				return false
+			# no shield, attack ok
+			return true
 
 
 func get_player_army(player : Player) -> BattleGridState.ArmyInBattleState:
@@ -383,6 +416,14 @@ func force_surrender():
 
 #region AI Helpers
 
+
+func get_possible_moves() -> Array[MoveInfo]:
+	if is_during_summoning_phase():
+		return _get_all_spawn_moves()
+
+	return _get_all_unit_moves()
+
+
 func get_summon_tiles(player : Player) -> Array[Vector2i]:
 	var idx = find_army_idx(player)
 	return get_summon_coords(idx)
@@ -407,6 +448,97 @@ func find_army_idx(player : Player) -> int:
 			return idx
 	assert(false, "ai asked for army idx for player who doesnt control any army")
 	return -1
+
+
+## not summons, only units already placed
+func _get_all_unit_moves() -> Array[MoveInfo]:
+	var legal_moves : Array[MoveInfo] = []
+	var my_units := get_units(get_current_player())
+
+	for unit in my_units:
+		for side in range(6):
+			var new_coord = GenericHexGrid.adjacent_coord(unit.coord, side)
+			var move_dir = get_move_direction_if_valid(unit, new_coord)
+			if move_dir != BattleGridState.MOVE_IS_INVALID:
+				legal_moves.append(MoveInfo.make_move(unit.coord, new_coord))
+	return legal_moves
+
+
+func _get_all_spawn_moves() -> Array[MoveInfo]:
+	var legal_moves: Array[MoveInfo] = []
+	var me = get_current_player()
+	var spawn_tiles = get_summon_tiles(me)
+	var units = get_not_summoned_units(me)
+	for unit in units:
+		for spawn_tile in spawn_tiles:
+			legal_moves.append(MoveInfo.make_summon(unit, spawn_tile))
+
+	return legal_moves
+
+
+## only legal moves are supported
+func filter_only_kill_moves(all_moves: Array[MoveInfo]) -> Array[MoveInfo]:
+	var all_kill_moves : Array[MoveInfo] = []
+	for move in all_moves:
+		if _is_kill_move(move):
+			all_kill_moves.append(move)
+
+	return all_kill_moves
+
+
+## only legal moves are supported
+func _is_kill_move(move : MoveInfo) -> bool:
+
+	if move.move_type != MoveInfo.TYPE_MOVE:
+		return false # summons don't kill
+
+	var me = get_current_player()
+	var unit_on_target_field = get_unit(move.target_tile_coord)
+	if unit_on_target_field != null \
+			and unit_on_target_field.controller != me:
+		# can move into a unit and kill it
+		# if it couldn't move would not be legal
+		return true
+
+	# BOW
+	var attacker = get_unit(move.move_source)
+	var move_direction = GenericHexGrid.direction_to_adjacent( \
+			move.move_source, move.target_tile_coord);
+	for side in range(6):
+		var opposite_side = GenericHexGrid.opposite_direction(side)
+		var symbol = attacker.get_symbol_when_rotated(side, move_direction)
+		if symbol == E.Symbols.BOW:
+			var target : Unit = get_shot_target(move.move_source, side)
+			if target != null and target.controller != me \
+					and target.get_symbol(opposite_side) != E.Symbols.SHIELD:
+				# can shoot enemy in this direction
+				return true
+
+	# check for enemies near new field
+	var target_adjacent_units = adjacent_units(move.target_tile_coord)
+	# check for enemy spears
+	for side in 6:
+		var enemy = target_adjacent_units[side]
+		if enemy and enemy.controller != me:
+			var opposite_side = GenericHexGrid.opposite_direction(side)
+			if enemy.get_symbol(opposite_side) == E.Symbols.SPEAR:
+				if attacker.get_symbol_when_rotated(move_direction, side) != E.Symbols.SHIELD:
+					# will die to spear befor it can kill, no-go
+					return false
+	# check for unprotected attacker symbols
+	for side in 6:
+		var enemy = target_adjacent_units[side]
+		if not enemy or enemy.controller == me:
+			continue
+		# TODO detect killing pushes
+		var opposite_side = GenericHexGrid.opposite_direction(side)
+		if enemy.get_symbol(opposite_side) == E.Symbols.SHIELD:
+			continue
+		var attack_symbol =  attacker.get_symbol_when_rotated(move_direction, side)
+		if attack_symbol == E.Symbols.SWORD or attack_symbol == E.Symbols.SPEAR:
+			return true
+	return false
+
 
 #endregion
 

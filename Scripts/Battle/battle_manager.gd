@@ -3,11 +3,12 @@ extends GridNode2D
 
 var _battle_is_ongoing : bool = false
 
-var _tile_grid : GenericHexGrid # Grid<TileForm>
-var _battle_grid: BattleGridState
+var _battle_grid: BattleGridState # GAMEPLAY combat state
 
-var _grid_tiles_node : Node2D
-var _unit_forms_node : Node2D
+var _tile_grid : GenericHexGrid # Grid<TileForm> - VISUALs in a grid
+var _unit_to_unit_form : Dictionary # gameplay unit to VISUAL mapping
+var _grid_tiles_node : Node2D # parent for tiles VISUAL
+var _unit_forms_node : Node2D # parent for units VISUAL
 
 var _battle_ui : BattleUI
 var _anim_queue : Array[AnimInQueue] = []
@@ -15,12 +16,11 @@ var _anim_queue : Array[AnimInQueue] = []
 var _current_summary : DataBattleSummary = null
 
 var _selected_unit : Unit
-var _unit_to_unit_form : Dictionary
 
 var _replay_data : BattleReplay
 var _replay_is_playing : bool = false
 
-var _batch_mode : bool = false
+var _batch_mode : bool = false # flagged true when recreating game state
 
 
 func _ready():
@@ -45,6 +45,7 @@ func _process(_delta):
 
 func world_map_started():
 	_battle_is_ongoing = false
+
 
 ## x_offset is used to place battle to the right of world map
 func start_battle(new_armies : Array[Army], battle_map : DataBattleMap, \
@@ -72,10 +73,10 @@ func start_battle(new_armies : Array[Army], battle_map : DataBattleMap, \
 
 	_battle_ui.load_armies(_battle_grid.armies_in_battle_state)
 
-	if battle_state:
+	if battle_state: # recreate state if present
 		_batch_mode = true
 		for m in battle_state.replay.moves:
-			perform_replay_move(m)
+			_perform_replay_move(m)
 		_batch_mode = false
 
 	# first turn does not get a signal emit
@@ -162,11 +163,11 @@ func perform_network_move(move_info : MoveInfo) -> void:
 	_perform_move_info(move_info)
 
 
-func perform_replay_move(move_info : MoveInfo) -> void:
+func _perform_replay_move(move_info : MoveInfo) -> void:
 	_perform_move_info(move_info)
 
 
-func perform_ai_move(move_info : MoveInfo) -> void:
+func _perform_ai_move(move_info : MoveInfo) -> void:
 	_perform_move_info(move_info)
 
 
@@ -439,7 +440,7 @@ func perform_replay(replay : BattleReplay) -> void:
 	for m in replay.moves:
 		if not _battle_is_ongoing:
 			return # terminating battle while watching
-		perform_replay_move(m)
+		_perform_replay_move(m)
 		await _replay_move_delay()
 	_replay_is_playing = false
 
