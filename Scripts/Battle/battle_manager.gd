@@ -155,7 +155,7 @@ func _on_turn_started(player : Player) -> void:
 	if not player:
 		print("uncontrolled army's turn")
 		return
-	
+
 	# trigger AI analysis
 	print("your move %s - %s" % [player.get_player_name(), player.get_player_color().name])
 
@@ -503,6 +503,10 @@ func unload_for_editor() -> void:
 
 func paint(coord : Vector2i, brush : DataTile) -> void:
 	(_tile_grid.get_hex(coord) as TileForm).paint(brush)
+
+
+func editor_get_hexes_copy_as_array() -> Array: #Array[Array[TileForm]]
+	return _tile_grid.hexes.duplicate(true)
 
 #endregion
 

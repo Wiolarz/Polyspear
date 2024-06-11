@@ -181,7 +181,7 @@ func get_battle_map(trim : bool = true) -> DataBattleMap:
 	var result = DataBattleMap.new()
 	result.grid_data = []
 
-	var manager_grid_data = BM.tile_grid.hexes.duplicate(true)
+	var manager_grid_data = BM.editor_get_hexes_copy_as_array()
 	if trim:
 		manager_grid_data = _optimize_grid_size(manager_grid_data)
 	for tile_column in manager_grid_data:
@@ -301,13 +301,6 @@ func _on_back_button_pressed():
 
 func create_empty_tile() -> DataTile:
 	return load(CFG.SENTINEL_TILE_PATH)
-
-
-func get_tile_grid_data() -> Array:
-	if current_map_type == MapType.WORLD:
-		return W_GRID.tile_grid.hexes
-	else:
-		return BM.tile_grid.hexes
 
 
 func _on_add_column_pressed():
