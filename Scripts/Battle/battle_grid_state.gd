@@ -124,6 +124,7 @@ func _process_offensive_symbols(unit : Unit) -> void:
 
 		var enemy = adjacent[side]
 		if unit_weapon == E.Symbols.PUSH:
+			_push_enemy(enemy, side)
 			continue # push is special case
 		var opposite_side := GenericHexGrid.opposite_direction(side)
 		if enemy.get_symbol(opposite_side) == E.Symbols.SHIELD:
