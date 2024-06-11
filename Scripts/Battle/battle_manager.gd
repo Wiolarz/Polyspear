@@ -241,7 +241,7 @@ func _grid_input_summon(coord : Vector2i) -> void:
 	if _battle_ui.selected_unit == null:
 		return # no unit selected to summon on ui
 
-	if not _battle_grid_state.can_summon_on(_battle_grid_state.current_army_index, coord):
+	if not _battle_grid_state.current_player_can_summon_on(coord):
 		return
 
 	print(NET.get_role_name(), " input - summoning unit")
@@ -273,8 +273,7 @@ func _grid_input_fighting(coord : Vector2i) -> void:
 	# - spot is not movable (MOVE_IS_INVALID)
 	# - there is an enemy that can be killed by the move (dir)
 	# - there is enemy that cannot be killed by the move (MOVE_IS_INVALID)
-	var direction : int = _battle_grid_state.get_move_direction_if_valid(_selected_unit, coord)
-	if direction == BattleGridState.MOVE_IS_INVALID:
+	if not _battle_grid_state.is_move_valid(_selected_unit, coord):
 		return
 
 	_unit_to_unit_form[_selected_unit].set_selected(false)
