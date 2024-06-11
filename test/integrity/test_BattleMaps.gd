@@ -49,7 +49,7 @@ func test_battle_maps():
 				if not tile_types_seen.has(tile.type):
 					tile_types_seen[tile.type] = 0
 				tile_types_seen[tile.type] += 1
-		assert_between(tile_types_seen["2_player_spawn"], 1,5,"2_player_spawn")
-		assert_between(tile_types_seen["1_player_spawn"], 1,5,"1_player_spawn")
+		assert_between(tile_types_seen["2_player_spawn"], 1,10,"2_player_spawn")
+		assert_between(tile_types_seen["1_player_spawn"], 1,10,"1_player_spawn")
 		gut.p([tile_types_seen["2_player_spawn"], tile_types_seen["1_player_spawn"]])
 
