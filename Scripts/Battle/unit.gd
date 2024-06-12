@@ -46,7 +46,7 @@ func turn(side : GenericHexGrid.GridDirections):
 ## puts unit to a given coordinate, can be awaited see waits_for_form
 func move(new_coord : Vector2i, is_swamp : bool):
 	is_on_swamp = is_swamp
-	
+
 	var old = coord
 	coord = new_coord
 	print("emit move [move] %s %s" % [str(old), str(new_coord)])

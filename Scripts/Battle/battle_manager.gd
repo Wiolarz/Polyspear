@@ -541,7 +541,7 @@ class AnimInQueue:
 
 	static func create_turn(unit_form_ : UnitForm) -> AnimInQueue:
 		var result = AnimInQueue.new()
-		result.debug_name = "turn_"+unit_form_.unit.template.unit_name
+		result.debug_name = "turn_"+unit_form_.entity.template.unit_name
 		result._unit_form = unit_form_
 		unit_form_.anim_end.connect(result.on_anim_end)
 		result._animate = func () : if (unit_form_): unit_form_.start_turn_anim()
@@ -550,7 +550,7 @@ class AnimInQueue:
 
 	static func create_move(unit_form_ : UnitForm) -> AnimInQueue:
 		var result = AnimInQueue.new()
-		result.debug_name = "move_"+unit_form_.unit.template.unit_name
+		result.debug_name = "move_"+unit_form_.entity.template.unit_name
 		result._unit_form = unit_form_
 		unit_form_.anim_end.connect(result.on_anim_end)
 		result._animate = func () : if (unit_form_): unit_form_.start_move_anim()
@@ -559,7 +559,7 @@ class AnimInQueue:
 
 	static func create_die(unit_form_ : UnitForm) -> AnimInQueue:
 		var result = AnimInQueue.new()
-		result.debug_name = "die_"+unit_form_.unit.template.unit_name
+		result.debug_name = "die_"+unit_form_.entity.template.unit_name
 		result._unit_form = unit_form_
 		unit_form_.anim_end.connect(result.on_anim_end)
 		result._animate = func () : if (unit_form_): unit_form_.start_death_anim()

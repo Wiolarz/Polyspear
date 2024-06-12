@@ -4,7 +4,7 @@ extends Node2D
 ## emitted when anim ends (move, turn, die)
 signal anim_end()
 
-var unit : Unit
+var entity : Unit
 
 var _play_move_anim : bool
 var _target_global_position : Vector2
@@ -21,7 +21,7 @@ var _symbols_flipped : bool = true  # flag used for unit rotation
 static func create(new_unit : Unit) -> UnitForm:
 	var result = CFG.UNIT_FORM_SCENE.instantiate()
 	result.name = new_unit.template.unit_name
-	result.unit = new_unit
+	result.entity = new_unit
 
 	result.apply_graphics(new_unit.template,
 			new_unit.get_player_color())
@@ -43,6 +43,8 @@ static func create_for_summon_ui(template: DataUnit, color : DataPlayerColor) ->
 
 
 func _physics_process(delta):
+	if entity:
+		$Symbols.modulate = Color.RED if entity.is_on_swamp else Color.WHITE
 	if _animate_rotation():
 		return
 	if _animate_movement():
@@ -53,7 +55,7 @@ func _physics_process(delta):
 func start_turn_anim():
 	print("start turn anim")
 	_play_turn_anim = true
-	var new_side = unit.unit_rotation
+	var new_side = entity.unit_rotation
 	_target_rotation_degrees = (60 * (new_side))
 
 	var current_rotation_degrees = fmod(rotation_degrees + 360, 360)
@@ -64,7 +66,7 @@ func start_turn_anim():
 func start_move_anim():
 	print("start move anim")
 	_play_move_anim = true
-	var new_coord = unit.coord
+	var new_coord = entity.coord
 	_target_global_position = BM.get_tile_global_position(new_coord)
 	_move_speed = (_target_global_position - global_position).length() / CFG.animation_speed_frames
 	print("move from ", global_position, " to ", _target_global_position, " coord ", new_coord )
@@ -76,12 +78,12 @@ func start_death_anim():
 
 
 func update_movement_immediately():
-	var tile_position = BM.get_tile_global_position(unit.coord)
+	var tile_position = BM.get_tile_global_position(entity.coord)
 	global_position = tile_position
 
 
 func update_turn_immediately():
-	var side = unit.unit_rotation
+	var side = entity.unit_rotation
 	_target_rotation_degrees = (60 * (side))
 	rotation_degrees = _target_rotation_degrees
 	$sprite_unit.rotation = -rotation
@@ -206,8 +208,8 @@ func _apply_symbol_sprite(dir : int, texture_path : String) -> void:
 ## Flips ths sprite so that weapons always point to the top of the screen
 func _flip_symbol_sprite(symbol_sprite : Sprite2D, dir : int):
 	var abstract_rotation : int = 0
-	if unit != null:
-		abstract_rotation = (unit.unit_rotation + dir) % 6
+	if entity != null:
+		abstract_rotation = (entity.unit_rotation + dir) % 6
 	if abstract_rotation in [0, 1, 5]:  # LEFT
 		symbol_sprite.flip_v = false
 	else:
