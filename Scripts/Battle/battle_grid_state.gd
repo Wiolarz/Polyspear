@@ -70,7 +70,7 @@ func _perform_move(unit : Unit, direction : int, target_tile_coord : Vector2i) -
 		return
 	# MOVE
 	_change_unit_coord(unit, target_tile_coord)
-	unit.move(target_tile_coord)
+	unit.move(target_tile_coord, _get_battle_hex(target_tile_coord).swamp)
 	if _process_symbols(unit):
 		return
 
@@ -162,7 +162,7 @@ func _push_enemy(enemy : Unit, direction : int) -> void:
 
 	# MOVE for PUSH (no rotate)
 	_change_unit_coord(enemy, target_coord)
-	enemy.move(target_coord)
+	enemy.move(target_coord, _get_battle_hex(target_coord).swamp)
 
 	# check for counter_attacks
 	if _should_die_to_counter_attack(enemy):
@@ -298,7 +298,6 @@ func _get_move_direction_if_valid(unit : Unit, coord : Vector2i) -> int:
 	return move_direction
 
 
-
 ## can i kill/push this enemy in melee if i attack in specified direction
 func _can_kill_or_push(me : Unit, other_unit : Unit, attack_direction : int):
 	# - attacker has no attack symbol on front
@@ -409,9 +408,7 @@ func force_surrender():
 		_kill_army(army_idx)
 
 
-
 #region AI Helpers
-
 
 func get_possible_moves() -> Array[MoveInfo]:
 	if is_during_summoning_phase():
@@ -544,17 +541,19 @@ func _is_kill_move(move : MoveInfo) -> bool:
 
 #endregion
 
+#region Subclasses
+
+
 class BattleHex:
-	var can_be_moved_to: bool
 	var unit : Unit
-	var spawn_point_army_idx : int
+	var spawn_point_army_idx : int = -1
 	var spawn_direction : int
+	var can_be_moved_to : bool = true
+	var can_shoot_through : bool = true
+	var swamp : bool = false # TODO REFACTOR THIS NAME
 
-	static var sentinel: BattleHex = BattleHex.new()
+	static var sentinel: BattleHex = BattleHex.create_sentinel()
 
-	func _init():
-		can_be_moved_to = false
-		spawn_point_army_idx = -1
 
 	static func get_spawn_direction(army_id:int) -> int:
 		match army_id:
@@ -564,20 +563,43 @@ class BattleHex:
 			_: return GenericHexGrid.GridDirections.LEFT
 
 
+	static func create_sentinel():
+		var result = BattleHex.new()
+		result.can_be_moved_to = false
+		result.can_shoot_through = false
+		return result
+
+
 	static func create(data : DataTile):
 		if data.type == "sentinel":
 			return null
+
 		var result = BattleHex.new()
-		result.can_be_moved_to = true
 
 		if data.type.substr(1) == "_player_spawn":
 			result.spawn_point_army_idx = data.type[0].to_int() - 1
 			result.spawn_direction = get_spawn_direction(result.spawn_point_army_idx)
+			return result
+
+
+		match data.type:
+			"hole":
+				result.can_be_moved_to = false
+			"wall":
+				result.can_be_moved_to = false
+				result.can_shoot_through = false
+			"swamp":
+				result.swamp = true
+			"empty":
+				pass
+			_:
+				pass #TODO push error that tile type is not supported
 
 		return result
 
+
 	func blocks_shots() -> bool:
-		return not can_be_moved_to
+		return not can_shoot_through
 
 
 class ArmyInBattleState:
@@ -623,3 +645,5 @@ class ArmyInBattleState:
 		var result = Unit.create(army_reference.controller, unit_data, coord, rotation)
 		units.append(result)
 		return result
+
+#endregion

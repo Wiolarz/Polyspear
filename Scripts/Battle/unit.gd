@@ -19,6 +19,8 @@ var unit_rotation : int
 ## unit died
 var dead : bool
 
+var is_on_swamp : bool = false
+
 
 static func create(new_controller : Player, \
 		new_template : DataUnit, \
@@ -42,7 +44,9 @@ func turn(side : GenericHexGrid.GridDirections):
 
 
 ## puts unit to a given coordinate, can be awaited see waits_for_form
-func move(new_coord : Vector2i):
+func move(new_coord : Vector2i, is_swamp : bool):
+	is_on_swamp = is_swamp
+
 	var old = coord
 	coord = new_coord
 	print("emit move [move] %s %s" % [str(old), str(new_coord)])
@@ -66,12 +70,16 @@ func get_symbol(side_world : int) -> E.Symbols:
 
 ## gets symbol facing specified directin on the battle map, if unit was rotated in given dir
 func get_symbol_when_rotated(side_world : int, hypotetical_rotation : int) -> E.Symbols:
+	if is_on_swamp:
+		return E.Symbols.EMPTY
 	var side_local : int = GenericHexGrid.rotate_clockwise( \
 			side_world as GenericHexGrid.GridDirections, -hypotetical_rotation)
 	return template.symbols[side_local].type
 
 
 func get_front_symbol() -> E.Symbols:
+	if is_on_swamp:
+		return E.Symbols.EMPTY
 	return template.symbols[GenericHexGrid.DIRECTION_FRONT].type
 
 
