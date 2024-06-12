@@ -215,7 +215,7 @@ func get_serializable_battle_state() -> SerializableBattleState:
 	if BM.battle_is_active():
 		state.replay = BM.get_ripped_replay()
 		if WM.world_game_is_active():
-			for army in BM._battle_grid.armies_in_battle_state:
+			for army in BM._battle_grid_state.armies_in_battle_state:
 				state.world_armies.append(army.army_reference.coord)
 			state.combat_coord = WM.combat_tile
 	return state

@@ -3,11 +3,12 @@ extends GridNode2D
 
 var _battle_is_ongoing : bool = false
 
-var _tile_grid : GenericHexGrid # Grid<TileForm>
-var _battle_grid: BattleGridState
+var _battle_grid_state: BattleGridState # GAMEPLAY combat state
 
-var _grid_tiles_node : Node2D
-var _unit_forms_node : Node2D
+var _tile_grid : GenericHexGrid # Grid<TileForm> - VISUALs in a grid
+var _unit_to_unit_form : Dictionary # gameplay unit to VISUAL mapping
+var _grid_tiles_node : Node2D # parent for tiles VISUAL
+var _unit_forms_node : Node2D # parent for units VISUAL
 
 var _battle_ui : BattleUI
 var _anim_queue : Array[AnimInQueue] = []
@@ -15,12 +16,11 @@ var _anim_queue : Array[AnimInQueue] = []
 var _current_summary : DataBattleSummary = null
 
 var _selected_unit : Unit
-var _unit_to_unit_form : Dictionary
 
 var _replay_data : BattleReplay
 var _replay_is_playing : bool = false
 
-var _batch_mode : bool = false
+var _batch_mode : bool = false # flagged true when recreating game state
 
 
 func _ready():
@@ -46,6 +46,7 @@ func _process(_delta):
 func world_map_started():
 	_battle_is_ongoing = false
 
+
 ## x_offset is used to place battle to the right of world map
 func start_battle(new_armies : Array[Army], battle_map : DataBattleMap, \
 		battle_state : SerializableBattleState, x_offset : float) -> void:
@@ -64,25 +65,22 @@ func start_battle(new_armies : Array[Army], battle_map : DataBattleMap, \
 	_selected_unit = null
 
 	# GAMEPLAY GRID and Armies state:
-	_battle_grid = BattleGridState.create(battle_map, new_armies)
-	_battle_grid.on_unit_summoned.connect(_on_unit_summoned)
-	_battle_grid.on_battle_ended.connect(_on_battle_ended)
-	_battle_grid.on_turn_started.connect(_on_turn_started)
+	_battle_grid_state = BattleGridState.create(battle_map, new_armies)
 
 	# GRAPHICS GRID:
 	_load_map(battle_map)
 	_grid_tiles_node.position.x = x_offset
 
-	_battle_ui.load_armies(_battle_grid.armies_in_battle_state)
+	_battle_ui.load_armies(_battle_grid_state.armies_in_battle_state)
 
-	if battle_state:
+	if battle_state: # recreate state if present
 		_batch_mode = true
 		for m in battle_state.replay.moves:
-			perform_replay_move(m)
+			_perform_replay_move(m)
 		_batch_mode = false
 
 	# first turn does not get a signal emit
-	_on_turn_started(_battle_grid.get_current_player())
+	_on_turn_started(_battle_grid_state.get_current_player())
 
 
 func _load_map(map : DataBattleMap) -> void:
@@ -152,24 +150,39 @@ func _on_turn_started(player : Player) -> void:
 	if not _battle_is_ongoing:
 		return
 
-	_battle_ui.start_player_turn(_battle_grid.current_army_index)
+	_battle_ui.start_player_turn(_battle_grid_state.current_army_index)
 
-	if player:
-		# triggers AI analysis
-		player.your_turn(_battle_grid)
-	else:
+	if not player:
 		print("uncontrolled army's turn")
+		return
+
+	# trigger AI analysis
+	print("your move %s - %s" % [player.get_player_name(), player.get_player_color().name])
+
+	if player.bot_engine and not NET.client: # AI is simulated on server only
+		print("AI starts thinking")
+		var move = player.bot_engine.choose_move(_battle_grid_state)
+		await _ai_thinking_delay() # moving too fast feels weird
+		_perform_ai_move(move)
+
+
+func _ai_thinking_delay() -> void:
+	var seconds = CFG.bot_speed_frames / 60.0
+	print("ai wait %f s" % [seconds])
+	await get_tree().create_timer(seconds).timeout
+	while IM.is_game_paused() or CFG.bot_speed_frames == CFG.BotSpeed.FREEZE:
+		await get_tree().create_timer(0.1).timeout
 
 
 func perform_network_move(move_info : MoveInfo) -> void:
 	_perform_move_info(move_info)
 
 
-func perform_replay_move(move_info : MoveInfo) -> void:
+func _perform_replay_move(move_info : MoveInfo) -> void:
 	_perform_move_info(move_info)
 
 
-func perform_ai_move(move_info : MoveInfo) -> void:
+func _perform_ai_move(move_info : MoveInfo) -> void:
 	_perform_move_info(move_info)
 
 
@@ -187,12 +200,12 @@ func grid_input(coord : Vector2i) -> void:
 		print("anim playing, input ignored")
 		return
 
-	var current_player : Player =  _battle_grid.get_current_player()
+	var current_player : Player =  _battle_grid_state.get_current_player()
 	if current_player != null and current_player.bot_engine:
 		print("ai playing, input ignored")
 		return
 
-	if _battle_grid.is_during_summoning_phase(): # Summon phase
+	if _battle_grid_state.is_during_summoning_phase(): # Summon phase
 		_grid_input_summon(coord)
 		return
 
@@ -213,7 +226,7 @@ func _on_unit_summoned(unit : Unit) -> void:
 	# apply correct BM position offset in world battles
 	form.global_position = get_tile_global_position(unit.coord)
 
-	_battle_ui.unit_summoned(not _battle_grid.is_during_summoning_phase(), unit.template)
+	_battle_ui.unit_summoned(not _battle_grid_state.is_during_summoning_phase(), unit.template)
 
 	unit.unit_died.connect(_on_unit_killed.bind(unit))
 	unit.unit_turned.connect(_on_unit_turned.bind(unit))
@@ -222,13 +235,13 @@ func _on_unit_summoned(unit : Unit) -> void:
 
 ## handles player input while during the summoning phase
 func _grid_input_summon(coord : Vector2i) -> void:
-	assert(_battle_grid.state == _battle_grid.STATE_SUMMONNING, \
+	assert(_battle_grid_state.state == _battle_grid_state.STATE_SUMMONNING, \
 			"_grid_input_summon called in an incorrect state")
 
 	if _battle_ui.selected_unit == null:
 		return # no unit selected to summon on ui
 
-	if not _battle_grid.can_summon_on(_battle_grid.current_army_index, coord):
+	if not _battle_grid_state.current_player_can_summon_on(coord):
 		return
 
 	print(NET.get_role_name(), " input - summoning unit")
@@ -245,7 +258,7 @@ func _grid_input_summon(coord : Vector2i) -> void:
 #region Fighting Phase
 
 func _grid_input_fighting(coord : Vector2i) -> void:
-	assert(_battle_grid.state == _battle_grid.STATE_FIGHTING, \
+	assert(_battle_grid_state.state == _battle_grid_state.STATE_FIGHTING, \
 			"_grid_input_fighting called in an incorrect state")
 
 	if _try_select_unit(coord) or _selected_unit == null:
@@ -260,8 +273,7 @@ func _grid_input_fighting(coord : Vector2i) -> void:
 	# - spot is not movable (MOVE_IS_INVALID)
 	# - there is an enemy that can be killed by the move (dir)
 	# - there is enemy that cannot be killed by the move (MOVE_IS_INVALID)
-	var direction : int = _battle_grid.get_move_direction_if_valid(_selected_unit, coord)
-	if direction == BattleGridState.MOVE_IS_INVALID:
+	if not _battle_grid_state.is_move_valid(_selected_unit, coord):
 		return
 
 	_unit_to_unit_form[_selected_unit].set_selected(false)
@@ -278,10 +290,10 @@ func _grid_input_fighting(coord : Vector2i) -> void:
 ## Select friendly Unit on a given coord
 ## returns true if unit was selected
 func _try_select_unit(coord : Vector2i) -> bool:
-	var new_unit : Unit = _battle_grid.get_unit(coord)
+	var new_unit : Unit = _battle_grid_state.get_unit(coord)
 	if not new_unit:
 		return false
-	if new_unit.controller != _battle_grid.get_current_player():
+	if new_unit.controller != _battle_grid_state.get_current_player():
 		return false
 
 	# deselect visually old unit if new one selected
@@ -302,13 +314,22 @@ func _perform_move_info(move_info : MoveInfo) -> void:
 	_replay_data.save()
 	if NET.server:
 		NET.server.broadcast_move(move_info)
-	if move_info.move_type == MoveInfo.TYPE_MOVE:
-		_battle_grid.move_info_move_unit(move_info.move_source, move_info.target_tile_coord)
-		return
-	if move_info.move_type == MoveInfo.TYPE_SUMMON:
-		_battle_grid.move_info_summon_unit(move_info.summon_unit, move_info.target_tile_coord)
-		return
-	assert(false, "Move move_type not supported in perform")
+
+	match move_info.move_type:
+		MoveInfo.TYPE_MOVE:
+			_battle_grid_state.move_info_move_unit(move_info.move_source, move_info.target_tile_coord)
+
+		MoveInfo.TYPE_SUMMON:
+			var unit := _battle_grid_state.move_info_summon_unit(move_info.summon_unit, move_info.target_tile_coord)
+			_on_unit_summoned(unit)
+
+		_ :
+			assert(false, "Move move_type not supported in perform, " + str(move_info.move_type))
+
+	if _battle_grid_state.battle_is_ongoing():
+		_on_turn_started(_battle_grid_state.get_current_player())
+	else :
+		_on_battle_ended()
 
 
 func _on_unit_killed(unit: Unit) -> void:
@@ -345,6 +366,7 @@ func close_when_quiting_game() -> void:
 
 ## called when battle simulation decided battle was won
 func _on_battle_ended() -> void:
+	print("ending battle")
 	if not _battle_is_ongoing:
 		assert(false, "battle ended when it was not ongoing...")
 		return
@@ -364,7 +386,7 @@ func _on_battle_ended() -> void:
 
 
 func _close_battle() -> void:
-	var state_for_world = _battle_grid.armies_in_battle_state
+	var state_for_world = _battle_grid_state.armies_in_battle_state
 	_clear_anim_queue()
 	_turn_off_battle_ui()
 	_reset_grid_and_unit_forms()
@@ -388,7 +410,7 @@ func _reset_grid_and_unit_forms() -> void:
 	_unit_to_unit_form.clear()
 	Helpers.remove_all_children(_grid_tiles_node)
 	Helpers.remove_all_children(_unit_forms_node)
-	_battle_grid = null
+	_battle_grid_state = null
 
 
 func _create_summary() -> DataBattleSummary:
@@ -396,7 +418,7 @@ func _create_summary() -> DataBattleSummary:
 	summary.color = CFG.NEUTRAL_COLOR.color
 	summary.title = "Draw"
 
-	var armies_in_battle_state := _battle_grid.armies_in_battle_state
+	var armies_in_battle_state := _battle_grid_state.armies_in_battle_state
 
 	for army_in_battle in armies_in_battle_state:
 		var player_stats := DataBattleSummaryPlayer.new()
@@ -432,7 +454,7 @@ func perform_replay(replay : BattleReplay) -> void:
 	for m in replay.moves:
 		if not _battle_is_ongoing:
 			return # terminating battle while watching
-		perform_replay_move(m)
+		_perform_replay_move(m)
 		await _replay_move_delay()
 	_replay_is_playing = false
 
@@ -458,11 +480,11 @@ func get_ripped_replay() -> BattleReplay:
 #region cheats
 
 func force_win_battle():
-	_battle_grid.force_win_battle()
+	_battle_grid_state.force_win_battle()
 
 
 func force_surrender():
-	_battle_grid.force_surrender()
+	_battle_grid_state.force_surrender()
 
 
 #endregion
@@ -480,6 +502,10 @@ func unload_for_editor() -> void:
 
 func paint(coord : Vector2i, brush : DataTile) -> void:
 	(_tile_grid.get_hex(coord) as TileForm).paint(brush)
+
+
+func editor_get_hexes_copy_as_array() -> Array: #Array[Array[TileForm]]
+	return _tile_grid.hexes.duplicate(true)
 
 #endregion
 
