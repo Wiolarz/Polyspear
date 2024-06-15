@@ -15,6 +15,7 @@ var turn_counter : int = 0
 var current_army_index : int = 0
 var armies_in_battle_state : Array[ArmyInBattleState] = []
 
+var currently_processed_move_info : MoveInfo = null
 
 #region init
 
@@ -40,16 +41,25 @@ static func create(map: DataBattleMap, new_armies : Array[Army]) -> BattleGridSt
 
 #region move_info support
 
-func move_info_summon_unit(unit_data : DataUnit, coord : Vector2i) -> Unit:
+func move_info_summon_unit(move_info : MoveInfo) -> Unit:
+	assert(move_info.move_type == MoveInfo.TYPE_SUMMON)
+	currently_processed_move_info = move_info
+	var unit_data := move_info.summon_unit
+	var coord := move_info.target_tile_coord
 	var initial_rotation := _get_spawn_rotation(coord)
 	var army_state := armies_in_battle_state[current_army_index]
 	var unit := army_state.summon_unit(unit_data, coord, initial_rotation)
 	_put_unit_on_grid(unit, coord)
 	_switch_participant_turn()
+	currently_processed_move_info = null
 	return unit
 
 
-func move_info_move_unit(source_tile_coord: Vector2i, target_tile_coord : Vector2i) -> void:
+func move_info_move_unit(move_info : MoveInfo) -> void:
+	assert(move_info.move_type == MoveInfo.TYPE_MOVE)
+	currently_processed_move_info = move_info
+	var source_tile_coord := move_info.move_source
+	var target_tile_coord := move_info.target_tile_coord
 	var unit = get_unit(source_tile_coord)
 	var direction = GenericHexGrid.direction_to_adjacent(unit.coord, target_tile_coord)
 
@@ -61,6 +71,7 @@ func move_info_move_unit(source_tile_coord: Vector2i, target_tile_coord : Vector
 		_check_battle_end()
 	if battle_is_ongoing():
 		_switch_participant_turn()
+	currently_processed_move_info = null
 
 
 func _perform_move(unit : Unit, direction : int, target_tile_coord : Vector2i) -> void:
@@ -159,6 +170,11 @@ func _push_enemy(enemy : Unit, direction : int) -> void:
 		# Spot isn't empty
 		_kill_unit(enemy)
 		return
+
+	var push_info := MoveInfo.PushedUnit.new()
+	push_info.from_coord = enemy.coord
+	push_info.to_coord = target_coord
+	currently_processed_move_info.units_killed.append(push_info)
 
 	# MOVE for PUSH (no rotate)
 	_change_unit_coord(enemy, target_coord)
@@ -339,6 +355,14 @@ func _get_player_army(player : Player) -> BattleGridState.ArmyInBattleState:
 
 
 func _kill_unit(target : Unit) -> void:
+	var kill_info := MoveInfo.KilledUnit.new()
+	kill_info.army_idx = _find_army_idx(target.controller)
+	kill_info.coord = target.coord
+	kill_info.template = target.template
+	currently_processed_move_info.units_killed.append(kill_info)
+
+	_find_army_idx(target.controller)
+
 	_get_player_army(target.controller).kill_unit(target)
 	_check_battle_end()
 

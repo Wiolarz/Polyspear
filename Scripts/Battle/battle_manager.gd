@@ -317,10 +317,10 @@ func _perform_move_info(move_info : MoveInfo) -> void:
 
 	match move_info.move_type:
 		MoveInfo.TYPE_MOVE:
-			_battle_grid_state.move_info_move_unit(move_info.move_source, move_info.target_tile_coord)
+			_battle_grid_state.move_info_move_unit(move_info)
 
 		MoveInfo.TYPE_SUMMON:
-			var unit := _battle_grid_state.move_info_summon_unit(move_info.summon_unit, move_info.target_tile_coord)
+			var unit := _battle_grid_state.move_info_summon_unit(move_info)
 			_on_unit_summoned(unit)
 
 		_ :

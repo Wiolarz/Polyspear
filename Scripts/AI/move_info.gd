@@ -9,6 +9,11 @@ const TYPE_SUMMON = "summon"
 @export var move_source: Vector2i
 @export var target_tile_coord: Vector2i
 
+
+# for undo, do not serialize
+var units_killed : Array[KilledUnit] = []
+var units_pushed: Array[PushedUnit] = []
+
 static func make_move(src : Vector2i, dst : Vector2i) -> MoveInfo:
 	var result:MoveInfo = MoveInfo.new()
 	result.move_type = TYPE_MOVE
@@ -47,8 +52,18 @@ static func from_network_serializable(dict : Dictionary) -> MoveInfo:
 	return null
 
 
-
 func _to_string() -> String:
 	if move_type == TYPE_SUMMON:
 		return TYPE_SUMMON + " " + str(target_tile_coord) + " " + summon_unit.unit_name
 	return move_type + " " + str(target_tile_coord) + " from " + str(move_source)
+
+
+class KilledUnit:
+	var army_idx: int
+	var template : DataUnit
+	var coord : Vector2i
+
+
+class PushedUnit:
+	var from_coord : Vector2i
+	var to_coord : Vector2i
