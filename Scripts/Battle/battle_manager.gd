@@ -186,6 +186,21 @@ func _perform_ai_move(move_info : MoveInfo) -> void:
 	_perform_move_info(move_info)
 
 
+func undo() -> void:
+	if _replay_data.moves.is_empty():
+		return
+	if not battle_is_active():
+		return
+
+	var last_move := _replay_data.moves.pop_back() as MoveInfo
+	_battle_grid_state.undo(last_move)
+	_on_turn_started(_battle_grid_state.get_current_player())
+
+
+func redo() -> void:
+	push_warning("not implemented")
+	pass
+
 ## called when tile is clicked
 func grid_input(coord : Vector2i) -> void:
 	if not _battle_is_ongoing:

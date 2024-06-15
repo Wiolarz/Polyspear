@@ -11,6 +11,7 @@ const TYPE_SUMMON = "summon"
 
 
 # for undo, do not serialize
+var army_idx : int = -1
 var units_killed : Array[KilledUnit] = []
 var units_pushed: Array[PushedUnit] = []
 

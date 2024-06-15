@@ -122,6 +122,11 @@ func _unhandled_input(event : InputEvent) -> void:
 		camera.process_input_event(event)
 
 
+	if event.is_action_pressed("UNDO"):
+		BM.undo()
+	elif event.is_action_pressed("REDO"):
+		BM.redo()
+
 	# if event.is_action_pressed("KEY_SAVE_GAME"):
 	# 	print("quick save is not yet supported")
 
