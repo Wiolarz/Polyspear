@@ -219,11 +219,15 @@ func _should_die_to_counter_attack(unit : Unit) -> bool:
 			continue # no unit
 		if adjacent_units[side].controller.team == unit.controller.team:
 			continue # no friendly fire within team
-		if unit.get_symbol(side) == E.Symbols.SHIELD:
-			continue # we have a shield
+		
+		var shield_power : int = Unit.defense_power(unit.get_symbol(side))
 		var opposite_side := GenericHexGrid.opposite_direction(side)
-		if adjacent_units[side].get_symbol(opposite_side) == E.Symbols.SPEAR:
-			return true # enemy has a counter_attack
+		var enemy_symbol : E.Symbols = adjacent[side].get_symbol(opposite_side)
+		match enemy_symbol:
+			E.Symbols.SPEAR: # enemy has a counter_attack
+				if Unit.attack_power(enemy_symbol) > shield_power:
+					return true
+		
 	return false
 
 
@@ -247,7 +251,7 @@ func _process_offensive_symbols(unit : Unit) -> void:
 			_push_enemy(enemy, side)
 			continue # push is special case
 		var opposite_side := GenericHexGrid.opposite_direction(side)
-		if enemy.get_symbol(opposite_side) == E.Symbols.SHIELD:
+		if Unit.defense_power(enemy.get_symbol(opposite_side)) >= Unit.attack_power(unit_weapon):
 			continue # enemy defended
 		_kill_unit(enemy)
 
@@ -261,7 +265,8 @@ func _process_bow(unit : Unit, side : int) -> void:
 		return # no friendly fire within team
 
 	var opposite_side := GenericHexGrid.opposite_direction(side)
-	if target.get_symbol(opposite_side) == E.Symbols.SHIELD:
+	var shield_power : int = Unit.defense_power(target.get_symbol(opposite_side))
+	if Unit.attack_power(unit.get_symbol(side)) <= shield_power:
 		return  # blocked by shield
 
 	_kill_unit(target)
@@ -405,7 +410,8 @@ func _can_kill_or_push(me : Unit, other_unit : Unit, attack_direction : int):
 	elif other_unit.controller.team == me.controller.team:
 		return false
 
-	match me.get_front_symbol():
+	var front_symbol : E.Symbols = me.get_front_symbol()
+	match front_symbol:
 		E.Symbols.EMPTY:
 			# can't deal with enemy_unit
 			return false
@@ -419,9 +425,9 @@ func _can_kill_or_push(me : Unit, other_unit : Unit, attack_direction : int):
 			# assume other attack symbol
 			# Does enemy_unit has a shield?
 			var defense_direction = GenericHexGrid.opposite_direction(attack_direction)
-			var defense_symbol = other_unit.get_symbol(defense_direction)
+			var shield_power = Unit.defense_power(other_unit.get_symbol(defense_direction))
 
-			if defense_symbol == E.Symbols.SHIELD:
+			if shield_power >= Unit.attack_power(front_symbol):
 				return false
 			# no shield, attack ok
 			return true
@@ -921,11 +927,20 @@ func _is_kill_move(move : MoveInfo) -> bool:
 			continue
 		# TODO detect killing pushes
 		var opposite_side = GenericHexGrid.opposite_direction(side)
+
+		var attack_symbol =  attacker.get_symbol_when_rotated(move_direction, side)
+		match attack_symbol:
+				E.Symbols.RED_AXE:
+					print("działa--------------------------------------------------")
+					return true
+
 		if enemy.get_symbol(opposite_side) == E.Symbols.SHIELD:
 			continue
-		var attack_symbol =  attacker.get_symbol_when_rotated(move_direction, side)
-		if attack_symbol == E.Symbols.SWORD or attack_symbol == E.Symbols.SPEAR:
-			return true
+		
+		match attack_symbol:
+			E.Symbols.SWORD, E.Symbols.SPEAR:
+				return true
+
 	return false
 
 #endregion
