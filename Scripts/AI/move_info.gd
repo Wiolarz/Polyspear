@@ -12,8 +12,10 @@ const TYPE_SUMMON = "summon"
 
 # for undo, do not serialize
 var army_idx : int = -1
+var original_rotation : int = -1
 var units_killed : Array[KilledUnit] = []
 var units_pushed: Array[PushedUnit] = []
+
 
 static func make_move(src : Vector2i, dst : Vector2i) -> MoveInfo:
 	var result:MoveInfo = MoveInfo.new()

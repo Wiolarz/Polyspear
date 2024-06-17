@@ -201,6 +201,12 @@ func redo() -> void:
 	push_warning("not implemented")
 	pass
 
+
+func ai_move() -> void:
+	var move := AiBotStateRandom.choose_move_static(_battle_grid_state)
+	_perform_ai_move(move)
+
+
 ## called when tile is clicked
 func grid_input(coord : Vector2i) -> void:
 	if not _battle_is_ongoing:

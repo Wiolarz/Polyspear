@@ -126,6 +126,8 @@ func _unhandled_input(event : InputEvent) -> void:
 		BM.undo()
 	elif event.is_action_pressed("REDO"):
 		BM.redo()
+	elif event.is_action_pressed("AI_MOVE"):
+		BM.ai_move()
 
 	# if event.is_action_pressed("KEY_SAVE_GAME"):
 	# 	print("quick save is not yet supported")

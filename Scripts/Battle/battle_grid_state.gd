@@ -44,12 +44,14 @@ static func create(map: DataBattleMap, new_armies : Array[Army]) -> BattleGridSt
 func move_info_summon_unit(move_info : MoveInfo) -> Unit:
 	assert(move_info.move_type == MoveInfo.TYPE_SUMMON)
 	currently_processed_move_info = move_info
-	move_info.army_idx = current_army_index
 	var unit_data := move_info.summon_unit
 	var coord := move_info.target_tile_coord
 	var initial_rotation := _get_spawn_rotation(coord)
 	var army_state := armies_in_battle_state[current_army_index]
 	var unit := army_state.summon_unit(unit_data, coord, initial_rotation)
+	move_info.army_idx = current_army_index
+	move_info.original_rotation = initial_rotation
+
 	_put_unit_on_grid(unit, coord)
 	_switch_participant_turn()
 	currently_processed_move_info = null
@@ -59,11 +61,12 @@ func move_info_summon_unit(move_info : MoveInfo) -> Unit:
 func move_info_move_unit(move_info : MoveInfo) -> void:
 	assert(move_info.move_type == MoveInfo.TYPE_MOVE)
 	currently_processed_move_info = move_info
-	move_info.army_idx = current_army_index
 	var source_tile_coord := move_info.move_source
 	var target_tile_coord := move_info.target_tile_coord
 	var unit = get_unit(source_tile_coord)
 	var direction = GenericHexGrid.direction_to_adjacent(unit.coord, target_tile_coord)
+	move_info.army_idx = current_army_index
+	move_info.original_rotation = unit.unit_rotation
 
 	_perform_move(unit, direction, target_tile_coord)
 
@@ -77,9 +80,19 @@ func move_info_move_unit(move_info : MoveInfo) -> void:
 
 
 func undo(move_info : MoveInfo) -> void:
+
 	if move_info.move_type == MoveInfo.TYPE_SUMMON:
 		current_army_index = move_info.army_idx
 		armies_in_battle_state[current_army_index].unsummon(move_info.target_tile_coord)
+		state = STATE_SUMMONNING
+
+	if move_info.move_type == MoveInfo.TYPE_MOVE:
+		current_army_index = move_info.army_idx
+		var unit := get_unit(move_info.target_tile_coord)
+		_change_unit_coord(unit, move_info.move_source)
+		unit.move(move_info.move_source, _get_battle_hex(move_info.move_source).swamp)
+		unit.turn(move_info.original_rotation)
+		# TODO add revert pushes and kills
 
 
 func _perform_move(unit : Unit, direction : int, target_tile_coord : Vector2i) -> void:
