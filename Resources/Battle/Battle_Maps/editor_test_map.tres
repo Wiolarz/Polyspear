@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="DataBattleMap" load_steps=23 format=3]
+[gd_resource type="Resource" script_class="DataBattleMap" load_steps=23 format=3 uid="uid://c4b71lkvxao4g"]
 
 [ext_resource type="Script" path="res://Resources/data_tile.gd" id="1_5nc6c"]
 [ext_resource type="Script" path="res://Resources/Battle/data_battle_map.gd" id="2_i30r3"]

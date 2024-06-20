@@ -232,6 +232,9 @@ func _on_save_map_pressed():
 		save_path = CFG.BATTLE_MAPS_PATH + map_file_name + ".tres"
 
 	ResourceSaver.save(new_map, save_path)
+	# WARNING clears uids
+	# see https://github.com/godotengine/godot/issues/83259
+	# use uid_fixer script to fix
 
 	print("end save map")
 	print("reloading map")

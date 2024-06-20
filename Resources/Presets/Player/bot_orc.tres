@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="PlayerSetting" load_steps=3 format=3 uid="uid://4t5xpc54btid"]
+[gd_resource type="Resource" script_class="PresetPlayer" load_steps=3 format=3 uid="uid://4t5xpc54btid"]
 
 [ext_resource type="Resource" uid="uid://blmlq31auuhh0" path="res://Resources/Factions/orc.tres" id="1_lnihc"]
 [ext_resource type="Script" path="res://Resources/Presets/preset_player.gd" id="2_o1p5p"]
