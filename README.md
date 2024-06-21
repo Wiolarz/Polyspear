@@ -26,7 +26,7 @@ Available as branches on this repo:
  - [Schmup](https://github.com/Wiolarz/Krong/tree/Shmup)
 
  - [Kings Hunt](https://github.com/Wiolarz/Krong/tree/King's_Hunt_development)
- 
+
  - [Krąg season 2: Text game](https://github.com/Wiolarz/Krong/tree/K2TextGame1)
 
  - [Krąg season 2: Sealth](https://github.com/Wiolarz/Krong/tree/K2CrowdStealth)

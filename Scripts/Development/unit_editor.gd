@@ -189,6 +189,7 @@ func _on_save_pressed():
 	ResourceSaver.save(edited_unit, edited_unit.resource_path)
 	# WARNING clears uids
 	# see https://github.com/godotengine/godot/issues/83259
+	# use uid_fixer script to fix
 
 
 ## return to main menu

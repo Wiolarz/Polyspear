@@ -4,6 +4,6 @@
 
 [resource]
 script = ExtResource("1_mawcs")
+type = "sentinel"
 texture_path = "res://Art/world_map/sentinel.png"
 flip_horizontal = false
-type = "sentinel"

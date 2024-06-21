@@ -4,6 +4,6 @@
 
 [resource]
 script = ExtResource("1_mce6o")
+type = "empty"
 texture_path = "res://Art/battle_map/grass.png"
 flip_horizontal = false
-type = "empty"

@@ -4,6 +4,6 @@
 
 [resource]
 script = ExtResource("1_joy02")
+type = "wood_hunt"
 texture_path = "res://Art/world_map/wood_hunt.png"
 flip_horizontal = false
-type = "wood_hunt"
