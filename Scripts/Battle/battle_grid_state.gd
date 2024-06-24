@@ -93,6 +93,8 @@ func undo(move_info : MoveInfo) -> void:
 		unit.move(move_info.move_source, _get_battle_hex(move_info.move_source).swamp)
 		unit.turn(move_info.original_rotation)
 		# TODO add revert pushes and kills
+		for killed_unit_info in move_info.units_killed:
+			armies_in_battle_state[killed_unit_info.army_idx].revive(killed_unit_info)
 
 
 func _perform_move(unit : Unit, direction : int, target_tile_coord : Vector2i) -> void:
@@ -195,7 +197,7 @@ func _push_enemy(enemy : Unit, direction : int) -> void:
 	var push_info := MoveInfo.PushedUnit.new()
 	push_info.from_coord = enemy.coord
 	push_info.to_coord = target_coord
-	currently_processed_move_info.units_killed.append(push_info)
+	currently_processed_move_info.units_pushed.append(push_info)
 
 	# MOVE for PUSH (no rotate)
 	_change_unit_coord(enemy, target_coord)
@@ -376,10 +378,7 @@ func _get_player_army(player : Player) -> BattleGridState.ArmyInBattleState:
 
 
 func _kill_unit(target : Unit) -> void:
-	var kill_info := MoveInfo.KilledUnit.new()
-	kill_info.army_idx = _find_army_idx(target.controller)
-	kill_info.coord = target.coord
-	kill_info.template = target.template
+	var kill_info := MoveInfo.KilledUnit.create(_find_army_idx(target.controller), target)
 	currently_processed_move_info.units_killed.append(kill_info)
 
 	_find_army_idx(target.controller)
@@ -672,6 +671,12 @@ class ArmyInBattleState:
 		#gdlint: ignore=private-method-call
 		battle_grid_state.get_ref()._remove_unit(target)
 		target.unit_killed()
+
+
+	func revive(kill_info : MoveInfo.KilledUnit) -> void:
+		var unit = kill_info.respawn()
+		dead_units.erase(unit.template)
+		units.append(unit)
 
 
 	func kill_army() -> void:

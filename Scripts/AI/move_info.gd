@@ -65,6 +65,22 @@ class KilledUnit:
 	var army_idx: int
 	var template : DataUnit
 	var coord : Vector2i
+	var unit_rotation : int
+
+	static func create(army_idx:int, unit:Unit) -> KilledUnit:
+		var result = KilledUnit.new()
+		result.army_idx = army_idx
+		result.coord = unit.coord
+		result.template = unit.template
+		result.unit_rotation = unit.unit_rotation
+		return result
+
+	func respawn() -> Unit:
+		var result = Unit.new()
+		result.coord = coord
+		result.template = template
+		result.unit_rotation = unit_rotation
+		return result
 
 
 class PushedUnit:
