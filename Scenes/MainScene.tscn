@@ -1,6 +1,3 @@
 [gd_scene load_steps=2 format=3 uid="uid://prwwopybbvvh"]
 
-[ext_resource type="Script" path="res://Scripts/Gameplay/snap.gd" id="1_ghmhn"]
-
 [node name="MainScene" type="Node"]
-script = ExtResource("1_ghmhn")
