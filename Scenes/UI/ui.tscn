@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://bi1yq2awm2kc0"]
 
-[ext_resource type="Script" path="res://Scripts/UI/Game_Logic/Debug_Manager.gd" id="1_py7q0"]
+[ext_resource type="Script" path="res://Scripts/Development/Debug_Manager.gd" id="1_py7q0"]
 [ext_resource type="Script" path="res://Scripts/UI/Game_Logic/SaveSystem.gd" id="2_hnyc1"]
 
 [node name="UI" type="CanvasLayer"]
