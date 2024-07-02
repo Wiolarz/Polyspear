@@ -79,8 +79,8 @@ func move_info_move_unit(move_info : MoveInfo) -> void:
 	currently_processed_move_info = null
 
 
-func undo(move_info : MoveInfo) -> void:
-
+func undo(move_info : MoveInfo) -> Array[Unit]:
+	var result = [] as Array[Unit]
 	if move_info.move_type == MoveInfo.TYPE_SUMMON:
 		current_army_index = move_info.army_idx
 		armies_in_battle_state[current_army_index].unsummon(move_info.target_tile_coord)
@@ -94,7 +94,12 @@ func undo(move_info : MoveInfo) -> void:
 		unit.turn(move_info.original_rotation)
 		# TODO add revert pushes and kills
 		for killed_unit_info in move_info.units_killed:
-			armies_in_battle_state[killed_unit_info.army_idx].revive(killed_unit_info)
+			var u := armies_in_battle_state[killed_unit_info.army_idx].revive(killed_unit_info)
+			_put_unit_on_grid(u, u.coord)
+			result.append(u)
+
+	return result
+
 
 
 func _perform_move(unit : Unit, direction : int, target_tile_coord : Vector2i) -> void:
@@ -673,10 +678,12 @@ class ArmyInBattleState:
 		target.unit_killed()
 
 
-	func revive(kill_info : MoveInfo.KilledUnit) -> void:
+	func revive(kill_info : MoveInfo.KilledUnit) -> Unit:
 		var unit = kill_info.respawn()
+		unit.controller = army_reference.controller
 		dead_units.erase(unit.template)
 		units.append(unit)
+		return unit
 
 
 	func kill_army() -> void:

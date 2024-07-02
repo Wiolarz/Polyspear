@@ -67,9 +67,9 @@ class KilledUnit:
 	var coord : Vector2i
 	var unit_rotation : int
 
-	static func create(army_idx:int, unit:Unit) -> KilledUnit:
+	static func create(army_idx_:int, unit:Unit) -> KilledUnit:
 		var result = KilledUnit.new()
-		result.army_idx = army_idx
+		result.army_idx = army_idx_
 		result.coord = unit.coord
 		result.template = unit.template
 		result.unit_rotation = unit.unit_rotation
