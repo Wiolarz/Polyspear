@@ -6,14 +6,26 @@ var coord : Vector2i
 
 var type : String = "sentinel"
 
-var place : Place :
-	set(value):
-		if value:
-			value.connect("controller_changed", controller_changed)
-		place = value
-
+var hex = null # WorldHex in world
 
 var grid_type : GameSetupInfo.GameMode = GameSetupInfo.GameMode.WORLD
+
+
+## ugly, FIXME
+static func create_world_tile_new(hex : WorldHex, coord : Vector2i, \
+		new_position : Vector2) -> TileForm:
+	var result = CFG.HEX_TILE_FORM_SCENE.instantiate()
+	var image = hex.get_image()
+	result.type = "SENTINEL"
+	if hex.place:
+		assert(coord == hex.place.coord)
+		result.type = hex.place.get_type()
+	result._set_coord(coord)
+	result._set_texture(image)
+	result.name = "Tile_%s_%s" % [ coord, result.type ]
+	result.position = new_position
+	result.hex = hex
+	return result
 
 
 static func create_world_tile(data: DataTile, new_coord : Vector2i, \
@@ -49,13 +61,13 @@ func _on_input_event(_viewport : Node, event : InputEvent, _shape_idx : int):
 
 func _process(_delta):
 	$PlaceLabel.text = ""
-	if place != null: #TEMP
-		$PlaceLabel.text = place.get_map_description()
+	if hex and hex.place: #TEMP
+		$PlaceLabel.text = hex.place.get_map_description()
 
 
 func controller_changed():
 	$ControlerSprite.visible = true
-	var color_name : String = place.controller.get_player_color().name
+	var color_name : String = hex.place.controller.get_player_color().name
 
 	var path = "res://Art/player_colors/%s_color.png" % color_name
 	var texture = load(path) as Texture2D

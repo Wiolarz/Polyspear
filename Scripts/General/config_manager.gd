@@ -117,6 +117,7 @@ const POLYAPI_BASE_URL = "https://polyserver.onrender.com/"
 const HERO_LEVEL_CAP = 7
 
 func get_start_goods() -> Goods:
+	return Goods.new(200,150,100)
 	return Goods.new(10,5,3)
 
 #region Neutral Units armies

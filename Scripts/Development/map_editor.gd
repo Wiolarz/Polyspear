@@ -24,6 +24,12 @@ var current_button: TextureButton
 		FileSystemHelpers.list_files_in_folder(CFG.BATTLE_MAP_TILES_PATH, true)
 
 
+# # TEMP FIXME HACK
+# var temp_world_grid_form : Node2D
+# var temp_world_grid : GenericHexGrid
+
+var world_grid : HackWorldEditGrid
+
 #region Setup
 
 func _create_button(map_tile : String) -> TextureButton:
@@ -54,7 +60,7 @@ func _create_button(map_tile : String) -> TextureButton:
 ## Replaces target map tile with currently selected "brush" (map tile type)
 func grid_input(coord : Vector2i) -> void:
 	if current_map_type == MapType.WORLD:
-		W_GRID.paint(coord, current_brush)
+		world_grid.paint(coord, current_brush)
 	else:
 		BM.paint(coord, current_brush)
 
@@ -171,7 +177,7 @@ func _on_load_map_pressed():
 	BM.unload_for_editor()
 	if map_to_load is DataWorldMap:
 		_set_grid_type(MapType.WORLD)
-		W_GRID.load_map(map_to_load)
+		world_grid.load_map(map_to_load)
 	else:
 		_set_grid_type(MapType.BATTLE)
 		BM.load_editor_map(map_to_load)
@@ -200,23 +206,25 @@ func get_battle_map(trim : bool = true) -> DataBattleMap:
 
 
 func get_world_map(trim : bool =  true) -> DataWorldMap:
-	var result = DataWorldMap.new()
-	result.grid_data = []
+	return world_grid.get_current_map(trim)
+	# var result = DataWorldMap.new()
+	# result.grid_data = []
 
-	var manager_grid_data = W_GRID.tile_grid.hexes.duplicate(true)
-	if trim:
-		manager_grid_data = _optimize_grid_size(manager_grid_data)
-	for tile_column in manager_grid_data:
-		var current_column = []
-		for tile : TileForm in tile_column:
-			current_column.append( DataTile.create_data_tile(tile))
-		result.grid_data.append(current_column)
+	# var manager_grid_data = W_GRID.tile_grid.hexes.duplicate(true)
+	# if trim:
+	# 	manager_grid_data = _optimize_grid_size(manager_grid_data)
+	# for tile_column in manager_grid_data:
+	# 	var current_column = []
+	# 	for tile : TileForm in tile_column:
+	# 		current_column.append(tile.type)
+	# 	result.grid_data.append(current_column)
 
-	result.grid_width = manager_grid_data.size()
-	result.grid_height = manager_grid_data[0].size()
-	result.max_player_number = _generate_world_max_player_number(manager_grid_data)
+	# result.grid_width = manager_grid_data.size()
+	# result.grid_height = manager_grid_data[0].size()
+	# result.max_player_number = \
+	# 	_generate_world_max_player_number(manager_grid_data)
 
-	return result
+	# return result
 
 
 func _on_save_map_pressed():
@@ -256,15 +264,18 @@ func _on_new_world_map_pressed():
 	_set_grid_type(MapType.WORLD)
 	map_file_name_input.text = "new_world"
 
-	var new_map = DataWorldMap.new()
-	var grid_data = _generate_empty_map()
-	new_map.grid_data = grid_data
+	world_grid = HackWorldEditGrid.new()
+	world_grid.resize(Vector2i(5, 5))
 
-	new_map.grid_height = grid_data.size()
-	new_map.grid_width = grid_data[0].size()
-	#print(new_map.grid_height, " ", new_map.grid_width)
-	W_GRID.reset_data()
-	W_GRID.load_map(new_map)
+	# var new_map = DataWorldMap.new()
+	# var grid_data = _generate_empty_map()
+	# new_map.grid_data = grid_data
+
+	# new_map.grid_height = grid_data.size()
+	# new_map.grid_width = grid_data[0].size()
+	# #print(new_map.grid_height, " ", new_map.grid_width)
+	# W_GRID.reset_data()
+	# W_GRID.load_map(new_map)
 
 
 func _on_new_battle_map_pressed():
@@ -305,18 +316,16 @@ func create_empty_tile() -> DataTile:
 
 func get_tile_grid_data() -> Array:
 	if current_map_type == MapType.WORLD:
-		return W_GRID.tile_grid.hexes
+		return world_grid.get_tile_grid_data()
 	else:
 		return BM.tile_grid.hexes
 
 
 func _on_add_column_pressed():
 	if current_map_type == MapType.WORLD:
-		var new_map := get_world_map(false)
-		new_map.grid_data.append(create_empty_row(new_map.grid_height))
-		new_map.grid_width += 1
-		WM.close_world()
-		W_GRID.load_map(new_map)
+		var size = world_grid.size()
+		size.x += 1
+		world_grid.resize(size)
 	else:
 		var new_map := get_battle_map(false)
 		new_map.grid_data.append(create_empty_row(new_map.grid_height))
@@ -334,12 +343,9 @@ func create_empty_row(length : int) -> Array[DataTile]:
 
 func _on_add_row_pressed():
 	if current_map_type == MapType.WORLD:
-		var new_map := get_world_map(false)
-		for row in new_map.grid_data:
-			row.append(create_empty_tile())
-		new_map.grid_height += 1
-		WM.close_world()
-		W_GRID.load_map(new_map)
+		var size = world_grid.size()
+		size.y += 1
+		world_grid.resize(size)
 	else:
 		var new_map := get_battle_map(false)
 		for row in new_map.grid_data:

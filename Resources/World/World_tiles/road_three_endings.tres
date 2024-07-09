@@ -4,6 +4,6 @@
 
 [resource]
 script = ExtResource("1_7nhkj")
+type = "EMPTY"
 texture_path = "res://Art/world_map/road_three_endings.png"
 flip_horizontal = false
-type = "empty"

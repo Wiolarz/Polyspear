@@ -188,6 +188,7 @@ static func create_empty() -> GameSetupInfo:
 		result.slots[i].occupier = 0
 		result.slots[i].faction = CFG.FACTIONS_LIST[i]
 		result.slots[i].color = i
+		result.slots[i].index = i
 	return result
 
 
@@ -209,6 +210,8 @@ class Slot extends RefCounted: # check if this is good base
 	## for battle only mode
 	var units_list : Array[DataUnit] = [null,null,null,null,null]
 
+	## used for some simpleness at player in world
+	var index : int = -1
 
 	func is_bot() -> bool:
 		return occupier is int

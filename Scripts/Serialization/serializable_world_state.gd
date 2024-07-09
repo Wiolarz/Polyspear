@@ -1,33 +1,22 @@
 extends Resource
 class_name SerializableWorldState
 
+class PlayerState extends Resource:
+	@export var goods : Array[int]
+	@export var dead_heroes : Array[String] # TODO better handle heroes
+											# for example saving level after
+											# resurrection
+	@export var capital_city : Vector2i
+
 @export var unit_hexes : Dictionary
 @export var place_hexes : Dictionary
-## every 3 is one player, maybe not very beautiful... -> (1)
-@export var goods : Array[int]
-# each element for a player
-@export var dead_heroes : Array[Array] # Array[Array[DataHero]]
 @export var current_player : int = 0
-# each element for a player
-@export var capital_cities : Array[Vector2i]
-# each element for a player
-@export var outposts : Array[Array]
-# each element for a player
-@export var outpost_buildings : Array[Array]
+@export var players : Array[PlayerState]
 
-# (1) ... but we will need to kind of rework it together with world_manager
-# rework
 
 func valid() -> bool:
-	var player_number = capital_cities.size()
-	return \
-		player_number > 0 and \
-		goods.size() == player_number * 3 and \
-		dead_heroes.size() == player_number and \
-		outpost_buildings.size() == player_number and \
-		outposts.size() == player_number and \
-		true
-
+	var player_number = players.size()
+	return player_number > 0 and current_player in range(player_number)
 
 static func get_network_serialized(world_state : SerializableWorldState) \
 		-> PackedByteArray:

@@ -169,7 +169,8 @@ func push_enemy(enemy : Unit, direction : int) -> void:
 #endregion
 
 func get_current_player() -> Player:
-	return armies_in_battle_state[current_army_index].army_reference.controller
+	var player_index = armies_in_battle_state[current_army_index].army_reference.controller_index
+	return IM.get_player_by_index(player_index)
 
 
 func switch_participant_turn() -> void:
@@ -304,8 +305,11 @@ func get_move_direction_if_valid(unit : Unit, coord : Vector2i) -> int:
 
 
 func get_player_army(player : Player) -> BattleGridState.ArmyInBattleState:
+	var player_index = -1
+	if player:
+		player_index = player.index
 	for army in armies_in_battle_state:
-		if army.army_reference.controller == player:
+		if army.army_reference.controller_index == player_index:
 			return army
 	assert(false, "No army for player " + str(player))
 	return null
@@ -388,7 +392,7 @@ func get_summon_tiles(player : Player) -> Array[Vector2i]:
 
 func get_not_summoned_units(player : Player) -> Array[DataUnit]:
 	for a in armies_in_battle_state:
-		if a.army_reference.controller == player:
+		if a.army_reference.controller_index == player.index:
 			return a.units_to_summon.duplicate()
 	assert(false, "ai asked for units to summon but it doesn't control any army")
 	return []
@@ -401,7 +405,7 @@ func get_units(player : Player) -> Array[Unit]:
 
 func find_army_idx(player : Player) -> int:
 	for idx in range(armies_in_battle_state.size()):
-		if armies_in_battle_state[idx].army_reference.controller == player:
+		if armies_in_battle_state[idx].army_reference.controller_index == player.index:
 			return idx
 	assert(false, "ai asked for army idx for player who doesnt control any army")
 	return -1
@@ -483,7 +487,8 @@ class ArmyInBattleState:
 
 	func summon_unit(unit_data : DataUnit, coord:Vector2i, rotation:int) -> Unit:
 		units_to_summon.erase(unit_data)
-		var result = Unit.create(army_reference.controller, unit_data, coord, rotation)
+		var player = IM.get_player_by_index(army_reference.controller_index)
+		var result = Unit.create(player, unit_data, coord, rotation)
 		units.append(result)
 		battle_grid_state.get_ref().on_unit_summoned.emit(result)
 		return result

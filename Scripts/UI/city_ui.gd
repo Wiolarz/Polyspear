@@ -5,7 +5,16 @@ signal purchased_hero  # Hero list UI Update
 
 var city : City
 ## currently visiting hero, null if none
-var hero_army : ArmyForm
+## this is the hero who is trading with city, not the one who is inside
+## UPDATE -- TODO remove -- we do not need this -- better use WM.selected_hero
+var trading_hero_army : Army:
+	get: return WM.selected_hero.entity if WM.selected_hero else null
+	set(_v): assert("no set here")
+
+## this should be replaced somehow after this refactor
+var world_state_ugly : WorldState
+
+# TODO consider some pointer to world_state
 
 @onready var hero_panels = $HeroRecruitment
 @onready var unit_panels = $RecruitUnits
@@ -20,16 +29,11 @@ func _exit_tree():
 	WM.world_move_done.disconnect(_refresh_all)
 
 
-func show_trade_ui(viewed_city : City, visiting_hero : ArmyForm):
+func show_trade_ui(viewed_city : City):
 	city = viewed_city
-	hero_army = visiting_hero
-	if visiting_hero == null:
-		var army := W_GRID.get_army(viewed_city.coord)
-		if army and army.entity.hero:
-			hero_army = army
 
 	_refresh_all()
-	if not unit_panels.visible and visiting_hero:
+	if not unit_panels.visible and trading_hero_army:
 		_on_show_recruit_units_ui_pressed()
 
 
@@ -41,7 +45,7 @@ func _refresh_all():
 
 
 func _refresh_heroes_to_buy():
-	var heroes = city.get_heroes_to_buy()
+	var heroes = city.get_heroes_to_buy(world_state_ugly)
 	assert(heroes.size() == hero_panels.get_child_count(),\
 			"panels should equal heroes count, check fraction settings and city ui")
 	for i in range(hero_panels.get_child_count()):
@@ -52,16 +56,16 @@ func _refresh_heroes_to_buy():
 			load(heroes[i].data_unit.texture_path)
 
 		var button = hero_panel.get_node("BuyHeroButton")
-		var description = city.get_cost_description(hero_to_buy)
+		var description = city.get_cost_description(world_state_ugly, hero_to_buy)
 		button.text = "Buy %s\n%s" % [hero_to_buy.hero_name, description]
-		button.disabled = not city.can_buy_hero(heroes[i])
+		button.disabled = not city.can_buy_hero(heroes[i], world_state_ugly)
 		for s in button.pressed.get_connections():
 			button.pressed.disconnect(s["callable"])
 		button.pressed.connect(_on_buy_hero_button_pressed.bind(i))
 
 
 func _refresh_units_to_buy():
-	var units = city.get_units_to_buy()
+	var units = city.get_units_to_buy(world_state_ugly)
 	var buy_children = $RecruitUnits/UnitsToBuy.get_children()
 	for i in range(buy_children.size()-1):
 		var b = buy_children[i+1] as Button
@@ -71,58 +75,65 @@ func _refresh_units_to_buy():
 		if i < units.size():
 			var unit = units[i]
 			b.text = unit.unit_name
-			if not city.unit_has_required_building(unit):
+			if not city.unit_has_required_building(world_state_ugly, unit):
 				b.text += "\n" + "needs 🏛"
 			else:
 				b.text += "\n" + unit.cost.to_string_short("free")
 			b.pressed.connect(_buy_unit.bind(unit))
-			b.disabled = not city.can_buy_unit(unit, hero_army)
+			b.disabled = true if not WM.selected_hero else \
+				(world_state_ugly.check_recruit_unit(unit, city.coord, \
+					WM.selected_hero.coord) != "")
 
 
 func _refresh_army_display():
 	#TODO CLEAN
 	var army_children : Array = $RecruitUnits/VisitingHeroArmy.get_children()
-	if hero_army:
-		army_children[0].text = "Max size " + str(hero_army.entity.hero.max_army_size)
+	if trading_hero_army:
+		army_children[0].text = "Max size %s" % trading_hero_army.hero.max_army_size
 	else:
 		army_children[0].text = "No hero"
 	for i in range(army_children.size()-1):
 		var b = army_children[i+1] as Button
 		b.text = "-empty-"
-		b.disabled = not hero_army
-		if hero_army and i < hero_army.entity.units_data.size():
-			b.text = hero_army.entity.units_data[i].unit_name
+		b.disabled = not trading_hero_army
+		if trading_hero_army and i < trading_hero_army.units_data.size():
+			b.text = trading_hero_army.units_data[i].unit_name
 
 
-func _buy_unit(unit):
+func _buy_unit(unit : DataUnit):
 	print("trying to buy ", unit.unit_name)
 
-	WM.request_recruit_unit(hero_army, unit)
+	WM.try_recruit_unit(city.coord, WM.selected_hero.coord, unit)
 
 
 func _on_buy_hero_button_pressed(hero_index : int):
 	print("trying to buy a hero ")
 
-	var hero_to_buy : DataHero = city.controller.get_faction().heroes[hero_index]
+	# var hero_to_buy : DataHero = city.controller.get_faction().heroes[hero_index]
+	var hero_to_buy : DataHero = \
+		world_state_ugly.get_hero_to_buy_in_city(city, hero_index)
 
-	WM.request_recruit_hero(city.controller, hero_to_buy, city.coord)
+	if not hero_to_buy:
+		return
+
+	WM.try_recruit_hero(city, hero_to_buy)
 	_on_show_recruit_heroes_ui_pressed() # hide
 
 	purchased_hero.emit()
 
 
 func _refresh_buildings_display():
-	var buildings_data = city.controller.get_faction().buildings
+	var buildings_data = city.get_faction(world_state_ugly).buildings
 	for i in range(buildings_data.size()):
 		var building_data = buildings_data[i]
 		var b_button = building_buttons.get_child(i+1) as Button
 		if not b_button:
 			continue
 		var description = str(building_data.cost)
-		if city.has_built(building_data):
+		if city.has_built(world_state_ugly, building_data):
 			description = "✔"
 		b_button.text = "%s\n%s" % [building_data.name, description]
-		b_button.disabled = not city.can_build(building_data)
+		b_button.disabled = not city.can_build(world_state_ugly, building_data)
 		for s in b_button.pressed.get_connections():
 			b_button.pressed.disconnect(s["callable"])
 		b_button.pressed.connect(func build():
@@ -133,6 +144,11 @@ func _refresh_buildings_display():
 func show_recruit_heroes():
 	if not hero_panels.visible:
 		_on_show_recruit_heroes_ui_pressed()
+
+
+func show_recruit_units():
+	if not unit_panels.visible:
+		_on_show_recruit_units_ui_pressed()
 
 
 func _on_show_recruit_heroes_ui_pressed():
@@ -157,7 +173,8 @@ func _on_show_build_ui_pressed():
 
 
 func _on_enter_city_pressed():
-	if not hero_army:
+	if not trading_hero_army:
 		return
-	var move = WorldMoveInfo.make_world_move(hero_army.coord, city.coord, true)
-	WM.perform_world_move_info(move)
+	var move = WorldMoveInfo.make_world_travel(
+		trading_hero_army.coord, city.coord)
+	WM.try_do_move(move)

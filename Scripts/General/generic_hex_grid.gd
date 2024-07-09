@@ -60,6 +60,14 @@ func set_hex(coord : Vector2i, value : Variant) -> void:
 	hexes[coord.x][coord.y] = value
 
 
+func find(hex) -> Vector2i:
+	for x in width:
+		for y in height:
+			if hexes[x][y] == hex:
+				return Vector2i(x, y)
+	return Vector2i(-1, -1)
+
+
 static func direction_to_name(d : GridDirections) -> String:
 	return GridDirections.keys()[d]
 

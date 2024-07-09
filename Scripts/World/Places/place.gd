@@ -3,85 +3,108 @@ extends RefCounted # RefCounted is default
 
 signal controller_changed()
 
-var type : E.WorldMapTiles = E.WorldMapTiles.EMPTY
-var controller : Player
+# TODO make this not duplicated
+const PATH_TODO_MOVE_TO_CONFIG = "res://Scripts/World/Places/"
+
+# TODO make controller private and set proper getter and setter
+var controller_index : int = -1
 var defender_army : Army
-var battle_map : DataBattleMap
 var coord : Vector2i
+var movable : bool = false
+
+## used only in basic places which are not derived classes
+var basic_type : String
 
 
-# TODO move to other file and rework Place
-static func _inner_create_place(new_data_tile : DataTile) -> Place:
-	match new_data_tile.type:
-		# city:
-		"elf_city", "orc_city":
-			return City.new()
-
-		# Resource Outposts
-		"sawmill":
-			return Outpost.new(Goods.new(1,0,0), new_data_tile.type, CFG.OUTPOST_WOOD_PATH)
-		"iron_mine":
-			return Outpost.new(Goods.new(0,1,0), new_data_tile.type, CFG.OUTPOST_IRON_PATH)
-		"ruby_cave":
-			return Outpost.new(Goods.new(0,0,1), new_data_tile.type, CFG.OUTPOST_RUBY_PATH)
-
-		# resource hunt spots
-		"wood_hunt":
-			return HuntSpot.new(CFG.HUNT_WOOD_PATH, [Goods.new(3,0,0), Goods.new(6,0,0), Goods.new(9,0,0)])
-		"iron_hunt":
-			return HuntSpot.new(CFG.HUNT_IRON_PATH, [Goods.new(0,3,0), Goods.new(0,6,0), Goods.new(0,9,0)])
-		"ruby_hunt":
-			return HuntSpot.new(CFG.HUNT_RUBY_PATH, [Goods.new(0,0,3), Goods.new(0,0,6), Goods.new(0,0,9)])
-
-		_:#"sentinel", "wall", "empty"
-			return null
+static func create_basic(coord : Vector2i, movable : bool, type_name : String) \
+		-> Place:
+	var place := Place.new()
+	place.coord = coord
+	place.movable = movable
+	place.basic_type = type_name
+	return place
 
 
-static func create_place(new_data_tile : DataTile, \
-			new_coord : Vector2i) -> Place:
-	var new_place = _inner_create_place(new_data_tile)
-	if new_place:
-		new_place.coord = new_coord
-
-	return new_place
-
-
-func on_game_started() -> void:
-	pass
+static func create_new(_args : PackedStringArray, coord : Vector2i) -> Place:
+	# TODO add grid to args -- it would ge great also to add hex *atomically*
+	# in this funciton
+	var place := Place.new()
+	place.coord = coord
+	return place
 
 
-func interact(army : ArmyForm) -> void:
+func get_army_at_start() -> PresetArmy:
+	return null
+
+
+func interact(_world_state : WorldState, army : Army) -> bool:
 	print(army)
+	return false
 
 
-func on_end_of_turn() -> void:
+func on_end_of_turn(_world_state : WorldState) -> void:
 	pass
 
 
 func get_map_description() -> String:
 	return ""
 
-func change_controler(player : Player):
-	controller = player
-	controller_changed.emit()
+
+func capture(_world_state : WorldState, _player_index : int) -> bool:
+	return false
 
 
-static func get_network_serializable(place : Place) -> Dictionary:
+# func change_controler(player : Player):
+# 	controller = player
+# 	controller_changed.emit()
+
+
+static func get_network_serializable(place : Place, \
+		world_state : WorldState) -> Dictionary:
 	if not place:
 		return {}
 	var dict : Dictionary = {}
 	place.to_specific_serializable(dict)
-	dict["type"] = place.type
-	dict["player"] = WM.get_player_index(place.controller)
-	# defender army will be get from unit_grid
-
-	# var script : String = get_script().resource_path.get_file()
-	# dict["script"] = script
+	dict["type"] = place.get_type()
+	dict["player"] = place.controller_index
 	return dict
 
 
+static func from_network_serializable(dict : Dictionary, coord : Vector2i) -> Place:
+	var type = dict["type"]
+	var script_path = "%s/%s.gd" % [ PATH_TODO_MOVE_TO_CONFIG, type[0] ]
+	var script = load(script_path) as Script
+	assert(script)
+	var place : Place = script.create_new(PackedStringArray(), coord)
+	var player_index = dict["player"]
+	place.controller_index = player_index
+	place.paste_specific_serializable_state(dict)
+	return place
+
+
+func get_image_override() -> Resource:
+	return null
+
+
+func get_type() -> String:
+	if get_script() != Place:
+		return get_script().resource_path.get_file().get_basename()
+	else:
+		return basic_type
+
+
+
+
 ## should be overridden by each place
-## but also this is a temporary part of greater refactor which is needed for
-## Place class
+## This function has to copy such information of state that it would be
+## possible to add it to the state after "create_new" call
 func to_specific_serializable(dict : Dictionary) -> void:
-	dict["not implemented"] = true
+	pass
+
+
+## shoould be overridden by each place
+## This function has to recover every information that is not recovered by
+## "create_new" of the type with defaults and changing player which is done
+## earlier
+func paste_specific_serializable_state(dict : Dictionary) -> void:
+	return

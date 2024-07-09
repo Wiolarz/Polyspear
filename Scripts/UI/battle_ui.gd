@@ -43,7 +43,8 @@ func load_armies(army_list : Array[BattleGridState.ArmyInBattleState]):
 
 	var idx = 0
 	for army in army_list:
-		var controller = army.army_reference.controller
+		var controller_index = army.army_reference.controller_index
+		var controller = IM.get_player_by_index(controller_index)
 		# create player buttons
 		var n = Button.new()
 		n.text = get_text_for(controller, idx == 0)
@@ -69,7 +70,8 @@ func on_player_selected(army_index : int, preview : bool = false):
 
 	for i in range(armies_reference.size()):
 		var is_currently_active := (i == current_player)
-		var controller = armies_reference[i].army_reference.controller
+		var controller_index = armies_reference[i].army_reference.controller_index
+		var controller = IM.get_player_by_index(controller_index)
 		var button := players_box.get_child(i + 1) as Button
 		button.text = get_text_for(controller, is_currently_active)
 
@@ -78,7 +80,8 @@ func on_player_selected(army_index : int, preview : bool = false):
 	for old_buttons in units_box.get_children():
 		old_buttons.queue_free()
 
-	var units_controller : Player = armies_reference[army_index].army_reference.controller
+	var units_controller_index = armies_reference[army_index].army_reference.controller_index
+	var units_controller : Player = IM.get_player_by_index(units_controller_index)
 	var bg_color : DataPlayerColor = CFG.NEUTRAL_COLOR
 	if units_controller:
 		bg_color = units_controller.get_player_color()

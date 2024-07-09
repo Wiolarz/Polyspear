@@ -9,6 +9,11 @@ extends Resource
 
 @export var outpost_requirement : String
 
+
+func is_outpost_upgrade() -> bool:
+	return outpost_requirement != ""
+
+
 static func get_network_id(building : DataBuilding) -> String:
 	if not building:
 		return ""
