@@ -102,12 +102,15 @@ func on_player_selected(army_index : int, preview : bool = false):
 		b.pressed.connect(lambda)
 
 
-func unit_summoned(summon_phase_end : bool, _unit : DataUnit):
+func unit_summoned(summon_phase_end : bool):
 	selected_unit = null
 	selected_unit_button = null
 
-	if summon_phase_end:
-		units_box.hide()
+	units_box.visible = not summon_phase_end
+
+
+func refresh_after_undo(summon_phase_active : bool):
+	units_box.visible = summon_phase_active
 
 
 func _on_switch_camera_pressed():

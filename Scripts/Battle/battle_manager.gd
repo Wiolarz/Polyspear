@@ -195,7 +195,8 @@ func undo() -> void:
 	var last_move := _replay_data.moves.pop_back() as MoveInfo
 	var new_units = _battle_grid_state.undo(last_move)
 	for n in new_units:
-		_on_unit_summoned(n, true)
+		_on_unit_summoned(n)
+	_battle_ui.refresh_after_undo(_battle_grid_state.is_during_summoning_phase())
 	_on_turn_started(_battle_grid_state.get_current_player())
 
 
@@ -241,7 +242,7 @@ func grid_input(coord : Vector2i) -> void:
 
 ## handles spawning unit form when unit is spawned on a gameplay map
 ## also connects animation related signals
-func _on_unit_summoned(unit : Unit, revived : bool = false) -> void:
+func _on_unit_summoned(unit : Unit) -> void:
 	var form := UnitForm.create(unit)
 	_unit_forms_node.add_child(form)
 	_unit_to_unit_form[unit] = form
@@ -249,8 +250,7 @@ func _on_unit_summoned(unit : Unit, revived : bool = false) -> void:
 	# apply correct BM position offset in world battles
 	form.global_position = get_tile_global_position(unit.coord)
 
-	if not revived:
-		_battle_ui.unit_summoned(not _battle_grid_state.is_during_summoning_phase(), unit.template)
+	_battle_ui.unit_summoned(not _battle_grid_state.is_during_summoning_phase())
 
 	unit.unit_died.connect(_on_unit_killed.bind(unit))
 	unit.unit_turned.connect(_on_unit_turned.bind(unit))
