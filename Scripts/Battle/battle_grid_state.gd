@@ -87,16 +87,45 @@ func undo(move_info : MoveInfo) -> Array[Unit]:
 		state = STATE_SUMMONNING
 
 	if move_info.move_type == MoveInfo.TYPE_MOVE:
+		# revert turn change
 		current_army_index = move_info.army_idx
-		var unit := get_unit(move_info.target_tile_coord)
-		_change_unit_coord(unit, move_info.move_source)
-		unit.move(move_info.move_source, _get_battle_hex(move_info.move_source).swamp)
-		unit.turn(move_info.original_rotation)
-		# TODO add revert pushes and kills
+
+		# revert move
+		var m_unit := get_unit(move_info.target_tile_coord)
+		var mover_dead = false
+		if m_unit == null:
+			mover_dead = true
+		else :
+			_change_unit_coord(m_unit, move_info.move_source)
+			var m_hex = _get_battle_hex(move_info.move_source)
+			m_unit.move(move_info.move_source, m_hex.swamp)
+			m_unit.turn(move_info.original_rotation)
+
+		# revert kills
 		for killed_unit_info in move_info.units_killed:
 			var u := armies_in_battle_state[killed_unit_info.army_idx].revive(killed_unit_info)
 			_put_unit_on_grid(u, u.coord)
 			result.append(u)
+
+		# TODO: fix scenarios like:
+		# - pushing enemies on enemy spear covered hex
+		# - trying to move into a unit with spear and dying (needs shield on spear side first)
+		# fix idea: remember sequence of operations during turn to undo in order?
+		if mover_dead:
+			var d_unit := get_unit(move_info.target_tile_coord)
+			assert(d_unit != null, "Mover still dead after reverting kills")
+			_change_unit_coord(d_unit, move_info.move_source)
+			var m_hex = _get_battle_hex(move_info.move_source)
+			d_unit.move(move_info.move_source, m_hex.swamp)
+			d_unit.turn(move_info.original_rotation)
+
+		# revert pushes
+		for p in move_info.units_pushed:
+			var p_unit := get_unit(p.to_coord)
+			_change_unit_coord(p_unit, p.from_coord)
+			var p_hex = _get_battle_hex(p.from_coord)
+			p_unit.move(p.from_coord, p_hex.swamp)
+
 
 	return result
 
