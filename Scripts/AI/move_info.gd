@@ -54,6 +54,37 @@ static func from_network_serializable(dict : Dictionary) -> MoveInfo:
 	push_error("move_type not supported: ", dict["move_type"])
 	return null
 
+#region callbacks to store move results for undo
+
+func register_move_start(army_idx_ : int, unit:Unit) -> void:
+	army_idx = army_idx_
+	original_rotation = unit.unit_rotation
+	units_killed = []
+	units_pushed = []
+
+
+func register_turning_complete() -> void:
+	pass
+
+
+func register_kill(killed_unit_army_idx : int, killed_unit : Unit) -> void:
+	var record = KilledUnit.create(killed_unit_army_idx, killed_unit)
+	units_killed.append(record)
+
+
+func register_push(pushed_unit : Unit, goal_coord : Vector2i) -> void:
+	var record = PushedUnit.create(pushed_unit.coord, goal_coord)
+	units_pushed.append(record)
+
+
+func register_locomote_complete() -> void:
+	pass
+
+
+func register_whole_move_complete() -> void:
+	pass
+
+#endregion undo
 
 func _to_string() -> String:
 	if move_type == TYPE_SUMMON:
@@ -86,3 +117,9 @@ class KilledUnit:
 class PushedUnit:
 	var from_coord : Vector2i
 	var to_coord : Vector2i
+
+	static func create(from_coord_:Vector2i, to_coord_:Vector2i) -> KilledUnit:
+		var result = PushedUnit.new()
+		result.from_coord = from_coord_
+		result.to_coord = to_coord_
+		return result

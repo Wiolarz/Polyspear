@@ -65,10 +65,11 @@ func move_info_move_unit(move_info : MoveInfo) -> void:
 	var target_tile_coord := move_info.target_tile_coord
 	var unit = get_unit(source_tile_coord)
 	var direction = GenericHexGrid.direction_to_adjacent(unit.coord, target_tile_coord)
-	move_info.army_idx = current_army_index
-	move_info.original_rotation = unit.unit_rotation
+	move_info.register_move_start(current_army_index, unit)
 
 	_perform_move(unit, direction, target_tile_coord)
+
+	move_info.register_whole_move_complete()
 
 	turn_counter += 1
 
@@ -136,9 +137,11 @@ func _perform_move(unit : Unit, direction : int, target_tile_coord : Vector2i) -
 	unit.turn(direction)
 	if _process_symbols(unit):
 		return
+	currently_processed_move_info.register_turning_complete()
 	# MOVE
 	_change_unit_coord(unit, target_tile_coord)
 	unit.move(target_tile_coord, _get_battle_hex(target_tile_coord).swamp)
+	currently_processed_move_info.register_locomote_complete()
 	if _process_symbols(unit):
 		return
 
@@ -228,10 +231,7 @@ func _push_enemy(enemy : Unit, direction : int) -> void:
 		_kill_unit(enemy)
 		return
 
-	var push_info := MoveInfo.PushedUnit.new()
-	push_info.from_coord = enemy.coord
-	push_info.to_coord = target_coord
-	currently_processed_move_info.units_pushed.append(push_info)
+	currently_processed_move_info.register_push(enemy, target_coord)
 
 	# MOVE for PUSH (no rotate)
 	_change_unit_coord(enemy, target_coord)
@@ -412,10 +412,8 @@ func _get_player_army(player : Player) -> BattleGridState.ArmyInBattleState:
 
 
 func _kill_unit(target : Unit) -> void:
-	var kill_info := MoveInfo.KilledUnit.create(_find_army_idx(target.controller), target)
-	currently_processed_move_info.units_killed.append(kill_info)
-
-	_find_army_idx(target.controller)
+	var target_army_index := _find_army_idx(target.controller)
+	currently_processed_move_info.register_kill(target_army_index, target)
 
 	_get_player_army(target.controller).kill_unit(target)
 	_check_battle_end()
