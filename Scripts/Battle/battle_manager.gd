@@ -12,6 +12,7 @@ var _unit_forms_node : Node2D # parent for units VISUAL
 
 var _battle_ui : BattleUI
 var _anim_queue : Array[AnimInQueue] = []
+var latest_ai_cancel_token : CancellationToken
 
 var _current_summary : DataBattleSummary = null
 
@@ -161,9 +162,20 @@ func _on_turn_started(player : Player) -> void:
 
 	if player.bot_engine and not NET.client: # AI is simulated on server only
 		print("AI starts thinking")
+		var my_cancel_token = CancellationToken.new()
+		assert(latest_ai_cancel_token == null)
+		latest_ai_cancel_token = my_cancel_token
 		var move = player.bot_engine.choose_move(_battle_grid_state)
 		await _ai_thinking_delay() # moving too fast feels weird
-		_perform_ai_move(move)
+		if not my_cancel_token.is_canceled():
+			_perform_ai_move(move)
+			latest_ai_cancel_token = null
+
+
+func cancel_pending_ai_move() ->  void:
+	if latest_ai_cancel_token:
+		latest_ai_cancel_token.cancel()
+		latest_ai_cancel_token = null
 
 
 func _ai_thinking_delay() -> void:
@@ -192,6 +204,8 @@ func undo() -> void:
 	if not battle_is_active():
 		return
 
+	cancel_pending_ai_move()
+
 	var last_move := _replay_data.moves.pop_back() as MoveInfo
 	var new_units = _battle_grid_state.undo(last_move)
 	for n in new_units:
@@ -206,6 +220,9 @@ func redo() -> void:
 
 
 func ai_move() -> void:
+	if latest_ai_cancel_token:
+		push_warning("ai is already moving, dont stack two simultaneous ai moves race")
+		return
 	var move := AiBotStateRandom.choose_move_static(_battle_grid_state)
 	_perform_ai_move(move)
 
