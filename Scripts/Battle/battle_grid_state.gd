@@ -80,6 +80,7 @@ func move_info_move_unit(move_info : MoveInfo) -> void:
 	currently_processed_move_info = null
 
 
+## returns array of revived units
 func undo(move_info : MoveInfo) -> Array[Unit]:
 	var result = [] as Array[Unit]
 	if move_info.move_type == MoveInfo.TYPE_SUMMON:
@@ -90,46 +91,47 @@ func undo(move_info : MoveInfo) -> Array[Unit]:
 	if move_info.move_type == MoveInfo.TYPE_MOVE:
 		# revert turn change
 		current_army_index = move_info.army_idx
+		turn_counter -= 1
 
-		# revert move
-		var m_unit := get_unit(move_info.target_tile_coord)
-		var mover_dead = false
-		if m_unit == null:
-			mover_dead = true
-		else :
-			_change_unit_coord(m_unit, move_info.move_source)
-			var m_hex = _get_battle_hex(move_info.move_source)
-			m_unit.move(move_info.move_source, m_hex.swamp)
-			m_unit.turn(move_info.original_rotation)
+		var actions_to_undo = move_info.actions_list.duplicate()
+		# last action should be reversed first, else bugs will be created
+		actions_to_undo.reverse()
+		for a in actions_to_undo:
+			if a is MoveInfo.KilledUnit:
+				var u = _undo_kill(move_info, a)
+				result.append(u)
+			elif a is MoveInfo.PushedUnit:
+				_undo_push(move_info, a)
+			elif a is MoveInfo.LocomotionCompleted:
+				_undo_main_locomotion(move_info)
+			else :
+				push_error("unknown action type %s - %s"%[a.get_class(), str(a)])
 
-		# revert kills
-		for killed_unit_info in move_info.units_killed:
-			var u := armies_in_battle_state[killed_unit_info.army_idx].revive(killed_unit_info)
-			_put_unit_on_grid(u, u.coord)
-			result.append(u)
-
-		# TODO: fix scenarios like:
-		# - pushing enemies on enemy spear covered hex
-		# - trying to move into a unit with spear and dying (needs shield on spear side first)
-		# fix idea: remember sequence of operations during turn to undo in order?
-		if mover_dead:
-			var d_unit := get_unit(move_info.target_tile_coord)
-			assert(d_unit != null, "Mover still dead after reverting kills")
-			_change_unit_coord(d_unit, move_info.move_source)
-			var m_hex = _get_battle_hex(move_info.move_source)
-			d_unit.move(move_info.move_source, m_hex.swamp)
-			d_unit.turn(move_info.original_rotation)
-
-		# revert pushes
-		for p in move_info.units_pushed:
-			var p_unit := get_unit(p.to_coord)
-			_change_unit_coord(p_unit, p.from_coord)
-			var p_hex = _get_battle_hex(p.from_coord)
-			p_unit.move(p.from_coord, p_hex.swamp)
-
+		# revert turn
+		var unit := get_unit(move_info.move_source)
+		unit.turn(move_info.original_rotation)
 
 	return result
 
+
+func _undo_main_locomotion(move_info : MoveInfo) -> void:
+	var m_unit := get_unit(move_info.target_tile_coord)
+	_change_unit_coord(m_unit, move_info.move_source)
+	var m_hex = _get_battle_hex(move_info.move_source)
+	m_unit.move(move_info.move_source, m_hex.swamp)
+
+
+func _undo_kill(_move: MoveInfo , killed : MoveInfo.KilledUnit) -> Unit:
+	var u := armies_in_battle_state[killed.army_idx].revive(killed)
+	_put_unit_on_grid(u, u.coord)
+	return u
+
+
+func _undo_push(_move : MoveInfo , pushed : MoveInfo.PushedUnit) -> void:
+	var p_unit := get_unit(pushed.to_coord)
+	_change_unit_coord(p_unit, pushed.from_coord)
+	var p_hex = _get_battle_hex(pushed.from_coord)
+	p_unit.move(pushed.from_coord, p_hex.swamp)
 
 
 func _perform_move(unit : Unit, direction : int, target_tile_coord : Vector2i) -> void:

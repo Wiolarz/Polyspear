@@ -11,10 +11,13 @@ const TYPE_SUMMON = "summon"
 
 
 # for undo, do not serialize
+
+## index of the army that performed the move, used to recreate proper current player
 var army_idx : int = -1
+## used to recreate proper main unit rotation
 var original_rotation : int = -1
-var units_killed : Array[KilledUnit] = []
-var units_pushed: Array[PushedUnit] = []
+## sequence of KilledUnit, PushedUnit, LocomotionCompleted in order they happended
+var actions_list : Array = []
 
 
 static func make_move(src : Vector2i, dst : Vector2i) -> MoveInfo:
@@ -54,13 +57,13 @@ static func from_network_serializable(dict : Dictionary) -> MoveInfo:
 	push_error("move_type not supported: ", dict["move_type"])
 	return null
 
-#region callbacks to store move results for undo
+
+#region notyfications for undo
 
 func register_move_start(army_idx_ : int, unit:Unit) -> void:
 	army_idx = army_idx_
 	original_rotation = unit.unit_rotation
-	units_killed = []
-	units_pushed = []
+	actions_list = []
 
 
 func register_turning_complete() -> void:
@@ -69,22 +72,22 @@ func register_turning_complete() -> void:
 
 func register_kill(killed_unit_army_idx : int, killed_unit : Unit) -> void:
 	var record = KilledUnit.create(killed_unit_army_idx, killed_unit)
-	units_killed.append(record)
+	actions_list.append(record)
 
 
 func register_push(pushed_unit : Unit, goal_coord : Vector2i) -> void:
 	var record = PushedUnit.create(pushed_unit.coord, goal_coord)
-	units_pushed.append(record)
+	actions_list.append(record)
 
 
 func register_locomote_complete() -> void:
-	pass
+	actions_list.append(LocomotionCompleted.new())
 
 
 func register_whole_move_complete() -> void:
 	pass
 
-#endregion undo
+#endregion notyfications for undo
 
 func _to_string() -> String:
 	if move_type == TYPE_SUMMON:
@@ -118,8 +121,12 @@ class PushedUnit:
 	var from_coord : Vector2i
 	var to_coord : Vector2i
 
-	static func create(from_coord_:Vector2i, to_coord_:Vector2i) -> KilledUnit:
+	static func create(from_coord_:Vector2i, to_coord_:Vector2i) -> PushedUnit:
 		var result = PushedUnit.new()
 		result.from_coord = from_coord_
 		result.to_coord = to_coord_
 		return result
+
+## marker for when main unit switched tile
+class LocomotionCompleted:
+	pass
