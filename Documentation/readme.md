@@ -1,5 +1,8 @@
 # Polyspear Documantation
 
+## Language
+
+- [Ubiquitous Language](language.md)
 
 ## Code
 
