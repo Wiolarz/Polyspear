@@ -19,7 +19,7 @@ And terms specific for a particular project might need to be introduced. Ideally
 - slot - represents a separate entity that can fight or be allied to other slots, both in battle and world modes
   - slot id - integrer that determines turn order, starts with 0, id's should be consecutive but some slots may be eliminated during the game, or skip turns in certain phases
   - color - each slot has a color assigned that makes slot graphically distinct from other slots
-  - faction - defines available heroes, units and buildnigs in world mode, in battle mode faction is irrelevant
+  - race - defines available heroes, units and buildnigs in world mode, in battle mode faction is irrelevant
   - ai - a slot can be controlled by an AI
   - player filter (currently not implemented, but shown on UI) in multiplayer network game limits witch client can control witch slot
 
