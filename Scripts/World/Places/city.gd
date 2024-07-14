@@ -47,10 +47,9 @@ func get_cost_description(world_state : WorldState, hero: DataHero) -> String:
 		return "✔"
 	var cost = world_state.get_hero_cost_for_player(controller_index, hero)
 	var resurrect : bool = world_state.has_player_a_dead_hero(controller_index, hero)
-	if not resurrect:
-		return "Recruit\n%s" % cost
-	else:
-		return "Resurrect\n" % cost
+	if resurrect:
+		return "Resurrect\n%s" % cost
+	return "%s" % cost
 
 
 func can_buy_hero(hero: DataHero, world_state : WorldState) -> bool:
@@ -139,7 +138,7 @@ func to_specific_serializable(dict : Dictionary) -> void:
 		dict["buildings"].append(DataBuilding.get_network_id(building))
 
 
-func paste_specific_serializable(dict : Dictionary) -> void:
+func paste_specific_serializable_state(dict : Dictionary) -> void:
 	buildings = []
 	for b in dict["buildings"]:
 		buildings.append(DataBuilding.from_network_id(b))

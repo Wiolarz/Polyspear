@@ -468,6 +468,7 @@ class ArmyInBattleState:
 
 	func kill_unit(target : Unit) -> void:
 		print("killing ", target.coord, " ",target.template.unit_name)
+		assert(target in units)
 		units.erase(target)
 		dead_units.append(target.template)
 		battle_grid_state.get_ref().remove_unit(target)

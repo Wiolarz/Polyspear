@@ -59,8 +59,7 @@ func capture(_world_state : WorldState, _player_index : int) -> bool:
 # 	controller_changed.emit()
 
 
-static func get_network_serializable(place : Place, \
-		world_state : WorldState) -> Dictionary:
+static func get_network_serializable(place : Place) -> Dictionary:
 	if not place:
 		return {}
 	var dict : Dictionary = {}
@@ -72,7 +71,7 @@ static func get_network_serializable(place : Place, \
 
 static func from_network_serializable(dict : Dictionary, coord : Vector2i) -> Place:
 	var type = dict["type"]
-	var script_path = "%s/%s.gd" % [ PATH_TODO_MOVE_TO_CONFIG, type[0] ]
+	var script_path = "%s/%s.gd" % [ PATH_TODO_MOVE_TO_CONFIG, type ]
 	var script = load(script_path) as Script
 	assert(script)
 	var place : Place = script.create_new(PackedStringArray(), coord)
@@ -86,8 +85,12 @@ func get_image_override() -> Resource:
 	return null
 
 
+func is_basic() -> bool:
+	return get_script() == Place
+
+
 func get_type() -> String:
-	if get_script() != Place:
+	if not is_basic():
 		return get_script().resource_path.get_file().get_basename()
 	else:
 		return basic_type

@@ -41,7 +41,7 @@ static func level_threshold_at(level : int) -> int:
 
 
 ## this function only creates structure -- it has to be later added to state
-## properly as it is done by WorldState::recruit_hero function
+## properly as it is done by WorldState.recruit_hero function
 static func construct_hero(data_hero : DataHero,
 		player_index : int) -> Hero:
 	var new_hero = Hero.new()
@@ -105,10 +105,9 @@ func to_network_serializable() -> Dictionary:
 	return dict
 
 
-static func from_network_serializable(dict : Dictionary,
-		world_state : WorldState) -> Hero:
+static func from_network_serializable(dict : Dictionary, controller_index : int) -> Hero:
 	var data_hero = DataHero.from_network_id(dict["data_hero"])
-	var hero : Hero = Hero.construct_hero(data_hero, dict["player"])
+	var hero : Hero = Hero.construct_hero(data_hero, controller_index)
 	hero.hero_name = dict["name"]
 	hero.movement_points = dict["movement_points"]
 	hero.xp = dict["xp"]

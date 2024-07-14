@@ -11,6 +11,20 @@ var hex = null # WorldHex in world
 var grid_type : GameSetupInfo.GameMode = GameSetupInfo.GameMode.WORLD
 
 
+static func create_world_editor_tile(data_tile : DataTile, coord : Vector2i,
+		new_position : Vector2) -> TileForm:
+	var result = CFG.HEX_TILE_FORM_SCENE.instantiate()
+	result._set_coord(coord)
+	result.name = "Tile_%s_%s" % [ coord.x, coord.y ]
+	result.position = new_position
+	if data_tile:
+		var image = load(data_tile.texture_path)
+		result.type = data_tile.type
+		result._set_texture(image)
+	return result
+
+
+
 ## ugly, FIXME
 static func create_world_tile_new(hex : WorldHex, coord : Vector2i, \
 		new_position : Vector2) -> TileForm:

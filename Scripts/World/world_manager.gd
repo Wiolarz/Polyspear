@@ -68,7 +68,7 @@ func set_selected_hero(army : Army):
 	selected_hero = army_form
 	if selected_hero:
 		selected_hero.set_selected(true)
-	world_ui.refresh_heroes(get_current_player())
+	world_ui.refresh_heroes()
 	world_ui.city_ui._refresh_units_to_buy()
 	world_ui.city_ui._refresh_army_display()
 
@@ -110,7 +110,7 @@ func try_end_turn():
 
 func callback_turn_changed():
 	set_selected_hero(null)
-	world_ui.refresh_heroes(get_current_player())
+	world_ui.refresh_heroes()
 	world_ui.show_trade_ui(get_current_player_capital())
 	world_ui.refresh_player_buttons()
 
@@ -189,6 +189,7 @@ func try_interact(hero : ArmyForm, coord : Vector2i):
 	try_do_move(world_move_info)
 
 
+## called on input from player
 func try_do_move(world_move_info : WorldMoveInfo) -> void:
 	var problem = world_state.check_move_allowed(world_move_info)
 	if problem != "":
@@ -205,6 +206,7 @@ func trade_armies(_second_army : ArmyForm):
 	print("trading armies")
 
 
+## called by `try_do_move` or when move is received from network
 func perform_world_move_info(world_move_info : WorldMoveInfo) -> void:
 	print(NET.get_role_name(), " performing world move ", world_move_info)
 	# TODO replay.record_move
@@ -422,28 +424,11 @@ func start_new_world(world_map : DataWorldMap) -> void:
 	recreate_tile_forms()
 	recreate_army_forms()
 
-	# var spawn_location = world_map.get_spawn_locations()
-
-	# for coord in spawn_location:
-	# 	print("spawn: ",  coord)
-
-	# players = IM.players
-
-	# assert(players.size() != 0, "ERROR WM.players is empty")
-
-	# current_player = players[0]
-	# if world_ui == null or not is_instance_valid(world_ui):
-	# 	spawn_world_ui()
 	UI.go_to_custom_ui(world_ui)
 	world_ui.game_started()
 
-	# W_GRID.load_map(world_map, false)
-
-	# for player_id in range(players.size()):
-	# 	spawn_player(spawn_location[player_id], players[player_id])
-
 	world_ui.show_trade_ui(get_current_player_capital())
-	world_ui.refresh_heroes(get_current_player())
+	world_ui.refresh_heroes()
 
 
 # this function probably should be divided into parts
@@ -457,94 +442,18 @@ func start_world_in_state(world_map : DataWorldMap, \
 	BM.world_map_started()
 
 	_clear_state()
-	world_state = \
-		WorldState.create(world_map, IM.game_setup_info.slots, ser_state)
+	world_state = WorldState.create(world_map, IM.game_setup_info.slots, ser_state)
 	_connect_callbacks()
+	world_ui.refresh_world_state_ugly(world_state)
 
-	# players = IM.players
+	recreate_tile_forms()
+	recreate_army_forms()
 
-	# assert(players.size() != 0, "ERROR WM.players is empty")
-
-
-	# W_GRID.load_map(world_map, true)
-	# for coord in world_state.place_hexes:
-	# 	var ser = world_state.place_hexes[coord]
-
-	# 	# these are a HACK and TEMP
-	# 	# TODO rework Place and make it nice
-	# 	var tile_placed_by_loading_map : TileForm = W_GRID.get_tile_form(coord)
-	# 	var player : Player = get_player_by_index(ser["player"])
-	# 	var place : Place = tile_placed_by_loading_map.place
-	# 	place.controller = player
-	# 	if place is City:
-	# 		var city = place as City
-	# 		for building in ser["buildings"]:
-	# 			var building_data = DataBuilding.from_network_id(building)
-	# 			city.buildings.append(building_data)
-	# 		if player:
-	# 			player.cities.append(city)
-	# 		# we do not add cities yet as they are added at map load
-	# 		# maybe it will change in the future
-	# 	elif place is HuntSpot:
-	# 		var hunt_spot = place as HuntSpot
-	# 		var goods_array = ser["present_goods"]
-	# 		hunt_spot._present_goods = \
-	# 			Goods.new(goods_array[0], goods_array[1], goods_array[2])
-	# 		hunt_spot.current_level = ser["current_level"]
-	# 		hunt_spot._alive_army = W_GRID.get_army_form(coord)
-	# 		hunt_spot._time_left_for_respawn = ser["time_to_respawn"]
-	# 	elif place is Outpost:
-	# 		pass
-	# 	# Deposit is not used anywhere
-
-	# for coord in world_state.unit_hexes:
-	# 	var ser = world_state.unit_hexes[coord]
-	# 	var unit : ArmyForm = _deserialize_unit_hex(ser, coord)
-	# 	add_child(unit)
-	# 	W_GRID.place_army(unit, coord)
-	# 	if unit.controller and unit.entity.hero:
-	# 		unit.controller.hero_armies.append(unit)
-	# 	# here we also do a small HACK that if hero is not in town, we he set
-	# 	# him not to be selected -- then he will get his light background back
-	# 	if not W_GRID.get_place(unit.coord) is City and unit.entity.hero:
-	# 		unit.set_selected(false)
-
-	# for player_index in players.size():
-	# 	var player : Player = players[player_index]
-	# 	if player.cities.size() > 0:
-	# 		var capital_coord = world_state.capital_cities[player_index]
-	# 		if player.cities[0].coord != capital_coord:
-	# 			# swap
-	# 			var index = player.cities.find(capital_coord)
-	# 			if index > 0:
-	# 				var copy = player.cities[0]
-	# 				player.cities[0] = player.cities[index]
-	# 				player.cities[index] = copy
-	# 	var goods = world_state.goods.slice( \
-	# 		3 * player_index, 3 * (player_index + 1))
-	# 	player.goods = Goods.new(goods[0], goods[1], goods[2])
-	# 	for dead_hero in world_state.dead_heroes[player_index]:
-	# 		var hero := Hero.from_network_serializable(dead_hero, player)
-	# 		player.dead_heroes.append(hero)
-	# 	for outpost_coord in world_state.outposts[player_index]:
-	# 		var outpost : Place = W_GRID.get_place(outpost_coord)
-	# 		assert(outpost is Outpost)
-	# 		player.outposts.append(outpost)
-	# 	for outpost_building in world_state.outpost_buildings[player_index]:
-	# 		var building_data : DataBuilding = \
-	# 			DataBuilding.from_network_id(outpost_building)
-	# 		player.outpost_buildings.append(building_data)
-
-	# current_player = players[world_state.current_player]
-
-	# # TODO some cheks for these inputs
-
-	if world_ui == null or not is_instance_valid(world_ui):
-		spawn_world_ui()
 	UI.go_to_custom_ui(world_ui)
-	world_ui.refresh_player_buttons()
+	world_ui.game_started()
 
 	world_ui.show_trade_ui(get_current_player_capital())
+	world_ui.refresh_heroes()
 
 	_batch_mode = false
 
@@ -609,23 +518,6 @@ func _refresh_army_form_position(army_form : ArmyForm) -> void:
 	army_form.position = to_position(army_form.entity.coord)
 
 
-#func _get_serializable_unit_hex(hex : ArmyForm) -> Dictionary:
-	#var army : Army = hex.entity
-	#var army_dict : Dictionary = {}
-	#army_dict["player"] = get_player_index(army.controller)
-#
-	#if army.hero:
-		#var hero : Hero = army.hero
-		#army_dict["hero"] = hero.to_network_serializable()
-#
-	#army_dict["units"] = []
-	#var unit_array = army_dict["units"]
-	#for unit in army.units_data:
-		#unit_array.append(DataUnit.get_network_id(unit))
-#
-	#return army_dict
-
-
 # func _get_serializable_place_hex(hex : Place) -> Dictionary:
 # 	return Place.get_network_serializable(hex)
 
@@ -662,47 +554,8 @@ func _refresh_army_form_position(army_form : ArmyForm) -> void:
 
 func get_serializable_state() -> SerializableWorldState:
 	var state := SerializableWorldState.new()
-	# if W_GRID.unit_grid:
-	# 	var hexes = W_GRID.unit_grid.hexes
-	# 	for row_index in hexes.size():
-	# 		var row = hexes[row_index]
-	# 		for hex_index in row.size():
-	# 			var hex = row[hex_index]
-	# 			if hex:
-	# 				var ser = _get_serializable_unit_hex(hex)
-	# 				state.unit_hexes[Vector2i(row_index, hex_index)] = ser
-	# if W_GRID.places_grid:
-	# 	# TODO this part should probably send networkd IDs of hex tiles and
-	# 	# their current state (things that are not set at start)
-	# 	var hexes = W_GRID.places_grid.hexes
-	# 	for row_index in hexes.size():
-	# 		var row = hexes[row_index]
-	# 		for hex_index in row.size():
-	# 			var hex = row[hex_index]
-	# 			if hex:
-	# 				var ser = _get_serializable_place_hex(hex)
-	# 				state.place_hexes[Vector2i(row_index, hex_index)] = ser
-	# for player in players:
-	# 	state.goods.append(player.goods.wood)
-	# 	state.goods.append(player.goods.iron)
-	# 	state.goods.append(player.goods.ruby)
-	# 	if player.capital_city:
-	# 		state.capital_cities.append(player.capital_city.coord)
-	# 	else:
-	# 		state.capital_cities.append(Vector2i.MAX) # no optional vector :c
-	# 	state.dead_heroes.append([])
-	# 	var dh = state.dead_heroes.back()
-	# 	for dead_hero in player.dead_heroes:
-	# 		dh.append(dead_hero.to_network_serializable())
-	# 	state.outposts.append([])
-	# 	var o = state.outposts.back()
-	# 	for outpost in player.outposts:
-	# 		o.append(outpost.coord)
-	# 	state.outpost_buildings.append([])
-	# 	var ob = state.outpost_buildings.back()
-	# 	for outpost_building in player.outpost_buildings:
-	# 		ob.append(DataBuilding.get_network_id(outpost_building))
-	# state.current_player = WM.get_player_index(current_player)
+	if world_state:
+		state = world_state.to_network_serializable()
 	return state
 
 

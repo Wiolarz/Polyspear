@@ -30,14 +30,23 @@ var height : int
 var hexes : Array = [] # Array[Array[HexType]]
 var sentinel : Variant
 
+
 func _init(width_ : int, height_ : int, sentinel_ : Variant):
-	width = width_
-	height = height_
 	sentinel = sentinel_
+	resize(width_, height_)
+
+
+func resize(w : int, h : int):
+	var old_width = width
+
+	height = h
+	width = w
 
 	hexes.resize(width)
+	if old_width < width:
+		for x in range(old_width, width):
+			hexes[x] = []
 	for x in range(width):
-		hexes[x] = []
 		hexes[x].resize(height)
 
 

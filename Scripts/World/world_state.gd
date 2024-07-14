@@ -33,17 +33,27 @@ static func create(map: DataWorldMap,
 		ser : SerializableWorldState) -> WorldState:
 	var result = WorldState.new(map.grid_width, map.grid_height)
 
-	# result.players = players
 
+	# load players and their not related-to-grid state
 	result.player_states.resize(slots.size())
-	#var players = result.players
 	for i in result.player_states.size():
 		result.player_states[i] = WorldPlayerState.new()
 		var player = result.player_states[i]
 		var slot = slots[i]
 		player.faction = slot.faction
-		player.goods = CFG.get_start_goods()
+		if not ser:
+			player.goods = CFG.get_start_goods()
+		else:
+			player.goods = Goods.from_array(ser.players[i].goods)
+			for dead_hero_ser in ser.players[i].dead_heroes:
+				player.dead_heroes.append(Hero.from_network_serializable(
+					dead_hero_ser, i))
+			for outpost_building_ser in ser.players[i].outpost_buildings:
+				player.outpost_upgrades.append(DataBuilding.from_network_id(
+					outpost_building_ser))
 
+
+	# init places and armies from map or map and saved game
 	for x in map.grid_width:
 		for y in map.grid_height:
 			var coord := Vector2i(x, y)
@@ -52,8 +62,9 @@ static func create(map: DataWorldMap,
 			var place_ser : Dictionary = {}
 			var type : String = hex.data_tile.type
 			if ser:
-				place_ser = ser.place_hexes[coord]
-				type = place_ser["type"]
+				place_ser = ser.place_hexes.get(coord, {})
+				if place_ser.size() > 0:
+					type = place_ser["type"]
 			hex.init_place(type, coord, place_ser)
 			# TODO somehow get this inside of
 			# creation
@@ -65,25 +76,19 @@ static func create(map: DataWorldMap,
 						hex.place.controller_index)
 			if ser and coord in ser.army_hexes:
 				var loaded : Dictionary = ser.army_hexes[coord]
-
+				var army : Army = null
+				if loaded:
+					army = _deserialize_army_wip(loaded)
+				if army:
+					hex.army = army
+					army.coord = coord
 
 	result.synchronize_players_with_their_places()
 
-
-	#if world_state:
-		#for i in players.size():
-			#var ser = world_state.players[i]
-			#var player : Player = players[i]
-			## swap cities if capital is not first
-			#if player.capital_city.coord != ser.capital_city:
-				#pass # TODO -- previous version was probably buggy
-			#player.goods = Goods.from_array(ser.goods)
-			#for identifier in ser.dead_heroes:
-				#var hero := Hero.from_network_serializable(identifier, player)
-				#player.dead_heroes.append(hero)
-		#current_player = players[world_state.current_player]
-
-	result.current_player_index = 0
+	if not ser:
+		result.current_player_index = 0
+	else:
+		result.current_player_index = ser["current_player"]
 
 	return result
 
@@ -300,7 +305,7 @@ func get_hero_cost_for_player(player_index : int, hero_data : DataHero) \
 	var player = get_player(player_index)
 	if not player:
 		return Goods.new(0, 0, 0)
-	if hero_data in player.dead_heroes:
+	if has_player_a_dead_hero(player_index, hero_data):
 		return hero_data.revive_cost
 	return hero_data.cost
 
@@ -398,11 +403,18 @@ func has_player_a_hero(player_index : int, hero : DataHero) -> bool:
 	return false
 
 
-func has_player_a_dead_hero(player_index : int, hero : DataHero) -> bool:
+func find_dead_hero_of_player(player_index : int, data_hero : DataHero) -> Hero:
 	var player = get_player(player_index)
 	if not player:
-		return false
-	return hero in player.dead_heroes
+		return null
+	for hero in player.dead_heroes:
+		if hero.template == data_hero:
+			return hero
+	return null
+
+
+func has_player_a_dead_hero(player_index : int, data_hero : DataHero) -> bool:
+	return find_dead_hero_of_player(player_index, data_hero) != null
 
 
 func has_player_enough(player_index : int, goods : Goods) -> bool:
@@ -510,7 +522,8 @@ func end_combat(army_updates : Array[Dictionary]) -> bool:
 
 	var source : Vector2i = move_hold_on_combat[0]
 	var target : Vector2i = move_hold_on_combat[1]
-	do_army_travel(source, target)
+	if check_army_travel(source, target) == "":
+		do_army_travel(source, target)
 
 	return true
 
@@ -691,11 +704,68 @@ func do_end_turn() -> bool:
 	return true
 
 
+func to_network_serializable() -> SerializableWorldState:
+	var result := SerializableWorldState.new()
+	for col_index in grid.hexes.size():
+		var col = grid.hexes[col_index]
+		for hex_index in col.size():
+			var coord = Vector2i(col_index, hex_index)
+			var hex = col[hex_index]
+			assert(hex)
+			var place = hex.place
+			# TODO later handle modified places (changed to basic)
+			# (if ever needed)
+			if place and not place.is_basic():
+				result.place_hexes[coord] = \
+					Place.get_network_serializable(place)
+			var army = hex.army
+			if army:
+				result.army_hexes[coord] = _get_serialized_army(army)
+	result.players.resize(player_states.size())
+	for player_index in player_states.size():
+		var player = player_states[player_index]
+		result.players[player_index] = SerializableWorldState.PlayerState.new()
+		var ser = result.players[player_index]
+		ser.goods = player.goods.to_array()
+		ser.dead_heroes.resize(player.dead_heroes.size())
+		for dead_hero_index in player.dead_heroes.size():
+			ser.dead_heroes[dead_hero_index] = \
+				player.dead_heroes[dead_hero_index] \
+					.to_network_serializable()
+		ser.outpost_buildings.resize(player.outpost_upgrades.size())
+		for outpost_building_index in player.outpost_upgrades.size():
+			ser.outpost_buildings[outpost_building_index] = \
+				DataBuilding.get_network_id(
+					player.outpost_upgrades[outpost_building_index])
+	result.current_player = current_player_index
+	return result
 
 
+func _get_serialized_army(army) -> Dictionary:
+	var army_dict : Dictionary = {}
+	army_dict["player"] = army.controller_index
 
-func _kill_army():
-	pass
+	if army.hero:
+		var hero : Hero = army.hero
+		army_dict["hero"] = hero.to_network_serializable()
+
+	army_dict["units"] = []
+	var unit_array = army_dict["units"]
+	for unit in army.units_data:
+		unit_array.append(DataUnit.get_network_id(unit))
+
+	return army_dict
+
+
+static func _deserialize_army_wip(dict : Dictionary) -> Army:
+	var army : Army = Army.new()
+	army.controller_index = dict["player"]
+	if "hero" in dict:
+		army.hero = Hero.from_network_serializable(dict["hero"], dict["player"])
+	for unit_ser in dict["units"]:
+		army.units_data.append(DataUnit.from_network_id(unit_ser))
+	return army
+
 
 
 func _end_of_turn_callbacks(player_index : int) -> void:

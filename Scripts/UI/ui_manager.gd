@@ -118,6 +118,9 @@ func _unhandled_input(event : InputEvent) -> void:
 		print("anim speed - fast")
 		CFG.animation_speed_frames = CFG.AnimationSpeed.INSTANT
 		CFG.bot_speed_frames = CFG.BotSpeed.FAST
+	elif event.is_action_pressed("KEY_FORCE_DESYNC"):
+		print("forcing desynchronization")
+		NET.desync()
 	if camera and not get_tree().paused:
 		camera.process_input_event(event)
 

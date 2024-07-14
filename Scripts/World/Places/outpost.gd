@@ -5,38 +5,44 @@ extends Place
 var per_turn : Goods
 var outpost_type : String
 var neutral_army_preset : PresetArmy
-var buildings : Array[DataBuilding] = []
 
 
 static func create_new(args : PackedStringArray, coord : Vector2i) -> Place:
 
 	var type = ""
 
-	if args.size() != 1:
-		push_error("outpost needs exactly one argument to create")
+	# if args.size() != 1:
+	# 	push_error("outpost needs exactly one argument to create")
 
 	var result = Outpost.new()
-	type = args[0]
-	match type:
-		"wood":
-			result.per_turn = Goods.new(1,0,0)
-			result.neutral_army_preset = load(CFG.OUTPOST_WOOD_PATH)
-		"iron":
-			result.per_turn = Goods.new(0,1,0)
-			result.neutral_army_preset = load(CFG.OUTPOST_IRON_PATH)
-		"ruby":
-			result.per_turn = Goods.new(0,0,1)
-			result.neutral_army_preset = load(CFG.OUTPOST_RUBY_PATH)
-		_:
-			push_error("bad type of outpost")
-			return null
+	type = args[0] if args.size() >= 1 else "wood"
+	if not result._set_type(type):
+		return null
 
 	# TODO move this somewhere else -- this should not be here
 	result.coord = coord
 	result.movable = true
-	result.outpost_type = type
 
 	return result
+
+
+## returns false on error
+func _set_type(type : String) -> bool:
+	match type:
+		"wood":
+			per_turn = Goods.new(1,0,0)
+			neutral_army_preset = load(CFG.OUTPOST_WOOD_PATH)
+		"iron":
+			per_turn = Goods.new(0,1,0)
+			neutral_army_preset = load(CFG.OUTPOST_IRON_PATH)
+		"ruby":
+			per_turn = Goods.new(0,0,1)
+			neutral_army_preset = load(CFG.OUTPOST_RUBY_PATH)
+		_:
+			push_error("bad type of outpost")
+			return false
+	outpost_type = type
+	return true
 
 
 func on_game_started():
@@ -79,12 +85,8 @@ func get_map_description() -> String:
 
 
 func to_specific_serializable(dict : Dictionary) -> void:
-	pass
+	dict["outpost_type"] = outpost_type
 
 
 func paste_specific_serializable_state(dict : Dictionary) -> void:
-	buildings = []
-
-	# var player = world_state.get_player(controller_index)
-	# if player:
-	# 	player.outposts.append(self)
+	_set_type(dict["outpost_type"])

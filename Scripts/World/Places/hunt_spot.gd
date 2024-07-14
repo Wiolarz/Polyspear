@@ -13,6 +13,7 @@ const ruby_materials = [[0,0,3], [0,0,6], [0,0,9]]
 var neutral_armies : Array[PresetArmy]
 var material_rewards : Array[Goods] = []
 var army_respawn_time : int = 1 # in turns
+var hunt_spot_type : String
 
 ## local variables
 var current_level : int = 0
@@ -33,41 +34,49 @@ static func create_new(args : PackedStringArray, coord : Vector2i) -> Place:
 
 	var type = ""
 
-	if args.size() != 1:
-		push_error("hunt spot needs exactly one argument to create")
+	# if args.size() != 1:
+	# 	push_error("hunt spot needs exactly one argument to create")
 
 	var result = HuntSpot.new()
-	type = args[0]
-	var rewards : Array = []
-	match type:
-		"wood":
-			result.neutral_armies = \
-				HuntSpot.get_hunt_army_presets(CFG.HUNT_WOOD_PATH)
-			rewards = wood_materials
-		"iron":
-			result.neutral_armies = \
-				HuntSpot.get_hunt_army_presets(CFG.HUNT_IRON_PATH)
-			rewards = iron_materials
-		"ruby":
-			result.neutral_armies = \
-				HuntSpot.get_hunt_army_presets(CFG.HUNT_RUBY_PATH)
-			rewards = ruby_materials
-		_:
-			push_error("bad type of hunt spot")
-			return null
-
-	for reward in rewards:
-		result.material_rewards.append(Goods.from_array(reward))
+	type = args[0] if args.size() >= 1 else "wood"
+	if not result._set_type(type):
+		return null
 
 	result.current_level = 0
 	result.movable = true
-	result._present_goods = result.material_rewards[result.current_level]
 	result._time_left_for_respawn = 0
 
 	# TODO move this somewhere else -- this should not be here
 	result.coord = coord
 
 	return result
+
+
+func _set_type(type : String) -> bool:
+	var rewards : Array = []
+	match type:
+		"wood":
+			neutral_armies = \
+				HuntSpot.get_hunt_army_presets(CFG.HUNT_WOOD_PATH)
+			rewards = wood_materials
+		"iron":
+			neutral_armies = \
+				HuntSpot.get_hunt_army_presets(CFG.HUNT_IRON_PATH)
+			rewards = iron_materials
+		"ruby":
+			neutral_armies = \
+				HuntSpot.get_hunt_army_presets(CFG.HUNT_RUBY_PATH)
+			rewards = ruby_materials
+		_:
+			push_error("bad type of hunt spot")
+			return false
+
+	for reward in rewards:
+		material_rewards.append(Goods.from_array(reward))
+	_present_goods = material_rewards[current_level]
+	hunt_spot_type = type
+
+	return true
 
 
 func on_game_started():
@@ -140,9 +149,11 @@ func to_specific_serializable(dict : Dictionary) -> void:
 	dict["current_level"] = current_level
 	# "alive_army" not needed -- deduced
 	dict["time_to_respawn"] = _time_left_for_respawn
+	dict["hunt_spot_type"] = hunt_spot_type
 
 
 func paste_specific_serializable(dict : Dictionary) -> void:
+	_set_type(dict["hunt_spot_type"])
 	current_level = dict["current_level"]
 	_present_goods = Goods.from_array(dict["present_goods"])
 	_time_left_for_respawn = dict["time_left_for_respawn"]

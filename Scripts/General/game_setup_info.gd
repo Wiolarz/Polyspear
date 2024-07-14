@@ -66,8 +66,10 @@ static func from_dictionary(dict : Dictionary, \
 	if "battle_map" in dict and dict["battle_map"] is String:
 		result.battle_map = DataBattleMap.from_network_id(dict["battle_map"])
 	if "slots" in dict and dict["slots"] is Array:
-		for read_slot in dict["slots"]:
+		for i in dict["slots"].size():
+			var read_slot : Dictionary = dict["slots"][i]
 			var new_slot : Slot = Slot.new()
+			new_slot.index = i
 			if "occupier" in read_slot:
 				new_slot.occupier = occupier_receive_from_network( \
 					read_slot["occupier"], local_username)

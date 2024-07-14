@@ -26,9 +26,9 @@ func refresh_world_state_ugly(world_state : WorldState) -> void:
 	city_ui.world_state_ugly = world_state
 
 
-func refresh_heroes(player : Player):
+func refresh_heroes():
 	Helpers.remove_all_children(heroes_list)
-	var player_index = WM.get_index_of_player(player)
+	var player_index = world_state_ugly.current_player_index
 	var player_state = world_state_ugly.get_player(player_index)
 	if not player_state:
 		return
@@ -44,7 +44,7 @@ func refresh_heroes(player : Player):
 		if WM.selected_hero and WM.selected_hero.entity == army:
 			button.modulate = Color.FIREBRICK
 		button.pressed.connect(func ():
-			if army.controller_index == WM.current_player.index:
+			if army.controller_index == WM.get_current_player().index:
 				WM.set_selected_hero(army)
 				UI.camera.center_camera(WM.get_army_form(army))
 		)
