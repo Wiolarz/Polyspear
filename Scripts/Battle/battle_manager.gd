@@ -12,6 +12,7 @@ var _unit_forms_node : Node2D # parent for units VISUAL
 
 var _battle_ui : BattleUI
 var _anim_queue : Array[AnimInQueue] = []
+var latest_ai_cancel_token : CancellationToken
 
 var _current_summary : DataBattleSummary = null
 
@@ -161,9 +162,20 @@ func _on_turn_started(player : Player) -> void:
 
 	if player.bot_engine and not NET.client: # AI is simulated on server only
 		print("AI starts thinking")
+		var my_cancel_token = CancellationToken.new()
+		assert(latest_ai_cancel_token == null)
+		latest_ai_cancel_token = my_cancel_token
 		var move = player.bot_engine.choose_move(_battle_grid_state)
 		await _ai_thinking_delay() # moving too fast feels weird
-		_perform_ai_move(move)
+		if not my_cancel_token.is_canceled():
+			_perform_ai_move(move)
+			latest_ai_cancel_token = null
+
+
+func cancel_pending_ai_move() ->  void:
+	if latest_ai_cancel_token:
+		latest_ai_cancel_token.cancel()
+		latest_ai_cancel_token = null
 
 
 func _ai_thinking_delay() -> void:
@@ -184,6 +196,35 @@ func _perform_replay_move(move_info : MoveInfo) -> void:
 
 func _perform_ai_move(move_info : MoveInfo) -> void:
 	_perform_move_info(move_info)
+
+
+func undo() -> void:
+	if _replay_data.moves.is_empty():
+		return
+	if not battle_is_active():
+		return
+
+	cancel_pending_ai_move()
+
+	var last_move := _replay_data.moves.pop_back() as MoveInfo
+	var new_units = _battle_grid_state.undo(last_move)
+	for n in new_units:
+		_on_unit_summoned(n)
+	_battle_ui.refresh_after_undo(_battle_grid_state.is_during_summoning_phase())
+	_on_turn_started(_battle_grid_state.get_current_player())
+
+
+func redo() -> void:
+	push_warning("not implemented")
+	pass
+
+
+func ai_move() -> void:
+	if latest_ai_cancel_token:
+		push_warning("ai is already moving, dont stack two simultaneous ai moves race")
+		return
+	var move := AiBotStateRandom.choose_move_static(_battle_grid_state)
+	_perform_ai_move(move)
 
 
 ## called when tile is clicked
@@ -226,7 +267,7 @@ func _on_unit_summoned(unit : Unit) -> void:
 	# apply correct BM position offset in world battles
 	form.global_position = get_tile_global_position(unit.coord)
 
-	_battle_ui.unit_summoned(not _battle_grid_state.is_during_summoning_phase(), unit.template)
+	_battle_ui.unit_summoned(not _battle_grid_state.is_during_summoning_phase())
 
 	unit.unit_died.connect(_on_unit_killed.bind(unit))
 	unit.unit_turned.connect(_on_unit_turned.bind(unit))
@@ -317,10 +358,10 @@ func _perform_move_info(move_info : MoveInfo) -> void:
 
 	match move_info.move_type:
 		MoveInfo.TYPE_MOVE:
-			_battle_grid_state.move_info_move_unit(move_info.move_source, move_info.target_tile_coord)
+			_battle_grid_state.move_info_move_unit(move_info)
 
 		MoveInfo.TYPE_SUMMON:
-			var unit := _battle_grid_state.move_info_summon_unit(move_info.summon_unit, move_info.target_tile_coord)
+			var unit := _battle_grid_state.move_info_summon_unit(move_info)
 			_on_unit_summoned(unit)
 
 		_ :

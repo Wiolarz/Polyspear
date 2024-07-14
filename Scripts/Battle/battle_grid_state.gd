@@ -15,6 +15,7 @@ var turn_counter : int = 0
 var current_army_index : int = 0
 var armies_in_battle_state : Array[ArmyInBattleState] = []
 
+var currently_processed_move_info : MoveInfo = null
 
 #region init
 
@@ -40,20 +41,35 @@ static func create(map: DataBattleMap, new_armies : Array[Army]) -> BattleGridSt
 
 #region move_info support
 
-func move_info_summon_unit(unit_data : DataUnit, coord : Vector2i) -> Unit:
+func move_info_summon_unit(move_info : MoveInfo) -> Unit:
+	assert(move_info.move_type == MoveInfo.TYPE_SUMMON)
+	currently_processed_move_info = move_info
+	var unit_data := move_info.summon_unit
+	var coord := move_info.target_tile_coord
 	var initial_rotation := _get_spawn_rotation(coord)
 	var army_state := armies_in_battle_state[current_army_index]
 	var unit := army_state.summon_unit(unit_data, coord, initial_rotation)
+	move_info.army_idx = current_army_index
+	move_info.original_rotation = initial_rotation
+
 	_put_unit_on_grid(unit, coord)
 	_switch_participant_turn()
+	currently_processed_move_info = null
 	return unit
 
 
-func move_info_move_unit(source_tile_coord: Vector2i, target_tile_coord : Vector2i) -> void:
+func move_info_move_unit(move_info : MoveInfo) -> void:
+	assert(move_info.move_type == MoveInfo.TYPE_MOVE)
+	currently_processed_move_info = move_info
+	var source_tile_coord := move_info.move_source
+	var target_tile_coord := move_info.target_tile_coord
 	var unit = get_unit(source_tile_coord)
 	var direction = GenericHexGrid.direction_to_adjacent(unit.coord, target_tile_coord)
+	move_info.register_move_start(current_army_index, unit)
 
 	_perform_move(unit, direction, target_tile_coord)
+
+	move_info.register_whole_move_complete()
 
 	turn_counter += 1
 
@@ -61,6 +77,61 @@ func move_info_move_unit(source_tile_coord: Vector2i, target_tile_coord : Vector
 		_check_battle_end()
 	if battle_is_ongoing():
 		_switch_participant_turn()
+	currently_processed_move_info = null
+
+
+## returns array of revived units
+func undo(move_info : MoveInfo) -> Array[Unit]:
+	var result = [] as Array[Unit]
+	if move_info.move_type == MoveInfo.TYPE_SUMMON:
+		current_army_index = move_info.army_idx
+		armies_in_battle_state[current_army_index].unsummon(move_info.target_tile_coord)
+		state = STATE_SUMMONNING
+
+	if move_info.move_type == MoveInfo.TYPE_MOVE:
+		# revert turn change
+		current_army_index = move_info.army_idx
+		turn_counter -= 1
+
+		var actions_to_undo = move_info.actions_list.duplicate()
+		# last action should be reversed first, else bugs will be created
+		actions_to_undo.reverse()
+		for a in actions_to_undo:
+			if a is MoveInfo.KilledUnit:
+				var u = _undo_kill(move_info, a)
+				result.append(u)
+			elif a is MoveInfo.PushedUnit:
+				_undo_push(move_info, a)
+			elif a is MoveInfo.LocomotionCompleted:
+				_undo_main_locomotion(move_info)
+			else :
+				push_error("unknown action type %s - %s"%[a.get_class(), str(a)])
+
+		# revert turn
+		var unit := get_unit(move_info.move_source)
+		unit.turn(move_info.original_rotation)
+
+	return result
+
+
+func _undo_main_locomotion(move_info : MoveInfo) -> void:
+	var m_unit := get_unit(move_info.target_tile_coord)
+	_change_unit_coord(m_unit, move_info.move_source)
+	var m_hex = _get_battle_hex(move_info.move_source)
+	m_unit.move(move_info.move_source, m_hex.swamp)
+
+
+func _undo_kill(_move: MoveInfo , killed : MoveInfo.KilledUnit) -> Unit:
+	var u := armies_in_battle_state[killed.army_idx].revive(killed)
+	_put_unit_on_grid(u, u.coord)
+	return u
+
+
+func _undo_push(_move : MoveInfo , pushed : MoveInfo.PushedUnit) -> void:
+	var p_unit := get_unit(pushed.to_coord)
+	_change_unit_coord(p_unit, pushed.from_coord)
+	var p_hex = _get_battle_hex(pushed.from_coord)
+	p_unit.move(pushed.from_coord, p_hex.swamp)
 
 
 func _perform_move(unit : Unit, direction : int, target_tile_coord : Vector2i) -> void:
@@ -68,9 +139,11 @@ func _perform_move(unit : Unit, direction : int, target_tile_coord : Vector2i) -
 	unit.turn(direction)
 	if _process_symbols(unit):
 		return
+	currently_processed_move_info.register_turning_complete()
 	# MOVE
 	_change_unit_coord(unit, target_tile_coord)
 	unit.move(target_tile_coord, _get_battle_hex(target_tile_coord).swamp)
+	currently_processed_move_info.register_locomote_complete()
 	if _process_symbols(unit):
 		return
 
@@ -159,6 +232,8 @@ func _push_enemy(enemy : Unit, direction : int) -> void:
 		# Spot isn't empty
 		_kill_unit(enemy)
 		return
+
+	currently_processed_move_info.register_push(enemy, target_coord)
 
 	# MOVE for PUSH (no rotate)
 	_change_unit_coord(enemy, target_coord)
@@ -339,6 +414,9 @@ func _get_player_army(player : Player) -> BattleGridState.ArmyInBattleState:
 
 
 func _kill_unit(target : Unit) -> void:
+	var target_army_index := _find_army_idx(target.controller)
+	currently_processed_move_info.register_kill(target_army_index, target)
+
 	_get_player_army(target.controller).kill_unit(target)
 	_check_battle_end()
 
@@ -629,6 +707,14 @@ class ArmyInBattleState:
 		target.unit_killed()
 
 
+	func revive(kill_info : MoveInfo.KilledUnit) -> Unit:
+		var unit = kill_info.respawn()
+		unit.controller = army_reference.controller
+		dead_units.erase(unit.template)
+		units.append(unit)
+		return unit
+
+
 	func kill_army() -> void:
 		dead_units.append_array(units_to_summon)
 		units_to_summon.clear()
@@ -645,5 +731,14 @@ class ArmyInBattleState:
 		var result = Unit.create(army_reference.controller, unit_data, coord, rotation)
 		units.append(result)
 		return result
+
+
+	func unsummon(coord : Vector2i):
+		var target = battle_grid_state.get_ref().get_unit(coord)
+		units.erase(target)
+		units_to_summon.append(target.template)
+		#gdlint: ignore=private-method-call
+		battle_grid_state.get_ref()._remove_unit(target)
+		target.unit_killed()
 
 #endregion
