@@ -17,7 +17,8 @@ var current_map_type : MapType
 var current_brush : DataTile
 var current_button: TextureButton
 
-@onready var tile_buttons_box : BoxContainer = $Scroll/TilesPickerBox
+@onready var tile_buttons_box : BoxContainer = $TopBar/MarginContainer/VBoxContainer/Scroll/TilesPickerBox
+@onready var tile_name_label : Label = $TopBar/MarginContainer/VBoxContainer/TileNameContainer/TileNameLabel
 @onready var tiles_world : Array[String] = \
 		FileSystemHelpers.list_files_in_folder(CFG.WORLD_MAP_TILES_PATH, true)
 @onready var tiles_battle : Array[String] = \
@@ -41,6 +42,7 @@ func _create_button(map_tile : String) -> TextureButton:
 		current_brush = tile
 		current_button = new_button
 		current_button.modulate = Color.DIM_GRAY
+		tile_name_label.text = tile.type
 
 	new_button.pressed.connect(lambda)  # self._button_pressed
 	return new_button
