@@ -40,6 +40,8 @@ func _ready():
 
 func _process(_delta):
 	_process_anim_queue()
+	if _battle_grid_state:
+		_battle_ui.update_clock(_battle_grid_state.get_current_time_left())
 
 
 #region Battle Setup

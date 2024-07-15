@@ -90,5 +90,12 @@ grow_vertical = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
+[node name="ClockLeft" type="Label" parent="."]
+offset_left = 809.0
+offset_top = 32.0
+offset_right = 1298.0
+offset_bottom = 148.0
+text = "1:1000"
+
 [connection signal="pressed" from="SwitchCamera" to="." method="_on_switch_camera_pressed"]
 [connection signal="pressed" from="Menu" to="." method="_on_menu_pressed"]

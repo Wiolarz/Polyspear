@@ -251,6 +251,7 @@ func get_current_player() -> Player:
 
 
 func _switch_participant_turn() -> void:
+	var prev_player := armies_in_battle_state[current_army_index]
 	current_army_index += 1
 	current_army_index %= armies_in_battle_state.size()
 	print(NET.get_role_name(), " _switch_participant_turn ", current_army_index)
@@ -271,6 +272,11 @@ func _switch_participant_turn() -> void:
 		while not armies_in_battle_state[current_army_index].can_fight():
 			current_army_index += 1
 			current_army_index %= armies_in_battle_state.size()
+
+	var next_player := armies_in_battle_state[current_army_index]
+
+	prev_player.turn_ended()
+	next_player.turn_started()
 
 
 func _get_battle_hex(coord : Vector2i) -> BattleHex:
@@ -420,6 +426,9 @@ func _kill_unit(target : Unit) -> void:
 	_get_player_army(target.controller).kill_unit(target)
 	_check_battle_end()
 
+## in miliseconds
+func get_current_time_left() -> int:
+	return armies_in_battle_state[current_army_index].get_time_left()
 
 #region End Battle
 
@@ -688,6 +697,13 @@ class ArmyInBattleState:
 	var units : Array[Unit] = []
 	var dead_units : Array[DataUnit] = []
 
+	## when turn started - for local time calculation
+	var turn_start_timestamp
+	##  miliseconds on the clock when turn started - will be synched in multiplayer
+	var start_turn_clock_time_left_ms = 3.0 * 60 * 1000
+	## time to add when turn ends
+	var turn_increment_ms = 2 * 1000
+
 
 	static func create_from(army : Army, state : BattleGridState) -> ArmyInBattleState:
 		var result = ArmyInBattleState.new()
@@ -695,7 +711,22 @@ class ArmyInBattleState:
 		result.army_reference = army
 		for u in army.units_data:
 			result.units_to_summon.append(u)
+		result.turn_started() # DRUT
 		return result
+
+
+	func turn_started() -> void:
+		turn_start_timestamp = Time.get_ticks_msec()
+
+
+	func get_time_left() -> int:
+		var turn_time_local_passed_ms = Time.get_ticks_msec() - turn_start_timestamp
+		return start_turn_clock_time_left_ms - turn_time_local_passed_ms
+
+
+	func turn_ended() -> void:
+		start_turn_clock_time_left_ms = get_time_left()
+		start_turn_clock_time_left_ms += turn_increment_ms
 
 
 	func kill_unit(target : Unit) -> void:

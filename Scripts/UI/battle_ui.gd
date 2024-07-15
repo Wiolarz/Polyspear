@@ -9,6 +9,8 @@ extends CanvasLayer
 
 @onready var summary_container : Container = $SummaryContainer
 
+@onready var clock = $ClockLeft
+
 var armies_reference : Array[BattleGridState.ArmyInBattleState]
 
 var selected_unit : DataUnit = null
@@ -18,6 +20,7 @@ var current_player : int = 0
 
 func _ready():
 	pass
+
 
 func get_text_for(controller : Player, selected : bool):
 	var prefix = " > " if selected else ""
@@ -58,6 +61,14 @@ func load_armies(army_list : Array[BattleGridState.ArmyInBattleState]):
 
 func start_player_turn(army_index : int):
 	on_player_selected(army_index, false)
+
+
+func update_clock(miliseconds_left : int) -> void:
+	var seconds = miliseconds_left/1000.0
+	var minutes = floor(seconds / 60)
+	seconds -= minutes * 60
+	var ms = 1000*(seconds-floor(seconds))
+	clock.text = "%2.0f : %02.0f : %03.0f"%[minutes, floor(seconds),ms]
 
 
 func on_player_selected(army_index : int, preview : bool = false):
