@@ -30,14 +30,23 @@ var height : int
 var hexes : Array = [] # Array[Array[HexType]]
 var sentinel : Variant
 
+
 func _init(width_ : int, height_ : int, sentinel_ : Variant):
-	width = width_
-	height = height_
 	sentinel = sentinel_
+	resize(width_, height_)
+
+
+func resize(width_ : int, height_ : int):
+	var old_width = width
+
+	height = height_
+	width = width_
 
 	hexes.resize(width)
+	if old_width < width:
+		for x in range(old_width, width):
+			hexes[x] = []
 	for x in range(width):
-		hexes[x] = []
 		hexes[x].resize(height)
 
 
@@ -58,6 +67,14 @@ func get_hex(coord : Vector2i) -> Variant:
 func set_hex(coord : Vector2i, value : Variant) -> void:
 	assert(is_on_grid(coord), "set_hex not on a grid "+str(coord))
 	hexes[coord.x][coord.y] = value
+
+
+func find(hex) -> Vector2i:
+	for x in width:
+		for y in height:
+			if hexes[x][y] == hex:
+				return Vector2i(x, y)
+	return Vector2i(-1, -1)
 
 
 static func direction_to_name(d : GridDirections) -> String:
