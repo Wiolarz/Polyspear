@@ -439,7 +439,8 @@ func _kill_army(army_idx : int):
 
 
 ## TEMP: After some turns Defender (army idx 1) wins
-## in case army idx 1 was eliminated, last idx alive wins
+## in case army idx 1 was eliminated
+## kill all armies in idex order, last idx alive wins
 func end_stalemate():
 	for army_idx in range(armies_in_battle_state.size()):
 		if army_idx == 1:

@@ -9,7 +9,8 @@ extends CanvasLayer
 
 @onready var summary_container : Container = $SummaryContainer
 
-@onready var clock = $ClockLeft
+@onready var clock = $TurnsBG/ClockLeft
+@onready var turns = $TurnsBG/TurnCount
 
 var armies_reference : Array[BattleGridState.ArmyInBattleState]
 
@@ -20,6 +21,22 @@ var current_player : int = 0
 
 func _ready():
 	pass
+
+func _process(_delta):
+	if BM.battle_is_active():
+		update_clock()
+
+func update_clock() -> void:
+	var miliseconds_left = BM.get_current_time_left_ms()
+	var seconds = miliseconds_left/1000.0
+	var minutes = floor(seconds / 60)
+	seconds -= minutes * 60
+	var ms = 1000*(seconds-floor(seconds))
+
+	clock.text = "%2.0f : %02.0f : %03.0f" % [minutes, floor(seconds), ms]
+	clock.modulate = BM.get_current_slot_color().color
+
+	turns.text = "Turn %d (last turn %d)" % [BM.get_current_turn(), BM.get_max_turn()]
 
 
 func get_text_for(controller : Player, selected : bool):
@@ -61,14 +78,6 @@ func load_armies(army_list : Array[BattleGridState.ArmyInBattleState]):
 
 func start_player_turn(army_index : int):
 	on_player_selected(army_index, false)
-
-
-func update_clock(miliseconds_left : int) -> void:
-	var seconds = miliseconds_left/1000.0
-	var minutes = floor(seconds / 60)
-	seconds -= minutes * 60
-	var ms = 1000*(seconds-floor(seconds))
-	clock.text = "%2.0f : %02.0f : %03.0f"%[minutes, floor(seconds),ms]
 
 
 func on_player_selected(army_index : int, preview : bool = false):
