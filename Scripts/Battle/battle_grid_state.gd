@@ -488,6 +488,10 @@ func force_win_battle():
 		_kill_army(army_idx)
 
 
+func surrender_on_timeout():
+	_kill_army(current_army_index)
+
+
 func force_surrender():
 	for army_idx in range(armies_in_battle_state.size()):
 		if army_idx != current_army_index:
@@ -700,9 +704,9 @@ class ArmyInBattleState:
 	## when turn started - for local time calculation
 	var turn_start_timestamp
 	##  miliseconds on the clock when turn started - will be synched in multiplayer
-	var start_turn_clock_time_left_ms = 3.0 * 60 * 1000
+	var start_turn_clock_time_left_ms = CFG.CHESS_CLOCK_BATTLE_TIME_PER_PLAYER_MS
 	## time to add when turn ends
-	var turn_increment_ms = 2 * 1000
+	var turn_increment_ms = CFG.CHESS_CLOCK_BATTLE_TURN_INCREMENT_MS
 
 
 	static func create_from(army : Army, state : BattleGridState) -> ArmyInBattleState:
