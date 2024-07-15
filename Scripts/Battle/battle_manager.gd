@@ -40,11 +40,15 @@ func _ready():
 
 func _process(_delta):
 	_process_anim_queue()
-	if _battle_grid_state:
+
+	if _battle_grid_state && _battle_grid_state.battle_is_ongoing():
 		var time_left = _battle_grid_state.get_current_time_left()
 		if time_left < 0:
 			_battle_grid_state.surrender_on_timeout()
-			_battle_ui.start_player_turn(_battle_grid_state.current_army_index)
+			if _battle_grid_state.battle_is_ongoing():
+				_on_turn_started(_battle_grid_state.get_current_player())
+			else :
+				_on_battle_ended()
 			return
 		_battle_ui.update_clock(time_left)
 
@@ -529,10 +533,18 @@ func get_ripped_replay() -> BattleReplay:
 
 func force_win_battle():
 	_battle_grid_state.force_win_battle()
+	if _battle_grid_state.battle_is_ongoing():
+		_on_turn_started(_battle_grid_state.get_current_player())
+	else :
+		_on_battle_ended()
 
 
 func force_surrender():
 	_battle_grid_state.force_surrender()
+	if _battle_grid_state.battle_is_ongoing():
+		_on_turn_started(_battle_grid_state.get_current_player())
+	else :
+		_on_battle_ended()
 
 
 #endregion
