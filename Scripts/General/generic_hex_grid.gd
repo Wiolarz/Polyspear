@@ -12,9 +12,10 @@ enum GridDirections
 	BOTTOM_LEFT,
 }
 
+const INT_MIN = -9223372036854775808 # we really need issue 2411 in godot
 const DIRECTION_FRONT = GridDirections.LEFT
 const TILES_NOT_ADJACENT = -1
-const COORD_NOT_EXIST := Vector2i(-1, -1)
+const COORD_NOT_EXIST := Vector2i(INT_MIN, INT_MIN)
 
 ## see E.GridDirections
 const DIRECTION_TO_OFFSET = [ \
