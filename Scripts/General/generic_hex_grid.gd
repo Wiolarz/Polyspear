@@ -14,6 +14,7 @@ enum GridDirections
 
 const DIRECTION_FRONT = GridDirections.LEFT
 const TILES_NOT_ADJACENT = -1
+const COORD_NOT_EXIST := Vector2i(-1, -1)
 
 ## see E.GridDirections
 const DIRECTION_TO_OFFSET = [ \
@@ -74,7 +75,7 @@ func find(hex) -> Vector2i:
 		for y in height:
 			if hexes[x][y] == hex:
 				return Vector2i(x, y)
-	return Vector2i(-1, -1)
+	return COORD_NOT_EXIST
 
 
 static func direction_to_name(d : GridDirections) -> String:
