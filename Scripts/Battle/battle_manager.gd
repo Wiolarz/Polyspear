@@ -124,10 +124,10 @@ func _check_clock_timer_run_out() -> void:
 	if get_current_time_left_ms() > 0:
 		return
 	_battle_grid_state.surrender_on_timeout()
-	_update_ui_after_player_move_or_dropp()
+	_update_ui_after_player_move_or_drop()
 
 
-func _update_ui_after_player_move_or_dropp() -> void:
+func _update_ui_after_player_move_or_drop() -> void:
 	if _battle_grid_state.battle_is_ongoing():
 		_on_turn_started(_battle_grid_state.get_current_player())
 	else :
@@ -252,7 +252,7 @@ func undo() -> void:
 	for n in new_units:
 		_on_unit_summoned(n)
 	_battle_ui.refresh_after_undo(_battle_grid_state.is_during_summoning_phase())
-	_update_ui_after_player_move_or_dropp()
+	_update_ui_after_player_move_or_drop()
 
 
 func redo() -> void:
@@ -408,7 +408,7 @@ func _perform_move_info(move_info : MoveInfo) -> void:
 		_ :
 			assert(false, "Move move_type not supported in perform, " + str(move_info.move_type))
 
-	_update_ui_after_player_move_or_dropp()
+	_update_ui_after_player_move_or_drop()
 
 
 func _on_unit_killed(unit: Unit) -> void:
@@ -560,12 +560,12 @@ func get_ripped_replay() -> BattleReplay:
 
 func force_win_battle():
 	_battle_grid_state.force_win_battle()
-	_update_ui_after_player_move_or_dropp()
+	_update_ui_after_player_move_or_drop()
 
 
 func force_surrender():
 	_battle_grid_state.force_surrender()
-	_update_ui_after_player_move_or_dropp()
+	_update_ui_after_player_move_or_drop()
 
 
 #endregion
