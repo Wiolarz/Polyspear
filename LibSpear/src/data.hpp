@@ -72,6 +72,7 @@ public:
 
     inline int get_defense_force() {
         switch(type) {
+            // Note - also update MIN_SHIELD_DEFENSE constant when changing these values
             case Symbol::Type::SHIELD:
                 return 1;
             case Symbol::Type::EMPTY:
@@ -106,6 +107,7 @@ enum class UnitStatus: uint8_t {
 };
 
 enum class BattleState: uint8_t {
+    INITIALIZING,
     SUMMONING,
     ONGOING,
     FINISHED
@@ -200,6 +202,7 @@ public:
     }
 };
 
+const int MIN_SHIELD_DEFENSE = 1;
 const std::array<Position, 6> DIRECTIONS = {
 	Position(-1, 0),
 	Position(0, -1),

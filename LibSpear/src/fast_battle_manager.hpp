@@ -17,29 +17,48 @@
 #include "tile_grid_fast.hpp"
 
 
-using namespace godot;
+using godot::Node;
+using godot::Vector2i;
 
+const unsigned MAX_ARMIES = 2;
 
 class BattleManagerFast;
 class BattleMCTSManager;
+
+
+struct BattleResult {
+    int8_t winner_team = -1;
+    std::array<uint8_t, MAX_ARMIES> total_scores;
+    std::array<uint8_t, MAX_ARMIES> score_gained;
+    std::array<uint8_t, MAX_ARMIES> score_lost;
+};
 
 struct Unit {
     UnitStatus status = UnitStatus::DEAD;
     Position pos{};
     uint8_t rotation{};
+    uint8_t score = 2;
     std::array<Symbol, 6> sides{};
 
     inline void rotate(int times) {
         rotation = (6-rotation + times) % 6;
     }
 
-    inline Symbol symbol_at_side(int side) {
+    inline Symbol symbol_at_side(int side) const {
         return sides[(6-rotation + side) % 6];
+    }
+
+    inline void kill(int killer_team, int victim_team, BattleResult& out_result) {
+        status = UnitStatus::DEAD;
+        out_result.score_gained[killer_team] += score;
+        out_result.score_lost[victim_team] -= score;
+        out_result.total_scores[victim_team] -= score;
     }
 };
 
 struct Army {
-    int team = -1;
+    int8_t id = 0;
+    int8_t team = -1;
     std::array<Unit, 5> units{};
 
     Unit* get_unit(Position coord);
@@ -47,8 +66,7 @@ struct Army {
     bool is_defeated();
 };
 
-using ArmyList = std::array<Army, 2>;
-
+using ArmyList = std::array<Army, MAX_ARMIES>;
 
 struct Move {
     uint8_t unit;
@@ -71,27 +89,37 @@ struct std::hash<Move> {
 };
 
 
+enum class TeamRelation {
+    ALLY,
+    ENEMY
+};
+
+
 // idea - BattleManagerFastWrapper as multiple inheritance of internal BattleManagerFast and godot Node if it turns out that Node itself is expensive
 class BattleManagerFast : public Node {
     GDCLASS(BattleManagerFast, Node);
 
-    int x,y;
     int current_participant;
-    BattleState state = BattleState::SUMMONING;
+    BattleState state = BattleState::INITIALIZING;
     ArmyList armies{};
     TileGridFast* tiles;
-    //BattleMCTSManager* mcts;
+
+    BattleResult result;
+
     std::vector<Move> moves{};
+    std::vector<Move> heuristic_moves{};
     bool moves_dirty = true;
+    bool heuristic_moves_dirty = true;
 
     Unit* _get_unit(Position coord);
     Tile* _get_tile(Position coord);
 
-    int _process_unit(Unit& unit, Army& army, bool process_kills = true);
-    int _process_bow(Unit& unit, Army& enemy_army);
+    void _process_unit(Unit& unit, Army& army, bool process_kills, BattleResult& out_result);
+    void _process_bow(Unit& unit, Army& team, Army& enemy_army, BattleResult& out_result);
 
     void _refresh_legal_moves();
-    int _play_move(unsigned unit, Vector2i move);
+    void _refresh_heuristically_good_moves();
+    BattleResult _play_move(unsigned unit, Vector2i move);
 
 protected:
     static void _bind_methods();
@@ -105,19 +133,25 @@ public:
     void set_unit_symbol(int army, int unit, int symbol, int symbol_id); /// Add symbol for a specified unit
     void set_tile_grid(TileGridFast* tilegrid);
     void set_current_participant(int army);
+    void finish_initialization();
     void force_battle_ongoing();
     
-    int play_move(Move move);
+    BattleResult play_move(Move move);
     int play_move_gd(unsigned unit, Vector2i move);
     
-    int get_winner();
+    /// Get winner team, or -1 if the battle has not yet ended. On error returns -2.
+    int get_winner_team();
 
-    /// Get legal moves iterator for current participant
     const std::vector<Move>& get_legal_moves();
-    Move get_random_move();
+    /// Get legal moves in an array of arrays [[unit, position], ...]
+    godot::Array get_legal_moves_gd();
+    Move get_random_move(float heuristic_probability);
     int get_move_count();
 
-    bool is_occupied(Position pos, int team) const;
+    /// Get moves that are likely to increase score/win the game/avoid losses. If there are no notable moves, returns all moves
+    const std::vector<Move>& get_heuristically_good_moves();
+
+    bool is_occupied(Position pos, int team, TeamRelation relation) const;
 
     // Getters, primarily for testing correctness with regular BattleManager
     inline Vector2i get_unit_position(int army, int unit) const {

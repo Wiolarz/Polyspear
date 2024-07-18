@@ -615,9 +615,6 @@ func cloned_as_fast(out_unit_array: Array, tgrid: TileGridFast = null) -> Battle
 	
 	new.set_current_participant(current_army_index)
 	
-	if state == STATE_FIGHTING:
-		new.force_battle_ongoing()
-	
 	for army_idx in range(armies_in_battle_state.size()):
 		var army = armies_in_battle_state[army_idx]
 		new.set_army_team(army_idx,army_idx)
@@ -640,7 +637,12 @@ func cloned_as_fast(out_unit_array: Array, tgrid: TileGridFast = null) -> Battle
 				new.set_unit_symbol(army_idx, unit_idx + army.units.size(), i, unit.symbols[i].type)
 			if army_idx == current_army_index:
 				out_unit_array.push_back(unit)
+
+	new.finish_initialization()
 	
+	if state == STATE_FIGHTING:
+		new.force_battle_ongoing()
+
 	return new
 
 func compare(bm: BattleManagerFast) -> bool:

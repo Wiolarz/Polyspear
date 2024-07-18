@@ -10,6 +10,8 @@
 #include <unordered_map>
 
 const int MAX_SIM_ITERATIONS = 70;
+const int MIN_NESTED_MCTS_ITERATIONS_PER_MOVE = 5;
+const float HEURISTIC_PROBABIlITY = 0.85f;
 
 class BattleMCTSManager;
 
@@ -21,6 +23,9 @@ class BattleMCTSNode {
 
     float reward = 0.0f;
     float visits = 0.0f;
+    unsigned draws = 0;
+    unsigned wins = 0;
+    unsigned loses = 0;
 
     friend class BattleMCTSManager;
 
@@ -36,7 +41,7 @@ public:
     /// Find a new child node
     void expand();
     /// Simulate a complete playout until either decided, 
-    int simulate();
+    int simulate(int parent_mcts_iterations, int max_sim_iterations);
     /// Backpropagate the result
     void backpropagate(float new_visit, float new_reward);
 };
@@ -48,6 +53,8 @@ class BattleMCTSManager : public Node {
     // i wanted it to not be a pointer, but c++ was stronger
     BattleMCTSNode* root = nullptr;
     int army_team;
+
+    void _iterate(int iterations, int max_sim_iterations = MAX_SIM_ITERATIONS);
 
     friend class BattleMCTSNode;
     
