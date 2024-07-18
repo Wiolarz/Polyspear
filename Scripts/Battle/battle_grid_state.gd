@@ -274,7 +274,7 @@ func _switch_participant_turn() -> void:
 			current_army_index %= armies_in_battle_state.size()
 
 	var next_player := armies_in_battle_state[current_army_index]
-
+	# chess clock is updated in  turn_ended() and turn_started()
 	prev_player.turn_ended()
 	next_player.turn_started()
 
