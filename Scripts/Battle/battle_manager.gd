@@ -40,6 +40,7 @@ func _ready():
 
 func _process(_delta):
 	_process_anim_queue()
+	_check_clock_timer_run_out()
 
 
 #region Battle Setup
@@ -114,6 +115,46 @@ func get_bounds_global_position() -> Rect2:
 
 
 #region helpers
+
+func _check_clock_timer_run_out() -> void:
+	if not _battle_grid_state:
+		return
+	if not _battle_grid_state.battle_is_ongoing():
+		return
+	if get_current_time_left_ms() > 0:
+		return
+	_battle_grid_state.surrender_on_timeout()
+	_update_ui_after_player_move_or_drop()
+
+
+func _update_ui_after_player_move_or_drop() -> void:
+	if _battle_grid_state.battle_is_ongoing():
+		_on_turn_started(_battle_grid_state.get_current_player())
+	else :
+		_on_battle_ended()
+
+func get_current_slot_color() -> DataPlayerColor:
+	if not _battle_is_ongoing:
+		return CFG.NEUTRAL_COLOR
+	var player = _battle_grid_state.get_current_player()
+	if not player:
+		return CFG.NEUTRAL_COLOR
+	return player.get_player_color()
+
+
+func get_current_time_left_ms() -> int:
+	if _battle_grid_state && _battle_grid_state.battle_is_ongoing():
+		return _battle_grid_state.get_current_time_left()
+	return 0
+
+
+func get_current_turn() -> int:
+	return _battle_grid_state.turn_counter
+
+
+func get_max_turn() -> int:
+	return _battle_grid_state.STALEMATE_TURN_COUNT
+
 
 ## tells if there is battle state that is important and should be serialized
 func battle_is_active() -> bool:
@@ -211,7 +252,7 @@ func undo() -> void:
 	for n in new_units:
 		_on_unit_summoned(n)
 	_battle_ui.refresh_after_undo(_battle_grid_state.is_during_summoning_phase())
-	_on_turn_started(_battle_grid_state.get_current_player())
+	_update_ui_after_player_move_or_drop()
 
 
 func redo() -> void:
@@ -367,10 +408,7 @@ func _perform_move_info(move_info : MoveInfo) -> void:
 		_ :
 			assert(false, "Move move_type not supported in perform, " + str(move_info.move_type))
 
-	if _battle_grid_state.battle_is_ongoing():
-		_on_turn_started(_battle_grid_state.get_current_player())
-	else :
-		_on_battle_ended()
+	_update_ui_after_player_move_or_drop()
 
 
 func _on_unit_killed(unit: Unit) -> void:
@@ -522,10 +560,12 @@ func get_ripped_replay() -> BattleReplay:
 
 func force_win_battle():
 	_battle_grid_state.force_win_battle()
+	_update_ui_after_player_move_or_drop()
 
 
 func force_surrender():
 	_battle_grid_state.force_surrender()
+	_update_ui_after_player_move_or_drop()
 
 
 #endregion
