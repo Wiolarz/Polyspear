@@ -716,7 +716,7 @@ class ArmyInBattleState:
 		result.army_reference = army
 		for u in army.units_data:
 			result.units_to_summon.append(u)
-		result.turn_started() # DRUT
+		result.turn_started() # TEMP - FIXME - better init for chess clock
 		return result
 
 
