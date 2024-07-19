@@ -98,6 +98,7 @@ offset_bottom = 150.0
 color = Color(0, 0, 0, 0.423529)
 
 [node name="TurnCount" type="Label" parent="TurnsBG"]
+layout_mode = 0
 offset_left = 4.0
 offset_top = 5.0
 offset_right = 493.0
@@ -105,6 +106,7 @@ offset_bottom = 55.0
 text = "Turn 1 (last turn is 30)"
 
 [node name="ClockLeft" type="Label" parent="TurnsBG"]
+layout_mode = 0
 offset_left = 6.0
 offset_top = 64.0
 offset_right = 495.0
