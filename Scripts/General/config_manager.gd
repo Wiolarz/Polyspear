@@ -66,6 +66,25 @@ const DEFAULT_USER_NAMES : Array[String] = [
 	"Gracz Doty",
 ]
 
+
+func set_defaults_for_host_setup(address : String, port : int, username : String):
+	player_options.login = username
+	player_options.lastMyHostAddress = address
+	player_options.lastMyHostPort = port
+	save_player_options()
+
+
+func set_defaults_for_joining(address : String, port : int, username : String):
+	player_options.login = username
+	player_options.lastRemoteHostAddress = address
+	player_options.lastRemoteHostPort = port
+	save_player_options()
+
+
+func get_username() -> String:
+	return player_options.login
+
+
 func get_random_username() -> String:
 	return DEFAULT_USER_NAMES[randi() % DEFAULT_USER_NAMES.size()]
 

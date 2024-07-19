@@ -22,9 +22,11 @@ var current_player : int = 0
 func _ready():
 	pass
 
+
 func _process(_delta):
 	if BM.battle_is_active():
 		update_clock()
+
 
 func update_clock() -> void:
 	var miliseconds_left = BM.get_current_time_left_ms()

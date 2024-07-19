@@ -18,10 +18,13 @@ var host_menu : HostMenu = null
 
 
 func _ready():
-	server_name_line.text = CFG.get_random_username()
+	server_name_line.text = CFG.get_username()
+	server_address_line.text = CFG.player_options.lastMyHostAddress
+	server_port_line.text = str(CFG.player_options.lastMyHostPort)
 
 
 func start_server():
+	CFG.set_defaults_for_host_setup(get_address(), get_port(), get_username_server())
 	NET.clear_local_chat_log()
 	NET.server_listen(get_address(), get_port(), get_username_server())
 	host_menu.refresh_after_connection_change()

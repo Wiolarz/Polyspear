@@ -18,7 +18,9 @@ var client_menu : ClientMenu = null
 
 
 func _ready():
-	username_line.text = CFG.get_random_username()
+	username_line.text = CFG.get_username()
+	server_address_line.text = CFG.player_options.lastRemoteHostAddress
+	server_port_line.text = str(CFG.player_options.lastRemoteHostPort)
 
 
 func get_address():
@@ -40,6 +42,7 @@ func get_username():
 
 
 func connect_to_server():
+	CFG.set_defaults_for_joining(get_address(), get_port(), get_username())
 	NET.clear_local_chat_log()
 	NET.client_connect_and_login(get_address(), get_port(), get_username())
 
