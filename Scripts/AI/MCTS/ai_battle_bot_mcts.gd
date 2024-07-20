@@ -10,7 +10,7 @@ func play_move() -> void:
 	var mcts = BattleMCTSManager.new()
 	mcts.set_root(bm)
 	
-	mcts.iterate(iterations)
+	mcts.iterate(iterations, OS.get_processor_count())
 	var unit = mcts.get_optimal_move_unit(0)
 	var position = mcts.get_optimal_move_position(0)
 	
