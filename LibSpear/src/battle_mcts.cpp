@@ -7,6 +7,7 @@
 #include <random>
 #include <algorithm>
 #include <numeric>
+#include <thread>
 
 #include <signal.h>
 
@@ -36,6 +37,8 @@ std::pair<Move, BattleMCTSNode*> BattleMCTSNode::select() {
         return std::make_pair(Move(), nullptr);
     }
 
+    std::lock_guard lock(local_mutex);
+
     float uct_max = -std::numeric_limits<float>::infinity();
     BattleMCTSNode* uct_max_idx = nullptr;
     Move best_move;
@@ -56,11 +59,16 @@ void BattleMCTSNode::expand() {
     if(bm.is_battle_finished()) {
         return;
     }
+
+    std::lock_guard lock(local_mutex);
     
-    auto move = bm.get_random_move(0.85f);
+    auto move = bm.get_random_move(HEURISTIC_PROBABILITY);
 
     if(children.count(move) == 0) {
-        children.insert({move, BattleMCTSNode(bm, manager, this)});
+        children.emplace(std::piecewise_construct,
+                std::forward_as_tuple(move), 
+                std::forward_as_tuple(bm, manager, this)
+        );
         children.at(move).bm.play_move(move);
     }
 }
@@ -71,12 +79,14 @@ BattleResult BattleMCTSNode::simulate(int max_sim_iterations) {
     Move move;
     int i = 0;
 
+    std::lock_guard lock(local_mutex);
+
     if(bm.is_battle_finished()) {
         return bm.get_result();
     }
     
     do {
-        move = bmnew.get_random_move(HEURISTIC_PROBABIlITY);
+        move = bmnew.get_random_move(HEURISTIC_PROBABILITY);
         i++;
     } while((result = bmnew.play_move(move)).winner_team == -1 && i < max_sim_iterations);
 
@@ -98,15 +108,12 @@ void BattleMCTSNode::backpropagate(BattleResult& result) {
 
     // there's a bug somewhere, temporary fix
     if(ally_score + enemy_score >= 0.001f) {
+        // TODO better reward maximizing enemy losses in case of failure
         reward += ally_score / (ally_score+enemy_score);
     }
     else {
         WARN_PRINT("MCTS ally_score = enemy_score = 0");
         reward += 0.5f;
-    }
-
-    if(std::isnan(reward)) {
-        raise(SIGINT);
     }
     //reward += result.winner_team == current_team ? 1.0f : (result.winner_team == -1 ? 0.5f : 0.0f);
     visits += 1.0f;
@@ -120,31 +127,54 @@ bool BattleMCTSNode::is_explored() {
     return bm.get_move_count() == children.size();
 }
 
-void BattleMCTSManager::iterate(int iterations) {
-    _iterate(iterations);
+void BattleMCTSManager::iterate(int iterations, int max_threads) {
+    std::shared_mutex mutex;
+    // TODO parallelize - this currently crashes the game, more/better-thought-out locks needed
+    /*std::vector<std::thread> threads;
+
+    for(int i = 0; i < max_threads; i++) {
+        // hey, i tried avoiding a lambda, i know that's possible, but c++ was once again stronger, probably doesn't matter at all
+        threads.emplace_back([&]() {
+            _iterate(std::ref(mutex), iterations/max_threads);
+        });
+    }
+
+    for(auto& i: threads) {
+        i.join();
+    }*/
+    _iterate(mutex, iterations);
 }
 
-void BattleMCTSManager::_iterate(int iterations, int max_sim_iterations) {
+void BattleMCTSManager::_iterate(std::shared_mutex& rwlock, int iterations, int max_sim_iterations) {
+
     for(int i = 0; i < iterations; i++) {
+        BattleResult result;
         BattleMCTSNode* node = root, *temp_node;
-        int tree_level = 0;
-        while((temp_node = node->select().second) != nullptr) {
-            node = temp_node;
-            tree_level++;
+
+        {
+            std::shared_lock rlock(rwlock);
+
+            while((temp_node = node->select().second) != nullptr) {
+                node = temp_node;
+            }
+
+            node->expand();
+            result = node->simulate(max_sim_iterations);    
         }
 
-        node->expand();
-        auto result = node->simulate(max_sim_iterations);
-        node->backpropagate(result);
-        
-        if(result.winner_team == army_team) {
-            root->wins++;
-        }
-        else if(result.winner_team == -1) {
-            root->draws++;
-        }
-        else {
-            root->loses++;
+        {
+            std::unique_lock wlock(rwlock);
+            node->backpropagate(result);
+
+            if(result.winner_team == army_team) {
+                root->wins++;
+            }
+            else if(result.winner_team == -1) {
+                root->draws++;
+            }
+            else {
+                root->loses++;
+            }
         }
     }
 }
@@ -195,7 +225,7 @@ void BattleMCTSManager::_bind_methods() {
     ClassDB::bind_method(D_METHOD("get_optimal_move_unit"), &BattleMCTSManager::get_optimal_move_unit, "nth_best_move");
     ClassDB::bind_method(D_METHOD("get_optimal_move_position"), &BattleMCTSManager::get_optimal_move_position, "nth_best_move");
 
-    ClassDB::bind_method(D_METHOD("iterate"), &BattleMCTSManager::iterate, "iterations");
+    ClassDB::bind_method(D_METHOD("iterate"), &BattleMCTSManager::iterate, "iterations", "max_threads");
 
     ClassDB::bind_method(D_METHOD("set_root"), &BattleMCTSManager::set_root, "battle_manager");
 }

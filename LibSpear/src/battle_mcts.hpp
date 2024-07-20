@@ -8,10 +8,11 @@
 #include "fast_battle_manager.hpp"
 #include <optional>
 #include <unordered_map>
+#include <mutex>
+#include <shared_mutex>
 
 const int MAX_SIM_ITERATIONS = 70;
-const int MIN_NESTED_MCTS_ITERATIONS_PER_MOVE = 5;
-const float HEURISTIC_PROBABIlITY = 0.85f;
+const float HEURISTIC_PROBABILITY = 0.85f;
 
 class BattleMCTSManager;
 
@@ -26,6 +27,7 @@ class BattleMCTSNode {
     unsigned draws = 0;
     unsigned wins = 0;
     unsigned loses = 0;
+    std::mutex local_mutex;
 
     friend class BattleMCTSManager;
 
@@ -55,7 +57,7 @@ class BattleMCTSManager : public Node {
     int army_team;
     int army_id;
 
-    void _iterate(int iterations, int max_sim_iterations = MAX_SIM_ITERATIONS);
+    void _iterate(std::shared_mutex& mutex, int iterations, int max_sim_iterations = MAX_SIM_ITERATIONS);
 
     friend class BattleMCTSNode;
     
@@ -68,7 +70,7 @@ public:
     //virtual ~BattleMCTSManager() override;
     void set_root(BattleManagerFast* bm);
 
-    void iterate(int iterations = 1);
+    void iterate(int iterations = 1, int max_threads = 1);
 
     /// Get the optimal move. Return zero unit/position on fail
     Move get_optimal_move(int nth_best_move);
