@@ -99,7 +99,8 @@ enum class TeamRelation {
 class BattleManagerFast : public Node {
     GDCLASS(BattleManagerFast, Node);
 
-    int current_participant;
+    int8_t current_participant;
+    int8_t previous_participant;
     BattleState state = BattleState::INITIALIZING;
     ArmyList armies{};
     TileGridFast* tiles;
@@ -141,6 +142,7 @@ public:
     
     /// Get winner team, or -1 if the battle has not yet ended. On error returns -2.
     int get_winner_team();
+    inline BattleResult get_result() {return result;}
 
     const std::vector<Move>& get_legal_moves();
     /// Get legal moves in an array of arrays [[unit, position], ...]
@@ -173,6 +175,10 @@ public:
 
     inline int get_current_participant() const {
         return current_participant;
+    }
+
+    inline int get_previous_participant() const {
+        return previous_participant;
     }
 
     inline bool is_battle_finished() const {

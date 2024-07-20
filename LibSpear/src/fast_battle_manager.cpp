@@ -27,7 +27,9 @@ void BattleManagerFast::finish_initialization() {
         for(int i = 0; i < armies.size(); i++) {
             armies[i].id = i;
             for(auto& unit: armies[i].units) {
-                result.total_scores[i] += unit.score;
+                if(unit.status != UnitStatus::DEAD) {
+                    result.total_scores[i] += unit.score;
+                }
             }
         }
     }
@@ -53,6 +55,8 @@ BattleResult BattleManagerFast::_play_move(unsigned unit_id, Vector2i pos) {
     result.winner_team = -1;
     result.score_gained.fill(0);
     result.score_lost.fill(0);
+
+    previous_participant = current_participant;
 
     if(state == BattleState::INITIALIZING) {
         ERR_FAIL_V_MSG(result, "BMFast - Please call finish_initialization() before playing a move");

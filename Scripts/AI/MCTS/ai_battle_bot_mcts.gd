@@ -1,7 +1,7 @@
 class_name AIBattleBotMCTS
 extends ExampleBot
 
-@export var iterations = 30000
+@export var iterations = 100000
 
 func play_move() -> void:
 	

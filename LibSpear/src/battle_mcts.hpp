@@ -41,9 +41,9 @@ public:
     /// Find a new child node
     void expand();
     /// Simulate a complete playout until either decided, 
-    int simulate(int parent_mcts_iterations, int max_sim_iterations);
+    BattleResult simulate(int max_sim_iterations);
     /// Backpropagate the result
-    void backpropagate(float new_visit, float new_reward);
+    void backpropagate(BattleResult& result);
 };
 
 
@@ -53,6 +53,7 @@ class BattleMCTSManager : public Node {
     // i wanted it to not be a pointer, but c++ was stronger
     BattleMCTSNode* root = nullptr;
     int army_team;
+    int army_id;
 
     void _iterate(int iterations, int max_sim_iterations = MAX_SIM_ITERATIONS);
 
