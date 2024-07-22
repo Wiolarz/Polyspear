@@ -5,9 +5,16 @@ extends Resource
 @export var battle_map: DataBattleMap
 @export var units_at_start = [] # :Array[Array[DataUnit]]
 @export var moves: Array[MoveInfo] = []
+@export var player_names : Array[String] = []
+
 
 static func create(armies : Array[Army], c_battle_map: DataBattleMap):
 	var result = BattleReplay.new()
+
+	for army in armies:
+		var player_name = IM.get_player_name(army.controller)
+		result.player_names.append(player_name)
+
 	result.timestamp = Time.get_datetime_string_from_system()
 	result.battle_map = c_battle_map
 	for a in armies:
@@ -19,7 +26,7 @@ func record_move(m : MoveInfo, time_left_ms : int) -> void:
 	moves.append(m)
 
 func get_filename() -> String:
-	return timestamp.replace(":", "_") + ".tres"
+	return timestamp.replace(":", "_") + player_names[0] + "_" + player_names[1] + ".tres" #TEMP Works only for 2 players
 
 func save():
 	BattleReplay.prepare_replay_directory()
