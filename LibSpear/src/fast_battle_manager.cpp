@@ -21,7 +21,7 @@
         return val; \
     }
 
-void BattleManagerFast::finish_initialization() {
+void BattleManagerFastCpp::finish_initialization() {
     if(state == BattleState::INITIALIZING) {
         state = BattleState::SUMMONING;
         for(int i = 0; i < armies.size(); i++) {
@@ -38,17 +38,17 @@ void BattleManagerFast::finish_initialization() {
     }
 }
 
-BattleResult BattleManagerFast::play_move(Move move) {
+BattleResult BattleManagerFastCpp::play_move(Move move) {
     auto ret = _play_move(move.unit, Vector2i(move.pos.x, move.pos.y));
     return ret;
 }
 
-int BattleManagerFast::play_move_gd(unsigned unit_id, Vector2i pos) {
+int BattleManagerFastCpp::play_move_gd(unsigned unit_id, Vector2i pos) {
     auto ret = _play_move(unit_id, pos);
     return ret.winner_team;
 }
 
-BattleResult BattleManagerFast::_play_move(unsigned unit_id, Vector2i pos) {
+BattleResult BattleManagerFastCpp::_play_move(unsigned unit_id, Vector2i pos) {
     moves_dirty = true;
     heuristic_moves_dirty = true;
 
@@ -126,7 +126,7 @@ BattleResult BattleManagerFast::_play_move(unsigned unit_id, Vector2i pos) {
 }
 
 
-void BattleManagerFast::_process_unit(Unit& unit, Army& army, bool process_kills, BattleResult& out_result) {
+void BattleManagerFastCpp::_process_unit(Unit& unit, Army& army, bool process_kills, BattleResult& out_result) {
 
     for(auto& enemy_army : armies) {
 
@@ -179,7 +179,7 @@ void BattleManagerFast::_process_unit(Unit& unit, Army& army, bool process_kills
     }
 }
 
-void BattleManagerFast::_process_bow(Unit& unit, Army& army, Army& enemy_army, BattleResult& out_result) {
+void BattleManagerFastCpp::_process_bow(Unit& unit, Army& army, Army& enemy_army, BattleResult& out_result) {
     for(int i = 0; i < 6; i++) {
         auto force = unit.symbol_at_side(i).get_bow_force();
         if(force == 0) {
@@ -202,7 +202,7 @@ void BattleManagerFast::_process_bow(Unit& unit, Army& army, Army& enemy_army, B
     }
 }
 
-int BattleManagerFast::get_winner_team() {
+int BattleManagerFastCpp::get_winner_team() {
 
     if(state == BattleState::SUMMONING) {
         return -1;
@@ -242,7 +242,7 @@ int BattleManagerFast::get_winner_team() {
 }
 
 
-const std::vector<Move>& BattleManagerFast::get_legal_moves() {
+const std::vector<Move>& BattleManagerFastCpp::get_legal_moves() {
     if(moves_dirty) {
         _refresh_legal_moves();
         moves_dirty = false;
@@ -250,7 +250,7 @@ const std::vector<Move>& BattleManagerFast::get_legal_moves() {
     return moves;
 }
 
-const std::vector<Move>& BattleManagerFast::get_heuristically_good_moves() {
+const std::vector<Move>& BattleManagerFastCpp::get_heuristically_good_moves() {
     if(heuristic_moves_dirty) {
         _refresh_heuristically_good_moves();
         heuristic_moves_dirty = false;
@@ -261,7 +261,7 @@ const std::vector<Move>& BattleManagerFast::get_heuristically_good_moves() {
     return heuristic_moves;
 }
 
-void BattleManagerFast::_refresh_legal_moves() {
+void BattleManagerFastCpp::_refresh_legal_moves() {
     moves.clear();
     moves.reserve(64);
 
@@ -334,7 +334,7 @@ void BattleManagerFast::_refresh_legal_moves() {
     }
 }
 
-void BattleManagerFast::_refresh_heuristically_good_moves() {
+void BattleManagerFastCpp::_refresh_heuristically_good_moves() {
     heuristic_moves.clear();
     heuristic_moves.reserve(64);
 
@@ -379,7 +379,7 @@ void BattleManagerFast::_refresh_heuristically_good_moves() {
 }
 
 
-Move BattleManagerFast::get_random_move(float heuristic_probability) {
+Move BattleManagerFastCpp::get_random_move(float heuristic_probability) {
     static thread_local std::mt19937 rand_engine;
     static thread_local std::uniform_real_distribution heur_dist(0.0f, 1.0f);
 
@@ -398,11 +398,11 @@ Move BattleManagerFast::get_random_move(float heuristic_probability) {
     return moves_arr[move];
 }
 
-int BattleManagerFast::get_move_count() {
+int BattleManagerFastCpp::get_move_count() {
     return get_legal_moves().size();
 }
 
-godot::Array BattleManagerFast::get_legal_moves_gd() {
+godot::Array BattleManagerFastCpp::get_legal_moves_gd() {
     auto& moves_arr = get_legal_moves();
     godot::Array arr{};
     
@@ -416,7 +416,7 @@ godot::Array BattleManagerFast::get_legal_moves_gd() {
     return arr;
 }
 
-bool BattleManagerFast::is_occupied(Position pos, int team, TeamRelation relation) const {
+bool BattleManagerFastCpp::is_occupied(Position pos, int team, TeamRelation relation) const {
     for(auto& army : armies) {
         if( (army.team == team) != (relation == TeamRelation::ALLY) ) {
             continue;
@@ -431,7 +431,7 @@ bool BattleManagerFast::is_occupied(Position pos, int team, TeamRelation relatio
     return false;
 }
 
-void BattleManagerFast::insert_unit(int army, int idx, Vector2i pos, int rotation, bool is_summoning) {
+void BattleManagerFastCpp::insert_unit(int army, int idx, Vector2i pos, int rotation, bool is_summoning) {
     CHECK_UNIT(idx,)
     CHECK_ARMY(army,)
     armies[army].units[idx].pos = pos;
@@ -439,34 +439,34 @@ void BattleManagerFast::insert_unit(int army, int idx, Vector2i pos, int rotatio
     armies[army].units[idx].status = is_summoning ? UnitStatus::SUMMONING : UnitStatus::ALIVE;
 }
 
-void BattleManagerFast::set_unit_symbol(int army, int unit, int side, int symbol) {
+void BattleManagerFastCpp::set_unit_symbol(int army, int unit, int side, int symbol) {
     CHECK_UNIT(unit,)
     CHECK_ARMY(army,)
     armies[army].units[unit].sides[side] = Symbol(symbol);
 }
 
-void BattleManagerFast::set_army_team(int army, int team) {
+void BattleManagerFastCpp::set_army_team(int army, int team) {
     CHECK_ARMY(army,)
     armies[army].team = team;
 }
 
-void BattleManagerFast::set_current_participant(int army) {
+void BattleManagerFastCpp::set_current_participant(int army) {
     CHECK_ARMY(army,)
     current_participant = army;
 }
 
-void BattleManagerFast::set_tile_grid(TileGridFast* tg) {
+void BattleManagerFastCpp::set_tile_grid(TileGridFastCpp* tg) {
     tiles = tg;
 }
 
-void BattleManagerFast::force_battle_ongoing() {
+void BattleManagerFastCpp::force_battle_ongoing() {
     if(state == BattleState::INITIALIZING) {
         ERR_FAIL_MSG("Must finish_initialization() before calling force_battle_ongoing()");
     }
     state = BattleState::ONGOING;
 }
 
-Unit* BattleManagerFast::_get_unit(Position coord) {
+Unit* BattleManagerFastCpp::_get_unit(Position coord) {
     for(auto army : armies) {
         auto unit = army.get_unit(coord);
         if(unit != nullptr && unit->pos == coord) {
@@ -477,22 +477,22 @@ Unit* BattleManagerFast::_get_unit(Position coord) {
 }
 
 
-void BattleManagerFast::_bind_methods() {
-    ClassDB::bind_method(D_METHOD("insert_unit"), &BattleManagerFast::insert_unit, "army", "index", "position", "rotation", "is_summoning");
-    ClassDB::bind_method(D_METHOD("set_unit_symbol"), &BattleManagerFast::set_unit_symbol, "army", "index", "symbol_slot", "symbol_type");
-    ClassDB::bind_method(D_METHOD("set_army_team"), &BattleManagerFast::set_army_team, "army", "team");
-    ClassDB::bind_method(D_METHOD("set_tile_grid"), &BattleManagerFast::set_tile_grid, "tilegrid");
-    ClassDB::bind_method(D_METHOD("set_current_participant"), &BattleManagerFast::set_current_participant, "army");
-    ClassDB::bind_method(D_METHOD("force_battle_ongoing"), &BattleManagerFast::force_battle_ongoing);
-    ClassDB::bind_method(D_METHOD("finish_initialization"), &BattleManagerFast::finish_initialization);
-    ClassDB::bind_method(D_METHOD("play_move"), &BattleManagerFast::play_move_gd, "unit", "position");
+void BattleManagerFastCpp::_bind_methods() {
+    ClassDB::bind_method(D_METHOD("insert_unit"), &BattleManagerFastCpp::insert_unit, "army", "index", "position", "rotation", "is_summoning");
+    ClassDB::bind_method(D_METHOD("set_unit_symbol"), &BattleManagerFastCpp::set_unit_symbol, "army", "index", "symbol_slot", "symbol_type");
+    ClassDB::bind_method(D_METHOD("set_army_team"), &BattleManagerFastCpp::set_army_team, "army", "team");
+    ClassDB::bind_method(D_METHOD("set_tile_grid"), &BattleManagerFastCpp::set_tile_grid, "tilegrid");
+    ClassDB::bind_method(D_METHOD("set_current_participant"), &BattleManagerFastCpp::set_current_participant, "army");
+    ClassDB::bind_method(D_METHOD("force_battle_ongoing"), &BattleManagerFastCpp::force_battle_ongoing);
+    ClassDB::bind_method(D_METHOD("finish_initialization"), &BattleManagerFastCpp::finish_initialization);
+    ClassDB::bind_method(D_METHOD("play_move"), &BattleManagerFastCpp::play_move_gd, "unit", "position");
 
-    ClassDB::bind_method(D_METHOD("get_unit_position"), &BattleManagerFast::get_unit_position, "army", "unit");
-    ClassDB::bind_method(D_METHOD("get_unit_rotation"), &BattleManagerFast::get_unit_rotation, "army", "unit");
-    ClassDB::bind_method(D_METHOD("is_unit_alive"), &BattleManagerFast::is_unit_alive, "army", "unit");
-    ClassDB::bind_method(D_METHOD("is_unit_being_summoned"), &BattleManagerFast::is_unit_being_summoned, "army", "unit");
-    ClassDB::bind_method(D_METHOD("get_current_participant"), &BattleManagerFast::get_current_participant);
-    ClassDB::bind_method(D_METHOD("get_legal_moves"), &BattleManagerFast::get_legal_moves_gd);
+    ClassDB::bind_method(D_METHOD("get_unit_position"), &BattleManagerFastCpp::get_unit_position, "army", "unit");
+    ClassDB::bind_method(D_METHOD("get_unit_rotation"), &BattleManagerFastCpp::get_unit_rotation, "army", "unit");
+    ClassDB::bind_method(D_METHOD("is_unit_alive"), &BattleManagerFastCpp::is_unit_alive, "army", "unit");
+    ClassDB::bind_method(D_METHOD("is_unit_being_summoned"), &BattleManagerFastCpp::is_unit_being_summoned, "army", "unit");
+    ClassDB::bind_method(D_METHOD("get_current_participant"), &BattleManagerFastCpp::get_current_participant);
+    ClassDB::bind_method(D_METHOD("get_legal_moves"), &BattleManagerFastCpp::get_legal_moves_gd);
 
 }
 

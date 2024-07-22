@@ -18,8 +18,8 @@
 using namespace godot;
 
 
-class TileGridFast : public Node {
-    GDCLASS(TileGridFast, Node);
+class TileGridFastCpp : public Node {
+    GDCLASS(TileGridFastCpp, Node);
 
     Vector2i dims;
     std::vector<Tile> tiles;

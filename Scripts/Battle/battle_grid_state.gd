@@ -17,8 +17,6 @@ var armies_in_battle_state : Array[ArmyInBattleState] = []
 
 var currently_processed_move_info : MoveInfo = null
 
-var _debug_check_fast_bm_integrity: bool = true
-
 #region init
 
 func _init(width_ : int, height_ : int):
@@ -64,12 +62,9 @@ func move_info_move_unit(move_info : MoveInfo) -> void:
 	assert(move_info.move_type == MoveInfo.TYPE_MOVE)
 	currently_processed_move_info = move_info
 
-	var old_army_index = current_army_index
-	var bmfast: BattleManagerFast
-	if _debug_check_fast_bm_integrity:
-		bmfast = cloned_as_fast([])
-		assert(compare(bmfast) == true, "BMFast Integrity check failed before move")
-
+	var bmfast = BattleManagerFast.from(self)
+	bmfast.check_integrity_before_move(self, move_info)
+	
 	var source_tile_coord := move_info.move_source
 	var target_tile_coord := move_info.target_tile_coord
 	var unit = get_unit(source_tile_coord)
@@ -87,13 +82,8 @@ func move_info_move_unit(move_info : MoveInfo) -> void:
 	if battle_is_ongoing():
 		_switch_participant_turn()
 	currently_processed_move_info = null
-
-	if _debug_check_fast_bm_integrity:
-		var unit_id = armies_in_battle_state[old_army_index].units.find(unit)
-		if(unit_id != -1): # should only be false when unit died to spear
-			bmfast.play_move(unit_id, move_info.target_tile_coord)
-			assert(compare(bmfast) == true, "BMFast Integrity check failed after move")
-
+	
+	bmfast.check_integrity_after_move(self)
 
 ## returns array of revived units
 func undo(move_info : MoveInfo) -> Array[Unit]:
@@ -648,97 +638,6 @@ func _is_kill_move(move : MoveInfo) -> bool:
 
 #endregion
 
-#region BMFast utilities
-
-## Make a BattleManagerFast for MCTS purposes. 
-## Parameter tgrid may be null, in which case TileGridFast is created automatically
-func cloned_as_fast(out_unit_array: Array, tgrid: TileGridFast = null) -> BattleManagerFast:
-	var new = BattleManagerFast.new()
-	if tgrid == null:
-		tgrid = TileGridFast.new()
-		tgrid.set_map_size(Vector2i(width, height))
-		
-		for x in width:
-			for y in height:
-				var i = Vector2i(x,y)
-				var hex = _get_battle_hex(i)
-				tgrid.set_tile(i, 
-					hex.can_be_moved_to,
-					not hex.can_shoot_through,
-					hex.swamp,
-					hex.spawn_point_army_idx,
-					hex.spawn_direction
-				)
-		
-		new.set_tile_grid(tgrid)
-	
-	new.set_current_participant(current_army_index)
-	
-	for army_idx in range(armies_in_battle_state.size()):
-		var army = armies_in_battle_state[army_idx]
-		new.set_army_team(army_idx,army_idx)
-		
-		for unit_idx in range(army.units.size()):
-			var unit = army.units[unit_idx]
-			if unit.dead:
-				continue
-			
-			new.insert_unit(army_idx, unit_idx, unit.coord, unit.unit_rotation, false)
-			for i in range(6):
-				new.set_unit_symbol(army_idx, unit_idx, i, unit.template.symbols[i].type)
-			if army_idx == current_army_index:
-				out_unit_array.push_back(unit)
-	
-		for unit_idx in range(army.units_to_summon.size()):
-			var unit = army.units_to_summon[unit_idx]
-			new.insert_unit(army_idx, unit_idx + army.units.size(), Vector2i.ZERO, 0, true)
-			for i in range(6):
-				new.set_unit_symbol(army_idx, unit_idx + army.units.size(), i, unit.symbols[i].type)
-			if army_idx == current_army_index:
-				out_unit_array.push_back(unit)
-
-	new.finish_initialization()
-	
-	if state == STATE_FIGHTING:
-		new.force_battle_ongoing()
-
-	return new
-
-func compare(bm: BattleManagerFast) -> bool:
-	var ret = true
-	
-	if current_army_index != bm.get_current_participant():
-		push_error("BMFast mismatch - current army: slow ", current_army_index, " fast", bm.get_current_participant())
-		ret = false
-	
-	for army_id in range(armies_in_battle_state.size()):
-		var units_nr = 5
-		var army = armies_in_battle_state[army_id]
-		
-		assert(army.units.size() + army.units_to_summon.size() <= 5, "No support for more than 5 units in fast BM")
-		for unit_id in range(5):
-			if not bm.is_unit_alive(army_id, unit_id):
-				units_nr -= 1
-				continue # probably no need to check summons/dead
-			
-			var unit: Unit = get_unit(bm.get_unit_position(army_id, unit_id))
-			if unit == null:
-				push_error("BMFast mismatch - unit not present in slow - fast id:", army_id, ".", unit_id, "(@", bm.get_unit_position(army_id, unit_id), ")")
-				ret = false
-				continue
-			if unit.unit_rotation != bm.get_unit_rotation(army_id, unit_id):
-				push_error("BMFast mismsatch - unit: id ", army_id, ".", unit_id, " slow has rotation ", unit.unit_rotation, \
-						   ",  ", " vs fast's rotation ", bm.get_unit_rotation(army_id, unit_id), " (@", unit.coord, ")")
-				ret = false
-				
-		var units_alive_in_army = army.units.filter(func(x): return not x.dead).size()
-		if units_nr != units_alive_in_army:
-			push_error("BMFast mismatch - number of units in army ", army_id, ": slow ", units_alive_in_army, ", fast ", units_nr)
-			ret = false
-		
-	return ret
-
-#endregion
 
 #region Subclasses
 

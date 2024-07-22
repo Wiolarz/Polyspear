@@ -12,7 +12,7 @@
 #include <signal.h>
 
 
-BattleMCTSNode::BattleMCTSNode(BattleManagerFast bm, BattleMCTSManager* manager, BattleMCTSNode* parent) 
+BattleMCTSNode::BattleMCTSNode(BattleManagerFastCpp bm, BattleMCTSManager* manager, BattleMCTSNode* parent) 
     : bm(bm),
       manager(manager),
       parent(parent)
@@ -75,7 +75,7 @@ void BattleMCTSNode::expand() {
 
 BattleResult BattleMCTSNode::simulate(int max_sim_iterations) {
     BattleResult result;
-    BattleManagerFast bmnew = bm;
+    BattleManagerFastCpp bmnew = bm;
     Move move;
     int i = 0;
 
@@ -208,7 +208,7 @@ Vector2i BattleMCTSManager::get_optimal_move_position(int nth_best_move) {
 }
 
 
-void BattleMCTSManager::set_root(BattleManagerFast* bm) {
+void BattleMCTSManager::set_root(BattleManagerFastCpp* bm) {
     root = new BattleMCTSNode(*bm, this, nullptr);
     army_id = bm->get_current_participant();
     army_team = bm->get_army_team(army_id);

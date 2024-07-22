@@ -10,8 +10,8 @@ void libspear_initialize(ModuleInitializationLevel level) {
         return;
 
     ClassDB::register_class<BattleMCTSManager>();
-    ClassDB::register_class<BattleManagerFast>();
-    ClassDB::register_class<TileGridFast>();
+    ClassDB::register_class<BattleManagerFastCpp>();
+    ClassDB::register_class<TileGridFastCpp>();
 }
 
 void libspear_terminate(ModuleInitializationLevel level) {

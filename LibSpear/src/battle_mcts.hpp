@@ -20,7 +20,7 @@ class BattleMCTSNode {
     BattleMCTSManager* manager = nullptr;
     BattleMCTSNode* parent = nullptr;
     std::unordered_map<Move, BattleMCTSNode> children{};
-    BattleManagerFast bm;
+    BattleManagerFastCpp bm;
 
     float reward = 0.0f;
     float visits = 0.0f;
@@ -32,7 +32,7 @@ class BattleMCTSNode {
     friend class BattleMCTSManager;
 
 public:
-    BattleMCTSNode(BattleManagerFast bm, BattleMCTSManager* manager, BattleMCTSNode* parent);
+    BattleMCTSNode(BattleManagerFastCpp bm, BattleMCTSManager* manager, BattleMCTSNode* parent);
     ~BattleMCTSNode() = default;
 
     float uct() const;
@@ -68,7 +68,7 @@ public:
     BattleMCTSManager() = default;
     // TODO what the fuck it crashes godot editor
     //virtual ~BattleMCTSManager() override;
-    void set_root(BattleManagerFast* bm);
+    void set_root(BattleManagerFastCpp* bm);
 
     void iterate(int iterations = 1, int max_threads = 1);
 

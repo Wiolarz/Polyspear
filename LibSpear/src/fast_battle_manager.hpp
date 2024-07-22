@@ -20,9 +20,9 @@
 using godot::Node;
 using godot::Vector2i;
 
-const unsigned MAX_ARMIES = 2;
+const unsigned MAX_ARMIES = 4;
 
-class BattleManagerFast;
+class BattleManagerFastCpp;
 class BattleMCTSManager;
 
 
@@ -95,15 +95,15 @@ enum class TeamRelation {
 };
 
 
-// idea - BattleManagerFastWrapper as multiple inheritance of internal BattleManagerFast and godot Node if it turns out that Node itself is expensive
-class BattleManagerFast : public Node {
-    GDCLASS(BattleManagerFast, Node);
+// idea - BattleManagerFastWrapper as multiple inheritance of internal BattleManagerFastCpp and godot Node if it turns out that Node itself is expensive
+class BattleManagerFastCpp : public Node {
+    GDCLASS(BattleManagerFastCpp, Node);
 
     int8_t current_participant;
     int8_t previous_participant;
     BattleState state = BattleState::INITIALIZING;
     ArmyList armies{};
-    TileGridFast* tiles;
+    TileGridFastCpp* tiles;
 
     BattleResult result;
 
@@ -126,13 +126,13 @@ protected:
     static void _bind_methods();
 
 public:
-    BattleManagerFast() = default;
-    ~BattleManagerFast() = default;
+    BattleManagerFastCpp() = default;
+    ~BattleManagerFastCpp() = default;
 
     void insert_unit(int army, int idx, Vector2i pos, int rotation, bool is_summoning); /// Add a unit in a summoning state
     void set_army_team(int army, int team); /// Set army's team - required
     void set_unit_symbol(int army, int unit, int symbol, int symbol_id); /// Add symbol for a specified unit
-    void set_tile_grid(TileGridFast* tilegrid);
+    void set_tile_grid(TileGridFastCpp* tilegrid);
     void set_current_participant(int army);
     void finish_initialization();
     void force_battle_ongoing();
