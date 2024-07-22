@@ -7,12 +7,13 @@
 
 [sub_resource type="Resource" id="Resource_5r62w"]
 script = ExtResource("1_feg68")
-wood = 5
-iron = 5
-ruby = 10
+wood = 3
+iron = 3
+ruby = 3
 
 [resource]
 script = ExtResource("2_cbv6a")
 name = "Barracks level 3"
 cost = SubResource("Resource_5r62w")
 requirements = Array[ExtResource("2_cbv6a")]([ExtResource("2_pvbg7"), ExtResource("3_ef74p")])
+outpost_requirement = "ruby_cave"

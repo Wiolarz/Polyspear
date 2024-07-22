@@ -24,7 +24,7 @@ static func process_command(server : Server, peer : ENetPacketPeer, \
 	if index < 0 or index >= slots.size():
 		return FAILED
 	var slot = IM.game_setup_info.slots[index]
-	slot.occupier = 0
+	slot.occupier = 0  # AI takes over the player that left
 	server.broadcast_full_game_setup(IM.game_setup_info)
 	IM.game_setup_info_changed.emit()
 	return OK

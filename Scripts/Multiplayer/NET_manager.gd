@@ -43,6 +43,12 @@ func make_client() -> void:
 	add_child(client)
 
 
+func desync() -> void:
+	push_error("desync")
+	if client:
+		client.desync()
+
+
 func server_listen(address : String, port : int, username : String):
 	make_server()
 	server.listen(address, port, username)

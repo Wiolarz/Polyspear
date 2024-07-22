@@ -4,6 +4,6 @@
 
 [resource]
 script = ExtResource("1_unfbe")
+type = "wall"
 texture_path = "res://Art/battle_map/rock.png"
 flip_horizontal = false
-type = "wall"

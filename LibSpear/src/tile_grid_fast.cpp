@@ -14,8 +14,8 @@ void TileGridFast::set_tile(Position pos, Tile type) {
         printf("ERROR - invalid tile position %d %d (idx - %d, dims - %dx%d)\n", pos.x, pos.y, idx, dims.x, dims.y);
         return;
     }
-    auto old_team = tiles[idx].get_spawning_team();
-    auto new_team = type.get_spawning_team();
+    auto old_team = tiles[idx].get_spawning_army();
+    auto new_team = type.get_spawning_army();
     if(old_team != -1) {
         spawns[old_team].erase(std::find(spawns[old_team].begin(), spawns[old_team].end(), pos));
     }
@@ -31,7 +31,7 @@ void TileGridFast::set_map_size(Vector2i dimensions) {
 }
 
 void TileGridFast::_bind_methods() {
-    ClassDB::bind_method(D_METHOD("set_tile"), &TileGridFast::set_tile_gd);
+    ClassDB::bind_method(D_METHOD("set_tile"), &TileGridFast::set_tile_gd, "passable", "wall", "swamp", "");
     ClassDB::bind_method(D_METHOD("set_map_size"), &TileGridFast::set_map_size);
 }
 

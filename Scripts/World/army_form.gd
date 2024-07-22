@@ -41,7 +41,10 @@ static func create_neutral_army(army_preset : PresetArmy) -> ArmyForm:
 	result.get_node("sprite_unit").texture = \
 		load(army_preset.units[0].texture_path)
 
-	result.get_node("sprite_unit").scale = Vector2(0.5, 0.5)
+	result.get_node("sprite_unit").scale = Vector2(0.9, 0.9)
+	result.get_node("MoveLabel").text = ""
+	result.get_node("DescriptionLabel").text = ""
+
 	return result
 
 

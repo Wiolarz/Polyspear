@@ -9,6 +9,19 @@ func _init():
 	type = E.WorldMapTiles.CITY
 
 
+func interact(army : ArmyForm) -> void:
+	if controller != army.controller:
+		WM.win_game(army.controller)
+
+func on_end_of_turn() -> void:
+	controller.goods.add(Goods.new(0, 1, 0))
+	for bulding in buildings:
+		if bulding.name == "sawmill":
+			controller.goods.add(Goods.new(3, 0, 0))
+
+
+#region Heroes
+
 func get_heroes_to_buy() -> Array[DataHero]:
 	var result : Array[DataHero] = []
 	for hero_data : DataHero in controller.get_faction().heroes:
@@ -33,6 +46,10 @@ func can_buy_hero(hero: DataHero) -> bool:
 	var cost = controller.get_hero_cost(hero)
 	return controller.has_enough(cost)
 
+#endregion
+
+
+#region Units
 
 func get_units_to_buy() -> Array[DataUnit]:
 	var units : Array[DataUnit] = []
@@ -51,25 +68,44 @@ func can_buy_unit(unit: DataUnit, hero_army : ArmyForm) -> bool:
 	return controller.has_enough(unit.cost)
 
 
-func unit_has_required_building(unit : DataUnit):
-	return not unit.required_building or unit.required_building in buildings
+func unit_has_required_building(unit : DataUnit) -> bool:
+	if not unit.required_building:
+		return true
+	return has_built(unit.required_building)
+
+#endregion
 
 
-func build(building : DataBuilding):
+#region Buildings
+
+func build(building : DataBuilding) -> void:
 	if not can_build(building):
 		return
 	if controller.purchase(building.cost):
-		buildings.append(building)
+		if building.outpost_requirement == "":
+			buildings.append(building)
+		else:
+			controller.outpost_buildings.append(building)
 
 
-func has_build(building : DataBuilding):
-	return building in buildings
+func has_built(building : DataBuilding) -> bool:
+	return building in buildings or building in controller.outpost_buildings
 
 
-func can_build(building : DataBuilding):
-	if has_build(building):
+func can_build(building : DataBuilding)-> bool:
+	if has_built(building):
 		return false
 	if not controller.has_enough(building.cost):
 		return false
+
+	if not controller.outpost_requirement(building.outpost_requirement):
+		return false
+
 	return building.requirements \
-		.all(func b_present(b:DataBuilding): return has_build(b))
+		.all(func b_present(b:DataBuilding): return has_built(b))
+
+
+func to_specific_serializable(dict : Dictionary) -> void:
+	dict["buildings"] = []
+	for building in buildings:
+		dict["buildings"].append(DataBuilding.get_network_id(building))

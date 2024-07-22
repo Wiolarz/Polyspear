@@ -33,7 +33,7 @@ func has_slot(player_index : int) -> bool:
 	return player_index >= 0 and player_index < slots.size()
 
 
-func set_unit(slot_index:int, unit_index:int, unit_data:DataUnit):
+func set_unit(slot_index:int, unit_index:int, unit_data : DataUnit):
 	slots[slot_index].units_list[unit_index] = unit_data
 
 
@@ -124,13 +124,65 @@ static func units_list_receive_from_network(serialized: Array) -> Array[DataUnit
 	return result
 
 
+func set_battle_map(map : DataBattleMap):
+	assert(game_mode == GameMode.BATTLE, "setting battle map in game mode: " + str(game_mode))
+	battle_map = map
+	while slots.size() > map.player_slots.keys().size():
+		slots.pop_back()
+
+	var taken_colors = []
+	for slot in slots:
+		taken_colors.append(slot.color)
+
+	while slots.size() < map.player_slots.keys().size():
+		var slot = GameSetupInfo.Slot.new()
+		slots.append(slot)
+
+		slot.faction = CFG.FACTIONS_LIST[0]
+		slot.color = 0
+
+		while slot.color in taken_colors:
+			slot.color += 1
+
+		taken_colors.append(slot.color)
+
+	for slot_idx in slots.size():
+		slots[slot_idx].set_units_length(map.player_slots[slot_idx + 1])
+
+
+func set_world_map(map: DataWorldMap):
+	assert(game_mode == GameMode.WORLD, "setting world map in game mode: " + str(game_mode))
+
+	world_map = map
+
+	var map_slots_size = 2
+
+	while slots.size() > map_slots_size:
+		slots.pop_back()
+
+	var taken_colors = []
+	for slot in slots:
+		taken_colors.append(slot.color)
+
+	while slots.size() < map_slots_size:
+		var slot = GameSetupInfo.Slot.new()
+		slots.append(slot)
+		var faction_idx = wrap(slots.size()-1, 0, CFG.FACTIONS_LIST.size())
+		slot.faction = CFG.FACTIONS_LIST[faction_idx]
+		slot.color = 0
+
+		while slot.color in taken_colors:
+			slot.color += 1
+
+		taken_colors.append(slot.color)
+
+
 static func create_empty() -> GameSetupInfo:
 	var slot_count = 2
 	var result = GameSetupInfo.new()
 	result.slots.resize(slot_count)
 	for i in range(slot_count):
 		result.slots[i] = GameSetupInfo.Slot.new()
-		result.slots[i].occupier = 0
 		result.slots[i].faction = CFG.FACTIONS_LIST[i]
 		result.slots[i].color = i
 	return result
@@ -154,6 +206,10 @@ class Slot extends RefCounted: # check if this is good base
 	## for battle only mode
 	var units_list : Array[DataUnit] = [null,null,null,null,null]
 
+	func _init():
+		if CFG.player_options.use_default_AI_players:
+			occupier = 0
+
 
 	func is_bot() -> bool:
 		return occupier is int
@@ -163,6 +219,11 @@ class Slot extends RefCounted: # check if this is good base
 		return occupier.is_empty()
 
 
+	func set_units_length(value : int) -> void:
+		units_list.resize(value)
+
+
+	## for "Custom battles" unit list creation
 	## ignores empty values in units_list
 	func get_units_list() -> Array[DataUnit]:
 		var non_empty : Array[DataUnit] = []
@@ -171,3 +232,11 @@ class Slot extends RefCounted: # check if this is good base
 				continue
 			non_empty.append(u)
 		return non_empty
+
+	## for replays
+	func set_units(new_units : Array[DataUnit]) -> void:
+		for idx in range(units_list.size()):
+			if idx >= new_units.size():
+				units_list[idx] = null
+				continue
+			units_list[idx] = new_units[idx]

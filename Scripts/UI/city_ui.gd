@@ -1,6 +1,8 @@
 class_name CityUi
 extends Control
 
+signal purchased_hero  # Hero list UI Update
+
 var city : City
 ## currently visiting hero, null if none
 var hero_army : ArmyForm
@@ -10,9 +12,22 @@ var hero_army : ArmyForm
 @onready var building_buttons = $Buildings
 
 
+func _ready():
+	WM.world_move_done.connect(_refresh_all)
+
+
+func _exit_tree():
+	WM.world_move_done.disconnect(_refresh_all)
+
+
 func show_trade_ui(viewed_city : City, visiting_hero : ArmyForm):
 	city = viewed_city
 	hero_army = visiting_hero
+	if visiting_hero == null:
+		var army := W_GRID.get_army(viewed_city.coord)
+		if army and army.entity.hero:
+			hero_army = army
+
 	_refresh_all()
 	if not unit_panels.visible and visiting_hero:
 		_on_show_recruit_units_ui_pressed()
@@ -82,12 +97,7 @@ func _refresh_army_display():
 func _buy_unit(unit):
 	print("trying to buy ", unit.unit_name)
 
-	if not hero_army.controller.purchase(unit.cost):
-		print("not enough cash, needed ",unit.cost)
-		return
-
-	hero_army.entity.units_data.append(unit)
-	_refresh_all()
+	WM.request_recruit_unit(hero_army, unit)
 
 
 func _on_buy_hero_button_pressed(hero_index : int):
@@ -95,14 +105,10 @@ func _on_buy_hero_button_pressed(hero_index : int):
 
 	var hero_to_buy : DataHero = city.controller.get_faction().heroes[hero_index]
 
-	var cost = city.controller.get_hero_cost(hero_to_buy)
-	if not city.controller.purchase(cost):
-		print("not enough cash, needed ", cost)
-		return
-
-	WM.recruit_hero(city.controller, hero_to_buy, city.coord)
-	_refresh_all()
+	WM.request_recruit_hero(city.controller, hero_to_buy, city.coord)
 	_on_show_recruit_heroes_ui_pressed() # hide
+
+	purchased_hero.emit()
 
 
 func _refresh_buildings_display():
@@ -113,16 +119,20 @@ func _refresh_buildings_display():
 		if not b_button:
 			continue
 		var description = str(building_data.cost)
-		if city.has_build(building_data):
+		if city.has_built(building_data):
 			description = "✔"
 		b_button.text = "%s\n%s" % [building_data.name, description]
 		b_button.disabled = not city.can_build(building_data)
 		for s in b_button.pressed.get_connections():
 			b_button.pressed.disconnect(s["callable"])
 		b_button.pressed.connect(func build():
-			city.build(building_data)
-			_refresh_all()
+			WM.request_build(city, building_data)
 		)
+
+
+func show_recruit_heroes():
+	if not hero_panels.visible:
+		_on_show_recruit_heroes_ui_pressed()
 
 
 func _on_show_recruit_heroes_ui_pressed():
@@ -144,3 +154,10 @@ func _on_show_build_ui_pressed():
 	unit_panels.hide()
 	_refresh_buildings_display()
 	building_buttons.visible = not building_buttons.visible
+
+
+func _on_enter_city_pressed():
+	if not hero_army:
+		return
+	var move = WorldMoveInfo.make_world_move(hero_army.coord, city.coord, true)
+	WM.perform_world_move_info(move)

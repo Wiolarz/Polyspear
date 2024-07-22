@@ -13,10 +13,10 @@ const EMPTY_UNIT_TEXT = " - empty - "
 var setup_ui : BattleSetup = null
 var button_take_leave_state : TakeLeaveButtonState = TakeLeaveButtonState.FREE
 
+var unit_paths : Array[String]
 
 @onready var button_take_leave = $VBoxContainer/HBoxContainer/ButtonTakeLeave
 @onready var label_name = $VBoxContainer/HBoxContainer/PlayerInfoPanel/Label
-@onready var button_ai = $VBoxContainer/HBoxContainer/ButtonAI
 @onready var buttons_units : Array[OptionButton] = [
 	$VBoxContainer/OptionButtonUnit1,
 	$VBoxContainer/OptionButtonUnit2,
@@ -41,12 +41,6 @@ func cycle_color(backwards : bool = false):
 	if not setup_ui:
 		return
 	setup_ui.cycle_color_slot(self, backwards)
-
-
-func cycle_ai(backwards : bool = false):
-	if not setup_ui:
-		return
-	setup_ui.cycle_ai_slot(self, backwards)
 
 
 func set_visible_color(c : Color):
@@ -81,19 +75,25 @@ func set_visible_take_leave_button_state(state : TakeLeaveButtonState):
 
 
 func _ready():
-	var unit_paths = FileSystemHelpers.list_files_in_folder(CFG.UNITS_PATH, true, true)
+	unit_paths = FileSystemHelpers.list_files_in_folder(CFG.UNITS_PATH, true, true)
 	for index in buttons_units.size():
-		var b : OptionButton = buttons_units[index]
-		b.clear()
-		b.add_item(EMPTY_UNIT_TEXT)
-		for unit_path in unit_paths:
-			b.add_item(unit_path.trim_prefix(CFG.UNITS_PATH))
-		b.item_selected.connect(unit_in_army_changed.bind(index))
+		var button : OptionButton = buttons_units[index]
+		init_unit_button(button, index)
+
+
+func init_unit_button(button : OptionButton, index : int):
+	button.clear()
+	button.add_item(EMPTY_UNIT_TEXT)
+	for unit_path in unit_paths:
+		button.add_item(unit_path.trim_prefix(CFG.UNITS_PATH))
+	button.item_selected.connect(unit_in_army_changed.bind(index))
 
 
 func unit_in_army_changed(selected_index, unit_index):
 	var unit_path = buttons_units[unit_index].get_item_text(selected_index)
-	var unit_data = load(CFG.UNITS_PATH+"/"+unit_path)
+	var unit_data : DataUnit = null
+	if unit_path != EMPTY_UNIT_TEXT:
+		unit_data = load(CFG.UNITS_PATH+"/"+unit_path)
 	var slot_index = setup_ui.slot_to_index(self)
 	IM.game_setup_info.set_unit(slot_index, unit_index, unit_data)
 	if NET.server:
@@ -106,6 +106,8 @@ func apply_army_preset(army : PresetArmy):
 	var slot_index = setup_ui.slot_to_index(self)
 	var idx = 0
 	for u in army.units:
+		if not u:
+			continue
 		set_unit(buttons_units[idx], u)
 		IM.game_setup_info.set_unit(slot_index, idx, u)
 		idx += 1
@@ -118,6 +120,17 @@ func apply_army_preset(army : PresetArmy):
 
 
 func set_army(units_list:Array[DataUnit]):
+	while buttons_units.size() > units_list.size():
+		var b = buttons_units.pop_back()
+		$VBoxContainer.remove_child(b)
+		b.queue_free()
+	while buttons_units.size() < units_list.size():
+		var b := OptionButton.new()
+		init_unit_button(b, buttons_units.size())
+		buttons_units.append(b)
+		$VBoxContainer.add_child(b)
+		b.custom_minimum_size = Vector2(200, 0)
+
 	for index in units_list.size():
 		set_unit(buttons_units[index], units_list[index])
 
@@ -143,7 +156,3 @@ func _on_button_take_leave_pressed():
 
 func _on_button_color_pressed():
 	cycle_color()
-
-
-func _on_button_ai_pressed():
-	cycle_ai()

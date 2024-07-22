@@ -7,7 +7,12 @@ extends CanvasLayer
 
 @onready var camera_button : Button = $SwitchCamera
 
-var armies_reference : Array[BM.ArmyInBattleState]
+@onready var summary_container : Container = $SummaryContainer
+
+@onready var clock = $TurnsBG/ClockLeft
+@onready var turns = $TurnsBG/TurnCount
+
+var armies_reference : Array[BattleGridState.ArmyInBattleState]
 
 var selected_unit : DataUnit = null
 var selected_unit_button : TextureButton = null
@@ -17,6 +22,23 @@ var current_player : int = 0
 func _ready():
 	pass
 
+func _process(_delta):
+	if BM.battle_is_active():
+		update_clock()
+
+func update_clock() -> void:
+	var miliseconds_left = BM.get_current_time_left_ms()
+	var seconds = miliseconds_left/1000.0
+	var minutes = floor(seconds / 60)
+	seconds -= minutes * 60
+	var ms = 1000*(seconds-floor(seconds))
+
+	clock.text = "%2.0f : %02.0f : %03.0f" % [minutes, floor(seconds), ms]
+	clock.modulate = BM.get_current_slot_color().color
+
+	turns.text = "Turn %d (last turn %d)" % [BM.get_current_turn(), BM.get_max_turn()]
+
+
 func get_text_for(controller : Player, selected : bool):
 	var prefix = " > " if selected else ""
 	var player_name = "Neutral"
@@ -25,16 +47,17 @@ func get_text_for(controller : Player, selected : bool):
 	return prefix + "Player " + player_name
 
 
-func load_armies(army_list : Array[BM.ArmyInBattleState]):
+func load_armies(army_list : Array[BattleGridState.ArmyInBattleState]):
 	camera_button.disabled = IM.game_setup_info.game_mode != GameSetupInfo.GameMode.WORLD
 
 	# save armies
 	armies_reference = army_list
 
 	# removing temp shit
-	var players = players_box.get_children()
-	players[2].queue_free()
-	players[1].queue_free()
+	while players_box.get_child_count() > 1:
+		var c = players_box.get_child(1)
+		c.queue_free()
+		players_box.remove_child(c)
 
 	units_box.show()
 
@@ -45,7 +68,7 @@ func load_armies(army_list : Array[BM.ArmyInBattleState]):
 		var n = Button.new()
 		n.text = get_text_for(controller, idx == 0)
 		if controller:
-			n.modulate = controller.get_player_color()
+			n.modulate = controller.get_player_color().color
 		else:
 			n.modulate = Color.GRAY
 		n.pressed.connect(func select(): on_player_selected(idx, true))
@@ -75,11 +98,15 @@ func on_player_selected(army_index : int, preview : bool = false):
 	for old_buttons in units_box.get_children():
 		old_buttons.queue_free()
 
+	var units_controller : Player = armies_reference[army_index].army_reference.controller
+	var bg_color : DataPlayerColor = CFG.NEUTRAL_COLOR
+	if units_controller:
+		bg_color = units_controller.get_player_color()
 	for unit in armies_reference[army_index].units_to_summon:
-		var b = TextureButton.new()
+		var b := TextureButton.new()
 		b.texture_normal = CFG.SUMMON_BUTTON_TEXTURE
 
-		var unit_display := UnitForm.create_for_summon_ui(unit)
+		var unit_display := UnitForm.create_for_summon_ui(unit, bg_color)
 		unit_display.position = b.texture_normal.get_size()/2
 		b.add_child(unit_display)
 
@@ -95,13 +122,15 @@ func on_player_selected(army_index : int, preview : bool = false):
 		b.pressed.connect(lambda)
 
 
-func unit_summoned(summon_phase_end : bool, _unit : DataUnit):
+func unit_summoned(summon_phase_end : bool):
 	selected_unit = null
 	selected_unit_button = null
 
-	if summon_phase_end:
-		units_box.hide()
+	units_box.visible = not summon_phase_end
 
+
+func refresh_after_undo(summon_phase_active : bool):
+	units_box.visible = summon_phase_active
 
 
 func _on_switch_camera_pressed():
@@ -114,4 +143,3 @@ func _on_switch_camera_pressed():
 
 func _on_menu_pressed():
 	IM.toggle_in_game_menu()
-

@@ -1,11 +1,9 @@
 class_name Unit
 extends RefCounted # default
 
-signal select_request(is_selected : bool)
 signal unit_died()
 signal unit_turned()
 signal unit_moved()
-signal anim_end()
 
 var controller : Player
 
@@ -18,16 +16,16 @@ var coord : Vector2i
 ## see E.GridDirections, int for convinience
 var unit_rotation : int
 
-## bool to indicate weather unit synchs with some animations or not
-var waits_for_form : bool
-
-## unit died and waits for kill anim to end
+## unit died
 var dead : bool
+
+var is_on_swamp : bool = false
+
 
 static func create(new_controller : Player, \
 		new_template : DataUnit, \
 		new_coord : Vector2i, \
-		new_rotation : E.GridDirections) -> Unit:
+		new_rotation : GenericHexGrid.GridDirections) -> Unit:
 	var result = Unit.new()
 	result.controller = new_controller
 	result.template = new_template
@@ -37,65 +35,55 @@ static func create(new_controller : Player, \
 
 
 ## turns unit front to a given side, can be awaited see waits_for_form
-func turn(side : E.GridDirections):
+func turn(side : GenericHexGrid.GridDirections):
+	if side == unit_rotation:
+		return
 	unit_rotation = side
-	if waits_for_form:
-		unit_turned.emit()
-		await anim_end
+	print("emit turn [turn]")
+	unit_turned.emit()
 
 
 ## puts unit to a given coordinate, can be awaited see waits_for_form
-func move(new_coord : Vector2i):
+func move(new_coord : Vector2i, is_swamp : bool):
+	is_on_swamp = is_swamp
+
+	var old = coord
 	coord = new_coord
-	if waits_for_form:
-		unit_moved.emit()
-		await anim_end
+	print("emit move [move] %s %s" % [str(old), str(new_coord)])
+	unit_moved.emit()
 
 
 ## kills unit, can be awaited see waits_for_form
-func die():
+func unit_killed():
 	dead = true
-	if waits_for_form:
-		unit_died.emit()
-		await anim_end
+	unit_died.emit()
 
 
 func can_defend(side : int) -> bool:
 	return get_symbol(side) == E.Symbols.SHIELD
 
 
+## gets symbol facing specified directin on the battle map
 func get_symbol(side_world : int) -> E.Symbols:
-	var side_local : int = E.rotate_clockwise(side_world as E.GridDirections, -unit_rotation)
+	return get_symbol_when_rotated(side_world, unit_rotation)
+
+
+## gets symbol facing specified directin on the battle map, if unit was rotated in given dir
+func get_symbol_when_rotated(side_world : int, hypotetical_rotation : int) -> E.Symbols:
+	if is_on_swamp:
+		return E.Symbols.EMPTY
+	var side_local : int = GenericHexGrid.rotate_clockwise( \
+			side_world as GenericHexGrid.GridDirections, -hypotetical_rotation)
 	return template.symbols[side_local].type
 
+
 func get_front_symbol() -> E.Symbols:
-	return template.symbols[E.DIRECTION_FRONT].type
+	if is_on_swamp:
+		return E.Symbols.EMPTY
+	return template.symbols[GenericHexGrid.DIRECTION_FRONT].type
 
-## can i kill this enemy in melee if i attack in specified direction
-func can_kill(enemy : Unit, attack_direction : int):
-	# - attacker has no attack symbol on front
-	# - attacker has push symbol on front (no current unit has it)
-	# - attacker has some attack symbol
-	#   - defender has shield
 
-	match get_front_symbol():
-		E.Symbols.EMPTY:
-			# can't deal with enemy_unit
-			return false
-		E.Symbols.SHIELD:
-			# can't deal with enemy_unit
-			return false
-		E.Symbols.PUSH:
-			# push ignores enemy_unit shields etc
-			return true
-		_:
-			# assume other attack symbol
-			# Does enemy_unit has a shield?
-			var defense_direction = E.opposite_direction(attack_direction)
-			var defense_symbol = enemy.get_symbol(defense_direction)
-
-			if defense_symbol == E.Symbols.SHIELD:
-				return false
-			# no shield, attack ok
-			return true
-
+func get_player_color() -> DataPlayerColor:
+	if not controller:
+		return CFG.NEUTRAL_COLOR
+	return controller.get_player_color()

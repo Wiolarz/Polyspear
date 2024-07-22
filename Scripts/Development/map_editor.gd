@@ -17,7 +17,8 @@ var current_map_type : MapType
 var current_brush : DataTile
 var current_button: TextureButton
 
-@onready var tile_buttons_box : BoxContainer = $Scroll/TilesPickerBox
+@onready var tile_buttons_box : BoxContainer = $TopBar/MarginContainer/VBoxContainer/Scroll/TilesPickerBox
+@onready var tile_name_label : Label = $TopBar/MarginContainer/VBoxContainer/TileNameContainer/TileNameLabel
 @onready var tiles_world : Array[String] = \
 		FileSystemHelpers.list_files_in_folder(CFG.WORLD_MAP_TILES_PATH, true)
 @onready var tiles_battle : Array[String] = \
@@ -41,6 +42,7 @@ func _create_button(map_tile : String) -> TextureButton:
 		current_brush = tile
 		current_button = new_button
 		current_button.modulate = Color.DIM_GRAY
+		tile_name_label.text = tile.type
 
 	new_button.pressed.connect(lambda)  # self._button_pressed
 	return new_button
@@ -54,11 +56,9 @@ func _create_button(map_tile : String) -> TextureButton:
 ## Replaces target map tile with currently selected "brush" (map tile type)
 func grid_input(coord : Vector2i) -> void:
 	if current_map_type == MapType.WORLD:
-		W_GRID.tile_grid[coord.x][coord.y].type = current_brush.type
-		W_GRID.tile_grid[coord.x][coord.y].get_node("Sprite2D").texture = ResourceLoader.load(current_brush.texture_path)
+		W_GRID.paint(coord, current_brush)
 	else:
-		B_GRID.tile_grid[coord.x][coord.y].type = current_brush.type
-		B_GRID.tile_grid[coord.x][coord.y].get_node("Sprite2D").texture = ResourceLoader.load(current_brush.texture_path)
+		BM.paint(coord, current_brush)
 
 
 func _set_grid_type(new_type : MapType) -> void:
@@ -78,12 +78,21 @@ func _set_grid_type(new_type : MapType) -> void:
 
 func _mark_button(selected_type : MapType):
 	if selected_type == MapType.WORLD:
-		$MenuContainer/NewWorldMap.modulate = Color.FIREBRICK
-		$MenuContainer/NewBattleMap.modulate = Color.WHITE
+		$LMenuContainer/NewWorldMap.modulate = Color.FIREBRICK
+		$LMenuContainer/NewBattleMap.modulate = Color.WHITE
 	else:
-		$MenuContainer/NewBattleMap.modulate = Color.FIREBRICK
-		$MenuContainer/NewWorldMap.modulate = Color.WHITE
+		$LMenuContainer/NewBattleMap.modulate = Color.FIREBRICK
+		$LMenuContainer/NewWorldMap.modulate = Color.WHITE
 
+
+func open_draw_menu():
+	visible = true
+	_on_new_world_map_pressed()
+
+#endregion
+
+
+#region Saving Map
 
 func _optimize_grid_size(local_tile_grid : Array) -> Array:
 	"""
@@ -96,9 +105,11 @@ func _optimize_grid_size(local_tile_grid : Array) -> Array:
 	var right_pos : int = 0
 	var top_pos : int = local_tile_grid[0].size()
 	var bot_pos : int = 0
+	var found_any_tiles = false
 	for x in local_tile_grid.size():
 		for y in local_tile_grid[0].size():
 			if local_tile_grid[x][y].type != "sentinel":
+				found_any_tiles = true
 				if left_pos > x:
 					left_pos = x
 				elif right_pos < x:
@@ -107,6 +118,10 @@ func _optimize_grid_size(local_tile_grid : Array) -> Array:
 					top_pos = y
 				if bot_pos < y:
 					bot_pos = y
+	if not found_any_tiles:
+		push_warning("map without any tiles...")
+		return [[]]
+
 	for right in range(max(local_tile_grid.size() - right_pos - 1, 0)):
 		local_tile_grid.pop_back()
 
@@ -126,9 +141,21 @@ func _optimize_grid_size(local_tile_grid : Array) -> Array:
 	return local_tile_grid
 
 
-func open_draw_menu():
-	visible = true
-	_on_new_world_map_pressed()
+func _generate_world_max_player_number(_local_tile_grid : Array) -> int:
+	return 2  # TEMP
+
+
+func _generate_battle_players_slots(local_tile_grid : Array) -> Dictionary:
+	var player_slots : Dictionary = {}
+	for tile_column : Array in local_tile_grid:
+		for tile : TileForm in tile_column:
+			if tile.type.substr(1) == "_player_spawn":
+				var player_idx : int = tile.type[0].to_int()
+				if player_idx in player_slots.keys():
+					player_slots[player_idx] += 1
+				else:
+					player_slots[player_idx] = 1
+	return player_slots
 
 #endregion
 
@@ -143,66 +170,89 @@ func _on_load_map_pressed():
 	var map_to_load = load(map_path)
 	assert(map_to_load != null, "there is no selected map to be loaded")
 	WM.close_world()
-	BM.reset_grid_and_unit_forms()
+	BM.unload_for_editor()
 	if map_to_load is DataWorldMap:
 		_set_grid_type(MapType.WORLD)
-		W_GRID.generate_grid(map_to_load)
+		W_GRID.load_map(map_to_load)
 	else:
 		_set_grid_type(MapType.BATTLE)
-		B_GRID.generate_grid(map_to_load)
+		BM.load_editor_map(map_to_load)
+
+
+func get_battle_map(trim : bool = true) -> DataBattleMap:
+	var result = DataBattleMap.new()
+	result.grid_data = []
+
+	var manager_grid_data = BM.editor_get_hexes_copy_as_array()
+	if trim:
+		manager_grid_data = _optimize_grid_size(manager_grid_data)
+	for tile_column in manager_grid_data:
+		var current_column = []
+		for tile : TileForm in tile_column:
+			current_column.append( DataTile.create_data_tile(tile))
+		result.grid_data.append(current_column)
+
+	result.grid_width = manager_grid_data.size()
+	result.grid_height = manager_grid_data[0].size()
+	var player_slots =  _generate_battle_players_slots(manager_grid_data)
+	# print(player_slots)
+	result.player_slots = player_slots
+	result.max_player_number = player_slots.keys().size()
+	return result
+
+
+func get_world_map(trim : bool =  true) -> DataWorldMap:
+	var result = DataWorldMap.new()
+	result.grid_data = []
+
+	var manager_grid_data = W_GRID.tile_grid.hexes.duplicate(true)
+	if trim:
+		manager_grid_data = _optimize_grid_size(manager_grid_data)
+	for tile_column in manager_grid_data:
+		var current_column = []
+		for tile : TileForm in tile_column:
+			current_column.append( DataTile.create_data_tile(tile))
+		result.grid_data.append(current_column)
+
+	result.grid_width = manager_grid_data.size()
+	result.grid_height = manager_grid_data[0].size()
+	result.max_player_number = _generate_world_max_player_number(manager_grid_data)
+
+	return result
 
 
 func _on_save_map_pressed():
-	print("save map")
-	var map_save_name : String = map_file_name_input.text
-
+	print("saving map")
+	var map_file_name : String = map_file_name_input.text
 	var new_map
-	var local_tile_grid : Array
 	var save_path
 	if current_map_type == MapType.WORLD:
-		new_map = DataWorldMap.new()
-		local_tile_grid = W_GRID.tile_grid
-		save_path = CFG.WORLD_MAPS_PATH + map_save_name + ".tres"
+		new_map = get_world_map()
+		save_path = CFG.WORLD_MAPS_PATH + map_file_name + ".tres"
 	else:
-		new_map = DataBattleMap.new()
-		local_tile_grid = B_GRID.tile_grid
-		save_path = CFG.BATTLE_MAPS_PATH + map_save_name + ".tres"
-
-	var grid_data = []
-
-	local_tile_grid = _optimize_grid_size(local_tile_grid.duplicate(true))
-
-	for tile_column in local_tile_grid:
-		var current_column = []
-		grid_data.append(current_column)
-		for tile in tile_column:
-			var new_data_tile = DataTile.create_data_tile(tile)
-
-			current_column.append(new_data_tile)
-
-
-	new_map.grid_data = grid_data
-
-	new_map.grid_height = grid_data[0].size()
-	new_map.grid_width = grid_data.size()
+		new_map = get_battle_map()
+		save_path = CFG.BATTLE_MAPS_PATH + map_file_name + ".tres"
 
 	ResourceSaver.save(new_map, save_path)
+	# WARNING clears uids
+	# see https://github.com/godotengine/godot/issues/83259
+	# use uid_fixer script to fix
 
 	print("end save map")
+	print("reloading map")
+	_on_load_map_pressed()
 
 
 func _generate_empty_map(size_x : int = 5, size_y : int = 5) -> Array: # -> Array[Array[DataTile]]
 	WM.close_world()
-	BM.reset_grid_and_unit_forms()
+	BM.unload_for_editor()
 	var grid_data = []
 
 	for tile_column in range(size_x):
 		var current_column = []
 		grid_data.append(current_column)
 		for tile in range(size_y):
-			var new_data_tile = load(CFG.SENTINEL_TILE_PATH)
-
-			current_column.append(new_data_tile)
+			current_column.append(create_empty_tile())
 
 	return grid_data
 
@@ -219,24 +269,22 @@ func _on_new_world_map_pressed():
 	new_map.grid_width = grid_data[0].size()
 	#print(new_map.grid_height, " ", new_map.grid_width)
 	W_GRID.reset_data()
-	W_GRID.generate_grid(new_map)
+	W_GRID.load_map(new_map)
 
 
 func _on_new_battle_map_pressed():
 	_set_grid_type(MapType.BATTLE)
 	map_file_name_input.text = "new_battleground"
 
-	var grid_data = _generate_empty_map()
-
 	var new_map = DataBattleMap.new()
-
+	var grid_data = _generate_empty_map()
 	new_map.grid_data = grid_data
 
 	new_map.grid_height = grid_data.size()
 	new_map.grid_width = grid_data[0].size()
 	#print(new_map.grid_height, " ", new_map.grid_width)
-	B_GRID.reset_data()
-	B_GRID.generate_grid(new_map)
+	BM.unload_for_editor()
+	BM.load_editor_map(new_map)
 
 
 func _on_open_button_pressed():
@@ -255,3 +303,45 @@ func _on_back_button_pressed():
 	IM.go_to_main_menu()
 
 #endregion
+
+func create_empty_tile() -> DataTile:
+	return load(CFG.SENTINEL_TILE_PATH)
+
+
+func _on_add_column_pressed():
+	if current_map_type == MapType.WORLD:
+		var new_map := get_world_map(false)
+		new_map.grid_data.append(create_empty_row(new_map.grid_height))
+		new_map.grid_width += 1
+		WM.close_world()
+		W_GRID.load_map(new_map)
+	else:
+		var new_map := get_battle_map(false)
+		new_map.grid_data.append(create_empty_row(new_map.grid_height))
+		new_map.grid_width += 1
+		BM.unload_for_editor()
+		BM.load_editor_map(new_map)
+
+
+func create_empty_row(length : int) -> Array[DataTile]:
+	var row: Array[DataTile] = []
+	for x in length:
+		row.append(create_empty_tile())
+	return row
+
+
+func _on_add_row_pressed():
+	if current_map_type == MapType.WORLD:
+		var new_map := get_world_map(false)
+		for row in new_map.grid_data:
+			row.append(create_empty_tile())
+		new_map.grid_height += 1
+		WM.close_world()
+		W_GRID.load_map(new_map)
+	else:
+		var new_map := get_battle_map(false)
+		for row in new_map.grid_data:
+			row.append(create_empty_tile())
+		new_map.grid_height += 1
+		BM.unload_for_editor()
+		BM.load_editor_map(new_map)

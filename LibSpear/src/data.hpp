@@ -114,91 +114,41 @@ enum class BattleState: uint8_t {
 };
 
 class Tile {
-    enum class Type: uint8_t {
-        SENTINEL,
-        BLUE_SPAWN,
-        EMPTY,
-        RED_SPAWN,
-        WALL,
-        SWAMP,
-        HOLE,
-        FORBIDDEN
-    } type;
+    static const uint8_t PASSABLE = 0x1;
+    static const uint8_t WALL = 0x2;
+    static const uint8_t SWAMP = 0x4;
+    static const uint8_t FORBIDDEN = 0x8;
+
+    uint8_t flags;
+    int8_t spawning_army;
+    uint8_t spawning_direction;
 
 public:
-    Tile() : type(Type::FORBIDDEN) {}
-    Tile(godot::String& gstr) {
-        auto stru8 = gstr.utf8();
-        auto str = stru8.ptr();
-        if(strcmp(str, "sentinel") == 0) {
-            type = Tile::Type::SENTINEL;
-        }
-        else if(strcmp(str, "blue_spawn") == 0) {
-            type = Tile::Type::BLUE_SPAWN;
-        }
-        else if(strcmp(str, "empty") == 0) {
-            type = Tile::Type::EMPTY;
-        }
-        else if(strcmp(str, "red_spawn") == 0) {
-            type = Tile::Type::RED_SPAWN;
-        }
-        else if(strcmp(str, "wall") == 0) {
-            type = Tile::Type::WALL;
-        }
-        else if(strcmp(str, "swamp") == 0) {
-            type = Tile::Type::SWAMP;
-        }
-        else if(strcmp(str, "hole") == 0) {
-            type = Tile::Type::HOLE;
-        }
-        else {
-            printf("WARNING - unknown tile type %s\n", str);
-            type = Tile::Type::FORBIDDEN;
-        }
-    }
+    Tile() : flags(FORBIDDEN), spawning_army(-1) {}
+    Tile(bool passable, bool wall, bool swamp, int army, unsigned direction) :
+        flags(
+            (passable ? PASSABLE : 0)
+          | (wall ? WALL : 0)
+          | (swamp ? SWAMP : 0)
+        ),
+        spawning_army(army),
+        spawning_direction(direction)
+    {}
     
     inline bool is_passable() {
-        switch(type) {
-            case Tile::Type::WALL:
-            case Tile::Type::SENTINEL:
-            case Tile::Type::HOLE:
-                return false;
-            default:
-                return true;
-        }
+        return (flags & PASSABLE) != 0;
     }
 
     inline bool is_wall() {
-        switch(type) {
-            case Tile::Type::WALL:
-            case Tile::Type::SENTINEL:
-            case Tile::Type::FORBIDDEN:
-                return true;
-            default:
-                return false;
-        }
+        return (flags & WALL) != 0;
     }
 
-    inline int get_spawning_team() {
-        switch(type) {
-            case Tile::Type::RED_SPAWN:
-                return 0;
-            case Tile::Type::BLUE_SPAWN:
-                return 1;
-            default:
-                return -1;
-        }
+    inline int get_spawning_army() {
+        return spawning_army;
     }
 
     inline int get_spawn_rotation() {
-        switch(type) {
-            case Tile::Type::RED_SPAWN:
-                return 0;
-            case Tile::Type::BLUE_SPAWN:
-                return 3;
-            default:
-                return true;
-        }
+        return spawning_direction;
     }
 };
 

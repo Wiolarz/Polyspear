@@ -5,4 +5,4 @@
 [resource]
 script = ExtResource("1_rdbby")
 type = 1
-texture_path = "res://Art/old/spear.png"
+texture_path = "res://Art/items/two handed weapons/blue_two_handed_spear.png"

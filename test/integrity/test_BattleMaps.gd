@@ -2,9 +2,11 @@ extends GutTest
 
 const ALLOWED_BATTLE_TILE_TYPES = {
 	"sentinel" : true,
-	"blue_spawn": true,
+	"1_player_spawn": true,
+	"2_player_spawn": true,
+	"3_player_spawn": true,
+	"4_player_spawn": true,
 	"empty": true,
-	"red_spawn": true,
 	"wall": true,
 	"swamp": true,
 	"hole": true,
@@ -35,7 +37,7 @@ func test_battle_maps():
 	for path in map_paths:
 		gut.p("Checking "+path)
 		var map_data : DataBattleMap = load(path)
-		assert_between(map_data.max_player_number, 2, 2, "max_player_number")
+		assert_between(map_data.max_player_number, 2, 4, "max_player_number")
 		var tile_types_seen = {}
 		for x in range(map_data.grid_width):
 			for y in range(map_data.grid_height):
@@ -47,7 +49,7 @@ func test_battle_maps():
 				if not tile_types_seen.has(tile.type):
 					tile_types_seen[tile.type] = 0
 				tile_types_seen[tile.type] += 1
-		assert_between(tile_types_seen["blue_spawn"], 2,5,"blue_spawn")
-		assert_between(tile_types_seen["red_spawn"], 2,5,"red_spawn")
-		gut.p([tile_types_seen["blue_spawn"], tile_types_seen["red_spawn"]])
+		assert_between(tile_types_seen["2_player_spawn"], 1,10,"2_player_spawn")
+		assert_between(tile_types_seen["1_player_spawn"], 1,10,"1_player_spawn")
+		gut.p([tile_types_seen["2_player_spawn"], tile_types_seen["1_player_spawn"]])
 

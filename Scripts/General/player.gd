@@ -16,6 +16,8 @@ var capital_city : City:
 		assert(false, "attempt to modify read only value of player capital_city")
 
 var cities : Array[City]
+var outposts : Array[Outpost]
+var outpost_buildings : Array[DataBuilding]
 
 var hero_armies : Array[ArmyForm] = []
 
@@ -39,6 +41,8 @@ func _init():
 	name = "Player"
 
 
+#region Getters
+
 func get_player_name() -> String:
 	if slot.is_bot():
 		return "AI"
@@ -48,23 +52,14 @@ func get_player_name() -> String:
 	return slot.occupier
 
 
-func get_player_color() -> Color:
-	return CFG.TEAM_COLORS[slot.color].color
+func get_player_color() -> DataPlayerColor:
+	return CFG.TEAM_COLORS[slot.color]
 
 
 func get_faction() -> DataFaction:
 	return slot.faction
 
-
-## let player know its his turn,
-## in case play is AI, call his decision maker
-func your_turn():
-	var color_name = CFG.TEAM_COLORS[slot.color].name
-	print("your move %s - %s" % [get_player_name(), color_name])
-
-	if bot_engine != null and not NET.client: # AI is simulated on server only
-		bot_engine.play_move()
-
+#endregion
 
 func set_capital(capital : City):
 	capital.controller = self
@@ -84,6 +79,8 @@ func purchase(cost : Goods) -> bool:
 	print("not enough money")
 	return false
 
+
+#region Heroes
 
 func hero_recruited(hero : ArmyForm):
 	hero_armies.append(hero)
@@ -118,3 +115,35 @@ func get_hero_cost(data_hero: DataHero):
 	if has_dead_hero(data_hero):
 		return data_hero.revive_cost
 	return data_hero.cost
+
+#endregion
+
+
+#region Outposts
+
+func outpost_add(outpost : Outpost) -> void:
+	outposts.append(outpost)
+
+func outpost_remove(outpost : Outpost) -> void:
+	assert(outpost in outposts, "attempt to remove outpost that wasnt assigned to the player")
+
+	outposts.erase(outpost)
+
+	if not outpost_requirement(outpost.outpost_type):
+		outpost_demolish(outpost.outpost_type)
+
+func outpost_requirement(outpost_type_needed : String) -> bool:
+	if outpost_type_needed == "":
+		return true
+	for outpost in outposts:
+		if outpost.outpost_type == outpost_type_needed:
+			return true
+	return false
+
+func outpost_demolish(demolish_type : String):
+	for building_idx in range(outpost_buildings.size() -1, -1, -1):
+		if outpost_buildings[building_idx].outpost_requirement == demolish_type:
+			outpost_buildings.pop_at(building_idx)
+
+
+#endregion

@@ -1,9 +1,11 @@
-[gd_scene load_steps=6 format=3 uid="uid://b4ndp6v0ts1on"]
+[gd_scene load_steps=8 format=3 uid="uid://b4ndp6v0ts1on"]
 
 [ext_resource type="Script" path="res://Scripts/UI/main_menu.gd" id="1_iln2i"]
 [ext_resource type="PackedScene" uid="uid://b3dmmym31kdbx" path="res://Scenes/UI/Lobby/HostLobby.tscn" id="2_eyp7f"]
 [ext_resource type="PackedScene" uid="uid://biy1n2dqeqrox" path="res://Scenes/UI/Lobby/ClientLobby.tscn" id="3_rshoh"]
 [ext_resource type="PackedScene" uid="uid://b6eoph2qpu0d" path="res://Scenes/UI/SettingsMenu.tscn" id="4_f2bj7"]
+[ext_resource type="PackedScene" uid="uid://iqku7lopk1xl" path="res://Scenes/UI/CreditsMenu.tscn" id="5_bvo4w"]
+[ext_resource type="PackedScene" uid="uid://cs7ibsdnsrn5v" path="res://Scenes/UI/ReplaysMenu.tscn" id="6_lxdjb"]
 
 [sub_resource type="StyleBoxLine" id="StyleBoxLine_3lov4"]
 color = Color(0.701961, 0.701961, 0.701961, 1)
@@ -22,54 +24,42 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 3
+theme_override_constants/separation = 0
 
 [node name="TopMenu" type="HBoxContainer" parent="MainContainer"]
 layout_mode = 2
 size_flags_vertical = 0
+theme_override_constants/separation = 20
 
-[node name="EditorsMenuBar" type="MenuBar" parent="MainContainer/TopMenu"]
+[node name="Tabs" type="TabBar" parent="MainContainer/TopMenu"]
 layout_mode = 2
-theme_override_constants/h_separation = 0
-prefer_global_menu = false
-
-[node name="Editors" type="PopupMenu" parent="MainContainer/TopMenu/EditorsMenuBar"]
-size = Vector2i(238, 126)
-item_count = 2
-item_0/text = "Map Editor"
-item_0/id = 0
-item_1/text = "Unit Editor"
-item_1/id = 1
-
-[node name="ReplaysMenuBar" type="MenuBar" parent="MainContainer/TopMenu"]
-layout_mode = 2
-prefer_global_menu = false
-
-[node name="Replays" type="PopupMenu" parent="MainContainer/TopMenu/ReplaysMenuBar"]
-size = Vector2i(243, 100)
-item_count = 1
-item_0/text = "Run Replay"
-item_0/id = 0
-
-[node name="MultiplayerMenuBar" type="MenuBar" parent="MainContainer/TopMenu"]
-layout_mode = 2
-prefer_global_menu = false
-
-[node name="Multiplayer" type="PopupMenu" parent="MainContainer/TopMenu/MultiplayerMenuBar"]
-size = Vector2i(247, 126)
-item_count = 2
-item_0/text = "Host server"
-item_0/id = 0
-item_1/text = "Join"
-item_1/id = 1
+tab_count = 5
+clip_tabs = false
+tab_0/title = " >> Host <<"
+tab_1/title = "-- Join --"
+tab_2/title = "Settings"
+tab_3/title = "Credits"
+tab_4/title = "Replays"
 
 [node name="VSeparator" type="VSeparator" parent="MainContainer/TopMenu"]
 layout_mode = 2
 theme_override_constants/separation = 92
 theme_override_styles/separator = SubResource("StyleBoxLine_3lov4")
 
-[node name="SettingsButton" type="Button" parent="MainContainer/TopMenu"]
+[node name="UnitEditorButton" type="Button" parent="MainContainer/TopMenu"]
 layout_mode = 2
-text = "Settings"
+text = "Unit Editor
+"
+
+[node name="MapEditorButton" type="Button" parent="MainContainer/TopMenu"]
+layout_mode = 2
+text = "Map Editor
+"
+
+[node name="ExitButton" type="Button" parent="MainContainer/TopMenu"]
+layout_mode = 2
+size_flags_horizontal = 10
+text = "Exit"
 
 [node name="HostLobby" parent="MainContainer" instance=ExtResource("2_eyp7f")]
 layout_mode = 2
@@ -83,18 +73,16 @@ layout_mode = 2
 visible = false
 layout_mode = 2
 
-[node name="FileDialogReplay" type="FileDialog" parent="."]
-title = "Open a File"
-initial_position = 2
-size = Vector2i(1000, 900)
-ok_button_text = "Open"
-file_mode = 0
-access = 1
-root_subfolder = "replays/"
+[node name="CreditsMenu" parent="MainContainer" instance=ExtResource("5_bvo4w")]
+visible = false
+layout_mode = 2
+
+[node name="ReplaysMenu" parent="MainContainer" instance=ExtResource("6_lxdjb")]
+visible = false
+layout_mode = 2
 
 [connection signal="visibility_changed" from="." to="." method="_on_visibility_changed"]
-[connection signal="id_pressed" from="MainContainer/TopMenu/EditorsMenuBar/Editors" to="." method="_on_editors_menu_id_pressed"]
-[connection signal="id_pressed" from="MainContainer/TopMenu/ReplaysMenuBar/Replays" to="." method="_on_replays_id_pressed"]
-[connection signal="id_pressed" from="MainContainer/TopMenu/MultiplayerMenuBar/Multiplayer" to="." method="_on_multiplayer_id_pressed"]
-[connection signal="pressed" from="MainContainer/TopMenu/SettingsButton" to="." method="_on_settings_button_pressed"]
-[connection signal="file_selected" from="FileDialogReplay" to="." method="_on_file_dialog_replay_file_selected"]
+[connection signal="tab_changed" from="MainContainer/TopMenu/Tabs" to="." method="_on_tabs_tab_changed"]
+[connection signal="pressed" from="MainContainer/TopMenu/UnitEditorButton" to="." method="_on_unit_editor_button_pressed"]
+[connection signal="pressed" from="MainContainer/TopMenu/MapEditorButton" to="." method="_on_map_editor_button_pressed"]
+[connection signal="pressed" from="MainContainer/TopMenu/ExitButton" to="." method="_on_exit_button_pressed"]

@@ -24,8 +24,6 @@ class TileGridFast : public Node {
     Vector2i dims;
     std::vector<Tile> tiles;
     std::array<std::vector<Position>, 2> spawns;
-
-    friend class SpawnIterator;
 protected:
     static void _bind_methods();
 
@@ -35,9 +33,9 @@ public:
     Tile get_tile(Position pos);
     //inline int get_tile_gd(Vector2i pos);
     
-    void set_tile(Position pos, Tile tile_type);
-    inline void set_tile_gd(Vector2i pos, godot::String str) {
-        set_tile(Position(pos.x, pos.y), Tile(str));
+    void set_tile(Position pos, Tile tile);
+    inline void set_tile_gd(Vector2i pos, bool passable, bool wall, bool swamp, int army, unsigned direction) {
+        set_tile(Position(pos.x, pos.y), Tile(passable, wall, swamp, army, direction));
     }
 
     constexpr const std::vector<Position>& get_spawns(int army) const {

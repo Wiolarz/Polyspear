@@ -1,9 +1,17 @@
-[gd_scene load_steps=5 format=3 uid="uid://c7521eme06u5v"]
+[gd_scene load_steps=9 format=3 uid="uid://c7521eme06u5v"]
 
 [ext_resource type="Script" path="res://Scripts/UI/world_ui.gd" id="1_kic0v"]
 [ext_resource type="Shortcut" uid="uid://fuvss5hfg4q2" path="res://Resources/Shortcuts/go_back.tres" id="2_nfb7t"]
-[ext_resource type="PackedScene" uid="uid://dm3oqhffhprfy" path="res://Scenes/UI/CityUI.tscn" id="3_nvhgh"]
+[ext_resource type="Texture2D" uid="uid://bul31ap566nua" path="res://Art/world_heroes/elf_druid.png" id="3_ft084"]
+[ext_resource type="PackedScene" uid="uid://dm3oqhffhprfy" path="res://Scenes/UI/World/CityUI.tscn" id="3_nvhgh"]
 [ext_resource type="PackedScene" uid="uid://c2tjldwjynnry" path="res://Scenes/UI/GameChat.tscn" id="4_b7mj1"]
+[ext_resource type="Shader" path="res://Art/UI/player_slot_panel.gdshader" id="6_0pp5m"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_nfvsa"]
+shader = ExtResource("6_0pp5m")
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_kwqk7"]
+bg_color = Color(0.440812, 0.656877, 0.539633, 1)
 
 [node name="WorldUi" type="CanvasLayer"]
 script = ExtResource("1_kic0v")
@@ -58,6 +66,26 @@ offset_bottom = 80.0
 layout_mode = 2
 text = "0 🪓| 0 ⛏️| 0 💎"
 
+[node name="HeroesList" type="HBoxContainer" parent="."]
+offset_left = 304.0
+offset_top = 25.0
+offset_right = 632.0
+offset_bottom = 125.0
+
+[node name="TextureButton" type="TextureButton" parent="HeroesList"]
+custom_minimum_size = Vector2(200, 200)
+layout_mode = 2
+texture_normal = ExtResource("3_ft084")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="TextureButton2" type="TextureButton" parent="HeroesList"]
+custom_minimum_size = Vector2(200, 200)
+layout_mode = 2
+texture_normal = ExtResource("3_ft084")
+ignore_texture_size = true
+stretch_mode = 5
+
 [node name="CityUi" parent="." instance=ExtResource("3_nvhgh")]
 
 [node name="GameChat" parent="." instance=ExtResource("4_b7mj1")]
@@ -71,6 +99,33 @@ offset_top = -400.0
 offset_right = 0.0
 grow_horizontal = 0
 grow_vertical = 0
+
+[node name="YouWinPanel" type="Panel" parent="."]
+visible = false
+material = SubResource("ShaderMaterial_nfvsa")
+offset_left = 370.0
+offset_top = 162.0
+offset_right = 1354.0
+offset_bottom = 729.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_kwqk7")
+
+[node name="RichTextLabel" type="Label" parent="YouWinPanel"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -447.0
+offset_top = -251.5
+offset_right = 447.0
+offset_bottom = 251.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 100
+text = "YOU WIN"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [connection signal="pressed" from="Menu" to="." method="_on_menu_pressed"]
 [connection signal="pressed" from="End Turn" to="." method="_on_end_turn_pressed"]

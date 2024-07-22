@@ -3,6 +3,7 @@ extends Node
 
 var in_game_menu
 var main_menu
+var ui_overlay
 var map_editor
 var unit_editor
 var host_lobby
@@ -18,12 +19,14 @@ func _ready():
 
 	in_game_menu = load("res://Scenes/UI/GameMenu.tscn").instantiate()
 	main_menu    = load("res://Scenes/UI/MainMenu.tscn").instantiate()
+	ui_overlay   = load("res://Scenes/UI/UIOverlay.tscn").instantiate()
 	map_editor   = load("res://Scenes/UI/Editors/MapEditor.tscn").instantiate()
 	unit_editor  = load("res://Scenes/UI/Editors/UnitEditor.tscn").instantiate()
 
 	add_child(main_menu)
 	add_child(map_editor)
 	add_child(unit_editor)
+	add_child(ui_overlay)
 	add_child(in_game_menu, false, Node.INTERNAL_MODE_BACK)
 
 	_hide_all()
@@ -32,6 +35,11 @@ func _ready():
 func add_custom_screen(custom_ui : CanvasLayer):
 	add_child(custom_ui)
 	custom_ui.hide()
+	# we need them always at the top
+	if ui_overlay:
+		move_child(ui_overlay, -1)
+	if in_game_menu:
+		move_child(in_game_menu, -1)
 
 
 func go_to_custom_ui(custom_ui : CanvasLayer):
@@ -114,6 +122,13 @@ func _unhandled_input(event : InputEvent) -> void:
 		camera.process_input_event(event)
 
 
+	if event.is_action_pressed("UNDO"):
+		BM.undo()
+	elif event.is_action_pressed("REDO"):
+		BM.redo()
+	elif event.is_action_pressed("AI_MOVE"):
+		BM.ai_move()
+
 	# if event.is_action_pressed("KEY_SAVE_GAME"):
 	# 	print("quick save is not yet supported")
 
@@ -125,17 +140,18 @@ func _unhandled_input(event : InputEvent) -> void:
 func grid_input_listener(tile_coord : Vector2i, \
 		tile_type : GameSetupInfo.GameMode, mouse_drag : bool):
 	#print("tile ", tile_coord)
-	if mouse_drag:
-		if IM.draw_mode:
+	if IM.draw_mode:
+		if mouse_drag:
 			map_editor.grid_input(tile_coord)
 		return
 
-	if BM.battle_is_ongoing:
-		if tile_type == GameSetupInfo.GameMode.BATTLE:
-			BM.grid_input(tile_coord)
-	else:
-		if tile_type == GameSetupInfo.GameMode.WORLD:
-			WM.grid_input(tile_coord)
+	if mouse_drag:
+		return
+
+	if tile_type == GameSetupInfo.GameMode.BATTLE:
+		BM.grid_input(tile_coord)
+	elif tile_type == GameSetupInfo.GameMode.WORLD:
+		WM.grid_input(tile_coord)
 
 
 func ensure_camera_is_spawned() -> void:
@@ -147,7 +163,7 @@ func ensure_camera_is_spawned() -> void:
 
 func switch_camera() -> void:
 	if current_camera_position == E.CameraPosition.WORLD:
-		if BM.battle_is_ongoing:
+		if BM.can_show_battla_camera():
 			set_camera(E.CameraPosition.BATTLE)
 	else:
 		if IM.game_setup_info.game_mode == GameSetupInfo.GameMode.WORLD:

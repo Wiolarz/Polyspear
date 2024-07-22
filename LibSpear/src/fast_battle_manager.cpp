@@ -72,7 +72,7 @@ BattleResult BattleManagerFast::_play_move(unsigned unit_id, Vector2i pos) {
             return result;
         }
 
-        if(tiles->get_tile(pos).get_spawning_team() != current_participant) {
+        if(tiles->get_tile(pos).get_spawning_army() != current_participant) {
             WARN_PRINT("BMFast - target spawn does not belong to current army, aborting\n");
             raise(SIGINT);
             return result;

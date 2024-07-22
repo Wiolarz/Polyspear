@@ -18,6 +18,6 @@ func _init(my_tags : Array[ExampleBot.TAG], my_player:Player):
 	me = my_player
 
 
-func choose_move(legal_moves : Array[MoveInfo]) -> MoveInfo:
+func choose_move(_battle_state : BattleGridState) -> MoveInfo:
 	assert(false, "basic State shouldn't be used")
-	return legal_moves[0]
+	return null

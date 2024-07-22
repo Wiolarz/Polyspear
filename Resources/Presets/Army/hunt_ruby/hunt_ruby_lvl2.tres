@@ -1,7 +1,7 @@
 [gd_resource type="Resource" script_class="PresetArmy" load_steps=3 format=3 uid="uid://woy7pyjibnp0"]
 
 [ext_resource type="Script" path="res://Resources/Presets/preset_army.gd" id="1_x3jnw"]
-[ext_resource type="Resource" uid="uid://cap1ybfpgyy4n" path="res://Resources/Battle/Units/Neutral/ruby_bird.tres" id="2_6v83c"]
+[ext_resource type="Resource" uid="uid://8xis8qlhr7te" path="res://Resources/Battle/Units/Neutral/ruby_bird.tres" id="2_6v83c"]
 
 [resource]
 script = ExtResource("1_x3jnw")

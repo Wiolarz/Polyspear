@@ -15,7 +15,7 @@ enum TAG \
 
 var tags_set: Dictionary = {} # [TAG -> null] used as Hash set
 
-var current_state
+var current_state : AiBotState
 
 
 func _ready():
@@ -38,25 +38,5 @@ func remove_tag(tag : TAG):
 	# update state
 
 
-func play_move() -> void:
-	var legal_moves = _get_possible_moves()
-	assert(legal_moves.size() > 0, "play_move called with no moves to make")
-	var move = current_state.choose_move(legal_moves)
-
-	await ai_thinking_delay() # moving too fast feels weird
-	BM.perform_ai_move( move )
-
-
-func ai_thinking_delay() -> void:
-	var seconds = CFG.bot_speed_frames / 60.0
-	print("ai wait ", seconds)
-	await get_tree().create_timer(seconds).timeout
-	while IM.is_game_paused() or CFG.bot_speed_frames == CFG.BotSpeed.FREEZE:
-		await get_tree().create_timer(0.1).timeout
-
-func _get_possible_moves() -> Array[MoveInfo]:
-	if BM.is_during_summoning_phase():
-		return AIHelpers.get_all_spawn_moves(me)
-
-	var my_units : Array[Unit] = BM.get_units(me)
-	return AIHelpers.get_all_legal_moves(me)
+func choose_move(battle_state : BattleGridState) -> MoveInfo:
+	return current_state.choose_move(battle_state)

@@ -11,15 +11,27 @@ var host_menu : HostMenu = null
 @onready var chat_line_edit = \
 	$MarginContainer/VBoxContainer/Chat/Writing/ChatMessage
 
-@onready var chat_container = \
+@onready var chat_container : ScrollContainer = \
 	$MarginContainer/VBoxContainer/Chat/LogScroll
 
 @onready var server_status_label = \
 	$MarginContainer/VBoxContainer/ServerInfo/Log
 
+@onready var external_ip_poll_button = \
+	$MarginContainer/VBoxContainer/ButtonsRow2/ButtonPollIp
+
+@onready var external_ip_edit = \
+	$MarginContainer/VBoxContainer/ButtonsRow2/ExternalIpLineEdit
+
+@onready var external_port_edit = \
+	$MarginContainer/VBoxContainer/ButtonsRow3/ExternalPortLineEdit
+
+
 func _ready():
-	$MarginContainer/VBoxContainer/ButtonsRow2/ButtonPollIp.text = \
-			"Fetch external ip by calling '%s'"%[CFG.FETCH_EXTERNAL_IP_GET_URL]
+	external_ip_poll_button.text = \
+		"Fetch external ip by\ncalling '%s'" % [CFG.FETCH_EXTERNAL_IP_GET_URL]
+	external_ip_edit.text = NET.server.server_external_address
+	external_port_edit.text = str(NET.server.enet_network.get_local_port())
 
 func _process(_delta):
 	update_server_info()
@@ -27,11 +39,13 @@ func _process(_delta):
 
 
 #region Chat
+
 func update_chat():
 	chat_container.get_node("Log").text = NET.chat_log
 
 
 func scroll_chat_down():
+	await get_tree().create_timer(0.1).timeout # needs time to update sizes
 	chat_container.get_v_scroll_bar().ratio = 1
 
 
@@ -66,8 +80,10 @@ func kick_all_players():
 
 
 func _on_button_stop_pressed():
+	var login = NET.server.server_username
 	stop_server()
 	host_menu.refresh_after_connection_change()
+	await PolyApi.delete_server(login)
 
 
 func _on_button_kick_all_pressed():
@@ -79,6 +95,7 @@ func _on_button_kick_all_pressed():
 func update_server_info():
 	server_status_label.text = get_server_status_string()
 
+
 func get_server_status_string() -> String:
 	if not NET.server:
 		return "server is turned off"
@@ -87,18 +104,23 @@ func get_server_status_string() -> String:
 		return "connection is not active"
 
 	var result = ""
-	result += "EXTERNAL address %s (guess)\n"% \
-		[NET.server.server_external_address]
+	result += "host login: %s\n" % NET.server.server_username
 	result += "LOCAL address %s:%d\n"% \
 		[NET.server.server_local_address,
 			NET.server.enet_network.get_local_port()]
-	result += "host login: %s\n" % NET.server.server_username
+	result += "peers:\n"
+	var has_peers := false
 	for peer in NET.server.enet_network.get_peers():
 		result += describe_peer(peer) + "\n"
+		has_peers = true
 	for session in NET.server.sessions:
 		if session.peer == null:
 			result += " - %s - session disconnected\n" % session.username
+			has_peers = true
+	if not has_peers:
+		result += " - <no peers>"
 	return result
+
 
 func describe_peer(peer : ENetPacketPeer):
 	var connection_state : String = describe_peer_state(peer)
@@ -110,6 +132,7 @@ func describe_peer(peer : ENetPacketPeer):
 	return "- %s [%s] from %s:%d" % [ \
 			session.username, connection_state, \
 			peer.get_remote_address(), peer.get_remote_port()]
+
 
 func describe_peer_state(peer:ENetPacketPeer) -> String:
 	match peer.get_state():
@@ -135,3 +158,20 @@ func _on_button_poll_ip_pressed():
 	var external_ip = await NET.fetch_external_address_guess()
 	if NET.server:
 		NET.server.server_external_address = external_ip
+		external_ip_edit.text = external_ip
+
+
+func _on_is_public_check_box_toggled(toggled_on):
+	if toggled_on:
+		if NET.server.server_external_address == "-needs fetch-":
+			await _on_button_poll_ip_pressed()
+
+		var server_description := PolyApi.ServerDescription.new({
+			login = NET.server.server_username,
+			address = external_ip_edit.text,
+			port = external_port_edit.text as int,
+			description = "normal server"
+		})
+		await PolyApi.post_server(server_description)
+	else:
+		await PolyApi.delete_server(NET.server.server_username)

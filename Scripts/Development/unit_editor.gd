@@ -5,7 +5,7 @@ extends CanvasLayer
 ## not saved changes are kept on `dirty_changes`
 var edited_unit : DataUnit
 
-var dirty_changes : DataUnit
+var dirty_changes : DataUnit = DataUnit.new()
 
 ## order of symbols here is the same order as in symbol pickers
 var all_data_symbols : Array[DataSymbol] = []
@@ -145,7 +145,7 @@ func load_unit(path : String):
 
 	currently_edited_label.text = edited_unit.resource_path
 
-	unit_preview_form.apply_graphics(dirty_changes)
+	unit_preview_form.apply_graphics(dirty_changes, CFG.NEUTRAL_COLOR)
 	for dir in range(0,6):
 		_set_symbol_picker(dir, dirty_changes.symbols[dir])
 
@@ -160,7 +160,7 @@ func _set_symbol_picker(dir: int, value: DataSymbol):
 func on_symbol_selected(dir : int, picker_index : int):
 	var picked_symbol = all_data_symbols[picker_index]
 	print("selected dir %d %s - symbol %s - %s" % \
-			[dir, E.direction_to_name(dir as E.GridDirections), \
+			[dir, GenericHexGrid.direction_to_name(dir as GenericHexGrid.GridDirections), \
 			picked_symbol.type, E.symbol_to_name(picked_symbol.type)])
 
 	unit_preview_form._apply_symbol_sprite(dir, picked_symbol.texture_path)
@@ -189,6 +189,7 @@ func _on_save_pressed():
 	ResourceSaver.save(edited_unit, edited_unit.resource_path)
 	# WARNING clears uids
 	# see https://github.com/godotengine/godot/issues/83259
+	# use uid_fixer script to fix
 
 
 ## return to main menu

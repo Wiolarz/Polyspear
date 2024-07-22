@@ -4,6 +4,7 @@ extends Control
 func refresh():
 	$VBoxContainer/ToggleAutoStart.button_pressed = CFG.AUTO_START_GAME
 	$VBoxContainer/ToggleBattleDefault.button_pressed = CFG.DEFAULT_MODE_IS_BATTLE
+	$VBoxContainer/ToggleDefaultAIPlayers.button_pressed = CFG.player_options.use_default_AI_players
 
 
 func _on_toggle_auto_start_pressed():
@@ -22,3 +23,10 @@ func _on_toggle_battle_default_pressed():
 func _on_toggle_auto_start_visibility_changed():
 	if visible:
 		refresh()
+
+
+func _on_toggle_default_ai_players_pressed():
+	#TODO quick refactor
+	CFG.player_options.use_default_AI_players = not CFG.player_options.use_default_AI_players
+	CFG.save_player_options()
+	$VBoxContainer/ToggleDefaultAIPlayers.button_pressed = CFG.player_options.use_default_AI_players

@@ -10,11 +10,12 @@ see: "Project Settings >> Autoload" for full list
 	- `WM` (World Manager)
 		- `W_GRID` (World Grid Manager)
 	- `BM` (Battle Manager)
-		- `B_GRID` (Battle Grid Manager)
 
-`IM` is notified when tiles are clicked. Then sends calls `WM` or `BM` depending on the game state (is battle or world map active). `WM`/`BM` control the game using maps loaded to `W_GRID`/`B_GRID` respectively. Grids handle positional queries etc.
+`IM` is notified when tiles are clicked. Then sends calls `WM` or `BM` depending on the game state (is battle or world map active).
 
-`IM` contains a list of `Players` and knows if there is an active battle that needs to be resolved.
+`WM`/`BM` control the game using maps loaded to `W_GRID` or internal variables respectively. Grids handle positional queries etc.
+
+`IM` contains a list of `Players` based on `Slots` set up in lobby and knows if there is an active battle that needs to be resolved.
 
 ## Core user journeys
 
@@ -44,7 +45,7 @@ It sets up Players based on the intended map, then starts the map.
 
 When the map is started `WM`/`BM` (World/Battle Manager) set up their own state and init corresponding grids.
 
-Grid Managers (`W_GRID`/`B_GRID`) spawn `HexGrid` Nodes creating a clickable map that is based on `DataXyzMap` resource
+Grid Managers (`W_GRID`, internal grid) spawn `HexTileForm` Nodes creating a clickable map that is based on `DataXyzMap` resource
 
 ### 2. Gameplay start - World map
 
