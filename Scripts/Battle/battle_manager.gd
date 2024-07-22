@@ -232,6 +232,7 @@ func perform_network_move(move_info : MoveInfo) -> void:
 
 
 func _perform_replay_move(move_info : MoveInfo) -> void:
+	_battle_grid_state.set_displayed_time_left_ms(move_info.time_left_ms)
 	_perform_move_info(move_info)
 
 
@@ -392,7 +393,10 @@ func _perform_move_info(move_info : MoveInfo) -> void:
 	if not _battle_is_ongoing:
 		return
 	print(NET.get_role_name(), " performing move ", move_info)
-	_replay_data.record_move(move_info)
+
+	
+
+	_replay_data.record_move(move_info, get_current_time_left_ms())
 	_replay_data.save()
 	if NET.server:
 		NET.server.broadcast_move(move_info)

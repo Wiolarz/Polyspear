@@ -14,7 +14,8 @@ static func create(armies : Array[Army], c_battle_map: DataBattleMap):
 		result.units_at_start.append(a.get_units_list())
 	return result
 
-func record_move(m: MoveInfo) -> void:
+func record_move(m : MoveInfo, time_left_ms : int) -> void:
+	m.time_left_ms = time_left_ms
 	moves.append(m)
 
 func get_filename() -> String:

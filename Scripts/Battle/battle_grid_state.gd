@@ -426,9 +426,20 @@ func _kill_unit(target : Unit) -> void:
 	_get_player_army(target.controller).kill_unit(target)
 	_check_battle_end()
 
+
+#region Timer
+
 ## in miliseconds
 func get_current_time_left() -> int:
-	return armies_in_battle_state[current_army_index].get_time_left()
+	return armies_in_battle_state[current_army_index].get_time_left_ms()
+
+
+## only for Replays
+func set_displayed_time_left_ms(time_left_ms : int) -> void:
+	armies_in_battle_state[current_army_index].set_time_left_ms(time_left_ms)
+
+#endregion Timer
+
 
 #region End Battle
 
@@ -724,13 +735,18 @@ class ArmyInBattleState:
 		turn_start_timestamp = Time.get_ticks_msec()
 
 
-	func get_time_left() -> int:
+	func get_time_left_ms() -> int:
 		var turn_time_local_passed_ms = Time.get_ticks_msec() - turn_start_timestamp
 		return start_turn_clock_time_left_ms - turn_time_local_passed_ms
 
 
+	func set_time_left_ms(time_left_ms : int) -> void:
+		turn_start_timestamp = Time.get_ticks_msec()
+		start_turn_clock_time_left_ms = time_left_ms
+
+
 	func turn_ended() -> void:
-		start_turn_clock_time_left_ms = get_time_left()
+		start_turn_clock_time_left_ms = get_time_left_ms()
 		start_turn_clock_time_left_ms += turn_increment_ms
 
 
