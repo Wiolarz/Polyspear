@@ -10,7 +10,10 @@ func choose_move(state: BattleGridState) -> MoveInfo:
 	var mcts = BattleMCTSManager.new()
 	mcts.set_root(bm)
 	
-	mcts.iterate(iterations, OS.get_processor_count())
+	var thread = Thread.new()
+	thread.start(mcts.iterate.bind(iterations, OS.get_processor_count()), Thread.PRIORITY_HIGH)
+	await mcts.complete
+	
 	var unit = mcts.get_optimal_move_unit(0)
 	var position = mcts.get_optimal_move_position(0)
 	

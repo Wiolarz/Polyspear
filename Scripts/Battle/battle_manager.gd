@@ -205,7 +205,7 @@ func _on_turn_started(player : Player) -> void:
 		var my_cancel_token = CancellationToken.new()
 		assert(latest_ai_cancel_token == null)
 		latest_ai_cancel_token = my_cancel_token
-		var move = player.bot_engine.choose_move(_battle_grid_state)
+		var move = await player.bot_engine.choose_move(_battle_grid_state)
 		await _ai_thinking_delay() # moving too fast feels weird
 		if not my_cancel_token.is_canceled():
 			_perform_ai_move(move)

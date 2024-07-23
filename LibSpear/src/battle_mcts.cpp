@@ -152,6 +152,7 @@ void BattleMCTSManager::iterate(int iterations, int max_threads) {
     }*/
     root->mcts_iterations = iterations;
     _iterate(mutex, iterations);
+    emit_signal("complete");
 }
 
 void BattleMCTSManager::_iterate(std::shared_mutex& rwlock, int iterations, int max_sim_iterations) {
@@ -192,7 +193,7 @@ Move BattleMCTSManager::get_optimal_move(int nth_best_move) {
     // TODO? nth best move
     
     if(nth_best_move != 0) {
-        ::godot::_err_print_error(FUNCTION_STR, __FILE__, __LINE__, "ERROR - Nth best move is not implemented for BattleMCTSManager yet");
+        ERR_PRINT_ONCE_ED("ERROR - Nth best move is not implemented for BattleMCTSManager yet");
     }
 
     for(auto& [move, node] : root->children) {
@@ -247,5 +248,6 @@ void BattleMCTSManager::_bind_methods() {
     ClassDB::bind_method(D_METHOD("iterate"), &BattleMCTSManager::iterate, "iterations", "max_threads");
 
     ClassDB::bind_method(D_METHOD("set_root"), &BattleMCTSManager::set_root, "battle_manager");
+    ADD_SIGNAL(MethodInfo("complete"));
 }
 
