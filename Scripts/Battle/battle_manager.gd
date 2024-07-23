@@ -209,8 +209,8 @@ func _on_turn_started(player : Player) -> void:
 		var move = player.bot_engine.choose_move(_battle_grid_state)
 		await _ai_thinking_delay() # moving too fast feels weird
 		if not my_cancel_token.is_canceled():
-			_perform_ai_move(move)
 			latest_ai_cancel_token = null
+			_perform_ai_move(move)
 
 
 func cancel_pending_ai_move() ->  void:
