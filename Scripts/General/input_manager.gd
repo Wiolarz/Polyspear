@@ -95,7 +95,7 @@ func perform_replay(path):
 	for slot_id in range(replay.units_at_start.size()):
 		var slot = game_setup_info.slots[slot_id]
 		var units_array = replay.units_at_start[slot_id]
-		slot.occupier = ""
+		slot.occupier = replay.get_player_name(slot_id)
 		slot.set_units(units_array)
 
 	start_new_game()
