@@ -10,7 +10,8 @@ config_version=5
 
 [application]
 
-config/name="Krong"
+config/name="Polyspear"
+config/version="0.2.0"
 run/main_scene="res://Scenes/MainScene.tscn"
 config/features=PackedStringArray("4.2", "GL Compatibility")
 config/icon="res://Art/world_map/ruby_cave.png"
@@ -36,6 +37,10 @@ window/size/viewport_height=1080
 window/size/window_width_override=960
 window/size/window_height_override=540
 window/stretch/mode="viewport"
+
+[editor]
+
+export/convert_text_resources_to_binary=false
 
 [editor_plugins]
 
