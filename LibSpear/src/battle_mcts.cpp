@@ -62,14 +62,22 @@ void BattleMCTSNode::expand() {
 
     std::lock_guard lock(local_mutex);
     
-    auto move = bm.get_random_move(HEURISTIC_PROBABILITY);
+    auto [move, heur_chosen] = bm.get_random_move(HEURISTIC_PROBABILITY);
 
     if(children.count(move) == 0) {
         children.emplace(std::piecewise_construct,
                 std::forward_as_tuple(move), 
                 std::forward_as_tuple(bm, manager, this)
         );
-        children.at(move).bm.play_move(move);
+        auto& child = children.at(move);
+        child.bm.play_move(move);
+        child.mcts_iterations = mcts_iterations;
+
+        if(heur_chosen) {
+            auto prior_reward = mcts_iterations * float(HEURISTIC_PRIOR_REWARD_PER_ITERATION);
+            child.visits += prior_reward;
+            child.reward += prior_reward;
+        }
     }
 }
 
@@ -86,7 +94,7 @@ BattleResult BattleMCTSNode::simulate(int max_sim_iterations) {
     }
     
     do {
-        move = bmnew.get_random_move(HEURISTIC_PROBABILITY);
+        move = bmnew.get_random_move(HEURISTIC_PROBABILITY).first;
         i++;
     } while((result = bmnew.play_move(move)).winner_team == -1 && i < max_sim_iterations);
 
@@ -142,6 +150,7 @@ void BattleMCTSManager::iterate(int iterations, int max_threads) {
     for(auto& i: threads) {
         i.join();
     }*/
+    root->mcts_iterations = iterations;
     _iterate(mutex, iterations);
 }
 
@@ -180,7 +189,7 @@ void BattleMCTSManager::_iterate(std::shared_mutex& rwlock, int iterations, int 
 }
 
 Move BattleMCTSManager::get_optimal_move(int nth_best_move) {
-    // TODO nth best move
+    // TODO? nth best move
     
     if(nth_best_move != 0) {
         ::godot::_err_print_error(FUNCTION_STR, __FILE__, __LINE__, "ERROR - Nth best move is not implemented for BattleMCTSManager yet");
@@ -189,14 +198,24 @@ Move BattleMCTSManager::get_optimal_move(int nth_best_move) {
     for(auto& [move, node] : root->children) {
         auto& hm = root->bm.get_heuristically_good_moves();
         bool heur_move = std::find(hm.begin(), hm.end(), move) != hm.end();
-        printf("Child %c %d->%d,%d = %f (reward: %f, visits: %f, %i/%i/%i)\n", 
-                heur_move ? 'H':' ', move.unit, move.pos.x, move.pos.y, node.uct(), 
-                node.reward, node.visits, root->wins, root->draws, root->loses
+        printf("Child %c %d->%d,%d UCT=%f, R/V=%f (reward: %f, visits: %f)\n", 
+                heur_move ? 'H':' ', move.unit, move.pos.x, move.pos.y, 
+                node.uct(), node.reward / node.visits, node.reward, node.visits
         );
     }
-    printf("\n");
+    printf("%i/%i/%i\n", root->wins, root->draws, root->loses);
 
-    return root->select().first;
+    float max_ratio = -1.0f;
+    Move chosen;
+
+    for(auto& [move, node] : root->children) {
+        if(node.reward / node.visits > max_ratio) {
+            chosen = move;
+            max_ratio = node.reward / node.visits;
+        }
+    }
+
+    return chosen;
 }
 
 int BattleMCTSManager::get_optimal_move_unit(int nth_best_move) {

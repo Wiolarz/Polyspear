@@ -33,6 +33,12 @@ struct Position {
     inline bool operator==(const Position other) const {
         return x == other.x && y == other.y;
     }
+
+    inline bool is_in_line_with(Position other) const {
+        auto delta = *this - other;
+        return delta.x == -delta.y || delta.x == 0 || delta.y == 0;
+    }
+
 };
 
 
@@ -159,7 +165,7 @@ const std::array<Position, 6> DIRECTIONS = {
 	Position(1, -1),
 	Position(1, 0),
 	Position(0, 1),
-	Position(-1, 1),
+	Position(-1, 1),  // non-axes - -1,-1; 1,1
 };
 
 

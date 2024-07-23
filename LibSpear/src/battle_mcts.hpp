@@ -13,6 +13,7 @@
 
 const int MAX_SIM_ITERATIONS = 70;
 const float HEURISTIC_PROBABILITY = 0.85f;
+const float HEURISTIC_PRIOR_REWARD_PER_ITERATION = 0.05f;
 
 class BattleMCTSManager;
 
@@ -22,6 +23,7 @@ class BattleMCTSNode {
     std::unordered_map<Move, BattleMCTSNode> children{};
     BattleManagerFastCpp bm;
 
+    unsigned mcts_iterations = 0;
     float reward = 0.0f;
     float visits = 0.0f;
     unsigned draws = 0;

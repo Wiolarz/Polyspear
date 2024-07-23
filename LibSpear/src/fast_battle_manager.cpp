@@ -327,13 +327,18 @@ void BattleManagerFastCpp::_refresh_heuristically_good_moves() {
     heuristic_moves.clear();
     heuristic_moves.reserve(64);
 
+    if(state == BattleState::SUMMONING) {
+        _refresh_heuristically_good_summon_moves();
+        return;
+    }
+
     auto& army = armies[current_participant];
 
     std::vector<BattleResult> move_results;
     bool killing_move_found = false;
 
-    for(int i = 0; i < moves.size(); i++) {
-        auto& m = moves[i];
+
+    for(auto& m : get_legal_moves()) {
         auto bm = *this;
         auto result = bm.play_move(m);
         
@@ -361,30 +366,75 @@ void BattleManagerFastCpp::_refresh_heuristically_good_moves() {
             heuristic_moves.push_back(m);
         }
     }
+}
 
-    // TODO: potential heuristics:
-    // - summon archer such that it can shoot unprotected unit on first turn or as a last unit
-    // - if opponent has archers, summon units such that the (eventually) summoned archer cannot kill them (account for shields)
+void BattleManagerFastCpp::_refresh_heuristically_good_summon_moves() {
+    auto& army = armies[current_participant];
+
+    bool enemy_has_unsummoned_bowman = false;
+    for(auto& enemy_army : armies) {
+        if(enemy_army.team == army.team) {
+            continue;
+        }
+
+        for(auto& enemy : enemy_army.units) {
+            if(enemy.status == UnitStatus::SUMMONING && enemy.sides[0].get_bow_force() > 0) {
+                enemy_has_unsummoned_bowman = true;
+                break;
+            }
+        }
+    }
+
+    for(auto& m : get_legal_moves()) {
+        auto& unit = army.units[m.unit];
+        // At this moment assumes every spawn is not safe from bowman - good for now, but TODO?
+
+        // Summon bowman preferrably only on tiles where an enemy can be shot
+        if(unit.sides[0].get_bow_force() > 0) {
+            for(auto& enemy_army : armies) {
+                if(enemy_army.team == army.team) {
+                    continue;
+                }
+                    
+                for(auto& enemy : enemy_army.units) {
+                    if(enemy.status == UnitStatus::ALIVE && m.pos.is_in_line_with(enemy.pos) && enemy.sides[0].get_defense_force() < unit.sides[0].get_bow_force()) {
+                        heuristic_moves.push_back(m);
+                    }
+                }
+            }
+        }
+
+        // Avoid yet-unsummoned bowman - only spawn when there's a non-bowman unit on the other side
+        if(enemy_has_unsummoned_bowman) {
+            for(auto& enemy_army : armies) {
+                if(enemy_army.team == army.team) {
+                    continue;
+                }
+
+                for(auto& enemy : enemy_army.units) {
+                    if(enemy.status == UnitStatus::ALIVE && m.pos.is_in_line_with(enemy.pos) && enemy.sides[0].get_bow_force() <= unit.sides[0].get_defense_force()) {
+                        heuristic_moves.push_back(m);
+                    }
+                }
+            }
+        }
+    }
 }
 
 
-Move BattleManagerFastCpp::get_random_move(float heuristic_probability) {
+std::pair<Move, bool> BattleManagerFastCpp::get_random_move(float heuristic_probability) {
     static thread_local std::mt19937 rand_engine;
     static thread_local std::uniform_real_distribution heur_dist(0.0f, 1.0f);
 
-    auto moves_arr = ( !heuristic_moves.empty() && heur_dist(rand_engine) < heuristic_probability )
-        ? get_heuristically_good_moves() 
-        : get_legal_moves();
+    auto heur_chosen = heur_dist(rand_engine) < heuristic_probability;
+    auto moves_arr = heur_chosen ? get_heuristically_good_moves() : get_legal_moves();
 
-    if(moves_arr.size() == 0) {
-		::godot::_err_print_error(FUNCTION_STR, __FILE__, __LINE__, "ERROR - a random move requested, but 0 moves are possible"); \
-        raise(SIGINT);
-    }
+    ERR_FAIL_COND_V_MSG(moves_arr.size() == 0, std::make_pair(Move{}, false), "BMFast - get_random_move has 0 moves to choose");
     
     std::uniform_int_distribution dist{0, int(moves_arr.size() - 1)};
     auto move = dist(rand_engine);
 
-    return moves_arr[move];
+    return std::make_pair(moves_arr[move], heur_chosen);
 }
 
 int BattleManagerFastCpp::get_move_count() {

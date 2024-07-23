@@ -121,6 +121,7 @@ class BattleManagerFastCpp : public Node {
 
     void _refresh_legal_moves();
     void _refresh_heuristically_good_moves();
+    void _refresh_heuristically_good_summon_moves();
     BattleResult _play_move(unsigned unit, Vector2i move);
 
 protected:
@@ -148,7 +149,8 @@ public:
     const std::vector<Move>& get_legal_moves();
     /// Get legal moves in an array of arrays [[unit, position], ...]
     godot::Array get_legal_moves_gd();
-    Move get_random_move(float heuristic_probability);
+    /// Return a random move with a custom bias towards heuristically sensible moves, and whether such a move was chosen
+    std::pair<Move, bool> get_random_move(float heuristic_probability);
     int get_move_count();
 
     /// Get moves that are likely to increase score/win the game/avoid losses. If there are no notable moves, returns all moves
