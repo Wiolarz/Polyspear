@@ -31,8 +31,11 @@ func refresh_replays_list():
 			_description.text = replay_path \
 				+ "\n map : " + DataBattleMap.get_network_id(_replay.battle_map) \
 				+ "\n moves : " + str(_replay.moves.size())
+			var i = 0
 			for army in _replay.units_at_start:
-				_description.text += "\n army:"
+				var army_controller_name = _replay.get_player_name(i)
+				i += 1
+				_description.text += "\n%s army:" % [army_controller_name]
 				for unit : DataUnit in army:
 					_description.text += "\n  - " + unit.unit_name
 
