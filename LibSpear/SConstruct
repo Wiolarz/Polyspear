@@ -4,7 +4,10 @@ import sys
 
 env = SConscript("godot-cpp/SConstruct")
 
-env.Append(CPPPATH=["src/"])
+env.Append(
+    CPPPATH=["src/"],
+    CXXFLAGS=["-std=c++20"]
+)
 sources = Glob("src/*.cpp")
 
 # Create compile_commands.json for clangd

@@ -215,11 +215,11 @@ void BattleMCTSManager::set_root(BattleManagerFastCpp* bm) {
 }
 
 // TODO apparently this crashes godot editor
-/*BattleMCTSManager::~BattleMCTSManager() {
+BattleMCTSManager::~BattleMCTSManager() {
     if(root) {
         delete root;
     }
-}*/
+}
 
 void BattleMCTSManager::_bind_methods() {
     ClassDB::bind_method(D_METHOD("get_optimal_move_unit"), &BattleMCTSManager::get_optimal_move_unit, "nth_best_move");

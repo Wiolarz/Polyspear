@@ -21,6 +21,7 @@ using godot::Node;
 using godot::Vector2i;
 
 const unsigned MAX_ARMIES = 4;
+const unsigned MAX_UNITS_IN_ARMY = 5;
 
 class BattleManagerFastCpp;
 class BattleMCTSManager;
@@ -59,7 +60,7 @@ struct Unit {
 struct Army {
     int8_t id = 0;
     int8_t team = -1;
-    std::array<Unit, 5> units{};
+    std::array<Unit, MAX_UNITS_IN_ARMY> units{};
 
     Unit* get_unit(Position coord);
     int find_summon_id(int from = 0);

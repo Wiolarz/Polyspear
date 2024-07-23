@@ -6,20 +6,11 @@
 #include <stdlib.h>
 #include <random>
 #include <csignal>
+#include <format>
 
-#define CHECK_UNIT(idx, val) \
-    if(idx >= 5) { \
-        printf("ERROR - Unknown unit id %d\n", idx);\
-		::godot::_err_print_error(FUNCTION_STR, __FILE__, __LINE__, "ERROR - Unknown unit id - check stdout"); \
-        return val;\
-    }
 
-#define CHECK_ARMY(idx, val) \
-    if(idx >= 4) { \
-        printf("ERROR - Unknown army id %d\n", idx); \
-		::godot::_err_print_error(FUNCTION_STR, __FILE__, __LINE__, "ERROR - Unknown army id - check stdout"); \
-        return val; \
-    }
+#define CHECK_UNIT(idx, ret) ERR_FAIL_COND_V_MSG(idx >= MAX_UNITS_IN_ARMY, ret, std::format("BMFast - invalid unit id {}", idx).c_str())
+#define CHECK_ARMY(idx, ret) ERR_FAIL_COND_V_MSG(idx >= MAX_ARMIES, ret, std::format("BMFast - invalid army id {}", idx).c_str())
 
 void BattleManagerFastCpp::finish_initialization() {
     if(state == BattleState::INITIALIZING) {
@@ -58,11 +49,9 @@ BattleResult BattleManagerFastCpp::_play_move(unsigned unit_id, Vector2i pos) {
 
     previous_participant = current_participant;
 
-    if(state == BattleState::INITIALIZING) {
-        ERR_FAIL_V_MSG(result, "BMFast - Please call finish_initialization() before playing a move");
-    }
-
+    ERR_FAIL_COND_V_MSG(state == BattleState::INITIALIZING ,result, "BMFast - Please call finish_initialization() before playing a move");
     CHECK_UNIT(unit_id, result);
+    
     auto& unit = armies[current_participant].units[unit_id];
 
     if(state == BattleState::SUMMONING) {
@@ -432,26 +421,26 @@ bool BattleManagerFastCpp::is_occupied(Position pos, int team, TeamRelation rela
 }
 
 void BattleManagerFastCpp::insert_unit(int army, int idx, Vector2i pos, int rotation, bool is_summoning) {
-    CHECK_UNIT(idx,)
-    CHECK_ARMY(army,)
+    CHECK_UNIT(idx,);
+    CHECK_ARMY(army,);
     armies[army].units[idx].pos = pos;
     armies[army].units[idx].rotation = rotation;
     armies[army].units[idx].status = is_summoning ? UnitStatus::SUMMONING : UnitStatus::ALIVE;
 }
 
 void BattleManagerFastCpp::set_unit_symbol(int army, int unit, int side, int symbol) {
-    CHECK_UNIT(unit,)
-    CHECK_ARMY(army,)
+    CHECK_UNIT(unit,);
+    CHECK_ARMY(army,);
     armies[army].units[unit].sides[side] = Symbol(symbol);
 }
 
 void BattleManagerFastCpp::set_army_team(int army, int team) {
-    CHECK_ARMY(army,)
+    CHECK_ARMY(army,);
     armies[army].team = team;
 }
 
 void BattleManagerFastCpp::set_current_participant(int army) {
-    CHECK_ARMY(army,)
+    CHECK_ARMY(army,);
     current_participant = army;
 }
 

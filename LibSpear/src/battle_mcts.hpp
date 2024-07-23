@@ -66,8 +66,8 @@ protected:
 
 public:
     BattleMCTSManager() = default;
-    // TODO what the fuck it crashes godot editor
-    //virtual ~BattleMCTSManager() override;
+    virtual ~BattleMCTSManager() override;
+
     void set_root(BattleManagerFastCpp* bm);
 
     void iterate(int iterations = 1, int max_threads = 1);
