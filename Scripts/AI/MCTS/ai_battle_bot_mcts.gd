@@ -2,6 +2,7 @@ class_name AIBattleBotMCTS extends AIInterface
 
 @export var iterations = 100000
 
+var thread: Thread
 
 func choose_move(state: BattleGridState) -> MoveInfo:
 	
@@ -9,8 +10,11 @@ func choose_move(state: BattleGridState) -> MoveInfo:
 	var bm = BattleManagerFast.from(state, unit_array)
 	var mcts = BattleMCTSManager.new()
 	mcts.set_root(bm)
+
+	if thread:
+		thread.wait_to_finish()
+	thread = Thread.new()
 	
-	var thread = Thread.new()
 	thread.start(mcts.iterate.bind(iterations, OS.get_processor_count()), Thread.PRIORITY_HIGH)
 	await mcts.complete
 	
