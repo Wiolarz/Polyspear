@@ -6,6 +6,7 @@ extends Resource
 @export var use_default_AI_players : bool
 
 @export var login : String
+@export var randomiseJoinLogin : bool
 
 @export var lastMyHostAddress : String
 @export var lastMyHostPort : int

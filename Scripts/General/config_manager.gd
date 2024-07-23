@@ -67,15 +67,18 @@ const DEFAULT_USER_NAMES : Array[String] = [
 ]
 
 
-func set_defaults_for_host_setup(address : String, port : int, username : String):
+func save_last_used_for_host_setup(address : String, port : int, username : String):
 	player_options.login = username
 	player_options.lastMyHostAddress = address
 	player_options.lastMyHostPort = port
 	save_player_options()
 
 
-func set_defaults_for_joining(address : String, port : int, username : String):
+func save_last_used_for_joining(\
+		address : String, port : int,\
+		username : String, randomise_join_login : bool):
 	player_options.login = username
+	player_options.randomiseJoinLogin = randomise_join_login
 	player_options.lastRemoteHostAddress = address
 	player_options.lastRemoteHostPort = port
 	save_player_options()
