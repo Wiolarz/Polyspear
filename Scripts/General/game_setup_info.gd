@@ -240,3 +240,24 @@ class Slot extends RefCounted: # check if this is good base
 				units_list[idx] = null
 				continue
 			units_list[idx] = new_units[idx]
+
+
+	func get_occupier_name(all_slots: Array[Slot]) -> String:
+		if is_bot():
+			return _get_bot_name(all_slots)
+		if occupier == "":
+			return NET.get_current_login()
+		return occupier as String
+
+
+	func _get_bot_name(all_slots: Array[Slot]) -> String:
+		var number_of_ais : int = 0
+		var index_of_this_ai : int = 0
+		for slot in all_slots:
+			if slot.is_bot():
+				if slot == self:
+					index_of_this_ai = number_of_ais
+				number_of_ais += 1
+		if number_of_ais == 1:
+			return "AI"
+		return "AI %s" % index_of_this_ai

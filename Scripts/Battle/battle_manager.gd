@@ -394,7 +394,7 @@ func _perform_move_info(move_info : MoveInfo) -> void:
 		return
 	print(NET.get_role_name(), " performing move ", move_info)
 
-	
+
 
 	_replay_data.record_move(move_info, get_current_time_left_ms())
 	_replay_data.save()

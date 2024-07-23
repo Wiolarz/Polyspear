@@ -25,6 +25,7 @@ func init_game_setup():
 func get_world_maps_list() -> Array[String]:
 	return FileSystemHelpers.list_files_in_folder(CFG.WORLD_MAPS_PATH)
 
+
 func get_battle_maps_list() -> Array[String]:
 	return FileSystemHelpers.list_files_in_folder(CFG.BATTLE_MAPS_PATH)
 
@@ -181,50 +182,17 @@ func get_player_name(player : Player) -> String:
 	var slot = player.slot
 	if slot == null:
 		return "neutral"
-	var the_name : String = "somebody"
-	if slot.is_bot():
-		var number_of_ais : int = 0
-		var index_of_this_ai : int = 0
-		for counted_slot in game_setup_info.slots:
-			if counted_slot.is_bot():
-				if counted_slot == slot:
-					index_of_this_ai = number_of_ais
-				number_of_ais += 1
-		if number_of_ais > 1:
-			the_name = "AI %s" % index_of_this_ai
-		else:
-			the_name = "AI"
-	elif slot.occupier == "":
-		the_name = NET.get_current_login()
-	else:
-		the_name = slot.occupier as String
-	return "%s" % [the_name]
+	return slot.get_occupier_name(game_setup_info.slots)
+
+
+func get_player_color(player : Player) -> DataPlayerColor:
+	if not player:
+		return CFG.DEFAULT_TEAM_COLOR
+	return player.get_player_color()
+
 
 func get_full_player_description(player : Player) -> String:
-	if not player:
-		return "neutral"
-	var slot = player.slot
-	if slot == null:
-		return "neutral"
-	var the_name : String = "somebody"
-	if slot.is_bot():
-		var number_of_ais : int = 0
-		var index_of_this_ai : int = 0
-		for counted_slot in game_setup_info.slots:
-			if counted_slot.is_bot():
-				if counted_slot == slot:
-					index_of_this_ai = number_of_ais
-				number_of_ais += 1
-		if number_of_ais > 1:
-			the_name = "AI %s" % index_of_this_ai
-		else:
-			the_name = "AI"
-	elif slot.occupier == "":
-		the_name = NET.get_current_login()
-	else:
-		the_name = slot.occupier as String
-	var color = player.get_player_color()
-	return "%s\n%s" % [color.name, the_name]
+	return "%s\n%s" % [get_player_color(player).name, get_player_name(player)]
 
 
 func get_serializable_world_state() -> SerializableWorldState:
