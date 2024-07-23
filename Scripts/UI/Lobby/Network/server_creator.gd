@@ -31,8 +31,8 @@ func _on_visibility_changed():
 
 func _fill_fields_from_last_used():
 	server_name_line.text = CFG.get_username()
-	server_address_line.text = CFG.player_options.lastMyHostAddress
-	server_port_line.text = str(CFG.player_options.lastMyHostPort)
+	server_address_line.text = CFG.player_options.last_hosting_address_used
+	server_port_line.text = str(CFG.player_options.last_hosting_port_used)
 
 
 func start_server():

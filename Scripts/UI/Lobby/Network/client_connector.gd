@@ -32,9 +32,9 @@ func _on_visibility_changed():
 
 func _fill_fields_from_last_used():
 	username_line.text = CFG.get_username()
-	randomise_login.set_pressed(CFG.player_options.randomiseJoinLogin)
-	server_address_line.text = CFG.player_options.lastRemoteHostAddress
-	server_port_line.text = str(CFG.player_options.lastRemoteHostPort)
+	randomise_login.set_pressed(CFG.player_options.randomise_join_login)
+	server_address_line.text = CFG.player_options.last_remote_host_address
+	server_port_line.text = str(CFG.player_options.last_remote_host_port)
 
 
 func get_address():
