@@ -66,10 +66,35 @@ const DEFAULT_USER_NAMES : Array[String] = [
 	"Gracz Doty",
 ]
 
+
+func save_last_used_for_host_setup(\
+		address : String, port : int, username : String) -> void:
+	player_options.login = username
+	player_options.last_hosting_address_used = address
+	player_options.last_hosting_port_used = port
+	save_player_options()
+
+
+func save_last_used_for_joining(\
+		address : String, port : int,\
+		username : String, randomise_join_login : bool) -> void:
+	player_options.login = username
+	player_options.randomise_join_login = randomise_join_login
+	player_options.last_remote_host_address = address
+	player_options.last_remote_host_port = port
+	save_player_options()
+
+
+func get_username() -> String:
+	return player_options.login
+
+
 func get_random_username() -> String:
 	return DEFAULT_USER_NAMES[randi() % DEFAULT_USER_NAMES.size()]
 
+
 const DEFAULT_USER_NAME : String = "(( you ))"
+
 
 var TEAM_COLORS : Array[DataPlayerColor] = [
 	DataPlayerColor.create("purple", Color(0.9, 0.2, 0.85)),
