@@ -21,19 +21,26 @@ static func create(armies : Array[Army], c_battle_map: DataBattleMap):
 		result.units_at_start.append(a.get_units_list())
 	return result
 
+
 func record_move(m : MoveInfo, time_left_ms : int) -> void:
 	m.time_left_ms = time_left_ms
 	moves.append(m)
 
+
 func get_filename() -> String:
-	return timestamp.replace(":", "_") + player_names[0] + "_" + player_names[1] + ".tres" #TEMP Works only for 2 players
+	var timestamp_for_filename = timestamp.replace(":", "_")
+	var all_player_names = "_".join(player_names)
+	return "%s-%s.tres" % [timestamp_for_filename, all_player_names]
+
 
 func save():
 	BattleReplay.prepare_replay_directory()
 	ResourceSaver.save(self, CFG.REPLAY_DIRECTORY + get_filename())
 
+
 static func prepare_replay_directory():
 	DirAccess.make_dir_recursive_absolute(CFG.REPLAY_DIRECTORY)
+
 
 static func has_replays():
 	if not DirAccess.dir_exists_absolute(CFG.REPLAY_DIRECTORY):
