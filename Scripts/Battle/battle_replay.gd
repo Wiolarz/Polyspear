@@ -37,6 +37,10 @@ func save():
 	BattleReplay.prepare_replay_directory()
 	ResourceSaver.save(self, CFG.REPLAY_DIRECTORY + get_filename())
 
+func get_player_name(army_idx : int) -> String:
+	if not player_names or army_idx >= player_names.size():
+		return "unknown"
+	return player_names[army_idx]
 
 static func prepare_replay_directory():
 	DirAccess.make_dir_recursive_absolute(CFG.REPLAY_DIRECTORY)
