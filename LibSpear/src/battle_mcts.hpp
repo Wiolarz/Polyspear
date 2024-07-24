@@ -14,6 +14,7 @@
 const int MAX_SIM_ITERATIONS = 70;
 const float HEURISTIC_PROBABILITY = 0.85f;
 const float HEURISTIC_PRIOR_REWARD_PER_ITERATION = 0.05f;
+const int MAX_MCTS_BURST = 200;
 
 class BattleMCTSManager;
 
@@ -40,6 +41,9 @@ public:
     float uct() const;
     bool is_explored();
 
+    void iterate(int iterations, int depth = 0);
+    void iterate_self(int iterations);
+
     /// Select the currently best child. May return nullptr as the second return value
     std::pair<Move, BattleMCTSNode*> select();
     /// Find a new child node
@@ -59,7 +63,10 @@ class BattleMCTSManager : public Node {
     int army_team;
     int army_id;
 
-    void _iterate(std::shared_mutex& mutex, int iterations, int max_sim_iterations = MAX_SIM_ITERATIONS);
+    // TODO parameters
+    //int max_sim_iterations;
+
+    void _iterate(std::shared_mutex& mutex, int iterations);
 
     friend class BattleMCTSNode;
     
