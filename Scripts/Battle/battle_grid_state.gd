@@ -17,6 +17,8 @@ var armies_in_battle_state : Array[ArmyInBattleState] = []
 
 var currently_processed_move_info : MoveInfo = null
 
+var _logger := LOG.LoggerWithArea.new(LOG.LOG_BATTLE)
+
 #region init
 
 func _init(width_ : int, height_ : int):
@@ -64,6 +66,7 @@ func move_info_move_unit(move_info : MoveInfo) -> void:
 	var source_tile_coord := move_info.move_source
 	var target_tile_coord := move_info.target_tile_coord
 	var unit = get_unit(source_tile_coord)
+	_logger.info("move unit %s from %s to %s", [unit.template.unit_name, move_info.move_source, move_info.target_tile_coord])
 	var direction = GenericHexGrid.direction_to_adjacent(unit.coord, target_tile_coord)
 	move_info.register_move_start(current_army_index, unit)
 
@@ -254,7 +257,8 @@ func _switch_participant_turn() -> void:
 	var prev_player := armies_in_battle_state[current_army_index]
 	current_army_index += 1
 	current_army_index %= armies_in_battle_state.size()
-	print(NET.get_role_name(), " _switch_participant_turn ", current_army_index)
+	_logger.info("%s _switch_participant_turn %d", \
+		[NET.get_role_name(), current_army_index])
 
 	if state == STATE_SUMMONNING:
 		var skip_count = 0
@@ -720,6 +724,7 @@ class ArmyInBattleState:
 	## time to add when turn ends
 	var turn_increment_ms = CFG.CHESS_CLOCK_BATTLE_TURN_INCREMENT_MS
 
+	var _logger := LOG.LoggerWithArea.new(LOG.LOG_BATTLE)
 
 	static func create_from(army : Army, state : BattleGridState) -> ArmyInBattleState:
 		var result = ArmyInBattleState.new()
@@ -751,7 +756,7 @@ class ArmyInBattleState:
 
 
 	func kill_unit(target : Unit) -> void:
-		print("killing ", target.coord, " ",target.template.unit_name)
+		_logger.info("killing %s on %s", [target.template.unit_name, target.coord])
 		units.erase(target)
 		dead_units.append(target.template)
 		#gdlint: ignore=private-method-call

@@ -35,6 +35,7 @@ const WORLD_MAP_TILES_PATH = "res://Resources/World/World_tiles/"
 const SYMBOLS_PATH = "res://Resources/Battle/Symbols/"
 
 const REPLAY_DIRECTORY = "user://replays/"
+const LOGS_DIRECTORY = "user://logs/"
 const PLAYER_OPTIONS_PATH = "user://player_options.tres"
 
 var FACTION_ELVES : DataFaction = load("res://Resources/Factions/elf.tres")
