@@ -84,7 +84,7 @@ flip_horizontal = false
 [sub_resource type="Resource" id="Resource_vufl8"]
 script = ExtResource("1_bku71")
 type = "empty"
-texture_path = "res://Art/battle_map/grass.png"
+texture_path = "res://Art/world_map/grass_basic.png"
 flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_7ax7q"]
@@ -114,13 +114,13 @@ flip_horizontal = false
 [sub_resource type="Resource" id="Resource_wna38"]
 script = ExtResource("1_bku71")
 type = "empty"
-texture_path = "res://Art/battle_map/grass.png"
+texture_path = "res://Art/world_map/grass_basic.png"
 flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_axv4b"]
 script = ExtResource("1_bku71")
 type = "empty"
-texture_path = "res://Art/battle_map/grass.png"
+texture_path = "res://Art/world_map/grass_basic.png"
 flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_jl616"]
@@ -144,49 +144,49 @@ flip_horizontal = false
 [sub_resource type="Resource" id="Resource_tcd81"]
 script = ExtResource("1_bku71")
 type = "empty"
-texture_path = "res://Art/battle_map/grass.png"
+texture_path = "res://Art/world_map/grass_basic.png"
 flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_w4h2v"]
 script = ExtResource("1_bku71")
 type = "empty"
-texture_path = "res://Art/battle_map/grass.png"
+texture_path = "res://Art/world_map/grass_basic.png"
 flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_xp8ne"]
 script = ExtResource("1_bku71")
 type = "empty"
-texture_path = "res://Art/battle_map/grass.png"
+texture_path = "res://Art/world_map/grass_basic.png"
 flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_036d7"]
 script = ExtResource("1_bku71")
 type = "empty"
-texture_path = "res://Art/battle_map/grass.png"
+texture_path = "res://Art/world_map/grass_basic.png"
 flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_3s2ob"]
 script = ExtResource("1_bku71")
 type = "empty"
-texture_path = "res://Art/battle_map/grass.png"
+texture_path = "res://Art/world_map/grass_basic.png"
 flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_2qucq"]
 script = ExtResource("1_bku71")
 type = "empty"
-texture_path = "res://Art/battle_map/grass.png"
+texture_path = "res://Art/world_map/grass_basic.png"
 flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_na3re"]
 script = ExtResource("1_bku71")
 type = "empty"
-texture_path = "res://Art/battle_map/grass.png"
+texture_path = "res://Art/world_map/grass_basic.png"
 flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_pskea"]
 script = ExtResource("1_bku71")
 type = "empty"
-texture_path = "res://Art/battle_map/grass.png"
+texture_path = "res://Art/world_map/grass_basic.png"
 flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_1envw"]
@@ -198,13 +198,13 @@ flip_horizontal = false
 [sub_resource type="Resource" id="Resource_ocm7k"]
 script = ExtResource("1_bku71")
 type = "empty"
-texture_path = "res://Art/battle_map/grass.png"
+texture_path = "res://Art/world_map/grass_basic.png"
 flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_021fq"]
 script = ExtResource("1_bku71")
 type = "empty"
-texture_path = "res://Art/battle_map/grass.png"
+texture_path = "res://Art/world_map/grass_basic.png"
 flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_d1csn"]
@@ -222,13 +222,13 @@ flip_horizontal = false
 [sub_resource type="Resource" id="Resource_llc3k"]
 script = ExtResource("1_bku71")
 type = "empty"
-texture_path = "res://Art/battle_map/grass.png"
+texture_path = "res://Art/world_map/grass_basic.png"
 flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_f4c4r"]
 script = ExtResource("1_bku71")
 type = "empty"
-texture_path = "res://Art/battle_map/grass.png"
+texture_path = "res://Art/world_map/grass_basic.png"
 flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_lu0ao"]
@@ -240,49 +240,49 @@ flip_horizontal = false
 [sub_resource type="Resource" id="Resource_vriay"]
 script = ExtResource("1_bku71")
 type = "empty"
-texture_path = "res://Art/battle_map/grass.png"
+texture_path = "res://Art/world_map/grass_basic.png"
 flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_hvrcm"]
 script = ExtResource("1_bku71")
 type = "empty"
-texture_path = "res://Art/battle_map/grass.png"
+texture_path = "res://Art/world_map/grass_basic.png"
 flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_5oxwy"]
 script = ExtResource("1_bku71")
 type = "empty"
-texture_path = "res://Art/battle_map/grass.png"
+texture_path = "res://Art/world_map/grass_basic.png"
 flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_f5ede"]
 script = ExtResource("1_bku71")
 type = "empty"
-texture_path = "res://Art/battle_map/grass.png"
+texture_path = "res://Art/world_map/grass_basic.png"
 flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_lptxt"]
 script = ExtResource("1_bku71")
 type = "empty"
-texture_path = "res://Art/battle_map/grass.png"
+texture_path = "res://Art/world_map/grass_basic.png"
 flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_fr17b"]
 script = ExtResource("1_bku71")
 type = "empty"
-texture_path = "res://Art/battle_map/grass.png"
+texture_path = "res://Art/world_map/grass_basic.png"
 flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_ormg2"]
 script = ExtResource("1_bku71")
 type = "empty"
-texture_path = "res://Art/battle_map/grass.png"
+texture_path = "res://Art/world_map/grass_basic.png"
 flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_2wu3t"]
 script = ExtResource("1_bku71")
 type = "empty"
-texture_path = "res://Art/battle_map/grass.png"
+texture_path = "res://Art/world_map/grass_basic.png"
 flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_ncsj4"]
@@ -306,13 +306,13 @@ flip_horizontal = false
 [sub_resource type="Resource" id="Resource_mf3s5"]
 script = ExtResource("1_bku71")
 type = "empty"
-texture_path = "res://Art/battle_map/grass.png"
+texture_path = "res://Art/world_map/grass_basic.png"
 flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_65lhm"]
 script = ExtResource("1_bku71")
 type = "empty"
-texture_path = "res://Art/battle_map/grass.png"
+texture_path = "res://Art/world_map/grass_basic.png"
 flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_1t0bg"]
@@ -342,7 +342,7 @@ flip_horizontal = false
 [sub_resource type="Resource" id="Resource_skqnd"]
 script = ExtResource("1_bku71")
 type = "empty"
-texture_path = "res://Art/battle_map/grass.png"
+texture_path = "res://Art/world_map/grass_basic.png"
 flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_b6ink"]

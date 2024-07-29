@@ -286,6 +286,46 @@ func get_current_player() -> Player:
 	return armies_in_battle_state[current_army_index].army_reference.controller
 
 
+func _switch_participant_turn() -> void:
+	var prev_player := armies_in_battle_state[current_army_index]
+	var prev_idx = current_army_index
+	current_army_index += 1
+	current_army_index %= armies_in_battle_state.size()
+	print(NET.get_role_name(), " _switch_participant_turn ", current_army_index)
+
+	if state == STATE_SUMMONNING:
+		var skip_count = 0
+		# skip players with nothing to summon
+		while armies_in_battle_state[current_army_index].units_to_summon.size() == 0:
+			current_army_index += 1
+			current_army_index %= armies_in_battle_state.size()
+			skip_count += 1
+			# no player has anything to summon, go to next phase
+			if skip_count == armies_in_battle_state.size():
+				_end_summoning_state()
+				break
+
+	elif state == STATE_FIGHTING:
+		
+		while not armies_in_battle_state[current_army_index].can_fight():
+			current_army_index += 1
+			current_army_index %= armies_in_battle_state.size()
+		if prev_idx > current_army_index:
+			cyclone_target.cyclone_timer -= 1
+
+			# MEGA TEMP:
+			if cyclone_target.cyclone_timer == 0:
+				cyclone_target.kill_army()
+				if battle_is_ongoing():
+					_check_battle_end()
+
+
+	var next_player := armies_in_battle_state[current_army_index]
+	# chess clock is updated in  turn_ended() and turn_started()
+	prev_player.turn_ended()
+	next_player.turn_started()
+
+
 func _get_battle_hex(coord : Vector2i) -> BattleHex:
 	return get_hex(coord)
 
@@ -518,9 +558,7 @@ func set_displayed_time_left_ms(time_left_ms : int) -> void:
 
 #region Mana Cyclone Timer
 
-func mana_values_changed() -> void:
-	## Occurs any time mana values are changed (cheap function)
-	## It may change the cyclone_target
+func mana_values_changed():
 	var current_worst = armies_in_battle_state[0]
 	var current_best = armies_in_battle_state[-1]
 	for army in armies_in_battle_state:
@@ -532,9 +570,7 @@ func mana_values_changed() -> void:
 	
 	cyclone_target = current_worst
 	var mana_difference = current_best.mana_points - current_worst.mana_points
- 
-	var new_cylone_counter = (number_of_mana_wells * 10) * max(1, (5 - mana_difference))
-	#new_cylone_counter = 1 # use to test
+	var new_cylone_counter = (number_of_mana_wells * 0.5) * max(1, (5 - mana_difference))
 
 	if current_worst.cyclone_timer == 0:  # Cycle killed a unit now it resets
 		current_worst.cyclone_timer = new_cylone_counter
@@ -542,13 +578,14 @@ func mana_values_changed() -> void:
 		current_worst.cyclone_timer = new_cylone_counter
 
 	
+
+
 func cyclone_get_current_target() -> Player:
 	return cyclone_target.army_reference.controller
 
 
 func cyclone_get_current_target_turns_left() -> int:
 	return cyclone_target.cyclone_timer
-
 
 #endregion Mana Cyclone Timer
 

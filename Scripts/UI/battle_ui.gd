@@ -14,6 +14,8 @@ extends CanvasLayer
 
 @onready var cyclone = $CycloneTimer/CycloneTarget
 
+@onready var cyclone = $CycloneTimer/CycloneTarget
+
 var armies_reference : Array[BattleGridState.ArmyInBattleState]
 
 var selected_unit : DataUnit = null

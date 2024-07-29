@@ -325,6 +325,21 @@ func ai_move() -> void:
 #endregion AI Support
 
 
+#region Mana Cyclone Timer
+
+func get_cyclone_target() -> String:
+	var player = _battle_grid_state.cyclone_get_current_target()
+	if player:
+		return player.get_player_color().name # TEMP translate id to name here
+	return "neutral"
+
+
+func get_cyclone_timer() -> int:
+	return _battle_grid_state.cyclone_get_current_target_turns_left()
+
+#endregion Mana Cyclone Timer
+
+
 #region Summon Phase
 
 ## handles spawning unit form when unit is spawned on a gameplay map
