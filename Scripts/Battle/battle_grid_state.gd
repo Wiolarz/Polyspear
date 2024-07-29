@@ -17,6 +17,8 @@ var armies_in_battle_state : Array[ArmyInBattleState] = []
 
 var currently_processed_move_info : MoveInfo = null
 
+static var _logger := LOG.LoggerWithArea.new(LOG.LOG_BATTLE)
+
 #region init
 
 func _init(width_ : int, height_ : int):
@@ -254,7 +256,7 @@ func _switch_participant_turn() -> void:
 	var prev_player := armies_in_battle_state[current_army_index]
 	current_army_index += 1
 	current_army_index %= armies_in_battle_state.size()
-	LOG.info(LOG.LOG_BATTLE, "%s _switch_participant_turn %d",\
+	_logger.info("%s _switch_participant_turn %d", \
 		[NET.get_role_name(), current_army_index])
 
 	if state == STATE_SUMMONNING:
@@ -721,6 +723,7 @@ class ArmyInBattleState:
 	## time to add when turn ends
 	var turn_increment_ms = CFG.CHESS_CLOCK_BATTLE_TURN_INCREMENT_MS
 
+	static var _logger := LOG.LoggerWithArea.new(LOG.LOG_BATTLE)
 
 	static func create_from(army : Army, state : BattleGridState) -> ArmyInBattleState:
 		var result = ArmyInBattleState.new()
@@ -752,7 +755,7 @@ class ArmyInBattleState:
 
 
 	func kill_unit(target : Unit) -> void:
-		LOG.info(LOG.LOG_BATTLE, "killing %s on %s", [target.template.unit_name, target.coord])
+		_logger.info("killing %s on %s", [target.template.unit_name, target.coord])
 		units.erase(target)
 		dead_units.append(target.template)
 		#gdlint: ignore=private-method-call

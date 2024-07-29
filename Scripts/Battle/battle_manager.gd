@@ -22,7 +22,7 @@ var _replay_data : BattleReplay
 var _replay_is_playing : bool = false
 
 var _batch_mode : bool = false # flagged true when recreating game state
-
+var _logger := LOG.LoggerWithArea.new(LOG.LOG_BATTLE)
 
 func _ready():
 	_battle_ui = load("res://Scenes/UI/BattleUi.tscn").instantiate()
@@ -102,7 +102,7 @@ func _load_map(map : DataBattleMap) -> void:
 ## space needed for battle tiles in global position
 func get_bounds_global_position() -> Rect2:
 	if _is_clear():
-		LOG.warn(LOG.LOG_BATTLE, "asking not initialized grid for camera bounding box")
+		_logger.warn("asking not initialized grid for camera bounding box")
 		return Rect2(0, 0, 0, 0)
 	var top_left_tile_position := get_tile_global_position(Vector2i(0,0))
 	var bottom_right_tile_position  := \
@@ -195,14 +195,14 @@ func _on_turn_started(player : Player) -> void:
 	_battle_ui.start_player_turn(_battle_grid_state.current_army_index)
 
 	if not player:
-		LOG.info(LOG.LOG_BATTLE, "uncontrolled army's turn")
+		_logger.info("uncontrolled army's turn")
 		return
 
 	# trigger AI analysis
-	LOG.info(LOG.LOG_BATTLE, "your move %s - %s", [player.get_player_name(), player.get_player_color().name])
+	_logger.info("your move %s - %s", [player.get_player_name(), player.get_player_color().name])
 
 	if player.bot_engine and not NET.client: # AI is simulated on server only
-		LOG.info(LOG.LOG_BATTLE, "AI starts thinking")
+		_logger.info("AI starts thinking")
 		var my_cancel_token = CancellationToken.new()
 		assert(latest_ai_cancel_token == null)
 		latest_ai_cancel_token = my_cancel_token
@@ -221,7 +221,7 @@ func cancel_pending_ai_move() ->  void:
 
 func _ai_thinking_delay() -> void:
 	var seconds = CFG.bot_speed_frames / 60.0
-	LOG.info(LOG.LOG_BATTLE,"ai wait %f s", [seconds])
+	_logger.info("ai wait %f s", [seconds])
 	await get_tree().create_timer(seconds).timeout
 	while IM.is_game_paused() or CFG.bot_speed_frames == CFG.BotSpeed.FREEZE:
 		await get_tree().create_timer(0.1).timeout
@@ -257,13 +257,13 @@ func undo() -> void:
 
 
 func redo() -> void:
-	LOG.warn(LOG.LOG_BATTLE, "redo not implemented")
+	_logger.warn("redo not implemented")
 	pass
 
 
 func ai_move() -> void:
 	if latest_ai_cancel_token:
-		LOG.warn(LOG.LOG_BATTLE, "ai is already moving, don't stack two simultaneous ai moves race")
+		_logger.warn("ai is already moving, don't stack two simultaneous ai moves race")
 		return
 	var move := AiBotStateRandom.choose_move_static(_battle_grid_state)
 	_perform_ai_move(move)
@@ -272,20 +272,20 @@ func ai_move() -> void:
 ## called when tile is clicked
 func grid_input(coord : Vector2i) -> void:
 	if not _battle_is_ongoing:
-		LOG.info(LOG.LOG_BATTLE,"battle finished, input ignored")
+		_logger.info("battle finished, input ignored")
 		return
 
 	if _replay_is_playing:
-		LOG.info(LOG.LOG_BATTLE, "replay playing, input ignored")
+		_logger.info("replay playing, input ignored")
 		return
 
 	if _anim_queue.size() > 0:
-		LOG.info(LOG.LOG_BATTLE, "anim playing, input ignored")
+		_logger.info("anim playing, input ignored")
 		return
 
 	var current_player : Player =  _battle_grid_state.get_current_player()
 	if current_player != null and current_player.bot_engine:
-		LOG.info(LOG.LOG_BATTLE, "ai playing, input ignored")
+		_logger.info("ai playing, input ignored")
 		return
 
 	if _battle_grid_state.is_during_summoning_phase(): # Summon phase
@@ -327,7 +327,7 @@ func _grid_input_summon(coord : Vector2i) -> void:
 	if not _battle_grid_state.current_player_can_summon_on(coord):
 		return
 
-	LOG.info(LOG.LOG_BATTLE, "%s input - summoning unit", [NET.get_role_name()])
+	_logger.info("%s input - summoning unit", [NET.get_role_name()])
 	var move_info = MoveInfo.make_summon(_battle_ui.selected_unit, coord)
 	if NET.client:
 		NET.client.queue_request_move(move_info)
@@ -392,7 +392,7 @@ func _try_select_unit(coord : Vector2i) -> bool:
 func _perform_move_info(move_info : MoveInfo) -> void:
 	if not _battle_is_ongoing:
 		return
-	LOG.info(LOG.LOG_BATTLE, "%s performing move %s", [NET.get_role_name(), move_info])
+	_logger.info("%s performing move %s", [NET.get_role_name(), move_info])
 
 	_replay_data.record_move(move_info, get_current_time_left_ms())
 	_replay_data.save()
@@ -447,7 +447,7 @@ func close_when_quiting_game() -> void:
 
 ## called when battle simulation decided battle was won
 func _on_battle_ended() -> void:
-	LOG.info(LOG.LOG_BATTLE, "ending battle")
+	_logger.info("ending battle")
 	if not _battle_is_ongoing:
 		assert(false, "battle ended when it was not ongoing...")
 		return
@@ -472,14 +472,14 @@ func _close_battle() -> void:
 	_turn_off_battle_ui()
 	_reset_grid_and_unit_forms()
 
-	LOG.info(LOG.LOG_BATTLE, "battle ended")
+	_logger.info("battle ended")
 
 	if not WM.world_game_is_active():
-		LOG.info(LOG.LOG_BATTLE, "going to main menu")
+		_logger.info("going to main menu")
 		IM.go_to_main_menu()
 		return
 
-	LOG.info(LOG.LOG_BATTLE, "going to world")
+	_logger.info("going to world")
 	WM.end_of_battle(state_for_world)
 
 
@@ -608,7 +608,7 @@ func _process_anim_queue() -> void:
 		return
 	if not _anim_queue[0]._unit_form:
 		var broken = _anim_queue.pop_front()
-		LOG.warn(LOG.LOG_BATTLE, "poping broken animation from the queue %s", [str(broken)])
+		_logger.warn("poping broken animation from the queue %s", [str(broken)])
 
 
 func _clear_anim_queue():

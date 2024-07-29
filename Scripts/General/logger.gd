@@ -70,3 +70,27 @@ func warn(area : String, message : String, params : Variant = null):
 
 func err(area : String, message : String, params : Variant = null):
 	basic_log(Severity.ERROR, area, message, params)
+
+
+
+class LoggerWithArea:
+	var _area : String
+
+	func _init(area : String):
+		_area = area
+
+
+	func debug(message : String, params : Variant = null):
+		LOG.debug(_area, message, params)
+
+
+	func info(message : String, params : Variant = null):
+		LOG.info(_area, message, params)
+
+
+	func warn(message : String, params : Variant = null):
+		LOG.warn(_area, message, params)
+
+
+	func err(message : String, params : Variant = null):
+		LOG.err(_area, message, params)
