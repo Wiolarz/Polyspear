@@ -18,6 +18,7 @@ config/icon="res://Art/world_map/ruby_cave.png"
 
 [autoload]
 
+LOG="*res://Scripts/General/logger.gd"
 CFG="*res://Scripts/General/config_manager.gd"
 W_GRID="*res://Scripts/World/world_grid_node2d.gd"
 WM="*res://Scripts/World/world_manager.gd"
