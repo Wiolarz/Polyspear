@@ -221,7 +221,7 @@ func cancel_pending_ai_move() ->  void:
 
 func _ai_thinking_delay() -> void:
 	var seconds = CFG.bot_speed_frames / 60.0
-	print("ai wait %f s" % [seconds])
+	LOG.info(LOG.LOG_BATTLE,"ai wait %f s", [seconds])
 	await get_tree().create_timer(seconds).timeout
 	while IM.is_game_paused() or CFG.bot_speed_frames == CFG.BotSpeed.FREEZE:
 		await get_tree().create_timer(0.1).timeout
@@ -272,20 +272,20 @@ func ai_move() -> void:
 ## called when tile is clicked
 func grid_input(coord : Vector2i) -> void:
 	if not _battle_is_ongoing:
-		print("battle finished, input ignored")
+		LOG.info(LOG.LOG_BATTLE,"battle finished, input ignored")
 		return
 
 	if _replay_is_playing:
-		print("replay playing, input ignored")
+		LOG.info(LOG.LOG_BATTLE, "replay playing, input ignored")
 		return
 
 	if _anim_queue.size() > 0:
-		print("anim playing, input ignored")
+		LOG.info(LOG.LOG_BATTLE, "anim playing, input ignored")
 		return
 
 	var current_player : Player =  _battle_grid_state.get_current_player()
 	if current_player != null and current_player.bot_engine:
-		print("ai playing, input ignored")
+		LOG.info(LOG.LOG_BATTLE, "ai playing, input ignored")
 		return
 
 	if _battle_grid_state.is_during_summoning_phase(): # Summon phase
@@ -327,7 +327,7 @@ func _grid_input_summon(coord : Vector2i) -> void:
 	if not _battle_grid_state.current_player_can_summon_on(coord):
 		return
 
-	print(NET.get_role_name(), " input - summoning unit")
+	LOG.info(LOG.LOG_BATTLE, "%s input - summoning unit", [NET.get_role_name()])
 	var move_info = MoveInfo.make_summon(_battle_ui.selected_unit, coord)
 	if NET.client:
 		NET.client.queue_request_move(move_info)
@@ -392,9 +392,7 @@ func _try_select_unit(coord : Vector2i) -> bool:
 func _perform_move_info(move_info : MoveInfo) -> void:
 	if not _battle_is_ongoing:
 		return
-	print(NET.get_role_name(), " performing move ", move_info)
-
-
+	LOG.info(LOG.LOG_BATTLE, "%s performing move %s", [NET.get_role_name(), move_info])
 
 	_replay_data.record_move(move_info, get_current_time_left_ms())
 	_replay_data.save()
@@ -449,7 +447,7 @@ func close_when_quiting_game() -> void:
 
 ## called when battle simulation decided battle was won
 func _on_battle_ended() -> void:
-	print("ending battle")
+	LOG.info(LOG.LOG_BATTLE, "ending battle")
 	if not _battle_is_ongoing:
 		assert(false, "battle ended when it was not ongoing...")
 		return
@@ -474,11 +472,14 @@ func _close_battle() -> void:
 	_turn_off_battle_ui()
 	_reset_grid_and_unit_forms()
 
+	LOG.info(LOG.LOG_BATTLE, "battle ended")
+
 	if not WM.world_game_is_active():
-		print("end of test battle")
+		LOG.info(LOG.LOG_BATTLE, "going to main menu")
 		IM.go_to_main_menu()
 		return
 
+	LOG.info(LOG.LOG_BATTLE, "going to world")
 	WM.end_of_battle(state_for_world)
 
 
