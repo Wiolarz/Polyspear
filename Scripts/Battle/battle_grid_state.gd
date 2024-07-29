@@ -254,7 +254,8 @@ func _switch_participant_turn() -> void:
 	var prev_player := armies_in_battle_state[current_army_index]
 	current_army_index += 1
 	current_army_index %= armies_in_battle_state.size()
-	print(NET.get_role_name(), " _switch_participant_turn ", current_army_index)
+	LOG.info(LOG.LOG_BATTLE, "%s _switch_participant_turn %d",\
+		[NET.get_role_name(), current_army_index])
 
 	if state == STATE_SUMMONNING:
 		var skip_count = 0
@@ -751,7 +752,7 @@ class ArmyInBattleState:
 
 
 	func kill_unit(target : Unit) -> void:
-		print("killing ", target.coord, " ",target.template.unit_name)
+		LOG.info(LOG.LOG_BATTLE, "killing %s on %s", [target.template.unit_name, target.coord])
 		units.erase(target)
 		dead_units.append(target.template)
 		#gdlint: ignore=private-method-call

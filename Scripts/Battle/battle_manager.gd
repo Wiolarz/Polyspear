@@ -102,7 +102,7 @@ func _load_map(map : DataBattleMap) -> void:
 ## space needed for battle tiles in global position
 func get_bounds_global_position() -> Rect2:
 	if _is_clear():
-		push_warning("asking not initialized grid for camera bounding box")
+		LOG.warn(LOG.LOG_BATTLE, "asking not initialized grid for camera bounding box")
 		return Rect2(0, 0, 0, 0)
 	var top_left_tile_position := get_tile_global_position(Vector2i(0,0))
 	var bottom_right_tile_position  := \
@@ -257,13 +257,13 @@ func undo() -> void:
 
 
 func redo() -> void:
-	push_warning("not implemented")
+	LOG.warn(LOG.LOG_BATTLE, "redo not implemented")
 	pass
 
 
 func ai_move() -> void:
 	if latest_ai_cancel_token:
-		push_warning("ai is already moving, dont stack two simultaneous ai moves race")
+		LOG.warn(LOG.LOG_BATTLE, "ai is already moving, don't stack two simultaneous ai moves race")
 		return
 	var move := AiBotStateRandom.choose_move_static(_battle_grid_state)
 	_perform_ai_move(move)
@@ -608,7 +608,7 @@ func _process_anim_queue() -> void:
 		return
 	if not _anim_queue[0]._unit_form:
 		var broken = _anim_queue.pop_front()
-		push_warning("poping broken animation from the queue " + str(broken))
+		LOG.warn(LOG.LOG_BATTLE, "poping broken animation from the queue %s", [str(broken)])
 
 
 func _clear_anim_queue():
