@@ -195,14 +195,14 @@ func _on_turn_started(player : Player) -> void:
 	_battle_ui.start_player_turn(_battle_grid_state.current_army_index)
 
 	if not player:
-		print("uncontrolled army's turn")
+		LOG.info(LOG.LOG_BATTLE, "uncontrolled army's turn")
 		return
 
 	# trigger AI analysis
-	print("your move %s - %s" % [player.get_player_name(), player.get_player_color().name])
+	LOG.info(LOG.LOG_BATTLE, "your move %s - %s", [player.get_player_name(), player.get_player_color().name])
 
 	if player.bot_engine and not NET.client: # AI is simulated on server only
-		print("AI starts thinking")
+		LOG.info(LOG.LOG_BATTLE, "AI starts thinking")
 		var my_cancel_token = CancellationToken.new()
 		assert(latest_ai_cancel_token == null)
 		latest_ai_cancel_token = my_cancel_token
