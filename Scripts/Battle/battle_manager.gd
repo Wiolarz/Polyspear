@@ -249,6 +249,7 @@ func undo() -> void:
 	cancel_pending_ai_move()
 
 	var last_move := _replay_data.moves.pop_back() as MoveInfo
+	_logger.info("undo on move %s",[last_move])
 	var new_units = _battle_grid_state.undo(last_move)
 	for n in new_units:
 		_on_unit_summoned(n)
@@ -392,7 +393,7 @@ func _try_select_unit(coord : Vector2i) -> bool:
 func _perform_move_info(move_info : MoveInfo) -> void:
 	if not _battle_is_ongoing:
 		return
-	_logger.info("%s performing move %s", [NET.get_role_name(), move_info])
+	_logger.info("%s performing move_info %s", [NET.get_role_name(), move_info])
 
 	_replay_data.record_move(move_info, get_current_time_left_ms())
 	_replay_data.save()

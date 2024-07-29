@@ -17,7 +17,7 @@ var armies_in_battle_state : Array[ArmyInBattleState] = []
 
 var currently_processed_move_info : MoveInfo = null
 
-static var _logger := LOG.LoggerWithArea.new(LOG.LOG_BATTLE)
+var _logger := LOG.LoggerWithArea.new(LOG.LOG_BATTLE)
 
 #region init
 
@@ -66,6 +66,7 @@ func move_info_move_unit(move_info : MoveInfo) -> void:
 	var source_tile_coord := move_info.move_source
 	var target_tile_coord := move_info.target_tile_coord
 	var unit = get_unit(source_tile_coord)
+	_logger.info("move unit %s from %s to %s", [unit.template.unit_name, move_info.move_source, move_info.target_tile_coord])
 	var direction = GenericHexGrid.direction_to_adjacent(unit.coord, target_tile_coord)
 	move_info.register_move_start(current_army_index, unit)
 
@@ -723,7 +724,7 @@ class ArmyInBattleState:
 	## time to add when turn ends
 	var turn_increment_ms = CFG.CHESS_CLOCK_BATTLE_TURN_INCREMENT_MS
 
-	static var _logger := LOG.LoggerWithArea.new(LOG.LOG_BATTLE)
+	var _logger := LOG.LoggerWithArea.new(LOG.LOG_BATTLE)
 
 	static func create_from(army : Army, state : BattleGridState) -> ArmyInBattleState:
 		var result = ArmyInBattleState.new()
