@@ -12,6 +12,8 @@ extends CanvasLayer
 @onready var clock = $TurnsBG/ClockLeft
 @onready var turns = $TurnsBG/TurnCount
 
+@onready var cyclone = $CycloneTimer/CycloneTarget
+
 var armies_reference : Array[BattleGridState.ArmyInBattleState]
 
 var selected_unit : DataUnit = null
@@ -26,6 +28,13 @@ func _ready():
 func _process(_delta):
 	if BM.battle_is_active():
 		update_clock()
+		update_cyclone()
+
+
+func update_cyclone():
+	cyclone.text = "%s %d turns" % [BM.get_cyclone_target(), BM.get_cyclone_timer()]
+
+	pass
 
 
 func update_clock() -> void:

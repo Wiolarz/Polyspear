@@ -17,6 +17,9 @@ var armies_in_battle_state : Array[ArmyInBattleState] = []
 
 var currently_processed_move_info : MoveInfo = null
 
+var number_of_mana_wells : int = 0
+var cyclone_target : ArmyInBattleState
+
 #region init
 
 func _init(width_ : int, height_ : int):
@@ -34,10 +37,17 @@ static func create(map: DataBattleMap, new_armies : Array[Army]) -> BattleGridSt
 	for x in range(map.grid_width):
 		for y in range(map.grid_height):
 			var map_tile : DataTile = map.grid_data[x][y]
-			result.set_hex(Vector2i(x,y), BattleHex.create(map_tile))
+			var new_hex = BattleHex.create(map_tile)
+			result.set_hex(Vector2i(x,y), new_hex)
+			if new_hex and new_hex.is_mana_tile():
+				result.number_of_mana_wells += 1
+
+	result.mana_values_changed()
+
 	return result
 
 #endregion
+
 
 #region move_info support
 
@@ -252,6 +262,7 @@ func get_current_player() -> Player:
 
 func _switch_participant_turn() -> void:
 	var prev_player := armies_in_battle_state[current_army_index]
+	var prev_idx = current_army_index
 	current_army_index += 1
 	current_army_index %= armies_in_battle_state.size()
 	print(NET.get_role_name(), " _switch_participant_turn ", current_army_index)
@@ -269,9 +280,19 @@ func _switch_participant_turn() -> void:
 				break
 
 	elif state == STATE_FIGHTING:
+		
 		while not armies_in_battle_state[current_army_index].can_fight():
 			current_army_index += 1
 			current_army_index %= armies_in_battle_state.size()
+		if prev_idx > current_army_index:
+			cyclone_target.cyclone_timer -= 1
+
+			# MEGA TEMP:
+			if cyclone_target.cyclone_timer == 0:
+				cyclone_target.kill_army()
+				if battle_is_ongoing():
+					_check_battle_end()
+
 
 	var next_player := armies_in_battle_state[current_army_index]
 	# chess clock is updated in  turn_ended() and turn_started()
@@ -439,6 +460,40 @@ func set_displayed_time_left_ms(time_left_ms : int) -> void:
 	armies_in_battle_state[current_army_index].set_time_left_ms(time_left_ms)
 
 #endregion Timer
+
+
+#region Mana Cyclone Timer
+
+func mana_values_changed():
+	var current_worst = armies_in_battle_state[0]
+	var current_best = armies_in_battle_state[-1]
+	for army in armies_in_battle_state:
+		if current_worst.mana_points > army.mana_points: 
+			# TODO write documentation explaining that better defensive positions have those later in the array
+			current_worst = army
+		if current_best.mana_points < army.mana_points:
+			current_best = army
+	
+	cyclone_target = current_worst
+	var mana_difference = current_best.mana_points - current_worst.mana_points
+	var new_cylone_counter = (number_of_mana_wells * 0.5) * max(1, (5 - mana_difference))
+
+	if current_worst.cyclone_timer == 0:  # Cycle killed a unit now it resets
+		current_worst.cyclone_timer = new_cylone_counter
+	elif current_worst.cyclone_timer > new_cylone_counter:
+		current_worst.cyclone_timer = new_cylone_counter
+
+	
+
+
+func cyclone_get_current_target() -> Player:
+	return cyclone_target.army_reference.controller
+
+
+func cyclone_get_current_target_turns_left() -> int:
+	return cyclone_target.cyclone_timer
+
+#endregion Mana Cyclone Timer
 
 
 #region End Battle
@@ -654,6 +709,7 @@ class BattleHex:
 	var can_be_moved_to : bool = true
 	var can_shoot_through : bool = true
 	var swamp : bool = false # TODO REFACTOR THIS NAME
+	var mana : bool = false
 
 	static var sentinel: BattleHex = BattleHex.create_sentinel()
 
@@ -695,6 +751,8 @@ class BattleHex:
 				result.swamp = true
 			"empty":
 				pass
+			"mana_well":
+				result.mana = true
 			_:
 				pass #TODO push error that tile type is not supported
 
@@ -703,6 +761,10 @@ class BattleHex:
 
 	func blocks_shots() -> bool:
 		return not can_shoot_through
+	
+
+	func is_mana_tile() -> bool:
+		return mana
 
 
 class ArmyInBattleState:
@@ -712,6 +774,9 @@ class ArmyInBattleState:
 	var units_to_summon : Array[DataUnit] = []
 	var units : Array[Unit] = []
 	var dead_units : Array[DataUnit] = []
+
+	var mana_points : int = 1
+	var cyclone_timer : int = 100
 
 	## when turn started - for local time calculation
 	var turn_start_timestamp
