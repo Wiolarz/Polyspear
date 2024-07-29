@@ -41,6 +41,8 @@ func basic_log(\
 	if params:
 		message = message % params
 
+	message = "[%s] %s" % [Time.get_time_string_from_system(), message]
+
 	match severity:
 		Severity.DEBUG:
 			print(message)
