@@ -19,6 +19,9 @@ var currently_processed_move_info : MoveInfo = null
 
 var number_of_mana_wells : int = 0
 var cyclone_target : ArmyInBattleState
+#temp
+var cyclone_sacrifice : bool = false
+
 
 #region init
 
@@ -90,6 +93,19 @@ func move_info_move_unit(move_info : MoveInfo) -> void:
 	currently_processed_move_info = null
 
 
+func move_info_sacrifice(move_info : MoveInfo) -> void:
+	assert(move_info.move_type == MoveInfo.TYPE_SACRIFICE)
+	currently_processed_move_info = move_info
+	
+	var source_tile_coord := move_info.move_source
+
+	var unit = get_unit(source_tile_coord)
+
+	move_info.register_kill(_get_army_index(cyclone_target), unit)
+
+	_kill_unit(unit)
+
+
 ## returns array of revived units
 func undo(move_info : MoveInfo) -> Array[Unit]:
 	var result = [] as Array[Unit]
@@ -157,7 +173,8 @@ func _perform_move(unit : Unit, direction : int, target_tile_coord : Vector2i) -
 	if _process_symbols(unit):
 		return
 
-#end region
+#endregion move_info support
+
 
 #region Symbols
 
@@ -256,87 +273,18 @@ func _push_enemy(enemy : Unit, direction : int) -> void:
 #endregion
 
 
+#region helpers
+
 func get_current_player() -> Player:
 	return armies_in_battle_state[current_army_index].army_reference.controller
-
-
-func _switch_participant_turn() -> void:
-	var prev_player := armies_in_battle_state[current_army_index]
-	var prev_idx = current_army_index
-	current_army_index += 1
-	current_army_index %= armies_in_battle_state.size()
-	print(NET.get_role_name(), " _switch_participant_turn ", current_army_index)
-
-	if state == STATE_SUMMONNING:
-		var skip_count = 0
-		# skip players with nothing to summon
-		while armies_in_battle_state[current_army_index].units_to_summon.size() == 0:
-			current_army_index += 1
-			current_army_index %= armies_in_battle_state.size()
-			skip_count += 1
-			# no player has anything to summon, go to next phase
-			if skip_count == armies_in_battle_state.size():
-				_end_summoning_state()
-				break
-
-	elif state == STATE_FIGHTING:
-		
-		while not armies_in_battle_state[current_army_index].can_fight():
-			current_army_index += 1
-			current_army_index %= armies_in_battle_state.size()
-		if prev_idx > current_army_index:
-			cyclone_target.cyclone_timer -= 1
-
-			# MEGA TEMP:
-			if cyclone_target.cyclone_timer == 0:
-				cyclone_target.kill_army()
-				if battle_is_ongoing():
-					_check_battle_end()
-
-
-	var next_player := armies_in_battle_state[current_army_index]
-	# chess clock is updated in  turn_ended() and turn_started()
-	prev_player.turn_ended()
-	next_player.turn_started()
 
 
 func _get_battle_hex(coord : Vector2i) -> BattleHex:
 	return get_hex(coord)
 
 
-func current_player_can_summon_on(coord : Vector2i) -> bool:
-	return _can_summon_on(current_army_index, coord)
-
-
-func _can_summon_on(army_idx : int, coord : Vector2i) -> bool:
-	var hex := _get_battle_hex(coord)
-	return  hex.spawn_point_army_idx == army_idx and hex.unit == null
-
-
-func _get_spawn_rotation(coord : Vector2i) -> int:
-	return _get_battle_hex(coord).spawn_direction
-
-
-func _put_unit_on_grid(unit : Unit, coord : Vector2i) -> void:
-	var hex := _get_battle_hex(coord)
-	assert(hex.can_be_moved_to, "summoning unit to an invalid tile")
-	assert(not hex.unit, "summoning unit to an occupied tile")
-	hex.unit = unit
-
-
 func get_unit(coord : Vector2i) -> Unit:
 	return _get_battle_hex(coord).unit
-
-
-func _change_unit_coord(unit : Unit, target_coord : Vector2i) -> void:
-	_remove_unit(unit)
-	_put_unit_on_grid(unit, target_coord)
-
-
-func _remove_unit(unit : Unit) -> void:
-	var hex := _get_battle_hex(unit.coord)
-	assert(hex.unit == unit, "incorrect remove unit, coord desync")
-	hex.unit = null
 
 
 func _is_movable(coord : Vector2i) -> bool:
@@ -440,12 +388,100 @@ func _get_player_army(player : Player) -> BattleGridState.ArmyInBattleState:
 	return null
 
 
+func _get_army_index(army : BattleGridState.ArmyInBattleState):
+	return armies_in_battle_state.bsearch(army)
+
+#endregion helpers
+
+
+#region Gameplay Events
+
+func _switch_participant_turn() -> void:
+	var prev_player := armies_in_battle_state[current_army_index]
+	var prev_idx = current_army_index
+	current_army_index += 1
+	current_army_index %= armies_in_battle_state.size()
+	print(NET.get_role_name(), " _switch_participant_turn ", current_army_index)
+
+	if state == STATE_SUMMONNING:
+		var skip_count = 0
+		# skip players with nothing to summon
+		while armies_in_battle_state[current_army_index].units_to_summon.size() == 0:
+			current_army_index += 1
+			current_army_index %= armies_in_battle_state.size()
+			skip_count += 1
+			# no player has anything to summon, go to next phase
+			if skip_count == armies_in_battle_state.size():
+				_end_summoning_state()
+				break
+
+	elif state == STATE_FIGHTING:
+		
+		while not armies_in_battle_state[current_army_index].can_fight():
+			current_army_index += 1
+			current_army_index %= armies_in_battle_state.size()
+		if prev_idx > current_army_index: # Cyclone timer update
+
+			cyclone_target.cyclone_timer -= 1
+
+			# MEGA TEMP:
+			if cyclone_target.cyclone_timer == 0:
+				cyclone_sacrifice = true
+
+				
+
+
+	var next_player := armies_in_battle_state[current_army_index]
+	# chess clock is updated in  turn_ended() and turn_started()
+	prev_player.turn_ended()
+	next_player.turn_started()
+
+
+func _change_unit_coord(unit : Unit, target_coord : Vector2i) -> void:
+	_remove_unit(unit)
+	_put_unit_on_grid(unit, target_coord)
+
+
+func _remove_unit(unit : Unit) -> void:
+	var hex := _get_battle_hex(unit.coord)
+	assert(hex.unit == unit, "incorrect remove unit, coord desync")
+	hex.unit = null
+
+
 func _kill_unit(target : Unit) -> void:
 	var target_army_index := _find_army_idx(target.controller)
 	currently_processed_move_info.register_kill(target_army_index, target)
 
 	_get_player_army(target.controller).kill_unit(target)
 	_check_battle_end()
+
+
+#endregion Gameplay Events
+
+
+#region Summon Phase
+
+func current_player_can_summon_on(coord : Vector2i) -> bool:
+	return _can_summon_on(current_army_index, coord)
+
+
+func _can_summon_on(army_idx : int, coord : Vector2i) -> bool:
+	var hex := _get_battle_hex(coord)
+	return  hex.spawn_point_army_idx == army_idx and hex.unit == null
+
+
+func _get_spawn_rotation(coord : Vector2i) -> int:
+	return _get_battle_hex(coord).spawn_direction
+
+
+func _put_unit_on_grid(unit : Unit, coord : Vector2i) -> void:
+	var hex := _get_battle_hex(coord)
+	assert(hex.can_be_moved_to, "summoning unit to an invalid tile")
+	assert(not hex.unit, "summoning unit to an occupied tile")
+	hex.unit = unit
+
+
+#endregion Summon Phase
 
 
 #region Timer
@@ -464,7 +500,9 @@ func set_displayed_time_left_ms(time_left_ms : int) -> void:
 
 #region Mana Cyclone Timer
 
-func mana_values_changed():
+func mana_values_changed() -> void:
+	## Occurs any time mana values are changed (cheap function)
+	## It may change the cyclone_target
 	var current_worst = armies_in_battle_state[0]
 	var current_best = armies_in_battle_state[-1]
 	for army in armies_in_battle_state:
@@ -476,7 +514,8 @@ func mana_values_changed():
 	
 	cyclone_target = current_worst
 	var mana_difference = current_best.mana_points - current_worst.mana_points
-	var new_cylone_counter = (number_of_mana_wells * 0.5) * max(1, (5 - mana_difference))
+	var new_cylone_counter = 1
+	#TEMPvar new_cylone_counter = (number_of_mana_wells * 0.5) * max(1, (5 - mana_difference))
 
 	if current_worst.cyclone_timer == 0:  # Cycle killed a unit now it resets
 		current_worst.cyclone_timer = new_cylone_counter
@@ -484,14 +523,13 @@ func mana_values_changed():
 		current_worst.cyclone_timer = new_cylone_counter
 
 	
-
-
 func cyclone_get_current_target() -> Player:
 	return cyclone_target.army_reference.controller
 
 
 func cyclone_get_current_target_turns_left() -> int:
 	return cyclone_target.cyclone_timer
+
 
 #endregion Mana Cyclone Timer
 
@@ -564,6 +602,8 @@ func force_surrender():
 		if army_idx != current_army_index:
 			continue
 		_kill_army(army_idx)
+
+#endregion End Battle
 
 
 #region AI Helpers
@@ -698,6 +738,7 @@ func _is_kill_move(move : MoveInfo) -> bool:
 
 
 #endregion
+
 
 #region Subclasses
 
