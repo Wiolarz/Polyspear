@@ -3,6 +3,7 @@ extends Resource
 
 const TYPE_MOVE = "move"
 const TYPE_SUMMON = "summon"
+const TYPE_SACRIFICE = "sacrifice"
 
 @export var move_type: String = ""
 @export var summon_unit: DataUnit
@@ -35,6 +36,12 @@ static func make_summon(unit : DataUnit, dst : Vector2i) -> MoveInfo:
 	result.move_type = TYPE_SUMMON
 	result.summon_unit = unit
 	result.target_tile_coord = dst
+	return result
+
+static func make_sacrifice(src : Vector2i) -> MoveInfo:
+	var result : MoveInfo = MoveInfo.new()
+	result.move_type = TYPE_SACRIFICE
+	result.move_source = src
 	return result
 
 

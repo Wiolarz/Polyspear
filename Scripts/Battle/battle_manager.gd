@@ -359,6 +359,20 @@ func _grid_input_fighting(coord : Vector2i) -> void:
 	assert(_battle_grid_state.state == _battle_grid_state.STATE_FIGHTING, \
 			"_grid_input_fighting called in an incorrect state")
 
+	#TEMP this Cyclon sacrifice support should be moved somewhere else as it occours only every dozens moves
+	#and input should be locked to the person that is bound to make a sacrifice, which could be a different player than a current one
+	# also it occurs at round start
+	if _battle_grid_state.cyclone_sacrifice:
+		var new_unit : Unit = _battle_grid_state.get_unit(coord)
+		if new_unit and new_unit.controller == _battle_grid_state.cyclone_target.army_reference.controller:
+
+			_battle_grid_state.cyclone_sacrifice = false
+			_battle_grid_state.mana_values_changed()
+			var move_info = MoveInfo.make_sacrifice(coord)
+			_perform_move_info(move_info)	
+		return
+
+
 	if _try_select_unit(coord) or _selected_unit == null:
 		# used in scenarios:
 		# - selected a new unit
@@ -423,7 +437,11 @@ func _perform_move_info(move_info : MoveInfo) -> void:
 		MoveInfo.TYPE_SUMMON:
 			var unit := _battle_grid_state.move_info_summon_unit(move_info)
 			_on_unit_summoned(unit)
-
+		MoveInfo.TYPE_SACRIFICE: # TEMP
+			
+			_battle_grid_state.move_info_sacrifice(move_info)
+			
+			#_on_unit_killed(_battle_grid_state.get_unit(move_info.move_source))
 		_ :
 			assert(false, "Move move_type not supported in perform, " + str(move_info.move_type))
 
