@@ -5,5 +5,5 @@
 [resource]
 script = ExtResource("1_ds3ie")
 type = "mana_well"
-texture_path = "res://Art/battle_map/grass.png"
+texture_path = "res://Art/battle_map/mana_well.png"
 flip_horizontal = false
