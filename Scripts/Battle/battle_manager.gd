@@ -116,6 +116,14 @@ func get_bounds_global_position() -> Rect2:
 
 #region helpers
 
+func get_player_color(player : Player) -> DataPlayerColor:
+	if not _battle_is_ongoing:
+		return CFG.NEUTRAL_COLOR
+	if not player:
+		return CFG.NEUTRAL_COLOR
+	return player.get_player_color()
+
+
 func get_current_slot_color() -> DataPlayerColor:
 	if not _battle_is_ongoing:
 		return CFG.NEUTRAL_COLOR
@@ -257,6 +265,7 @@ func grid_input(coord : Vector2i) -> void:
 		print("ai playing, input ignored")
 		return
 
+	
 	if _battle_grid_state.is_during_summoning_phase(): # Summon phase
 		_grid_input_summon(coord)
 		return
@@ -349,11 +358,8 @@ func _grid_input_summon(coord : Vector2i) -> void:
 
 #region Mana Cyclone Timer
 
-func get_cyclone_target() -> String:
-	var player = _battle_grid_state.cyclone_get_current_target()
-	if player:
-		return player.get_player_color().name # TEMP translate id to name here
-	return "neutral"
+func get_cyclone_target() -> Player:
+	return _battle_grid_state.cyclone_get_current_target()
 
 
 func get_cyclone_timer() -> int:
@@ -364,10 +370,12 @@ func get_cyclone_timer() -> int:
 
 #region Fighting Phase
 
+## Turn timer unit sacrifice (Stalemate mechanic)
 func _grid_input_sacrifice(coord : Vector2i) -> void:
-	#TEMP this Cyclon sacrifice support should be moved somewhere else as it occours only every dozens moves
-	#and input should be locked to the person that is bound to make a sacrifice, which could be a different player than a current one
-	# also it occurs at round start
+	## TODO:
+	## input should be locked to the person that is bound to make a sacrifice,
+	## which could be a different player than a current one also it occurs at round start
+
 	assert(_battle_grid_state.state == _battle_grid_state.STATE_SACRIFICE, \
 			"_grid_input_fighting called in an incorrect state")
 
@@ -380,7 +388,7 @@ func _grid_input_sacrifice(coord : Vector2i) -> void:
 		_perform_move_info(move_info)	
 		
 
-
+## Either Unit selection or a command to move
 func _grid_input_fighting(coord : Vector2i) -> void:
 	assert(_battle_grid_state.state == _battle_grid_state.STATE_FIGHTING, \
 			"_grid_input_fighting called in an incorrect state")
@@ -450,11 +458,10 @@ func _perform_move_info(move_info : MoveInfo) -> void:
 		MoveInfo.TYPE_SUMMON:
 			var unit := _battle_grid_state.move_info_summon_unit(move_info)
 			_on_unit_summoned(unit)
-		MoveInfo.TYPE_SACRIFICE: # TEMP
-			
+		
+		MoveInfo.TYPE_SACRIFICE:
 			_battle_grid_state.move_info_sacrifice(move_info)
 			
-			#_on_unit_killed(_battle_grid_state.get_unit(move_info.move_source))
 		_ :
 			assert(false, "Move move_type not supported in perform, " + str(move_info.move_type))
 
