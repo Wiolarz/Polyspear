@@ -3,12 +3,13 @@ extends GenericHexGrid
 
 const STATE_SUMMONNING = "summonning"
 const STATE_FIGHTING = "fighting"
-const STATE_STALLMATE = "stallmate"
+const STATE_SACRIFICE = "sacrifice"
 const STATE_BATTLE_FINISHED = "battle_finished"
 
 const MOVE_IS_INVALID = -1
 
-const STALEMATE_TURN_COUNT = 69
+#TODO implement repeated moves detection
+const STALEMATE_TURN_COUNT = 3 # number of repeated moves that fast forward Mana Cyclon Timer
 
 var state : String = ""
 var turn_counter : int = 0
@@ -19,8 +20,6 @@ var currently_processed_move_info : MoveInfo = null
 
 var number_of_mana_wells : int = 0
 var cyclone_target : ArmyInBattleState
-#temp
-var cyclone_sacrifice : bool = false
 
 
 #region init
@@ -426,7 +425,7 @@ func _switch_participant_turn() -> void:
 
 			# MEGA TEMP:
 			if cyclone_target.cyclone_timer == 0:
-				cyclone_sacrifice = true
+				state = STATE_SACRIFICE
 
 				
 
@@ -455,6 +454,10 @@ func _kill_unit(target : Unit) -> void:
 	_get_player_army(target.controller).kill_unit(target)
 	_check_battle_end()
 
+
+## TODO implement repeated moves detection
+func end_stalemate() -> void:
+	pass
 
 #endregion Gameplay Events
 
@@ -542,24 +545,16 @@ func _kill_army(army_idx : int):
 		_check_battle_end()
 
 
-## TEMP: After some turns Defender (army idx 1) wins
-## in case army idx 1 was eliminated
-## kill all armies in idex order, last idx alive wins
-func end_stalemate():
-	for army_idx in range(armies_in_battle_state.size()):
-		if army_idx == 1:
-			continue
-		_kill_army(army_idx)
-		if state == STATE_BATTLE_FINISHED:
-			break
-
-
 func battle_is_ongoing() -> bool:
 	return state != STATE_BATTLE_FINISHED
 
 
 func is_during_summoning_phase() -> bool:
 	return state == STATE_SUMMONNING
+
+
+func is_during_sacrifice_phase() -> bool:
+	return state == STATE_SACRIFICE
 
 
 func _end_summoning_state() -> void:
@@ -579,11 +574,6 @@ func _check_battle_end() -> void:
 	if armies_alive < 2:
 		state = STATE_BATTLE_FINISHED
 		return
-
-	# TEMP
-	if turn_counter == STALEMATE_TURN_COUNT and state != STATE_STALLMATE:
-		state = STATE_STALLMATE
-		end_stalemate()
 
 
 func force_win_battle():

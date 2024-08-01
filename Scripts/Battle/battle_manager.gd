@@ -116,23 +116,6 @@ func get_bounds_global_position() -> Rect2:
 
 #region helpers
 
-func _check_clock_timer_run_out() -> void:
-	if not _battle_grid_state:
-		return
-	if not _battle_grid_state.battle_is_ongoing():
-		return
-	if get_current_time_left_ms() > 0:
-		return
-	_battle_grid_state.surrender_on_timeout()
-	_update_ui_after_player_move_or_drop()
-
-
-func _update_ui_after_player_move_or_drop() -> void:
-	if _battle_grid_state.battle_is_ongoing():
-		_on_turn_started(_battle_grid_state.get_current_player())
-	else :
-		_on_battle_ended()
-
 func get_current_slot_color() -> DataPlayerColor:
 	if not _battle_is_ongoing:
 		return CFG.NEUTRAL_COLOR
@@ -142,18 +125,8 @@ func get_current_slot_color() -> DataPlayerColor:
 	return player.get_player_color()
 
 
-func get_current_time_left_ms() -> int:
-	if _battle_grid_state && _battle_grid_state.battle_is_ongoing():
-		return _battle_grid_state.get_current_time_left()
-	return 0
-
-
 func get_current_turn() -> int:
 	return _battle_grid_state.turn_counter
-
-
-func get_max_turn() -> int:
-	return _battle_grid_state.STALEMATE_TURN_COUNT
 
 
 ## tells if there is battle state that is important and should be serialized
@@ -183,10 +156,32 @@ func _is_clear() -> bool:
 			and _unit_forms_node.get_child_count() == 0 \
 			and _tile_grid == null
 
-#endregion
+#endregion helpers
+
+
+#region Chess clock
+
+func _check_clock_timer_run_out() -> void:
+	if not _battle_grid_state:
+		return
+	if not _battle_grid_state.battle_is_ongoing():
+		return
+	if get_current_time_left_ms() > 0:
+		return
+	_battle_grid_state.surrender_on_timeout()
+	_end_move()
+
+
+func get_current_time_left_ms() -> int:
+	if _battle_grid_state && _battle_grid_state.battle_is_ongoing():
+		return _battle_grid_state.get_current_time_left()
+	return 0
+
+#endregion Chess clock
 
 
 #region Ongoing battle
+
 
 func _on_turn_started(player : Player) -> void:
 	if not _battle_is_ongoing:
@@ -213,30 +208,12 @@ func _on_turn_started(player : Player) -> void:
 			_perform_ai_move(move)
 
 
-func cancel_pending_ai_move() ->  void:
-	if latest_ai_cancel_token:
-		latest_ai_cancel_token.cancel()
-		latest_ai_cancel_token = null
-
-
-func _ai_thinking_delay() -> void:
-	var seconds = CFG.bot_speed_frames / 60.0
-	print("ai wait %f s" % [seconds])
-	await get_tree().create_timer(seconds).timeout
-	while IM.is_game_paused() or CFG.bot_speed_frames == CFG.BotSpeed.FREEZE:
-		await get_tree().create_timer(0.1).timeout
-
-
 func perform_network_move(move_info : MoveInfo) -> void:
 	_perform_move_info(move_info)
 
 
 func _perform_replay_move(move_info : MoveInfo) -> void:
 	_battle_grid_state.set_displayed_time_left_ms(move_info.time_left_ms)
-	_perform_move_info(move_info)
-
-
-func _perform_ai_move(move_info : MoveInfo) -> void:
 	_perform_move_info(move_info)
 
 
@@ -253,20 +230,12 @@ func undo() -> void:
 	for n in new_units:
 		_on_unit_summoned(n)
 	_battle_ui.refresh_after_undo(_battle_grid_state.is_during_summoning_phase())
-	_update_ui_after_player_move_or_drop()
+	_end_move()
 
 
 func redo() -> void:
 	push_warning("not implemented")
 	pass
-
-
-func ai_move() -> void:
-	if latest_ai_cancel_token:
-		push_warning("ai is already moving, dont stack two simultaneous ai moves race")
-		return
-	var move := AiBotStateRandom.choose_move_static(_battle_grid_state)
-	_perform_ai_move(move)
 
 
 ## called when tile is clicked
@@ -292,24 +261,49 @@ func grid_input(coord : Vector2i) -> void:
 		_grid_input_summon(coord)
 		return
 
-	_grid_input_fighting(coord)
-
-#endregion
-
-
-#region Mana Cyclone Timer
-
-func get_cyclone_target() -> String:
-	var player = _battle_grid_state.cyclone_get_current_target()
-	if player:
-		return player.get_player_color().name # TEMP translate id to name here
-	return "neutral"
+	if _battle_grid_state.is_during_sacrifice_phase():
+		_grid_input_sacrifice(coord)
+	else:
+		_grid_input_fighting(coord)
 
 
-func get_cyclone_timer() -> int:
-	return _battle_grid_state.cyclone_get_current_target_turns_left()
+func  _end_move() -> void:
+	if _battle_grid_state.battle_is_ongoing():
+		_on_turn_started(_battle_grid_state.get_current_player())
+	else :
+		_on_battle_ended()
 
-#endregion Mana Cyclone Timer
+#endregion Ongoing battle
+
+
+#region AI Support
+
+func cancel_pending_ai_move() ->  void:
+	if latest_ai_cancel_token:
+		latest_ai_cancel_token.cancel()
+		latest_ai_cancel_token = null
+
+
+func _ai_thinking_delay() -> void:
+	var seconds = CFG.bot_speed_frames / 60.0
+	print("ai wait %f s" % [seconds])
+	await get_tree().create_timer(seconds).timeout
+	while IM.is_game_paused() or CFG.bot_speed_frames == CFG.BotSpeed.FREEZE:
+		await get_tree().create_timer(0.1).timeout
+
+
+func _perform_ai_move(move_info : MoveInfo) -> void:
+	_perform_move_info(move_info)
+
+
+func ai_move() -> void:
+	if latest_ai_cancel_token:
+		push_warning("ai is already moving, dont stack two simultaneous ai moves race")
+		return
+	var move := AiBotStateRandom.choose_move_static(_battle_grid_state)
+	_perform_ai_move(move)
+
+#endregion AI Support
 
 
 #region Summon Phase
@@ -350,27 +344,46 @@ func _grid_input_summon(coord : Vector2i) -> void:
 
 	_perform_move_info(move_info)
 
-#endregion
+#endregion Summon Phase
+
+
+#region Mana Cyclone Timer
+
+func get_cyclone_target() -> String:
+	var player = _battle_grid_state.cyclone_get_current_target()
+	if player:
+		return player.get_player_color().name # TEMP translate id to name here
+	return "neutral"
+
+
+func get_cyclone_timer() -> int:
+	return _battle_grid_state.cyclone_get_current_target_turns_left()
+
+#endregion Mana Cyclone Timer
 
 
 #region Fighting Phase
 
-func _grid_input_fighting(coord : Vector2i) -> void:
-	assert(_battle_grid_state.state == _battle_grid_state.STATE_FIGHTING, \
-			"_grid_input_fighting called in an incorrect state")
-
+func _grid_input_sacrifice(coord : Vector2i) -> void:
 	#TEMP this Cyclon sacrifice support should be moved somewhere else as it occours only every dozens moves
 	#and input should be locked to the person that is bound to make a sacrifice, which could be a different player than a current one
 	# also it occurs at round start
-	if _battle_grid_state.cyclone_sacrifice:
-		var new_unit : Unit = _battle_grid_state.get_unit(coord)
-		if new_unit and new_unit.controller == _battle_grid_state.cyclone_target.army_reference.controller:
+	assert(_battle_grid_state.state == _battle_grid_state.STATE_SACRIFICE, \
+			"_grid_input_fighting called in an incorrect state")
 
-			_battle_grid_state.cyclone_sacrifice = false
-			_battle_grid_state.mana_values_changed()
-			var move_info = MoveInfo.make_sacrifice(coord)
-			_perform_move_info(move_info)	
-		return
+	var new_unit : Unit = _battle_grid_state.get_unit(coord)
+	if new_unit and new_unit.controller == _battle_grid_state.cyclone_target.army_reference.controller:
+
+		_battle_grid_state.state = _battle_grid_state.STATE_FIGHTING
+		_battle_grid_state.mana_values_changed()
+		var move_info = MoveInfo.make_sacrifice(coord)
+		_perform_move_info(move_info)	
+		
+
+
+func _grid_input_fighting(coord : Vector2i) -> void:
+	assert(_battle_grid_state.state == _battle_grid_state.STATE_FIGHTING, \
+			"_grid_input_fighting called in an incorrect state")
 
 
 	if _try_select_unit(coord) or _selected_unit == null:
@@ -445,7 +458,7 @@ func _perform_move_info(move_info : MoveInfo) -> void:
 		_ :
 			assert(false, "Move move_type not supported in perform, " + str(move_info.move_type))
 
-	_update_ui_after_player_move_or_drop()
+	_end_move()
 
 
 func _on_unit_killed(unit: Unit) -> void:
@@ -470,7 +483,7 @@ func _on_unit_moved(unit: Unit) -> void:
 		_anim_queue.push_back(AnimInQueue.create_move(_unit_to_unit_form[unit]))
 
 
-#endregion
+#endregion Fighting Phase
 
 
 #region Battle End
@@ -559,7 +572,7 @@ func _create_summary() -> DataBattleSummary:
 		summary.players.append(player_stats)
 	return summary
 
-#endregion
+#endregion Battle End
 
 
 #region Replays
@@ -590,22 +603,22 @@ func get_ripped_replay() -> BattleReplay:
 	result.moves = _replay_data.moves.duplicate()
 	return result
 
-#endregion
+#endregion Replays
 
 
 #region cheats
 
 func force_win_battle():
 	_battle_grid_state.force_win_battle()
-	_update_ui_after_player_move_or_drop()
+	_end_move()
 
 
 func force_surrender():
 	_battle_grid_state.force_surrender()
-	_update_ui_after_player_move_or_drop()
+	_end_move()
 
 
-#endregion
+#endregion cheats
 
 
 #region map editor
@@ -625,7 +638,7 @@ func paint(coord : Vector2i, brush : DataTile) -> void:
 func editor_get_hexes_copy_as_array() -> Array: #Array[Array[TileForm]]
 	return _tile_grid.hexes.duplicate(true)
 
-#endregion
+#endregion map editor
 
 
 #region anim queue
@@ -697,4 +710,4 @@ class AnimInQueue:
 	func _to_string():
 		return debug_name
 
-#endregion
+#endregion anim queue
