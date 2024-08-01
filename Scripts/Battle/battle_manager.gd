@@ -265,15 +265,22 @@ func grid_input(coord : Vector2i) -> void:
 		print("ai playing, input ignored")
 		return
 
-	
-	if _battle_grid_state.is_during_summoning_phase(): # Summon phase
-		_grid_input_summon(coord)
-		return
+	var move_info : MoveInfo
 
-	if _battle_grid_state.is_during_sacrifice_phase():
-		_grid_input_sacrifice(coord)
+	if _battle_grid_state.is_during_summoning_phase(): # Summon phase
+		move_info = _grid_input_summon(coord)
+	elif _battle_grid_state.is_during_sacrifice_phase():
+		move_info = _grid_input_sacrifice(coord)
 	else:
-		_grid_input_fighting(coord)
+		move_info = _grid_input_fighting(coord)
+
+	
+	if move_info:
+		if NET.client:
+			NET.client.queue_request_move(move_info)
+			return # dont perform move, send it to server
+
+		_perform_move_info(move_info)
 
 
 func  _end_move() -> void:
@@ -335,23 +342,19 @@ func _on_unit_summoned(unit : Unit) -> void:
 
 
 ## handles player input while during the summoning phase
-func _grid_input_summon(coord : Vector2i) -> void:
+func _grid_input_summon(coord : Vector2i) -> MoveInfo:
 	assert(_battle_grid_state.state == _battle_grid_state.STATE_SUMMONNING, \
 			"_grid_input_summon called in an incorrect state")
 
 	if _battle_ui.selected_unit == null:
-		return # no unit selected to summon on ui
+		return null # no unit selected to summon on ui
 
 	if not _battle_grid_state.current_player_can_summon_on(coord):
-		return
+		return null
 
 	print(NET.get_role_name(), " input - summoning unit")
-	var move_info = MoveInfo.make_summon(_battle_ui.selected_unit, coord)
-	if NET.client:
-		NET.client.queue_request_move(move_info)
-		return # dont perform move, send it to server
+	return MoveInfo.make_summon(_battle_ui.selected_unit, coord)
 
-	_perform_move_info(move_info)
 
 #endregion Summon Phase
 
@@ -371,7 +374,7 @@ func get_cyclone_timer() -> int:
 #region Fighting Phase
 
 ## Turn timer unit sacrifice (Stalemate mechanic)
-func _grid_input_sacrifice(coord : Vector2i) -> void:
+func _grid_input_sacrifice(coord : Vector2i) -> MoveInfo:
 	## TODO:
 	## input should be locked to the person that is bound to make a sacrifice,
 	## which could be a different player than a current one also it occurs at round start
@@ -384,12 +387,13 @@ func _grid_input_sacrifice(coord : Vector2i) -> void:
 
 		_battle_grid_state.state = _battle_grid_state.STATE_FIGHTING
 		_battle_grid_state.mana_values_changed()
-		var move_info = MoveInfo.make_sacrifice(coord)
-		_perform_move_info(move_info)	
+		return MoveInfo.make_sacrifice(coord)
+	return null
+		
 		
 
 ## Either Unit selection or a command to move
-func _grid_input_fighting(coord : Vector2i) -> void:
+func _grid_input_fighting(coord : Vector2i) -> MoveInfo:
 	assert(_battle_grid_state.state == _battle_grid_state.STATE_FIGHTING, \
 			"_grid_input_fighting called in an incorrect state")
 
@@ -398,7 +402,7 @@ func _grid_input_fighting(coord : Vector2i) -> void:
 		# used in scenarios:
 		# - selected a new unit
 		# - clicked a tile with no ally units, when no unit was selected
-		return
+		return null
 
 	# get_move_direction() returns MOVE_IS_INVALID on impossible moves, handles scenarios like
 	# - spot is not adjacent (MOVE_IS_INVALID)
@@ -407,17 +411,14 @@ func _grid_input_fighting(coord : Vector2i) -> void:
 	# - there is an enemy that can be killed by the move (dir)
 	# - there is enemy that cannot be killed by the move (MOVE_IS_INVALID)
 	if not _battle_grid_state.is_move_valid(_selected_unit, coord):
-		return
+		return null
 
 	_unit_to_unit_form[_selected_unit].set_selected(false)
 	var move_info = MoveInfo.make_move(_selected_unit.coord, coord)
 	_selected_unit = null
 
-	if NET.client:
-		NET.client.queue_request_move(move_info)
-		return # dont perform move, send it to server
-
-	_perform_move_info(move_info)
+	return move_info
+	
 
 
 ## Select friendly Unit on a given coord

@@ -63,6 +63,8 @@ static func from_network_serializable(dict : Dictionary) -> MoveInfo:
 		MoveInfo.TYPE_MOVE:
 			return MoveInfo.make_move(dict["move_source"],
 					dict["target_tile_coord"])
+		MoveInfo.TYPE_SACRIFICE:
+			return MoveInfo.make_sacrifice(dict["move_source"])
 	push_error("move_type not supported: ", dict["move_type"])
 	return null
 
