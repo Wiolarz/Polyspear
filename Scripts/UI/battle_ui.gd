@@ -32,9 +32,18 @@ func _process(_delta):
 
 
 func update_cyclone():
-	cyclone.text = "%s %d turns" % [BM.get_cyclone_target(), BM.get_cyclone_timer()]
+	var timer : int = BM.get_cyclone_timer()
+	var target : Player = BM.get_cyclone_target()
 
-	pass
+	#TEMP
+	var target_color = BM.get_player_color(target)
+	cyclone.modulate = target_color.color
+
+	
+	if timer == 0:
+		cyclone.text = "%s Sacrifice" % [target_color.name]
+	else:
+		cyclone.text = "%s %d turns" % [target_color.name, timer]
 
 
 func update_clock() -> void:
