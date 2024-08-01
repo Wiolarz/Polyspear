@@ -47,7 +47,7 @@ func update_clock() -> void:
 	clock.text = "%2.0f : %02.0f : %03.0f" % [minutes, floor(seconds), ms]
 	clock.modulate = BM.get_current_slot_color().color
 
-	turns.text = "Turn %d (last turn %d)" % [BM.get_current_turn(), BM.get_max_turn()]
+	turns.text = "Turn %d" % [BM.get_current_turn()]
 
 
 func get_text_for(controller : Player, selected : bool):
