@@ -31,8 +31,10 @@ func _init(width_ : int, height_ : int):
 static func create(map: DataBattleMap, new_armies : Array[Army]) -> BattleGridState:
 	var result := BattleGridState.new(map.grid_width, map.grid_height)
 	result.state = STATE_SUMMONNING
-	for a in new_armies:
-		result.armies_in_battle_state.append(ArmyInBattleState.create_from(a, result))
+	for army in new_armies:
+		result.armies_in_battle_state.append(ArmyInBattleState.create_from(army, result))
+
+
 	result.current_army_index = 0
 	result.turn_counter = 0
 
@@ -41,7 +43,8 @@ static func create(map: DataBattleMap, new_armies : Array[Army]) -> BattleGridSt
 			var map_tile : DataTile = map.grid_data[x][y]
 			var new_hex = BattleHex.create(map_tile)
 			result.set_hex(Vector2i(x,y), new_hex)
-			if new_hex and new_hex.is_mana_tile():
+
+			if new_hex and new_hex.is_mana_tile(): # MANA
 				result.number_of_mana_wells += 1
 
 	result.mana_values_changed()
@@ -423,7 +426,7 @@ func _switch_participant_turn() -> void:
 
 			cyclone_target.cyclone_timer -= 1
 
-			# MEGA TEMP:
+			# TEMP?
 			if cyclone_target.cyclone_timer == 0:
 				state = STATE_SACRIFICE
 
@@ -517,8 +520,9 @@ func mana_values_changed() -> void:
 	
 	cyclone_target = current_worst
 	var mana_difference = current_best.mana_points - current_worst.mana_points
-	var new_cylone_counter = 1
-	#TEMPvar new_cylone_counter = (number_of_mana_wells * 0.5) * max(1, (5 - mana_difference))
+ 
+	var new_cylone_counter = (number_of_mana_wells * 0.5) * max(1, (5 - mana_difference))
+	#new_cylone_counter = 1 #TEMP
 
 	if current_worst.cyclone_timer == 0:  # Cycle killed a unit now it resets
 		current_worst.cyclone_timer = new_cylone_counter
@@ -821,9 +825,16 @@ class ArmyInBattleState:
 		var result = ArmyInBattleState.new()
 		result.battle_grid_state = weakref(state)
 		result.army_reference = army
-		for u in army.units_data:
-			result.units_to_summon.append(u)
+		for unit : DataUnit in army.units_data:
+			result.units_to_summon.append(unit)
+			
+			result.mana_points += unit.mana # MANA
+
 		result.turn_started() # TEMP - FIXME - better init for chess clock
+
+		
+
+
 		return result
 
 
@@ -848,6 +859,10 @@ class ArmyInBattleState:
 
 	func kill_unit(target : Unit) -> void:
 		print("killing ", target.coord, " ",target.template.unit_name)
+		if target.template.mana > 0:
+			mana_points -= target.template.mana
+			battle_grid_state.get_ref().mana_values_changed()
+
 		units.erase(target)
 		dead_units.append(target.template)
 		#gdlint: ignore=private-method-call
