@@ -267,12 +267,15 @@ func grid_input(coord : Vector2i) -> void:
 
 	var move_info : MoveInfo
 
-	if _battle_grid_state.is_during_summoning_phase(): # Summon phase
-		move_info = _grid_input_summon(coord)
-	elif _battle_grid_state.is_during_sacrifice_phase():
-		move_info = _grid_input_sacrifice(coord)
-	else:
-		move_info = _grid_input_fighting(coord)
+	match _battle_grid_state.state:
+		BattleGridState.STATE_SUMMONNING:
+			move_info = _grid_input_summon(coord)
+		BattleGridState.STATE_FIGHTING:
+			move_info = _grid_input_fighting(coord)
+		BattleGridState.STATE_SACRIFICE:
+			move_info = _grid_input_sacrifice(coord)
+
+		
 
 	
 	if move_info:

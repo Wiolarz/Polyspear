@@ -89,9 +89,11 @@ func move_info_move_unit(move_info : MoveInfo) -> void:
 	turn_counter += 1
 
 	if battle_is_ongoing():
-		_check_battle_end()
+		_check_battle_end()  # Can change battle_is_ongoing result
 	if battle_is_ongoing():
 		_switch_participant_turn()
+	
+
 	currently_processed_move_info = null
 
 
@@ -106,6 +108,9 @@ func move_info_sacrifice(move_info : MoveInfo) -> void:
 	move_info.register_kill(_get_army_index(cyclone_target), unit)
 
 	_kill_unit(unit)
+
+	if battle_is_ongoing():
+		_switch_participant_turn()
 
 
 ## returns array of revived units
@@ -391,7 +396,12 @@ func _get_player_army(player : Player) -> BattleGridState.ArmyInBattleState:
 
 
 func _get_army_index(army : BattleGridState.ArmyInBattleState):
-	return armies_in_battle_state.bsearch(army)
+	var result = armies_in_battle_state.find(army)
+	return result
+
+
+func is_during_summoning_phase() -> bool:
+	return state == STATE_SUMMONNING
 
 #endregion helpers
 
@@ -422,21 +432,23 @@ func _switch_participant_turn() -> void:
 		while not armies_in_battle_state[current_army_index].can_fight():
 			current_army_index += 1
 			current_army_index %= armies_in_battle_state.size()
-		if prev_idx > current_army_index: # Cyclone timer update
 
+		if prev_idx > current_army_index: # Cyclone timer update
 			cyclone_target.cyclone_timer -= 1
 
-			# TEMP?
 			if cyclone_target.cyclone_timer == 0:
+				current_army_index = _get_army_index(cyclone_target)
 				state = STATE_SACRIFICE
-
-				
-
 
 	var next_player := armies_in_battle_state[current_army_index]
 	# chess clock is updated in  turn_ended() and turn_started()
 	prev_player.turn_ended()
 	next_player.turn_started()
+
+
+func _end_summoning_state() -> void:
+	state = STATE_FIGHTING
+	current_army_index = 0
 
 
 func _change_unit_coord(unit : Unit, target_coord : Vector2i) -> void:
@@ -552,18 +564,6 @@ func _kill_army(army_idx : int):
 func battle_is_ongoing() -> bool:
 	return state != STATE_BATTLE_FINISHED
 
-
-func is_during_summoning_phase() -> bool:
-	return state == STATE_SUMMONNING
-
-
-func is_during_sacrifice_phase() -> bool:
-	return state == STATE_SACRIFICE
-
-
-func _end_summoning_state() -> void:
-	state = STATE_FIGHTING
-	current_army_index = 0
 
 
 func _check_battle_end() -> void:
@@ -831,9 +831,6 @@ class ArmyInBattleState:
 			result.mana_points += unit.mana # MANA
 
 		result.turn_started() # TEMP - FIXME - better init for chess clock
-
-		
-
 
 		return result
 
