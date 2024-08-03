@@ -533,8 +533,8 @@ func mana_values_changed() -> void:
 	cyclone_target = current_worst
 	var mana_difference = current_best.mana_points - current_worst.mana_points
  
-	var new_cylone_counter = (number_of_mana_wells * 0.5) * max(1, (5 - mana_difference))
-	#new_cylone_counter = 1 #TEMP
+	var new_cylone_counter = (number_of_mana_wells * 10) * max(1, (5 - mana_difference))
+	#new_cylone_counter = 1 # use to test
 
 	if current_worst.cyclone_timer == 0:  # Cycle killed a unit now it resets
 		current_worst.cyclone_timer = new_cylone_counter
