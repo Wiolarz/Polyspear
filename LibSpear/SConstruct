@@ -5,8 +5,8 @@ import sys
 env = SConscript("godot-cpp/SConstruct")
 
 env.Append(
-    CPPPATH=["src/"],
-    CXXFLAGS=["-std=c++20"]
+    CPPPATH=["src/", "deps/thread-pool/include"],
+    CXXFLAGS=["-std=c++20"],
 )
 sources = Glob("src/*.cpp")
 

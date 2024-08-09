@@ -8,13 +8,13 @@
 #include "fast_battle_manager.hpp"
 #include <optional>
 #include <unordered_map>
-#include <mutex>
-#include <shared_mutex>
 
 const int MAX_SIM_ITERATIONS = 70;
 const float HEURISTIC_PROBABILITY = 0.85f;
 const float HEURISTIC_PRIOR_REWARD_PER_ITERATION = 0.05f;
 const int MAX_MCTS_BURST = 200;
+const int MAX_SIMULATIONS_PER_VISIT = 40;
+
 
 class BattleMCTSManager;
 
@@ -30,7 +30,6 @@ class BattleMCTSNode {
     unsigned draws = 0;
     unsigned wins = 0;
     unsigned loses = 0;
-    std::mutex local_mutex;
 
     friend class BattleMCTSManager;
 
@@ -48,10 +47,10 @@ public:
     std::pair<Move, BattleMCTSNode*> select();
     /// Find a new child node
     void expand();
-    /// Simulate a complete playout until either decided, 
-    BattleResult simulate(int max_sim_iterations);
+    /// Simulate a number of complete playouts in parallel
+    BattleResult simulate(int max_sim_iterations, int simulations);
     /// Backpropagate the result
-    void backpropagate(BattleResult& result);
+    void backpropagate(BattleResult& result, int new_visits);
 };
 
 
@@ -65,8 +64,6 @@ class BattleMCTSManager : public Node {
 
     // TODO parameters
     //int max_sim_iterations;
-
-    void _iterate(std::shared_mutex& mutex, int iterations);
 
     friend class BattleMCTSNode;
     

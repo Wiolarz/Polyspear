@@ -8,8 +8,12 @@
 #include <algorithm>
 #include <numeric>
 #include <thread>
-
 #include <signal.h>
+
+#include "BS_thread_pool.hpp"
+
+
+BS::thread_pool mcts_workers;
 
 
 BattleMCTSNode::BattleMCTSNode(BattleManagerFastCpp bm, BattleMCTSManager* manager, BattleMCTSNode* parent) 
@@ -81,18 +85,11 @@ void BattleMCTSNode::expand() {
     }
 }
 
-BattleResult BattleMCTSNode::simulate(int max_sim_iterations) {
+BattleResult _simulate_thread(BattleManagerFastCpp bmnew, int max_sim_iterations) {
     BattleResult result;
-    BattleManagerFastCpp bmnew = bm;
     Move move;
     int i = 0;
 
-    //std::lock_guard lock(local_mutex);
-
-    if(bm.is_battle_finished()) {
-        return bm.get_result();
-    }
-    
     do {
         move = bmnew.get_random_move(HEURISTIC_PROBABILITY).first;
         i++;
@@ -101,7 +98,33 @@ BattleResult BattleMCTSNode::simulate(int max_sim_iterations) {
     return result;
 }
 
-void BattleMCTSNode::backpropagate(BattleResult& result) {
+BattleResult BattleMCTSNode::simulate(int max_sim_iterations, int simulations) {
+    BattleResult ret;
+
+    if(bm.is_battle_finished()) {
+        return bm.get_result();
+    }
+
+    BattleManagerFastCpp bmnew = bm;
+    std::vector<std::future<BattleResult>> results;
+
+    for(int i = 0; i < simulations; i++) {
+        results.push_back(mcts_workers.submit_task([=]() {
+            return _simulate_thread(bm, max_sim_iterations);
+        }));
+    }
+
+    for(auto& fut : results) {
+        auto result = fut.get();
+        for(int i = 0; i < ret.total_scores.size(); i++) {
+            ret.total_scores[i] += result.total_scores[i];
+        }
+    }
+
+    return ret;
+}
+
+void BattleMCTSNode::backpropagate(BattleResult& result, int new_visits) {
     auto current_team = bm.get_army_team(bm.get_previous_participant());
     auto ally_score = 0.0f, enemy_score = 0.0f;
 
@@ -124,10 +147,10 @@ void BattleMCTSNode::backpropagate(BattleResult& result) {
         reward += 0.5f;
     }
     //reward += result.winner_team == current_team ? 1.0f : (result.winner_team == -1 ? 0.5f : 0.0f);
-    visits += 1.0f;
+    visits += new_visits;
 
     if(parent) {
-        parent->backpropagate(result);
+        parent->backpropagate(result, new_visits);
     }
 }
 
@@ -136,20 +159,6 @@ bool BattleMCTSNode::is_explored() {
 }
 
 void BattleMCTSManager::iterate(int iterations, int max_threads) {
-    std::shared_mutex mutex;
-    // TODO parallelize - this currently crashes the game, more/better-thought-out locks needed
-    /*std::vector<std::thread> threads;
-
-    for(int i = 0; i < max_threads; i++) {
-        // hey, i tried avoiding a lambda, i know that's possible, but c++ was once again stronger, probably doesn't matter at all
-        threads.emplace_back([&]() {
-            _iterate(std::ref(mutex), iterations/max_threads);
-        });
-    }
-
-    for(auto& i: threads) {
-        i.join();
-    }*/
     root->mcts_iterations = iterations;
     root->iterate(iterations, 0);
     emit_signal("complete");
@@ -161,14 +170,15 @@ void BattleMCTSNode::iterate(int iterations, int depth) {
     parent = nullptr; // Block backpropagation during this procedure
 
     int burst = MAX_MCTS_BURST;
-
+    iterate_self(iterations);
+    /*
     while(iterations > 0) {
         // end of the tree
         if(bm.get_move_count() == 0) {
             break;
         }
 
-        if(!is_explored() || depth == 2) {
+        if(!is_explored() || depth == 0) {
             iterate_self(burst);
             iterations -= burst;
             continue;
@@ -176,20 +186,27 @@ void BattleMCTSNode::iterate(int iterations, int depth) {
 
         auto next_depth = std::thread::hardware_concurrency() > children.size() ? 2 : (depth + 1);
 
-        std::vector<std::thread> threads;
+        //std::vector<std::thread> threads;
+        std::vector<std::future<void>> futures;
 
         // Process each subtree in a separate thread
         for(auto& [move, node] : children) {
             auto next_burst = (next_depth == 1 && node.is_explored()) ? burst * node.children.size() : burst;
             threads.emplace_back([&]() {
-                node.iterate(next_burst, next_depth);
-            });
+            //futures.emplace_back(
+                //mcts_workers.submit_task([&]() {
+                    printf("Doing %d->%d,%d\n", move.unit, move.pos.x, move.pos.y);
+                    node.iterate(next_burst, next_depth);
+                    printf("Done %d->%d,%d\n", move.unit, move.pos.x, move.pos.y);
+                //})
+            );
             iterations -= next_burst;
         }
 
-        for(auto& i : threads) {
-            i.join();
-        }
+        printf("Waiting\n");
+        mcts_workers.wait();
+        printf("Waiteded\n");
+
 
         // Backpropagate manually
         reward = 0.0f; visits = 0.0f;
@@ -197,14 +214,17 @@ void BattleMCTSNode::iterate(int iterations, int depth) {
             reward += node.reward;
             visits += node.visits;
         }
-    }
 
+    }
+    */
     std::swap(tmp_parent, parent);
 }
 
 void BattleMCTSNode::iterate_self(int iterations) {
 
-    for(int i = 0; i < iterations; i++) {
+    auto visits = MAX_SIMULATIONS_PER_VISIT;
+
+    for(int i = 0; i < iterations; i+=visits) {
         BattleResult result;
         BattleMCTSNode* node = this, *temp_node;
 
@@ -216,12 +236,12 @@ void BattleMCTSNode::iterate_self(int iterations) {
             }
 
             node->expand();
-            result = node->simulate(MAX_SIM_ITERATIONS);    
+            result = node->simulate(MAX_SIM_ITERATIONS, visits);    
         }
 
         {
             //std::unique_lock wlock(rwlock);
-            node->backpropagate(result);
+            node->backpropagate(result, visits);
 
             if(result.winner_team == manager->army_team) {
                 this->wins++;
