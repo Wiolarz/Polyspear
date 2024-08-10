@@ -14,87 +14,13 @@
 #include <algorithm>
 
 #include "data.hpp"
+#include "battle_structs.hpp"
+#include "cache_grid.hpp"
 #include "tile_grid_fast.hpp"
 
 
 using godot::Node;
 using godot::Vector2i;
-
-const unsigned MAX_ARMIES = 4;
-const unsigned MAX_UNITS_IN_ARMY = 5;
-
-class BattleManagerFastCpp;
-class BattleMCTSManager;
-
-
-struct BattleResult {
-    int8_t winner_team = -1;
-    std::array<uint8_t, MAX_ARMIES> total_scores;
-    std::array<uint8_t, MAX_ARMIES> score_gained;
-    std::array<uint8_t, MAX_ARMIES> score_lost;
-};
-
-struct Unit {
-    UnitStatus status = UnitStatus::DEAD;
-    Position pos{};
-    uint8_t rotation{};
-    uint8_t score = 2;
-    std::array<Symbol, 6> sides{};
-
-    inline void rotate(int times) {
-        rotation = (6-rotation + times) % 6;
-    }
-
-    inline Symbol symbol_at_side(int side) const {
-        return sides[(6-rotation + side) % 6];
-    }
-
-    inline void kill(int killer_team, int victim_team, BattleResult& out_result) {
-        status = UnitStatus::DEAD;
-        out_result.score_gained[killer_team] += score;
-        out_result.score_lost[victim_team] -= score;
-        out_result.total_scores[victim_team] -= score;
-    }
-};
-
-struct Army {
-    int8_t id = 0;
-    int8_t team = -1;
-    std::array<Unit, MAX_UNITS_IN_ARMY> units{};
-
-    Unit* get_unit(Position coord);
-    int find_summon_id(int from = 0);
-    bool is_defeated();
-};
-
-using ArmyList = std::array<Army, MAX_ARMIES>;
-
-struct Move {
-    uint8_t unit;
-    Position pos;
-
-    Move() = default;
-    bool operator==(const Move& other) const {
-        return unit == other.unit && pos == other.pos;
-    }
-};
-
-template<>
-struct std::hash<Move> {
-    const std::size_t operator()(const Move& move) const {
-        auto h1 = std::hash<unsigned>{}(move.unit);
-        auto h2 = std::hash<unsigned>{}(move.pos.x);
-        auto h3 = std::hash<unsigned>{}(move.pos.y);
-        return h1 ^ (h2 << 1) ^ (h3 << 2);
-    }
-};
-
-
-enum class TeamRelation {
-    ALLY,
-    ENEMY
-};
-
 
 // idea - BattleManagerFastWrapper as multiple inheritance of internal BattleManagerFastCpp and godot Node if it turns out that Node itself is expensive
 class BattleManagerFastCpp : public Node {
@@ -108,20 +34,26 @@ class BattleManagerFastCpp : public Node {
 
     BattleResult result;
 
+    CacheGrid unit_cache;
     std::vector<Move> moves{};
     std::vector<Move> heuristic_moves{};
     bool moves_dirty = true;
     bool heuristic_moves_dirty = true;
 
-    Unit* _get_unit(Position coord);
+    std::pair<Unit*, Army*> _get_unit(UnitID id);
+    std::pair<Unit*, Army*> _get_unit(Position coord);
     Tile* _get_tile(Position coord);
 
-    void _process_unit(Unit& unit, Army& army, bool process_kills, BattleResult& out_result);
-    void _process_bow(Unit& unit, Army& team, Army& enemy_army, BattleResult& out_result);
+    void _process_unit(UnitID uid, bool process_kills);
+    void _process_bow(UnitID uid);
 
     void _refresh_legal_moves();
     void _refresh_heuristically_good_moves();
     void _refresh_heuristically_good_summon_moves();
+
+    void _move_unit(UnitID id, Position pos);
+    void _kill_unit(UnitID id, int killer_team);
+
     BattleResult _play_move(unsigned unit, Vector2i move);
 
 protected:

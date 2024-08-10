@@ -105,11 +105,10 @@ BattleResult BattleMCTSNode::simulate(int max_sim_iterations, int simulations) {
         return bm.get_result();
     }
 
-    BattleManagerFastCpp bmnew = bm;
     std::vector<std::future<BattleResult>> results;
 
     for(int i = 0; i < simulations; i++) {
-        results.push_back(mcts_workers.submit_task([=]() {
+        results.push_back(mcts_workers.submit_task([*this, max_sim_iterations]() {
             return _simulate_thread(bm, max_sim_iterations);
         }));
     }
@@ -301,7 +300,6 @@ void BattleMCTSManager::set_root(BattleManagerFastCpp* bm) {
     army_team = bm->get_army_team(army_id);
 }
 
-// TODO apparently this crashes godot editor
 BattleMCTSManager::~BattleMCTSManager() {
     if(root) {
         delete root;

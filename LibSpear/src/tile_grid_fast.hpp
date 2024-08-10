@@ -41,6 +41,10 @@ public:
     constexpr const std::vector<Position>& get_spawns(int army) const {
         return spawns[army];
     }
+
+    const Vector2i get_dims() const {
+        return dims;
+    }
 };
 
 #endif
