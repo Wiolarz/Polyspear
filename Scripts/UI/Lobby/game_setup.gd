@@ -29,8 +29,11 @@ func _ready():
 	button_battle.button_group = button_world.button_group
 	if CFG.DEFAULT_MODE_IS_BATTLE:
 		button_battle.button_pressed = true
+		_on_button_battle_pressed()
 	else:
 		button_world.button_pressed = true
+		_on_button_world_pressed()
+	
 	if client_side:
 		button_battle.disabled = true
 		button_world.disabled = true
@@ -42,18 +45,6 @@ func clear_container():
 		child.queue_free()
 
 
-func select_world():
-	IM.game_setup_info.game_mode = GameSetupInfo.GameMode.WORLD
-	_select_setup_page(multi_world_setup_scene)
-	if NET.server:
-		NET.server.broadcast_full_game_setup(IM.game_setup_info)
-
-
-func select_battle():
-	IM.game_setup_info.game_mode = GameSetupInfo.GameMode.BATTLE
-	_select_setup_page(multi_battle_setup_scene)
-	if NET.server:
-		NET.server.broadcast_full_game_setup(IM.game_setup_info)
 
 
 func _select_setup_page(page):
@@ -89,6 +80,7 @@ func force_full_rebuild():
 			setup.rebuild()
 			setup.refresh()
 
+#region Changing settings
 
 func try_to_take_slot(index : int) -> bool:
 	var slots = IM.game_setup_info.slots
@@ -171,15 +163,32 @@ func try_to_set_world_map_name(map_name : String) -> bool:
 	# TODO here load this map and adjust slot number
 	return true
 
+#endregion Changing settings
 
-func _on_button_world_toggled(toggled_on : bool):
-	if toggled_on:
-		select_world()
+#region Change Game Mode
+
+func select_world():
+	IM.game_setup_info.game_mode = GameSetupInfo.GameMode.WORLD
+	_select_setup_page(multi_world_setup_scene)
+	if NET.server:
+		NET.server.broadcast_full_game_setup(IM.game_setup_info)
 
 
-func _on_button_battle_toggled(toggled_on : bool):
-	if toggled_on:
-		select_battle()
+func select_battle():
+	IM.game_setup_info.game_mode = GameSetupInfo.GameMode.BATTLE
+	_select_setup_page(multi_battle_setup_scene)
+	if NET.server:
+		NET.server.broadcast_full_game_setup(IM.game_setup_info)
+
+
+func _on_button_world_pressed():
+	select_world()
+
+
+func _on_button_battle_pressed():
+	select_battle()
+
+#endregion Change Game Mode
 
 
 func _on_button_confirm_pressed():

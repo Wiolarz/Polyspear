@@ -18,6 +18,7 @@ var _play_death_anim : bool
 
 var _symbols_flipped : bool = true  # flag used for unit rotation
 
+
 static func create(new_unit : Unit) -> UnitForm:
 	var result = CFG.UNIT_FORM_SCENE.instantiate()
 	result.name = new_unit.template.unit_name

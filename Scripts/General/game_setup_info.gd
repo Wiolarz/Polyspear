@@ -33,7 +33,11 @@ func has_slot(player_index : int) -> bool:
 	return player_index >= 0 and player_index < slots.size()
 
 
-func set_unit(slot_index:int, unit_index:int, unit_data : DataUnit):
+func set_team(slot_index : int, team_idx : int):
+	slots[slot_index].team = team_idx
+
+## Gameplay setting a unit to memory
+func set_unit(slot_index : int, unit_index : int, unit_data : DataUnit):
 	slots[slot_index].units_list[unit_index] = unit_data
 
 
@@ -205,6 +209,8 @@ class Slot extends RefCounted: # check if this is good base
 
 	## for battle only mode
 	var units_list : Array[DataUnit] = [null,null,null,null,null]
+
+	var team : int = 0
 
 	func _init():
 		if CFG.player_options.use_default_AI_players:
