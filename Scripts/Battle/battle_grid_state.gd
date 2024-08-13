@@ -44,7 +44,10 @@ static func create(map: DataBattleMap, new_armies : Array[Army]) -> BattleGridSt
 	for army in new_armies:
 		var team = army.controller.team
 		if team == 0:
+			while new_team_idx  in occupied_team_slots:
+				new_team_idx += 1
 			army.controller.team = new_team_idx
+			new_team_idx += 1
 
 
 
