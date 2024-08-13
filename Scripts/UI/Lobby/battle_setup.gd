@@ -45,6 +45,7 @@ func fill_presets_list() -> void:
 
 
 
+
 ## Called upon join, applies changes to the UI to make it Client UI not Host UI
 func make_client_side() -> void:
 	$MapSelect/Label.text = "Selected map"
@@ -111,26 +112,6 @@ func slot_to_index(slot) -> int:
 	return player_slot_panels.find(slot)
 
 
-func prepare_player_slots() -> void:
-	player_slot_panels = []
-	for slot in player_list.get_children():
-		player_list.remove_child(slot)
-		slot.queue_free()
-
-	var max_number_of_players : int = IM.game_setup_info.slots.size()
-
-	for slot in IM.game_setup_info.slots:
-		var slot_scene : BattlePlayerSlotPanel = load(PLAYER_SLOT_PANEL_PATH).instantiate()
-		player_slot_panels.append(slot_scene)
-		slot_scene.setup_ui = self
-
-		player_list.add_child(slot_scene)
-
-		slot_scene.fill_team_list(max_number_of_players)
-
-	refresh()
-
-
 #region Changing settings
 
 ## add missing path and calls apply_preset()
@@ -169,6 +150,27 @@ func _on_map_list_item_selected(index):
 
 	if NET.server:
 		NET.server.broadcast_full_game_setup(IM.game_setup_info)
+
+
+func prepare_player_slots() -> void:
+	player_slot_panels = []
+	for slot in player_list.get_children():
+		player_list.remove_child(slot)
+		slot.queue_free()
+
+	var max_number_of_players : int = IM.game_setup_info.slots.size()
+
+	for slot in IM.game_setup_info.slots:
+		var slot_scene : BattlePlayerSlotPanel = load(PLAYER_SLOT_PANEL_PATH).instantiate()
+		player_slot_panels.append(slot_scene)
+		slot_scene.setup_ui = self
+
+		player_list.add_child(slot_scene)
+
+		slot_scene.fill_team_list(max_number_of_players)
+
+	refresh()
+
 
 
 func try_to_take_slot(slot) -> bool: # true means something changed
