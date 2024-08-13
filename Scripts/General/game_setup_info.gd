@@ -233,10 +233,10 @@ class Slot extends RefCounted: # check if this is good base
 	## ignores empty values in units_list
 	func get_units_list() -> Array[DataUnit]:
 		var non_empty : Array[DataUnit] = []
-		for u in units_list:
-			if not u:
+		for unit in units_list:
+			if not unit:
 				continue
-			non_empty.append(u)
+			non_empty.append(unit)
 		return non_empty
 
 	## for replays

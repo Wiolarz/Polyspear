@@ -120,23 +120,19 @@ func _start_game_battle(battle_state : SerializableBattleState):
 	var map_data = game_setup_info.battle_map
 	var armies : Array[Army]  = []
 
-	var temp_idx = 0
-	for player in players:
-		if temp_idx in [0, 1]:
-			player.team = 1
-		temp_idx += 1
-
+	for player in players:	
 		armies.append(create_army_for(player))
 
 	UI.go_to_main_menu()
 	var x_offset = 0.0
 	BM.start_battle(armies, map_data, battle_state, x_offset)
 
-
+## Creates army based on player slot data
 func create_army_for(player : Player) -> Army:
 	var army = Army.new()
 	army.controller = player
 	army.units_data = player.slot.get_units_list()
+	player.team = player.slot.team
 	return army
 
 #endregion Game setup

@@ -1,7 +1,7 @@
 class_name Player
 extends Node
 
-var slot: GameSetupInfo.Slot
+var slot : GameSetupInfo.Slot
 
 var bot_engine : AIInterface
 

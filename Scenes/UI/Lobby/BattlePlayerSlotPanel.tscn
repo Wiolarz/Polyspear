@@ -94,4 +94,4 @@ layout_mode = 2
 
 [connection signal="pressed" from="VBoxContainer/HBoxContainer/ButtonTakeLeave" to="." method="_on_button_take_leave_pressed"]
 [connection signal="pressed" from="VBoxContainer/HBoxContainer/ButtonColor" to="." method="_on_button_color_pressed"]
-[connection signal="pressed" from="VBoxContainer/HBoxContainer/OptionButtonTeam" to="." method="_on_option_button_team_pressed"]
+[connection signal="item_selected" from="VBoxContainer/HBoxContainer/OptionButtonTeam" to="." method="_on_option_button_team_item_selected"]

@@ -124,7 +124,7 @@ func apply_army_preset(army : PresetArmy):
 		NET.server.broadcast_full_game_setup(IM.game_setup_info)
 
 
-func set_army(units_list:Array[DataUnit]):
+func set_army(units_list : Array[DataUnit]):
 	while buttons_units.size() > units_list.size():
 		var b = buttons_units.pop_back()
 		$VBoxContainer.remove_child(b)
@@ -173,9 +173,11 @@ func _on_button_color_pressed():
 	cycle_color()
 
 
-func _on_option_button_alliance_pressed():
-	pass # Replace with function body.
+func _on_option_button_team_item_selected(index : int):
+	var slot_index = setup_ui.slot_to_index(self) # determine on which slot player is
 
-
-func _on_option_button_team_pressed():
-	pass # Replace with function body.
+	IM.game_setup_info.set_team(slot_index, index)
+	if NET.server:
+		NET.server.broadcast_full_game_setup(IM.game_setup_info)
+	if NET.client:
+		NET.client.queue_lobby_set_team(slot_index, index)

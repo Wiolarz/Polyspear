@@ -90,6 +90,13 @@ func queue_lobby_set_unit(slot_index:int, unit_index:int, unit_data:DataUnit):
 			))
 
 
+func queue_lobby_set_team(slot_index : int, team_index : int):
+	queue_message_to_server( \
+			LobbySetTeamCommand.create_packet( \
+				slot_index, team_index \
+			))
+
+
 func queue_request_move(move : MoveInfo):
 	queue_message_to_server(ClientRequestedMoveCommand.create_packet(move))
 

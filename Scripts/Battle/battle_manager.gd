@@ -3,7 +3,7 @@ extends GridNode2D
 
 var _battle_is_ongoing : bool = false
 
-var _battle_grid_state: BattleGridState # GAMEPLAY combat state
+var _battle_grid_state : BattleGridState # GAMEPLAY combat state
 
 var _tile_grid : GenericHexGrid # Grid<TileForm> - VISUALs in a grid
 var _unit_to_unit_form : Dictionary # gameplay unit to VISUAL mapping
@@ -265,8 +265,6 @@ func grid_input(coord : Vector2i) -> void:
 		return
 
 	var move_info : MoveInfo
-
-	
 
 	match _battle_grid_state.state:
 		BattleGridState.STATE_SUMMONNING:
