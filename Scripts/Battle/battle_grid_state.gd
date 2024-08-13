@@ -32,6 +32,22 @@ func _init(width_ : int, height_ : int):
 static func create(map: DataBattleMap, new_armies : Array[Army]) -> BattleGridState:
 	var result := BattleGridState.new(map.grid_width, map.grid_height)
 	result.state = STATE_SUMMONNING
+
+	var occupied_team_slots = []
+	for army in new_armies: # assigning NO team players
+		var team = army.controller.team
+		if team == 0:
+			continue
+		if team not in occupied_team_slots:
+			occupied_team_slots.append(team)
+	var new_team_idx = 1
+	for army in new_armies:
+		var team = army.controller.team
+		if team == 0:
+			army.controller.team = new_team_idx
+
+
+
 	for army in new_armies:
 		result.armies_in_battle_state.append(ArmyInBattleState.create_from(army, result))
 
@@ -235,8 +251,8 @@ func _should_die_to_counter_attack(unit : Unit) -> bool:
 	for side in range(6):
 		if not adjacent_units[side]:
 			continue # no unit
-		if adjacent_units[side].controller == unit.controller:
-			continue # no friendly fire
+		if adjacent_units[side].controller.team == unit.controller.team:
+			continue # no friendly fire within team
 		if unit.get_symbol(side) == E.Symbols.SHIELD:
 			continue # we have a shield
 		var opposite_side := GenericHexGrid.opposite_direction(side)
@@ -257,8 +273,8 @@ func _process_offensive_symbols(unit : Unit) -> void:
 			continue # bow is special case
 		if not adjacent[side]:
 			continue # nothing to interact with
-		if adjacent[side].controller == unit.controller:
-			continue # no friendly fire
+		if adjacent[side].controller.team == unit.controller.team:
+			continue # no friendly fire within team
 
 		var enemy = adjacent[side]
 		if unit_weapon == E.Symbols.PUSH:
@@ -275,8 +291,9 @@ func _process_bow(unit : Unit, side : int) -> void:
 
 	if target == null:
 		return # no target
-	if target.controller == unit.controller:
-		return # no friendly fire
+	if target.controller.team == unit.controller.team:
+		return # no friendly fire within team
+
 	var opposite_side := GenericHexGrid.opposite_direction(side)
 	if target.get_symbol(opposite_side) == E.Symbols.SHIELD:
 		return  # blocked by shield
@@ -409,6 +426,8 @@ func _can_kill_or_push(me : Unit, other_unit : Unit, attack_direction : int):
 	#   - defender has shield
 
 	if other_unit.controller == me.controller:
+		return false
+	elif other_unit.controller.team == me.controller.team:
 		return false
 
 	match me.get_front_symbol():
@@ -735,12 +754,14 @@ func _check_battle_end() -> void:
 	if state == STATE_BATTLE_FINISHED:
 		return
 
-	var armies_alive = 0
-	for a in armies_in_battle_state:
-		if a.can_fight():
-			armies_alive += 1
+	var teams_alive = []
+	for army in armies_in_battle_state:
+		if army.can_fight():
+			var army_team = army.army_reference.controller.team
+			if army_team not in teams_alive:
+				teams_alive.append(army_team)
 
-	if armies_alive < 2:
+	if teams_alive.size() < 2:
 		state = STATE_BATTLE_FINISHED
 		return
 
