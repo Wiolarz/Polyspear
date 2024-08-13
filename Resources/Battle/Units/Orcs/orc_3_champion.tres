@@ -21,3 +21,4 @@ cost = SubResource("Resource_h1m34")
 required_building = ExtResource("2_ww81b")
 level = 3
 mana = 0
+spells = Array[Resource("res://Scripts/Battle/battle_spell.gd")]([])

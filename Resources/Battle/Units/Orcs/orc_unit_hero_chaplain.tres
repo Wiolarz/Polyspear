@@ -20,3 +20,4 @@ symbols = Array[Resource("res://Resources/Battle/data_symbol.gd")]([ExtResource(
 cost = SubResource("Resource_bgw4c")
 level = 1
 mana = 1
+spells = Array[Resource("res://Scripts/Battle/battle_spell.gd")]([])
