@@ -17,6 +17,7 @@ class BattleMCTSManager;
 
 struct BattleResult {
     int8_t winner_team = -1;
+    std::array<uint8_t, MAX_ARMIES> max_scores;
     std::array<uint8_t, MAX_ARMIES> total_scores;
     std::array<uint8_t, MAX_ARMIES> score_gained;
     std::array<uint8_t, MAX_ARMIES> score_lost;
@@ -29,11 +30,7 @@ struct Unit {
     uint8_t score = 2;
     std::array<Symbol, 6> sides{};
 
-    inline void rotate(int times) {
-        rotation = (6-rotation + times) % 6;
-    }
-
-    inline Symbol symbol_at_side(int side) const {
+    inline Symbol symbol_at_abs_side(int side) const {
         return sides[(6-rotation + side) % 6];
     }
 };
@@ -44,7 +41,7 @@ struct Army {
     std::array<Unit, MAX_UNITS_IN_ARMY> units{};
 
     Unit* get_unit(Position coord);
-    int find_summon_id(int from = 0);
+    int find_unit_id_to_summon(int from = 0);
     bool is_defeated();
 };
 

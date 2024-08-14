@@ -26,8 +26,8 @@ using godot::Vector2i;
 class BattleManagerFastCpp : public Node {
     GDCLASS(BattleManagerFastCpp, Node);
 
-    int8_t current_participant;
-    int8_t previous_participant;
+    int8_t current_army;
+    int8_t previous_army;
     BattleState state = BattleState::INITIALIZING;
     ArmyList armies{};
     TileGridFastCpp* tiles;
@@ -109,11 +109,11 @@ public:
     }
 
     inline int get_current_participant() const {
-        return current_participant;
+        return current_army;
     }
 
     inline int get_previous_participant() const {
-        return previous_participant;
+        return previous_army;
     }
 
     inline bool is_battle_finished() const {

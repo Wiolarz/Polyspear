@@ -177,8 +177,6 @@ inline int get_rotation(Position origin, Position relative) {
         }
     }
     return 6;
-    //auto it = std::find(DIRECTIONS.begin(), DIRECTIONS.end(), relative - origin);
-    //return it - DIRECTIONS.begin();
 }
 
 inline int flip(int rot) {

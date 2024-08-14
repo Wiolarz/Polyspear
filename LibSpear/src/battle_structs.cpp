@@ -10,7 +10,7 @@ Unit* Army::get_unit(Position coord) {
     return nullptr;
 }
 
-int Army::find_summon_id(int i) {
+int Army::find_unit_id_to_summon(int i) {
     for(; i < 5; i++) {
         if(units[i].status == UnitStatus::SUMMONING) {
             return i;
