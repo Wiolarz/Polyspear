@@ -117,6 +117,7 @@ BattleResult BattleMCTSNode::simulate(int max_sim_iterations, int simulations) {
         auto result = fut.get();
         for(int i = 0; i < ret.total_scores.size(); i++) {
             ret.total_scores[i] += result.total_scores[i];
+            ret.max_scores[i] += result.max_scores[i];
         }
     }
 
@@ -126,26 +127,29 @@ BattleResult BattleMCTSNode::simulate(int max_sim_iterations, int simulations) {
 void BattleMCTSNode::backpropagate(BattleResult& result, int new_visits) {
     auto current_team = bm.get_army_team(bm.get_previous_participant());
     auto ally_score = 0.0f, enemy_score = 0.0f;
+    auto max_ally_score = 0.0f, max_enemy_score = 0.0f;
 
     for(int i = 0; i < result.total_scores.size(); i++) {
         if(bm.get_army_team(i) == current_team) {
             ally_score += result.total_scores[i];
+            max_ally_score += result.max_scores[i];
         }
         else {
             enemy_score += result.total_scores[i];
+            max_enemy_score += result.max_scores[i];
         }
     }
 
+    auto reward_add = (ally_score + max_enemy_score - enemy_score) / (max_ally_score+max_enemy_score); 
     // there's a bug somewhere, temporary fix
-    if(ally_score + enemy_score >= 0.001f) {
-        // TODO better reward maximizing enemy losses in case of failure
-        reward += ally_score / (ally_score+enemy_score);
-    }
-    else {
-        WARN_PRINT("MCTS ally_score = enemy_score = 0");
+    if(reward_add < 0.0f) {
+        WARN_PRINT("invalid reward");
+        raise(SIGINT);
         reward += 0.5f;
     }
-    //reward += result.winner_team == current_team ? 1.0f : (result.winner_team == -1 ? 0.5f : 0.0f);
+    else {
+        reward += reward_add;
+    }
     visits += new_visits;
 
     if(parent) {

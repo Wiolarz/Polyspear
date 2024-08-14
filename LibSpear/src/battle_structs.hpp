@@ -14,13 +14,14 @@ const unsigned MAX_UNITS_IN_ARMY = 5;
 class BattleManagerFastCpp;
 class BattleMCTSManager;
 
+using Score = int16_t;
 
 struct BattleResult {
     int8_t winner_team = -1;
-    std::array<uint8_t, MAX_ARMIES> max_scores;
-    std::array<uint8_t, MAX_ARMIES> total_scores;
-    std::array<uint8_t, MAX_ARMIES> score_gained;
-    std::array<uint8_t, MAX_ARMIES> score_lost;
+    std::array<Score, MAX_ARMIES> max_scores{0};
+    std::array<Score, MAX_ARMIES> total_scores{0};
+    std::array<Score, MAX_ARMIES> score_gained{0};
+    std::array<Score, MAX_ARMIES> score_lost{0};
 };
 
 struct Unit {

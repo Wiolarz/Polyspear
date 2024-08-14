@@ -13,7 +13,7 @@ const int MAX_SIM_ITERATIONS = 70;
 const float HEURISTIC_PROBABILITY = 0.85f;
 const float HEURISTIC_PRIOR_REWARD_PER_ITERATION = 0.05f;
 const int MAX_MCTS_BURST = 200;
-const int MAX_SIMULATIONS_PER_VISIT = 40;
+const int MAX_SIMULATIONS_PER_VISIT = 32;
 
 
 class BattleMCTSManager;
