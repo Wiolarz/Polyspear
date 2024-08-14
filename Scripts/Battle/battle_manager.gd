@@ -205,8 +205,9 @@ func _on_turn_started(player : Player) -> void:
 		var my_cancel_token = CancellationToken.new()
 		assert(latest_ai_cancel_token == null)
 		latest_ai_cancel_token = my_cancel_token
+		var thinking_begin_s = Time.get_ticks_msec() / 1000.0
 		var move = await player.bot_engine.choose_move(_battle_grid_state)
-		await _ai_thinking_delay() # moving too fast feels weird
+		await _ai_thinking_delay(thinking_begin_s) # moving too fast feels weird
 		if not my_cancel_token.is_canceled():
 			_perform_ai_move(move)
 			latest_ai_cancel_token = null
@@ -218,9 +219,9 @@ func cancel_pending_ai_move() ->  void:
 		latest_ai_cancel_token = null
 
 
-func _ai_thinking_delay() -> void:
-	var seconds = CFG.bot_speed_frames / 60.0
-	print("ai wait %f s" % [seconds])
+func _ai_thinking_delay(thinking_begin_s) -> void:
+	var max_seconds = CFG.bot_speed_frames / 60.0
+	var seconds = max(0, max_seconds - (Time.get_ticks_msec()/1000.0 - thinking_begin_s))
 	await get_tree().create_timer(seconds).timeout
 	while IM.is_game_paused() or CFG.bot_speed_frames == CFG.BotSpeed.FREEZE:
 		await get_tree().create_timer(0.1).timeout
