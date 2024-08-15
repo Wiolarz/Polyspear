@@ -68,6 +68,10 @@ custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
 text = "Color"
 
+[node name="OptionButtonBot" type="OptionButton" parent="VBoxContainer/HBoxContainer"]
+layout_mode = 2
+allow_reselect = true
+
 [node name="OptionButtonUnit1" type="OptionButton" parent="VBoxContainer"]
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2

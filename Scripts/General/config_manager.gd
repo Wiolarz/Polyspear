@@ -33,6 +33,7 @@ const SENTINEL_TILE_PATH = "res://Resources/World/World_tiles/sentinel.tres"
 const BATTLE_MAP_TILES_PATH = "res://Resources/Battle/Battle_tiles/"
 const WORLD_MAP_TILES_PATH = "res://Resources/World/World_tiles/"
 const SYMBOLS_PATH = "res://Resources/Battle/Symbols/"
+const BATTLE_BOTS_PATH = "res://Resources/Battle/Bots"
 
 const REPLAY_DIRECTORY = "user://replays/"
 const PLAYER_OPTIONS_PATH = "user://player_options.tres"

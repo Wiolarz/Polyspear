@@ -221,7 +221,7 @@ func cancel_pending_ai_move() ->  void:
 
 func _ai_thinking_delay(thinking_begin_s) -> void:
 	var max_seconds = CFG.bot_speed_frames / 60.0
-	var seconds = max(0, max_seconds - (Time.get_ticks_msec()/1000.0 - thinking_begin_s))
+	var seconds = max(0.01, max_seconds - (Time.get_ticks_msec()/1000.0 - thinking_begin_s))
 	await get_tree().create_timer(seconds).timeout
 	while IM.is_game_paused() or CFG.bot_speed_frames == CFG.BotSpeed.FREEZE:
 		await get_tree().create_timer(0.1).timeout
