@@ -85,15 +85,15 @@ void BattleMCTSNode::expand() {
     }
 }
 
-BattleResult _simulate_thread(BattleManagerFastCpp bmnew, int max_sim_iterations) {
+BattleResult _simulate_thread(BattleManagerFastCpp bmnew, const BattleMCTSManager& mcts) {
     BattleResult result;
     Move move;
     int i = 0;
 
     do {
-        move = bmnew.get_random_move(HEURISTIC_PROBABILITY).first;
+        move = bmnew.get_random_move(mcts.heuristic_probability).first;
         i++;
-    } while((result = bmnew.play_move(move)).winner_team == -1 && i < max_sim_iterations);
+    } while((result = bmnew.play_move(move)).winner_team == -1 && i < mcts.max_sim_iterations);
 
     return result;
 }
@@ -108,8 +108,8 @@ BattleResult BattleMCTSNode::simulate(int max_sim_iterations, int simulations) {
     std::vector<std::future<BattleResult>> results;
 
     for(int i = 0; i < simulations; i++) {
-        results.push_back(mcts_workers.submit_task([*this, max_sim_iterations]() {
-            return _simulate_thread(bm, max_sim_iterations);
+        results.push_back(mcts_workers.submit_task([*this]() {
+            return _simulate_thread(bm, *this->manager);
         }));
     }
 
@@ -161,69 +161,14 @@ bool BattleMCTSNode::is_explored() {
     return bm.get_move_count() == children.size();
 }
 
-void BattleMCTSManager::iterate(int iterations, int max_threads) {
+void BattleMCTSManager::iterate(int iterations) {
+    emit_signal("_assert_params_are_set");
     root->mcts_iterations = iterations;
-    root->iterate(iterations, 0);
+    root->iterate(iterations);
     emit_signal("complete");
 }
 
-void BattleMCTSNode::iterate(int iterations, int depth) {
-
-    auto tmp_parent = parent;
-    parent = nullptr; // Block backpropagation during this procedure
-
-    int burst = MAX_MCTS_BURST;
-    iterate_self(iterations);
-    /*
-    while(iterations > 0) {
-        // end of the tree
-        if(bm.get_move_count() == 0) {
-            break;
-        }
-
-        if(!is_explored() || depth == 0) {
-            iterate_self(burst);
-            iterations -= burst;
-            continue;
-        }
-
-        auto next_depth = std::thread::hardware_concurrency() > children.size() ? 2 : (depth + 1);
-
-        //std::vector<std::thread> threads;
-        std::vector<std::future<void>> futures;
-
-        // Process each subtree in a separate thread
-        for(auto& [move, node] : children) {
-            auto next_burst = (next_depth == 1 && node.is_explored()) ? burst * node.children.size() : burst;
-            threads.emplace_back([&]() {
-            //futures.emplace_back(
-                //mcts_workers.submit_task([&]() {
-                    printf("Doing %d->%d,%d\n", move.unit, move.pos.x, move.pos.y);
-                    node.iterate(next_burst, next_depth);
-                    printf("Done %d->%d,%d\n", move.unit, move.pos.x, move.pos.y);
-                //})
-            );
-            iterations -= next_burst;
-        }
-
-        printf("Waiting\n");
-        mcts_workers.wait();
-        printf("Waiteded\n");
-
-
-        // Backpropagate manually
-        reward = 0.0f; visits = 0.0f;
-        for(auto& [move, node] : children) {
-            reward += node.reward;
-            visits += node.visits;
-        }
-
-    }
-    */
-    std::swap(tmp_parent, parent);
-}
-
-void BattleMCTSNode::iterate_self(int iterations) {
+void BattleMCTSNode::iterate(int iterations) {
 
     auto visits = MAX_SIMULATIONS_PER_VISIT;
 
@@ -318,5 +263,11 @@ void BattleMCTSManager::_bind_methods() {
 
     ClassDB::bind_method(D_METHOD("set_root"), &BattleMCTSManager::set_root, "battle_manager");
     ADD_SIGNAL(MethodInfo("complete"));
+    ADD_SIGNAL(MethodInfo("_assert_params_are_set"));
+
+    BIND_MCTS_PARAMETER(Variant::INT, max_sim_iterations);
+    BIND_MCTS_PARAMETER(Variant::FLOAT, heuristic_probability);
+    BIND_MCTS_PARAMETER(Variant::FLOAT, heuristic_prior_reward_per_iteration);
+    BIND_MCTS_PARAMETER(Variant::INT, max_playouts_per_visit);
 }
 

@@ -9,9 +9,25 @@
 #include <optional>
 #include <unordered_map>
 
-const int MAX_SIM_ITERATIONS = 70;
+#include "godot_cpp/core/object.hpp"
+
+
+#define DEFINE_MCTS_PARAMETER(type, name) \
+    private: \
+        type name = -1; \
+    public: \
+        inline type get_##name () const {return name;} \
+        inline void set_##name (const type new_##name) {name = new_##name;} 
+
+#define BIND_MCTS_PARAMETER(variant, name) \
+    ClassDB::bind_method(D_METHOD("set" #name, "new_" #name), &BattleMCTSManager::set_##name); \
+    ClassDB::bind_method(D_METHOD("get" #name), &BattleMCTSManager::get_##name); \
+    ADD_PROPERTY(PropertyInfo(variant, #name), "set" #name, "get" #name); 
+
+
+const int MAX_SIM_ITERATIONS = 80;
 const float HEURISTIC_PROBABILITY = 0.85f;
-const float HEURISTIC_PRIOR_REWARD_PER_ITERATION = 0.05f;
+const float HEURISTIC_PRIOR_REWARD_PER_ITERATION = 0.01f;
 const int MAX_MCTS_BURST = 200;
 const int MAX_SIMULATIONS_PER_VISIT = 32;
 
@@ -40,8 +56,7 @@ public:
     float uct() const;
     bool is_explored();
 
-    void iterate(int iterations, int depth = 0);
-    void iterate_self(int iterations);
+    void iterate(int iterations);
 
     /// Select the currently best child. May return nullptr as the second return value
     std::pair<Move, BattleMCTSNode*> select();
@@ -57,14 +72,20 @@ public:
 class BattleMCTSManager : public Node {
     GDCLASS(BattleMCTSManager, Node);
 
+    //inline void _connect_assert_params_are_set(const StringName& method) {
+    //}
+
+    DEFINE_MCTS_PARAMETER(int, max_sim_iterations);
+    DEFINE_MCTS_PARAMETER(float, heuristic_probability);
+    DEFINE_MCTS_PARAMETER(float, heuristic_prior_reward_per_iteration);
+    DEFINE_MCTS_PARAMETER(int, max_playouts_per_visit);
+
     // i wanted it to not be a pointer, but c++ was stronger
     BattleMCTSNode* root = nullptr;
     int army_team;
     int army_id;
 
-    // TODO parameters
-    //int max_sim_iterations;
-
+    friend BattleResult _simulate_thread(BattleManagerFastCpp bm, const BattleMCTSManager& mcts);
     friend class BattleMCTSNode;
     
 protected:
@@ -76,7 +97,7 @@ public:
 
     void set_root(BattleManagerFastCpp* bm);
 
-    void iterate(int iterations = 1, int max_threads = 1);
+    void iterate(int iterations = 1);
 
     /// Get the optimal move. Return zero unit/position on fail
     Move get_optimal_move(int nth_best_move);
