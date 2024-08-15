@@ -64,7 +64,7 @@ func check_integrity_before_move(bgs: BattleGridState, move: MoveInfo):
 func check_integrity_after_move(bgs: BattleGridState):
 	if not _integrity_check_move:
 		return # Summoning move, compare() does not check for them
-	if CFG.debug_check_bmfast_integrity:
+	if CFG.debug_check_bmfast_integrity and bgs.state != bgs.STATE_BATTLE_FINISHED:
 		assert(compare(bgs) == true, "BMFast Integrity check failed after move")
 		
 
