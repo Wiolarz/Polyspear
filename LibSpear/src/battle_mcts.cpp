@@ -17,9 +17,9 @@ BS::thread_pool mcts_workers;
 
 
 BattleMCTSNode::BattleMCTSNode(BattleManagerFastCpp bm, BattleMCTSManager* manager, BattleMCTSNode* parent) 
-    : bm(bm),
-      manager(manager),
-      parent(parent)
+    : _bm(bm),
+      _manager(manager),
+      _parent(parent)
 {
     
 }
@@ -27,13 +27,13 @@ BattleMCTSNode::BattleMCTSNode(BattleManagerFastCpp bm, BattleMCTSManager* manag
 float BattleMCTSNode::uct() const {
     const auto coeff = sqrt(2);
 
-    if(abs(visits) < 1e-5f) {
+    if(abs(_visits) < 1e-5f) {
         // not explored, a large number to force exploring it
         // idea - dither - this + a tiny bit of pseudorandom noise to select a random node vs first/last found
         return 10000.0f;
     }
-    auto parent_visits = parent ? parent->visits : visits;
-    return (reward/visits) + coeff * sqrt(log2(parent_visits) / visits);
+    auto parent_visits = _parent ? _parent->_visits : _visits;
+    return (_reward/_visits) + coeff * sqrt(log2(parent_visits) / _visits);
 }
 
 std::pair<Move, BattleMCTSNode*> BattleMCTSNode::select() {
@@ -47,7 +47,7 @@ std::pair<Move, BattleMCTSNode*> BattleMCTSNode::select() {
     BattleMCTSNode* uct_max_idx = nullptr;
     Move best_move;
 
-    for(auto& [move, node] : children) {
+    for(auto& [move, node] : _children) {
         auto uct = node.uct();
         if(uct >= uct_max) {
             uct_max = uct;
@@ -60,27 +60,27 @@ std::pair<Move, BattleMCTSNode*> BattleMCTSNode::select() {
 }
 
 void BattleMCTSNode::expand() {
-    if(bm.is_battle_finished()) {
+    if(_bm.is_battle_finished()) {
         return;
     }
 
     //std::lock_guard lock(local_mutex);
     
-    auto [move, heur_chosen] = bm.get_random_move(manager->heuristic_probability);
+    auto [move, heur_chosen] = _bm.get_random_move(_manager->heuristic_probability);
 
-    if(children.count(move) == 0) {
-        children.emplace(std::piecewise_construct,
+    if(_children.count(move) == 0) {
+        _children.emplace(std::piecewise_construct,
                 std::forward_as_tuple(move), 
-                std::forward_as_tuple(bm, manager, this)
+                std::forward_as_tuple(_bm, _manager, this)
         );
-        auto& child = children.at(move);
-        child.bm.play_move(move);
-        child.mcts_iterations = mcts_iterations;
+        auto& child = _children.at(move);
+        child._bm.play_move(move);
+        child._mcts_iterations = _mcts_iterations;
 
         if(heur_chosen) {
-            auto prior_reward = mcts_iterations * float(manager->heuristic_prior_reward_per_iteration);
-            child.visits += prior_reward;
-            child.reward += prior_reward;
+            auto prior_reward = _mcts_iterations * float(_manager->heuristic_prior_reward_per_iteration);
+            child._visits += prior_reward;
+            child._reward += prior_reward;
         }
     }
 }
@@ -101,15 +101,15 @@ BattleResult _simulate_thread(BattleManagerFastCpp bmnew, const BattleMCTSManage
 BattleResult BattleMCTSNode::simulate(int max_sim_iterations, int simulations) {
     BattleResult ret;
 
-    if(bm.is_battle_finished()) {
-        return bm.get_result();
+    if(_bm.is_battle_finished()) {
+        return _bm.get_result();
     }
 
     std::vector<std::future<BattleResult>> results;
 
     for(int i = 0; i < simulations; i++) {
         results.push_back(mcts_workers.submit_task([*this]() {
-            return _simulate_thread(bm, *this->manager);
+            return _simulate_thread(_bm, *this->_manager);
         }));
     }
 
@@ -125,12 +125,12 @@ BattleResult BattleMCTSNode::simulate(int max_sim_iterations, int simulations) {
 }
 
 void BattleMCTSNode::backpropagate(BattleResult& result, int new_visits) {
-    auto current_team = bm.get_army_team(bm.get_previous_participant());
+    auto current_team = _bm.get_army_team(_bm.get_previous_participant());
     auto ally_score = 0.0f, enemy_score = 0.0f;
     auto max_ally_score = 0.0f, max_enemy_score = 0.0f;
 
     for(int i = 0; i < result.total_scores.size(); i++) {
-        if(bm.get_army_team(i) == current_team) {
+        if(_bm.get_army_team(i) == current_team) {
             ally_score += result.total_scores[i];
             max_ally_score += result.max_scores[i];
         }
@@ -145,32 +145,32 @@ void BattleMCTSNode::backpropagate(BattleResult& result, int new_visits) {
     if(reward_add < 0.0f) {
         WARN_PRINT("invalid reward");
         raise(SIGINT);
-        reward += 0.5f;
+        _reward += 0.5f;
     }
     else {
-        reward += reward_add;
+        _reward += reward_add;
     }
-    visits += new_visits;
+    _visits += new_visits;
 
-    if(parent) {
-        parent->backpropagate(result, new_visits);
+    if(_parent) {
+        _parent->backpropagate(result, new_visits);
     }
 }
 
 bool BattleMCTSNode::is_explored() {
-    return bm.get_move_count() == children.size();
+    return _bm.get_move_count() == _children.size();
 }
 
 void BattleMCTSManager::iterate(int iterations) {
     emit_signal("_assert_params_are_set");
-    root->mcts_iterations = iterations;
+    root->_mcts_iterations = iterations;
     root->iterate(iterations);
     emit_signal("complete");
 }
 
 void BattleMCTSNode::iterate(int iterations) {
 
-    auto visits = manager->max_playouts_per_visit;
+    auto visits = _manager->max_playouts_per_visit;
 
     for(int i = 0; i < iterations; i+=visits) {
         BattleResult result;
@@ -184,21 +184,21 @@ void BattleMCTSNode::iterate(int iterations) {
             }
 
             node->expand();
-            result = node->simulate(manager->max_sim_iterations, visits);    
+            result = node->simulate(_manager->max_sim_iterations, visits);    
         }
 
         {
             //std::unique_lock wlock(rwlock);
             node->backpropagate(result, visits);
 
-            if(result.winner_team == manager->army_team) {
-                this->wins++;
+            if(result.winner_team == _manager->army_team) {
+                this->_wins++;
             }
             else if(result.winner_team == -1) {
-                this->draws++;
+                this->_draws++;
             }
             else {
-                this->loses++;
+                this->_loses++;
             }
         }
     }
@@ -211,23 +211,23 @@ Move BattleMCTSManager::get_optimal_move(int nth_best_move) {
         ERR_PRINT_ONCE_ED("ERROR - Nth best move is not implemented for BattleMCTSManager yet");
     }
 
-    for(auto& [move, node] : root->children) {
-        auto& hm = root->bm.get_heuristically_good_moves();
+    for(auto& [move, node] : root->_children) {
+        auto& hm = root->_bm.get_heuristically_good_moves();
         bool heur_move = std::find(hm.begin(), hm.end(), move) != hm.end();
         printf("Child %c %d->%d,%d UCT=%f, R/V=%f (reward: %f, visits: %f)\n", 
                 heur_move ? 'H':' ', move.unit, move.pos.x, move.pos.y, 
-                node.uct(), node.reward / node.visits, node.reward, node.visits
+                node.uct(), node._reward / node._visits, node._reward, node._visits
         );
     }
-    printf("%i/%i/%i\n", root->wins, root->draws, root->loses);
+    printf("%i/%i/%i\n", root->_wins, root->_draws, root->_loses);
 
     float max_ratio = -1.0f;
     Move chosen;
 
-    for(auto& [move, node] : root->children) {
-        if(node.reward / node.visits > max_ratio) {
+    for(auto& [move, node] : root->_children) {
+        if(node._reward / node._visits > max_ratio) {
             chosen = move;
-            max_ratio = node.reward / node.visits;
+            max_ratio = node._reward / node._visits;
         }
     }
 

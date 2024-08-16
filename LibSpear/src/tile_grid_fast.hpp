@@ -21,9 +21,9 @@ using namespace godot;
 class TileGridFastCpp : public Node {
     GDCLASS(TileGridFastCpp, Node);
 
-    Vector2i dims;
-    std::vector<Tile> tiles;
-    std::array<std::vector<Position>, 2> spawns;
+    Vector2i _dims;
+    std::vector<Tile> _tiles;
+    std::array<std::vector<Position>, 2> _spawns;
 protected:
     static void _bind_methods();
 
@@ -38,11 +38,11 @@ public:
     }
 
     constexpr const std::vector<Position>& get_spawns(int army) const {
-        return spawns[army];
+        return _spawns[army];
     }
 
     const Vector2i get_dims() const {
-        return dims;
+        return _dims;
     }
 };
 

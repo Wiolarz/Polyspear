@@ -13,19 +13,19 @@
 #define CHECK_ARMY(idx, ret) ERR_FAIL_COND_V_MSG(idx >= MAX_ARMIES, ret, std::format("BMFast - invalid army id {}", idx).c_str())
 
 void BattleManagerFastCpp::finish_initialization() {
-    if(state == BattleState::INITIALIZING) {
-        state = BattleState::SUMMONING;
-        for(int i = 0; i < armies.size(); i++) {
-            armies[i].id = i;
-            for(auto& unit: armies[i].units) {
+    if(_state == BattleState::INITIALIZING) {
+        _state = BattleState::SUMMONING;
+        for(int i = 0; i < _armies.size(); i++) {
+            _armies[i].id = i;
+            for(auto& unit: _armies[i].units) {
                 if(unit.status != UnitStatus::DEAD) {
-                    result.total_scores[i] += unit.score;
-                    result.max_scores[i]   += unit.score;
+                    _result.total_scores[i] += unit.score;
+                    _result.max_scores[i]   += unit.score;
                 }
             }
         }
 
-        unit_cache.update_armies(armies);
+        _unit_cache.update_armies(_armies);
     }
     else {
         WARN_PRINT("BMFast already initialized");
@@ -43,55 +43,55 @@ int BattleManagerFastCpp::play_move_gd(unsigned unit_id, Vector2i pos) {
 }
 
 BattleResult BattleManagerFastCpp::_play_move(unsigned unit_id, Vector2i pos) {
-    moves_dirty = true;
-    heuristic_moves_dirty = true;
+    _moves_dirty = true;
+    _heuristic_moves_dirty = true;
 
-    result.winner_team = -1;
-    result.score_gained.fill(0);
-    result.score_lost.fill(0);
+    _result.winner_team = -1;
+    _result.score_gained.fill(0);
+    _result.score_lost.fill(0);
 
-    previous_army = current_army;
+    _previous_army = _current_army;
 
-    ERR_FAIL_COND_V_MSG(state == BattleState::INITIALIZING, result, "BMFast - Please call finish_initialization() before playing a move");
-    CHECK_UNIT(unit_id, result);
+    ERR_FAIL_COND_V_MSG(_state == BattleState::INITIALIZING, _result, "BMFast - Please call finish_initialization() before playing a move");
+    CHECK_UNIT(unit_id, _result);
     
-    UnitID uid = std::make_pair(current_army, unit_id);
-    auto& unit = armies[current_army].units[unit_id];
+    UnitID uid = std::make_pair(_current_army, unit_id);
+    auto& unit = _armies[_current_army].units[unit_id];
 
-    if(state == BattleState::SUMMONING) {
+    if(_state == BattleState::SUMMONING) {
         if(unit.status != UnitStatus::SUMMONING) {
             WARN_PRINT("BMFast - unit is not in summoning state\n");
-            return result;
+            return _result;
         }
 
-        if(tiles->get_tile(pos).get_spawning_army() != current_army) {
+        if(_tiles->get_tile(pos).get_spawning_army() != _current_army) {
             WARN_PRINT("BMFast - target spawn does not belong to current army, aborting\n");
-            return result;
+            return _result;
         }
 
         _move_unit(uid, pos);
-        unit.rotation = tiles->get_tile(pos).get_spawn_rotation();
+        unit.rotation = _tiles->get_tile(pos).get_spawn_rotation();
         unit.status = UnitStatus::ALIVE;
 
         bool end_summon = true;
-        for(int i = (current_army+1) % armies.size(); i != current_army; i = (i+1)%armies.size()) {
-            if(armies[i].find_unit_id_to_summon() != -1) {
-                current_army = i;
+        for(int i = (_current_army+1) % _armies.size(); i != _current_army; i = (i+1)%_armies.size()) {
+            if(_armies[i].find_unit_id_to_summon() != -1) {
+                _current_army = i;
                 end_summon = false;
                 break;
             }
         }
 
         if(end_summon) {
-            state = BattleState::ONGOING;
+            _state = BattleState::ONGOING;
         }
     }
-    else if(state == BattleState::ONGOING) {
+    else if(_state == BattleState::ONGOING) {
         auto rot_new = get_rotation(unit.pos, pos);
 
         if(rot_new == 6) {
             WARN_PRINT("BMFast - target position is not a neighbor\n");
-            return result;
+            return _result;
         }
 
         unit.rotation = rot_new;
@@ -102,22 +102,22 @@ BattleResult BattleManagerFastCpp::_play_move(unsigned unit_id, Vector2i pos) {
             _process_unit(uid, true);
         }
         
-        int limit = current_army;
+        int limit = _current_army;
         do {
-            current_army = (current_army+1) % armies.size();
-        } while(armies[current_army].is_defeated() && current_army != limit);
+            _current_army = (_current_army+1) % _armies.size();
+        } while(_armies[_current_army].is_defeated() && _current_army != limit);
     }
     else {
         WARN_PRINT("BMFast - battle already ended, did not expect that\n");
-        return result;
+        return _result;
     }
 
-    result.winner_team = get_winner_team();
+    _result.winner_team = get_winner_team();
 
     // Test whether all cache updates are correct
     //unit_cache.self_test(armies);
 
-    return result;
+    return _result;
 }
 
 
@@ -126,7 +126,7 @@ void BattleManagerFastCpp::_process_unit(UnitID unit_id, bool process_kills) {
 
     for(int side = 0; side < 6; side++) {
         auto pos = unit->pos + DIRECTIONS[side];
-        auto neighbor_id = unit_cache.get(pos);
+        auto neighbor_id = _unit_cache.get(pos);
         auto [neighbor, enemy_army] = _get_unit(neighbor_id);
 
         if(!neighbor || !enemy_army || neighbor->status != UnitStatus::ALIVE || enemy_army->team == army->team) {
@@ -149,7 +149,7 @@ void BattleManagerFastCpp::_process_unit(UnitID unit_id, bool process_kills) {
 
             if(unit_symbol.pushes()) {
                 auto new_pos = neighbor->pos + neighbor->pos - unit->pos;
-                if(!(tiles->get_tile(new_pos).is_passable()) || _get_unit(new_pos).first != nullptr) {
+                if(!(_tiles->get_tile(new_pos).is_passable()) || _get_unit(new_pos).first != nullptr) {
                     _kill_unit(neighbor_id, army->team);
                 }
                 else {
@@ -176,8 +176,8 @@ void BattleManagerFastCpp::_process_bow(UnitID unit_id) {
 
         auto iter = DIRECTIONS[i];
 
-        for(auto pos = unit->pos + iter; !(tiles->get_tile(pos).is_wall()); pos = pos + iter) {
-            auto other_id = unit_cache.get(pos);
+        for(auto pos = unit->pos + iter; !(_tiles->get_tile(pos).is_wall()); pos = pos + iter) {
+            auto other_id = _unit_cache.get(pos);
             auto [other, other_army] = _get_unit(other_id);
 
             if(!other && !other_army) {
@@ -198,7 +198,7 @@ void BattleManagerFastCpp::_process_bow(UnitID unit_id) {
 
 int BattleManagerFastCpp::get_winner_team() {
 
-    if(state == BattleState::SUMMONING) {
+    if(_state == BattleState::SUMMONING) {
         return -1;
     }
 
@@ -206,9 +206,9 @@ int BattleManagerFastCpp::get_winner_team() {
     int teams_alive = 4;
     std::array<int, 4> armies_in_teams_alive = {0,0,0,0};
 
-    for(int i = 0; i < armies.size(); i++) {
-        if(!armies[i].is_defeated()) {
-            armies_in_teams_alive[armies[i].team] += 1;
+    for(int i = 0; i < _armies.size(); i++) {
+        if(!_armies[i].is_defeated()) {
+            armies_in_teams_alive[_armies[i].team] += 1;
         }
     }
     
@@ -223,12 +223,12 @@ int BattleManagerFastCpp::get_winner_team() {
 
     if(teams_alive == 0) {
         ERR_PRINT("C++ Assertion failed: no teams alive after battle, should not be possible");
-        state = BattleState::FINISHED;
+        _state = BattleState::FINISHED;
         return -2;
     }
 
     if(teams_alive == 1) {
-        state = BattleState::FINISHED;
+        _state = BattleState::FINISHED;
         return last_team_alive;
     }
 
@@ -237,34 +237,34 @@ int BattleManagerFastCpp::get_winner_team() {
 
 
 const std::vector<Move>& BattleManagerFastCpp::get_legal_moves() {
-    if(moves_dirty) {
+    if(_moves_dirty) {
         _refresh_legal_moves();
-        moves_dirty = false;
+        _moves_dirty = false;
     }
-    return moves;
+    return _moves;
 }
 
 const std::vector<Move>& BattleManagerFastCpp::get_heuristically_good_moves() {
-    if(heuristic_moves_dirty) {
+    if(_heuristic_moves_dirty) {
         _refresh_heuristically_good_moves();
-        heuristic_moves_dirty = false;
+        _heuristic_moves_dirty = false;
     }
-    if(heuristic_moves.empty()) {
+    if(_heuristic_moves.empty()) {
         return get_legal_moves();
     }
-    return heuristic_moves;
+    return _heuristic_moves;
 }
 
 void BattleManagerFastCpp::_refresh_legal_moves() {
-    moves.clear();
-    moves.reserve(64);
+    _moves.clear();
+    _moves.reserve(64);
 
-    auto& army = armies[current_army];
-    auto& spawns = tiles->get_spawns(current_army);
+    auto& army = _armies[_current_army];
+    auto& spawns = _tiles->get_spawns(_current_army);
 
     Move move;
 
-    if(state == BattleState::SUMMONING) {
+    if(_state == BattleState::SUMMONING) {
         for(auto& spawn : spawns) {
             if(is_occupied(spawn, army.team, TeamRelation::ALLY)) {
                 continue;
@@ -277,11 +277,11 @@ void BattleManagerFastCpp::_refresh_legal_moves() {
 
                 move.unit = i;
                 move.pos = spawn;
-                moves.push_back(move);
+                _moves.push_back(move);
             }
         }
     }
-    else if(state == BattleState::ONGOING) {
+    else if(_state == BattleState::ONGOING) {
 
         for(int unit_id = 0; unit_id < army.units.size(); unit_id++) {
             auto& unit = army.units[unit_id];
@@ -293,7 +293,7 @@ void BattleManagerFastCpp::_refresh_legal_moves() {
                 move.unit = unit_id;
                 move.pos = unit.pos + DIRECTIONS[side];
 
-                if(!tiles->get_tile(move.pos).is_passable()) {
+                if(!_tiles->get_tile(move.pos).is_passable()) {
                     continue;
                 }
                 
@@ -310,22 +310,22 @@ void BattleManagerFastCpp::_refresh_legal_moves() {
                     }
                 }
 
-                moves.push_back(move);
+                _moves.push_back(move);
             }
         }
     }
 }
 
 void BattleManagerFastCpp::_refresh_heuristically_good_moves() {
-    heuristic_moves.clear();
-    heuristic_moves.reserve(64);
+    _heuristic_moves.clear();
+    _heuristic_moves.reserve(64);
 
-    if(state == BattleState::SUMMONING) {
+    if(_state == BattleState::SUMMONING) {
         _refresh_heuristically_good_summon_moves();
         return;
     }
 
-    auto& army = armies[current_army];
+    auto& army = _armies[_current_army];
 
     bool killing_move_found = false;
 
@@ -335,8 +335,8 @@ void BattleManagerFastCpp::_refresh_heuristically_good_moves() {
         
         // Always win the game if possible and avoid defeats
         if(result.winner_team == army.team) {
-            heuristic_moves.clear();
-            heuristic_moves.push_back(m);
+            _heuristic_moves.clear();
+            _heuristic_moves.push_back(m);
             return;
         }
         else if(result.winner_team != -1) {
@@ -344,26 +344,26 @@ void BattleManagerFastCpp::_refresh_heuristically_good_moves() {
         }
 
         // If a move kills an enemy unit, prioritize killing move
-        if(result.score_gained[current_army] > 0) {
+        if(result.score_gained[_current_army] > 0) {
             if(!killing_move_found) {
                 killing_move_found = true;
-                heuristic_moves.clear();
+                _heuristic_moves.clear();
             }
-            heuristic_moves.push_back(m);
+            _heuristic_moves.push_back(m);
         }
 
         // If no killing move found, prioritize moves that don't result in a loss
-        if(result.score_lost[current_army] == 0 && !killing_move_found) {
-            heuristic_moves.push_back(m);
+        if(result.score_lost[_current_army] == 0 && !killing_move_found) {
+            _heuristic_moves.push_back(m);
         }
     }
 }
 
 void BattleManagerFastCpp::_refresh_heuristically_good_summon_moves() {
-    auto& army = armies[current_army];
+    auto& army = _armies[_current_army];
 
     bool enemy_has_unsummoned_bowman = false;
-    for(auto& enemy_army : armies) {
+    for(auto& enemy_army : _armies) {
         if(enemy_army.team == army.team) {
             continue;
         }
@@ -387,8 +387,8 @@ void BattleManagerFastCpp::_refresh_heuristically_good_summon_moves() {
         // Default - empty tile
         int move_score = (enemy_has_unsummoned_bowman || is_bowman) ? 0 : 1;
 
-        for(int enemy_army_id = 0; enemy_army_id < armies.size(); enemy_army_id++) {
-            auto& enemy_army = armies[enemy_army_id];
+        for(int enemy_army_id = 0; enemy_army_id < _armies.size(); enemy_army_id++) {
+            auto& enemy_army = _armies[enemy_army_id];
 
             if(enemy_army.team == army.team) {
                 continue;
@@ -401,7 +401,7 @@ void BattleManagerFastCpp::_refresh_heuristically_good_summon_moves() {
                 if(enemy.status != UnitStatus::ALIVE || !m.pos.is_in_line_with(enemy.pos)) {
                     continue;
                 }
-                if(enemy_can_shoot_unit && !(can_shoot_enemy && current_army > enemy_army_id) ) {
+                if(enemy_can_shoot_unit && !(can_shoot_enemy && _current_army > enemy_army_id) ) {
                     move_score = -100000;
                     break;
                 }
@@ -413,7 +413,7 @@ void BattleManagerFastCpp::_refresh_heuristically_good_summon_moves() {
 
         }
         if(move_score > 0) {
-            heuristic_moves.push_back(m);
+            _heuristic_moves.push_back(m);
         }
     }
 }
@@ -453,7 +453,7 @@ godot::Array BattleManagerFastCpp::get_legal_moves_gd() {
 }
 
 bool BattleManagerFastCpp::is_occupied(Position pos, int team, TeamRelation relation) const {
-    for(auto& army : armies) {
+    for(auto& army : _armies) {
         if( (army.team == team) != (relation == TeamRelation::ALLY) ) {
             continue;
         }
@@ -471,73 +471,73 @@ void BattleManagerFastCpp::_move_unit(UnitID id, Position pos) {
     auto [unit, army] = _get_unit(id);
 
     if(unit->status == UnitStatus::ALIVE) {
-        unit_cache[unit->pos] = NO_UNIT;
+        _unit_cache[unit->pos] = NO_UNIT;
     }
 
     unit->pos = pos;
-    if(unit_cache.get(pos) != NO_UNIT) {
+    if(_unit_cache.get(pos) != NO_UNIT) {
         ERR_FAIL_MSG("Unexpected unit during moving - units should be killed manually");
     }
-    unit_cache[pos] = id;
+    _unit_cache[pos] = id;
 }
 
 void BattleManagerFastCpp::_kill_unit(UnitID id, int killer_team) {
     auto [unit, army] = _get_unit(id);
     auto victim_team = army->team;
 
-    unit_cache[unit->pos] = NO_UNIT;
+    _unit_cache[unit->pos] = NO_UNIT;
     unit->status = UnitStatus::DEAD;
-    result.score_gained[killer_team] += unit->score;
-    result.score_lost[victim_team] -= unit->score;
-    result.total_scores[victim_team] -= unit->score;
+    _result.score_gained[killer_team] += unit->score;
+    _result.score_lost[victim_team] -= unit->score;
+    _result.total_scores[victim_team] -= unit->score;
 }
 
 
 void BattleManagerFastCpp::insert_unit(int army, int idx, Vector2i pos, int rotation, bool is_summoning) {
     CHECK_UNIT(idx,);
     CHECK_ARMY(army,);
-    armies[army].units[idx].pos = pos;
-    armies[army].units[idx].rotation = rotation;
-    armies[army].units[idx].status = is_summoning ? UnitStatus::SUMMONING : UnitStatus::ALIVE;
+    _armies[army].units[idx].pos = pos;
+    _armies[army].units[idx].rotation = rotation;
+    _armies[army].units[idx].status = is_summoning ? UnitStatus::SUMMONING : UnitStatus::ALIVE;
 }
 
 void BattleManagerFastCpp::set_unit_symbol(int army, int unit, int side, int symbol) {
     CHECK_UNIT(unit,);
     CHECK_ARMY(army,);
-    armies[army].units[unit].sides[side] = Symbol(symbol);
+    _armies[army].units[unit].sides[side] = Symbol(symbol);
 }
 
 void BattleManagerFastCpp::set_army_team(int army, int team) {
     CHECK_ARMY(army,);
-    armies[army].team = team;
+    _armies[army].team = team;
 }
 
 void BattleManagerFastCpp::set_current_participant(int army) {
     CHECK_ARMY(army,);
-    current_army = army;
+    _current_army = army;
 }
 
 void BattleManagerFastCpp::set_tile_grid(TileGridFastCpp* tg) {
-    tiles = tg;
-    unit_cache = CacheGrid(*tg);
+    _tiles = tg;
+    _unit_cache = CacheGrid(*tg);
 }
 
 void BattleManagerFastCpp::force_battle_ongoing() {
-    if(state == BattleState::INITIALIZING) {
+    if(_state == BattleState::INITIALIZING) {
         ERR_FAIL_MSG("Must finish_initialization() before calling force_battle_ongoing()");
     }
-    state = BattleState::ONGOING;
+    _state = BattleState::ONGOING;
 }
 
 std::pair<Unit*, Army*> BattleManagerFastCpp::_get_unit(UnitID id) {
     if(id == NO_UNIT) {
         return std::make_pair(nullptr, nullptr);
     }
-    return std::make_pair(&armies[id.first].units[id.second], &armies[id.first]);
+    return std::make_pair(&_armies[id.first].units[id.second], &_armies[id.first]);
 }
 
 std::pair<Unit*, Army*> BattleManagerFastCpp::_get_unit(Position coord) {
-    return _get_unit(unit_cache.get(coord));
+    return _get_unit(_unit_cache.get(coord));
 }
 
 void BattleManagerFastCpp::_bind_methods() {

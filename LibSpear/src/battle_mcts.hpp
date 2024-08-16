@@ -26,17 +26,17 @@
 class BattleMCTSManager;
 
 class BattleMCTSNode {
-    BattleMCTSManager* manager = nullptr;
-    BattleMCTSNode* parent = nullptr;
-    std::unordered_map<Move, BattleMCTSNode> children{};
-    BattleManagerFastCpp bm;
+    BattleMCTSManager* _manager = nullptr;
+    BattleMCTSNode* _parent = nullptr;
+    std::unordered_map<Move, BattleMCTSNode> _children{};
+    BattleManagerFastCpp _bm;
 
-    unsigned mcts_iterations = 0;
-    float reward = 0.0f;
-    float visits = 0.0f;
-    unsigned draws = 0;
-    unsigned wins = 0;
-    unsigned loses = 0;
+    unsigned _mcts_iterations = 0;
+    float _reward = 0.0f;
+    float _visits = 0.0f;
+    unsigned _draws = 0;
+    unsigned _wins = 0;
+    unsigned _loses = 0;
 
     friend class BattleMCTSManager;
 

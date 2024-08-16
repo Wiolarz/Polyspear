@@ -51,14 +51,14 @@ class Symbol {
         SHIELD,
         BOW,
         PUSH
-    } type;
+    } _type;
 public:
     Symbol() = default;
-    Symbol(int i) : type(Type(i)) {}
-    Symbol(Type i) : type(i) {}
+    Symbol(int i) : _type(Type(i)) {}
+    Symbol(Type i) : _type(i) {}
 
     inline int get_attack_force() {
-        switch(type) {
+        switch(_type) {
             case Symbol::Type::ATTACK:
             case Symbol::Type::ATTACK_WITH_COUNTER:
                 return 1;
@@ -68,7 +68,7 @@ public:
     }
 
     inline int get_counter_force() {
-        switch(type) {
+        switch(_type) {
             case Symbol::Type::ATTACK_WITH_COUNTER:
                 return 1;
             default:
@@ -77,7 +77,7 @@ public:
     }
 
     inline int get_defense_force() {
-        switch(type) {
+        switch(_type) {
             // Note - also update MIN_SHIELD_DEFENSE constant when changing these values
             case Symbol::Type::SHIELD:
                 return 1;
@@ -89,7 +89,7 @@ public:
     }
 
     inline int get_bow_force() {
-        switch(type) {
+        switch(_type) {
             case Symbol::Type::BOW:
                 return 1;
             default:
@@ -98,7 +98,7 @@ public:
     }
     
     inline int pushes() {
-        return type == Symbol::Type::PUSH;
+        return _type == Symbol::Type::PUSH;
     }
 
     inline void print() {
@@ -125,36 +125,36 @@ class Tile {
     static const uint8_t SWAMP = 0x4;
     static const uint8_t FORBIDDEN = 0x8;
 
-    uint8_t flags;
-    int8_t spawning_army;
-    uint8_t spawning_direction;
+    uint8_t _flags;
+    int8_t _spawning_army;
+    uint8_t _spawning_direction;
 
 public:
-    Tile() : flags(FORBIDDEN), spawning_army(-1) {}
+    Tile() : _flags(FORBIDDEN), _spawning_army(-1) {}
     Tile(bool passable, bool wall, bool swamp, int army, unsigned direction) :
-        flags(
+        _flags(
             (passable ? PASSABLE : 0)
           | (wall ? WALL : 0)
           | (swamp ? SWAMP : 0)
         ),
-        spawning_army(army),
-        spawning_direction(direction)
+        _spawning_army(army),
+        _spawning_direction(direction)
     {}
     
     inline bool is_passable() {
-        return (flags & PASSABLE) != 0;
+        return (_flags & PASSABLE) != 0;
     }
 
     inline bool is_wall() {
-        return (flags & WALL) != 0;
+        return (_flags & WALL) != 0;
     }
 
     inline int get_spawning_army() {
-        return spawning_army;
+        return _spawning_army;
     }
 
     inline int get_spawn_rotation() {
-        return spawning_direction;
+        return _spawning_direction;
     }
 };
 

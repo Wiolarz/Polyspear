@@ -26,19 +26,19 @@ using godot::Vector2i;
 class BattleManagerFastCpp : public Node {
     GDCLASS(BattleManagerFastCpp, Node);
 
-    int8_t current_army;
-    int8_t previous_army;
-    BattleState state = BattleState::INITIALIZING;
-    ArmyList armies{};
-    TileGridFastCpp* tiles;
+    int8_t _current_army;
+    int8_t _previous_army;
+    BattleState _state = BattleState::INITIALIZING;
+    ArmyList _armies{};
+    TileGridFastCpp* _tiles;
 
-    BattleResult result;
+    BattleResult _result;
 
-    CacheGrid unit_cache;
-    std::vector<Move> moves{};
-    std::vector<Move> heuristic_moves{};
-    bool moves_dirty = true;
-    bool heuristic_moves_dirty = true;
+    CacheGrid _unit_cache;
+    std::vector<Move> _moves{};
+    std::vector<Move> _heuristic_moves{};
+    bool _moves_dirty = true;
+    bool _heuristic_moves_dirty = true;
 
     std::pair<Unit*, Army*> _get_unit(UnitID id);
     std::pair<Unit*, Army*> _get_unit(Position coord);
@@ -76,7 +76,7 @@ public:
     
     /// Get winner team, or -1 if the battle has not yet ended. On error returns -2.
     int get_winner_team();
-    inline BattleResult get_result() {return result;}
+    inline BattleResult get_result() {return _result;}
 
     const std::vector<Move>& get_legal_moves();
     /// Get legal moves in an array of arrays [[unit, position], ...]
@@ -92,36 +92,36 @@ public:
 
     // Getters, primarily for testing correctness with regular BattleManager
     inline Vector2i get_unit_position(int army, int unit) const {
-        auto p = armies[army].units[unit].pos; 
+        auto p = _armies[army].units[unit].pos; 
         return Vector2i(p.x, p.y);
     }
 
     inline int get_unit_rotation(int army, int unit) const {
-        return armies[army].units[unit].rotation;
+        return _armies[army].units[unit].rotation;
     }
 
     inline bool is_unit_alive(int army, int unit) const {
-        return armies[army].units[unit].status == UnitStatus::ALIVE;
+        return _armies[army].units[unit].status == UnitStatus::ALIVE;
     }
 
     inline bool is_unit_being_summoned(int army, int unit) const {
-        return armies[army].units[unit].status == UnitStatus::SUMMONING;
+        return _armies[army].units[unit].status == UnitStatus::SUMMONING;
     }
 
     inline int get_current_participant() const {
-        return current_army;
+        return _current_army;
     }
 
     inline int get_previous_participant() const {
-        return previous_army;
+        return _previous_army;
     }
 
     inline bool is_battle_finished() const {
-        return state == BattleState::FINISHED;
+        return _state == BattleState::FINISHED;
     }
 
     inline int get_army_team(int army) const {
-        return armies[army].team;
+        return _armies[army].team;
     }
 };
 

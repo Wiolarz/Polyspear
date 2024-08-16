@@ -1,33 +1,33 @@
 #include "tile_grid_fast.hpp"
 
 Tile TileGridFastCpp::get_tile(Position pos) {
-    int idx = pos.x + pos.y * dims.x;
-    if(idx >= tiles.size()) {
+    int idx = pos.x + pos.y * _dims.x;
+    if(idx >= _tiles.size()) {
         return Tile();
     }
-    return tiles[idx];
+    return _tiles[idx];
 }
 
 void TileGridFastCpp::set_tile(Position pos, Tile type) {
-    unsigned idx = pos.x + pos.y * dims.x;
-    if(idx >= tiles.size()) {
-        printf("ERROR - invalid tile position %d %d (idx - %d, dims - %dx%d)\n", pos.x, pos.y, idx, dims.x, dims.y);
+    unsigned idx = pos.x + pos.y * _dims.x;
+    if(idx >= _tiles.size()) {
+        printf("ERROR - invalid tile position %d %d (idx - %d, dims - %dx%d)\n", pos.x, pos.y, idx, _dims.x, _dims.y);
         return;
     }
-    auto old_team = tiles[idx].get_spawning_army();
+    auto old_team = _tiles[idx].get_spawning_army();
     auto new_team = type.get_spawning_army();
     if(old_team != -1) {
-        spawns[old_team].erase(std::find(spawns[old_team].begin(), spawns[old_team].end(), pos));
+        _spawns[old_team].erase(std::find(_spawns[old_team].begin(), _spawns[old_team].end(), pos));
     }
     if(new_team != -1) {
-        spawns[new_team].push_back(pos);
+        _spawns[new_team].push_back(pos);
     }
-    tiles[idx] = type;
+    _tiles[idx] = type;
 }
 
 void TileGridFastCpp::set_map_size(Vector2i dimensions) {
-    dims = dimensions;
-    tiles.resize(dims.x * dims.y);
+    _dims = dimensions;
+    _tiles.resize(_dims.x * _dims.y);
 }
 
 void TileGridFastCpp::_bind_methods() {

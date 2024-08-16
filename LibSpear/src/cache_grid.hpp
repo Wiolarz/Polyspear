@@ -19,35 +19,35 @@ static UnitID _err_return_dummy_uid = std::make_pair(-1, -1);
 class CacheGrid {
     using T = UnitID;
 
-    std::vector<T> grid;
-    Vector2i dims;
+    std::vector<T> _grid;
+    Vector2i _dims;
 public:
     CacheGrid() = default;
     CacheGrid(TileGridFastCpp& tg) 
-        : dims(tg.get_dims())
+        : _dims(tg.get_dims())
     {
-        grid.resize(dims.x * dims.y);
+        _grid.resize(_dims.x * _dims.y);
     }
 
     inline T& operator[](Position pos) {
-        unsigned idx = pos.x + pos.y * dims.x;
-        if(idx >= grid.size()) {
+        unsigned idx = pos.x + pos.y * _dims.x;
+        if(idx >= _grid.size()) {
             raise(SIGINT);
             ERR_FAIL_V_MSG(_err_return_dummy_uid , std::format("Position {},{} not present in CacheGrid", pos.x, pos.y).c_str());
         }
-        return grid[idx];
+        return _grid[idx];
     }
 
     inline const T get(Position pos) const {
-        unsigned idx = pos.x + pos.y * dims.x;
-        if(idx >= grid.size()) {
+        unsigned idx = pos.x + pos.y * _dims.x;
+        if(idx >= _grid.size()) {
             return NO_UNIT;
         }
-        return grid[idx];
+        return _grid[idx];
     }
 
     inline void update_armies(ArmyList& armies) {
-        for(auto& i: grid) {
+        for(auto& i: _grid) {
             i = NO_UNIT;
         }
 
@@ -72,8 +72,8 @@ public:
     inline bool self_test(ArmyList& armies) {
         CacheGrid new_cache = *this;
         new_cache.update_armies(armies);
-        for(int i = 0; i < grid.size(); i++) {
-            if(new_cache.grid[i] != grid[i]) {
+        for(int i = 0; i < _grid.size(); i++) {
+            if(new_cache._grid[i] != _grid[i]) {
                 raise(SIGINT);
                 ERR_FAIL_V_MSG(false , std::format("CacheGrid mismatch").c_str());
             }
