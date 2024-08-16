@@ -541,19 +541,19 @@ std::pair<Unit*, Army*> BattleManagerFastCpp::_get_unit(Position coord) {
 }
 
 void BattleManagerFastCpp::_bind_methods() {
-    ClassDB::bind_method(D_METHOD("insert_unit"), &BattleManagerFastCpp::insert_unit, "army", "index", "position", "rotation", "is_summoning");
-    ClassDB::bind_method(D_METHOD("set_unit_symbol"), &BattleManagerFastCpp::set_unit_symbol, "army", "index", "symbol_slot", "symbol_type");
-    ClassDB::bind_method(D_METHOD("set_army_team"), &BattleManagerFastCpp::set_army_team, "army", "team");
-    ClassDB::bind_method(D_METHOD("set_tile_grid"), &BattleManagerFastCpp::set_tile_grid, "tilegrid");
-    ClassDB::bind_method(D_METHOD("set_current_participant"), &BattleManagerFastCpp::set_current_participant, "army");
+    ClassDB::bind_method(D_METHOD("insert_unit", "army", "index", "position", "rotation", "is_summoning"), &BattleManagerFastCpp::insert_unit);
+    ClassDB::bind_method(D_METHOD("set_unit_symbol", "army", "index", "symbol_slot", "symbol_type"), &BattleManagerFastCpp::set_unit_symbol);
+    ClassDB::bind_method(D_METHOD("set_army_team", "army", "team"), &BattleManagerFastCpp::set_army_team);
+    ClassDB::bind_method(D_METHOD("set_tile_grid", "tilegrid"), &BattleManagerFastCpp::set_tile_grid);
+    ClassDB::bind_method(D_METHOD("set_current_participant", "army"), &BattleManagerFastCpp::set_current_participant);
     ClassDB::bind_method(D_METHOD("force_battle_ongoing"), &BattleManagerFastCpp::force_battle_ongoing);
     ClassDB::bind_method(D_METHOD("finish_initialization"), &BattleManagerFastCpp::finish_initialization);
-    ClassDB::bind_method(D_METHOD("play_move"), &BattleManagerFastCpp::play_move_gd, "unit", "position");
+    ClassDB::bind_method(D_METHOD("play_move", "unit", "position"), &BattleManagerFastCpp::play_move_gd);
 
-    ClassDB::bind_method(D_METHOD("get_unit_position"), &BattleManagerFastCpp::get_unit_position, "army", "unit");
-    ClassDB::bind_method(D_METHOD("get_unit_rotation"), &BattleManagerFastCpp::get_unit_rotation, "army", "unit");
-    ClassDB::bind_method(D_METHOD("is_unit_alive"), &BattleManagerFastCpp::is_unit_alive, "army", "unit");
-    ClassDB::bind_method(D_METHOD("is_unit_being_summoned"), &BattleManagerFastCpp::is_unit_being_summoned, "army", "unit");
+    ClassDB::bind_method(D_METHOD("get_unit_position", "army", "unit"), &BattleManagerFastCpp::get_unit_position);
+    ClassDB::bind_method(D_METHOD("get_unit_rotation", "army", "unit"), &BattleManagerFastCpp::get_unit_rotation);
+    ClassDB::bind_method(D_METHOD("is_unit_alive", "army", "unit"), &BattleManagerFastCpp::is_unit_alive);
+    ClassDB::bind_method(D_METHOD("is_unit_being_summoned", "army", "unit"), &BattleManagerFastCpp::is_unit_being_summoned);
     ClassDB::bind_method(D_METHOD("get_current_participant"), &BattleManagerFastCpp::get_current_participant);
     ClassDB::bind_method(D_METHOD("get_legal_moves"), &BattleManagerFastCpp::get_legal_moves_gd);
 

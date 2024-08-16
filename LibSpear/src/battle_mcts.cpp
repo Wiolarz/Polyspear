@@ -66,7 +66,7 @@ void BattleMCTSNode::expand() {
 
     //std::lock_guard lock(local_mutex);
     
-    auto [move, heur_chosen] = bm.get_random_move(HEURISTIC_PROBABILITY);
+    auto [move, heur_chosen] = bm.get_random_move(manager->heuristic_probability);
 
     if(children.count(move) == 0) {
         children.emplace(std::piecewise_construct,
@@ -78,7 +78,7 @@ void BattleMCTSNode::expand() {
         child.mcts_iterations = mcts_iterations;
 
         if(heur_chosen) {
-            auto prior_reward = mcts_iterations * float(HEURISTIC_PRIOR_REWARD_PER_ITERATION);
+            auto prior_reward = mcts_iterations * float(manager->heuristic_prior_reward_per_iteration);
             child.visits += prior_reward;
             child.reward += prior_reward;
         }
@@ -170,7 +170,7 @@ void BattleMCTSManager::iterate(int iterations) {
 
 void BattleMCTSNode::iterate(int iterations) {
 
-    auto visits = MAX_SIMULATIONS_PER_VISIT;
+    auto visits = manager->max_playouts_per_visit;
 
     for(int i = 0; i < iterations; i+=visits) {
         BattleResult result;
@@ -184,7 +184,7 @@ void BattleMCTSNode::iterate(int iterations) {
             }
 
             node->expand();
-            result = node->simulate(MAX_SIM_ITERATIONS, visits);    
+            result = node->simulate(manager->max_sim_iterations, visits);    
         }
 
         {
@@ -256,12 +256,12 @@ BattleMCTSManager::~BattleMCTSManager() {
 }
 
 void BattleMCTSManager::_bind_methods() {
-    ClassDB::bind_method(D_METHOD("get_optimal_move_unit"), &BattleMCTSManager::get_optimal_move_unit, "nth_best_move");
-    ClassDB::bind_method(D_METHOD("get_optimal_move_position"), &BattleMCTSManager::get_optimal_move_position, "nth_best_move");
+    ClassDB::bind_method(D_METHOD("get_optimal_move_unit", "nth_best_move"), &BattleMCTSManager::get_optimal_move_unit);
+    ClassDB::bind_method(D_METHOD("get_optimal_move_position", "nth_best_move"), &BattleMCTSManager::get_optimal_move_position);
 
-    ClassDB::bind_method(D_METHOD("iterate"), &BattleMCTSManager::iterate, "iterations", "max_threads");
+    ClassDB::bind_method(D_METHOD("iterate", "iterations"), &BattleMCTSManager::iterate);
 
-    ClassDB::bind_method(D_METHOD("set_root"), &BattleMCTSManager::set_root, "battle_manager");
+    ClassDB::bind_method(D_METHOD("set_root", "battle_manager"), &BattleMCTSManager::set_root);
     ADD_SIGNAL(MethodInfo("complete"));
     ADD_SIGNAL(MethodInfo("_assert_params_are_set"));
 

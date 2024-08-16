@@ -4,11 +4,13 @@ import sys
 
 env = SConscript("godot-cpp/SConstruct")
 
-env.Append(
-    CPPPATH=["src/", "deps/thread-pool/include"],
-    CXXFLAGS=["-std=c++20"],
+env.Append(CPPPATH=["src/", "deps/thread-pool/include"])
+source_files = Glob("src/*.cpp")
+sources = env.SharedObject(
+        source=source_files, 
+        CXXFLAGS=["-std=c++20", "-Wno-template-id-cdtor"],
+        SHOBJPREFIX="#build/"
 )
-sources = Glob("src/*.cpp")
 
 # Create compile_commands.json for clangd
 env.Tool("compilation_db")

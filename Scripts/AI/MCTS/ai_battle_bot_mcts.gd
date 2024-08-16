@@ -45,7 +45,7 @@ func choose_move(state: BattleGridState) -> MoveInfo:
 	thread = Thread.new()
 	
 	thread.start(
-		mcts.iterate.bind(iterations, 1), 
+		mcts.iterate.bind(iterations), 
 		Thread.PRIORITY_HIGH
 	)
 	await complete

@@ -13,23 +13,14 @@
 
 
 #define DEFINE_MCTS_PARAMETER(type, name) \
-    private: \
-        type name = -1; \
-    public: \
-        inline type get_##name () const {return name;} \
-        inline void set_##name (const type new_##name) {name = new_##name;} 
+    type name = -1; \
+    inline type get_##name () const {return name;} \
+    inline void set_##name (const type new_##name) {name = new_##name;} 
 
 #define BIND_MCTS_PARAMETER(variant, name) \
-    ClassDB::bind_method(D_METHOD("set" #name, "new_" #name), &BattleMCTSManager::set_##name); \
-    ClassDB::bind_method(D_METHOD("get" #name), &BattleMCTSManager::get_##name); \
-    ADD_PROPERTY(PropertyInfo(variant, #name), "set" #name, "get" #name); 
-
-
-const int MAX_SIM_ITERATIONS = 80;
-const float HEURISTIC_PROBABILITY = 0.85f;
-const float HEURISTIC_PRIOR_REWARD_PER_ITERATION = 0.01f;
-const int MAX_MCTS_BURST = 200;
-const int MAX_SIMULATIONS_PER_VISIT = 32;
+    ClassDB::bind_method(D_METHOD("set_" #name, "new_" #name), &BattleMCTSManager::set_##name); \
+    ClassDB::bind_method(D_METHOD("get_" #name), &BattleMCTSManager::get_##name); \
+    ADD_PROPERTY(PropertyInfo(variant, #name), "set_" #name, "get_" #name); 
 
 
 class BattleMCTSManager;
@@ -71,9 +62,6 @@ public:
 
 class BattleMCTSManager : public Node {
     GDCLASS(BattleMCTSManager, Node);
-
-    //inline void _connect_assert_params_are_set(const StringName& method) {
-    //}
 
     DEFINE_MCTS_PARAMETER(int, max_sim_iterations);
     DEFINE_MCTS_PARAMETER(float, heuristic_probability);

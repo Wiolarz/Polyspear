@@ -31,7 +31,6 @@ public:
     void set_map_size(Vector2i dimensions);
     
     Tile get_tile(Position pos);
-    //inline int get_tile_gd(Vector2i pos);
     
     void set_tile(Position pos, Tile tile);
     inline void set_tile_gd(Vector2i pos, bool passable, bool wall, bool swamp, int army, unsigned direction) {
