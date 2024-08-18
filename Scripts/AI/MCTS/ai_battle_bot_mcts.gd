@@ -39,8 +39,6 @@ func choose_move(state: BattleGridState) -> MoveInfo:
 		iterate_complete_mutex.unlock()
 	)
 	
-	if thread:
-		thread.wait_to_finish()
 	thread = Thread.new()
 	
 	thread.start(
@@ -53,6 +51,11 @@ func choose_move(state: BattleGridState) -> MoveInfo:
 	var position = mcts.get_optimal_move_position(0)
 	
 	return bm.libspear_tuple_to_move_info([unit, position])
+
+func cleanup_after_move():
+	if thread:
+		thread.wait_to_finish()
+	thread = null
 
 func _process(_delta):
 	# Suddenly awaiting on timer from a worker thread became an issue for some reason

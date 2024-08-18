@@ -204,12 +204,18 @@ func _on_turn_started(player : Player) -> void:
 		print("AI starts thinking")
 		
 		var my_cancel_token = CancellationToken.new()
-		assert(latest_ai_cancel_token == null)
+		#assert(latest_ai_cancel_token == null)
 		latest_ai_cancel_token = my_cancel_token
 		
+		var bot = player.bot_engine
+		
 		var thinking_begin_s = Time.get_ticks_msec() / 1000.0
-		var move = await player.bot_engine.choose_move(_battle_grid_state)
+		var move = await bot.choose_move(_battle_grid_state)
 		await _ai_thinking_delay(thinking_begin_s) # moving too fast feels weird
+		
+		bot.cleanup_after_move()
+		if _battle_grid_state == null: # Player quit to main menu before finishing
+			return
 		
 		if not my_cancel_token.is_canceled():
 			assert(_battle_grid_state.is_move_possible(move), "AI tried to perform an invalid move")

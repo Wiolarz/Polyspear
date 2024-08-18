@@ -11,3 +11,6 @@ func choose_move(_battle_state : BattleGridState) -> MoveInfo:
 	# dead code, just to force godot to not throw warnings on awaiting and mark this method as async
 	await Signal()
 	return null
+
+func cleanup_after_move():
+	pass
