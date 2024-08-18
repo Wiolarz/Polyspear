@@ -344,6 +344,12 @@ func _get_shot_target(coord : Vector2i, direction : int) -> Unit:
 	return hex.unit
 
 
+func is_move_possible(move: MoveInfo) -> bool:
+	for i in get_possible_moves():
+		if i._to_string() == move._to_string():
+			return true
+	return false
+
 func is_move_valid(unit : Unit, coord : Vector2i) -> bool:
 	return _get_move_direction_if_valid(unit, coord) != MOVE_IS_INVALID
 

@@ -21,9 +21,8 @@ var thread: Thread
 signal complete
 
 
-func choose_move(state: BattleGridState) -> MoveInfo:	
-	var unit_array = []
-	var bm = BattleManagerFast.from(state, unit_array)
+func choose_move(state: BattleGridState) -> MoveInfo:
+	var bm = BattleManagerFast.from(state)
 	
 	var mcts = BattleMCTSManager.new()
 
@@ -53,10 +52,7 @@ func choose_move(state: BattleGridState) -> MoveInfo:
 	var unit = mcts.get_optimal_move_unit(0)
 	var position = mcts.get_optimal_move_position(0)
 	
-	if unit_array[unit] is DataUnit: # Summon
-		return MoveInfo.make_summon(unit_array[unit], position)
-	else: # Move
-		return MoveInfo.make_move(unit_array[unit].coord, position)
+	return bm.libspear_tuple_to_move_info([unit, position])
 
 func _process(_delta):
 	# Suddenly awaiting on timer from a worker thread became an issue for some reason

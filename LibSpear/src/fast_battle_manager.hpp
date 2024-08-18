@@ -89,6 +89,7 @@ public:
     const std::vector<Move>& get_heuristically_good_moves();
 
     bool is_occupied(Position pos, int team, TeamRelation relation) const;
+    godot::Array get_unit_id_on_position(Vector2i pos) const;
 
     // Getters, primarily for testing correctness with regular BattleManager
     inline Vector2i get_unit_position(int army, int unit) const {

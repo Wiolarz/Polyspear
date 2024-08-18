@@ -202,13 +202,17 @@ func _on_turn_started(player : Player) -> void:
 
 	if player.bot_engine and not NET.client: # AI is simulated on server only
 		print("AI starts thinking")
+		
 		var my_cancel_token = CancellationToken.new()
 		assert(latest_ai_cancel_token == null)
 		latest_ai_cancel_token = my_cancel_token
+		
 		var thinking_begin_s = Time.get_ticks_msec() / 1000.0
 		var move = await player.bot_engine.choose_move(_battle_grid_state)
 		await _ai_thinking_delay(thinking_begin_s) # moving too fast feels weird
+		
 		if not my_cancel_token.is_canceled():
+			assert(_battle_grid_state.is_move_possible(move), "AI tried to perform an invalid move")
 			_perform_ai_move(move)
 			latest_ai_cancel_token = null
 

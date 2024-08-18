@@ -540,6 +540,15 @@ std::pair<Unit*, Army*> BattleManagerFastCpp::_get_unit(Position coord) {
     return _get_unit(_unit_cache.get(coord));
 }
 
+
+godot::Array BattleManagerFastCpp::get_unit_id_on_position(Vector2i pos) const {
+    godot::Array ret{};
+    auto [army_id, unit_id] = _unit_cache.get(pos);
+    ret.push_back(army_id);
+    ret.push_back(unit_id);
+    return ret;
+}
+
 void BattleManagerFastCpp::_bind_methods() {
     ClassDB::bind_method(D_METHOD("insert_unit", "army", "index", "position", "rotation", "is_summoning"), &BattleManagerFastCpp::insert_unit);
     ClassDB::bind_method(D_METHOD("set_unit_symbol", "army", "index", "symbol_slot", "symbol_type"), &BattleManagerFastCpp::set_unit_symbol);
@@ -556,5 +565,6 @@ void BattleManagerFastCpp::_bind_methods() {
     ClassDB::bind_method(D_METHOD("is_unit_being_summoned", "army", "unit"), &BattleManagerFastCpp::is_unit_being_summoned);
     ClassDB::bind_method(D_METHOD("get_current_participant"), &BattleManagerFastCpp::get_current_participant);
     ClassDB::bind_method(D_METHOD("get_legal_moves"), &BattleManagerFastCpp::get_legal_moves_gd);
+    ClassDB::bind_method(D_METHOD("get_unit_id_on_position", "position"), &BattleManagerFastCpp::get_unit_id_on_position);
 
 }
