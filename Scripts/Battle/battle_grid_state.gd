@@ -857,7 +857,7 @@ func _get_all_spawn_moves() -> Array[MoveInfo]:
 
 
 ## only legal moves are supported
-func filter_only_kill_moves(all_moves: Array[MoveInfo]) -> Array[MoveInfo]:
+func filter_only_kill_moves(all_moves : Array[MoveInfo]) -> Array[MoveInfo]:
 	var all_kill_moves : Array[MoveInfo] = []
 	for move in all_moves:
 		if _is_kill_move(move):
@@ -919,12 +919,10 @@ func _is_kill_move(move : MoveInfo) -> bool:
 			return true
 	return false
 
-
 #endregion
 
 
 #region Subclasses
-
 
 class BattleHex:
 	var unit : Unit
@@ -1074,7 +1072,7 @@ class ArmyInBattleState:
 		return units.size() > 0 or units_to_summon.size() > 0
 
 
-	func summon_unit(unit_data : DataUnit, coord:Vector2i, rotation:int) -> Unit:
+	func summon_unit(unit_data : DataUnit, coord : Vector2i, rotation : int) -> Unit:
 		units_to_summon.erase(unit_data)
 		var result = Unit.create(army_reference.controller, unit_data, coord, rotation)
 		units.append(result)
