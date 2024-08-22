@@ -35,7 +35,7 @@ static func create(new_controller : Player, \
 	result.template = new_template
 	result.coord = new_coord
 	result.unit_rotation = new_rotation
-	result.spells = new_template.spells
+	result.spells = new_template.spells.duplicate() # spells reset every battle
 	return result
 
 

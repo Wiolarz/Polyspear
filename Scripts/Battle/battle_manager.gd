@@ -389,8 +389,7 @@ func _grid_input_sacrifice(coord : Vector2i) -> MoveInfo:
 	var new_unit : Unit = _battle_grid_state.get_unit(coord)
 	if new_unit and new_unit.controller == _battle_grid_state.cyclone_target.army_reference.controller:
 
-		_battle_grid_state.state = _battle_grid_state.STATE_FIGHTING
-		_battle_grid_state.mana_values_changed()
+		# Reselect the same target OR new one if that 
 		return MoveInfo.make_sacrifice(coord)
 	return null
 

@@ -507,6 +507,12 @@ func _switch_participant_turn() -> void:
 			if cyclone_target.cyclone_timer == 0:
 				current_army_index = _get_army_index(cyclone_target)
 				state = STATE_SACRIFICE
+	elif state == STATE_SACRIFICE: # New turn starts
+		current_army_index = 0
+		while not armies_in_battle_state[current_army_index].can_fight():
+			current_army_index += 1
+			current_army_index %= armies_in_battle_state.size()
+		state = STATE_FIGHTING
 
 	var next_player := armies_in_battle_state[current_army_index]
 	# chess clock is updated in  turn_ended() and turn_started()
@@ -580,9 +586,9 @@ func _kill_unit(target : Unit) -> void:
 
 			_:
 				continue
+	
+	mana_values_changed() # TEMP occurs every time after death
 
-	
-	
 
 
 ## TODO implement repeated moves detection
@@ -632,9 +638,11 @@ func set_displayed_time_left_ms(time_left_ms : int) -> void:
 
 #region Mana Cyclone Timer
 
+## Occurs any time a unit is killed [br]
+## It may change the cyclone_target
 func mana_values_changed() -> void:
-	## Occurs any time mana values are changed (cheap function)
-	## It may change the cyclone_target
+	## 
+	
 	var current_worst = armies_in_battle_state[0]
 	var current_best = armies_in_battle_state[-1]
 	for army in armies_in_battle_state:
@@ -648,7 +656,7 @@ func mana_values_changed() -> void:
 	var mana_difference = current_best.mana_points - current_worst.mana_points
  
 	var new_cylone_counter = (number_of_mana_wells * 10) * max(1, (5 - mana_difference))
-	#new_cylone_counter = 1 # use to test
+	new_cylone_counter = 1 # use to test
 
 	if current_worst.cyclone_timer == 0:  # Cycle killed a unit now it resets
 		current_worst.cyclone_timer = new_cylone_counter
@@ -1046,7 +1054,7 @@ class ArmyInBattleState:
 		print("killing ", target.coord, " ",target.template.unit_name)
 		if target.template.mana > 0:
 			mana_points -= target.template.mana
-			battle_grid_state.get_ref().mana_values_changed()
+			# mana_value changed gets called after every kill anyway
 
 		units.erase(target)
 		dead_units.append(target.template)
