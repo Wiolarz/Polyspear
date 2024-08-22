@@ -32,6 +32,25 @@ func _init(width_ : int, height_ : int):
 static func create(map: DataBattleMap, new_armies : Array[Army]) -> BattleGridState:
 	var result := BattleGridState.new(map.grid_width, map.grid_height)
 	result.state = STATE_SUMMONNING
+
+	var occupied_team_slots = []
+	for army in new_armies: # assigning NO team players
+		var team = army.controller.team
+		if team == 0:
+			continue
+		if team not in occupied_team_slots:
+			occupied_team_slots.append(team)
+	var new_team_idx = 1
+	for army in new_armies:
+		var team = army.controller.team
+		if team == 0:
+			while new_team_idx  in occupied_team_slots:
+				new_team_idx += 1
+			army.controller.team = new_team_idx
+			new_team_idx += 1
+
+
+
 	for army in new_armies:
 		result.armies_in_battle_state.append(ArmyInBattleState.create_from(army, result))
 
@@ -235,8 +254,8 @@ func _should_die_to_counter_attack(unit : Unit) -> bool:
 	for side in range(6):
 		if not adjacent_units[side]:
 			continue # no unit
-		if adjacent_units[side].controller == unit.controller:
-			continue # no friendly fire
+		if adjacent_units[side].controller.team == unit.controller.team:
+			continue # no friendly fire within team
 		if unit.get_symbol(side) == E.Symbols.SHIELD:
 			continue # we have a shield
 		var opposite_side := GenericHexGrid.opposite_direction(side)
@@ -257,8 +276,8 @@ func _process_offensive_symbols(unit : Unit) -> void:
 			continue # bow is special case
 		if not adjacent[side]:
 			continue # nothing to interact with
-		if adjacent[side].controller == unit.controller:
-			continue # no friendly fire
+		if adjacent[side].controller.team == unit.controller.team:
+			continue # no friendly fire within team
 
 		var enemy = adjacent[side]
 		if unit_weapon == E.Symbols.PUSH:
@@ -275,8 +294,9 @@ func _process_bow(unit : Unit, side : int) -> void:
 
 	if target == null:
 		return # no target
-	if target.controller == unit.controller:
-		return # no friendly fire
+	if target.controller.team == unit.controller.team:
+		return # no friendly fire within team
+
 	var opposite_side := GenericHexGrid.opposite_direction(side)
 	if target.get_symbol(opposite_side) == E.Symbols.SHIELD:
 		return  # blocked by shield
@@ -315,46 +335,6 @@ func _push_enemy(enemy : Unit, direction : int) -> void:
 
 func get_current_player() -> Player:
 	return armies_in_battle_state[current_army_index].army_reference.controller
-
-
-func _switch_participant_turn() -> void:
-	var prev_player := armies_in_battle_state[current_army_index]
-	var prev_idx = current_army_index
-	current_army_index += 1
-	current_army_index %= armies_in_battle_state.size()
-	print(NET.get_role_name(), " _switch_participant_turn ", current_army_index)
-
-	if state == STATE_SUMMONNING:
-		var skip_count = 0
-		# skip players with nothing to summon
-		while armies_in_battle_state[current_army_index].units_to_summon.size() == 0:
-			current_army_index += 1
-			current_army_index %= armies_in_battle_state.size()
-			skip_count += 1
-			# no player has anything to summon, go to next phase
-			if skip_count == armies_in_battle_state.size():
-				_end_summoning_state()
-				break
-
-	elif state == STATE_FIGHTING:
-		
-		while not armies_in_battle_state[current_army_index].can_fight():
-			current_army_index += 1
-			current_army_index %= armies_in_battle_state.size()
-		if prev_idx > current_army_index:
-			cyclone_target.cyclone_timer -= 1
-
-			# MEGA TEMP:
-			if cyclone_target.cyclone_timer == 0:
-				cyclone_target.kill_army()
-				if battle_is_ongoing():
-					_check_battle_end()
-
-
-	var next_player := armies_in_battle_state[current_army_index]
-	# chess clock is updated in  turn_ended() and turn_started()
-	prev_player.turn_ended()
-	next_player.turn_started()
 
 
 func _get_battle_hex(coord : Vector2i) -> BattleHex:
@@ -449,6 +429,8 @@ func _can_kill_or_push(me : Unit, other_unit : Unit, attack_direction : int):
 	#   - defender has shield
 
 	if other_unit.controller == me.controller:
+		return false
+	elif other_unit.controller.team == me.controller.team:
 		return false
 
 	match me.get_front_symbol():
@@ -650,7 +632,9 @@ func set_displayed_time_left_ms(time_left_ms : int) -> void:
 
 #region Mana Cyclone Timer
 
-func mana_values_changed():
+func mana_values_changed() -> void:
+	## Occurs any time mana values are changed (cheap function)
+	## It may change the cyclone_target
 	var current_worst = armies_in_battle_state[0]
 	var current_best = armies_in_battle_state[-1]
 	for army in armies_in_battle_state:
@@ -662,7 +646,9 @@ func mana_values_changed():
 	
 	cyclone_target = current_worst
 	var mana_difference = current_best.mana_points - current_worst.mana_points
-	var new_cylone_counter = (number_of_mana_wells * 0.5) * max(1, (5 - mana_difference))
+ 
+	var new_cylone_counter = (number_of_mana_wells * 10) * max(1, (5 - mana_difference))
+	#new_cylone_counter = 1 # use to test
 
 	if current_worst.cyclone_timer == 0:  # Cycle killed a unit now it resets
 		current_worst.cyclone_timer = new_cylone_counter
@@ -670,14 +656,13 @@ func mana_values_changed():
 		current_worst.cyclone_timer = new_cylone_counter
 
 	
-
-
 func cyclone_get_current_target() -> Player:
 	return cyclone_target.army_reference.controller
 
 
 func cyclone_get_current_target_turns_left() -> int:
 	return cyclone_target.cyclone_timer
+
 
 #endregion Mana Cyclone Timer
 
@@ -772,12 +757,14 @@ func _check_battle_end() -> void:
 	if state == STATE_BATTLE_FINISHED:
 		return
 
-	var armies_alive = 0
-	for a in armies_in_battle_state:
-		if a.can_fight():
-			armies_alive += 1
+	var teams_alive = []
+	for army in armies_in_battle_state:
+		if army.can_fight():
+			var army_team = army.army_reference.controller.team
+			if army_team not in teams_alive:
+				teams_alive.append(army_team)
 
-	if armies_alive < 2:
+	if teams_alive.size() < 2:
 		state = STATE_BATTLE_FINISHED
 		return
 
@@ -870,7 +857,7 @@ func _get_all_spawn_moves() -> Array[MoveInfo]:
 
 
 ## only legal moves are supported
-func filter_only_kill_moves(all_moves: Array[MoveInfo]) -> Array[MoveInfo]:
+func filter_only_kill_moves(all_moves : Array[MoveInfo]) -> Array[MoveInfo]:
 	var all_kill_moves : Array[MoveInfo] = []
 	for move in all_moves:
 		if _is_kill_move(move):
@@ -932,12 +919,10 @@ func _is_kill_move(move : MoveInfo) -> bool:
 			return true
 	return false
 
-
 #endregion
 
 
 #region Subclasses
-
 
 class BattleHex:
 	var unit : Unit
@@ -1087,7 +1072,7 @@ class ArmyInBattleState:
 		return units.size() > 0 or units_to_summon.size() > 0
 
 
-	func summon_unit(unit_data : DataUnit, coord:Vector2i, rotation:int) -> Unit:
+	func summon_unit(unit_data : DataUnit, coord : Vector2i, rotation : int) -> Unit:
 		units_to_summon.erase(unit_data)
 		var result = Unit.create(army_reference.controller, unit_data, coord, rotation)
 		units.append(result)

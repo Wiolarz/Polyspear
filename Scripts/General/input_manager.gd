@@ -18,8 +18,6 @@ func init_game_setup():
 	game_setup_info = GameSetupInfo.create_empty()
 
 
-#endregion
-
 #region Game setup
 
 func get_world_maps_list() -> Array[String]:
@@ -31,13 +29,13 @@ func get_battle_maps_list() -> Array[String]:
 
 
 func _prepare_to_start_game() -> void:
-	for p in players:
-		p.queue_free()
+	for player in players:
+		player.queue_free()
 	players = []
-	for s in game_setup_info.slots:
-		var p := Player.create(s)
-		players.append(p)
-		add_child(p)
+	for slot in game_setup_info.slots:
+		var player := Player.create(slot)
+		players.append(player)
+		add_child(player)
 
 	UI.ensure_camera_is_spawned()
 
@@ -122,25 +120,25 @@ func _start_game_battle(battle_state : SerializableBattleState):
 	var map_data = game_setup_info.battle_map
 	var armies : Array[Army]  = []
 
-	for p in players:
-		armies.append(create_army_for(p))
+	for player in players:	
+		armies.append(create_army_for(player))
 
 	UI.go_to_main_menu()
 	var x_offset = 0.0
 	BM.start_battle(armies, map_data, battle_state, x_offset)
 
-
+## Creates army based on player slot data
 func create_army_for(player : Player) -> Army:
 	var army = Army.new()
 	army.controller = player
 	army.units_data = player.slot.get_units_list()
+	player.team = player.slot.team
 	return army
 
-#endregion
+#endregion Game setup
 
 
 #region Gameplay UI
-
 
 func go_to_main_menu():
 	draw_mode = false
@@ -153,7 +151,7 @@ func toggle_in_game_menu():
 	UI.toggle_in_game_menu()
 	set_game_paused(UI.requests_pause())
 
-#endregion
+#endregion Gameplay UI
 
 
 #region Technical
@@ -171,7 +169,7 @@ func set_game_paused(is_paused : bool):
 func quit_game():
 	get_tree().quit()
 
-#endregion
+#endregion Technical
 
 
 #region Information
@@ -212,5 +210,4 @@ func get_serializable_battle_state() -> SerializableBattleState:
 			state.combat_coord = WM.combat_tile
 	return state
 
-
-#endregion
+#endregion Information

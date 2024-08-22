@@ -25,6 +25,8 @@ var unit_paths : Array[String]
 	$VBoxContainer/OptionButtonUnit5,
 ]
 
+@onready var team_list : OptionButton = $VBoxContainer/HBoxContainer/OptionButtonTeam
+
 func try_to_take():
 	if not setup_ui:
 		return
@@ -104,6 +106,9 @@ func unit_in_army_changed(selected_index, unit_index):
 
 func apply_army_preset(army : PresetArmy):
 	var slot_index = setup_ui.slot_to_index(self)
+
+	IM.game_setup_info.set_team(slot_index, army.team)
+	
 	var idx = 0
 	for u in army.units:
 		if not u:
@@ -119,7 +124,7 @@ func apply_army_preset(army : PresetArmy):
 		NET.server.broadcast_full_game_setup(IM.game_setup_info)
 
 
-func set_army(units_list:Array[DataUnit]):
+func set_army(units_list : Array[DataUnit]):
 	while buttons_units.size() > units_list.size():
 		var b = buttons_units.pop_back()
 		$VBoxContainer.remove_child(b)
@@ -135,6 +140,7 @@ func set_army(units_list:Array[DataUnit]):
 		set_unit(buttons_units[index], units_list[index])
 
 
+## Change text only after sele
 func set_unit(unit_button : OptionButton, unit : DataUnit):
 	if not unit:
 		unit_button.select(0)
@@ -142,6 +148,15 @@ func set_unit(unit_button : OptionButton, unit : DataUnit):
 	for idx in unit_button.item_count:
 		if unit.resource_path.ends_with(unit_button.get_item_text(idx)):
 			unit_button.select(idx)
+
+
+
+func fill_team_list(max_player_number : int) -> void:
+	#team_list.clear()
+	team_list.add_item("No Team")
+	for idx in range(1, max_player_number + 1):
+		team_list.add_item("Team " + str(idx))
+
 
 
 func _on_button_take_leave_pressed():
@@ -156,3 +171,13 @@ func _on_button_take_leave_pressed():
 
 func _on_button_color_pressed():
 	cycle_color()
+
+
+func _on_option_button_team_item_selected(index : int):
+	var slot_index = setup_ui.slot_to_index(self) # determine on which slot player is
+
+	IM.game_setup_info.set_team(slot_index, index)
+	if NET.server:
+		NET.server.broadcast_full_game_setup(IM.game_setup_info)
+	if NET.client:
+		NET.client.queue_lobby_set_team(slot_index, index)

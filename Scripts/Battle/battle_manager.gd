@@ -3,7 +3,7 @@ extends GridNode2D
 
 var _battle_is_ongoing : bool = false
 
-var _battle_grid_state: BattleGridState # GAMEPLAY combat state
+var _battle_grid_state : BattleGridState # GAMEPLAY combat state
 
 var _tile_grid : GenericHexGrid # Grid<TileForm> - VISUALs in a grid
 var _unit_to_unit_form : Dictionary # gameplay unit to VISUAL mapping
@@ -266,8 +266,6 @@ func grid_input(coord : Vector2i) -> void:
 
 	var move_info : MoveInfo
 
-	
-
 	match _battle_grid_state.state:
 		BattleGridState.STATE_SUMMONNING:
 			move_info = _grid_input_summon(coord)
@@ -326,6 +324,21 @@ func ai_move() -> void:
 	_perform_ai_move(move)
 
 #endregion AI Support
+
+
+#region Mana Cyclone Timer
+
+func get_cyclone_target() -> String:
+	var player = _battle_grid_state.cyclone_get_current_target()
+	if player:
+		return player.get_player_color().name # TEMP translate id to name here
+	return "neutral"
+
+
+func get_cyclone_timer() -> int:
+	return _battle_grid_state.cyclone_get_current_target_turns_left()
+
+#endregion Mana Cyclone Timer
 
 
 #region Mana Cyclone Timer
