@@ -40,14 +40,10 @@ func _ready():
 
 func _process(_delta):
 	_process_anim_queue()
-	_check_clock_timer_run_out()
+	_check_clock_timer_tick()
 
 
 #region Battle Setup
-
-func world_map_started():
-	_battle_is_ongoing = false
-
 
 ## x_offset is used to place battle to the right of world map
 func start_battle(new_armies : Array[Army], battle_map : DataBattleMap, \
@@ -165,27 +161,6 @@ func _is_clear() -> bool:
 			and _tile_grid == null
 
 #endregion helpers
-
-
-#region Chess clock
-
-func _check_clock_timer_run_out() -> void:
-	if not _battle_grid_state:
-		return
-	if not _battle_grid_state.battle_is_ongoing():
-		return
-	if get_current_time_left_ms() > 0:
-		return
-	_battle_grid_state.surrender_on_timeout()
-	_end_move()
-
-
-func get_current_time_left_ms() -> int:
-	if _battle_grid_state && _battle_grid_state.battle_is_ongoing():
-		return _battle_grid_state.get_current_time_left()
-	return 0
-
-#endregion Chess clock
 
 
 #region Ongoing battle
@@ -486,8 +461,6 @@ func _perform_move_info(move_info : MoveInfo) -> void:
 		return
 	print(NET.get_role_name(), " performing move ", move_info)
 
-
-
 	_replay_data.record_move(move_info, get_current_time_left_ms())
 	_replay_data.save()
 	if NET.server:
@@ -689,8 +662,30 @@ func editor_get_hexes_copy_as_array() -> Array: #Array[Array[TileForm]]
 #endregion map editor
 
 
+#region Chess clock
+
+## called every frame by _process
+func _check_clock_timer_tick() -> void:
+	if not _battle_grid_state or not _battle_grid_state.battle_is_ongoing():
+		return # no battle
+	if _battle_grid_state.get_current_time_left() > 0:
+		return # player still has time
+	
+	_battle_grid_state.surrender_on_timeout()
+	_end_move()
+
+## safe clock getter
+func get_current_time_left_ms() -> int:
+	if _battle_grid_state && _battle_grid_state.battle_is_ongoing():
+		return _battle_grid_state.get_current_time_left()
+	return 0
+
+#endregion Chess clock
+
+
 #region anim queue
 
+## called every frame by _process
 func _process_anim_queue() -> void:
 	if _anim_queue.size() == 0:
 		return
