@@ -11,7 +11,7 @@ const MOVE_IS_INVALID = -1
 #TODO implement repeated moves detection
 const STALEMATE_TURN_COUNT = 3 # number of repeated moves that fast forward Mana Cyclon Timer
 
-var state : String = ""
+var state : String = STATE_SUMMONNING
 var turn_counter : int = 0
 var current_army_index : int = 0
 var armies_in_battle_state : Array[ArmyInBattleState] = []
@@ -29,12 +29,12 @@ func _init(width_ : int, height_ : int):
 	super(width_, height_, BattleHex.sentinel)
 
 
-static func create(map: DataBattleMap, new_armies : Array[Army]) -> BattleGridState:
+static func create(map : DataBattleMap, new_armies : Array[Army]) -> BattleGridState:
 	var result := BattleGridState.new(map.grid_width, map.grid_height)
-	result.state = STATE_SUMMONNING
 
+	# assigning players without a team
 	var occupied_team_slots = []
-	for army in new_armies: # assigning NO team players
+	for army in new_armies: 
 		var team = army.controller.team
 		if team == 0:
 			continue
@@ -48,16 +48,12 @@ static func create(map: DataBattleMap, new_armies : Array[Army]) -> BattleGridSt
 				new_team_idx += 1
 			army.controller.team = new_team_idx
 			new_team_idx += 1
-
-
-
+	
+	# generate ArmyInBattleState Objects
 	for army in new_armies:
 		result.armies_in_battle_state.append(ArmyInBattleState.create_from(army, result))
 
-
-	result.current_army_index = 0
-	result.turn_counter = 0
-
+	# generate battle hex tiles
 	for x in range(map.grid_width):
 		for y in range(map.grid_height):
 			var map_tile : DataTile = map.grid_data[x][y]
@@ -67,15 +63,14 @@ static func create(map: DataBattleMap, new_armies : Array[Army]) -> BattleGridSt
 			if new_hex and new_hex.is_mana_tile(): # MANA
 				result.number_of_mana_wells += 1
 
-	result.mana_values_changed()
+	result.mana_values_changed() # assign first cyclone target
 
 	return result
 
-#endregion
+#endregion init
 
 
 #region move_info support
-
 
 func move_info_summon_unit(move_info : MoveInfo) -> Unit:
 	assert(move_info.move_type == MoveInfo.TYPE_SUMMON)
@@ -492,7 +487,8 @@ func _switch_participant_turn() -> void:
 			skip_count += 1
 			# no player has anything to summon, go to next phase
 			if skip_count == armies_in_battle_state.size():
-				_end_summoning_state()
+				state = STATE_FIGHTING
+				current_army_index = 0  # first army is always present
 				break
 
 	elif state == STATE_FIGHTING:
@@ -508,7 +504,7 @@ func _switch_participant_turn() -> void:
 				current_army_index = _get_army_index(cyclone_target)
 				state = STATE_SACRIFICE
 	elif state == STATE_SACRIFICE: # New turn starts
-		current_army_index = 0
+		current_army_index = 0 # first army may no longer be present
 		while not armies_in_battle_state[current_army_index].can_fight():
 			current_army_index += 1
 			current_army_index %= armies_in_battle_state.size()
@@ -519,10 +515,6 @@ func _switch_participant_turn() -> void:
 	prev_player.turn_ended()
 	next_player.turn_started()
 
-
-func _end_summoning_state() -> void:
-	state = STATE_FIGHTING
-	current_army_index = 0
 
 
 func _change_unit_coord(unit : Unit, target_coord : Vector2i) -> void:
@@ -656,7 +648,7 @@ func mana_values_changed() -> void:
 	var mana_difference = current_best.mana_points - current_worst.mana_points
  
 	var new_cylone_counter = (number_of_mana_wells * 10) * max(1, (5 - mana_difference))
-	new_cylone_counter = 1 # use to test
+	#new_cylone_counter = 1 # use to test
 
 	if current_worst.cyclone_timer == 0:  # Cycle killed a unit now it resets
 		current_worst.cyclone_timer = new_cylone_counter
@@ -715,27 +707,27 @@ func _perform_magic(unit : Unit, target_tile_coord : Vector2i, spell : BattleSpe
 			var enemy_targets : Array[Unit] = []
 			var ally_targets : Array[Unit] = []
 			var target : Unit = get_unit(target_tile_coord)
-			if target and target.controller == unit.controller:
+			if target and target.controller.team == unit.controller.team:
 				ally_targets.append(target)
 			elif target:
 				enemy_targets.append(target)
 			for direction in DIRECTION_TO_OFFSET:
 				target = get_unit(target_tile_coord + direction)
-				if target and target.controller == unit.controller:
+				if target and target.controller.team == unit.controller.team:
 					ally_targets.append(target)
 				elif target:
 					enemy_targets.append(target)
 			
-			for enemy_unit in enemy_targets:
+			for enemy_unit in enemy_targets: # kill enemy units first
 				_kill_unit(enemy_unit)
 			
 			if not battle_is_ongoing():
 				# we only start killing ally units after we are sure battle didn't end yet
 				return
 
-			for ally_unit in ally_targets: 
-				
+			for ally_unit in ally_targets: # kill rest
 				_kill_unit(ally_unit)
+			
 		"Teleport":
 			_perform_teleport(unit, target_tile_coord)
 		_:
