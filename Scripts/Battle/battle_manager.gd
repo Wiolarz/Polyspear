@@ -64,7 +64,7 @@ func start_battle(new_armies : Array[Army], battle_map : DataBattleMap, \
 	_battle_is_ongoing = true
 
 	_current_summary = null
-	_selected_unit = null
+	deselect_unit()
 
 	# GAMEPLAY GRID and Armies state:
 	_battle_grid_state = BattleGridState.create(battle_map, new_armies)
@@ -190,7 +190,6 @@ func get_current_time_left_ms() -> int:
 
 #region Ongoing battle
 
-
 func _on_turn_started(player : Player) -> void:
 	if not _battle_is_ongoing:
 		return
@@ -246,7 +245,7 @@ func redo() -> void:
 	pass
 
 
-## called when tile is clicked
+## IMPORTANT FUNCTION -> called when tile is clicked
 func grid_input(coord : Vector2i) -> void:
 	if not _battle_is_ongoing:
 		print("battle finished, input ignored")
@@ -267,17 +266,21 @@ func grid_input(coord : Vector2i) -> void:
 
 	var move_info : MoveInfo
 
+	
+
 	match _battle_grid_state.state:
 		BattleGridState.STATE_SUMMONNING:
 			move_info = _grid_input_summon(coord)
 		BattleGridState.STATE_FIGHTING:
-			move_info = _grid_input_fighting(coord)
+			if _battle_ui.selected_spell == null:
+				move_info = _grid_input_fighting(coord)
+			else:
+				move_info = _grid_input_magic(coord)
 		BattleGridState.STATE_SACRIFICE:
 			move_info = _grid_input_sacrifice(coord)
-
 		
+			
 
-	
 	if move_info:
 		if NET.client:
 			NET.client.queue_request_move(move_info)
@@ -323,6 +326,21 @@ func ai_move() -> void:
 	_perform_ai_move(move)
 
 #endregion AI Support
+
+
+#region Mana Cyclone Timer
+
+func get_cyclone_target() -> String:
+	var player = _battle_grid_state.cyclone_get_current_target()
+	if player:
+		return player.get_player_color().name # TEMP translate id to name here
+	return "neutral"
+
+
+func get_cyclone_timer() -> int:
+	return _battle_grid_state.cyclone_get_current_target_turns_left()
+
+#endregion Mana Cyclone Timer
 
 
 #region Summon Phase
@@ -392,8 +410,24 @@ func _grid_input_sacrifice(coord : Vector2i) -> MoveInfo:
 		_battle_grid_state.mana_values_changed()
 		return MoveInfo.make_sacrifice(coord)
 	return null
-		
-		
+
+
+## Selected Unit -> instead of moving casts a spell
+func _grid_input_magic(coord : Vector2i) -> MoveInfo:
+	assert(_battle_grid_state.state == _battle_grid_state.STATE_FIGHTING, \
+			"_grid_input_magic called in an incorrect state")
+
+	if _battle_ui.selected_spell == null:
+		return null # no spell selected to cast on ui
+
+	if not _battle_grid_state.is_spell_target_valid(_selected_unit, coord, _battle_ui.selected_spell):
+		return null
+
+	var move_info = MoveInfo.make_magic(_selected_unit.coord, coord, _battle_ui.selected_spell)
+	deselect_unit()
+	
+	return move_info
+	
 
 ## Either Unit selection or a command to move
 func _grid_input_fighting(coord : Vector2i) -> MoveInfo:
@@ -416,15 +450,14 @@ func _grid_input_fighting(coord : Vector2i) -> MoveInfo:
 	if not _battle_grid_state.is_move_valid(_selected_unit, coord):
 		return null
 
-	_unit_to_unit_form[_selected_unit].set_selected(false)
 	var move_info = MoveInfo.make_move(_selected_unit.coord, coord)
-	_selected_unit = null
+	deselect_unit()
 
 	return move_info
 	
 
 
-## Select friendly Unit on a given coord
+## Select friendly Unit on a given coord [br]
 ## returns true if unit was selected
 func _try_select_unit(coord : Vector2i) -> bool:
 	var new_unit : Unit = _battle_grid_state.get_unit(coord)
@@ -435,13 +468,36 @@ func _try_select_unit(coord : Vector2i) -> bool:
 
 	# deselect visually old unit if new one selected
 	if _selected_unit:
-		_unit_to_unit_form[_selected_unit].set_selected(false)
+		deselect_unit()
 
 	_selected_unit = new_unit
 	_unit_to_unit_form[_selected_unit].set_selected(true)
+
+	# attempt to display spells available to selected unit
+	_show_spells(_selected_unit)
+
 	return true
 
 
+## Main way to deselect unit -> use every time, its safe
+func deselect_unit() -> void:
+	if _selected_unit:
+		_unit_to_unit_form[_selected_unit].set_selected(false)
+	_selected_unit = null
+	_battle_ui.selected_spell = null
+	_battle_ui.reset_spells()
+
+
+
+func _show_spells(unit : Unit) -> void:
+	if unit.spells.size() == 0:
+		return
+	
+	#TODO? check here if selected unit is preview mode only (controlled by another player)
+	_battle_ui.load_spells(_battle_grid_state.current_army_index , unit.spells)
+
+
+## Executes given move_info [br]
 ## used by input moves, replays, network and AI
 func _perform_move_info(move_info : MoveInfo) -> void:
 	if not _battle_is_ongoing:
@@ -456,16 +512,12 @@ func _perform_move_info(move_info : MoveInfo) -> void:
 		NET.server.broadcast_move(move_info)
 
 	match move_info.move_type:
-		MoveInfo.TYPE_MOVE:
-			_battle_grid_state.move_info_move_unit(move_info)
+		MoveInfo.TYPE_MOVE, MoveInfo.TYPE_SACRIFICE, MoveInfo.TYPE_MAGIC:
+			_battle_grid_state.move_info_execute(move_info)
 
 		MoveInfo.TYPE_SUMMON:
-			var unit := _battle_grid_state.move_info_summon_unit(move_info)
+			var unit : Unit = _battle_grid_state.move_info_summon_unit(move_info)
 			_on_unit_summoned(unit)
-		
-		MoveInfo.TYPE_SACRIFICE:
-			_battle_grid_state.move_info_sacrifice(move_info)
-			
 		_ :
 			assert(false, "Move move_type not supported in perform, " + str(move_info.move_type))
 
@@ -500,6 +552,7 @@ func _on_unit_moved(unit: Unit) -> void:
 #region Battle End
 
 func close_when_quiting_game() -> void:
+	deselect_unit()
 	_clear_anim_queue()
 	_reset_grid_and_unit_forms()
 
@@ -511,7 +564,8 @@ func _on_battle_ended() -> void:
 		assert(false, "battle ended when it was not ongoing...")
 		return
 	_battle_is_ongoing = false
-
+	deselect_unit()
+	
 	await get_tree().create_timer(1).timeout # TEMP, don't exit immediately
 	while _replay_is_playing:
 		await get_tree().create_timer(0.1).timeout
@@ -530,6 +584,7 @@ func _close_battle() -> void:
 	_clear_anim_queue()
 	_turn_off_battle_ui()
 	_reset_grid_and_unit_forms()
+	deselect_unit()
 
 	if not WM.world_game_is_active():
 		print("end of test battle")
