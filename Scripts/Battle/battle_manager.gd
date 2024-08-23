@@ -262,7 +262,40 @@ func grid_input(coord : Vector2i) -> void:
 		_perform_move_info(move_info)
 
 
+func _check_for_stalemate() -> bool:
+	assert(BattleGridState.STALEMATE_TURN_REPEATS == 2,
+	" _check_for_stalemate has wrong STALEMATE_TURN_REPEATS value
+	later parts of this function version wasn't made in mind with more repeats allowed")
+	var limit = BattleGridState.STALEMATE_TURN_REPEATS
+
+	# if number of the armies were to change during last few moves, then it wouldn't be a stalemate
+	var alive_armies = []
+	for army in _battle_grid_state.armies_in_battle_state:
+		if army.can_fight():
+			alive_armies.append(army) 
+
+	# equation determines the shortest scenario to achieve a stalemate
+	# later we jump back X move behind, so it makes it safe to do so
+	if _replay_data.moves.size() < limit * alive_armies.size() * 2:
+		return false
+	
+	var go_back_value = limit * alive_armies.size() + 1
+	for player_idx in range(alive_armies.size()):
+		var old_move = _replay_data.moves[-go_back_value - player_idx]
+		var new_move = _replay_data.moves[-player_idx - 1]
+
+		if new_move.move_type != MoveInfo.TYPE_MOVE or old_move.move_type != new_move.move_type:
+			return false
+		if old_move.move_source != new_move.move_source or \
+			old_move.target_tile_coord != new_move.target_tile_coord:
+				return false
+	return true
+
 func  _end_move() -> void:
+	if _battle_grid_state.battle_is_ongoing():
+		if _check_for_stalemate():
+			_battle_grid_state.end_stalemate() # could end the battle
+
 	if _battle_grid_state.battle_is_ongoing():
 		_on_turn_started(_battle_grid_state.get_current_player())
 	else :

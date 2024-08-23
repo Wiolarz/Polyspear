@@ -9,7 +9,7 @@ const STATE_BATTLE_FINISHED = "battle_finished"
 const MOVE_IS_INVALID = -1
 
 #TODO implement repeated moves detection
-const STALEMATE_TURN_COUNT = 3  # number of repeated moves that fast forward Mana Cyclon Timer
+const STALEMATE_TURN_REPEATS = 2  # number of repeated moves that fast forward Mana Cyclon Timer
 
 var state : String = STATE_SUMMONNING
 var turn_counter : int = 0
@@ -596,6 +596,8 @@ func _kill_unit(target : Unit) -> void:
 
 ## TODO implement repeated moves detection
 func end_stalemate() -> void:
+	print("END OFF STALEMATE")
+	cyclone_target.cyclone_timer = 1
 	pass
 
 #endregion Gameplay Events
