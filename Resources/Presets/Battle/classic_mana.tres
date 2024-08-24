@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="PresetBattle" load_steps=10 format=3 uid="uid://dahoaf4wo5bur"]
+
+[ext_resource type="Script" path="res://Resources/Presets/preset_army.gd" id="1_0btc3"]
+[ext_resource type="Resource" uid="uid://i6rd1k4pejbh" path="res://Resources/Battle/Units/Classic/elf1.tres" id="2_82fps"]
+[ext_resource type="Resource" uid="uid://b74a77jns7xcd" path="res://Resources/Battle/Units/Elves/elf_unit_hero_druid.tres" id="3_lxil6"]
+[ext_resource type="Resource" uid="uid://wg6n0n7ufoxh" path="res://Resources/Battle/Units/Classic/orc2.tres" id="4_eko1f"]
+[ext_resource type="Resource" uid="uid://lijo3rfcpr7n" path="res://Resources/Battle/Units/Orcs/orc_1_brute.tres" id="5_n68nm"]
+[ext_resource type="Resource" uid="uid://bjdx7ccnprig2" path="res://Resources/Battle/Battle_Maps/a_mana_basic5x5.tres" id="6_uepbp"]
+[ext_resource type="Script" path="res://Resources/Presets/preset_battle.gd" id="7_dc5bo"]
+
+[sub_resource type="Resource" id="Resource_8gfw6"]
+script = ExtResource("1_0btc3")
+units = Array[Resource("res://Resources/Battle/data_unit.gd")]([ExtResource("2_82fps"), ExtResource("3_lxil6")])
+team = 0
+
+[sub_resource type="Resource" id="Resource_renb5"]
+script = ExtResource("1_0btc3")
+units = Array[Resource("res://Resources/Battle/data_unit.gd")]([ExtResource("4_eko1f"), ExtResource("5_n68nm")])
+team = 0
+
+[resource]
+script = ExtResource("7_dc5bo")
+armies = Array[ExtResource("1_0btc3")]([SubResource("Resource_8gfw6"), SubResource("Resource_renb5")])
+battle_map = ExtResource("6_uepbp")
