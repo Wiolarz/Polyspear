@@ -385,7 +385,7 @@ func get_cyclone_timer() -> int:
 
 #region Fighting Phase
 
-## Turn timer unit sacrifice (Stalemate mechanic)
+## Turn timer unit sacrifice (Stalemate prevention mechanic)
 func _grid_input_sacrifice(coord : Vector2i) -> MoveInfo:
 	## TODO:
 	## input should be locked to the person that is bound to make a sacrifice,

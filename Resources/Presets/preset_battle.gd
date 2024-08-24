@@ -1,5 +1,4 @@
 class_name PresetBattle
-
 extends Resource
 
 """

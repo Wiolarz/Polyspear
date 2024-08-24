@@ -1,11 +1,18 @@
 class_name PlayerOptions
 extends Resource
 
+## once the game is launched it instantly start the game with default lobby values [br]
+## depending on "use_default_battle" value starts either World/Battle
 @export var autostart_map : bool
+
+## Default starting screen when launching a game (autostart_map uses this variable)
 @export var use_default_battle : bool
+## if true all player slots are placed in control of AI controller [br]
+## if false all slots are by default controlled by host (human player)
 @export var use_default_AI_players : bool
 
 @export var login : String
+## if true adds a random number suffix at the end of a login string
 @export var randomise_join_login : bool = false
 
 @export var last_hosting_address_used : String = "0.0.0.0"

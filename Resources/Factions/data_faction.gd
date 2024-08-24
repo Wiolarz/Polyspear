@@ -9,6 +9,8 @@ Complete Faction data:
 """
 @export var faction_name : String
 
+## list of units avalaible in the battle lobby [br]
+## should be a copy of the units offered by the buildings list
 @export var units_data : Array[DataUnit]
 
 @export var heroes : Array[DataHero]

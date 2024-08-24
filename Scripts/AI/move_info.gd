@@ -7,12 +7,14 @@ const TYPE_SACRIFICE = "sacrifice"
 const TYPE_MAGIC = "magic"
 
 @export var move_type : String = ""
+## if TYPE_SUMMON, determines summoned unit
 @export var summon_unit : DataUnit
 @export var move_source : Vector2i
 @export var target_tile_coord : Vector2i
+## if TYPE_MAGIC, determines used spell
 @export var spell : BattleSpell
 
-# REPLAY ONLY DATA:
+## REPLAY ONLY DATA:
 @export var time_left_ms : int
 
 # for undo, do not serialize

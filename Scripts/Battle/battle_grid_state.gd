@@ -8,7 +8,6 @@ const STATE_BATTLE_FINISHED = "battle_finished"
 
 const MOVE_IS_INVALID = -1
 
-#TODO implement repeated moves detection
 const STALEMATE_TURN_REPEATS = 2  # number of repeated moves that fast forward Mana Cyclon Timer
 
 var state : String = STATE_SUMMONNING
@@ -593,12 +592,10 @@ func _kill_unit(target : Unit) -> void:
 	
 	mana_values_changed() # TEMP occurs every time after death
 
-
-## TODO implement repeated moves detection
+## Rare event when all players repeated their moves -> it pushes cyclone timer to activate next turn
 func end_stalemate() -> void:
 	print("END OFF STALEMATE")
 	cyclone_target.cyclone_timer = 1
-	pass
 
 #endregion Gameplay Events
 
@@ -646,13 +643,12 @@ func set_displayed_time_left_ms(time_left_ms : int) -> void:
 ## Occurs any time a unit is killed [br]
 ## It may change the cyclone_target
 func mana_values_changed() -> void:
-	## 
-	
 	var current_worst = armies_in_battle_state[0]
 	var current_best = armies_in_battle_state[-1]
+
+	# player later in an array win on ties between mana values - it's intentional
 	for army in armies_in_battle_state:
 		if current_worst.mana_points > army.mana_points: 
-			# TODO write documentation explaining that better defensive positions have those later in the array
 			current_worst = army
 		if current_best.mana_points < army.mana_points:
 			current_best = army

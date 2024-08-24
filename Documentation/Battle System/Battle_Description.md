@@ -34,6 +34,23 @@ Main way to kill enemy units is with the 'Symbols' at the edges of your units. T
  - TRIANGLE - 'Shield' nullifies sources of damage (doesn't work against push)
 
 
+
+
+
+## Advanced information
+
+Some gameplay systems like mana points for "Cyclone timer" have sometimes to determine who wins a tie.
+To determine that all those systems use exact same reason:
+Player who is attacked (defender) wins in such scenarios.
+But in cases like "Magic Forest Battle" where no one can be declared an attacker. We copy the order based on established in the lobby movee order.
+Example: First player is orc - Second Elf, Third - Dwarf. Both during their "1st" turn enter a magic forest.
+Orc is first so in any ties he looses, elf as a second wins any ties with orc by looses ties with dwarf.
+
+
+that better defensive positions 
+			# have those players that are later in the array
+
+
 #### Notes
 
 [More battle notes](B_structure.md)
