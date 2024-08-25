@@ -5,4 +5,4 @@
 [resource]
 script = ExtResource("1_86jdy")
 type = 2
-texture_path = "res://Art/items/blue_sword.png"
+texture_path = "res://Art/items/blue_axe.png"

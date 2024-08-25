@@ -73,7 +73,9 @@ func get_symbol(side_world : int) -> E.Symbols:
 	return get_symbol_when_rotated(side_world, unit_rotation)
 
 
-## gets symbol facing specified directin on the battle map, if unit was rotated in given dir
+## gets symbol facing specified directin on the battle map, if unit was rotated in given dir [br]
+## side_world - direction unit is turned toward [br]
+## hypotetical_rotation - unit side it's symbol
 func get_symbol_when_rotated(side_world : int, hypotetical_rotation : int) -> E.Symbols:
 	if is_on_swamp:
 		return E.Symbols.EMPTY
@@ -112,11 +114,11 @@ static func defense_power(symbol : E.Symbols) -> int:
 static func attack_power(symbol : E.Symbols) -> int:
 	match symbol:
 		E.Symbols.STRONG_AXE, E.Symbols.STRONG_SPEAR:
-			return 3
-		E.Symbols.AXE, E.Symbols.SPEAR, E.Symbols.BOW, E.Symbols.ATTACK_SHIELD, E.Symbols.FIST, E.Symbols.DAGGER:
-			return 2
+			return 3  # strong attack pierces normal shields
+		E.Symbols.AXE, E.Symbols.SPEAR, E.Symbols.BOW, E.Symbols.ATTACK_SHIELD, E.Symbols.FIST, E.Symbols.DAGGER, E.Symbols.SWORD:
+			return 2  # normal attack
 		E.Symbols.STAFF, E.Symbols.MACE:
-			return 1
+			return 1  # weak attack - kills only when enemy defense is 0 (Empty symbol present)
 		_:
 			return 0
 
