@@ -595,35 +595,56 @@ func _reset_grid_and_unit_forms() -> void:
 	Helpers.remove_all_children(_unit_forms_node)
 	_battle_grid_state = null
 
-
+## Major function which fully generates information panel at the end of the battle
 func _create_summary() -> DataBattleSummary:
 	var summary := DataBattleSummary.new()
-	summary.color = CFG.NEUTRAL_COLOR.color
-	summary.title = "Draw"
 
 	var armies_in_battle_state := _battle_grid_state.armies_in_battle_state
 
+	var winning_team : int
+	var winning_team_players : Array[Player] = []
+	# Search for winning team
+	for army_in_battle in armies_in_battle_state:
+		if army_in_battle.can_fight():
+			winning_team = army_in_battle.army_reference.controller.team
+			break
+
+	# Generate information for every player
 	for army_in_battle in armies_in_battle_state:
 		var player_stats := DataBattleSummaryPlayer.new()
-		if army_in_battle.dead_units.size() <= 0:
+
+		# Generate casulties info
+		if army_in_battle.dead_units.size() == 0:
 			player_stats.losses = "< none >"
 		else:
 			for dead in army_in_battle.dead_units:
 				var unit_description = "%s\n" % dead.unit_name
 				player_stats.losses += unit_description
 
-		var army_controller := army_in_battle.army_reference.controller
+		var army_controller : Player = army_in_battle.army_reference.controller
+
+		# generates player names for their info column
 		player_stats.player_description = IM.get_full_player_description(army_controller)
-		if army_in_battle.can_fight():
+
+		if army_controller.team == winning_team:
 			player_stats.state = "winner"
+			winning_team_players.append(army_controller)
+
+			# TEMP solution - better color system described in TODO notes
 			var color_description = CFG.NEUTRAL_COLOR
 			if army_controller:
 				color_description = army_controller.get_player_color()
 			summary.color = color_description.color
-			summary.title = "%s wins" % color_description.name
 		else:
 			player_stats.state = "loser"
 		summary.players.append(player_stats)
+	
+	# Summary title creation
+	assert(winning_team_players.size() > 0, "Battle resulted in no winners")
+	summary.title = "Team %s wins :" % [winning_team_players[0].team] 
+	for player in winning_team_players:
+		summary.title += " " + player.get_player_color().name
+
 	return summary
 
 #endregion Battle End

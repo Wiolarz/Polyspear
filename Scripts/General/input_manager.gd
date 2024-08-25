@@ -188,7 +188,7 @@ func get_player_color(player : Player) -> DataPlayerColor:
 		return CFG.DEFAULT_TEAM_COLOR
 	return player.get_player_color()
 
-
+## 2 line string - Player color | controller name
 func get_full_player_description(player : Player) -> String:
 	return "%s\n%s" % [get_player_color(player).name, get_player_name(player)]
 
