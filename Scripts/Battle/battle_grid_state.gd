@@ -222,7 +222,7 @@ func _should_die_to_counter_attack(unit : Unit) -> bool:
 		
 		var shield_power : int = Unit.defense_power(unit.get_symbol(side))
 		var opposite_side := GenericHexGrid.opposite_direction(side)
-		var enemy_symbol : E.Symbols = adjacent[side].get_symbol(opposite_side)
+		var enemy_symbol : E.Symbols = adjacent_units[side].get_symbol(opposite_side)
 		match enemy_symbol:
 			E.Symbols.SPEAR, E.Symbols.STRONG_SPEAR: # enemy has a counter_attack
 				if Unit.attack_power(enemy_symbol) > shield_power:
@@ -347,14 +347,14 @@ func _get_shot_target(coord : Vector2i, direction : int) -> Unit:
 
 
 ## Checks if given tile relative to start tile is in specific direction within specific range [br]
-## start_tile, end_tile | direction = -1 search in all directions| range = -1 with that value searh till the end of board
-func _is_faced_tile_in_range(start_coord : Vector2i, end_coord : Vector2i, direction : int, range : int = -1) -> bool:
+## start_tile, end_tile | direction = -1 search in all directions| reach = -1 with that value searh till the end of board
+func _is_faced_tile_in_range(start_coord : Vector2i, end_coord : Vector2i, direction : int, reach : int = -1) -> bool:
 	for angle in range(6):
 		var tile : Vector2i = start_coord
 		if direction != -1:
 			angle = direction
 		var idx = 0
-		while idx < range:
+		while idx < reach:
 			idx += 1
 			tile += DIRECTION_TO_OFFSET[angle]
 			if tile == end_coord:

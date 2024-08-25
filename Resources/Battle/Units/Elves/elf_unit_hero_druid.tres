@@ -18,3 +18,5 @@ texture_path = "res://Art/world_heroes/elf_druid.png"
 symbols = Array[Resource("res://Resources/Battle/data_symbol.gd")]([ExtResource("3_ana33"), ExtResource("3_ana33"), ExtResource("3_ana33"), ExtResource("3_tkndh"), ExtResource("3_ana33"), ExtResource("3_ana33")])
 cost = SubResource("Resource_o8yk3")
 level = 1
+mana = 0
+spells = Array[Resource("res://Scripts/Battle/battle_spell.gd")]([])
