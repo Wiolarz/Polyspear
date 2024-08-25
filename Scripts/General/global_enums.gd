@@ -8,12 +8,12 @@ enum Symbols
 	EMPTY,
 	# CLASSIC
 	SPEAR,
-	SWORD,
+	AXE,
 	SHIELD,
 	BOW,
 	PUSH,
 	# Items # MEGA TEMP
-	STRONG_SWORD,
+	STRONG_AXE,
 	STRONG_SPEAR,
 	STAFF,
 	
@@ -26,6 +26,8 @@ enum Symbols
 	FIST,
 	MACE,
 	DAGGER,
+
+	SWORD,
 }
 
 

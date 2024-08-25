@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://Scripts/World/Economy/goods.gd" id="1_kutjj"]
 [ext_resource type="Script" path="res://Resources/Battle/data_unit.gd" id="2_g1kee"]
-[ext_resource type="Resource" uid="uid://cngonnqsgsd6e" path="res://Resources/Battle/Symbols/sword.tres" id="3_sj8bg"]
+[ext_resource type="Resource" uid="uid://cngonnqsgsd6e" path="res://Resources/Battle/Symbols/axe.tres" id="3_sj8bg"]
 [ext_resource type="Resource" uid="uid://cmgmw6atlub6f" path="res://Resources/Battle/Symbols/push.tres" id="4_mincs"]
 [ext_resource type="Resource" uid="uid://o4rlmfc33rsh" path="res://Resources/Battle/Symbols/empty.tres" id="5_pwexe"]
 
