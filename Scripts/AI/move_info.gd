@@ -9,9 +9,11 @@ const TYPE_MAGIC = "magic"
 @export var move_type : String = ""
 ## if TYPE_SUMMON, determines summoned unit
 @export var summon_unit : DataUnit
+## used by: TYPE_MOVE, TYPE_MAGIC
 @export var move_source : Vector2i
+## used by all move types
 @export var target_tile_coord : Vector2i
-## if TYPE_MAGIC, determines used spell
+## used by TYPE_MAGIC, determines used spell
 @export var spell : BattleSpell
 
 ## REPLAY ONLY DATA:
@@ -26,6 +28,7 @@ var army_idx : int = -1
 var original_rotation : int = -1
 ## sequence of KilledUnit, PushedUnit, LocomotionCompleted in order they happended
 var actions_list : Array = []
+
 #endregion Undo related variables
 
 #region Constructors

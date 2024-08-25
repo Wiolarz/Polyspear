@@ -5,6 +5,7 @@ extends Control
 # move all modifications of IM.game_setup_info to some controller -- it
 # should not be modified directly by GUI
 
+## if true it means player is connected to a server
 @export var client_side : bool
 
 @onready var button_world : Button = \

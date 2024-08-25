@@ -1,6 +1,7 @@
 class_name BattleReplay
 extends Resource
 
+## Time.get_datetime_string_from_system()
 @export var timestamp : String
 @export var battle_map : DataBattleMap
 ## per player [ list of units ] : Array[Array[DataUnit]]
