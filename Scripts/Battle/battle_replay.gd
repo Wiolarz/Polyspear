@@ -1,10 +1,13 @@
 class_name BattleReplay
 extends Resource
 
+## Time.get_datetime_string_from_system()
 @export var timestamp : String
-@export var battle_map: DataBattleMap
-@export var units_at_start = [] # :Array[Array[DataUnit]]
-@export var moves: Array[MoveInfo] = []
+@export var battle_map : DataBattleMap
+## per player [ list of units ] : Array[Array[DataUnit]]
+@export var units_at_start = []
+## list of all actions made by players
+@export var moves : Array[MoveInfo] = []
 @export var player_names : Array[String] = []
 
 

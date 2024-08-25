@@ -7,15 +7,20 @@ const TYPE_SACRIFICE = "sacrifice"
 const TYPE_MAGIC = "magic"
 
 @export var move_type : String = ""
+## if TYPE_SUMMON, determines summoned unit
 @export var summon_unit : DataUnit
+## used by: TYPE_MOVE, TYPE_MAGIC
 @export var move_source : Vector2i
+## used by all move types
 @export var target_tile_coord : Vector2i
+## used by TYPE_MAGIC, determines used spell
 @export var spell : BattleSpell
 
-# REPLAY ONLY DATA:
+## REPLAY ONLY DATA:
 @export var time_left_ms : int
 
-# for undo, do not serialize
+#region Undo related variables
+# variables without @export aren't saved
 
 ## index of the army that performed the move, used to recreate proper current player
 var army_idx : int = -1
@@ -24,6 +29,7 @@ var original_rotation : int = -1
 ## sequence of KilledUnit, PushedUnit, LocomotionCompleted in order they happended
 var actions_list : Array = []
 
+#endregion Undo related variables
 
 #region Constructors
 
@@ -61,6 +67,8 @@ static func make_magic(move_source_ : Vector2i, target_tile_coord_ : Vector2i, s
 #endregion Constructors
 
 
+#region Network
+
 func to_network_serializable() -> Dictionary:
 	return {
 		"move_type" : move_type,
@@ -83,6 +91,8 @@ static func from_network_serializable(dict : Dictionary) -> MoveInfo:
 			return MoveInfo.make_sacrifice(dict["move_source"])
 	push_error("move_type not supported: ", dict["move_type"])
 	return null
+
+#endregion Network
 
 
 #region notification for undo
@@ -115,6 +125,7 @@ func register_whole_move_complete() -> void:
 	pass #TODO check what it was supposed to even do?
 
 #endregion notyfications for undo
+
 
 func _to_string() -> String:
 	if move_type == TYPE_SUMMON:

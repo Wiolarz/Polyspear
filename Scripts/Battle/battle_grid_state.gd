@@ -8,10 +8,9 @@ const STATE_BATTLE_FINISHED = "battle_finished"
 
 const MOVE_IS_INVALID = -1
 
-#TODO implement repeated moves detection
-const STALEMATE_TURN_COUNT = 3 # number of repeated moves that fast forward Mana Cyclon Timer
+const STALEMATE_TURN_REPEATS = 2  # number of repeated moves that fast forward Mana Cyclon Timer
 
-var state : String = ""
+var state : String = STATE_SUMMONNING
 var turn_counter : int = 0
 var current_army_index : int = 0
 var armies_in_battle_state : Array[ArmyInBattleState] = []
@@ -29,12 +28,12 @@ func _init(width_ : int, height_ : int):
 	super(width_, height_, BattleHex.sentinel)
 
 
-static func create(map: DataBattleMap, new_armies : Array[Army]) -> BattleGridState:
+static func create(map : DataBattleMap, new_armies : Array[Army]) -> BattleGridState:
 	var result := BattleGridState.new(map.grid_width, map.grid_height)
-	result.state = STATE_SUMMONNING
 
+	# assigning players without a team
 	var occupied_team_slots = []
-	for army in new_armies: # assigning NO team players
+	for army in new_armies: 
 		var team = army.controller.team
 		if team == 0:
 			continue
@@ -44,39 +43,36 @@ static func create(map: DataBattleMap, new_armies : Array[Army]) -> BattleGridSt
 	for army in new_armies:
 		var team = army.controller.team
 		if team == 0:
-			while new_team_idx  in occupied_team_slots:
+			while new_team_idx in occupied_team_slots:
 				new_team_idx += 1
 			army.controller.team = new_team_idx
 			new_team_idx += 1
-
-
-
+	
+	# generate ArmyInBattleState Objects
 	for army in new_armies:
 		result.armies_in_battle_state.append(ArmyInBattleState.create_from(army, result))
 
-
-	result.current_army_index = 0
-	result.turn_counter = 0
-
+	# generate battle hex tiles using GenericHexGrid variables
 	for x in range(map.grid_width):
 		for y in range(map.grid_height):
 			var map_tile : DataTile = map.grid_data[x][y]
-			var new_hex = BattleHex.create(map_tile)
+			var new_hex := BattleHex.create(map_tile)
 			result.set_hex(Vector2i(x,y), new_hex)
 
 			if new_hex and new_hex.is_mana_tile(): # MANA
 				result.number_of_mana_wells += 1
 
-	result.mana_values_changed()
+	result.mana_values_changed() # assign first cyclone target
 
 	return result
 
-#endregion
+#endregion init
 
 
 #region move_info support
 
-
+## Unpacker of MoveInfo class [br]
+## returns Unit (RefCounted) to the BM for there to be created Node2D object
 func move_info_summon_unit(move_info : MoveInfo) -> Unit:
 	assert(move_info.move_type == MoveInfo.TYPE_SUMMON)
 	currently_processed_move_info = move_info
@@ -133,16 +129,20 @@ func move_info_execute(move_info : MoveInfo) -> void:
 	turn_counter += 1
 	currently_processed_move_info = null
 
-	if battle_is_ongoing():
-		_check_battle_end()  # Can change battle_is_ongoing result
+	
+	_check_battle_end()
 	if battle_is_ongoing():
 		_switch_participant_turn()
 
+#endregion move_info support
 
 
+#region Undo
+
+## used only by BM.undo()
 ## returns array of revived units
 func undo(move_info : MoveInfo) -> Array[Unit]:
-	var result = [] as Array[Unit]
+	var result : Array[Unit] = []
 	if move_info.move_type == MoveInfo.TYPE_SUMMON:
 		current_army_index = move_info.army_idx
 		armies_in_battle_state[current_army_index].unsummon(move_info.target_tile_coord)
@@ -193,44 +193,7 @@ func _undo_push(_move : MoveInfo , pushed : MoveInfo.PushedUnit) -> void:
 	var p_hex = _get_battle_hex(pushed.from_coord)
 	p_unit.move(pushed.from_coord, p_hex.swamp)
 
-
-## Basic Unit move:
-## unit - that is going to move | direction - it will move toward
-## target_title_coord - hex tile it's going to move toward (doesn't have to be adjacent)
-func _perform_move(unit : Unit, direction : int, target_tile_coord : Vector2i) -> void:
-	# TURN
-	unit.turn(direction)
-	if _process_symbols(unit):
-		return
-	currently_processed_move_info.register_turning_complete()
-	# MOVE
-	_change_unit_coord(unit, target_tile_coord)
-	unit.move(target_tile_coord, _get_battle_hex(target_tile_coord).swamp)
-	currently_processed_move_info.register_locomote_complete()
-	if _process_symbols(unit):
-		return
-
-
-## Spell effect:
-## unit - that is going to move |
-## target_title_coord - hex tile it's going to move toward (doesn't have to be adjacent)
-##  direction - 
-func _perform_teleport(unit : Unit, target_tile_coord : Vector2i, direction : int = -1) -> void:
-	# TURN
-	if direction != -1:
-		unit.turn(direction)
-		# No need to chceck for counter damage here as rotation happens
-		# "during" teleport so we care only about counter damage once we arrive
-		currently_processed_move_info.register_turning_complete()
-	# MOVE
-	_change_unit_coord(unit, target_tile_coord)
-	unit.move(target_tile_coord, _get_battle_hex(target_tile_coord).swamp)
-	currently_processed_move_info.register_locomote_complete()
-	if _process_symbols(unit):
-		return
-
-
-#endregion move_info support
+#endregion Undo
 
 
 #region Symbols
@@ -328,21 +291,33 @@ func _push_enemy(enemy : Unit, direction : int) -> void:
 	if _should_die_to_counter_attack(enemy):
 		_kill_unit(enemy)
 
-#endregion
+#endregion Symbols
 
 
-#region helpers
+#region public helpers
 
 func get_current_player() -> Player:
 	return armies_in_battle_state[current_army_index].army_reference.controller
 
 
-func _get_battle_hex(coord : Vector2i) -> BattleHex:
-	return get_hex(coord)
-
-
 func get_unit(coord : Vector2i) -> Unit:
 	return _get_battle_hex(coord).unit
+
+
+func is_move_valid(unit : Unit, coord : Vector2i) -> bool:
+	return _get_move_direction_if_valid(unit, coord) != MOVE_IS_INVALID
+
+
+func is_during_summoning_phase() -> bool:
+	return state == STATE_SUMMONNING
+
+#endregion public helpers
+
+
+#region private helpers
+
+func _get_battle_hex(coord : Vector2i) -> BattleHex:
+	return get_hex(coord)
 
 
 func _is_movable(coord : Vector2i) -> bool:
@@ -365,9 +340,10 @@ func _get_shot_target(coord : Vector2i, direction : int) -> Unit:
 		hex = _get_battle_hex(target_coord)
 	return hex.unit
 
+
 ## Checks if given tile relative to start tile is in specific direction within specific range [br]
 ## start_tile, end_tile | direction = -1 search in all directions| range = -1 with that value searh till the end of board
-func is_faced_tile_in_range(start_coord : Vector2i, end_coord : Vector2i, direction : int, range : int = -1) -> bool:
+func _is_faced_tile_in_range(start_coord : Vector2i, end_coord : Vector2i, direction : int, range : int = -1) -> bool:
 	for angle in range(6):
 		var tile : Vector2i = start_coord
 		if direction != -1:
@@ -379,10 +355,6 @@ func is_faced_tile_in_range(start_coord : Vector2i, end_coord : Vector2i, direct
 			if tile == end_coord:
 				return true
 	return false
-
-
-func is_move_valid(unit : Unit, coord : Vector2i) -> bool:
-	return _get_move_direction_if_valid(unit, coord) != MOVE_IS_INVALID
 
 
 ## Returns `MOVE_IS_INVALID` if move is incorrect
@@ -467,15 +439,12 @@ func _get_army_index(army : BattleGridState.ArmyInBattleState):
 	var result = armies_in_battle_state.find(army)
 	return result
 
-
-func is_during_summoning_phase() -> bool:
-	return state == STATE_SUMMONNING
-
-#endregion helpers
+#endregion private helpers
 
 
 #region Gameplay Events
 
+## IMPORTANT occurs every turn -> main way to change state
 func _switch_participant_turn() -> void:
 	var prev_player := armies_in_battle_state[current_army_index]
 	var prev_idx = current_army_index
@@ -483,45 +452,86 @@ func _switch_participant_turn() -> void:
 	current_army_index %= armies_in_battle_state.size()
 	print(NET.get_role_name(), " _switch_participant_turn ", current_army_index)
 
-	if state == STATE_SUMMONNING:
-		var skip_count = 0
-		# skip players with nothing to summon
-		while armies_in_battle_state[current_army_index].units_to_summon.size() == 0:
-			current_army_index += 1
-			current_army_index %= armies_in_battle_state.size()
-			skip_count += 1
-			# no player has anything to summon, go to next phase
-			if skip_count == armies_in_battle_state.size():
-				_end_summoning_state()
-				break
+	match state:
+		STATE_SUMMONNING:
+			var skip_count = 0
+			# skip players with nothing to summon
+			while armies_in_battle_state[current_army_index].units_to_summon.size() == 0:
+				current_army_index += 1
+				current_army_index %= armies_in_battle_state.size()
+				skip_count += 1
+				# no player has anything to summon, go to next phase
+				if skip_count == armies_in_battle_state.size():
+					state = STATE_FIGHTING
+					current_army_index = 0  # first army is always present
+					break
 
-	elif state == STATE_FIGHTING:
-		
-		while not armies_in_battle_state[current_army_index].can_fight():
-			current_army_index += 1
-			current_army_index %= armies_in_battle_state.size()
+		STATE_FIGHTING:
+			while not armies_in_battle_state[current_army_index].can_fight():
+				current_army_index += 1
+				current_army_index %= armies_in_battle_state.size()
 
-		if prev_idx > current_army_index: # Cyclone timer update
-			cyclone_target.cyclone_timer -= 1
+			if prev_idx > current_army_index: # Cyclone timer update
+				cyclone_target.cyclone_timer -= 1
 
-			if cyclone_target.cyclone_timer == 0:
-				current_army_index = _get_army_index(cyclone_target)
-				state = STATE_SACRIFICE
+				if cyclone_target.cyclone_timer == 0:
+					current_army_index = _get_army_index(cyclone_target)
+					state = STATE_SACRIFICE
+	
+		STATE_SACRIFICE:  # New turn starts
+			current_army_index = 0  # first army may no longer be present
+			while not armies_in_battle_state[current_army_index].can_fight():
+				current_army_index += 1
+				current_army_index %= armies_in_battle_state.size()
+			state = STATE_FIGHTING
 
 	var next_player := armies_in_battle_state[current_army_index]
-	# chess clock is updated in  turn_ended() and turn_started()
+	# chess clock is updated in turn_ended() and turn_started()
 	prev_player.turn_ended()
 	next_player.turn_started()
 
 
-func _end_summoning_state() -> void:
-	state = STATE_FIGHTING
-	current_army_index = 0
+## Basic Unit move:
+## unit - that is going to move | direction - it will move toward
+## target_title_coord - hex tile it's going to move toward (doesn't have to be adjacent)
+func _perform_move(unit : Unit, direction : int, target_tile_coord : Vector2i) -> void:
+	# TURN
+	unit.turn(direction)
+	if _process_symbols(unit):
+		return
+	currently_processed_move_info.register_turning_complete()
+	# MOVE
+	_change_unit_coord(unit, target_tile_coord)
+	unit.move(target_tile_coord, _get_battle_hex(target_tile_coord).swamp)
+	currently_processed_move_info.register_locomote_complete()
+	if _process_symbols(unit):
+		return
 
 
+## Spell effect:
+## unit - that is going to move |
+## target_title_coord - hex tile it's going to move toward (doesn't have to be adjacent)
+##  direction - 
+func _perform_teleport(unit : Unit, target_tile_coord : Vector2i, direction : int = -1) -> void:
+	# TURN
+	if direction != -1:
+		unit.turn(direction)
+		# No need to chceck for counter damage here as rotation happens
+		# "during" teleport so we care only about counter damage once we arrive
+		currently_processed_move_info.register_turning_complete()
+	# MOVE
+	_change_unit_coord(unit, target_tile_coord)
+	unit.move(target_tile_coord, _get_battle_hex(target_tile_coord).swamp)
+	currently_processed_move_info.register_locomote_complete()
+	if _process_symbols(unit):
+		return
+
+
+## changes coordinates of the unit ONLY (doesn't activate attack or anything like that)
 func _change_unit_coord(unit : Unit, target_coord : Vector2i) -> void:
 	_remove_unit(unit)
 	_put_unit_on_grid(unit, target_coord)
+
 
 ## Used for movement, kills, unsummon(undo) [br]
 ## removes Unit from logic hex tile
@@ -529,6 +539,7 @@ func _remove_unit(unit : Unit) -> void:
 	var hex := _get_battle_hex(unit.coord)
 	assert(hex.unit == unit, "incorrect remove unit, coord desync")
 	hex.unit = null
+
 
 ## Main kill unit function -> checks for end of battle
 ## Contains spells related logic
@@ -559,8 +570,9 @@ func _kill_unit(target : Unit) -> void:
 	target_army.kill_unit(target)
 	_remove_unit(target) # remove reference from hextile
 	target.unit_killed() # emit singal for visual death animation
-	_check_battle_end()
+
 	# verify battle has ended before any additonal spell effects take place
+	_check_battle_end()
 	if not battle_is_ongoing(): 
 		return
 
@@ -572,22 +584,18 @@ func _kill_unit(target : Unit) -> void:
 		#spell.enchanted_unit_dies()
 		match spell.name:
 			"Vengeance":
-				#get_unit(target_tile_coord).effects.append(spell)
-				#print(get_unit(target_tile_coord).effects)
-				print("zemsta")
 				#TODO check if this temp solution should be used
 				_kill_unit(currently_active_unit)
 
 			_:
 				continue
-
 	
-	
+	mana_values_changed() # TEMP occurs every time after death
 
-
-## TODO implement repeated moves detection
+## Rare event when all players repeated their moves -> it pushes cyclone timer to activate next turn
 func end_stalemate() -> void:
-	pass
+	print("END OFF STALEMATE")
+	cyclone_target.cyclone_timer = 1
 
 #endregion Gameplay Events
 
@@ -618,7 +626,7 @@ func _put_unit_on_grid(unit : Unit, coord : Vector2i) -> void:
 
 #region Timer
 
-## in miliseconds
+## in miliseconds -- called only by BM _check_clock_timer_tick()
 func get_current_time_left() -> int:
 	return armies_in_battle_state[current_army_index].get_time_left_ms()
 
@@ -632,14 +640,15 @@ func set_displayed_time_left_ms(time_left_ms : int) -> void:
 
 #region Mana Cyclone Timer
 
+## Occurs any time a unit is killed [br]
+## It may change the cyclone_target
 func mana_values_changed() -> void:
-	## Occurs any time mana values are changed (cheap function)
-	## It may change the cyclone_target
 	var current_worst = armies_in_battle_state[0]
 	var current_best = armies_in_battle_state[-1]
+
+	# player later in an array win on ties between mana values - it's intentional
 	for army in armies_in_battle_state:
 		if current_worst.mana_points > army.mana_points: 
-			# TODO write documentation explaining that better defensive positions have those later in the array
 			current_worst = army
 		if current_best.mana_points < army.mana_points:
 			current_best = army
@@ -684,7 +693,7 @@ func is_spell_target_valid(unit : Unit, coord : Vector2i, spell : BattleSpell) -
 		"Fireball": # any hex target is valid
 			return true
 		"Teleport": # tile in range that is in front of the caster
-			if is_faced_tile_in_range(unit.coord, coord, unit.unit_rotation, 3):
+			if _is_faced_tile_in_range(unit.coord, coord, unit.unit_rotation, 3):
 				return true
 		_:
 			printerr("Spell targeting not supported: ", spell.name)
@@ -699,58 +708,58 @@ func _perform_magic(unit : Unit, target_tile_coord : Vector2i, spell : BattleSpe
 		"Vengeance":
 			get_unit(target_tile_coord).effects.append(spell)
 			print(get_unit(target_tile_coord).effects)
+		
 		"Martyr":
 			unit.effects.append(spell)  # target as well as caster both get affected
 			get_unit(target_tile_coord).effects.append(spell)
 			print(get_unit(target_tile_coord).effects)
+		
 		"Fireball":
 			var enemy_targets : Array[Unit] = []
 			var ally_targets : Array[Unit] = []
 			var target : Unit = get_unit(target_tile_coord)
-			if target and target.controller == unit.controller:
+			if target and target.controller.team == unit.controller.team:
 				ally_targets.append(target)
 			elif target:
 				enemy_targets.append(target)
 			for direction in DIRECTION_TO_OFFSET:
 				target = get_unit(target_tile_coord + direction)
-				if target and target.controller == unit.controller:
+				if target and target.controller.team == unit.controller.team:
 					ally_targets.append(target)
 				elif target:
 					enemy_targets.append(target)
 			
-			for enemy_unit in enemy_targets:
+			for enemy_unit in enemy_targets: # kill enemy units first
 				_kill_unit(enemy_unit)
 			
+			# we only start killing ally units after we are sure battle didn't end yet
 			if not battle_is_ongoing():
-				# we only start killing ally units after we are sure battle didn't end yet
 				return
 
-			for ally_unit in ally_targets: 
-				
+			for ally_unit in ally_targets: # kill rest
 				_kill_unit(ally_unit)
+			
 		"Teleport":
 			_perform_teleport(unit, target_tile_coord)
+		
 		_:
 			printerr("Spell perform not supported: ", spell.name)
 			return
 
 	unit.spells.erase(spell) # Remove to test casting multiple times
 
-
-#endregion
+#endregion Magic
 
 
 #region End Battle
 
 func _kill_army(army_idx : int):
 	armies_in_battle_state[army_idx].kill_army()
-	if battle_is_ongoing():
-		_check_battle_end()
+	_check_battle_end()
 
 
 func battle_is_ongoing() -> bool:
 	return state != STATE_BATTLE_FINISHED
-
 
 
 func _check_battle_end() -> void:
@@ -951,7 +960,7 @@ class BattleHex:
 		return result
 
 
-	static func create(data : DataTile):
+	static func create(data : DataTile) -> BattleHex:
 		if data.type == "sentinel":
 			return null
 
@@ -1046,7 +1055,7 @@ class ArmyInBattleState:
 		print("killing ", target.coord, " ",target.template.unit_name)
 		if target.template.mana > 0:
 			mana_points -= target.template.mana
-			battle_grid_state.get_ref().mana_values_changed()
+			# mana_value changed gets called after every kill anyway
 
 		units.erase(target)
 		dead_units.append(target.template)

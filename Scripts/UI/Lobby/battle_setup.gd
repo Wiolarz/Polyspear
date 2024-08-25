@@ -27,7 +27,10 @@ func _ready():
 
 	var number_of_presets = FileSystemHelpers.list_files_in_folder(CFG.BATTLE_PRESETS_PATH, true, true).size()
 	if number_of_presets > 0:
-		_on_preset_list_item_selected(0)
+		if CFG.LAST_USED_BATTLE_PRESET:
+			apply_preset(CFG.LAST_USED_BATTLE_PRESET)
+		else:
+			_on_preset_list_item_selected(0)
 
 
 func fill_maps_list() -> void:
@@ -120,6 +123,10 @@ func _on_preset_list_item_selected(index) -> void:
 	var preset_data : PresetBattle = \
 			load(CFG.BATTLE_PRESETS_PATH + "/" + preset_file)
 	apply_preset(preset_data)
+
+	# TODO - verify if its neccesary to imrpove on this simple solution
+	CFG.player_options.last_used_battle_preset = preset_data
+	CFG.save_player_options()
 
 
 func apply_preset(preset : PresetBattle):

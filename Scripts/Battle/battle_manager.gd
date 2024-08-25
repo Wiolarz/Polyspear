@@ -40,14 +40,10 @@ func _ready():
 
 func _process(_delta):
 	_process_anim_queue()
-	_check_clock_timer_run_out()
+	_check_clock_timer_tick()
 
 
 #region Battle Setup
-
-func world_map_started():
-	_battle_is_ongoing = false
-
 
 ## x_offset is used to place battle to the right of world map
 func start_battle(new_armies : Array[Army], battle_map : DataBattleMap, \
@@ -167,27 +163,6 @@ func _is_clear() -> bool:
 #endregion helpers
 
 
-#region Chess clock
-
-func _check_clock_timer_run_out() -> void:
-	if not _battle_grid_state:
-		return
-	if not _battle_grid_state.battle_is_ongoing():
-		return
-	if get_current_time_left_ms() > 0:
-		return
-	_battle_grid_state.surrender_on_timeout()
-	_end_move()
-
-
-func get_current_time_left_ms() -> int:
-	if _battle_grid_state && _battle_grid_state.battle_is_ongoing():
-		return _battle_grid_state.get_current_time_left()
-	return 0
-
-#endregion Chess clock
-
-
 #region Ongoing battle
 
 func _on_turn_started(player : Player) -> void:
@@ -287,7 +262,40 @@ func grid_input(coord : Vector2i) -> void:
 		_perform_move_info(move_info)
 
 
+func _check_for_stalemate() -> bool:
+	assert(BattleGridState.STALEMATE_TURN_REPEATS == 2,
+	" _check_for_stalemate has wrong STALEMATE_TURN_REPEATS value
+	later parts of this function version wasn't made in mind with more repeats allowed")
+	var limit = BattleGridState.STALEMATE_TURN_REPEATS
+
+	# if number of the armies were to change during last few moves, then it wouldn't be a stalemate
+	var alive_armies = []
+	for army in _battle_grid_state.armies_in_battle_state:
+		if army.can_fight():
+			alive_armies.append(army) 
+
+	# equation determines the shortest scenario to achieve a stalemate
+	# later we jump back X move behind, so it makes it safe to do so
+	if _replay_data.moves.size() < limit * alive_armies.size() * 2:
+		return false
+	
+	var go_back_value = limit * alive_armies.size() + 1
+	for player_idx in range(alive_armies.size()):
+		var old_move = _replay_data.moves[-go_back_value - player_idx]
+		var new_move = _replay_data.moves[-player_idx - 1]
+
+		if new_move.move_type != MoveInfo.TYPE_MOVE or old_move.move_type != new_move.move_type:
+			return false
+		if old_move.move_source != new_move.move_source or \
+			old_move.target_tile_coord != new_move.target_tile_coord:
+				return false
+	return true
+
 func  _end_move() -> void:
+	if _battle_grid_state.battle_is_ongoing():
+		if _check_for_stalemate():
+			_battle_grid_state.end_stalemate() # could end the battle
+
 	if _battle_grid_state.battle_is_ongoing():
 		_on_turn_started(_battle_grid_state.get_current_player())
 	else :
@@ -377,7 +385,7 @@ func get_cyclone_timer() -> int:
 
 #region Fighting Phase
 
-## Turn timer unit sacrifice (Stalemate mechanic)
+## Turn timer unit sacrifice (Stalemate prevention mechanic)
 func _grid_input_sacrifice(coord : Vector2i) -> MoveInfo:
 	## TODO:
 	## input should be locked to the person that is bound to make a sacrifice,
@@ -389,8 +397,7 @@ func _grid_input_sacrifice(coord : Vector2i) -> MoveInfo:
 	var new_unit : Unit = _battle_grid_state.get_unit(coord)
 	if new_unit and new_unit.controller == _battle_grid_state.cyclone_target.army_reference.controller:
 
-		_battle_grid_state.state = _battle_grid_state.STATE_FIGHTING
-		_battle_grid_state.mana_values_changed()
+		# Reselect the same target OR new one if that 
 		return MoveInfo.make_sacrifice(coord)
 	return null
 
@@ -486,8 +493,6 @@ func _perform_move_info(move_info : MoveInfo) -> void:
 	if not _battle_is_ongoing:
 		return
 	print(NET.get_role_name(), " performing move ", move_info)
-
-
 
 	_replay_data.record_move(move_info, get_current_time_left_ms())
 	_replay_data.save()
@@ -590,35 +595,56 @@ func _reset_grid_and_unit_forms() -> void:
 	Helpers.remove_all_children(_unit_forms_node)
 	_battle_grid_state = null
 
-
+## Major function which fully generates information panel at the end of the battle
 func _create_summary() -> DataBattleSummary:
 	var summary := DataBattleSummary.new()
-	summary.color = CFG.NEUTRAL_COLOR.color
-	summary.title = "Draw"
 
 	var armies_in_battle_state := _battle_grid_state.armies_in_battle_state
 
+	var winning_team : int
+	var winning_team_players : Array[Player] = []
+	# Search for winning team
+	for army_in_battle in armies_in_battle_state:
+		if army_in_battle.can_fight():
+			winning_team = army_in_battle.army_reference.controller.team
+			break
+
+	# Generate information for every player
 	for army_in_battle in armies_in_battle_state:
 		var player_stats := DataBattleSummaryPlayer.new()
-		if army_in_battle.dead_units.size() <= 0:
+
+		# Generate casulties info
+		if army_in_battle.dead_units.size() == 0:
 			player_stats.losses = "< none >"
 		else:
 			for dead in army_in_battle.dead_units:
 				var unit_description = "%s\n" % dead.unit_name
 				player_stats.losses += unit_description
 
-		var army_controller := army_in_battle.army_reference.controller
+		var army_controller : Player = army_in_battle.army_reference.controller
+
+		# generates player names for their info column
 		player_stats.player_description = IM.get_full_player_description(army_controller)
-		if army_in_battle.can_fight():
+
+		if army_controller.team == winning_team:
 			player_stats.state = "winner"
+			winning_team_players.append(army_controller)
+
+			# TEMP solution - better color system described in TODO notes
 			var color_description = CFG.NEUTRAL_COLOR
 			if army_controller:
 				color_description = army_controller.get_player_color()
 			summary.color = color_description.color
-			summary.title = "%s wins" % color_description.name
 		else:
 			player_stats.state = "loser"
 		summary.players.append(player_stats)
+	
+	# Summary title creation
+	assert(winning_team_players.size() > 0, "Battle resulted in no winners")
+	summary.title = "Team %s wins :" % [winning_team_players[0].team] 
+	for player in winning_team_players:
+		summary.title += " " + player.get_player_color().name
+
 	return summary
 
 #endregion Battle End
@@ -690,8 +716,30 @@ func editor_get_hexes_copy_as_array() -> Array: #Array[Array[TileForm]]
 #endregion map editor
 
 
+#region Chess clock
+
+## called every frame by _process
+func _check_clock_timer_tick() -> void:
+	if not _battle_grid_state or not _battle_grid_state.battle_is_ongoing():
+		return # no battle
+	if _battle_grid_state.get_current_time_left() > 0:
+		return # player still has time
+	
+	_battle_grid_state.surrender_on_timeout()
+	_end_move()
+
+## safe clock getter
+func get_current_time_left_ms() -> int:
+	if _battle_grid_state && _battle_grid_state.battle_is_ongoing():
+		return _battle_grid_state.get_current_time_left()
+	return 0
+
+#endregion Chess clock
+
+
 #region anim queue
 
+## called every frame by _process
 func _process_anim_queue() -> void:
 	if _anim_queue.size() == 0:
 		return

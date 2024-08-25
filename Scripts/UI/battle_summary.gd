@@ -32,7 +32,7 @@ func set_visible_title(title : String):
 func set_visible_color(color : Color):
 	color_rect.color = BattleSummary.adjust_color(color)
 
-
+## Generates text info for every player based on content data
 func set_visible_state_from_info(content : DataBattleSummary):
 	if content == null:
 		content = BM.DataBattleSummary.new()

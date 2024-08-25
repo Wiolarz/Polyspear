@@ -1,5 +1,4 @@
 class_name PresetArmy
-
 extends Resource
 
 
