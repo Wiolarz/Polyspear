@@ -98,30 +98,14 @@ func get_tile_controller(coord : Vector2i) -> Player:
 	return null
 
 
-func get_battle_map(_coord : Vector2i, army_size : int) -> DataBattleMap:
-	if army_size > 5:
-		return CFG.BIGGER_BATTLE_MAP
-
-	return CFG.DEFAULT_BATTLE_MAP
-
-
-func is_city(coord : Vector2i) -> bool:
-	return get_city(coord) != null
-
-
 func get_city(coord : Vector2i) -> City:
-	return get_place(coord) as City
+	assert(false, "removed from here")
+	return null
 
 
 func get_all_places() -> Array[Place]:
-	var result:Array[Place] = []
-	for x in range(grid_width):
-		for y in range(grid_height):
-			var coord := Vector2i(x, y)
-			var place := get_place(coord)
-			if place:
-				result.append(place)
-	return result
+	assert(false, "removed from here")
+	return []
 
 
 func is_enemy_present(coord : Vector2i, player : Player) -> bool:
@@ -135,16 +119,6 @@ func is_enemy_present(coord : Vector2i, player : Player) -> bool:
 func has_army(coord : Vector2i) -> bool:
 	return get_army(coord) != null
 
-
-func get_interactable_type(coord : Vector2i) -> String:
-	if has_army(coord):
-		return "army"
-
-	if is_city(coord):
-		return "city"
-
-	return "empty"
-
 #endregion
 
 
@@ -155,18 +129,11 @@ func is_clear() -> bool:
 
 
 func end_of_turn_callbacks(player : Player) -> void:
-	#TODO make it nicer
-	for x in range(grid_width):
-		for y in range(grid_height):
-			var coord = Vector2i(x,y)
-			var army := get_army(coord)
-			if army:
-				army.on_end_of_turn(player)
+	assert(false, "removed from here")
 
 
 func _end_of_round_callbacks() -> void:
-	for place in get_all_places():
-		place.on_end_of_turn()
+	assert(false, "removed from here")
 
 
 ## for map editor only

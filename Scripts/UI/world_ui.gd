@@ -5,14 +5,15 @@ extends CanvasLayer
 @onready var city_ui : CityUi = $CityUi
 @onready var heroes_list : BoxContainer = $HeroesList
 
+var world_state_ugly : WorldState
 
 func _ready():
 	city_ui.purchased_hero.connect(refresh_heroes)
 
 
 func _process(_delta):
-	if WM.current_player:
-		good_label.text = WM.current_player.goods.to_string()
+	if WM.world_state:
+		good_label.text = WM.world_state.get_current_player().goods.to_string()
 
 
 func game_started():
@@ -20,23 +21,32 @@ func game_started():
 	$YouWinPanel.hide()
 
 
-func refresh_heroes(player : Player = WM.current_player):
+func refresh_world_state_ugly(world_state : WorldState) -> void:
+	world_state_ugly = world_state
+	city_ui.world_state_ugly = world_state
+
+
+func refresh_heroes():
 	Helpers.remove_all_children(heroes_list)
-	for hf in player.hero_armies:
+	var player_index = world_state_ugly.current_player_index
+	var player_state = world_state_ugly.get_player(player_index)
+	if not player_state:
+		return
+	for army in player_state.hero_armies:
 		var button := TextureButton.new()
-		var hero_texture = hf.entity.hero.template.data_unit.texture_path
+		var hero_texture = army.hero.template.data_unit.texture_path
 		button.texture_normal = load(hero_texture)
 		button.ignore_texture_size = true
 		button.stretch_mode = TextureButton.STRETCH_KEEP_ASPECT_CENTERED
 		button.custom_minimum_size = Vector2(200,200)
-		if hf.entity.hero.movement_points == 0:
+		if army.hero.movement_points == 0:
 			button.modulate = Color.DIM_GRAY
-		if WM.selected_hero == hf:
+		if WM.selected_hero and WM.selected_hero.entity == army:
 			button.modulate = Color.FIREBRICK
 		button.pressed.connect(func ():
-			if hf.controller == WM.current_player:
-				WM.set_selected_hero(hf)
-				UI.camera.center_camera(hf)
+			if army.controller_index == WM.get_current_player().index:
+				WM.set_selected_hero(army)
+				UI.camera.center_camera(WM.get_army_form(army))
 		)
 		heroes_list.add_child(button)
 
@@ -44,8 +54,8 @@ func refresh_heroes(player : Player = WM.current_player):
 func refresh_player_buttons():
 	var player_buttons = $Players.get_children()
 	for i in range(player_buttons.size() - 1):
-		var player := WM.players[i]
-		var selected = player == WM.current_player
+		var player := IM.players[i]
+		var selected = player == WM.get_current_player()
 		var button = player_buttons[i+1] as Button
 		var text = player.get_player_name()
 		if selected:
@@ -54,8 +64,8 @@ func refresh_player_buttons():
 		button.modulate = player.get_player_color().color
 
 
-func show_trade_ui(city : City, hero : ArmyForm):
-	city_ui.show_trade_ui(city, hero)
+func show_trade_ui(city : City):
+	city_ui.show_trade_ui(city)
 
 
 func close_city_ui() -> void:
@@ -76,6 +86,6 @@ func _on_menu_pressed():
 
 
 func _on_end_turn_pressed():
-	WM.next_player_turn()
-	refresh_player_buttons()
-	refresh_heroes(WM.current_player)
+	WM.try_end_turn()
+	#refresh_player_buttons()
+	#refresh_heroes(WM.current_player)

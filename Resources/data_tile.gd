@@ -2,8 +2,9 @@ class_name DataTile
 
 extends Resource
 
-## use snake_case [br]
-## when adding new types update unit tests datasets
+## hardcoded name in SCREAMING_SNAKE_CASE like WALL or EMPTY [br]
+## or snake_case Place name (name of script containing derived class from [br]
+## Place)
 @export var type : String
 
 @export var texture_path : String
@@ -24,5 +25,6 @@ static func create_data_tile(hex_tile : TileForm) -> DataTile:
 	return new_data_tile
 
 
-func is_spawn_tile() -> bool:
-	return type == "city" or type == "elf_city" or type == "orc_city"
+func apply_data(tile : TileForm) -> void:
+	tile.get_node("Sprite2D").texture = ResourceLoader.load(texture_path)
+	tile.type = type

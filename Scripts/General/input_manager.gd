@@ -76,7 +76,7 @@ func start_game_in_state(world_state : SerializableWorldState, \
 		if battle_state.valid():
 			var armies : Array[Army] = []
 			for army_coord in battle_state.world_armies:
-				armies.append(W_GRID.get_army_form(army_coord).entity)
+				armies.append(WM.world_state.get_army_at(army_coord))
 			WM.start_combat(armies, battle_state.combat_coord, battle_state)
 			UI.go_to_custom_ui(BM._battle_ui)
 
@@ -120,7 +120,7 @@ func _start_game_battle(battle_state : SerializableBattleState):
 	var map_data = game_setup_info.battle_map
 	var armies : Array[Army]  = []
 
-	for player in players:	
+	for player in players:
 		armies.append(create_army_for(player))
 
 	UI.go_to_main_menu()
@@ -130,9 +130,8 @@ func _start_game_battle(battle_state : SerializableBattleState):
 ## Creates army based on player slot data
 func create_army_for(player : Player) -> Army:
 	var army = Army.new()
-	army.controller = player
+	army.controller_index = player.index
 	army.units_data = player.slot.get_units_list()
-	player.team = player.slot.team
 	return army
 
 #endregion Game setup
@@ -168,6 +167,20 @@ func set_game_paused(is_paused : bool):
 
 func quit_game():
 	get_tree().quit()
+
+
+func get_player_by_index(index : int) -> Player:
+	if index in range(players.size()):
+		return players[index]
+	return null
+
+
+func get_index_of_player(player : Player) -> int:
+	for i in range(players.size()):
+		if players[i] == player:
+			return i
+	return -1
+
 
 #endregion Technical
 

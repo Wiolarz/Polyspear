@@ -14,4 +14,4 @@ script = ExtResource("2_plri0")
 name = "barracks level 2"
 cost = SubResource("Resource_taog6")
 requirements = Array[ExtResource("2_plri0")]([])
-outpost_requirement = ""
+outpost_requirement = "iron"

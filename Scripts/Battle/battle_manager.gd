@@ -251,8 +251,6 @@ func grid_input(coord : Vector2i) -> void:
 				move_info = _grid_input_magic(coord)
 		BattleGridState.STATE_SACRIFICE:
 			move_info = _grid_input_sacrifice(coord)
-		
-			
 
 	if move_info:
 		if NET.client:
@@ -415,9 +413,9 @@ func _grid_input_magic(coord : Vector2i) -> MoveInfo:
 
 	var move_info = MoveInfo.make_magic(_selected_unit.coord, coord, _battle_ui.selected_spell)
 	deselect_unit()
-	
+
 	return move_info
-	
+
 
 ## Either Unit selection or a command to move
 func _grid_input_fighting(coord : Vector2i) -> MoveInfo:
@@ -444,7 +442,7 @@ func _grid_input_fighting(coord : Vector2i) -> MoveInfo:
 	deselect_unit()
 
 	return move_info
-	
+
 
 
 ## Select friendly Unit on a given coord [br]
@@ -482,7 +480,7 @@ func deselect_unit() -> void:
 func _show_spells(unit : Unit) -> void:
 	if unit.spells.size() == 0:
 		return
-	
+
 	#TODO? check here if selected unit is preview mode only (controlled by another player)
 	_battle_ui.load_spells(_battle_grid_state.current_army_index , unit.spells)
 
@@ -506,6 +504,10 @@ func _perform_move_info(move_info : MoveInfo) -> void:
 		MoveInfo.TYPE_SUMMON:
 			var unit : Unit = _battle_grid_state.move_info_summon_unit(move_info)
 			_on_unit_summoned(unit)
+
+		MoveInfo.TYPE_SACRIFICE:
+			_battle_grid_state.move_info_sacrifice(move_info)
+
 		_ :
 			assert(false, "Move move_type not supported in perform, " + str(move_info.move_type))
 
@@ -553,7 +555,7 @@ func _on_battle_ended() -> void:
 		return
 	_battle_is_ongoing = false
 	deselect_unit()
-	
+
 	await get_tree().create_timer(1).timeout # TEMP, don't exit immediately
 	while _replay_is_playing:
 		await get_tree().create_timer(0.1).timeout
@@ -606,7 +608,7 @@ func _create_summary() -> DataBattleSummary:
 	# Search for winning team
 	for army_in_battle in armies_in_battle_state:
 		if army_in_battle.can_fight():
-			winning_team = army_in_battle.army_reference.controller.team
+			winning_team = army_in_battle.team
 			break
 
 	# Generate information for every player
@@ -621,12 +623,13 @@ func _create_summary() -> DataBattleSummary:
 				var unit_description = "%s\n" % dead.unit_name
 				player_stats.losses += unit_description
 
-		var army_controller : Player = army_in_battle.army_reference.controller
+		var army_controller_index : int = army_in_battle.army_reference.controller_index
+		var army_controller = IM.get_player_by_index(army_controller_index)
 
 		# generates player names for their info column
 		player_stats.player_description = IM.get_full_player_description(army_controller)
 
-		if army_controller.team == winning_team:
+		if army_in_battle.team == winning_team:
 			player_stats.state = "winner"
 			winning_team_players.append(army_controller)
 
@@ -641,9 +644,16 @@ func _create_summary() -> DataBattleSummary:
 	
 	# Summary title creation
 	assert(winning_team_players.size() > 0, "Battle resulted in no winners")
-	summary.title = "Team %s wins :" % [winning_team_players[0].team] 
+	var team_name = 'Neutral'
+	if winning_team_players[0]:
+		team_name = "Team %s" % winning_team_players[0].team
+	summary.title = "%s wins" % [team_name]
+	var sep = " : "
 	for player in winning_team_players:
-		summary.title += " " + player.get_player_color().name
+		if not player: # neutral
+			continue
+		summary.title += sep + IM.get_player_color(player).name
+		sep = ", "
 
 	return summary
 

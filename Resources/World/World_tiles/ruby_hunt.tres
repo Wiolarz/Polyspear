@@ -4,6 +4,6 @@
 
 [resource]
 script = ExtResource("1_da2a5")
-type = "ruby_hunt"
+type = "hunt_spot ruby"
 texture_path = "res://Art/world_map/ruby_hunt.png"
 flip_horizontal = false

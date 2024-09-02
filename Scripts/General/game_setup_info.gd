@@ -56,6 +56,7 @@ func to_dictionary(local_username : String = "") -> Dictionary:
 			"color": slot.color,
 			"units_list": GameSetupInfo.units_list_prepare_for_network( \
 					slot.units_list),
+			"team": slot.team,
 		})
 	return result
 
@@ -70,8 +71,10 @@ static func from_dictionary(dict : Dictionary, \
 	if "battle_map" in dict and dict["battle_map"] is String:
 		result.battle_map = DataBattleMap.from_network_id(dict["battle_map"])
 	if "slots" in dict and dict["slots"] is Array:
-		for read_slot in dict["slots"]:
+		for i in dict["slots"].size():
+			var read_slot : Dictionary = dict["slots"][i]
 			var new_slot : Slot = Slot.new()
+			new_slot.index = i
 			if "occupier" in read_slot:
 				new_slot.occupier = occupier_receive_from_network( \
 					read_slot["occupier"], local_username)
@@ -83,6 +86,8 @@ static func from_dictionary(dict : Dictionary, \
 			if "units_list" in read_slot and read_slot["units_list"] is Array:
 				new_slot.units_list = \
 						GameSetupInfo.units_list_receive_from_network(read_slot["units_list"])
+			if "team" in read_slot and read_slot["team"] is int:
+				new_slot.team = read_slot["team"]
 			result.slots.append(new_slot)
 	return result
 
@@ -131,24 +136,9 @@ static func units_list_receive_from_network(serialized: Array) -> Array[DataUnit
 func set_battle_map(map : DataBattleMap):
 	assert(game_mode == GameMode.BATTLE, "setting battle map in game mode: " + str(game_mode))
 	battle_map = map
-	while slots.size() > map.player_slots.keys().size():
-		slots.pop_back()
 
-	var taken_colors = []
-	for slot in slots:
-		taken_colors.append(slot.color)
-
-	while slots.size() < map.player_slots.keys().size():
-		var slot = GameSetupInfo.Slot.new()
-		slots.append(slot)
-
-		slot.faction = CFG.FACTIONS_LIST[0]
-		slot.color = 0
-
-		while slot.color in taken_colors:
-			slot.color += 1
-
-		taken_colors.append(slot.color)
+	var slots_number = map.player_slots.keys().size()
+	set_slots_number(slots_number)
 
 	for slot_idx in slots.size():
 		slots[slot_idx].set_units_length(map.player_slots[slot_idx + 1])
@@ -189,7 +179,36 @@ static func create_empty() -> GameSetupInfo:
 		result.slots[i] = GameSetupInfo.Slot.new()
 		result.slots[i].faction = CFG.FACTIONS_LIST[i]
 		result.slots[i].color = i
+		result.slots[i].index = i
 	return result
+
+
+func set_slots_number(number : int) -> void:
+
+	# first we remove unused slots
+	while slots.size() > number:
+		slots.pop_back()
+
+	# check which colors are used to avoid assigning them to new slots
+	var taken_colors = []
+	for slot in slots:
+		taken_colors.append(slot.color)
+
+	# add new slots
+	while slots.size() < number:
+		var index = slots.size()
+		var slot = GameSetupInfo.Slot.new()
+		slots.append(slot)
+
+		slot.faction = CFG.FACTIONS_LIST[0]
+		slot.color = 0
+		slot.index = index
+
+		while slot.color in taken_colors:
+			slot.color += 1
+
+		taken_colors.append(slot.color)
+
 
 
 ## Info for a single slot
@@ -209,6 +228,9 @@ class Slot extends RefCounted: # check if this is good base
 
 	## for battle only mode
 	var units_list : Array[DataUnit] = [null,null,null,null,null]
+
+	## used for some simpleness at player in world
+	var index : int = -1
 
 	var team : int = 0
 

@@ -4,6 +4,6 @@
 
 [resource]
 script = ExtResource("1_7nhkj")
-type = "ruby_cave"
+type = "outpost ruby"
 texture_path = "res://Art/world_map/ruby_cave.png"
 flip_horizontal = false

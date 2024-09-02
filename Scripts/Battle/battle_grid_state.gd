@@ -33,26 +33,29 @@ static func create(map : DataBattleMap, new_armies : Array[Army]) -> BattleGridS
 
 	# assigning players without a team
 	var occupied_team_slots = []
-	for army in new_armies: 
-		var team = army.controller.team
-		if team == 0:
+	for army in new_armies: # assigning NO team players
+		var new_army_in_battle = ArmyInBattleState.create_from(army, result)
+		var player = IM.get_player_by_index(army.controller_index)
+		if player:
+			new_army_in_battle.team = player.team
+		result.armies_in_battle_state.append(new_army_in_battle)
+
+		if new_army_in_battle.team == 0:
 			continue
-		if team not in occupied_team_slots:
-			occupied_team_slots.append(team)
+		if new_army_in_battle.team not in occupied_team_slots:
+			occupied_team_slots.append(new_army_in_battle.team)
 	var new_team_idx = 1
-	for army in new_armies:
-		var team = army.controller.team
+	for army_in_battle in result.armies_in_battle_state:
+		var team = army_in_battle.team
 		if team == 0:
 			while new_team_idx in occupied_team_slots:
 				new_team_idx += 1
-			army.controller.team = new_team_idx
+			army_in_battle.team = new_team_idx
 			new_team_idx += 1
-	
-	# generate ArmyInBattleState Objects
-	for army in new_armies:
-		result.armies_in_battle_state.append(ArmyInBattleState.create_from(army, result))
 
-	# generate battle hex tiles using GenericHexGrid variables
+	result.current_army_index = 0
+	result.turn_counter = 0
+
 	for x in range(map.grid_width):
 		for y in range(map.grid_height):
 			var map_tile : DataTile = map.grid_data[x][y]
@@ -94,7 +97,7 @@ func move_info_summon_unit(move_info : MoveInfo) -> Unit:
 ## Calls specific methods based on 'move_info.move_type'
 func move_info_execute(move_info : MoveInfo) -> void:
 	currently_processed_move_info = move_info
-	
+
 	var source_tile_coord := move_info.move_source
 
 	var unit = get_unit(source_tile_coord)
@@ -115,17 +118,17 @@ func move_info_execute(move_info : MoveInfo) -> void:
 			move_info.register_kill(_get_army_index(cyclone_target), unit)
 
 			_kill_unit(unit)
-		
+
 		MoveInfo.TYPE_MAGIC:
 			var target_tile_coord := move_info.target_tile_coord
 			var spell = move_info.spell
-			
+
 			move_info.register_move_start(current_army_index, unit) # undo related
 
 			_perform_magic(unit, target_tile_coord, spell) # KEY FUNCTION
 
 			move_info.register_whole_move_complete() # TEMP check what it was supposed to do
-			
+
 	turn_counter += 1
 	currently_processed_move_info = null
 
@@ -135,6 +138,24 @@ func move_info_execute(move_info : MoveInfo) -> void:
 		_switch_participant_turn()
 
 #endregion move_info support
+
+	currently_processed_move_info = null
+
+
+func move_info_sacrifice(move_info : MoveInfo) -> void:
+	assert(move_info.move_type == MoveInfo.TYPE_SACRIFICE)
+	currently_processed_move_info = move_info
+
+	var source_tile_coord := move_info.move_source
+
+	var unit = get_unit(source_tile_coord)
+
+	move_info.register_kill(_get_army_index(cyclone_target), unit)
+
+	_kill_unit(unit)
+
+	if battle_is_ongoing():
+		_switch_participant_turn()
 
 
 #region Undo
@@ -216,13 +237,13 @@ func _should_die_to_counter_attack(unit : Unit) -> bool:
 
 	for side in range(6):
 		if not adjacent_units[side]:
-			continue  # no unit
-		if adjacent_units[side].controller.team == unit.controller.team:
-			continue  # no friendly fire within team
+			continue # no unit
+		if adjacent_units[side].army_in_battle.team == unit.army_in_battle.team:
+			continue # no friendly fire within team
 		var unit_symbol : E.Symbols = unit.get_symbol(side)
 		if Unit.does_it_parry(unit_symbol):
 			continue  # parry prevents counter attacks
-		
+
 		var opposite_side := GenericHexGrid.opposite_direction(side)
 		var enemy_symbol : E.Symbols = adjacent_units[side].get_symbol(opposite_side)
 		if Unit.does_it_counter_attack(enemy_symbol):
@@ -245,9 +266,9 @@ func _process_offensive_symbols(unit : Unit) -> void:
 			_process_bow(unit, side, reach)
 			continue  # bow is special case
 		if not adjacent[side]:
-			continue  # nothing to interact with
-		if adjacent[side].controller.team == unit.controller.team:
-			continue  # no friendly fire within team
+			continue # nothing to interact with
+		if adjacent[side].army_in_battle.team == unit.army_in_battle.team:
+			continue # no friendly fire within team
 
 		var enemy = adjacent[side]
 		var opposite_side := GenericHexGrid.opposite_direction(side)
@@ -270,7 +291,7 @@ func _process_bow(unit : Unit, side : int, reach : int) -> void:
 
 	if target == null:
 		return # no target
-	if target.controller.team == unit.controller.team:
+	if target.army_in_battle.team == unit.army_in_battle.team:
 		return # no friendly fire within team
 
 	var opposite_side := GenericHexGrid.opposite_direction(side)
@@ -311,7 +332,8 @@ func _push_enemy(enemy : Unit, direction : int) -> void:
 #region public helpers
 
 func get_current_player() -> Player:
-	return armies_in_battle_state[current_army_index].army_reference.controller
+	var player_index = armies_in_battle_state[current_army_index].army_reference.controller_index
+	return IM.get_player_by_index(player_index)
 
 
 func get_unit(coord : Vector2i) -> Unit:
@@ -423,7 +445,7 @@ func _can_kill_or_push(me : Unit, other_unit : Unit, attack_direction : int):
 
 	if other_unit.controller == me.controller:
 		return false
-	elif other_unit.controller.team == me.controller.team:
+	elif other_unit.army_in_battle.team == me.army_in_battle.team:
 		return false
 
 	var front_symbol : E.Symbols = me.get_front_symbol()
@@ -450,8 +472,11 @@ func _can_kill_or_push(me : Unit, other_unit : Unit, attack_direction : int):
 
 
 func _get_player_army(player : Player) -> BattleGridState.ArmyInBattleState:
+	var player_index = -1
+	if player:
+		player_index = player.index
 	for army in armies_in_battle_state:
-		if army.army_reference.controller == player:
+		if army.army_reference.controller_index == player_index:
 			return army
 	assert(false, "No army for player " + str(player))
 	return null
@@ -585,7 +610,7 @@ func _kill_unit(target : Unit) -> void:
 							target = unit
 							new_target_pos = unit.coord
 							break
-							
+
 	currently_processed_move_info.register_kill(target_army_index, target)
 
 	# killing starts
@@ -611,7 +636,7 @@ func _kill_unit(target : Unit) -> void:
 
 			_:
 				continue
-	
+
 	mana_values_changed() # TEMP occurs every time after death
 
 ## Rare event when all players repeated their moves -> it pushes cyclone timer to activate next turn
@@ -670,14 +695,14 @@ func mana_values_changed() -> void:
 
 	# player later in an array win on ties between mana values - it's intentional
 	for army in armies_in_battle_state:
-		if current_worst.mana_points > army.mana_points: 
+		if current_worst.mana_points > army.mana_points:
 			current_worst = army
 		if current_best.mana_points < army.mana_points:
 			current_best = army
-	
+
 	cyclone_target = current_worst
 	var mana_difference = current_best.mana_points - current_worst.mana_points
- 
+
 	var new_cylone_counter = (number_of_mana_wells * 10) * max(1, (5 - mana_difference))
 	if number_of_mana_wells == 0:
 		new_cylone_counter = 999
@@ -688,9 +713,10 @@ func mana_values_changed() -> void:
 	elif current_worst.cyclone_timer > new_cylone_counter:
 		current_worst.cyclone_timer = new_cylone_counter
 
-	
+
 func cyclone_get_current_target() -> Player:
-	return cyclone_target.army_reference.controller
+	return IM.get_player_by_index( \
+		cyclone_target.army_reference.controller_index)
 
 
 func cyclone_get_current_target_turns_left() -> int:
@@ -742,17 +768,17 @@ func _perform_magic(unit : Unit, target_tile_coord : Vector2i, spell : BattleSpe
 			var enemy_targets : Array[Unit] = []
 			var ally_targets : Array[Unit] = []
 			var target : Unit = get_unit(target_tile_coord)
-			if target and target.controller.team == unit.controller.team:
+			if target and target.army_in_battle.team == unit.army_in_battle.team:
 				ally_targets.append(target)
 			elif target:
 				enemy_targets.append(target)
 			for direction in DIRECTION_TO_OFFSET:
 				target = get_unit(target_tile_coord + direction)
-				if target and target.controller.team == unit.controller.team:
+				if target and target.army_in_battle.team == unit.army_in_battle.team:
 					ally_targets.append(target)
 				elif target:
 					enemy_targets.append(target)
-			
+
 			for enemy_unit in enemy_targets: # kill enemy units first
 				_kill_unit(enemy_unit)
 			
@@ -793,9 +819,8 @@ func _check_battle_end() -> void:
 	var teams_alive = []
 	for army in armies_in_battle_state:
 		if army.can_fight():
-			var army_team = army.army_reference.controller.team
-			if army_team not in teams_alive:
-				teams_alive.append(army_team)
+			if army.team not in teams_alive:
+				teams_alive.append(army.team)
 
 	if teams_alive.size() < 2:
 		state = STATE_BATTLE_FINISHED
@@ -845,8 +870,9 @@ func _get_summon_tiles(player : Player) -> Array[Vector2i]:
 
 
 func _get_not_summoned_units(player : Player) -> Array[DataUnit]:
+	var index = player.index if player else -1
 	for a in armies_in_battle_state:
-		if a.army_reference.controller == player:
+		if a.army_reference.controller_index == index:
 			return a.units_to_summon.duplicate()
 	assert(false, "ai asked for units to summon but it doesn't control any army")
 	return []
@@ -858,8 +884,13 @@ func _get_units(player : Player) -> Array[Unit]:
 
 
 func _find_army_idx(player : Player) -> int:
+	# change done in merge -- neutral player is null and we then need -1 index
+	# also, should be moved to some function
+	var player_index = -1
+	if player:
+		player_index = player.index
 	for idx in range(armies_in_battle_state.size()):
-		if armies_in_battle_state[idx].army_reference.controller == player:
+		if armies_in_battle_state[idx].army_reference.controller_index == player_index:
 			return idx
 	assert(false, "ai asked for army idx for player who doesnt control any army")
 	return -1
@@ -917,7 +948,7 @@ func _ai_should_die_to_counter_attack(unit : Unit, direction : int, coord : Vect
 	for side in range(6):
 		if not adjacent_units[side]:
 			continue  # no unit
-		if adjacent_units[side].controller.team == unit.controller.team:
+		if adjacent_units[side].army_in_battle.team == unit.army_in_battle.team:
 			continue  # no friendly fire within team
 		var unit_symbol : E.Symbols = unit.get_symbol_when_rotated(side, direction)
 		if Unit.does_it_parry(unit_symbol):
@@ -944,7 +975,7 @@ func _ai_will_melee_kill_someone(unit : Unit, direction : int, coord : Vector2i)
 			continue  # we don't verify ranged weapons here
 		if not adjacent_units[side]:
 			continue  # nothing to interact with
-		if adjacent_units[side].controller.team == unit.controller.team:
+		if adjacent_units[side].army_in_battle.team == unit.army_in_battle.team:
 			continue  # no friendly fire within team
 
 		var enemy : Unit = adjacent_units[side]
@@ -1005,7 +1036,7 @@ func _is_kill_move(move : MoveInfo) -> bool:
 
 		var reach = Unit.ranged_weapon_reach(symbol)
 		var target : Unit = _get_shot_target(move.move_source, side, reach)
-		if target != null and target.controller.team != me.team:
+		if target != null and target.army_in_battle.team != me.team:
 			var opposite_side = GenericHexGrid.opposite_direction(side)
 			var target_symbol = target.get_symbol(opposite_side)
 
@@ -1090,7 +1121,7 @@ class BattleHex:
 
 	func blocks_shots() -> bool:
 		return not can_shoot_through
-	
+
 
 	func is_mana_tile() -> bool:
 		return mana
@@ -1099,6 +1130,7 @@ class BattleHex:
 class ArmyInBattleState:
 	var battle_grid_state : WeakRef # BattleGridState
 	var army_reference : Army
+	var team : int = 0
 
 	var units_to_summon : Array[DataUnit] = []
 	var units : Array[Unit] = []
@@ -1121,7 +1153,7 @@ class ArmyInBattleState:
 		result.army_reference = army
 		for unit : DataUnit in army.units_data:
 			result.units_to_summon.append(unit)
-			
+
 			result.mana_points += unit.mana # MANA
 
 		result.turn_started() # TEMP - FIXME - better init for chess clock
@@ -1151,6 +1183,7 @@ class ArmyInBattleState:
 	## Used in so that "summary"
 	func kill_unit(target : Unit) -> void:
 		print("killing ", target.coord, " ",target.template.unit_name)
+		assert(target in units)
 		if target.template.mana > 0:
 			mana_points -= target.template.mana
 			# mana_value changed gets called after every kill anyway
@@ -1181,7 +1214,8 @@ class ArmyInBattleState:
 
 	func summon_unit(unit_data : DataUnit, coord : Vector2i, rotation : int) -> Unit:
 		units_to_summon.erase(unit_data)
-		var result = Unit.create(army_reference.controller, unit_data, coord, rotation)
+		var player = IM.get_player_by_index(army_reference.controller_index)
+		var result = Unit.create(player, unit_data, coord, rotation, self)
 		units.append(result)
 		return result
 

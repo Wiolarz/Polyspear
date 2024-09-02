@@ -55,3 +55,10 @@ func _to_string() -> String:
 
 func to_array() -> Array[int]:
 	return [wood, iron, ruby]
+
+
+static func from_array(array : Array) -> Goods:
+	var wood = (array[0] if 0 in range(array.size()) else 0) as int
+	var iron = (array[1] if 1 in range(array.size()) else 0) as int
+	var ruby = (array[2] if 2 in range(array.size()) else 0) as int
+	return Goods.new(wood, iron, ruby)
