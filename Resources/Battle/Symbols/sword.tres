@@ -1,8 +1,8 @@
-[gd_resource type="Resource" script_class="DataSymbol" load_steps=2 format=3 uid="uid://cngonnqsgsd6e"]
+[gd_resource type="Resource" script_class="DataSymbol" load_steps=2 format=3 uid="uid://dy85xcp8g7gbq"]
 
-[ext_resource type="Script" path="res://Resources/Battle/data_symbol.gd" id="1_86jdy"]
+[ext_resource type="Script" path="res://Resources/Battle/data_symbol.gd" id="1_1o42a"]
 
 [resource]
-script = ExtResource("1_86jdy")
-type = 2
-texture_path = "res://Art/items/blue_axe.png"
+script = ExtResource("1_1o42a")
+type = 16
+texture_path = "res://Art/items/blue_sword.png"

@@ -216,14 +216,20 @@ func _should_die_to_counter_attack(unit : Unit) -> bool:
 
 	for side in range(6):
 		if not adjacent_units[side]:
-			continue # no unit
+			continue  # no unit
 		if adjacent_units[side].controller.team == unit.controller.team:
-			continue # no friendly fire within team
-		if unit.get_symbol(side) == E.Symbols.SHIELD:
-			continue # we have a shield
+			continue  # no friendly fire within team
+		var unit_symbol : E.Symbols = unit.get_symbol(side)
+		if Unit.does_it_parry(unit_symbol):
+			continue  # parry prevents counter attacks
+		
 		var opposite_side := GenericHexGrid.opposite_direction(side)
-		if adjacent_units[side].get_symbol(opposite_side) == E.Symbols.SPEAR:
-			return true # enemy has a counter_attack
+		var enemy_symbol : E.Symbols = adjacent_units[side].get_symbol(opposite_side)
+		if Unit.does_it_counter_attack(enemy_symbol):
+			var shield_power : int = Unit.defense_power(unit_symbol)
+			if Unit.attack_power(enemy_symbol) > shield_power:
+				return true
+		
 	return false
 
 
@@ -232,28 +238,35 @@ func _process_offensive_symbols(unit : Unit) -> void:
 
 	for side in range(6):
 		var unit_weapon = unit.get_symbol(side)
-		if unit_weapon in [E.Symbols.EMPTY, E.Symbols.SHIELD]:
-			continue # We don't have any weapon
-		if unit_weapon == E.Symbols.BOW:
-			_process_bow(unit, side)
-			continue # bow is special case
+		if unit_weapon == E.Symbols.EMPTY:
+			continue  # We don't have any weapon
+		if Unit.does_it_shoot(unit_weapon):
+			var reach = Unit.ranged_weapon_reach(unit_weapon)
+			_process_bow(unit, side, reach)
+			continue  # bow is special case
 		if not adjacent[side]:
-			continue # nothing to interact with
+			continue  # nothing to interact with
 		if adjacent[side].controller.team == unit.controller.team:
-			continue # no friendly fire within team
+			continue  # no friendly fire within team
 
 		var enemy = adjacent[side]
-		if unit_weapon == E.Symbols.PUSH:
-			_push_enemy(enemy, side)
-			continue # push is special case
 		var opposite_side := GenericHexGrid.opposite_direction(side)
-		if enemy.get_symbol(opposite_side) == E.Symbols.SHIELD:
-			continue # enemy defended
-		_kill_unit(enemy)
+		var enemy_weapon = enemy.get_symbol(opposite_side)
+		if Unit.does_it_parry(enemy_weapon):
+			continue  # parry disables all melee symbols
+		
+		# we check if attacking symbol power is able to kill
+		if Unit.defense_power(enemy_weapon) < Unit.attack_power(unit_weapon):
+			_kill_unit(enemy)  # in case of winning battle - further attack checks won't break anything
+			continue  # enemy unit died
+		
+		# in case enemy defended against attack we check if attacker pushes away enemy
+		if Unit.can_it_push(unit_weapon):
+			_push_enemy(enemy, side)
 
 
-func _process_bow(unit : Unit, side : int) -> void:
-	var target := _get_shot_target(unit.coord, side)
+func _process_bow(unit : Unit, side : int, reach : int) -> void:
+	var target := _get_shot_target(unit.coord, side, reach)
 
 	if target == null:
 		return # no target
@@ -261,7 +274,8 @@ func _process_bow(unit : Unit, side : int) -> void:
 		return # no friendly fire within team
 
 	var opposite_side := GenericHexGrid.opposite_direction(side)
-	if target.get_symbol(opposite_side) == E.Symbols.SHIELD:
+	var shield_power : int = Unit.defense_power(target.get_symbol(opposite_side))
+	if Unit.attack_power(unit.get_symbol(side)) <= shield_power:
 		return  # blocked by shield
 
 	_kill_unit(target)
@@ -332,24 +346,31 @@ func _get_adjacent_units(coord : Vector2i) -> Array[Unit]:
 	return result
 
 
-func _get_shot_target(coord : Vector2i, direction : int) -> Unit:
+## reach - number of tiles missle can reach [br]
+## reach == -1 means infinite | reach == 0 shouldn't be used
+func _get_shot_target(coord : Vector2i, direction : int, reach : int = -1) -> Unit:
+	assert(reach != 0, "attempt to shoot with non ranged weapon")
 	var target_coord := GenericHexGrid.adjacent_coord(coord, direction)
 	var hex := _get_battle_hex(target_coord)
 	while not hex.unit and not hex.blocks_shots():
+		if reach == 0:
+			break
 		target_coord = GenericHexGrid.adjacent_coord(target_coord, direction)
 		hex = _get_battle_hex(target_coord)
+		reach -= 1
+		
 	return hex.unit
 
 
 ## Checks if given tile relative to start tile is in specific direction within specific range [br]
-## start_tile, end_tile | direction = -1 search in all directions| range = -1 with that value searh till the end of board
-func _is_faced_tile_in_range(start_coord : Vector2i, end_coord : Vector2i, direction : int, range : int = -1) -> bool:
+## start_tile, end_tile | direction = -1 search in all directions| reach = -1 with that value searh till the end of board
+func _is_faced_tile_in_range(start_coord : Vector2i, end_coord : Vector2i, direction : int, reach : int = -1) -> bool:
 	for angle in range(6):
 		var tile : Vector2i = start_coord
 		if direction != -1:
 			angle = direction
 		var idx = 0
-		while idx < range:
+		while idx < reach:
 			idx += 1
 			tile += DIRECTION_TO_OFFSET[angle]
 			if tile == end_coord:
@@ -405,7 +426,8 @@ func _can_kill_or_push(me : Unit, other_unit : Unit, attack_direction : int):
 	elif other_unit.controller.team == me.controller.team:
 		return false
 
-	match me.get_front_symbol():
+	var front_symbol : E.Symbols = me.get_front_symbol()
+	match front_symbol:
 		E.Symbols.EMPTY:
 			# can't deal with enemy_unit
 			return false
@@ -419,9 +441,9 @@ func _can_kill_or_push(me : Unit, other_unit : Unit, attack_direction : int):
 			# assume other attack symbol
 			# Does enemy_unit has a shield?
 			var defense_direction = GenericHexGrid.opposite_direction(attack_direction)
-			var defense_symbol = other_unit.get_symbol(defense_direction)
+			var shield_power = Unit.defense_power(other_unit.get_symbol(defense_direction))
 
-			if defense_symbol == E.Symbols.SHIELD:
+			if shield_power >= Unit.attack_power(front_symbol):
 				return false
 			# no shield, attack ok
 			return true
@@ -657,6 +679,8 @@ func mana_values_changed() -> void:
 	var mana_difference = current_best.mana_points - current_worst.mana_points
  
 	var new_cylone_counter = (number_of_mana_wells * 10) * max(1, (5 - mana_difference))
+	if number_of_mana_wells == 0:
+		new_cylone_counter = 999
 	#new_cylone_counter = 1 # use to test
 
 	if current_worst.cyclone_timer == 0:  # Cycle killed a unit now it resets
@@ -803,6 +827,8 @@ func force_surrender():
 func get_possible_moves() -> Array[MoveInfo]:
 	if is_during_summoning_phase():
 		return _get_all_spawn_moves()
+	if state == STATE_SACRIFICE:
+		return _get_all_sacrifice_moves()
 
 	return _get_all_unit_moves()
 
@@ -853,6 +879,15 @@ func _get_all_unit_moves() -> Array[MoveInfo]:
 	return legal_moves
 
 
+func _get_all_sacrifice_moves() -> Array[MoveInfo]:
+	var legal_moves : Array[MoveInfo] = []
+	var my_units := _get_units(get_current_player())
+
+	for unit in my_units:
+		legal_moves.append(MoveInfo.make_sacrifice(unit.coord))
+	return legal_moves
+
+
 func _get_all_spawn_moves() -> Array[MoveInfo]:
 	var legal_moves: Array[MoveInfo] = []
 	var me = get_current_player()
@@ -875,60 +910,123 @@ func filter_only_kill_moves(all_moves : Array[MoveInfo]) -> Array[MoveInfo]:
 	return all_kill_moves
 
 
-## only legal moves are supported
-func _is_kill_move(move : MoveInfo) -> bool:
+func _ai_should_die_to_counter_attack(unit : Unit, direction : int, coord : Vector2i) -> bool:
+	# Returns true if Enemy counter_attack can kill the target
+	var adjacent_units = _get_adjacent_units(coord)
 
-	if move.move_type != MoveInfo.TYPE_MOVE:
+	for side in range(6):
+		if not adjacent_units[side]:
+			continue  # no unit
+		if adjacent_units[side].controller.team == unit.controller.team:
+			continue  # no friendly fire within team
+		var unit_symbol : E.Symbols = unit.get_symbol_when_rotated(side, direction)
+		if Unit.does_it_parry(unit_symbol):
+			continue  # parry prevents counter attacks
+		
+		var opposite_side := GenericHexGrid.opposite_direction(side)
+		var enemy_symbol : E.Symbols = adjacent_units[side].get_symbol(opposite_side)
+		if Unit.does_it_counter_attack(enemy_symbol):
+			var shield_power : int = Unit.defense_power(unit_symbol)
+			if Unit.attack_power(enemy_symbol) > shield_power:
+				return true
+		
+	return false
+
+
+func _ai_will_melee_kill_someone(unit : Unit, direction : int, coord : Vector2i) -> bool:
+	var adjacent_units : Array[Unit] = _get_adjacent_units(coord)
+
+	for side in range(6):
+		var unit_weapon = unit.get_symbol_when_rotated(direction, side)
+		if unit_weapon == E.Symbols.EMPTY:
+			continue  # We don't have any weapon
+		if Unit.does_it_shoot(unit_weapon):
+			continue  # we don't verify ranged weapons here
+		if not adjacent_units[side]:
+			continue  # nothing to interact with
+		if adjacent_units[side].controller.team == unit.controller.team:
+			continue  # no friendly fire within team
+
+		var enemy : Unit = adjacent_units[side]
+		var opposite_side := GenericHexGrid.opposite_direction(side)
+		var enemy_weapon : E.Symbols = enemy.get_symbol(opposite_side)
+		if Unit.does_it_parry(enemy_weapon):
+			continue  # parry disables all melee symbols
+		
+		# we check if attacking symbol power is able to kill
+		if Unit.defense_power(enemy_weapon) < Unit.attack_power(unit_weapon):
+			return true 
+		# in case enemy defended against attack we check if attacker pushes away enemy
+		if Unit.can_it_push(unit_weapon):
+			var pushed_cord : Vector2i = GenericHexGrid.distant_coord(enemy.coord, side, 1)
+			
+			var hex = _get_battle_hex(pushed_cord)
+			if not hex.can_be_moved_to:
+				return true  # unit would get crushed
+
+			var unit_on_target = hex.unit
+			if unit_on_target:
+				return true # unit would get crushed
+
+			if _ai_should_die_to_counter_attack(enemy, enemy.unit_rotation, pushed_cord):
+				return true
+	
+	return false
+
+
+## returns true if that move will lead to enemy death [br]
+## doesn't account that in may after killing someone die instantly
+func _is_kill_move(move : MoveInfo) -> bool:
+	# list of checks:
+	# 1 verify if turning in (starting move with that unit) will even work
+	# 2 moving in that direction would shoot someone
+	# 3 turing in that direction will kill someone
+	# 4 you can survive entering that tile
+	# 5 you can kill someone entering that tile
+
+	if move.move_type != MoveInfo.TYPE_MOVE:  # TODO add support for spells
 		return false # summons don't kill
 
 	var me = get_current_player()
-	var unit_on_target_field = get_unit(move.target_tile_coord)
-	if unit_on_target_field != null \
-			and unit_on_target_field.controller != me:
-		# can move into a unit and kill it
-		# if it couldn't move would not be legal
-		return true
-
-	# BOW
 	var attacker = get_unit(move.move_source)
 	var move_direction = GenericHexGrid.direction_to_adjacent( \
 			move.move_source, move.target_tile_coord);
-	for side in range(6):
-		var opposite_side = GenericHexGrid.opposite_direction(side)
-		var symbol = attacker.get_symbol_when_rotated(side, move_direction)
-		if symbol == E.Symbols.BOW:
-			var target : Unit = _get_shot_target(move.move_source, side)
-			if target != null and target.controller != me \
-					and target.get_symbol(opposite_side) != E.Symbols.SHIELD:
-				# can shoot enemy in this direction
-				return true
 
-	# check for enemies near new field
-	var target_adjacent_units = _get_adjacent_units(move.target_tile_coord)
-	# check for enemy spears
-	for side in 6:
-		var enemy = target_adjacent_units[side]
-		if enemy and enemy.controller != me:
+	# step 1
+	if _ai_should_die_to_counter_attack(attacker, move_direction, move.move_source):
+		return false  # will die to a spear befor it can kill
+
+	# step 2 BOW
+	for side in range(6):  # we check each side for a ranged attack symbol
+		var symbol = attacker.get_symbol_when_rotated(side, move_direction)
+
+		if not Unit.does_it_shoot(symbol):
+			continue
+
+		var reach = Unit.ranged_weapon_reach(symbol)
+		var target : Unit = _get_shot_target(move.move_source, side, reach)
+		if target != null and target.controller.team != me.team:
 			var opposite_side = GenericHexGrid.opposite_direction(side)
-			if enemy.get_symbol(opposite_side) == E.Symbols.SPEAR:
-				if attacker.get_symbol_when_rotated(move_direction, side) != E.Symbols.SHIELD:
-					# will die to spear befor it can kill, no-go
-					return false
-	# check for unprotected attacker symbols
-	for side in 6:
-		var enemy = target_adjacent_units[side]
-		if not enemy or enemy.controller == me:
-			continue
-		# TODO detect killing pushes
-		var opposite_side = GenericHexGrid.opposite_direction(side)
-		if enemy.get_symbol(opposite_side) == E.Symbols.SHIELD:
-			continue
-		var attack_symbol =  attacker.get_symbol_when_rotated(move_direction, side)
-		if attack_symbol == E.Symbols.SWORD or attack_symbol == E.Symbols.SPEAR:
-			return true
+			var target_symbol = target.get_symbol(opposite_side)
+
+			if Unit.defense_power(target_symbol) < Unit.attack_power(symbol):
+				return true  # can shoot enemy in this direction
+
+	# step 3 melee weapon on first rotation
+	if _ai_will_melee_kill_someone(attacker, move_direction, move.move_source):
+		return true
+
+	# step 4
+	if _ai_should_die_to_counter_attack(attacker, move_direction, move.target_tile_coord):
+		return false  # will die to a spear befor it can kill
+	
+	# step 5
+	if _ai_will_melee_kill_someone(attacker, move_direction, move.target_tile_coord):
+		return true
+
 	return false
 
-#endregion
+#endregion AI Helpers
 
 
 #region Subclasses

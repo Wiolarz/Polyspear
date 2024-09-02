@@ -73,7 +73,9 @@ func get_symbol(side_world : int) -> E.Symbols:
 	return get_symbol_when_rotated(side_world, unit_rotation)
 
 
-## gets symbol facing specified directin on the battle map, if unit was rotated in given dir
+## gets symbol facing specified directin on the battle map, if unit was rotated in given dir [br]
+## side_world - direction unit is turned toward [br]
+## hypotetical_rotation - unit side it's symbol
 func get_symbol_when_rotated(side_world : int, hypotetical_rotation : int) -> E.Symbols:
 	if is_on_swamp:
 		return E.Symbols.EMPTY
@@ -92,3 +94,78 @@ func get_player_color() -> DataPlayerColor:
 	if not controller:
 		return CFG.NEUTRAL_COLOR
 	return controller.get_player_color()
+
+
+
+## 0 no shield, 1 weak shield (any symbol), 2 normal shield, 3 strong shield
+static func defense_power(symbol : E.Symbols) -> int:
+	match symbol:
+		E.Symbols.EMPTY:
+			return 0
+		E.Symbols.STRONG_SHIELD, E.Symbols.STRONG_TOWERSHIELD:
+			return 3
+		E.Symbols.SHIELD, E.Symbols.ATTACK_SHIELD, E.Symbols.TOWERSHIELD:
+			return 2
+
+		_:
+			return 1
+
+## power has to bigger than defense power to kill a unit
+static func attack_power(symbol : E.Symbols) -> int:
+	match symbol:
+		E.Symbols.STRONG_AXE, E.Symbols.STRONG_SPEAR:
+			return 3  # strong attack pierces normal shields
+		E.Symbols.AXE, E.Symbols.SPEAR, E.Symbols.BOW, E.Symbols.ATTACK_SHIELD, E.Symbols.FIST, E.Symbols.DAGGER, E.Symbols.SWORD:
+			return 2  # normal attack
+		E.Symbols.STAFF, E.Symbols.MACE:
+			return 1  # weak attack - kills only when enemy defense is 0 (Empty symbol present)
+		_:
+			return 0
+
+## returns true if symbol can push
+static func can_it_push(symbol : E.Symbols) -> bool:
+	match symbol:
+		E.Symbols.MACE, E.Symbols.FIST:
+			return true
+		E.Symbols.STRONG_TOWERSHIELD, E.Symbols.TOWERSHIELD: # shields
+			return true
+		E.Symbols.PUSH: # classic
+			return true
+		_:
+			return false
+
+
+static func does_it_parry(symbol : E.Symbols) -> bool:
+	match symbol:
+		E.Symbols.SWORD:
+			return true
+		_:
+			return false
+
+
+static func does_it_counter_attack(symbol : E.Symbols) -> bool:
+	match symbol:
+		E.Symbols.SPEAR, E.Symbols.STRONG_SPEAR:
+			return true
+		_:
+			return false
+
+
+static func does_it_shoot(symbol : E.Symbols) -> bool:
+	match symbol:
+		E.Symbols.BOW, E.Symbols.DAGGER:
+			return true
+		_:
+			return false
+
+
+## return how many tiles does range weapon attack can reach [br]
+## -1 = infinite
+static func ranged_weapon_reach(symbol : E.Symbols) -> int:
+	match symbol:
+		E.Symbols.BOW:
+			return 4
+		E.Symbols.DAGGER:
+			return 2
+		_:
+			return 0
