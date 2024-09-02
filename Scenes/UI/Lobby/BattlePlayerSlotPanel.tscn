@@ -33,19 +33,19 @@ theme = SubResource("Theme_ojgk6")
 theme_override_styles/panel = SubResource("StyleBoxFlat_6g5p6")
 script = ExtResource("2_ifloy")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="."]
+[node name="GeneralVContainer" type="VBoxContainer" parent="."]
 layout_mode = 2
 
-[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
+[node name="TopBarHContainer" type="HBoxContainer" parent="GeneralVContainer"]
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="PlayerInfoPanel" type="Panel" parent="VBoxContainer/HBoxContainer"]
+[node name="PlayerInfoPanel" type="Panel" parent="GeneralVContainer/TopBarHContainer"]
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_nhatr")
 
-[node name="Label" type="Label" parent="VBoxContainer/HBoxContainer/PlayerInfoPanel"]
+[node name="Label" type="Label" parent="GeneralVContainer/TopBarHContainer/PlayerInfoPanel"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -57,41 +57,53 @@ text = "Zdzichu"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="ButtonTakeLeave" type="Button" parent="VBoxContainer/HBoxContainer"]
-custom_minimum_size = Vector2(200, 0)
+[node name="ButtonTakeLeave" type="Button" parent="GeneralVContainer/TopBarHContainer"]
+custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
 size_flags_horizontal = 0
 text = "Take"
 
-[node name="ButtonColor" type="Button" parent="VBoxContainer/HBoxContainer"]
-custom_minimum_size = Vector2(200, 0)
+[node name="ButtonColor" type="Button" parent="GeneralVContainer/TopBarHContainer"]
+custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
 text = "Color"
 
-[node name="OptionButtonTeam" type="OptionButton" parent="VBoxContainer/HBoxContainer"]
+[node name="OptionButtonTeam" type="OptionButton" parent="GeneralVContainer/TopBarHContainer"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+item_count = 1
+selected = 0
+popup/item_0/text = "Team"
+popup/item_0/id = 0
+
+[node name="OptionButtonHero" type="OptionButton" parent="GeneralVContainer/TopBarHContainer"]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+item_count = 1
+selected = 0
+popup/item_0/text = "Hero"
+popup/item_0/id = 0
+
+[node name="OptionButtonUnit1" type="OptionButton" parent="GeneralVContainer"]
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
 
-[node name="OptionButtonUnit1" type="OptionButton" parent="VBoxContainer"]
+[node name="OptionButtonUnit2" type="OptionButton" parent="GeneralVContainer"]
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
 
-[node name="OptionButtonUnit2" type="OptionButton" parent="VBoxContainer"]
+[node name="OptionButtonUnit3" type="OptionButton" parent="GeneralVContainer"]
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
 
-[node name="OptionButtonUnit3" type="OptionButton" parent="VBoxContainer"]
+[node name="OptionButtonUnit4" type="OptionButton" parent="GeneralVContainer"]
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
 
-[node name="OptionButtonUnit4" type="OptionButton" parent="VBoxContainer"]
+[node name="OptionButtonUnit5" type="OptionButton" parent="GeneralVContainer"]
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
 
-[node name="OptionButtonUnit5" type="OptionButton" parent="VBoxContainer"]
-custom_minimum_size = Vector2(200, 0)
-layout_mode = 2
-
-[connection signal="pressed" from="VBoxContainer/HBoxContainer/ButtonTakeLeave" to="." method="_on_button_take_leave_pressed"]
-[connection signal="pressed" from="VBoxContainer/HBoxContainer/ButtonColor" to="." method="_on_button_color_pressed"]
-[connection signal="item_selected" from="VBoxContainer/HBoxContainer/OptionButtonTeam" to="." method="_on_option_button_team_item_selected"]
+[connection signal="pressed" from="GeneralVContainer/TopBarHContainer/ButtonTakeLeave" to="." method="_on_button_take_leave_pressed"]
+[connection signal="pressed" from="GeneralVContainer/TopBarHContainer/ButtonColor" to="." method="_on_button_color_pressed"]
+[connection signal="item_selected" from="GeneralVContainer/TopBarHContainer/OptionButtonTeam" to="." method="_on_option_button_team_item_selected"]

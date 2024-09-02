@@ -36,9 +36,15 @@ func has_slot(player_index : int) -> bool:
 func set_team(slot_index : int, team_idx : int):
 	slots[slot_index].team = team_idx
 
+
 ## Gameplay setting a unit to memory
 func set_unit(slot_index : int, unit_index : int, unit_data : DataUnit):
 	slots[slot_index].units_list[unit_index] = unit_data
+
+
+## Gameplay setting a hero to memory
+func set_hero(slot_index : int, hero_data : DataHero):
+	slots[slot_index].selected_hero = hero_data
 
 
 func to_dictionary(local_username : String = "") -> Dictionary:
@@ -141,7 +147,8 @@ func set_battle_map(map : DataBattleMap):
 	set_slots_number(slots_number)
 
 	for slot_idx in slots.size():
-		slots[slot_idx].set_units_length(map.player_slots[slot_idx + 1])
+		var number_of_unit_slots = map.player_slots[slot_idx + 1] - 1  # -1 space is reserved for hero unit
+		slots[slot_idx].set_units_length(number_of_unit_slots)
 
 
 func set_world_map(map: DataWorldMap):
@@ -227,7 +234,8 @@ class Slot extends RefCounted: # check if this is good base
 	var faction : DataFaction = null
 
 	## for battle only mode
-	var units_list : Array[DataUnit] = [null,null,null,null,null]
+	var units_list : Array[DataUnit] = [null,null,null,null,null] #TODO refactor to change variable to private as we have a clean getter for it
+	var selected_hero : DataHero = null
 
 	## used for some simpleness at player in world
 	var index : int = -1
@@ -260,6 +268,7 @@ class Slot extends RefCounted: # check if this is good base
 				continue
 			non_empty.append(unit)
 		return non_empty
+
 
 	## for replays
 	func set_units(new_units : Array[DataUnit]) -> void:

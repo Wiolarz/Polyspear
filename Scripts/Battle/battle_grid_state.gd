@@ -1236,6 +1236,13 @@ class ArmyInBattleState:
 	var mana_points : int = 1
 	var cyclone_timer : int = 100
 
+	var hero : Hero:
+		get:
+			return army_reference.hero
+		set(_no_value):
+			assert(false, "don't change the hero here")
+
+
 	## when turn started - for local time calculation
 	var turn_start_timestamp
 	##  miliseconds on the clock when turn started - will be synched in multiplayer
@@ -1248,6 +1255,11 @@ class ArmyInBattleState:
 		var result = ArmyInBattleState.new()
 		result.battle_grid_state = weakref(state)
 		result.army_reference = army
+		if army.hero: #TEMP
+			var hero_unit : DataUnit = army.hero.template.data_unit
+			if hero_unit:
+				result.units_to_summon.append(hero_unit)
+		# unit list
 		for unit : DataUnit in army.units_data:
 			result.units_to_summon.append(unit)
 
