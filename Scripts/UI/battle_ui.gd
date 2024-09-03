@@ -29,10 +29,6 @@ var selected_spell_button : TextureButton = null
 
 #region INIT
 
-func _ready():
-	pass
-
-
 func load_armies(army_list : Array[BattleGridState.ArmyInBattleState]):
 	# Disable "Switch camera" button for non world map gameplay
 	camera_button.disabled = IM.game_setup_info.game_mode != GameSetupInfo.GameMode.WORLD

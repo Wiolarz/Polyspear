@@ -215,6 +215,7 @@ func undo() -> void:
 	_end_move()
 
 
+## STUB
 func redo() -> void:
 	push_warning("not implemented")
 	pass

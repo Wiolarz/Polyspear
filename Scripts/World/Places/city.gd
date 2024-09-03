@@ -151,7 +151,7 @@ func paste_specific_serializable_state(dict : Dictionary) -> void:
 	# 	players[dict["player"]].cities.append(self)
 
 
-static func create_new(args : PackedStringArray, coord_ : Vector2i) -> Place:
+static func create_place(args : PackedStringArray, coord_ : Vector2i) -> Place:
 	var player_index : int = -1
 	for i in range(args.size()):
 		if args[i].is_valid_int():

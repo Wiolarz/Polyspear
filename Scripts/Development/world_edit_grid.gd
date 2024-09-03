@@ -1,9 +1,9 @@
-class_name HackWorldEditGrid
+class_name WorldEditGrid
 extends GridNode2D
 
 
 var grid : GenericHexGrid = \
-	GenericHexGrid.new(0, 0, HackWorldEditGrid.create_empty_tile())
+	GenericHexGrid.new(0, 0, WorldEditGrid.create_empty_tile())
 
 
 static func create_empty_tile() -> DataTile:
@@ -36,7 +36,7 @@ func resize(v : Vector2i) -> void:
 	var y_min : int = min(v.y, old_size.y)
 	var x_max : int = max(v.x, old_size.x)
 	var y_max : int = max(v.y, old_size.y)
-	var sentinel = HackWorldEditGrid.create_empty_tile()
+	var sentinel = WorldEditGrid.create_empty_tile()
 	for x in range(x_max):
 		for y in range(y_max):
 			if x < x_min and y < y_min:
@@ -76,10 +76,10 @@ func get_current_map(trim : bool) -> DataWorldMap:
 			if tile:
 				tile = tile.duplicate()
 			else:
-				tile = HackWorldEditGrid.create_empty_tile()
+				tile = WorldEditGrid.create_empty_tile()
 			column.append(tile)
 		grid_data.append(column)
-	HackWorldEditGrid._make_nulls_sentinels(grid_data)
+	WorldEditGrid._make_nulls_sentinels(grid_data)
 	map.max_player_number = _find_max_player_number()
 	map.grid_data = grid_data
 	if map.max_player_number < 1:
@@ -143,7 +143,7 @@ func _find_max_player_number() -> int:
 			if args.size() < 1 or args[0] != "city":
 				continue
 			var city : City = \
-				City.create_new(args.slice(1), coord)
+				City.create_place(args.slice(1), coord)
 			assert(city)
 			var index = city.controller_index
 			if index < 0:

@@ -29,7 +29,7 @@ var current_button: TextureButton
 # var temp_world_grid_form : Node2D
 # var temp_world_grid : GenericHexGrid
 
-var world_grid : HackWorldEditGrid
+var world_grid : WorldEditGrid
 
 #region Setup
 
@@ -258,7 +258,7 @@ func _on_new_world_map_pressed():
 	BM.unload_for_editor()
 	_drop_world_grid()
 
-	world_grid = HackWorldEditGrid.new()
+	world_grid = WorldEditGrid.new()
 	world_grid.resize(Vector2i(5, 5))
 
 	get_parent().add_child(world_grid)

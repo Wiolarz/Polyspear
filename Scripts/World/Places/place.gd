@@ -25,7 +25,7 @@ static func create_basic(coord_ : Vector2i, movable_ : bool, basic_type_ : Strin
 	return place
 
 
-static func create_new(_args : PackedStringArray, coord_ : Vector2i) -> Place:
+static func create_place(_args : PackedStringArray, coord_ : Vector2i) -> Place:
 	# TODO add grid to args -- it would ge great also to add hex *atomically*
 	# in this funciton
 	var place := Place.new()
@@ -74,7 +74,7 @@ static func from_network_serializable(dict : Dictionary, coord_ : Vector2i) -> P
 	var script_path = "%s/%s.gd" % [ PATH_TODO_MOVE_TO_CONFIG, type ]
 	var script = load(script_path) as Script
 	assert(script)
-	var place : Place = script.create_new(PackedStringArray(), coord_)
+	var place : Place = script.create_place(PackedStringArray(), coord_)
 	var player_index = dict["player"]
 	place.controller_index = player_index
 	place.paste_specific_serializable_state(dict)
@@ -100,14 +100,14 @@ func get_type() -> String:
 
 ## should be overridden by each place
 ## This function has to copy such information of state that it would be
-## possible to add it to the state after "create_new" call
+## possible to add it to the state after "create_place" call
 func to_specific_serializable(dict : Dictionary) -> void:
 	pass
 
 
 ## shoould be overridden by each place
 ## This function has to recover every information that is not recovered by
-## "create_new" of the type with defaults and changing player which is done
+## "create_place" of the type with defaults and changing player which is done
 ## earlier
 func paste_specific_serializable_state(dict : Dictionary) -> void:
 	return

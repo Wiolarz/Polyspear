@@ -39,7 +39,7 @@ func _fill_place_with_script(type_name : String, coord : Vector2i) -> void:
 	var script = load(script_path) as Script
 	assert(script) # TODO throw some error on map load
 	var args = type_array.slice(1)
-	place = script.create_new(args, coord)
+	place = script.create_place(args, coord)
 	# var army_preset : PresetArmy = place.get_army_at_start()
 	# if army_preset:
 	# 	army = Army.create_from_preset(army_preset)
