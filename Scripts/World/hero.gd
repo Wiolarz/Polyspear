@@ -25,8 +25,8 @@ var movement_points = 3
 var xp = 0
 var level = 1
 
-
-static func level_threshold_at(level : int) -> int:
+## DESIGN should current level determine how many exp is needed for level up
+static func level_threshold_at(_level : int) -> int:
 	return 2
 
 
@@ -72,7 +72,7 @@ func add_xp(gained_xp : int) -> void:
 	if gained_xp <= 0:
 		return
 	xp += gained_xp
-	while xp >= level_threshold_at(level):
+	while xp >= Hero.level_threshold_at(level):
 		level_up()
 
 
@@ -105,9 +105,9 @@ func to_network_serializable() -> Dictionary:
 	return dict
 
 
-static func from_network_serializable(dict : Dictionary, controller_index : int) -> Hero:
+static func from_network_serializable(dict : Dictionary, controller_index_ : int) -> Hero:
 	var data_hero = DataHero.from_network_id(dict["data_hero"])
-	var hero : Hero = Hero.construct_hero(data_hero, controller_index)
+	var hero : Hero = Hero.construct_hero(data_hero, controller_index_)
 	hero.hero_name = dict["name"]
 	hero.movement_points = dict["movement_points"]
 	hero.xp = dict["xp"]

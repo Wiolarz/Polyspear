@@ -34,11 +34,6 @@ func load_map(world_map : DataWorldMap, state_load_mode : bool = false) -> void:
 
 #region basic typed helpers
 
-## TODO rename `get_army_form`
-
-func get_army(coord : Vector2i) -> ArmyForm:
-	return get_army_form(coord)
-
 func get_army_form(coord : Vector2i) -> ArmyForm:
 	return unit_grid.get_hex(coord)
 
@@ -89,7 +84,7 @@ func is_movable(coord : Vector2i):
 
 
 func get_tile_controller(coord : Vector2i) -> Player:
-	var army = get_army(coord)
+	var army = get_army_form(coord)
 	if army:
 		return army.controller
 	var place = get_place(coord)
@@ -109,7 +104,7 @@ func get_all_places() -> Array[Place]:
 
 
 func is_enemy_present(coord : Vector2i, player : Player) -> bool:
-	var army := get_army(coord)
+	var army := get_army_form(coord)
 	if not army:
 		return false
 	if army.controller == player: #TEMP should check for allies
@@ -117,7 +112,7 @@ func is_enemy_present(coord : Vector2i, player : Player) -> bool:
 	return true
 
 func has_army(coord : Vector2i) -> bool:
-	return get_army(coord) != null
+	return get_army_form(coord) != null
 
 #endregion
 

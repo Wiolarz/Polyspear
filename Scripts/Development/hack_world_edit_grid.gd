@@ -76,7 +76,7 @@ func get_current_map(trim : bool) -> DataWorldMap:
 			if tile:
 				tile = tile.duplicate()
 			else:
-				tile = create_empty_tile()
+				tile = HackWorldEditGrid.create_empty_tile()
 			column.append(tile)
 		grid_data.append(column)
 	HackWorldEditGrid._make_nulls_sentinels(grid_data)

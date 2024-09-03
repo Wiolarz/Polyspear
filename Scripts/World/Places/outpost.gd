@@ -7,20 +7,17 @@ var outpost_type : String
 var neutral_army_preset : PresetArmy
 
 
-static func create_new(args : PackedStringArray, coord : Vector2i) -> Place:
-
-	var type = ""
-
+static func create_new(args : PackedStringArray, coord_ : Vector2i) -> Place:
 	# if args.size() != 1:
 	# 	push_error("outpost needs exactly one argument to create")
-
-	var result = Outpost.new()
-	type = args[0] if args.size() >= 1 else "wood"
+	var result := Outpost.new()
+	
+	var type : String = args[0] if args.size() >= 1 else "wood"
 	if not result._set_type(type):
 		return null
-
+	
 	# TODO move this somewhere else -- this should not be here
-	result.coord = coord
+	result.coord = coord_
 	result.movable = true
 
 	return result

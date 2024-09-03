@@ -9,7 +9,7 @@ var city : City
 ## UPDATE -- TODO remove -- we do not need this -- better use WM.selected_hero
 var trading_hero_army : Army:
 	get: return WM.selected_hero.entity if WM.selected_hero else null
-	set(_v): assert("no set here")
+	set(_v): assert(false, "no set here")
 
 ## this should be replaced somehow after this refactor
 var world_state_ugly : WorldState

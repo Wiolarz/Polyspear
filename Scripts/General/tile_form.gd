@@ -11,11 +11,11 @@ var hex = null # WorldHex in world
 var grid_type : GameSetupInfo.GameMode = GameSetupInfo.GameMode.WORLD
 
 
-static func create_world_editor_tile(data_tile : DataTile, coord : Vector2i,
+static func create_world_editor_tile(data_tile : DataTile, coord_ : Vector2i,
 		new_position : Vector2) -> TileForm:
 	var result = CFG.HEX_TILE_FORM_SCENE.instantiate()
-	result._set_coord(coord)
-	result.name = "Tile_%s_%s" % [ coord.x, coord.y ]
+	result._set_coord(coord_)
+	result.name = "Tile_%s_%s" % [ coord_.x, coord_.y ]
 	result.position = new_position
 	if data_tile:
 		var image = load(data_tile.texture_path)
@@ -26,19 +26,19 @@ static func create_world_editor_tile(data_tile : DataTile, coord : Vector2i,
 
 
 ## ugly, FIXME
-static func create_world_tile_new(hex : WorldHex, coord : Vector2i, \
+static func create_world_tile_new(hex_ : WorldHex, coord_ : Vector2i, \
 		new_position : Vector2) -> TileForm:
 	var result = CFG.HEX_TILE_FORM_SCENE.instantiate()
-	var image = hex.get_image()
+	var image = hex_.get_image()
 	result.type = "SENTINEL"
-	if hex.place:
-		assert(coord == hex.place.coord)
-		result.type = hex.place.get_type()
-	result._set_coord(coord)
+	if hex_.place:
+		assert(coord_ == hex_.place.coord)
+		result.type = hex_.place.get_type()
+	result._set_coord(coord_)
 	result._set_texture(image)
-	result.name = "Tile_%s_%s" % [ coord, result.type ]
+	result.name = "Tile_%s_%s" % [ coord_, result.type ]
 	result.position = new_position
-	result.hex = hex
+	result.hex = hex_
 	return result
 
 

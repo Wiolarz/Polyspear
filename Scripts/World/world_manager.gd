@@ -295,7 +295,7 @@ func do_local_recruit_hero(player : Player, hero_data : DataHero, \
 #region Battles
 
 func start_combat( \
-		armies : Array[Army], \
+		armies_ : Array[Army], \
 		combat_coord : Vector2i, \
 		battle_state : SerializableBattleState):
 	"""
@@ -303,14 +303,14 @@ func start_combat( \
 	"""
 	print("start_combat")
 	var biggest_army_size : int = 0
-	for army in armies:
+	for army in armies_:
 		var army_size : int = army.units_data.size()
 		if biggest_army_size < army_size:
 			biggest_army_size = army_size
 	combat_tile = combat_coord
 	var battle_map : DataBattleMap = world_state.get_battle_map_at(combat_tile, biggest_army_size)
 	var x_offset = get_bounds_global_position().end.x + CFG.MAPS_OFFSET_X
-	BM.start_battle(armies, battle_map, battle_state, x_offset)
+	BM.start_battle(armies_, battle_map, battle_state, x_offset)
 	UI.switch_camera()
 
 
@@ -318,11 +318,11 @@ func start_combat( \
 func start_combat_by_attack(attacking_army : Army, coord : Vector2i):
 	print("start_combat")
 
-	var armies : Array[Army] = [
+	var fighting_armies : Array[Army] = [
 		attacking_army,
 		world_state.get_army_at(coord),
 	]
-	start_combat(armies, coord, null)
+	start_combat(fighting_armies, coord, null)
 
 
 func end_of_battle(battle_results : Array[BattleGridState.ArmyInBattleState]):
@@ -603,8 +603,8 @@ func callback_place_changed(coord : Vector2i) -> void:
 	return
 
 
-func callback_combat_started(armies : Array, coord : Vector2i) -> void:
-	start_combat(armies, coord, null)
+func callback_combat_started(armies_ : Array, coord_ : Vector2i) -> void:
+	start_combat(armies_, coord_, null)
 
 
 #endregion

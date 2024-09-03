@@ -30,24 +30,20 @@ var _time_left_for_respawn : int = 0
 # 	_present_goods = material_rewards[0].duplicate()
 
 
-static func create_new(args : PackedStringArray, coord : Vector2i) -> Place:
-
-	var type = ""
-
+static func create_new(args : PackedStringArray, coord_ : Vector2i) -> Place:
 	# if args.size() != 1:
 	# 	push_error("hunt spot needs exactly one argument to create")
+	var result := HuntSpot.new()
 
-	var result = HuntSpot.new()
-	type = args[0] if args.size() >= 1 else "wood"
+	var type : String = args[0] if args.size() >= 1 else "wood"
 	if not result._set_type(type):
 		return null
-
+	
+	# TODO move this somewhere else -- this should not be here
+	result.coord = coord_
 	result.current_level = 0
 	result.movable = true
 	result._time_left_for_respawn = 0
-
-	# TODO move this somewhere else -- this should not be here
-	result.coord = coord
 
 	return result
 

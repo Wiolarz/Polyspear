@@ -16,20 +16,20 @@ var movable : bool = false
 var basic_type : String
 
 
-static func create_basic(coord : Vector2i, movable : bool, type_name : String) \
+static func create_basic(coord_ : Vector2i, movable_ : bool, basic_type_ : String) \
 		-> Place:
 	var place := Place.new()
-	place.coord = coord
-	place.movable = movable
-	place.basic_type = type_name
+	place.coord = coord_
+	place.movable = movable_
+	place.basic_type = basic_type_
 	return place
 
 
-static func create_new(_args : PackedStringArray, coord : Vector2i) -> Place:
+static func create_new(_args : PackedStringArray, coord_ : Vector2i) -> Place:
 	# TODO add grid to args -- it would ge great also to add hex *atomically*
 	# in this funciton
 	var place := Place.new()
-	place.coord = coord
+	place.coord = coord_
 	return place
 
 
@@ -69,12 +69,12 @@ static func get_network_serializable(place : Place) -> Dictionary:
 	return dict
 
 
-static func from_network_serializable(dict : Dictionary, coord : Vector2i) -> Place:
+static func from_network_serializable(dict : Dictionary, coord_ : Vector2i) -> Place:
 	var type = dict["type"]
 	var script_path = "%s/%s.gd" % [ PATH_TODO_MOVE_TO_CONFIG, type ]
 	var script = load(script_path) as Script
 	assert(script)
-	var place : Place = script.create_new(PackedStringArray(), coord)
+	var place : Place = script.create_new(PackedStringArray(), coord_)
 	var player_index = dict["player"]
 	place.controller_index = player_index
 	place.paste_specific_serializable_state(dict)

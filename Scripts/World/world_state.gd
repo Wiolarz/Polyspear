@@ -484,9 +484,9 @@ func do_army_travel(source : Vector2i, target : Vector2i) -> bool:
 
 	if is_enemy_at(target, army.controller_index):
 		var fighting_armies : Array[Army] = [army, get_army_at(target)]
-		var combat_started : bool = start_combat_by_attack(fighting_armies, \
+		var has_combat_started : bool = start_combat_by_attack(fighting_armies, \
 			source, target)
-		return combat_started
+		return has_combat_started
 
 	var spent = army_spend_movement_points(army, 1)
 	assert(spent)

@@ -151,11 +151,9 @@ func paste_specific_serializable_state(dict : Dictionary) -> void:
 	# 	players[dict["player"]].cities.append(self)
 
 
-static func create_new(args : PackedStringArray, coord : Vector2i) -> Place:
-
+static func create_new(args : PackedStringArray, coord_ : Vector2i) -> Place:
 	var player_index : int = -1
-
-	for i in range(0, args.size()):
+	for i in range(args.size()):
 		if args[i].is_valid_int():
 			if player_index >= 0:
 				push_error("tried to set player index more than one time")
@@ -165,17 +163,18 @@ static func create_new(args : PackedStringArray, coord : Vector2i) -> Place:
 				player_index = value
 		else:
 			push_error("unrecognised parameter: %s" % args[i])
-
+	
 	var result = City.new()
 	result.controller_index = player_index
+	
+	# TODO move this somewhere else -- this should not be here
+	result.coord = coord_
+	result.movable = true
+
+	# TODO check this fragment
 	# var player : WorldPlayerState = world_state.get_player(player_index)
 	# if player:
 	# 	result.controller_index = player_index
 	# 	player.cities.append(result)
-
-	result.movable = true
-
-	# TODO move this somewhere else -- this should not be here
-	result.coord = coord
 
 	return result

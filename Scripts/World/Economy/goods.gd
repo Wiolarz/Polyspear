@@ -58,7 +58,7 @@ func to_array() -> Array[int]:
 
 
 static func from_array(array : Array) -> Goods:
-	var wood = (array[0] if 0 in range(array.size()) else 0) as int
-	var iron = (array[1] if 1 in range(array.size()) else 0) as int
-	var ruby = (array[2] if 2 in range(array.size()) else 0) as int
-	return Goods.new(wood, iron, ruby)
+	var wood_ : int = (array[0] if 0 in range(array.size()) else 0)
+	var iron_ : int  = (array[1] if 1 in range(array.size()) else 0)
+	var ruby_ : int  = (array[2] if 2 in range(array.size()) else 0)
+	return Goods.new(wood_, iron_, ruby_)

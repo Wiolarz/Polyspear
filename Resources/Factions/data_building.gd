@@ -7,6 +7,7 @@ extends Resource
 
 @export var requirements : Array[DataBuilding]
 
+## if a resource type is stated it means this is a special faction wide construction
 @export var outpost_requirement : String
 
 
