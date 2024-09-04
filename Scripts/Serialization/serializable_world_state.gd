@@ -5,6 +5,7 @@ class PlayerState extends Resource:
 	@export var goods : Array[int]
 	@export var dead_heroes : Array[Dictionary]
 	@export var outpost_buildings : Array[String]
+	@export var armies : Array[Vector2i]
 	# TODO consider saving faction here
 
 @export var army_hexes : Dictionary
@@ -26,7 +27,8 @@ static func get_network_serialized(world_state : SerializableWorldState) \
 		player_array.append({
 			"goods": player.goods,
 			"dead_heroes": player.dead_heroes,
-			"outpost_buildings" : player.outpost_buildings
+			"outpost_buildings" : player.outpost_buildings,
+			"armies": player.armies,
 		})
 	var dict : Dictionary = {
 		"armies": world_state.army_hexes,
@@ -48,6 +50,8 @@ static func from_network_serialized(ser : PackedByteArray):
 		sws.players[index] = PlayerState.new()
 		sws.players[index].goods.assign(
 			dict["players"][index]["goods"].duplicate())
+		for army in dict["players"][index]["armies"]:
+			sws.players[index].armies.append(army)
 		for dead_hero in dict["players"][index]["dead_heroes"]:
 			sws.players[index].dead_heroes.append(dead_hero)
 		for outpost_building in dict["players"][index]["outpost_buildings"]:

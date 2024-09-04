@@ -51,6 +51,7 @@ static func create(map: DataWorldMap,
 			for outpost_building_ser in ser.players[i].outpost_buildings:
 				player.outpost_buildings.append(DataBuilding.from_network_id(
 					outpost_building_ser))
+			# living armies are added later
 
 
 	# init places and armies from map or map and saved game
@@ -82,6 +83,25 @@ static func create(map: DataWorldMap,
 				if army:
 					hex.army = army
 					army.coord = coord
+
+	# add armies to their players if loading from state
+	if ser:
+		for i in result.player_states.size():
+			var player = result.player_states[i]
+			for army_coord in ser.players[i].armies:
+				var army : Army = result.get_army_at(army_coord)
+				assert(army)
+				player.hero_armies.append(army)
+				army.controller_index = i
+			player.goods = Goods.from_array(ser.players[i].goods)
+			for dead_hero_ser in ser.players[i].dead_heroes:
+				player.dead_heroes.append(Hero.from_network_serializable(
+					dead_hero_ser, i))
+			for outpost_building_ser in ser.players[i].outpost_buildings:
+				player.outpost_buildings.append(DataBuilding.from_network_id(
+					outpost_building_ser))
+			# living armies are added later
+
 
 	result.synchronize_players_with_their_places()
 
@@ -725,6 +745,10 @@ func to_network_serializable() -> SerializableWorldState:
 		result.players[player_index] = SerializableWorldState.PlayerState.new()
 		var ser = result.players[player_index]
 		ser.goods = player.goods.to_array()
+		ser.armies.resize(player.hero_armies.size())
+		for army_index in player.hero_armies.size():
+			ser.armies[army_index] = \
+				player.hero_armies[army_index].coord
 		ser.dead_heroes.resize(player.dead_heroes.size())
 		for dead_hero_index in player.dead_heroes.size():
 			ser.dead_heroes[dead_hero_index] = \
