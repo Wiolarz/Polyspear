@@ -42,8 +42,6 @@ func update_connection_info():
 					ENetPacketPeer.PeerState.STATE_ACKNOWLEDGING_CONNECT:
 						label_content += "\nconnecting to %s %d" \
 								% [ peer.get_remote_address(), peer.get_remote_port() ]
-					_:
-						pass
 				if client.username != "":
 					label_content += "\nlogged as %s" % [ client.username ]
 				else:

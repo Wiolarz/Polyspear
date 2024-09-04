@@ -25,10 +25,6 @@ var current_button: TextureButton
 		FileSystemHelpers.list_files_in_folder(CFG.BATTLE_MAP_TILES_PATH, true)
 
 
-# # TEMP FIXME HACK
-# var temp_world_grid_form : Node2D
-# var temp_world_grid : GenericHexGrid
-
 var world_grid : WorldEditGrid
 
 #region Setup

@@ -271,24 +271,6 @@ func do_local_travel(source : Vector2i, target : Vector2i) -> void:
 		NET.desync()
 		return
 
-
-
-func do_local_recruit_hero(player : Player, hero_data : DataHero, \
-		coord : Vector2i) -> void:
-
-	var army = world_state.recruit_hero(hero_data, coord)
-
-	if not army:
-		NET.desync()
-		return
-
-	armies.add_child(ArmyForm.create_form_of_army(
-		world_state.grid.get_hex(coord),
-		coord,
-		to_position(coord)
-	))
-
-
 #endregion
 
 
@@ -312,17 +294,6 @@ func start_combat( \
 	var x_offset = get_bounds_global_position().end.x + CFG.MAPS_OFFSET_X
 	BM.start_battle(armies_, battle_map, battle_state, x_offset)
 	UI.switch_camera()
-
-
-## shortcut to start battle when one army attacks another
-func start_combat_by_attack(attacking_army : Army, coord : Vector2i):
-	print("start_combat")
-
-	var fighting_armies : Array[Army] = [
-		attacking_army,
-		world_state.get_army_at(coord),
-	]
-	start_combat(fighting_armies, coord, null)
 
 
 func end_of_battle(battle_results : Array[BattleGridState.ArmyInBattleState]):
@@ -470,40 +441,6 @@ func _refresh_army_form_position(army_form : ArmyForm) -> void:
 	army_form.position = to_position(army_form.entity.coord)
 
 
-# func _get_serializable_place_hex(hex : Place) -> Dictionary:
-# 	return Place.get_network_serializable(hex)
-
-
-## TODO consider moving to army_form.gd and deduplicate some code
-#func _deserialize_unit_hex(hex : Dictionary, coord : Vector2i) -> ArmyForm:
-	#var army := Army.new()
-	#var army_form := CFG.DEFAULT_ARMY_FORM.instantiate()
-	#var player : Player = get_player_by_index(hex["player"])
-	#var tile_form : TileForm = get_tile_of_hex(world_state.get_tile_form(coord))
-	#army.coord = coord
-	#army.controller = player
-	#army_form.entity = army
-	#if "hero" in hex:
-		#army.hero = Hero.from_network_serializable(hex["hero"], player)
-	#for unit in hex["units"]:
-		#var data_unit = DataUnit.from_network_id(unit)
-		#army.units_data.append(data_unit)
-	#army_form.position = tile_form.position
-	#if army.hero:
-		#army_form.get_node("sprite_unit").texture = \
-			#load(army.hero.template.data_unit.texture_path)
-	#else:
-		#if army.units_data.size() > 0:
-			#var shown_unit : DataUnit = army.units_data[0]
-			#var sprite = army_form.get_node("sprite_unit")
-			#sprite.texture = load(shown_unit.texture_path)
-			#sprite.scale = Vector2(0.9, 0.9)
-			#army_form.get_node("MoveLabel").text = ""
-			#army_form.get_node("DescriptionLabel").text = ""
-#
-	#return army_form
-
-
 func get_serializable_state() -> SerializableWorldState:
 	var state := SerializableWorldState.new()
 	if world_state:
@@ -513,8 +450,8 @@ func get_serializable_state() -> SerializableWorldState:
 
 #region callbacks
 
-func callback_player_created(player : Player) -> void:
-	return
+func callback_player_created(_player : Player) -> void:
+	return # does nothing yet -- TODO add something or delete in future
 
 
 func callback_army_created(army : Army) -> void:
@@ -524,12 +461,6 @@ func callback_army_created(army : Army) -> void:
 	var army_form : ArmyForm = ArmyForm.create_form_of_army(hex, \
 		coord, new_position)
 	armies.add_child(army_form)
-
-	#armies.add_child(ArmyForm.create_form_of_army(
-		#world_state.grid.get_hex(coord),
-		#coord,
-		#to_position(coord)
-	#))
 
 
 ## TODO make it full update, along with imgae etc.

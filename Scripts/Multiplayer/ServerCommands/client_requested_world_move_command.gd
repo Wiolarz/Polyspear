@@ -74,7 +74,7 @@ static func process_command(_server : Server, _peer : ENetPacketPeer, \
 					not params["data_building"] is String:
 				return FAILED
 		WorldMoveInfo.TYPE_END_TURN:
-			pass
+			pass # end turn has no parameters
 		_:
 			return FAILED
 	# TODO check move legality before performing on server

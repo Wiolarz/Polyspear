@@ -135,7 +135,7 @@ func move_info_execute(move_info : MoveInfo) -> void:
 	turn_counter += 1
 	currently_processed_move_info = null
 
-	
+
 	_check_battle_end()
 	if battle_is_ongoing():
 		_switch_participant_turn()
@@ -255,7 +255,7 @@ func _should_die_to_counter_attack(unit : Unit) -> bool:
 			if Unit.attack_power(enemy_symbol) > shield_power:
 				# found killer
 				spear_holding_killer_teams.append(adjacent_units[side].army_in_battle.team)
-	
+
 	if spear_holding_killer_teams.size() > 0:
 		return true
 	return false
@@ -282,13 +282,13 @@ func _process_offensive_symbols(unit : Unit) -> void:
 		var enemy_weapon = enemy.get_symbol(opposite_side)
 		if Unit.does_it_parry(enemy_weapon):
 			continue  # parry disables all melee symbols
-		
+
 		# we check if attacking symbol power is able to kill
 		if Unit.defense_power(enemy_weapon) < Unit.attack_power(unit_weapon):
 			# in case of winning battle - further attack checks won't break anything
 			_kill_unit(enemy, armies_in_battle_state[current_army_index])
 			continue  # enemy unit died
-		
+
 		# in case enemy defended against attack we check if attacker pushes away enemy
 		if Unit.can_it_push(unit_weapon):
 			_push_enemy(enemy, side)
@@ -389,7 +389,7 @@ func _get_shot_target(coord : Vector2i, direction : int, reach : int = -1) -> Un
 		target_coord = GenericHexGrid.adjacent_coord(target_coord, direction)
 		hex = _get_battle_hex(target_coord)
 		reach -= 1
-		
+
 	return hex.unit
 
 
@@ -509,7 +509,7 @@ func _find_proper_exp_winner(killed_team : int, spear_disputers_idx : Array[int]
 		for army_idx in range(armies_in_battle_state.size()):
 			if armies_in_battle_state[army_idx].team != killed_team:
 				searched_armies_idx.append(army_idx)
-		
+
 	searched_armies_idx.reverse()
 
 	# search for armies with present hero
@@ -560,7 +560,7 @@ func _switch_participant_turn() -> void:
 				if cyclone_target.cyclone_timer == 0:
 					current_army_index = _get_army_index(cyclone_target)
 					state = STATE_SACRIFICE
-	
+
 		STATE_SACRIFICE:  # New turn starts
 			current_army_index = 0  # first army may no longer be present
 			while not armies_in_battle_state[current_army_index].can_fight():
@@ -594,7 +594,7 @@ func _perform_move(unit : Unit, direction : int, target_tile_coord : Vector2i) -
 ## Spell effect:
 ## unit - that is going to move |
 ## target_title_coord - hex tile it's going to move toward (doesn't have to be adjacent)
-##  direction - 
+##  direction -
 func _perform_teleport(unit : Unit, target_tile_coord : Vector2i, direction : int = -1) -> void:
 	# TURN
 	if direction != -1:
@@ -664,7 +664,7 @@ func _kill_unit(target : Unit, killer_army : ArmyInBattleState = null) -> void:
 
 	# verify battle has ended before any additonal spell effects take place
 	_check_battle_end()
-	if not battle_is_ongoing(): 
+	if not battle_is_ongoing():
 		return
 
 	if replaced_target: # "Martyr" spell quick hack
@@ -802,12 +802,12 @@ func _perform_magic(unit : Unit, target_tile_coord : Vector2i, spell : BattleSpe
 		"Vengeance":
 			get_unit(target_tile_coord).effects.append(spell)
 			print(get_unit(target_tile_coord).effects)
-		
+
 		"Martyr":
 			unit.effects.append(spell)  # target as well as caster both get affected
 			get_unit(target_tile_coord).effects.append(spell)
 			print(get_unit(target_tile_coord).effects)
-		
+
 		"Fireball":
 			var enemy_targets : Array[Unit] = []
 			var ally_targets : Array[Unit] = []
@@ -825,19 +825,19 @@ func _perform_magic(unit : Unit, target_tile_coord : Vector2i, spell : BattleSpe
 
 			for enemy_unit in enemy_targets: # kill enemy units first
 				_kill_unit(enemy_unit, armies_in_battle_state[current_army_index])
-			
+
 			# we only start killing ally units after we are sure battle didn't end yet
 			if not battle_is_ongoing():
 				return
-			
+
 			var priority_enemy_army : ArmyInBattleState = _find_proper_exp_winner(unit.army_in_battle.team)
 
 			for ally_unit in ally_targets: # kill rest
 				_kill_unit(ally_unit, priority_enemy_army)
-			
+
 		"Teleport":
 			_perform_teleport(unit, target_tile_coord)
-		
+
 		_:
 			printerr("Spell perform not supported: ", spell.name)
 			return
@@ -999,14 +999,14 @@ func _ai_should_die_to_counter_attack(unit : Unit, direction : int, coord : Vect
 		var unit_symbol : E.Symbols = unit.get_symbol_when_rotated(side, direction)
 		if Unit.does_it_parry(unit_symbol):
 			continue  # parry prevents counter attacks
-		
+
 		var opposite_side := GenericHexGrid.opposite_direction(side)
 		var enemy_symbol : E.Symbols = adjacent_units[side].get_symbol(opposite_side)
 		if Unit.does_it_counter_attack(enemy_symbol):
 			var shield_power : int = Unit.defense_power(unit_symbol)
 			if Unit.attack_power(enemy_symbol) > shield_power:
 				return true
-		
+
 	return false
 
 
@@ -1029,14 +1029,14 @@ func _ai_will_melee_kill_someone(unit : Unit, direction : int, coord : Vector2i)
 		var enemy_weapon : E.Symbols = enemy.get_symbol(opposite_side)
 		if Unit.does_it_parry(enemy_weapon):
 			continue  # parry disables all melee symbols
-		
+
 		# we check if attacking symbol power is able to kill
 		if Unit.defense_power(enemy_weapon) < Unit.attack_power(unit_weapon):
-			return true 
+			return true
 		# in case enemy defended against attack we check if attacker pushes away enemy
 		if Unit.can_it_push(unit_weapon):
 			var pushed_cord : Vector2i = GenericHexGrid.distant_coord(enemy.coord, side, 1)
-			
+
 			var hex = _get_battle_hex(pushed_cord)
 			if not hex.can_be_moved_to:
 				return true  # unit would get crushed
@@ -1047,7 +1047,7 @@ func _ai_will_melee_kill_someone(unit : Unit, direction : int, coord : Vector2i)
 
 			if _ai_should_die_to_counter_attack(enemy, enemy.unit_rotation, pushed_cord):
 				return true
-	
+
 	return false
 
 
@@ -1096,7 +1096,7 @@ func _is_kill_move(move : MoveInfo) -> bool:
 	# step 4
 	if _ai_should_die_to_counter_attack(attacker, move_direction, move.target_tile_coord):
 		return false  # will die to a spear befor it can kill
-	
+
 	# step 5
 	if _ai_will_melee_kill_someone(attacker, move_direction, move.target_tile_coord):
 		return true

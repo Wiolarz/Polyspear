@@ -15,7 +15,6 @@ static func create(armies : Array[Army], c_battle_map: DataBattleMap):
 	var result = BattleReplay.new()
 
 	for army in armies:
-		# added at merge
 		var player = IM.get_player_by_index(army.controller_index)
 
 		var player_name = IM.get_player_name(player)

@@ -69,7 +69,7 @@ func show_trade_ui(city : City):
 
 
 func close_city_ui() -> void:
-	pass
+	pass # does nothing now, but probably we will use it in future
 
 
 func show_you_win(player : Player):

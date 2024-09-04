@@ -42,10 +42,6 @@ func interact(_world_state : WorldState, army : Army) -> bool:
 	return false
 
 
-func on_end_of_turn(_world_state : WorldState) -> void:
-	pass
-
-
 func get_map_description() -> String:
 	return ""
 
@@ -101,7 +97,7 @@ func get_type() -> String:
 ## should be overridden by each place
 ## This function has to copy such information of state that it would be
 ## possible to add it to the state after "create_place" call
-func to_specific_serializable(dict : Dictionary) -> void:
+func to_specific_serializable(_dict : Dictionary) -> void:
 	pass
 
 
@@ -109,5 +105,5 @@ func to_specific_serializable(dict : Dictionary) -> void:
 ## This function has to recover every information that is not recovered by
 ## "create_place" of the type with defaults and changing player which is done
 ## earlier
-func paste_specific_serializable_state(dict : Dictionary) -> void:
+func paste_specific_serializable_state(_dict : Dictionary) -> void:
 	return

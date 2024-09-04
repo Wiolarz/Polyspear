@@ -5,7 +5,7 @@ signal unit_died()
 signal unit_turned()
 signal unit_moved()
 
-## TODO remove this and add reference to army in battle
+## TODO remove this
 var controller : Player
 
 ## reference to army to which the unit belongs

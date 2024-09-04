@@ -11,11 +11,11 @@ static func create_place(args : PackedStringArray, coord_ : Vector2i) -> Place:
 	# if args.size() != 1:
 	# 	push_error("outpost needs exactly one argument to create")
 	var result := Outpost.new()
-	
+
 	var type : String = args[0] if args.size() >= 1 else "wood"
 	if not result._set_type(type):
 		return null
-	
+
 	# TODO move this somewhere else -- this should not be here
 	result.coord = coord_
 	result.movable = true
@@ -40,11 +40,6 @@ func _set_type(type : String) -> bool:
 			return false
 	outpost_type = type
 	return true
-
-
-func on_game_started():
-	pass
-	#WM.spawn_neutral_army(neutral_army, coord)
 
 
 func get_army_at_start() -> PresetArmy:

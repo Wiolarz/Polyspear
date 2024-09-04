@@ -42,7 +42,6 @@ func get_heroes_to_buy(world_state : WorldState) -> Array[DataHero]:
 
 
 func get_cost_description(world_state : WorldState, hero: DataHero) -> String:
-	var player = world_state.get_player(controller_index)
 	if world_state.has_player_a_hero(controller_index, hero):
 		return "✔"
 	var cost = world_state.get_hero_cost_for_player(controller_index, hero)

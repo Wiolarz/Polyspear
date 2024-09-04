@@ -38,7 +38,7 @@ static func create_place(args : PackedStringArray, coord_ : Vector2i) -> Place:
 	var type : String = args[0] if args.size() >= 1 else "wood"
 	if not result._set_type(type):
 		return null
-	
+
 	# TODO move this somewhere else -- this should not be here
 	result.coord = coord_
 	result.current_level = 0
@@ -73,11 +73,6 @@ func _set_type(type : String) -> bool:
 	hunt_spot_type = type
 
 	return true
-
-
-func on_game_started():
-	pass
-# 	_alive_army = WM.spawn_neutral_army(neutral_armies[0], coord)
 
 
 func get_army_at_start() -> PresetArmy:

@@ -271,13 +271,13 @@ func _check_for_stalemate() -> bool:
 	var alive_armies = []
 	for army in _battle_grid_state.armies_in_battle_state:
 		if army.can_fight():
-			alive_armies.append(army) 
+			alive_armies.append(army)
 
 	# equation determines the shortest scenario to achieve a stalemate
 	# later we jump back X move behind, so it makes it safe to do so
 	if _replay_data.moves.size() < limit * alive_armies.size() * 2:
 		return false
-	
+
 	var go_back_value = limit * alive_armies.size() + 1
 	for player_idx in range(alive_armies.size()):
 		var old_move = _replay_data.moves[-go_back_value - player_idx]
@@ -396,7 +396,7 @@ func _grid_input_sacrifice(coord : Vector2i) -> MoveInfo:
 	var new_unit : Unit = _battle_grid_state.get_unit(coord)
 	if new_unit and new_unit.controller == _battle_grid_state.cyclone_target.army_reference.controller:
 
-		# Reselect the same target OR new one if that 
+		# Reselect the same target OR new one if that
 		return MoveInfo.make_sacrifice(coord)
 	return null
 
@@ -642,7 +642,7 @@ func _create_summary() -> DataBattleSummary:
 		else:
 			player_stats.state = "loser"
 		summary.players.append(player_stats)
-	
+
 	# Summary title creation
 	assert(winning_team_players.size() > 0, "Battle resulted in no winners")
 	var team_name = 'Neutral'
@@ -735,7 +735,7 @@ func _check_clock_timer_tick() -> void:
 		return # no battle
 	if _battle_grid_state.get_current_time_left() > 0:
 		return # player still has time
-	
+
 	_battle_grid_state.surrender_on_timeout()
 	_end_move()
 

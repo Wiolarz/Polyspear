@@ -62,17 +62,3 @@ static func create_from_preset(army_preset : PresetArmy) \
 	#new_army.hero = army_preset.hero  # TODO ARMY PRESET HERO, ... yy??
 	##nie wiem kurde -- to raczej będzie do neutrali ale jeszcze zobaczymy xd
 	return new_army
-
-
-static func from_network_serializable(dict : Dictionary, \
-		players : Array[Player]) -> Army:
-	var result : Army = Army.new()
-	return result
-
-
-static func get_network_serializable(army : Army, players : Array[Player]) \
-		-> Dictionary:
-	if not army:
-		return {}
-	var dict : Dictionary = {}
-	return dict

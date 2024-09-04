@@ -318,7 +318,6 @@ func do_recruit_unit(data_unit : DataUnit, city_coord : Vector2i,
 		push_error(problem)
 		return false
 	var army : Army = get_army_at(army_coord)
-	var player = get_player(army.controller_index)
 	var purchased : bool = player_spend(army.controller_index, data_unit.cost)
 	assert(purchased)
 	army.units_data.append(data_unit)
@@ -450,7 +449,6 @@ func player_spend(player_index : int, cost : Goods) -> bool:
 
 func check_army_travel(source : Vector2i, target : Vector2i) -> String:
 	var army : Army = get_army_at(source)
-	var current_player = get_player(current_player_index)
 	if not army:
 		return "no army at source hex"
 	if source == target:
@@ -478,9 +476,6 @@ func do_army_travel(source : Vector2i, target : Vector2i) -> bool:
 		push_error(problem)
 		return false
 	var army : Army = get_army_at(source)
-	var current_player = get_player(current_player_index)
-
-	var player = get_player(army.controller_index)
 
 	if is_enemy_at(target, army.controller_index):
 		var fighting_armies : Array[Army] = [army, get_army_at(target)]

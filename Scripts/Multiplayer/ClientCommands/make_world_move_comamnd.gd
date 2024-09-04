@@ -72,7 +72,7 @@ static func process_command(_client : Client, params : Dictionary) -> int:
 					not params["data_building"] is String:
 				return FAILED
 		WorldMoveInfo.TYPE_END_TURN:
-			pass
+			pass # end turn has no parameters
 		_:
 			return FAILED
 	var world_move_info = MakeWorldMoveCommand.create_from(params)

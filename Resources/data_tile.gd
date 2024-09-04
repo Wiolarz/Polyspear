@@ -23,8 +23,3 @@ static func create_data_tile(hex_tile : TileForm) -> DataTile:
 	new_data_tile.type = hex_tile.type
 
 	return new_data_tile
-
-
-func apply_data(tile : TileForm) -> void:
-	tile.get_node("Sprite2D").texture = ResourceLoader.load(texture_path)
-	tile.type = type

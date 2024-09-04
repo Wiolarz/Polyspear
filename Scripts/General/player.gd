@@ -75,25 +75,6 @@ func purchase(world_state : WorldState, cost : Goods) -> bool:
 
 #region Heroes
 
-## it is probably called in some signal -- TODO document it or get rid of it
-func hero_recruited(hero : ArmyForm):
-	pass
-	# probably delete this xD
-	#world_state.player_recruit_hero(index, hero)
-	#wps.hero_armies.append(hero)
-
-
-#func hero_died(hero : Hero):
-	#var i = 0
-	#while i < wps.hero_armies.size():
-		#if wps.hero_armies[i].entity.hero == hero:
-			#wps.hero_armies.remove_at(i)
-		#else:
-			#i += 1
-
-	#wps.dead_heroes.append(hero)
-
-
 func has_hero(world_state : WorldState, data_hero: DataHero):
 	return world_state.has_player_a_hero(index, data_hero)
 
@@ -108,34 +89,3 @@ func get_hero_cost(world_state : WorldState, data_hero: DataHero):
 #endregion Heroes
 
 
-#region Outposts
-
-func outpost_add(world_state : WorldState, outpost : Outpost) -> void:
-	pass
-	#world_state
-	#wps.outposts.append(outpost)
-
-func outpost_remove(outpost : Outpost) -> void:
-	pass
-	#assert(outpost in wps.outposts, "attempt to remove outpost that wasnt assigned to the player")
-
-	#wps.outposts.erase(outpost)
-
-	#if not outpost_requirement(outpost.outpost_type):
-	#	outpost_demolish(outpost.outpost_type)
-#
-#func outpost_requirement(outpost_type_needed : String) -> bool:
-	#if outpost_type_needed == "":
-		#return true
-	#for outpost in wps.outposts:
-		#if outpost.outpost_type == outpost_type_needed:
-			#return true
-	#return false
-#
-#func outpost_demolish(demolish_type : String):
-	#for building_idx in range(wps.outpost_buildings.size() -1, -1, -1):
-		#if wps.outpost_buildings[building_idx].outpost_requirement == demolish_type:
-			#wps.outpost_buildings.pop_at(building_idx)
-
-
-#endregion Outposts
