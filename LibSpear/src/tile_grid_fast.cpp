@@ -1,12 +1,5 @@
 #include "tile_grid_fast.hpp"
 
-Tile TileGridFastCpp::get_tile(Position pos) {
-    int idx = pos.x + pos.y * _dims.x;
-    if(idx >= _tiles.size()) {
-        return Tile();
-    }
-    return _tiles[idx];
-}
 
 void TileGridFastCpp::set_tile(Position pos, Tile type) {
     unsigned idx = pos.x + pos.y * _dims.x;

@@ -40,9 +40,6 @@ class BattleManagerFastCpp : public Node {
     bool _moves_dirty = true;
     bool _heuristic_moves_dirty = true;
 
-    std::pair<Unit*, Army*> _get_unit(UnitID id);
-    std::pair<Unit*, Army*> _get_unit(Position coord);
-    Tile* _get_tile(Position coord);
 
     void _process_unit(UnitID uid, bool process_kills);
     void _process_bow(UnitID uid);
@@ -123,6 +120,17 @@ public:
 
     inline int get_army_team(int army) const {
         return _armies[army].team;
+    }
+private:
+    std::pair<Unit*, Army*> _get_unit(UnitID id) {
+        if(id == NO_UNIT) {
+            return std::make_pair(nullptr, nullptr);
+        }
+        return std::make_pair(&_armies[id.first].units[id.second], &_armies[id.first]);
+    }
+
+    std::pair<Unit*, Army*> _get_unit(Position coord) {
+        return _get_unit(_unit_cache.get(coord));
     }
 };
 

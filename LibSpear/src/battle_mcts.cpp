@@ -9,6 +9,7 @@
 #include <numeric>
 #include <thread>
 #include <signal.h>
+#include <chrono>
 
 #include "BS_thread_pool.hpp"
 
@@ -41,8 +42,6 @@ std::pair<Move, BattleMCTSNode*> BattleMCTSNode::select() {
         return std::make_pair(Move(), nullptr);
     }
 
-    //std::lock_guard lock(local_mutex);
-
     float uct_max = -std::numeric_limits<float>::infinity();
     BattleMCTSNode* uct_max_idx = nullptr;
     Move best_move;
@@ -64,8 +63,6 @@ void BattleMCTSNode::expand() {
         return;
     }
 
-    //std::lock_guard lock(local_mutex);
-    
     auto [move, heur_chosen] = _bm.get_random_move(_manager->heuristic_probability);
 
     if(_children.count(move) == 0) {
@@ -141,10 +138,9 @@ void BattleMCTSNode::backpropagate(BattleResult& result, int new_visits) {
     }
 
     auto reward_add = (ally_score + max_enemy_score - enemy_score) / (max_ally_score+max_enemy_score); 
-    // there's a bug somewhere, temporary fix
-    if(reward_add < 0.0f) {
+    // just in case
+    if(reward_add < 0.0f || std::isnan(reward_add) || std::isinf(reward_add)) {
         WARN_PRINT("invalid reward");
-        raise(SIGINT);
         _reward += 0.5f;
     }
     else {
@@ -171,37 +167,34 @@ void BattleMCTSManager::iterate(int iterations) {
 void BattleMCTSNode::iterate(int iterations) {
 
     auto visits = _manager->max_playouts_per_visit;
+    auto begin = std::chrono::high_resolution_clock::now();
 
     for(int i = 0; i < iterations; i+=visits) {
-        BattleResult result;
         BattleMCTSNode* node = this, *temp_node;
 
-        {
-            //std::shared_lock rlock(rwlock);
-
-            while((temp_node = node->select().second) != nullptr) {
-                node = temp_node;
-            }
-
-            node->expand();
-            result = node->simulate(_manager->max_sim_iterations, visits);    
+        while((temp_node = node->select().second) != nullptr) {
+            node = temp_node;
         }
 
-        {
-            //std::unique_lock wlock(rwlock);
-            node->backpropagate(result, visits);
+        node->expand();
+        BattleResult result = node->simulate(_manager->max_sim_iterations, visits);    
 
-            if(result.winner_team == _manager->army_team) {
-                this->_wins++;
-            }
-            else if(result.winner_team == -1) {
-                this->_draws++;
-            }
-            else {
-                this->_loses++;
-            }
+        node->backpropagate(result, visits);
+
+        if(result.winner_team == _manager->army_team) {
+            this->_wins++;
+        }
+        else if(result.winner_team == -1) {
+            this->_draws++;
+        }
+        else {
+            this->_loses++;
         }
     }
+    
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<float> seconds = end - begin;
+    printf("Iterate finished in %fs\n", seconds.count());
 }
 
 Move BattleMCTSManager::get_optimal_move(int nth_best_move) {

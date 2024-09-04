@@ -9,11 +9,13 @@
 #include "godot_cpp/core/class_db.hpp"
 #include "godot_cpp/variant/vector2i.hpp"
 #include "godot_cpp/variant/string.hpp"
+#include "godot_cpp/core/defs.hpp"
 #include <stdint.h>
 #include <array>
 #include <vector>
 
 #include "data.hpp"
+#include "battle_structs.hpp"
 
 using namespace godot;
 
@@ -23,15 +25,21 @@ class TileGridFastCpp : public Node {
 
     Vector2i _dims;
     std::vector<Tile> _tiles;
-    std::array<std::vector<Position>, 2> _spawns;
+    std::array<std::vector<Position>, MAX_ARMIES> _spawns;
 protected:
     static void _bind_methods();
 
 public:
     void set_map_size(Vector2i dimensions);
     
-    Tile get_tile(Position pos);
-    
+    _FORCE_INLINE_ Tile get_tile(Position pos) {
+        int idx = pos.x + pos.y * _dims.x;
+        if(idx >= _tiles.size()) {
+            return Tile();
+        }
+        return _tiles[idx];
+    }
+
     void set_tile(Position pos, Tile tile);
     inline void set_tile_gd(Vector2i pos, bool passable, bool wall, bool swamp, int army, unsigned direction) {
         set_tile(Position(pos.x, pos.y), Tile(passable, wall, swamp, army, direction));

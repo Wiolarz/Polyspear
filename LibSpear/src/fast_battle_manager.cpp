@@ -203,8 +203,8 @@ int BattleManagerFastCpp::get_winner_team() {
     }
 
     int last_team_alive = -2;
-    int teams_alive = 4;
-    std::array<int, 4> armies_in_teams_alive = {0,0,0,0};
+    int teams_alive = MAX_ARMIES;
+    std::array<int, MAX_ARMIES> armies_in_teams_alive = {0,0,0,0};
 
     for(int i = 0; i < _armies.size(); i++) {
         if(!_armies[i].is_defeated()) {
@@ -212,7 +212,7 @@ int BattleManagerFastCpp::get_winner_team() {
         }
     }
     
-    for(int i = 0; i < 4; i++) {
+    for(int i = 0; i < MAX_ARMIES; i++) {
         if(armies_in_teams_alive[i] == 0) {
             teams_alive--;
         }
@@ -420,7 +420,7 @@ void BattleManagerFastCpp::_refresh_heuristically_good_summon_moves() {
 
 
 std::pair<Move, bool> BattleManagerFastCpp::get_random_move(float heuristic_probability) {
-    static thread_local std::mt19937 rand_engine;
+    static thread_local std::minstd_rand rand_engine;
     static thread_local std::uniform_real_distribution heur_dist(0.0f, 1.0f);
 
     auto heur_chosen = heur_dist(rand_engine) < heuristic_probability;
@@ -527,17 +527,6 @@ void BattleManagerFastCpp::force_battle_ongoing() {
         ERR_FAIL_MSG("Must finish_initialization() before calling force_battle_ongoing()");
     }
     _state = BattleState::ONGOING;
-}
-
-std::pair<Unit*, Army*> BattleManagerFastCpp::_get_unit(UnitID id) {
-    if(id == NO_UNIT) {
-        return std::make_pair(nullptr, nullptr);
-    }
-    return std::make_pair(&_armies[id.first].units[id.second], &_armies[id.first]);
-}
-
-std::pair<Unit*, Army*> BattleManagerFastCpp::_get_unit(Position coord) {
-    return _get_unit(_unit_cache.get(coord));
 }
 
 

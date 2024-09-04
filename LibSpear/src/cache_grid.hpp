@@ -29,7 +29,7 @@ public:
         _grid.resize(_dims.x * _dims.y);
     }
 
-    inline T& operator[](Position pos) {
+    _FORCE_INLINE_ T& operator[](Position pos) {
         unsigned idx = pos.x + pos.y * _dims.x;
         if(idx >= _grid.size()) {
             raise(SIGINT);
@@ -38,7 +38,7 @@ public:
         return _grid[idx];
     }
 
-    inline const T get(Position pos) const {
+    _FORCE_INLINE_ const T get(Position pos) const {
         unsigned idx = pos.x + pos.y * _dims.x;
         if(idx >= _grid.size()) {
             return NO_UNIT;
