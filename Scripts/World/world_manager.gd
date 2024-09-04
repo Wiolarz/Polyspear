@@ -326,56 +326,8 @@ func start_combat_by_attack(attacking_army : Army, coord : Vector2i):
 
 
 func end_of_battle(battle_results : Array[BattleGridState.ArmyInBattleState]):
-	#TODO get result from Battle Manager
-	const ATTACKER = 0
-	const DEFENDER = 1
 
-	var attack_army : Army = battle_results[ATTACKER].army_reference
-	var defence_army : Army = battle_results[DEFENDER].army_reference
-	var attack_hero = attack_army.hero
-	var defence_hero = defence_army.hero
-
-	var updates : Array[Dictionary] = [
-		{ "army": attack_army, },
-		{ "army": defence_army, },
-	]
-
-	# if attack_hero:
-	# 	attack_hero.add_xp_for_casualties(battle_results[DEFENDER].dead_units, defence_hero)
-	# if defence_hero:
-	# 	defence_hero.add_xp_for_casualties(battle_results[ATTACKER].dead_units, attack_hero)
-
-	var the_range = range(min(updates.size(), battle_results.size()))
-	for i in the_range:
-		var update = updates[i]
-		var result = battle_results[i]
-		var hero = result.army_reference.hero
-		var level = 1
-		if hero:
-			level = hero.level
-		update["losses"] = result.dead_units
-		update["killed"] = not result.can_fight()
-		# xp
-		var xp = 0
-		for j in the_range:
-			if j == i:
-				continue
-			var opposite_result = battle_results[j]
-			var deads = opposite_result.dead_units
-			for dead in deads:
-				if dead.level >= level:
-					xp += 1
-			var opposite_hero = opposite_result.army_reference.hero
-			if opposite_hero and opposite_hero.level >= level:
-				xp += 1
-		update["xp"] = xp
-
-	if battle_results[DEFENDER].can_fight():
-		# no matter what, if defender is alive, it is draw of defender won
-		# that means attaked dead
-		updates[ATTACKER]["killed"] = true
-
-	world_state.end_combat(updates)
+	world_state.end_combat(battle_results)
 
 	UI.go_to_custom_ui(world_ui)
 

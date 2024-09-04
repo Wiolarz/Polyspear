@@ -22,6 +22,9 @@ var number_of_mana_wells : int = 0
 var cyclone_target : ArmyInBattleState
 
 
+#TEMP HACK for proper awarding of exp in spear kills
+var spear_holding_killer_teams : Array[int] = []
+
 #region init
 
 func _init(width_ : int, height_ : int):
@@ -137,8 +140,6 @@ func move_info_execute(move_info : MoveInfo) -> void:
 	if battle_is_ongoing():
 		_switch_participant_turn()
 
-#endregion move_info support
-
 	currently_processed_move_info = null
 
 
@@ -156,6 +157,8 @@ func move_info_sacrifice(move_info : MoveInfo) -> void:
 
 	if battle_is_ongoing():
 		_switch_participant_turn()
+
+#endregion move_info support
 
 
 #region Undo
@@ -230,9 +233,10 @@ func _process_symbols(unit : Unit) -> bool:
 		return true
 	return false
 
-
+## Returns true if Enemy counter_attack can kill the target
 func _should_die_to_counter_attack(unit : Unit) -> bool:
-	# Returns true if Enemy counter_attack can kill the target
+	spear_holding_killer_teams = [] #TEMP
+
 	var adjacent_units = _get_adjacent_units(unit.coord)
 
 	for side in range(6):
@@ -249,8 +253,11 @@ func _should_die_to_counter_attack(unit : Unit) -> bool:
 		if Unit.does_it_counter_attack(enemy_symbol):
 			var shield_power : int = Unit.defense_power(unit_symbol)
 			if Unit.attack_power(enemy_symbol) > shield_power:
-				return true
-		
+				# found killer
+				spear_holding_killer_teams.append(adjacent_units[side].army_in_battle.team)
+	
+	if spear_holding_killer_teams.size() > 0:
+		return true
 	return false
 
 
@@ -278,7 +285,8 @@ func _process_offensive_symbols(unit : Unit) -> void:
 		
 		# we check if attacking symbol power is able to kill
 		if Unit.defense_power(enemy_weapon) < Unit.attack_power(unit_weapon):
-			_kill_unit(enemy)  # in case of winning battle - further attack checks won't break anything
+			# in case of winning battle - further attack checks won't break anything
+			_kill_unit(enemy, armies_in_battle_state[current_army_index])
 			continue  # enemy unit died
 		
 		# in case enemy defended against attack we check if attacker pushes away enemy
@@ -299,7 +307,7 @@ func _process_bow(unit : Unit, side : int, reach : int) -> void:
 	if Unit.attack_power(unit.get_symbol(side)) <= shield_power:
 		return  # blocked by shield
 
-	_kill_unit(target)
+	_kill_unit(target, armies_in_battle_state[current_army_index])
 
 
 func _push_enemy(enemy : Unit, direction : int) -> void:
@@ -307,13 +315,13 @@ func _push_enemy(enemy : Unit, direction : int) -> void:
 
 	if not _is_movable(target_coord):
 		# Pushing outside the map
-		_kill_unit(enemy)
+		_kill_unit(enemy, armies_in_battle_state[current_army_index])
 		return
 
 	var target := get_unit(target_coord)
 	if target != null:
 		# Spot isn't empty
-		_kill_unit(enemy)
+		_kill_unit(enemy, armies_in_battle_state[current_army_index])
 		return
 
 	currently_processed_move_info.register_push(enemy, target_coord)
@@ -324,7 +332,8 @@ func _push_enemy(enemy : Unit, direction : int) -> void:
 
 	# check for counter_attacks
 	if _should_die_to_counter_attack(enemy):
-		_kill_unit(enemy)
+		# special case when we award EXP to the player that pushed the unit instead of spear holder
+		_kill_unit(enemy, armies_in_battle_state[current_army_index])
 
 #endregion Symbols
 
@@ -486,6 +495,33 @@ func _get_army_index(army : BattleGridState.ArmyInBattleState):
 	var result = armies_in_battle_state.find(army)
 	return result
 
+
+## searches for enemy army that has a hero, with priority for the last in array [br]
+## can return null
+## optionally it can be provided withsubset of enemy armies in case of counter attack dispute
+func _find_proper_exp_winner(killed_team : int, spear_disputers_idx : Array[int] = []) -> ArmyInBattleState:
+	var priority_enemy_army : ArmyInBattleState = null
+	var searched_armies_idx : Array[int] = []
+	if spear_disputers_idx.size() != 0:
+		spear_disputers_idx.sort()
+		searched_armies_idx = spear_disputers_idx
+	else:
+		for army_idx in range(armies_in_battle_state.size()):
+			if armies_in_battle_state[army_idx].team != killed_team:
+				searched_armies_idx.append(army_idx)
+		
+	searched_armies_idx.reverse()
+
+	# search for armies with present hero
+	for army_idx in searched_armies_idx:
+		var army_state = armies_in_battle_state[army_idx]
+		if army_state.army_reference.hero == null:
+			continue # we search for enemy armies that have a hero
+		priority_enemy_army = army_state
+		break
+
+	return priority_enemy_army
+
 #endregion private helpers
 
 
@@ -590,7 +626,7 @@ func _remove_unit(unit : Unit) -> void:
 
 ## Main kill unit function -> checks for end of battle
 ## Contains spells related logic
-func _kill_unit(target : Unit) -> void:
+func _kill_unit(target : Unit, killer_army : ArmyInBattleState = null) -> void:
 	var target_army_index := _find_army_idx(target.controller)
 	var target_army = _get_player_army(target.controller)
 
@@ -613,7 +649,15 @@ func _kill_unit(target : Unit) -> void:
 
 	currently_processed_move_info.register_kill(target_army_index, target)
 
-	# killing starts
+	# killing starts - award exp
+	if spear_holding_killer_teams.size() > 0:
+		killer_army = _find_proper_exp_winner(target_army.team, spear_holding_killer_teams)
+		spear_holding_killer_teams = []
+
+	if killer_army:
+		killer_army.killed_units.append(target.template.level)
+
+	# removal of unit
 	target_army.kill_unit(target)
 	_remove_unit(target) # remove reference from hextile
 	target.unit_killed() # emit singal for visual death animation
@@ -632,7 +676,7 @@ func _kill_unit(target : Unit) -> void:
 		match spell.name:
 			"Vengeance":
 				#TODO check if this temp solution should be used
-				_kill_unit(currently_active_unit)
+				_kill_unit(currently_active_unit, target_army)
 
 			_:
 				continue
@@ -780,14 +824,16 @@ func _perform_magic(unit : Unit, target_tile_coord : Vector2i, spell : BattleSpe
 					enemy_targets.append(target)
 
 			for enemy_unit in enemy_targets: # kill enemy units first
-				_kill_unit(enemy_unit)
+				_kill_unit(enemy_unit, armies_in_battle_state[current_army_index])
 			
 			# we only start killing ally units after we are sure battle didn't end yet
 			if not battle_is_ongoing():
 				return
+			
+			var priority_enemy_army : ArmyInBattleState = _find_proper_exp_winner(unit.army_in_battle.team)
 
 			for ally_unit in ally_targets: # kill rest
-				_kill_unit(ally_unit)
+				_kill_unit(ally_unit, priority_enemy_army)
 			
 		"Teleport":
 			_perform_teleport(unit, target_tile_coord)
@@ -1134,7 +1180,11 @@ class ArmyInBattleState:
 
 	var units_to_summon : Array[DataUnit] = []
 	var units : Array[Unit] = []
+	## owned units that died during combat
 	var dead_units : Array[DataUnit] = []
+
+	#STUB - the only relevant information about killed units is their level
+	var killed_units : Array[int]
 
 	var mana_points : int = 1
 	var cyclone_timer : int = 100

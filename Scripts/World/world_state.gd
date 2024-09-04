@@ -504,28 +504,31 @@ func start_combat_by_attack(armies : Array[Army], source : Vector2i, \
 	return true
 
 
-func end_combat(army_updates : Array[Dictionary]) -> bool:
-	if move_hold_on_combat.size() < 1:
-		return false
-	for update in army_updates:
-		var army = update["army"]
-		var killed = update["killed"]
-		var xp = update["xp"]
-		var losses = update["losses"]
-		if killed:
+## Awards exp, applies losses, moves armies that were on hold duo to battle taking place
+func end_combat(battle_results : Array[BattleGridState.ArmyInBattleState]) -> void:
+	for army_state in battle_results:
+		var army = army_state.army_reference
+		if army.hero:
+			army_state.killed_units.sort()  # from lowest to highest
+			# we aim to award hero as much as possible
+			for killed_unit : int in army_state.killed_units:
+				if army.hero.level <= killed_unit:
+					army.hero.add_xp(1)
+		
+
+		if not army_state.can_fight():
 			remove_army(army)
 		else:
-			if losses is Array and losses.size() > 0:
-				army.apply_losses(losses)
-			if xp > 0:
-				army.add_xp(xp)
+			army.apply_losses(army_state.dead_units)
+		
+	# TODO document this variable, and how it works better
+	if move_hold_on_combat.size() < 1:
+		return  # don't process moves if none were on hold
 
 	var source : Vector2i = move_hold_on_combat[0]
 	var target : Vector2i = move_hold_on_combat[1]
 	if check_army_travel(source, target) == "":
 		do_army_travel(source, target)
-
-	return true
 
 
 ## returns if place is interacted
