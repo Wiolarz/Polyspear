@@ -378,10 +378,6 @@ func is_move_possible(move: MoveInfo) -> bool:
 	return false
 
 
-func is_move_valid(unit : Unit, coord : Vector2i) -> bool:
-	return _get_move_direction_if_valid(unit, coord) != MOVE_IS_INVALID
-
-
 ## Checks if given tile relative to start tile is in specific direction within specific range [br]
 ## start_tile, end_tile | direction = -1 search in all directions| reach = -1 with that value searh till the end of board
 func _is_faced_tile_in_range(start_coord : Vector2i, end_coord : Vector2i, direction : int, reach : int = -1) -> bool:
