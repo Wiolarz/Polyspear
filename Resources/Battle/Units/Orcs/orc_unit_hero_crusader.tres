@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://Scripts/World/Economy/goods.gd" id="1_nfet6"]
 [ext_resource type="Script" path="res://Resources/Battle/data_unit.gd" id="2_ggqe6"]
-[ext_resource type="Resource" uid="uid://cngonnqsgsd6e" path="res://Resources/Battle/Symbols/sword.tres" id="3_l8c05"]
+[ext_resource type="Resource" uid="uid://cngonnqsgsd6e" path="res://Resources/Battle/Symbols/axe.tres" id="3_l8c05"]
 [ext_resource type="Resource" uid="uid://sr1570kq7sm8" path="res://Resources/Battle/Symbols/shield.tres" id="4_v5c6e"]
 [ext_resource type="Resource" uid="uid://o4rlmfc33rsh" path="res://Resources/Battle/Symbols/empty.tres" id="5_wpm4b"]
 
@@ -19,3 +19,5 @@ texture_path = "res://Art/world_heroes/orc_crusader.png"
 symbols = Array[Resource("res://Resources/Battle/data_symbol.gd")]([ExtResource("3_l8c05"), ExtResource("4_v5c6e"), ExtResource("5_wpm4b"), ExtResource("5_wpm4b"), ExtResource("5_wpm4b"), ExtResource("4_v5c6e")])
 cost = SubResource("Resource_bgw4c")
 level = 1
+mana = 0
+spells = Array[Resource("res://Scripts/Battle/battle_spell.gd")]([])

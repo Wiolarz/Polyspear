@@ -68,6 +68,10 @@ custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
 text = "Color"
 
+[node name="OptionButtonTeam" type="OptionButton" parent="VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+
 [node name="OptionButtonBot" type="OptionButton" parent="VBoxContainer/HBoxContainer"]
 layout_mode = 2
 allow_reselect = true
@@ -94,8 +98,4 @@ layout_mode = 2
 
 [connection signal="pressed" from="VBoxContainer/HBoxContainer/ButtonTakeLeave" to="." method="_on_button_take_leave_pressed"]
 [connection signal="pressed" from="VBoxContainer/HBoxContainer/ButtonColor" to="." method="_on_button_color_pressed"]
-[connection signal="pressed" from="VBoxContainer/OptionButtonUnit1" to="." method="_on_button_faction_pressed"]
-[connection signal="pressed" from="VBoxContainer/OptionButtonUnit2" to="." method="_on_button_faction_pressed"]
-[connection signal="pressed" from="VBoxContainer/OptionButtonUnit3" to="." method="_on_button_faction_pressed"]
-[connection signal="pressed" from="VBoxContainer/OptionButtonUnit4" to="." method="_on_button_faction_pressed"]
-[connection signal="pressed" from="VBoxContainer/OptionButtonUnit5" to="." method="_on_button_faction_pressed"]
+[connection signal="item_selected" from="VBoxContainer/HBoxContainer/OptionButtonTeam" to="." method="_on_option_button_team_item_selected"]

@@ -11,6 +11,8 @@ var client_menu : ClientMenu = null
 
 @onready var username_line = \
 	$MarginContainer/VBoxContainer/UserName/LineEdit
+@onready var randomise_login : CheckBox = \
+	$MarginContainer/VBoxContainer/UserName/RandomiseCheckBox
 @onready var server_address_line = \
 	$MarginContainer/VBoxContainer/ManualConnection/ConnectionParameters/H/IPAddress/LineEdit
 @onready var server_port_line = \
@@ -18,7 +20,21 @@ var client_menu : ClientMenu = null
 
 
 func _ready():
-	username_line.text = CFG.get_random_username()
+	_fill_fields_from_last_used()
+	visibility_changed.connect(_on_visibility_changed)
+
+
+func _on_visibility_changed():
+	# sometimes called before ready inits @onready
+	if username_line:
+		_fill_fields_from_last_used()
+
+
+func _fill_fields_from_last_used():
+	username_line.text = CFG.get_username()
+	randomise_login.set_pressed(CFG.player_options.randomise_join_login)
+	server_address_line.text = CFG.player_options.last_remote_host_address
+	server_port_line.text = str(CFG.player_options.last_remote_host_port)
 
 
 func get_address():
@@ -28,20 +44,28 @@ func get_address():
 	return server_address_line.text
 
 
-func get_port():
+func get_port() -> int:
 	var server_on_list_selected : bool = false
 	if server_on_list_selected:
 		return 0 # port of selected server
 	return int(server_port_line.text)
 
 
-func get_username():
+func get_username()-> String:
 	return username_line.text
+
+func _randomise(username : String) -> String:
+	return "%s_%04d" % [username, randi_range(0000, 9999)]
 
 
 func connect_to_server():
+	var username = get_username()
+	CFG.save_last_used_for_joining(get_address(), get_port(), get_username(), randomise_login.is_pressed())
+
 	NET.clear_local_chat_log()
-	NET.client_connect_and_login(get_address(), get_port(), get_username())
+	if randomise_login.is_pressed():
+		username = _randomise(username)
+	NET.client_connect_and_login(get_address(), get_port(), username)
 
 
 func _on_button_listen_pressed():

@@ -25,24 +25,32 @@ func _ready():
 	fill_maps_list()
 	fill_presets_list()
 
+	var number_of_presets = FileSystemHelpers.list_files_in_folder(CFG.BATTLE_PRESETS_PATH, true, true).size()
+	if number_of_presets > 0:
+		if CFG.LAST_USED_BATTLE_PRESET:
+			apply_preset(CFG.LAST_USED_BATTLE_PRESET)
+		else:
+			_on_preset_list_item_selected(0)
 
-func fill_maps_list():
+
+func fill_maps_list() -> void:
 	var maps = IM.get_battle_maps_list()
+	maps_list.clear()
 	for map_name in maps:
 		maps_list.add_item(map_name)
 
 
-func fill_presets_list():
+func fill_presets_list() -> void:
 	var presets = FileSystemHelpers.list_files_in_folder(CFG.BATTLE_PRESETS_PATH, true, true)
 	presets_list.clear()
 	for preset in presets:
 		presets_list.add_item(preset.trim_prefix(CFG.BATTLE_PRESETS_PATH))
-	if presets.size() > 0:
-		_on_preset_list_item_selected(0)
+
+
 
 
 ## Called upon join, applies changes to the UI to make it Client UI not Host UI
-func make_client_side():
+func make_client_side() -> void:
 	$MapSelect/Label.text = "Selected map"
 	maps_list.queue_free()
 	maps_list = null
@@ -56,7 +64,7 @@ func make_client_side():
 
 
 ## Updates UI to match GameState in IM
-func refresh():
+func refresh() -> void:
 	for index in range(player_slot_panels.size()):
 		_refresh_slot(index)
 
@@ -66,7 +74,7 @@ func refresh():
 
 
 ## Updates BattlePlayerSlotPanel to match GameState in IM
-func _refresh_slot(index : int):
+func _refresh_slot(index : int) -> void:
 	if index < 0 or index >= player_slot_panels.size():
 		push_error("no ui slot to refresh on index ", index)
 		return
@@ -108,36 +116,31 @@ func slot_to_index(slot) -> int:
 	return player_slot_panels.find(slot)
 
 
-func prepare_player_slots() -> void:
-	player_slot_panels = []
-	for slot in player_list.get_children():
-		player_list.remove_child(slot)
-		slot.queue_free()
-
-	for slot in IM.game_setup_info.slots:
-		var slot_scene : BattlePlayerSlotPanel = load(PLAYER_SLOT_PANEL_PATH).instantiate()
-		player_slot_panels.append(slot_scene)
-		slot_scene.setup_ui = self
-		player_list.add_child(slot_scene)
-
-	refresh()
-
-
 #region Changing settings
 
-func _on_preset_list_item_selected(index):
+## add missing path and calls apply_preset()
+func _on_preset_list_item_selected(index) -> void:
 	var preset_file = presets_list.get_item_text(index)
 	var preset_data : PresetBattle = \
 			load(CFG.BATTLE_PRESETS_PATH + "/" + preset_file)
 	apply_preset(preset_data)
 
+	# TODO - verify if its neccesary to imrpove on this simple solution
+	CFG.player_options.last_used_battle_preset = preset_data
+	CFG.save_player_options()
+
 
 func apply_preset(preset : PresetBattle):
 	var map_name = preset.battle_map.resource_path.get_file()
+	var found_a_map : bool = false
 	for i in range(maps_list.item_count):
 		if maps_list.get_item_text(i) == map_name:
 			maps_list.select(i)
 			_on_map_list_item_selected(i)
+			found_a_map = true
+			break
+	assert(found_a_map, "preset map not present in map pool")
+
 	for player_idx in preset.armies.size():
 		var army = preset.armies[player_idx]
 		player_slot_panels[player_idx].apply_army_preset(army)
@@ -155,6 +158,27 @@ func _on_map_list_item_selected(index):
 
 	if NET.server:
 		NET.server.broadcast_full_game_setup(IM.game_setup_info)
+
+
+func prepare_player_slots() -> void:
+	player_slot_panels = []
+	for slot in player_list.get_children():
+		player_list.remove_child(slot)
+		slot.queue_free()
+
+	var max_number_of_players : int = IM.game_setup_info.slots.size()
+
+	for slot in IM.game_setup_info.slots:
+		var slot_scene : BattlePlayerSlotPanel = load(PLAYER_SLOT_PANEL_PATH).instantiate()
+		player_slot_panels.append(slot_scene)
+		slot_scene.setup_ui = self
+
+		player_list.add_child(slot_scene)
+
+		slot_scene.fill_team_list(max_number_of_players)
+
+	refresh()
+
 
 
 func try_to_take_slot(slot) -> bool: # true means something changed

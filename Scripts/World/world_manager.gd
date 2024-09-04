@@ -440,7 +440,6 @@ func spawn_world_ui():
 
 
 func start_new_world(world_map : DataWorldMap) -> void:
-	BM.world_map_started()
 
 	var spawn_location = world_map.get_spawn_locations()
 
@@ -469,9 +468,8 @@ func start_new_world(world_map : DataWorldMap) -> void:
 # this function probably should be divided into parts
 func start_world_in_state(world_map : DataWorldMap, \
 		world_state : SerializableWorldState) -> void:
-	_batch_mode = true
 
-	BM.world_map_started()
+	_batch_mode = true
 
 	players = IM.players
 

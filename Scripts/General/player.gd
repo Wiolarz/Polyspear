@@ -1,7 +1,7 @@
 class_name Player
 extends Node
 
-var slot: GameSetupInfo.Slot
+var slot : GameSetupInfo.Slot
 
 var bot_engine : AIInterface
 
@@ -23,6 +23,8 @@ var hero_armies : Array[ArmyForm] = []
 
 var dead_heroes: Array[Hero] = []
 
+var team : int = 0
+
 
 static func create(new_slot : GameSetupInfo.Slot) -> Player:
 	var result := Player.new()
@@ -33,14 +35,14 @@ static func create(new_slot : GameSetupInfo.Slot) -> Player:
 		result.add_child(result.bot_engine)
 		result.bot_engine.set_player(result)
 		assert(result.bot_engine != null, "Bot '%s' does not exist" % new_slot.battle_bot_path)
-		
-	result.name = "Player_"+result.get_player_name()
+
+	result.name = "Player_" + result.get_player_name()
 	result.goods = CFG.get_start_goods()
 	
 	return result
 
 
-func _init():
+func _init(): #?
 	name = "Player"
 
 
@@ -62,7 +64,7 @@ func get_player_color() -> DataPlayerColor:
 func get_faction() -> DataFaction:
 	return slot.faction
 
-#endregion
+#endregion Getters
 
 func set_capital(capital : City):
 	capital.controller = self
@@ -119,7 +121,7 @@ func get_hero_cost(data_hero: DataHero):
 		return data_hero.revive_cost
 	return data_hero.cost
 
-#endregion
+#endregion Heroes
 
 
 #region Outposts
@@ -149,4 +151,4 @@ func outpost_demolish(demolish_type : String):
 			outpost_buildings.pop_at(building_idx)
 
 
-#endregion
+#endregion Outposts

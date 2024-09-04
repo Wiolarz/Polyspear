@@ -6,11 +6,28 @@ extends Object
 enum Symbols
 {
 	EMPTY,
+	# CLASSIC
 	SPEAR,
-	SWORD,
+	AXE,
 	SHIELD,
 	BOW,
 	PUSH,
+	# Items # MEGA TEMP
+	STRONG_AXE,
+	STRONG_SPEAR,
+	STAFF,
+	
+	STRONG_SHIELD,
+	ATTACK_SHIELD,
+	
+	TOWERSHIELD,
+	STRONG_TOWERSHIELD,
+
+	FIST,
+	MACE,
+	DAGGER,
+
+	SWORD,
 }
 
 

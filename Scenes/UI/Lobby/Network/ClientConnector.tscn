@@ -58,6 +58,10 @@ size_flags_vertical = 0
 text = "Mag"
 placeholder_text = "Type your desired name here"
 
+[node name="RandomiseCheckBox" type="CheckBox" parent="MarginContainer/VBoxContainer/UserName"]
+layout_mode = 2
+text = "Add random number suffix \"_1234\""
+
 [node name="ManualConnection" type="VBoxContainer" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
 

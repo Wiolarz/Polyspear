@@ -59,6 +59,6 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 60
 text = "START"
 
-[connection signal="toggled" from="MarginContainer/VBoxContainer/ModeChoice/ButtonWorld" to="." method="_on_button_world_toggled"]
-[connection signal="toggled" from="MarginContainer/VBoxContainer/ModeChoice/ButtonBattle" to="." method="_on_button_battle_toggled"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/ModeChoice/ButtonWorld" to="." method="_on_button_world_pressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/ModeChoice/ButtonBattle" to="." method="_on_button_battle_pressed"]
 [connection signal="pressed" from="MarginContainer/VBoxContainer/ButtonConfirm" to="." method="_on_button_confirm_pressed"]

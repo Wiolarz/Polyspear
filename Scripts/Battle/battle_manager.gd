@@ -3,7 +3,7 @@ class_name BattleManager extends GridNode2D
 
 var _battle_is_ongoing : bool = false
 
-var _battle_grid_state: BattleGridState # GAMEPLAY combat state
+var _battle_grid_state : BattleGridState # GAMEPLAY combat state
 
 var _tile_grid : GenericHexGrid # Grid<TileForm> - VISUALs in a grid
 var _unit_to_unit_form : Dictionary # gameplay unit to VISUAL mapping
@@ -40,14 +40,10 @@ func _ready():
 
 func _process(_delta):
 	_process_anim_queue()
-	_check_clock_timer_run_out()
+	_check_clock_timer_tick()
 
 
 #region Battle Setup
-
-func world_map_started():
-	_battle_is_ongoing = false
-
 
 ## x_offset is used to place battle to the right of world map
 func start_battle(new_armies : Array[Army], battle_map : DataBattleMap, \
@@ -64,7 +60,7 @@ func start_battle(new_armies : Array[Army], battle_map : DataBattleMap, \
 	_battle_is_ongoing = true
 
 	_current_summary = null
-	_selected_unit = null
+	deselect_unit()
 
 	_battle_grid_state = BattleGridState.create(battle_map, new_armies)
 
@@ -115,22 +111,13 @@ func get_bounds_global_position() -> Rect2:
 
 #region helpers
 
-func _check_clock_timer_run_out() -> void:
-	if not _battle_grid_state:
-		return
-	if not _battle_grid_state.battle_is_ongoing():
-		return
-	if get_current_time_left_ms() > 0:
-		return
-	_battle_grid_state.surrender_on_timeout()
-	_update_ui_after_player_move_or_drop()
+func get_player_color(player : Player) -> DataPlayerColor:
+	if not _battle_is_ongoing:
+		return CFG.NEUTRAL_COLOR
+	if not player:
+		return CFG.NEUTRAL_COLOR
+	return player.get_player_color()
 
-
-func _update_ui_after_player_move_or_drop() -> void:
-	if _battle_grid_state.battle_is_ongoing():
-		_on_turn_started(_battle_grid_state.get_current_player())
-	else :
-		_on_battle_ended()
 
 func get_current_slot_color() -> DataPlayerColor:
 	if not _battle_is_ongoing:
@@ -141,18 +128,8 @@ func get_current_slot_color() -> DataPlayerColor:
 	return player.get_player_color()
 
 
-func get_current_time_left_ms() -> int:
-	if _battle_grid_state && _battle_grid_state.battle_is_ongoing():
-		return _battle_grid_state.get_current_time_left()
-	return 0
-
-
 func get_current_turn() -> int:
 	return _battle_grid_state.turn_counter
-
-
-func get_max_turn() -> int:
-	return _battle_grid_state.STALEMATE_TURN_COUNT
 
 
 ## tells if there is battle state that is important and should be serialized
@@ -182,7 +159,7 @@ func _is_clear() -> bool:
 			and _unit_forms_node.get_child_count() == 0 \
 			and _tile_grid == null
 
-#endregion
+#endregion helpers
 
 
 #region Ongoing battle
@@ -242,10 +219,7 @@ func perform_network_move(move_info : MoveInfo) -> void:
 
 
 func _perform_replay_move(move_info : MoveInfo) -> void:
-	_perform_move_info(move_info)
-
-
-func _perform_ai_move(move_info : MoveInfo) -> void:
+	_battle_grid_state.set_displayed_time_left_ms(move_info.time_left_ms)
 	_perform_move_info(move_info)
 
 
@@ -262,7 +236,7 @@ func undo() -> void:
 	for n in new_units:
 		_on_unit_summoned(n)
 	_battle_ui.refresh_after_undo(_battle_grid_state.is_during_summoning_phase())
-	_update_ui_after_player_move_or_drop()
+	_end_move()
 
 
 func redo() -> void:
@@ -270,15 +244,7 @@ func redo() -> void:
 	pass
 
 
-func ai_move() -> void:
-	if latest_ai_cancel_token:
-		push_warning("ai is already moving, dont stack two simultaneous ai moves race")
-		return
-	var move := AiBotStateRandom.choose_move_static(_battle_grid_state)
-	_perform_ai_move(move)
-
-
-## called when tile is clicked
+## IMPORTANT FUNCTION -> called when tile is clicked
 func grid_input(coord : Vector2i) -> void:
 	if not _battle_is_ongoing:
 		print("battle finished, input ignored")
@@ -297,13 +263,99 @@ func grid_input(coord : Vector2i) -> void:
 		print("ai playing, input ignored")
 		return
 
-	if _battle_grid_state.is_during_summoning_phase(): # Summon phase
-		_grid_input_summon(coord)
+	var move_info : MoveInfo
+
+	match _battle_grid_state.state:
+		BattleGridState.STATE_SUMMONNING:
+			move_info = _grid_input_summon(coord)
+		BattleGridState.STATE_FIGHTING:
+			if _battle_ui.selected_spell == null:
+				move_info = _grid_input_fighting(coord)
+			else:
+				move_info = _grid_input_magic(coord)
+		BattleGridState.STATE_SACRIFICE:
+			move_info = _grid_input_sacrifice(coord)
+		
+			
+
+	if move_info:
+		if NET.client:
+			NET.client.queue_request_move(move_info)
+			return # dont perform move, send it to server
+
+		_perform_move_info(move_info)
+
+
+func _check_for_stalemate() -> bool:
+	assert(BattleGridState.STALEMATE_TURN_REPEATS == 2,
+	" _check_for_stalemate has wrong STALEMATE_TURN_REPEATS value
+	later parts of this function version wasn't made in mind with more repeats allowed")
+	var limit = BattleGridState.STALEMATE_TURN_REPEATS
+
+	# if number of the armies were to change during last few moves, then it wouldn't be a stalemate
+	var alive_armies = []
+	for army in _battle_grid_state.armies_in_battle_state:
+		if army.can_fight():
+			alive_armies.append(army) 
+
+	# equation determines the shortest scenario to achieve a stalemate
+	# later we jump back X move behind, so it makes it safe to do so
+	if _replay_data.moves.size() < limit * alive_armies.size() * 2:
+		return false
+	
+	var go_back_value = limit * alive_armies.size() + 1
+	for player_idx in range(alive_armies.size()):
+		var old_move = _replay_data.moves[-go_back_value - player_idx]
+		var new_move = _replay_data.moves[-player_idx - 1]
+
+		if new_move.move_type != MoveInfo.TYPE_MOVE or old_move.move_type != new_move.move_type:
+			return false
+		if old_move.move_source != new_move.move_source or \
+			old_move.target_tile_coord != new_move.target_tile_coord:
+				return false
+	return true
+
+func  _end_move() -> void:
+	if _battle_grid_state.battle_is_ongoing():
+		if _check_for_stalemate():
+			_battle_grid_state.end_stalemate() # could end the battle
+
+	if _battle_grid_state.battle_is_ongoing():
+		_on_turn_started(_battle_grid_state.get_current_player())
+	else :
+		_on_battle_ended()
+
+#endregion Ongoing battle
+
+
+#region AI Support
+
+func cancel_pending_ai_move() ->  void:
+	if latest_ai_cancel_token:
+		latest_ai_cancel_token.cancel()
+		latest_ai_cancel_token = null
+
+
+func _ai_thinking_delay() -> void:
+	var seconds = CFG.bot_speed_frames / 60.0
+	print("ai wait %f s" % [seconds])
+	await get_tree().create_timer(seconds).timeout
+	while IM.is_game_paused() or CFG.bot_speed_frames == CFG.BotSpeed.FREEZE:
+		await get_tree().create_timer(0.1).timeout
+
+
+func _perform_ai_move(move_info : MoveInfo) -> void:
+	_perform_move_info(move_info)
+
+
+func ai_move() -> void:
+	if latest_ai_cancel_token:
+		push_warning("ai is already moving, dont stack two simultaneous ai moves race")
 		return
+	var move := AiBotStateRandom.choose_move_static(_battle_grid_state)
+	_perform_ai_move(move)
 
-	_grid_input_fighting(coord)
-
-#endregion
+#endregion AI Support
 
 
 #region Summon Phase
@@ -326,37 +378,82 @@ func _on_unit_summoned(unit : Unit) -> void:
 
 
 ## handles player input while during the summoning phase
-func _grid_input_summon(coord : Vector2i) -> void:
+func _grid_input_summon(coord : Vector2i) -> MoveInfo:
 	assert(_battle_grid_state.state == _battle_grid_state.STATE_SUMMONNING, \
 			"_grid_input_summon called in an incorrect state")
 
 	if _battle_ui.selected_unit == null:
-		return # no unit selected to summon on ui
+		return null # no unit selected to summon on ui
 
 	if not _battle_grid_state.current_player_can_summon_on(coord):
-		return
+		return null
 
 	print(NET.get_role_name(), " input - summoning unit")
-	var move_info = MoveInfo.make_summon(_battle_ui.selected_unit, coord)
-	if NET.client:
-		NET.client.queue_request_move(move_info)
-		return # dont perform move, send it to server
+	return MoveInfo.make_summon(_battle_ui.selected_unit, coord)
 
-	_perform_move_info(move_info)
 
-#endregion
+#endregion Summon Phase
+
+
+#region Mana Cyclone Timer
+
+func get_cyclone_target() -> Player:
+	return _battle_grid_state.cyclone_get_current_target()
+
+
+func get_cyclone_timer() -> int:
+	return _battle_grid_state.cyclone_get_current_target_turns_left()
+
+#endregion Mana Cyclone Timer
 
 
 #region Fighting Phase
-func _grid_input_fighting(coord : Vector2i) -> void:
+
+## Turn timer unit sacrifice (Stalemate prevention mechanic)
+func _grid_input_sacrifice(coord : Vector2i) -> MoveInfo:
+	## TODO:
+	## input should be locked to the person that is bound to make a sacrifice,
+	## which could be a different player than a current one also it occurs at round start
+
+	assert(_battle_grid_state.state == _battle_grid_state.STATE_SACRIFICE, \
+			"_grid_input_fighting called in an incorrect state")
+
+	var new_unit : Unit = _battle_grid_state.get_unit(coord)
+	if new_unit and new_unit.controller == _battle_grid_state.cyclone_target.army_reference.controller:
+
+		# Reselect the same target OR new one if that 
+		return MoveInfo.make_sacrifice(coord)
+	return null
+
+
+## Selected Unit -> instead of moving casts a spell
+func _grid_input_magic(coord : Vector2i) -> MoveInfo:
+	assert(_battle_grid_state.state == _battle_grid_state.STATE_FIGHTING, \
+			"_grid_input_magic called in an incorrect state")
+
+	if _battle_ui.selected_spell == null:
+		return null # no spell selected to cast on ui
+
+	if not _battle_grid_state.is_spell_target_valid(_selected_unit, coord, _battle_ui.selected_spell):
+		return null
+
+	var move_info = MoveInfo.make_magic(_selected_unit.coord, coord, _battle_ui.selected_spell)
+	deselect_unit()
+	
+	return move_info
+	
+
+## Either Unit selection or a command to move
+func _grid_input_fighting(coord : Vector2i) -> MoveInfo:
 	assert(_battle_grid_state.state == _battle_grid_state.STATE_FIGHTING, \
 			"_grid_input_fighting called in an incorrect state")
+
 
 	if _try_select_unit(coord) or _selected_unit == null:
 		# used in scenarios:
 		# - selected a new unit
 		# - clicked a tile with no ally units, when no unit was selected
-		return
+		return null
 
 	# get_move_direction() returns MOVE_IS_INVALID on impossible moves, handles scenarios like
 	# - spot is not adjacent (MOVE_IS_INVALID)
@@ -365,20 +462,16 @@ func _grid_input_fighting(coord : Vector2i) -> void:
 	# - there is an enemy that can be killed by the move (dir)
 	# - there is enemy that cannot be killed by the move (MOVE_IS_INVALID)
 	if not _battle_grid_state.is_move_valid(_selected_unit, coord):
-		return
+		return null
 
-	_unit_to_unit_form[_selected_unit].set_selected(false)
 	var move_info = MoveInfo.make_move(_selected_unit.coord, coord)
-	_selected_unit = null
+	deselect_unit()
 
-	if NET.client:
-		NET.client.queue_request_move(move_info)
-		return # dont perform move, send it to server
-
-	_perform_move_info(move_info)
+	return move_info
+	
 
 
-## Select friendly Unit on a given coord
+## Select friendly Unit on a given coord [br]
 ## returns true if unit was selected
 func _try_select_unit(coord : Vector2i) -> bool:
 	var new_unit : Unit = _battle_grid_state.get_unit(coord)
@@ -389,36 +482,59 @@ func _try_select_unit(coord : Vector2i) -> bool:
 
 	# deselect visually old unit if new one selected
 	if _selected_unit:
-		_unit_to_unit_form[_selected_unit].set_selected(false)
+		deselect_unit()
 
 	_selected_unit = new_unit
 	_unit_to_unit_form[_selected_unit].set_selected(true)
+
+	# attempt to display spells available to selected unit
+	_show_spells(_selected_unit)
+
 	return true
 
 
+## Main way to deselect unit -> use every time, its safe
+func deselect_unit() -> void:
+	if _selected_unit:
+		_unit_to_unit_form[_selected_unit].set_selected(false)
+	_selected_unit = null
+	_battle_ui.selected_spell = null
+	_battle_ui.reset_spells()
+
+
+
+func _show_spells(unit : Unit) -> void:
+	if unit.spells.size() == 0:
+		return
+	
+	#TODO? check here if selected unit is preview mode only (controlled by another player)
+	_battle_ui.load_spells(_battle_grid_state.current_army_index , unit.spells)
+
+
+## Executes given move_info [br]
 ## used by input moves, replays, network and AI
 func _perform_move_info(move_info : MoveInfo) -> void:
 	if not _battle_is_ongoing:
 		return
 	print(NET.get_role_name(), " performing move ", move_info)
 
-	_replay_data.record_move(move_info)
+
+	_replay_data.record_move(move_info, get_current_time_left_ms())
 	_replay_data.save()
 	if NET.server:
 		NET.server.broadcast_move(move_info)
 
 	match move_info.move_type:
-		MoveInfo.TYPE_MOVE:
-			_battle_grid_state.move_info_move_unit(move_info)
+		MoveInfo.TYPE_MOVE, MoveInfo.TYPE_SACRIFICE, MoveInfo.TYPE_MAGIC:
+			_battle_grid_state.move_info_execute(move_info)
 
 		MoveInfo.TYPE_SUMMON:
-			var unit := _battle_grid_state.move_info_summon_unit(move_info)
+			var unit : Unit = _battle_grid_state.move_info_summon_unit(move_info)
 			_on_unit_summoned(unit)
-
 		_ :
 			assert(false, "Move move_type not supported in perform, " + str(move_info.move_type))
 
-	_update_ui_after_player_move_or_drop()
+	_end_move()
 
 
 func _on_unit_killed(unit: Unit) -> void:
@@ -443,12 +559,13 @@ func _on_unit_moved(unit: Unit) -> void:
 		_anim_queue.push_back(AnimInQueue.create_move(_unit_to_unit_form[unit]))
 
 
-#endregion
+#endregion Fighting Phase
 
 
 #region Battle End
 
 func close_when_quiting_game() -> void:
+	deselect_unit()
 	_clear_anim_queue()
 	_reset_grid_and_unit_forms()
 
@@ -460,7 +577,8 @@ func _on_battle_ended() -> void:
 		assert(false, "battle ended when it was not ongoing...")
 		return
 	_battle_is_ongoing = false
-
+	deselect_unit()
+	
 	await get_tree().create_timer(1).timeout # TEMP, don't exit immediately
 	while _replay_is_playing:
 		await get_tree().create_timer(0.1).timeout
@@ -479,6 +597,7 @@ func _close_battle() -> void:
 	_clear_anim_queue()
 	_turn_off_battle_ui()
 	_reset_grid_and_unit_forms()
+	deselect_unit()
 
 	if not WM.world_game_is_active():
 		print("end of test battle")
@@ -501,38 +620,59 @@ func _reset_grid_and_unit_forms() -> void:
 	Helpers.remove_all_children(_unit_forms_node)
 	_battle_grid_state = null
 
-
+## Major function which fully generates information panel at the end of the battle
 func _create_summary() -> DataBattleSummary:
 	var summary := DataBattleSummary.new()
-	summary.color = CFG.NEUTRAL_COLOR.color
-	summary.title = "Draw"
 
 	var armies_in_battle_state := _battle_grid_state.armies_in_battle_state
 
+	var winning_team : int
+	var winning_team_players : Array[Player] = []
+	# Search for winning team
+	for army_in_battle in armies_in_battle_state:
+		if army_in_battle.can_fight():
+			winning_team = army_in_battle.army_reference.controller.team
+			break
+
+	# Generate information for every player
 	for army_in_battle in armies_in_battle_state:
 		var player_stats := DataBattleSummaryPlayer.new()
-		if army_in_battle.dead_units.size() <= 0:
+
+		# Generate casulties info
+		if army_in_battle.dead_units.size() == 0:
 			player_stats.losses = "< none >"
 		else:
 			for dead in army_in_battle.dead_units:
 				var unit_description = "%s\n" % dead.unit_name
 				player_stats.losses += unit_description
 
-		var army_controller := army_in_battle.army_reference.controller
+		var army_controller : Player = army_in_battle.army_reference.controller
+
+		# generates player names for their info column
 		player_stats.player_description = IM.get_full_player_description(army_controller)
-		if army_in_battle.can_fight():
+
+		if army_controller.team == winning_team:
 			player_stats.state = "winner"
+			winning_team_players.append(army_controller)
+
+			# TEMP solution - better color system described in TODO notes
 			var color_description = CFG.NEUTRAL_COLOR
 			if army_controller:
 				color_description = army_controller.get_player_color()
 			summary.color = color_description.color
-			summary.title = "%s wins" % color_description.name
 		else:
 			player_stats.state = "loser"
 		summary.players.append(player_stats)
+	
+	# Summary title creation
+	assert(winning_team_players.size() > 0, "Battle resulted in no winners")
+	summary.title = "Team %s wins :" % [winning_team_players[0].team] 
+	for player in winning_team_players:
+		summary.title += " " + player.get_player_color().name
+
 	return summary
 
-#endregion
+#endregion Battle End
 
 
 #region Replays
@@ -563,22 +703,22 @@ func get_ripped_replay() -> BattleReplay:
 	result.moves = _replay_data.moves.duplicate()
 	return result
 
-#endregion
+#endregion Replays
 
 
 #region cheats
 
 func force_win_battle():
 	_battle_grid_state.force_win_battle()
-	_update_ui_after_player_move_or_drop()
+	_end_move()
 
 
 func force_surrender():
 	_battle_grid_state.force_surrender()
-	_update_ui_after_player_move_or_drop()
+	_end_move()
 
 
-#endregion
+#endregion cheats
 
 
 #region map editor
@@ -598,11 +738,33 @@ func paint(coord : Vector2i, brush : DataTile) -> void:
 func editor_get_hexes_copy_as_array() -> Array: #Array[Array[TileForm]]
 	return _tile_grid.hexes.duplicate(true)
 
-#endregion
+#endregion map editor
+
+
+#region Chess clock
+
+## called every frame by _process
+func _check_clock_timer_tick() -> void:
+	if not _battle_grid_state or not _battle_grid_state.battle_is_ongoing():
+		return # no battle
+	if _battle_grid_state.get_current_time_left() > 0:
+		return # player still has time
+	
+	_battle_grid_state.surrender_on_timeout()
+	_end_move()
+
+## safe clock getter
+func get_current_time_left_ms() -> int:
+	if _battle_grid_state && _battle_grid_state.battle_is_ongoing():
+		return _battle_grid_state.get_current_time_left()
+	return 0
+
+#endregion Chess clock
 
 
 #region anim queue
 
+## called every frame by _process
 func _process_anim_queue() -> void:
 	if _anim_queue.size() == 0:
 		return
@@ -670,4 +832,4 @@ class AnimInQueue:
 	func _to_string():
 		return debug_name
 
-#endregion
+#endregion anim queue
