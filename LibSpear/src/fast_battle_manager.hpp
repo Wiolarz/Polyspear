@@ -62,7 +62,11 @@ public:
 
     void insert_unit(int army, int idx, Vector2i pos, int rotation, bool is_summoning); /// Add a unit in a summoning state
     void set_army_team(int army, int team); /// Set army's team - required
-    void set_unit_symbol(int army, int unit, int symbol, int symbol_id); /// Add symbol for a specified unit
+    void set_unit_symbol(
+        int army, int unit, int side, 
+        int attack_strength, int defense_strength, int ranged_reach,
+        bool is_counter, int push_force, bool parries
+    );
     void set_tile_grid(TileGridFastCpp* tilegrid);
     void set_current_participant(int army);
     void finish_initialization();

@@ -44,65 +44,72 @@ struct Position {
 
 class Symbol {
 /// Should be kept in sync with Symbol in global_enums.gd singleton
-    enum class Type: uint8_t {
-        EMPTY,
-        ATTACK_WITH_COUNTER,
-        ATTACK,
-        SHIELD,
-        BOW,
-        PUSH
-    } _type;
+    uint8_t _attack_strength;
+    uint8_t _defense_strength;
+    uint8_t _ranged_reach;
+    uint8_t _flags;
+
 public:
+    static const uint8_t FLAG_COUNTER_ATTACK = 0x01;
+    static const uint8_t FLAG_PUSH = 0x02;
+    static const uint8_t FLAG_PARRY = 0x04;
+    
+    static const int MIN_SHIELD_DEFENSE = 2;
+
     Symbol() = default;
-    Symbol(int i) : _type(Type(i)) {}
-    Symbol(Type i) : _type(i) {}
+    Symbol(uint8_t attack_strength, uint8_t defense_strength, uint8_t ranged_reach, uint8_t flags) 
+        : _attack_strength(attack_strength),
+        _defense_strength(defense_strength),
+        _ranged_reach(ranged_reach),
+        _flags(flags) 
+    {
+
+    }
 
     inline int get_attack_force() {
-        switch(_type) {
-            case Symbol::Type::ATTACK:
-            case Symbol::Type::ATTACK_WITH_COUNTER:
-                return 1;
-            default:
-                return 0;
-        }
+        return _attack_strength;
     }
 
     inline int get_counter_force() {
-        switch(_type) {
-            case Symbol::Type::ATTACK_WITH_COUNTER:
-                return 1;
-            default:
-                return 0;
-        }
+        return (_flags & FLAG_COUNTER_ATTACK) ? _attack_strength : 0;
     }
 
     inline int get_defense_force() {
-        switch(_type) {
-            // Note - also update MIN_SHIELD_DEFENSE constant when changing these values
-            case Symbol::Type::SHIELD:
-                return 1;
-            case Symbol::Type::EMPTY:
-                return -2;
-            default:
-                return 0;
-        }
+        return _defense_strength;
     }
 
     inline int get_bow_force() {
-        switch(_type) {
-            case Symbol::Type::BOW:
-                return 1;
-            default:
-                return 0;
+        return (_ranged_reach > 1) ? _attack_strength : 0;
+    }
+
+    inline int get_reach() {
+        return _ranged_reach;
+    }
+
+    inline bool protects_against(Symbol other, bool active) {
+        // Parry disables melee attacks
+        if(other.get_bow_force() <= 0 && parries()) {
+            return true;
         }
+        
+        int other_force = active ? other.get_attack_force() : other.get_counter_force();
+        return other_force <= get_defense_force();
+    }
+
+    inline bool dies_to(Symbol other, bool active) {
+        return !protects_against(other, active);
     }
     
-    inline int pushes() {
-        return _type == Symbol::Type::PUSH;
+    inline bool pushes() {
+        return (_flags & FLAG_PUSH);
+    }
+
+    inline bool parries() {
+        return (_flags & FLAG_PARRY);
     }
 
     inline void print() {
-        printf("%d%d%d", get_attack_force(), get_counter_force(), get_defense_force());
+        printf("a%dc%dd%d", get_attack_force(), get_counter_force(), get_defense_force());
     }
 };
 
@@ -158,7 +165,6 @@ public:
     }
 };
 
-const int MIN_SHIELD_DEFENSE = 1;
 const std::array<Position, 6> DIRECTIONS = {
 	Position(-1, 0),
 	Position(0, -1),

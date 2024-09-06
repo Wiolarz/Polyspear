@@ -137,13 +137,13 @@ void BattleManagerFastCpp::_process_unit(UnitID unit_id, bool process_kills) {
         auto neighbor_symbol = neighbor->symbol_at_abs_side(flip(side));
 
         // counter/spear
-        if(neighbor_symbol.get_counter_force() > 0 && unit_symbol.get_defense_force() < neighbor_symbol.get_counter_force()) {
+        if(unit_symbol.dies_to(neighbor_symbol, false)) {
             _kill_unit(unit_id, enemy_army->team);
             return;
         }
 
         if(process_kills) {
-            if(unit_symbol.get_attack_force() > 0 && neighbor_symbol.get_defense_force() < unit_symbol.get_attack_force()) {
+            if(neighbor_symbol.dies_to(unit_symbol, true)) {
                 _kill_unit(neighbor_id, army->team);
             }
 
@@ -169,8 +169,8 @@ void BattleManagerFastCpp::_process_bow(UnitID unit_id) {
     auto [unit, army] = _get_unit(unit_id);
 
     for(int i = 0; i < 6; i++) {
-        auto force = unit->symbol_at_abs_side(i).get_bow_force();
-        if(force == 0) {
+        auto symbol = unit->symbol_at_abs_side(i);
+        if(symbol.get_bow_force() == 0) {
             continue;
         }
 
@@ -188,7 +188,7 @@ void BattleManagerFastCpp::_process_bow(UnitID unit_id) {
                 break;
             }
 
-            if(other != nullptr && other->symbol_at_abs_side(flip(i)).get_defense_force() < force) {
+            if(other != nullptr && other->symbol_at_abs_side(flip(i)).dies_to(symbol, true)) {
                 _kill_unit(other_id, army->team);
                 break;
             }
@@ -305,7 +305,7 @@ void BattleManagerFastCpp::_refresh_legal_moves() {
 
                     auto neighbor_symbol = other_unit->symbol_at_abs_side(flip(side));
 
-                    if(neighbor_symbol.get_defense_force() >= MIN_SHIELD_DEFENSE) {
+                    if(neighbor_symbol.get_defense_force() >= Symbol::MIN_SHIELD_DEFENSE) {
                         continue;
                     }
                 }
@@ -395,8 +395,8 @@ void BattleManagerFastCpp::_refresh_heuristically_good_summon_moves() {
             }
 
             for(auto& enemy : enemy_army.units) {
-                bool can_shoot_enemy      = unit.sides[0].get_bow_force() > enemy.sides[0].get_defense_force();
-                bool enemy_can_shoot_unit = enemy.sides[0].get_bow_force() > unit.sides[0].get_defense_force();
+                bool can_shoot_enemy      = unit.sides[0].protects_against(enemy.sides[0], true);
+                bool enemy_can_shoot_unit = enemy.sides[0].protects_against(unit.sides[0], true);
 
                 if(enemy.status != UnitStatus::ALIVE || !m.pos.is_in_line_with(enemy.pos)) {
                     continue;
@@ -501,10 +501,20 @@ void BattleManagerFastCpp::insert_unit(int army, int idx, Vector2i pos, int rota
     _armies[army].units[idx].status = is_summoning ? UnitStatus::SUMMONING : UnitStatus::ALIVE;
 }
 
-void BattleManagerFastCpp::set_unit_symbol(int army, int unit, int side, int symbol) {
+void BattleManagerFastCpp::set_unit_symbol(
+        int army, int unit, int side, 
+        int attack_strength, int defense_strength, int ranged_reach,
+        bool is_counter, int push_force, bool parries
+) {
     CHECK_UNIT(unit,);
     CHECK_ARMY(army,);
-    _armies[army].units[unit].sides[side] = Symbol(symbol);
+    ERR_FAIL_COND_MSG(push_force != 0 && push_force != 1, "Invalid push value (stronger pushes are not yet supported)");
+
+    uint8_t flags = (Symbol::FLAG_PARRY & parries) 
+                  | (Symbol::FLAG_COUNTER_ATTACK & is_counter)
+                  | (Symbol::FLAG_PUSH & (push_force == 1));
+
+    _armies[army].units[unit].sides[side] = Symbol(attack_strength, defense_strength, ranged_reach, flags);
 }
 
 void BattleManagerFastCpp::set_army_team(int army, int team) {
@@ -540,7 +550,11 @@ godot::Array BattleManagerFastCpp::get_unit_id_on_position(Vector2i pos) const {
 
 void BattleManagerFastCpp::_bind_methods() {
     ClassDB::bind_method(D_METHOD("insert_unit", "army", "index", "position", "rotation", "is_summoning"), &BattleManagerFastCpp::insert_unit);
-    ClassDB::bind_method(D_METHOD("set_unit_symbol", "army", "index", "symbol_slot", "symbol_type"), &BattleManagerFastCpp::set_unit_symbol);
+    ClassDB::bind_method(D_METHOD(
+        "set_unit_symbol_cpp", "army", "unit", "side", 
+        "attack_strength", "defense_strength", "ranged_reach",
+        "is_counter", "push_force", "parries"
+ ), &BattleManagerFastCpp::set_unit_symbol);
     ClassDB::bind_method(D_METHOD("set_army_team", "army", "team"), &BattleManagerFastCpp::set_army_team);
     ClassDB::bind_method(D_METHOD("set_tile_grid", "tilegrid"), &BattleManagerFastCpp::set_tile_grid);
     ClassDB::bind_method(D_METHOD("set_current_participant", "army"), &BattleManagerFastCpp::set_current_participant);

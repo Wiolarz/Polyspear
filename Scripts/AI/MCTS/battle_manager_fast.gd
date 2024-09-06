@@ -8,6 +8,9 @@ var _integrity_check_move: MoveInfo
 # Maps BMFast's integer IDs to DataUnit (for summons) or Unit (for already summoned)
 var unit_mapping: Array = []
 
+# Maps team ids to BMFast's team ids (BMFast's team ids must be less than max army number)
+var team_mapping: Dictionary = {}
+
 ## Make a BattleManagerFast for MCTS purposes. 
 ## Parameter tgrid may be null, in which case TileGridFast is created automatically
 static func from(bgstate: BattleGridState, tgrid: TileGridFast = null) -> BattleManagerFast:
@@ -18,12 +21,20 @@ static func from(bgstate: BattleGridState, tgrid: TileGridFast = null) -> Battle
 	new.set_tile_grid(tgrid)
 	new.set_current_participant(bgstate.current_army_index)
 	
+	var max_team = 0
+	
 	for army_idx in range(bgstate.armies_in_battle_state.size()):
 		var army = bgstate.armies_in_battle_state[army_idx]
-		new.set_army_team(army_idx,army_idx)
+		
+		var team = army.army_reference.controller.team
+		var team_id = team if team == 0 else (army_idx + 1000000)
+		if team_id not in new.team_mapping:
+			new.team_mapping[team_id] = max_team
+			max_team += 1
+		new.set_army_team(army_idx, new.team_mapping[team_id])
 		
 		for unit_idx in range(army.units.size()):
-			var unit = army.units[unit_idx]
+			var unit: Unit = army.units[unit_idx]
 			if unit.dead:
 				continue
 			
@@ -48,10 +59,17 @@ static func from(bgstate: BattleGridState, tgrid: TileGridFast = null) -> Battle
 
 	return new
 
+func set_unit_symbol(army_idx: int, unit_idx: int, symbol_idx: int, symbol: E.Symbols):
+	set_unit_symbol_cpp(
+		army_idx, unit_idx, symbol_idx, 
+		Unit.attack_power(symbol), Unit.defense_power(symbol), Unit.ranged_weapon_reach(symbol),
+		Unit.does_it_counter_attack(symbol), 1 if Unit.can_it_push(symbol) else 0, Unit.does_it_parry(symbol)
+	)
+
 #region Libspear tuple <-> MoveInfo conversion
 
 # Libspear tuple format - [unit_in_current_army_id, position]
-func libspear_tuple_to_move_info(tuple: Array):
+func libspear_tuple_to_move_info(tuple: Array) -> MoveInfo:
 	var unit: int = tuple[0]
 	var position: Vector2i = tuple[1]
 	
@@ -60,7 +78,7 @@ func libspear_tuple_to_move_info(tuple: Array):
 	else: # Move
 		return MoveInfo.make_move(unit_mapping[unit].coord, position)
 
-func move_info_to_libspear_tuple(move: MoveInfo):
+func move_info_to_libspear_tuple(move: MoveInfo) -> Array:
 	var unit: int
 	match move.move_type:
 		MoveInfo.TYPE_SUMMON:
