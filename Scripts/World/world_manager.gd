@@ -303,13 +303,6 @@ func end_of_battle(battle_results : Array[BattleGridState.ArmyInBattleState]):
 	UI.go_to_custom_ui(world_ui)
 
 
-# func kill_army(army : Army):
-# 	if army.hero:
-# 		army.controller.hero_died(army.hero)
-# 	world_state.remove_army(army) # there can only be one army at a single tile
-# 	# army.queue_free()
-# 	world_ui.city_ui._refresh_all()
-
 # endregion
 
 
@@ -433,7 +426,7 @@ func recreate_army_forms() -> void:
 				continue
 			var new_position = to_position(coord)
 			var army_form : ArmyForm = ArmyForm.create_form_of_army(hex, \
-				coord, new_position)
+				new_position)
 			armies.add_child(army_form)
 
 
@@ -459,7 +452,7 @@ func callback_army_created(army : Army) -> void:
 	var hex = world_state.grid.get_hex(coord)
 	var new_position = to_position(coord)
 	var army_form : ArmyForm = ArmyForm.create_form_of_army(hex, \
-		coord, new_position)
+		new_position)
 	armies.add_child(army_form)
 
 

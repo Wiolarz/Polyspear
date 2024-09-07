@@ -1064,7 +1064,10 @@ func _is_kill_move(move : MoveInfo) -> bool:
 	if move.move_type != MoveInfo.TYPE_MOVE:  # TODO add support for spells
 		return false # summons don't kill
 
+	# TODO change to get army, not player because player can have other team
+	# than aarmy in battle and player can be null
 	var me = get_current_player()
+
 	var attacker = get_unit(move.move_source)
 	var move_direction = GenericHexGrid.direction_to_adjacent( \
 			move.move_source, move.target_tile_coord);

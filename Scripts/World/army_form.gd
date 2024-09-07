@@ -26,8 +26,8 @@ static func get_placeholder_image() -> Resource:
 	return load("res://Art/units/neutral/wood_dryad.png")
 
 
-static func create_form_of_army(hex : WorldHex, _coord : Vector2i, \
-		position_ : Vector2) -> ArmyForm:
+static func create_form_of_army(hex : WorldHex, position_ : Vector2) \
+		-> ArmyForm:
 	if not hex or not hex.army:
 		return null
 	var result : ArmyForm = CFG.DEFAULT_ARMY_FORM.instantiate()

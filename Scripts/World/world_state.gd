@@ -509,13 +509,13 @@ func end_combat(battle_results : Array[BattleGridState.ArmyInBattleState]) -> vo
 			for killed_unit : int in army_state.killed_units:
 				if army.hero.level <= killed_unit:
 					army.hero.add_xp(1)
-		
+
 
 		if not army_state.can_fight():
 			remove_army(army)
 		else:
 			army.apply_losses(army_state.dead_units)
-		
+
 	# TODO document this variable, and how it works better
 	if move_hold_on_combat.size() < 1:
 		return  # don't process moves if none were on hold

@@ -59,6 +59,5 @@ static func create_from_preset(army_preset : PresetArmy) \
 	var new_army = Army.new()
 	new_army.units_data = army_preset.units
 	new_army.controller_index = -1
-	#new_army.hero = army_preset.hero  # TODO ARMY PRESET HERO, ... yy??
-	##nie wiem kurde -- to raczej będzie do neutrali ale jeszcze zobaczymy xd
+	#new_army.hero = army_preset.hero  # TODO ARMY PRESET HERO
 	return new_army

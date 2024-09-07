@@ -11,7 +11,7 @@ static func create_empty_tile() -> DataTile:
 
 
 func load_map(map : DataWorldMap) -> void:
-	# TODO in future read onlyu type and depending on this, select data_tile
+	# TODO in future read only type and depending on this, select data_tile
 	resize(Vector2i(map.grid_width, map.grid_height))
 	for x in range(map.grid_width):
 		for y in range(map.grid_height):
@@ -59,7 +59,7 @@ func paint(coord : Vector2i, data_tile : DataTile) -> void:
 func get_current_map(trim : bool) -> DataWorldMap:
 	var top_left = Vector2i(0, 0)
 	var bot_right = Vector2i(grid.width, grid.height)
-	if trim: # need to write other trim, as _optimize_cośtam does not work
+	if trim:
 		top_left = _find_real_top_left()
 		bot_right = _find_real_bot_right()
 	var map : DataWorldMap = DataWorldMap.new()

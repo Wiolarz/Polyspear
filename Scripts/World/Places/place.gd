@@ -42,17 +42,19 @@ func interact(_world_state : WorldState, army : Army) -> bool:
 	return false
 
 
+## this is overridden by other places and does nothing in empty places
+func on_end_of_turn(_world_state : WorldState) -> void:
+	pass
+
+
+## STUB
 func get_map_description() -> String:
 	return ""
 
 
+## STUB -- left for later to make some capture specific things
 func capture(_world_state : WorldState, _player_index : int) -> bool:
 	return false
-
-
-# func change_controler(player : Player):
-# 	controller = player
-# 	controller_changed.emit()
 
 
 static func get_network_serializable(place : Place) -> Dictionary:
@@ -98,7 +100,7 @@ func get_type() -> String:
 ## This function has to copy such information of state that it would be
 ## possible to add it to the state after "create_place" call
 func to_specific_serializable(_dict : Dictionary) -> void:
-	pass
+	pass # does nothing for empty places
 
 
 ## shoould be overridden by each place
@@ -106,4 +108,4 @@ func to_specific_serializable(_dict : Dictionary) -> void:
 ## "create_place" of the type with defaults and changing player which is done
 ## earlier
 func paste_specific_serializable_state(_dict : Dictionary) -> void:
-	return
+	pass # does nothing for empty places
