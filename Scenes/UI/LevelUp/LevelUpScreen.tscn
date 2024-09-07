@@ -1,0 +1,67 @@
+[gd_scene load_steps=2 format=3 uid="uid://5g2iqdyqmc75"]
+
+[ext_resource type="PackedScene" uid="uid://bukisun1sjf4t" path="res://Scenes/UI/LevelUp/TierPanel.tscn" id="1_2ruoq"]
+
+[node name="LevelUpScreen" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -902.0
+offset_top = -530.0
+offset_right = 927.0
+offset_bottom = 527.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="RichTextLabel" type="RichTextLabel" parent="."]
+layout_mode = 2
+offset_left = 87.0
+offset_top = 917.0
+offset_right = 1410.0
+offset_bottom = 1061.0
+text = "Examle skill/passive description"
+
+[node name="Button" type="Button" parent="."]
+layout_mode = 2
+offset_left = 1657.0
+offset_top = 977.0
+offset_right = 1856.0
+offset_bottom = 1059.0
+text = "Confirm"
+
+[node name="Button2" type="Button" parent="."]
+layout_mode = 2
+offset_left = 1657.0
+offset_top = 907.0
+offset_right = 1852.0
+offset_bottom = 967.0
+text = "Hide"
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 0
+offset_left = 128.0
+offset_top = 27.0
+offset_right = 1839.0
+offset_bottom = 904.0
+theme_override_constants/separation = 23
+alignment = 1
+
+[node name="TierPanel" parent="VBoxContainer" instance=ExtResource("1_2ruoq")]
+layout_mode = 2
+
+[node name="TierPanel2" parent="VBoxContainer" instance=ExtResource("1_2ruoq")]
+layout_mode = 2
+
+[node name="TierPanel3" parent="VBoxContainer" instance=ExtResource("1_2ruoq")]
+layout_mode = 2
