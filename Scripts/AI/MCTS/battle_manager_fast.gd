@@ -31,7 +31,9 @@ static func from(bgstate: BattleGridState, tgrid: TileGridFast = null) -> Battle
 		if team_id not in new.team_mapping:
 			new.team_mapping[team_id] = max_team
 			max_team += 1
+		
 		new.set_army_team(army_idx, new.team_mapping[team_id])
+		new.set_army_cyclone_timer(army_idx, army.cyclone_timer)
 		
 		for unit_idx in range(army.units.size()):
 			var unit: Unit = army.units[unit_idx]
@@ -39,6 +41,9 @@ static func from(bgstate: BattleGridState, tgrid: TileGridFast = null) -> Battle
 				continue
 			
 			new.insert_unit(army_idx, unit_idx, unit.coord, unit.unit_rotation, false)
+			new.set_unit_score(army_idx, unit_idx, unit.template.level)
+			new.set_unit_mana(army_idx, unit_idx, unit.template.mana)
+			
 			for i in range(6):
 				new.set_unit_symbol(army_idx, unit_idx, i, unit.template.symbols[i].type)
 			if army_idx == bgstate.current_army_index:
@@ -56,6 +61,8 @@ static func from(bgstate: BattleGridState, tgrid: TileGridFast = null) -> Battle
 	
 	if bgstate.state == BattleGridState.STATE_FIGHTING:
 		new.force_battle_ongoing()
+	elif bgstate.state == BattleGridState.STATE_SACRIFICE:
+		new.force_battle_sacrifice()
 
 	return new
 
@@ -73,22 +80,28 @@ func libspear_tuple_to_move_info(tuple: Array) -> MoveInfo:
 	var unit: int = tuple[0]
 	var position: Vector2i = tuple[1]
 	
-	if unit_mapping[unit] is DataUnit: # Summon
+	if is_in_sacrifice_phase():
+		return MoveInfo.make_sacrifice(unit_mapping[unit].coord)
+	elif unit_mapping[unit] is DataUnit: # Summon
 		return MoveInfo.make_summon(unit_mapping[unit], position)
 	else: # Move
 		return MoveInfo.make_move(unit_mapping[unit].coord, position)
 
 func move_info_to_libspear_tuple(move: MoveInfo) -> Array:
 	var unit: int
+	var pos = move.target_tile_coord
+	
 	match move.move_type:
 		MoveInfo.TYPE_SUMMON:
 			unit = unit_mapping.find(move.summon_unit)
 		MoveInfo.TYPE_MOVE:
 			unit = get_unit_id_on_position(move.move_source)[1]
+		MoveInfo.TYPE_SACRIFICE:
+			unit = get_unit_id_on_position(move.move_source)[1]
+			pos = Vector2i.ZERO
 		_:
 			assert(false, "Unknown move type '%s'" % [move.move_type])
 	
-	var pos = move.target_tile_coord
 	return [unit, pos]
 
 #endregion
@@ -97,8 +110,8 @@ func move_info_to_libspear_tuple(move: MoveInfo) -> Array:
 
 func check_integrity_before_move(bgs: BattleGridState, move: MoveInfo):
 	if CFG.debug_check_bmfast_integrity:
-		assert(compare_move_list(bgs), "BMFast Integrity check failed before move")
-		assert(compare_grid_state(bgs), "BMFast Integrity check failed before move")
+		assert(compare_move_list(bgs), "BMFast Integrity check failed before move - check error log for details")
+		assert(compare_grid_state(bgs), "BMFast Integrity check failed before move - check error log for details")
 	
 	if move.move_type == MoveInfo.TYPE_MOVE:
 		var unit = bgs.get_unit(move.move_source)
@@ -116,7 +129,7 @@ func check_integrity_after_move(bgs: BattleGridState):
 		#assert(compare_move_list(bgs), "BMFast Integrity check failed after move")
 		
 		if _integrity_check_move: # Only check ongoing battle moves
-			assert(compare_grid_state(bgs), "BMFast Integrity check failed after move")
+			assert(compare_grid_state(bgs), "BMFast Integrity check failed after move - check error log for details")
 		
 
 func compare_grid_state(bgs: BattleGridState) -> bool:
@@ -162,12 +175,12 @@ func compare_move_list(bgs: BattleGridState) -> bool:
 	for i in fast_moves:
 		var move = libspear_tuple_to_move_info(i)
 		if not bgs.is_move_possible(move):
-			push_error("BMFast move mismatch - fast move %s (%s) not present in slow" % [i, move])
+			push_error("BMFast move mismatch - fast action %s (%s) not present in slow" % [move, i])
 			ret = false
 	
 	for i in slow_moves:
 		if move_info_to_libspear_tuple(i) not in fast_moves:
-			push_error("BMFast move mismatch - slow %s not present in fast" % [i])
+			push_error("BMFast move mismatch - slow action %s not present in fast" % [i])
 			ret = false
 
 	return ret

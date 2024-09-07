@@ -15,6 +15,15 @@ void TileGridFastCpp::set_tile(Position pos, Tile type) {
     if(new_team != -1) {
         _spawns[new_team].push_back(pos);
     }
+
+    if(_tiles[idx].is_mana_well()) {
+        _number_of_mana_wells--;
+    }
+
+    if(type.is_mana_well()) {
+        _number_of_mana_wells++;
+    }
+
     _tiles[idx] = type;
 }
 

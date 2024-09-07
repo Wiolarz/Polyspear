@@ -24,6 +24,7 @@ class TileGridFastCpp : public Node {
     GDCLASS(TileGridFastCpp, Node);
 
     Vector2i _dims;
+    unsigned _number_of_mana_wells = 0;
     std::vector<Tile> _tiles;
     std::array<std::vector<Position>, MAX_ARMIES> _spawns;
 protected:
@@ -41,16 +42,20 @@ public:
     }
 
     void set_tile(Position pos, Tile tile);
-    inline void set_tile_gd(Vector2i pos, bool passable, bool wall, bool swamp, int army, unsigned direction) {
-        set_tile(Position(pos.x, pos.y), Tile(passable, wall, swamp, army, direction));
+    inline void set_tile_gd(Vector2i pos, bool passable, bool wall, bool swamp, bool mana_well, int army, unsigned direction) {
+        set_tile(Position(pos.x, pos.y), Tile(passable, wall, swamp, mana_well, army, direction));
     }
 
     constexpr const std::vector<Position>& get_spawns(int army) const {
         return _spawns[army];
     }
 
-    const Vector2i get_dims() const {
+    const inline Vector2i get_dims() const {
         return _dims;
+    }
+
+    const inline unsigned get_number_of_mana_wells() const {
+        return _number_of_mana_wells;
     }
 };
 

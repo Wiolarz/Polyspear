@@ -29,6 +29,7 @@ struct Unit {
     Position pos{};
     uint8_t rotation{};
     uint8_t score = 2;
+    uint8_t mana = 0;
     std::array<Symbol, 6> sides{};
 
     inline Symbol symbol_at_abs_side(int side) const {
@@ -39,6 +40,10 @@ struct Unit {
 struct Army {
     int8_t id = 0;
     int8_t team = -1;
+
+    uint16_t mana_points;
+    uint16_t cyclone_timer;
+
     std::array<Unit, MAX_UNITS_IN_ARMY> units{};
 
     Unit* get_unit(Position coord);

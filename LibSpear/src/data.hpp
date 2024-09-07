@@ -43,11 +43,10 @@ struct Position {
 
 
 class Symbol {
-/// Should be kept in sync with Symbol in global_enums.gd singleton
-    uint8_t _attack_strength;
-    uint8_t _defense_strength;
-    uint8_t _ranged_reach;
-    uint8_t _flags;
+    uint8_t _attack_strength = 0;
+    uint8_t _defense_strength = 0;
+    uint8_t _ranged_reach = 0;
+    uint8_t _flags = 0;
 
 public:
     static const uint8_t FLAG_COUNTER_ATTACK = 0x01;
@@ -123,6 +122,7 @@ enum class BattleState: uint8_t {
     INITIALIZING,
     SUMMONING,
     ONGOING,
+    SACRIFICE,
     FINISHED
 };
 
@@ -131,6 +131,7 @@ class Tile {
     static const uint8_t WALL = 0x2;
     static const uint8_t SWAMP = 0x4;
     static const uint8_t FORBIDDEN = 0x8;
+    static const uint8_t MANA_WELL = 0x10;
 
     uint8_t _flags;
     int8_t _spawning_army;
@@ -138,11 +139,12 @@ class Tile {
 
 public:
     Tile() : _flags(FORBIDDEN), _spawning_army(-1) {}
-    Tile(bool passable, bool wall, bool swamp, int army, unsigned direction) :
+    Tile(bool passable, bool wall, bool swamp, bool mana_well, int army, unsigned direction) :
         _flags(
             (passable ? PASSABLE : 0)
           | (wall ? WALL : 0)
           | (swamp ? SWAMP : 0)
+          | (mana_well ? MANA_WELL : 0)
         ),
         _spawning_army(army),
         _spawning_direction(direction)
@@ -154,6 +156,10 @@ public:
 
     inline bool is_wall() {
         return (_flags & WALL) != 0;
+    }
+
+    inline bool is_mana_well() {
+        return (_flags & MANA_WELL) != 0;
     }
 
     inline int get_spawning_army() {

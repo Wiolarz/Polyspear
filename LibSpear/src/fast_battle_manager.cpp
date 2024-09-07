@@ -17,15 +17,19 @@ void BattleManagerFastCpp::finish_initialization() {
         _state = BattleState::SUMMONING;
         for(int i = 0; i < _armies.size(); i++) {
             _armies[i].id = i;
+            _armies[i].mana_points = 1;
+
             for(auto& unit: _armies[i].units) {
                 if(unit.status != UnitStatus::DEAD) {
                     _result.total_scores[i] += unit.score;
                     _result.max_scores[i]   += unit.score;
+                    _armies[i].mana_points += unit.mana;
                 }
             }
         }
 
         _unit_cache.update_armies(_armies);
+        _update_mana();
     }
     else {
         WARN_PRINT("BMFast already initialized");
@@ -101,11 +105,37 @@ BattleResult BattleManagerFastCpp::_play_move(unsigned unit_id, Vector2i pos) {
             _move_unit(uid, pos);
             _process_unit(uid, true);
         }
-        
+
         int limit = _current_army;
         do {
             _current_army = (_current_army+1) % _armies.size();
         } while(_armies[_current_army].is_defeated() && _current_army != limit);
+        
+
+        if(_previous_army > _current_army) {
+            _armies[_cyclone_target].cyclone_timer--;
+            if(_armies[_cyclone_target].cyclone_timer == 0) {
+                _current_army = _cyclone_target;
+                _state = BattleState::SACRIFICE;
+            }
+        }
+    }
+    else if(_state == BattleState::SACRIFICE) {
+        auto& unit = _armies[_current_army].units[unit_id];
+        if(unit.status != UnitStatus::ALIVE) {
+            WARN_PRINT("BMFast - invalid sacrifice\n");
+            return _result;
+        }
+        
+        auto uid = std::make_pair(_current_army, unit_id);
+        _kill_unit(uid);
+
+        int limit = _current_army;
+        do {
+            _current_army = (_current_army+1) % _armies.size();
+        } while(_armies[_current_army].is_defeated() && _current_army != limit);
+
+        _state = BattleState::ONGOING;
     }
     else {
         WARN_PRINT("BMFast - battle already ended, did not expect that\n");
@@ -138,19 +168,19 @@ void BattleManagerFastCpp::_process_unit(UnitID unit_id, bool process_kills) {
 
         // counter/spear
         if(unit_symbol.dies_to(neighbor_symbol, false)) {
-            _kill_unit(unit_id, enemy_army->team);
+            _kill_unit(unit_id);
             return;
         }
 
         if(process_kills) {
             if(neighbor_symbol.dies_to(unit_symbol, true)) {
-                _kill_unit(neighbor_id, army->team);
+                _kill_unit(neighbor_id);
             }
 
             if(unit_symbol.pushes()) {
                 auto new_pos = neighbor->pos + neighbor->pos - unit->pos;
                 if(!(_tiles->get_tile(new_pos).is_passable()) || _get_unit(new_pos).first != nullptr) {
-                    _kill_unit(neighbor_id, army->team);
+                    _kill_unit(neighbor_id);
                 }
                 else {
                     _move_unit(neighbor_id, new_pos);
@@ -189,11 +219,58 @@ void BattleManagerFastCpp::_process_bow(UnitID unit_id) {
             }
 
             if(other != nullptr && other->symbol_at_abs_side(flip(i)).dies_to(symbol, true)) {
-                _kill_unit(other_id, army->team);
+                _kill_unit(other_id);
                 break;
             }
         }
     }
+}
+
+void BattleManagerFastCpp::_update_mana() {
+    int best_idx = -1, worst_idx = -1;
+
+    for(int i = 0; i < _armies.size(); i++) {
+        if(!_armies[i].is_defeated()) {
+            worst_idx = i;
+            break;
+        }
+    }
+
+    for(int i = _armies.size()-1; i >= 0; i--) {
+        if(!_armies[i].is_defeated()) {
+            best_idx = i;
+            break;
+        }
+    }
+
+    for(int i = 0; i < _armies.size(); i++) {
+        if(_armies[i].is_defeated()) {
+            continue;
+        }
+        
+        if(_armies[i].mana_points > _armies[best_idx].mana_points) {
+            best_idx = i;
+        }
+
+        if(_armies[i].mana_points < _armies[worst_idx].mana_points) {
+            worst_idx = i;
+        }
+    }
+
+    auto mana_difference = _armies[best_idx].mana_points - _armies[worst_idx].mana_points;
+    auto cyclone_mult = (1 > 5-mana_difference) ? 1 : 5-mana_difference;
+    auto new_cyclone_counter = (_tiles->get_number_of_mana_wells() * 10) * cyclone_mult;
+
+    if(_tiles->get_number_of_mana_wells()) {
+        new_cyclone_counter = 999;
+    }
+    
+    // Cyclone killed a unit - now resetting
+    if(_armies[worst_idx].cyclone_timer == 0 || _armies[worst_idx].cyclone_timer > new_cyclone_counter) {
+        _armies[worst_idx].cyclone_timer = new_cyclone_counter;
+    }
+
+    _cyclone_target = worst_idx;
 }
 
 int BattleManagerFastCpp::get_winner_team() {
@@ -313,6 +390,18 @@ void BattleManagerFastCpp::_refresh_legal_moves() {
                 _moves.push_back(move);
             }
         }
+    }
+    else if(_state == BattleState::SACRIFICE) {
+        move.pos = Position();
+        for(int i = 0; i < army.units.size(); i++) {
+            if(army.units[i].status == UnitStatus::ALIVE) {
+                move.unit = i;
+                _moves.push_back(move);
+            }
+        }
+    }
+    else {
+        WARN_PRINT("Trying to get moves in an invalid state");
     }
 }
 
@@ -481,15 +570,27 @@ void BattleManagerFastCpp::_move_unit(UnitID id, Position pos) {
     _unit_cache[pos] = id;
 }
 
-void BattleManagerFastCpp::_kill_unit(UnitID id, int killer_team) {
+void BattleManagerFastCpp::_kill_unit(UnitID id) {
     auto [unit, army] = _get_unit(id);
     auto victim_team = army->team;
 
     _unit_cache[unit->pos] = NO_UNIT;
     unit->status = UnitStatus::DEAD;
-    _result.score_gained[killer_team] += unit->score;
-    _result.score_lost[victim_team] -= unit->score;
-    _result.total_scores[victim_team] -= unit->score;
+
+    for(int i = 0; i < MAX_ARMIES; i++) {
+        if(_armies[i].team == victim_team) {
+            _result.score_lost[victim_team] -= unit->score;
+            _result.total_scores[victim_team] -= unit->score;
+        }
+        else {
+            _result.score_gained[i] += unit->score;
+        }
+    }
+
+    if(unit->mana > 0) {
+        army->mana_points -= unit->mana;
+        _update_mana();
+    }
 }
 
 
@@ -522,6 +623,25 @@ void BattleManagerFastCpp::set_army_team(int army, int team) {
     _armies[army].team = team;
 }
 
+void BattleManagerFastCpp::set_army_cyclone_timer(int army, int timer) {
+    CHECK_ARMY(army,);
+    _armies[army].cyclone_timer = timer;
+}
+
+void BattleManagerFastCpp::set_unit_score(int army, int unit, int score) {
+    CHECK_UNIT(unit,);
+    CHECK_ARMY(army,);
+
+    _armies[army].units[unit].score = score;
+}
+
+void BattleManagerFastCpp::set_unit_mana(int army, int unit, int mana) {
+    CHECK_UNIT(unit,);
+    CHECK_ARMY(army,);
+
+    _armies[army].units[unit].mana = mana;
+}
+
 void BattleManagerFastCpp::set_current_participant(int army) {
     CHECK_ARMY(army,);
     _current_army = army;
@@ -537,6 +657,13 @@ void BattleManagerFastCpp::force_battle_ongoing() {
         ERR_FAIL_MSG("Must finish_initialization() before calling force_battle_ongoing()");
     }
     _state = BattleState::ONGOING;
+}
+
+void BattleManagerFastCpp::force_battle_sacrifice() {
+    if(_state == BattleState::INITIALIZING) {
+        ERR_FAIL_MSG("Must finish_initialization() before calling force_battle_sacrifice()");
+    }
+    _state = BattleState::SACRIFICE;
 }
 
 
@@ -556,9 +683,13 @@ void BattleManagerFastCpp::_bind_methods() {
         "is_counter", "push_force", "parries"
  ), &BattleManagerFastCpp::set_unit_symbol);
     ClassDB::bind_method(D_METHOD("set_army_team", "army", "team"), &BattleManagerFastCpp::set_army_team);
+    ClassDB::bind_method(D_METHOD("set_unit_score", "army", "unit", "score"), &BattleManagerFastCpp::set_unit_score);
+    ClassDB::bind_method(D_METHOD("set_unit_mana", "army", "unit", "mana"), &BattleManagerFastCpp::set_unit_mana);
+    ClassDB::bind_method(D_METHOD("set_army_cyclone_timer", "army", "timer"), &BattleManagerFastCpp::set_army_cyclone_timer);
     ClassDB::bind_method(D_METHOD("set_tile_grid", "tilegrid"), &BattleManagerFastCpp::set_tile_grid);
     ClassDB::bind_method(D_METHOD("set_current_participant", "army"), &BattleManagerFastCpp::set_current_participant);
     ClassDB::bind_method(D_METHOD("force_battle_ongoing"), &BattleManagerFastCpp::force_battle_ongoing);
+    ClassDB::bind_method(D_METHOD("force_battle_sacrifice"), &BattleManagerFastCpp::force_battle_sacrifice);
     ClassDB::bind_method(D_METHOD("finish_initialization"), &BattleManagerFastCpp::finish_initialization);
     ClassDB::bind_method(D_METHOD("play_move", "unit", "position"), &BattleManagerFastCpp::play_move_gd);
 
@@ -569,5 +700,6 @@ void BattleManagerFastCpp::_bind_methods() {
     ClassDB::bind_method(D_METHOD("get_current_participant"), &BattleManagerFastCpp::get_current_participant);
     ClassDB::bind_method(D_METHOD("get_legal_moves"), &BattleManagerFastCpp::get_legal_moves_gd);
     ClassDB::bind_method(D_METHOD("get_unit_id_on_position", "position"), &BattleManagerFastCpp::get_unit_id_on_position);
+    ClassDB::bind_method(D_METHOD("is_in_sacrifice_phase"), &BattleManagerFastCpp::is_in_sacrifice_phase);
 
 }

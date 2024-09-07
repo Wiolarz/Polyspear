@@ -28,6 +28,7 @@ class BattleManagerFastCpp : public Node {
 
     int8_t _current_army;
     int8_t _previous_army;
+    int8_t _cyclone_target;
     BattleState _state = BattleState::INITIALIZING;
     ArmyList _armies{};
     TileGridFastCpp* _tiles;
@@ -49,7 +50,9 @@ class BattleManagerFastCpp : public Node {
     void _refresh_heuristically_good_summon_moves();
 
     void _move_unit(UnitID id, Position pos);
-    void _kill_unit(UnitID id, int killer_team);
+    void _kill_unit(UnitID id);
+
+    void _update_mana();
 
     BattleResult _play_move(unsigned unit, Vector2i move);
 
@@ -60,17 +63,21 @@ public:
     BattleManagerFastCpp() = default;
     ~BattleManagerFastCpp() = default;
 
-    void insert_unit(int army, int idx, Vector2i pos, int rotation, bool is_summoning); /// Add a unit in a summoning state
-    void set_army_team(int army, int team); /// Set army's team - required
+    void insert_unit(int army, int idx, Vector2i pos, int rotation, bool is_summoning);
+    void set_army_team(int army, int team);
     void set_unit_symbol(
         int army, int unit, int side, 
         int attack_strength, int defense_strength, int ranged_reach,
         bool is_counter, int push_force, bool parries
     );
+    void set_unit_mana(int army, int idx, int mana);
+    void set_unit_score(int army, int idx, int score);
+    void set_army_cyclone_timer(int army, int timer);
     void set_tile_grid(TileGridFastCpp* tilegrid);
     void set_current_participant(int army);
     void finish_initialization();
     void force_battle_ongoing();
+    void force_battle_sacrifice();
     
     BattleResult play_move(Move move);
     int play_move_gd(unsigned unit, Vector2i move);
@@ -120,6 +127,10 @@ public:
 
     inline bool is_battle_finished() const {
         return _state == BattleState::FINISHED;
+    }
+
+    inline bool is_in_sacrifice_phase() const {
+        return _state == BattleState::SACRIFICE;
     }
 
     inline int get_army_team(int army) const {
