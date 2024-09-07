@@ -23,6 +23,7 @@ var current_button: TextureButton
 		FileSystemHelpers.list_files_in_folder(CFG.WORLD_MAP_TILES_PATH, true)
 @onready var tiles_battle : Array[String] = \
 		FileSystemHelpers.list_files_in_folder(CFG.BATTLE_MAP_TILES_PATH, true)
+@onready var message_label : Label = $InfoLabel
 
 
 var world_grid : WorldEditGrid
@@ -210,6 +211,10 @@ func get_world_map(trim : bool =  true) -> DataWorldMap:
 	return map
 
 
+func show_info(message : String) -> void:
+	message_label.text = message
+
+
 func _on_save_map_pressed():
 	print("saving map")
 	var map_file_name : String = map_file_name_input.text
@@ -217,7 +222,9 @@ func _on_save_map_pressed():
 	var save_path
 	if current_map_type == MapType.WORLD:
 		new_map = get_world_map(true)
-		assert(new_map)
+		if not new_map:
+			show_info("cannot save map")
+			return
 		save_path = CFG.WORLD_MAPS_PATH + map_file_name + ".tres"
 	else:
 		new_map = get_battle_map()
@@ -227,6 +234,8 @@ func _on_save_map_pressed():
 	# WARNING clears uids
 	# see https://github.com/godotengine/godot/issues/83259
 	# use uid_fixer script to fix
+
+	show_info("map saved")
 
 	print("end save map")
 	# print("reloading map")
