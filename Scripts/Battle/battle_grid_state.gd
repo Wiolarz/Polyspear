@@ -275,7 +275,7 @@ func _process_offensive_symbols(unit : Unit) -> void:
 
 		# in case enemy defended against attack we check if attacker pushes away enemy
 		if Unit.can_it_push(unit_weapon):
-			_push_enemy(enemy, side)
+			_push_enemy(enemy, side, Unit.push_power(unit_weapon))
 
 
 func _process_bow(unit : Unit, side : int, reach : int) -> void:
@@ -293,28 +293,47 @@ func _process_bow(unit : Unit, side : int, reach : int) -> void:
 
 	_kill_unit(target, armies_in_battle_state[current_army_index])
 
+## pushes enemy in non-relative direction, "power" tiles away [br]
+## checks on each tile if it's possible to be moved to that spot [br]
+## deppending on power value 
+func _push_enemy(enemy : Unit, direction : int, power : int) -> void:
+	
+	for push_power in range(1, power + 1):
+		var target_coord := GenericHexGrid.distant_coord(enemy.coord, direction, 1)
+		var target_hex = get_hex(target_coord)
 
-func _push_enemy(enemy : Unit, direction : int) -> void:
-	var target_coord := GenericHexGrid.distant_coord(enemy.coord, direction, 1)
+		if target_hex.pit:  
+			# TODO replace this "animation" of falling into pit with a custom one
+			# animation doesn't work duo to "assert" on moving to a pit tile
+			#_change_unit_coord(enemy, target_coord)
+			#enemy.move(target_coord, _get_battle_hex(target_coord).swamp)
 
-	if not _is_movable(target_coord):
-		# Pushing outside the map
-		_kill_unit(enemy, armies_in_battle_state[current_army_index])
-		return
+			_kill_unit(enemy, armies_in_battle_state[current_army_index])
+			return
 
-	var target := get_unit(target_coord)
-	if target != null:
-		# Spot isn't empty
-		_kill_unit(enemy, armies_in_battle_state[current_army_index])
-		return
+		if not target_hex.can_be_moved_to:
+			# push behaves different for power equal to 1
+			if power == 1 or push_power< power:
+				_kill_unit(enemy, armies_in_battle_state[current_army_index])
+				return
+			# push power innsuficient to kill a unit
+			return
+			
+		var target := get_unit(target_coord)
+		if target != null:
+			# Spot isn't empty
+			_kill_unit(enemy, armies_in_battle_state[current_army_index])
+			return
 
-	currently_processed_move_info.register_push(enemy, target_coord)
+		currently_processed_move_info.register_push(enemy, target_coord)
 
-	# MOVE for PUSH (no rotate)
-	_change_unit_coord(enemy, target_coord)
-	enemy.move(target_coord, _get_battle_hex(target_coord).swamp)
+		# MOVE for PUSH (no rotate)
+		_change_unit_coord(enemy, target_coord)
+		enemy.move(target_coord, _get_battle_hex(target_coord).swamp)
+
 
 	# check for counter_attacks
+	# occurs only at last spot enemy was pushed to (push was to quick for allies to react)
 	if _should_die_to_counter_attack(enemy):
 		# special case when we award EXP to the player that pushed the unit instead of spear holder
 		_kill_unit(enemy, armies_in_battle_state[current_army_index])
@@ -441,27 +460,23 @@ func _can_kill_or_push(me : Unit, other_unit : Unit, attack_direction : int):
 	elif other_unit.army_in_battle.team == me.army_in_battle.team:
 		return false
 
-	var front_symbol : E.Symbols = me.get_front_symbol()
-	match front_symbol:
-		E.Symbols.EMPTY:
-			# can't deal with enemy_unit
-			return false
-		E.Symbols.SHIELD:
-			# can't deal with enemy_unit
-			return false
-		E.Symbols.PUSH:
-			# push ignores enemy_unit shields etc
-			return true
-		_:
-			# assume other attack symbol
-			# Does enemy_unit has a shield?
-			var defense_direction = GenericHexGrid.opposite_direction(attack_direction)
-			var shield_power = Unit.defense_power(other_unit.get_symbol(defense_direction))
+	var defense_direction = GenericHexGrid.opposite_direction(attack_direction)
+	var enemy_symbol = other_unit.get_symbol(defense_direction)
+	
+	if Unit.does_it_parry(enemy_symbol):
+		return false  # parry ignores our melee symbols
 
-			if shield_power >= Unit.attack_power(front_symbol):
-				return false
-			# no shield, attack ok
-			return true
+	var front_symbol : E.Symbols = me.get_front_symbol()
+
+	if Unit.can_it_push(front_symbol):
+		return true  # push ignores enemy_unit shields
+
+
+	var shield_power = Unit.defense_power(enemy_symbol)
+
+	if shield_power >= Unit.attack_power(front_symbol):
+		return false
+	return true  # unit attack is sufficient
 
 
 func _get_player_army(player : Player) -> BattleGridState.ArmyInBattleState:
@@ -1108,8 +1123,15 @@ class BattleHex:
 	var spawn_direction : int
 	var can_be_moved_to : bool = true
 	var can_shoot_through : bool = true
-	var swamp : bool = false # TODO REFACTOR THIS NAME
+
+	# Tile types (some tiles in the future may have )
+	var swamp : bool = false 
 	var mana : bool = false
+	var pit : bool = false
+	var hill : bool = false
+
+	
+
 
 	static var sentinel: BattleHex = BattleHex.create_sentinel()
 
@@ -1144,6 +1166,7 @@ class BattleHex:
 		match data.type:
 			"hole":
 				result.can_be_moved_to = false
+				result.pit = true
 			"wall":
 				result.can_be_moved_to = false
 				result.can_shoot_through = false

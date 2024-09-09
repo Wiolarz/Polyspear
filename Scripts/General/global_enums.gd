@@ -11,8 +11,8 @@ enum Symbols
 	AXE,
 	SHIELD,
 	BOW,
-	PUSH,
-	# Items # MEGA TEMP
+	PUSH,  # weak push power
+	# Items
 	STRONG_AXE,
 	STRONG_SPEAR,
 	STAFF,
@@ -23,8 +23,8 @@ enum Symbols
 	TOWERSHIELD,
 	STRONG_TOWERSHIELD,
 
-	FIST,
-	MACE,
+	FIST,  # STRONG PUSH
+	MACE,  # NORMAL PUSH
 	DAGGER,
 
 	SWORD,

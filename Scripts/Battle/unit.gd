@@ -128,18 +128,27 @@ static func attack_power(symbol : E.Symbols) -> int:
 		_:
 			return 0
 
+#region push
+
 ## returns true if symbol can push
 static func can_it_push(symbol : E.Symbols) -> bool:
-	match symbol:
-		E.Symbols.MACE, E.Symbols.FIST:
-			return true
-		E.Symbols.STRONG_TOWERSHIELD, E.Symbols.TOWERSHIELD: # shields
-			return true
-		E.Symbols.PUSH: # classic
-			return true
-		_:
-			return false
+	return Unit.push_power(symbol) > 0
 
+
+## return how many tiles does range weapon attack can reach [br]
+## -1 = infinite
+static func push_power(symbol : E.Symbols) -> int:
+	match symbol:
+		E.Symbols.FIST:
+			return 3
+		E.Symbols.MACE:
+			return 2
+		E.Symbols.PUSH, E.Symbols.STRONG_TOWERSHIELD, E.Symbols.TOWERSHIELD:
+			return 1
+		_:
+			return 0
+
+#endregion push
 
 static func does_it_parry(symbol : E.Symbols) -> bool:
 	match symbol:
