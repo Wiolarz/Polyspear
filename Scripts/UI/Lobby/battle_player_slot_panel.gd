@@ -209,3 +209,7 @@ func _on_option_button_team_item_selected(index : int):
 		NET.server.broadcast_full_game_setup(IM.game_setup_info)
 	if NET.client:
 		NET.client.queue_lobby_set_team(slot_index, index)
+
+
+func _on_button_level_up_pressed():
+	UI.show_hero_level_up()

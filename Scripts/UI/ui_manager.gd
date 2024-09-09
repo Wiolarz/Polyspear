@@ -8,6 +8,7 @@ var map_editor
 var unit_editor
 var host_lobby
 var client_lobby
+var hero_level_up
 
 var camera : PolyCamera
 var current_camera_position = E.CameraPosition.WORLD
@@ -22,11 +23,13 @@ func _ready():
 	ui_overlay   = load("res://Scenes/UI/UIOverlay.tscn").instantiate()
 	map_editor   = load("res://Scenes/UI/Editors/MapEditor.tscn").instantiate()
 	unit_editor  = load("res://Scenes/UI/Editors/UnitEditor.tscn").instantiate()
+	hero_level_up = load("res://Scenes/UI/LevelUp/LevelUpScreen.tscn").instantiate()
 
 	add_child(main_menu)
 	add_child(map_editor)
 	add_child(unit_editor)
 	add_child(ui_overlay)
+	add_child(hero_level_up)
 	add_child(in_game_menu, false, Node.INTERNAL_MODE_BACK)
 
 	_hide_all()
@@ -62,9 +65,25 @@ func go_to_unit_editor():
 	unit_editor.show()
 
 
+## TEMP
 func go_to_map_editor():
 	_hide_all()
 	map_editor.open_draw_menu()
+
+
+## TEMP
+func show_hero_level_up():
+	hero_level_up.hidden = false
+	hero_level_up.show()
+
+
+func close_hero_level_up():
+	hero_level_up.hidden = true
+	hero_level_up.hide()
+
+
+func hide_hero_level_up():
+	hero_level_up._on_button_hide_pressed()
 
 
 func show_in_game_menu():
