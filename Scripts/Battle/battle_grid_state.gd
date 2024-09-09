@@ -304,9 +304,8 @@ func _push_enemy(enemy : Unit, direction : int, power : int) -> void:
 
 		if target_hex.pit:  
 			# TODO replace this "animation" of falling into pit with a custom one
-			# animation doesn't work duo to "assert" on moving to a pit tile
-			#_change_unit_coord(enemy, target_coord)
-			#enemy.move(target_coord, _get_battle_hex(target_coord).swamp)
+			_change_unit_coord(enemy, target_coord)
+			enemy.move(target_coord, _get_battle_hex(target_coord).swamp)
 
 			_kill_unit(enemy, armies_in_battle_state[current_army_index])
 			return
@@ -422,6 +421,9 @@ func _get_move_direction_if_valid(unit : Unit, coord : Vector2i) -> int:
 		- can be occupied by a new unit:
 			- is empty
 			- contains a unit that would be killed/pushed by the move
+		- in special case that tile has a tag "special_move"
+		  move is possible if the unit is facing that tile
+		  that specific move may behave differently
 
 		@param unit to move
 		@param coord target coord for unit to move to
@@ -434,6 +436,26 @@ func _get_move_direction_if_valid(unit : Unit, coord : Vector2i) -> int:
 		return MOVE_IS_INVALID
 
 	var hex = _get_battle_hex(coord)
+	if hex.special_move and move_direction == unit.unit_rotation:
+		if hex.pit:
+			# check if a landing spot is a viable move
+			var jump_spot : Vector2i = GenericHexGrid.adjacent_coord(coord, move_direction)
+			hex = _get_battle_hex(jump_spot)
+			if not hex.can_be_moved_to:  # landing spot cannot be a special_move place
+				return MOVE_IS_INVALID
+			
+			var unit_on_target = hex.unit
+			# empty field
+			if not unit_on_target:
+				return move_direction
+
+			if not _can_kill_or_push(unit, unit_on_target, move_direction):
+				return MOVE_IS_INVALID
+			else:
+				return move_direction
+
+		return move_direction
+
 	if not hex.can_be_moved_to:
 		return MOVE_IS_INVALID
 
@@ -590,8 +612,13 @@ func _perform_move(unit : Unit, direction : int, target_tile_coord : Vector2i) -
 		return
 	currently_processed_move_info.register_turning_complete()
 	# MOVE
+	var target_tile : BattleGridState.BattleHex = _get_battle_hex(target_tile_coord)
+	if target_tile.pit:
+		# we assume move is possible
+		target_tile_coord += GenericHexGrid.DIRECTION_TO_OFFSET[direction]
+
 	_change_unit_coord(unit, target_tile_coord)
-	unit.move(target_tile_coord, _get_battle_hex(target_tile_coord).swamp)
+	unit.move(target_tile_coord, target_tile.swamp)
 	currently_processed_move_info.register_locomote_complete()
 	if _process_symbols(unit):
 		return
@@ -714,7 +741,8 @@ func _get_spawn_rotation(coord : Vector2i) -> int:
 
 func _put_unit_on_grid(unit : Unit, coord : Vector2i) -> void:
 	var hex := _get_battle_hex(coord)
-	assert(hex.can_be_moved_to, "summoning unit to an invalid tile")
+	# TODO discuss this assert as it conflicts with special move tiles
+	#assert(hex.can_be_moved_to, "summoning unit to an invalid tile")
 	assert(not hex.unit, "summoning unit to an occupied tile")
 	hex.unit = unit
 
@@ -1130,7 +1158,9 @@ class BattleHex:
 	var pit : bool = false
 	var hill : bool = false
 
-	
+	## allows unit to "enter" the tile under the condition 
+	## that it's facing it
+	var special_move : bool = false  
 
 
 	static var sentinel: BattleHex = BattleHex.create_sentinel()
@@ -1167,9 +1197,11 @@ class BattleHex:
 			"hole":
 				result.can_be_moved_to = false
 				result.pit = true
+				result.special_move = true
 			"wall":
 				result.can_be_moved_to = false
 				result.can_shoot_through = false
+				result.special_move = true
 			"swamp":
 				result.swamp = true
 			"empty":
