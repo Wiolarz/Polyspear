@@ -506,9 +506,6 @@ func _perform_move_info(move_info : MoveInfo) -> void:
 			var unit : Unit = _battle_grid_state.move_info_summon_unit(move_info)
 			_on_unit_summoned(unit)
 
-		MoveInfo.TYPE_SACRIFICE:
-			_battle_grid_state.move_info_sacrifice(move_info)
-
 		_ :
 			assert(false, "Move move_type not supported in perform, " + str(move_info.move_type))
 
@@ -646,7 +643,7 @@ func _create_summary() -> DataBattleSummary:
 	# Summary title creation
 	assert(winning_team_players.size() > 0, "Battle resulted in no winners")
 	var team_name = 'Neutral'
-	if winning_team_players[0]:
+	if winning_team_players[0]: # neutral is null, so we check
 		team_name = "Team %s" % winning_team_players[0].team
 	summary.title = "%s wins" % [team_name]
 	var sep = " : "
