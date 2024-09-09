@@ -448,11 +448,8 @@ func _get_move_direction_if_valid(unit : Unit, coord : Vector2i) -> int:
 			# empty field
 			if not unit_on_target:
 				return move_direction
-
-			if not _can_kill_or_push(unit, unit_on_target, move_direction):
-				return MOVE_IS_INVALID
 			else:
-				return move_direction
+				return MOVE_IS_INVALID  # during jump unit is unable to use their weapon
 
 		return move_direction
 
