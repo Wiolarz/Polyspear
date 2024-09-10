@@ -142,22 +142,6 @@ func move_info_execute(move_info : MoveInfo) -> void:
 
 	currently_processed_move_info = null
 
-
-func move_info_sacrifice(move_info : MoveInfo) -> void:
-	assert(move_info.move_type == MoveInfo.TYPE_SACRIFICE)
-	currently_processed_move_info = move_info
-
-	var source_tile_coord := move_info.move_source
-
-	var unit = get_unit(source_tile_coord)
-
-	move_info.register_kill(_get_army_index(cyclone_target), unit)
-
-	_kill_unit(unit)
-
-	if battle_is_ongoing():
-		_switch_participant_turn()
-
 #endregion move_info support
 
 
