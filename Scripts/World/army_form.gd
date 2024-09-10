@@ -22,10 +22,6 @@ func _process(_delta):
 				else Color.WHITE
 
 
-static func get_placeholder_image() -> Resource:
-	return load("res://Art/units/neutral/wood_dryad.png")
-
-
 static func create_form_of_army(hex : WorldHex, position_ : Vector2) \
 		-> ArmyForm:
 	if not hex or not hex.army:
@@ -33,7 +29,7 @@ static func create_form_of_army(hex : WorldHex, position_ : Vector2) \
 	var result : ArmyForm = CFG.DEFAULT_ARMY_FORM.instantiate()
 	var army : Army = hex.army
 	result.entity = army
-	var image = ArmyForm.get_placeholder_image()
+	var image = null
 	if army.hero:
 		result.name = army.hero.hero_name
 		image = load(army.hero.data_unit.texture_path)
