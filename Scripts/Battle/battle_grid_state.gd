@@ -481,17 +481,24 @@ func _get_army_index(army : BattleGridState.ArmyInBattleState):
 
 
 ## searches for enemy army that has a hero, with priority for the last in array [br]
-## can return null
-## optionally it can be provided withsubset of enemy armies in case of counter attack dispute
-func _find_proper_exp_winner(killed_team : int, spear_disputers_idx : Array[int] = []) -> ArmyInBattleState:
+## can return null [br]
+## optionally it can be provided withsubset of enemy armies in case of counter attack dispute [br]
+## killed_team - team_id [br]
+## spear_disputer_teams - array of team id's
+func _find_proper_exp_winner(killed_team : int, spear_disputer_teams : Array[int] = []) -> ArmyInBattleState:
 	var priority_enemy_army : ArmyInBattleState = null
 	var searched_armies_idx : Array[int] = []
-	if spear_disputers_idx.size() != 0:
-		spear_disputers_idx.sort()
-		searched_armies_idx = spear_disputers_idx
-	else:
-		for army_idx in range(armies_in_battle_state.size()):
-			if armies_in_battle_state[army_idx].team != killed_team:
+
+	
+	for army_idx in range(armies_in_battle_state.size()):
+		var army_team = armies_in_battle_state[army_idx].team
+		if army_team != killed_team:
+			# If unit was killed by one or more spear holder, 
+			# we will only look to award exp to one of those teams
+			if spear_disputer_teams.size() != 0:
+				if army_team in spear_disputer_teams:
+					searched_armies_idx.append(army_idx)
+			else: # otherwise we search through every enemy team
 				searched_armies_idx.append(army_idx)
 
 	searched_armies_idx.reverse()

@@ -68,10 +68,6 @@ func show_trade_ui(city : City):
 	city_ui.show_trade_ui(city)
 
 
-func close_city_ui() -> void:
-	pass # does nothing now, but probably we will use it in future
-
-
 func show_you_win(player : Player):
 	var style_box = ($YouWinPanel as Panel).get_theme_stylebox("panel")
 	if not style_box is StyleBoxFlat:
