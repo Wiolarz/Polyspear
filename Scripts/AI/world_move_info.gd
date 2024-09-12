@@ -32,6 +32,7 @@ static func make_world_travel(src : Vector2i, dst : Vector2i) -> WorldMoveInfo:
 	return result
 
 
+## TODO implement starting of trade or delete it
 static func make_start_trade(army_coord : Vector2i, city_coord : Vector2i) \
 		-> WorldMoveInfo:
 	var result : WorldMoveInfo = WorldMoveInfo.new()
@@ -71,6 +72,7 @@ static func make_build(city_coord : Vector2i, \
 	return result
 
 
+## TODO implement trades
 static func make_trade() -> WorldMoveInfo:
 	var result : WorldMoveInfo = WorldMoveInfo.new()
 	result.move_type = TYPE_TRADE
