@@ -73,15 +73,13 @@ func add_xp(gained_xp : int) -> void:
 		return
 	xp += gained_xp
 	while xp >= Hero.level_threshold_at(level):
-		level_up()
+		_level_up()
 
 
-func level_up() -> void:
+func _level_up() -> void:
 	if level == CFG.HERO_LEVEL_CAP:
 		return
 	var threshold = Hero.level_threshold_at(level)
-	if xp < threshold:
-		return
 	xp -= threshold
 	level += 1
 	print("%s leveled up, now has level %d" % [hero_name, level])
