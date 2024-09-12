@@ -127,7 +127,8 @@ func _on_chat_line_edit_text_submitted(new_text):
 	if new_text.length() >= 1 and new_text[0] == '/':
 		var cheat = new_text.substr(1).strip_edges().to_lower()
 		if cheat == "money":
-			WM.current_player.goods.add(Goods.new(100,100,100))
+			WM.cheat_money()
+			#WM.current_player.goods.add(Goods.new(100,100,100))
 			print("money cheat")
 		if cheat == "fast":
 			if WM.selected_hero:

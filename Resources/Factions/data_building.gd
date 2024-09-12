@@ -7,7 +7,13 @@ extends Resource
 
 @export var requirements : Array[DataBuilding]
 
+## if a resource type is stated it means this is a special faction wide construction
 @export var outpost_requirement : String
+
+
+func is_outpost_building() -> bool:
+	return outpost_requirement != ""
+
 
 static func get_network_id(building : DataBuilding) -> String:
 	if not building:

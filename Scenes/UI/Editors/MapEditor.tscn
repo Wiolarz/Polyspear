@@ -119,6 +119,18 @@ text = "Selected tile: "
 [node name="TileNameLabel" type="Label" parent="TopBar/MarginContainer/VBoxContainer/TileNameContainer"]
 layout_mode = 2
 
+[node name="InfoLabel" type="Label" parent="."]
+anchors_preset = -1
+anchor_left = 0.072
+anchor_top = 0.81
+anchor_right = 0.072
+anchor_bottom = 0.81
+offset_left = -17.24
+offset_top = -20.8
+offset_right = 871.76
+offset_bottom = 27.2
+text = "Editor"
+
 [node name="OpenButton" type="Button" parent="."]
 offset_left = 8.0
 offset_top = 996.0

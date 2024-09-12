@@ -22,29 +22,25 @@ func _process(_delta):
 				else Color.WHITE
 
 
-static func create_hero_army(player : Player, hero_data : DataHero) -> ArmyForm:
+static func create_form_of_army(hex : WorldHex, position_ : Vector2) \
+		-> ArmyForm:
+	if not hex or not hex.army:
+		return null
 	var result : ArmyForm = CFG.DEFAULT_ARMY_FORM.instantiate()
-	result.name = hero_data.hero_name
-	result.entity = Army.new()
-	result.entity.controller = player
-	result.entity.hero = Hero.create_hero(hero_data, player)
-	result.get_node("sprite_unit").texture = \
-		load(hero_data.data_unit.texture_path)
-	return result
-
-static func create_neutral_army(army_preset : PresetArmy) -> ArmyForm:
-	var result : ArmyForm = CFG.DEFAULT_ARMY_FORM.instantiate()
-	result.entity = Army.create_army_from_preset(army_preset)
-	result.name = "Neutral_"+army_preset.resource_path.get_file()
-
-
-	result.get_node("sprite_unit").texture = \
-		load(army_preset.units[0].texture_path)
-
-	result.get_node("sprite_unit").scale = Vector2(0.9, 0.9)
-	result.get_node("MoveLabel").text = ""
-	result.get_node("DescriptionLabel").text = ""
-
+	var army : Army = hex.army
+	result.entity = army
+	var image = null
+	if army.hero:
+		result.name = army.hero.hero_name
+		image = load(army.hero.data_unit.texture_path)
+	else:
+		result.name = "Neutral army TODO some name"
+		image = load(army.units_data[0].texture_path)
+		result.get_node("sprite_unit").scale = Vector2(0.9, 0.9)
+		result.get_node("MoveLabel").text = ""
+		result.get_node("DescriptionLabel").text = ""
+	result.get_node("sprite_unit").texture = image
+	result.position = position_
 	return result
 
 
@@ -53,22 +49,12 @@ func has_movement_points() -> bool:
 
 
 func place_on(tile):
-	entity.coord = tile.coord
 	position = tile.position
-
-
-func move(tile):
-	place_on(tile)
 
 
 func spend_movement_point() -> void:
 	assert(entity.hero.movement_points > 0)
 	entity.hero.movement_points -= 1
-
-
-func on_end_of_turn(player : Player):
-	if player == entity.controller and entity.hero:
-		entity.hero.movement_points = entity.hero.max_movement_points
 
 
 func set_selected(is_selected : bool) -> void:

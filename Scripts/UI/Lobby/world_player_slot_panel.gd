@@ -83,8 +83,6 @@ func _on_button_take_leave_pressed():
 			try_to_take()
 		TakeLeaveButtonState.TAKEN_BY_YOU:
 			try_to_leave()
-		_:
-			pass
 
 
 func _on_button_color_pressed():

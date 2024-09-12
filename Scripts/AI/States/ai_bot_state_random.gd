@@ -13,6 +13,8 @@ func choose_move(battle_state : BattleGridState) -> MoveInfo:
 
 
 static func choose_move_static(battle_state : BattleGridState) -> MoveInfo:
+	if not battle_state:
+		return null
 	var moves = battle_state.get_possible_moves()
 	assert(moves.size() > 0, "choose_move called with no moves to make")
 

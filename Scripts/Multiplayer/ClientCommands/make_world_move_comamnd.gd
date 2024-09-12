@@ -15,7 +15,7 @@ static func create_packet(move: WorldMoveInfo):
 
 		"move_type": move.move_type,
 	}
-	if move.move_type == WorldMoveInfo.TYPE_MOVE:
+	if move.move_type == WorldMoveInfo.TYPE_TRAVEL:
 		packet["move_source"] = move.move_source
 		packet["target_tile_coord"] = move.target_tile_coord
 	if move.move_type == WorldMoveInfo.TYPE_RECRUIT_HERO:
@@ -24,6 +24,7 @@ static func create_packet(move: WorldMoveInfo):
 		packet["data_hero"] = \
 			DataHero.get_network_id(move.recruit_hero_info.data_hero)
 	if move.move_type == WorldMoveInfo.TYPE_RECRUIT_UNIT:
+		packet["move_source"] = move.move_source
 		packet["target_tile_coord"] = move.target_tile_coord
 		packet["data_unit"] = DataUnit.get_network_id(move.data as DataUnit)
 	if move.move_type == WorldMoveInfo.TYPE_BUILD:
@@ -36,7 +37,7 @@ static func process_command(_client : Client, params : Dictionary) -> int:
 	if not "move_type" in params or not params["move_type"] is String:
 		return FAILED
 	match params["move_type"]:
-		WorldMoveInfo.TYPE_MOVE:
+		WorldMoveInfo.TYPE_TRAVEL:
 			if not "move_source" in params or \
 					not params["move_source"] is Vector2i:
 				return FAILED
@@ -54,6 +55,9 @@ static func process_command(_client : Client, params : Dictionary) -> int:
 					not params["target_tile_coord"] is Vector2i:
 				return FAILED
 		WorldMoveInfo.TYPE_RECRUIT_UNIT:
+			if not "move_source" in params or \
+					not params["move_source"] is Vector2i:
+				return FAILED
 			if not "target_tile_coord" in params or \
 					not params["target_tile_coord"] is Vector2i:
 				return FAILED
@@ -68,7 +72,7 @@ static func process_command(_client : Client, params : Dictionary) -> int:
 					not params["data_building"] is String:
 				return FAILED
 		WorldMoveInfo.TYPE_END_TURN:
-			pass
+			pass # end turn has no parameters
 		_:
 			return FAILED
 	var world_move_info = MakeWorldMoveCommand.create_from(params)
@@ -78,8 +82,8 @@ static func process_command(_client : Client, params : Dictionary) -> int:
 
 static func create_from(params : Dictionary) -> WorldMoveInfo:
 	match params["move_type"]:
-		WorldMoveInfo.TYPE_MOVE:
-			return WorldMoveInfo.make_world_move(params["move_source"],
+		WorldMoveInfo.TYPE_TRAVEL:
+			return WorldMoveInfo.make_world_travel(params["move_source"],
 					params["target_tile_coord"])
 		WorldMoveInfo.TYPE_RECRUIT_HERO:
 			return WorldMoveInfo.make_recruit_hero_from_network(
@@ -87,6 +91,7 @@ static func create_from(params : Dictionary) -> WorldMoveInfo:
 					params["data_hero"], params["target_tile_coord"])
 		WorldMoveInfo.TYPE_RECRUIT_UNIT:
 			return WorldMoveInfo.make_recruit_unit_from_network(
+					params["move_source"],
 					params["target_tile_coord"], params["data_unit"])
 		WorldMoveInfo.TYPE_BUILD:
 			return WorldMoveInfo.make_build_from_network(

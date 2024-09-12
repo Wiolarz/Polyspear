@@ -29,10 +29,6 @@ var selected_spell_button : TextureButton = null
 
 #region INIT
 
-func _ready():
-	pass
-
-
 func load_armies(army_list : Array[BattleGridState.ArmyInBattleState]):
 	# Disable "Switch camera" button for non world map gameplay
 	camera_button.disabled = IM.game_setup_info.game_mode != GameSetupInfo.GameMode.WORLD
@@ -50,7 +46,7 @@ func load_armies(army_list : Array[BattleGridState.ArmyInBattleState]):
 
 	var idx = 0
 	for army in army_list:
-		var controller = army.army_reference.controller
+		var controller = IM.get_player_by_index(army.army_reference.controller_index)
 		# create player buttons
 		var n = Button.new()
 		n.text = get_text_for(controller, idx == 0)
@@ -79,7 +75,7 @@ func update_cyclone():
 	var target_color = BM.get_player_color(target)
 	cyclone.modulate = target_color.color
 
-	
+
 	if timer == 0:
 		cyclone.text = "%s Sacrifice" % [target_color.name]
 	else:
@@ -118,7 +114,8 @@ func on_player_selected(army_index : int, preview : bool = false):
 
 	for i in range(armies_reference.size()):
 		var is_currently_active := (i == current_player)
-		var controller = armies_reference[i].army_reference.controller
+		var controller_index = armies_reference[i].army_reference.controller_index
+		var controller = IM.get_player_by_index(controller_index)
 		var button := players_box.get_child(i + 1) as Button
 		button.text = get_text_for(controller, is_currently_active)
 
@@ -127,7 +124,8 @@ func on_player_selected(army_index : int, preview : bool = false):
 	for old_buttons in units_box.get_children():
 		old_buttons.queue_free()
 
-	var units_controller : Player = armies_reference[army_index].army_reference.controller
+	var units_controller_index = armies_reference[army_index].army_reference.controller_index
+	var units_controller : Player = IM.get_player_by_index(units_controller_index)
 	var bg_color : DataPlayerColor = CFG.NEUTRAL_COLOR
 	if units_controller:
 		bg_color = units_controller.get_player_color()
@@ -167,27 +165,27 @@ func unit_summoned(summon_phase_end : bool):
 func load_spells(army_index : int, spells : Array[BattleSpell], preview : bool = false) -> void:
 	selected_spell = null #TODO check if neccesary
 	selected_spell_button = null
-	
+
 	if not preview:
 		current_player = army_index
-	
+
 	#TODO implement this:
 	# Get background color for spell book
 	"""var unit_controller : Player = armies_reference[army_index].army_reference.controller
 	var bg_color : DataPlayerColor = CFG.NEUTRAL_COLOR
 	if unit_controller:
 		bg_color = unit_controller.get_player_color()"""
-	
-	
+
+
 	for spell in spells:
 		var b := TextureButton.new()
-		
+
 		b.texture_normal = CFG.SUMMON_BUTTON_TEXTURE # TEMP replace for proper default spell background
 
 		#TEMP
 		b.texture_normal = load(spell.icon_path)
 		#var spell_icon : Texture2D = load(spell.icon_path) #:= UnitForm.create_for_summon_ui(unit, bg_color)
-		
+
 		#spell_icon.position = b.texture_normal.get_size() / 2
 		#b.add_child(spell_icon)
 
@@ -197,7 +195,7 @@ func load_spells(army_index : int, spells : Array[BattleSpell], preview : bool =
 				return
 			if selected_spell_button:
 				selected_spell_button.modulate = Color.WHITE
-			
+
 			if selected_spell_button == b: # Deselct a spell
 				selected_spell_button.modulate = Color.WHITE
 				selected_spell = null

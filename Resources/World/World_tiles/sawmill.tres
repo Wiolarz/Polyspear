@@ -4,6 +4,6 @@
 
 [resource]
 script = ExtResource("1_7nhkj")
-type = "sawmill"
+type = "outpost wood"
 texture_path = "res://Art/world_map/sawmill.png"
 flip_horizontal = false

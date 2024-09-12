@@ -5,7 +5,11 @@ signal unit_died()
 signal unit_turned()
 signal unit_moved()
 
+## TODO remove this
 var controller : Player
+
+## reference to army to which the unit belongs
+var army_in_battle : BattleGridState.ArmyInBattleState
 
 ## units constant stats resource
 var template : DataUnit
@@ -29,9 +33,11 @@ var is_on_swamp : bool = false
 static func create(new_controller : Player, \
 		new_template : DataUnit, \
 		new_coord : Vector2i, \
-		new_rotation : GenericHexGrid.GridDirections) -> Unit:
+		new_rotation : GenericHexGrid.GridDirections, \
+		new_army_in_battle_state : BattleGridState.ArmyInBattleState) -> Unit:
 	var result = Unit.new()
 	result.controller = new_controller
+	result.army_in_battle = new_army_in_battle_state
 	result.template = new_template
 	result.coord = new_coord
 	result.unit_rotation = new_rotation
