@@ -5,7 +5,7 @@
 #include "windows.h"
 #endif
 
-#include "fast_battle_manager.hpp"
+#include "battle_manager_fast.hpp"
 #include <optional>
 #include <unordered_map>
 

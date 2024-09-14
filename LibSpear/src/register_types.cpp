@@ -1,4 +1,4 @@
-#include "fast_battle_manager.hpp"
+#include "battle_manager_fast.hpp"
 #include "battle_mcts.hpp"
 #include <gdextension_interface.h>
 #include <godot_cpp/core/class_db.hpp>
