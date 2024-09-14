@@ -5,10 +5,12 @@ class_name BattleManagerFast extends BattleManagerFastCpp
 
 var _integrity_check_move: MoveInfo
 
-# Maps BMFast's integer IDs to DataUnit (for summons) or Unit (for already summoned)
+## Maps BMFast's integer IDs to DataUnit (for summons) or Unit (for already summoned)
 var unit_mapping: Array = []
+## Maps BMFast's integer IDs to BattleSpells
+var spell_mapping: Array = []
 
-# Maps team ids to BMFast's team ids (BMFast's team ids must be less than max army number)
+## Maps team ids to BMFast's team ids (BMFast's team ids must be less than max army number)
 var team_mapping: Dictionary = {}
 
 ## Make a BattleManagerFast for MCTS purposes. 
@@ -35,6 +37,8 @@ static func from(bgstate: BattleGridState, tgrid: TileGridFast = null) -> Battle
 		new.set_army_team(army_idx, new.team_mapping[team_id])
 		new.set_army_cyclone_timer(army_idx, army.cyclone_timer)
 		
+		var martyrs = []
+		
 		for unit_idx in range(army.units.size()):
 			var unit: Unit = army.units[unit_idx]
 			if unit.dead:
@@ -48,6 +52,21 @@ static func from(bgstate: BattleGridState, tgrid: TileGridFast = null) -> Battle
 				new.set_unit_symbol(army_idx, unit_idx, i, unit.template.symbols[i].type)
 			if army_idx == bgstate.current_army_index:
 				new.unit_mapping.push_back(unit)
+			
+			for spell in unit.spells:
+				new.insert_spell(army_idx, unit_idx, new.spell_mapping.size(), spell.name)
+				new.spell_mapping.push_back(spell)
+			
+			for eff in unit.effects:
+				match eff.name:
+					"Martyr":
+						martyrs.push_back(unit_idx)
+					"Vengeance":
+						new.set_unit_vengeance(army_idx, unit_idx)
+		
+		assert(martyrs.size() in [0,1,2], "Invalid martyr number")
+		if martyrs.size() == 2:
+			new.set_unit_martyr(army_idx, martyrs[0], martyrs[1])
 	
 		for unit_idx in range(army.units_to_summon.size()):
 			var unit = army.units_to_summon[unit_idx]
@@ -80,11 +99,14 @@ func libspear_tuple_to_move_info(tuple: Array) -> MoveInfo:
 	var unit: int = tuple[0]
 	var position: Vector2i = tuple[1]
 	
+	
 	if is_in_sacrifice_phase():
 		return MoveInfo.make_sacrifice(unit_mapping[unit].coord)
 	elif unit_mapping[unit] is DataUnit: # Summon
 		return MoveInfo.make_summon(unit_mapping[unit], position)
-	else: # Move
+	elif tuple.size() == 3: # Magic
+		return MoveInfo.make_magic(unit_mapping[unit].coord, position, spell_mapping[tuple[2]])
+	else:
 		return MoveInfo.make_move(unit_mapping[unit].coord, position)
 
 func move_info_to_libspear_tuple(move: MoveInfo) -> Array:
@@ -99,6 +121,9 @@ func move_info_to_libspear_tuple(move: MoveInfo) -> Array:
 		MoveInfo.TYPE_SACRIFICE:
 			unit = get_unit_id_on_position(move.move_source)[1]
 			pos = Vector2i.ZERO
+		MoveInfo.TYPE_MAGIC:
+			unit = get_unit_id_on_position(move.move_source)[1]
+			return [unit, pos, spell_mapping.find(move.spell)]
 		_:
 			assert(false, "Unknown move type '%s'" % [move.move_type])
 	
@@ -118,7 +143,7 @@ func check_integrity_before_move(bgs: BattleGridState, move: MoveInfo):
 		var unit_id = bgs.armies_in_battle_state[bgs.current_army_index].units.find(unit)
 		assert(unit_id != -1, "BMFast Integrity check failed before move - unit on coords %s not found in fast" % move.move_source)
 		
-		play_move(unit_id, move.target_tile_coord)
+		play_move(move_info_to_libspear_tuple(move))
 		_integrity_check_move = move
 	else:
 		move = null
@@ -158,7 +183,9 @@ func compare_grid_state(bgs: BattleGridState) -> bool:
 				push_error("BMFast mismsatch - unit: id ", army_id, ".", unit_id, " slow has rotation ", unit.unit_rotation, \
 						   ",  ", " vs fast's rotation ", get_unit_rotation(army_id, unit_id), " (@", unit.coord, ")")
 				ret = false
-				
+			
+			# TODO check spells and effects
+		
 		var units_alive_in_army = army.units.filter(func(x): return not x.dead).size()
 		if units_nr != units_alive_in_army:
 			push_error("BMFast mismatch - number of units in army ", army_id, ": slow ", units_alive_in_army, ", fast ", units_nr)
@@ -174,11 +201,17 @@ func compare_move_list(bgs: BattleGridState) -> bool:
 	
 	for i in fast_moves:
 		var move = libspear_tuple_to_move_info(i)
+		if move.move_type == MoveInfo.TYPE_MAGIC:
+			continue # TODO TEMP !!!!!! Implement magic move listing in godot
+		
 		if not bgs.is_move_possible(move):
 			push_error("BMFast move mismatch - fast action %s (%s) not present in slow" % [move, i])
 			ret = false
 	
 	for i in slow_moves:
+		if i.move_type == MoveInfo.TYPE_MAGIC:
+			continue # TODO TEMP !!!!!! Implement magic move listing in godot
+			
 		if move_info_to_libspear_tuple(i) not in fast_moves:
 			push_error("BMFast move mismatch - slow action %s not present in fast" % [i])
 			ret = false

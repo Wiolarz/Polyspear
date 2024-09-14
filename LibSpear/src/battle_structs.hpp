@@ -5,6 +5,10 @@
 #include <array>
 #include <vector>
 #include <algorithm>
+#include "godot_cpp/variant/array.hpp"
+#include "godot_cpp/variant/vector2i.hpp"
+#include "godot_cpp/variant/variant.hpp"
+#include "godot_cpp/core/error_macros.hpp"
 
 #include "data.hpp"
 
@@ -24,16 +28,31 @@ struct BattleResult {
     std::array<Score, MAX_ARMIES> score_lost{0};
 };
 
+
+using UnitID = std::pair<int8_t, int8_t>;
+
+static constexpr UnitID NO_UNIT = std::make_pair(-1, -1);
+static UnitID _err_return_dummy_uid = std::make_pair(-1, -1);
+
+
 struct Unit {
     UnitStatus status = UnitStatus::DEAD;
     Position pos{};
     uint8_t rotation{};
-    uint8_t score = 2;
+    uint8_t score = 1;
     uint8_t mana = 0;
+    UnitID martyr_id = NO_UNIT;
+    uint8_t flags = 0;
     std::array<Symbol, 6> sides{};
+
+    static const uint8_t FLAG_VENGEANCE = 0x01;
 
     inline Symbol symbol_at_abs_side(int side) const {
         return sides[(6-rotation + side) % 6];
+    }
+
+    inline bool is_vengeance_active() const {
+        return (flags & FLAG_VENGEANCE);
     }
 };
 
@@ -54,12 +73,33 @@ struct Army {
 using ArmyList = std::array<Army, MAX_ARMIES>;
 
 struct Move {
+    static const int8_t NO_SPELL = -1;
+
+    int8_t spell_id = NO_SPELL;
     uint8_t unit;
     Position pos;
 
     Move() = default;
+    Move(uint8_t _unit, Position _pos, int8_t _spell_id = NO_SPELL) : unit(_unit), pos(_pos), spell_id(_spell_id) {}
+    Move(godot::Array libspear_tuple) {
+        ERR_FAIL_COND_MSG(libspear_tuple.size() < 2 || libspear_tuple.size() > 3, "Invalid LibSpear tuple size");
+        unit = libspear_tuple[0];
+        pos = Position(libspear_tuple[1]);
+        spell_id = (libspear_tuple.size() >= 3) ? int8_t(libspear_tuple[2]) : NO_SPELL;
+    }
+
     bool operator==(const Move& other) const {
         return unit == other.unit && pos == other.pos;
+    }
+
+    godot::Array as_libspear_tuple() const {
+        godot::Array ret;
+        ret.push_back(unit);
+        ret.push_back(godot::Vector2i(pos.x, pos.y));
+        if(spell_id != NO_SPELL) {
+            ret.push_back(spell_id);
+        }
+        return ret;
     }
 };
 
@@ -75,8 +115,10 @@ struct std::hash<Move> {
 
 
 enum class TeamRelation {
+    ME,
     ALLY,
-    ENEMY
+    ENEMY,
+    ANY
 };
 
 #endif //BATTLE_STRUCTS_H

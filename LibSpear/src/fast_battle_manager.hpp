@@ -17,6 +17,7 @@
 #include "battle_structs.hpp"
 #include "cache_grid.hpp"
 #include "tile_grid_fast.hpp"
+#include "battle_spell.hpp"
 
 
 using godot::Node;
@@ -31,6 +32,7 @@ class BattleManagerFastCpp : public Node {
     int8_t _cyclone_target;
     BattleState _state = BattleState::INITIALIZING;
     ArmyList _armies{};
+    std::array<BattleSpell, MAX_SPELLS> _spells{};
     TileGridFastCpp* _tiles;
 
     BattleResult _result;
@@ -44,17 +46,24 @@ class BattleManagerFastCpp : public Node {
 
     void _process_unit(UnitID uid, bool process_kills);
     void _process_bow(UnitID uid);
+    void _process_spell(UnitID uid, int8_t spell_id, Position target);
+
+    void _spells_append_moves();
+
+    void _append_moves_unit(UnitID uid, int8_t spell_id, TeamRelation relation, bool include_self);
+    void _append_moves_all_tiles(UnitID uid, int8_t spell_id);
+    void _append_moves_lines(UnitID uid, int8_t spell_id, Position center, int range_min, int range_max);
 
     void _refresh_legal_moves();
     void _refresh_heuristically_good_moves();
     void _refresh_heuristically_good_summon_moves();
 
     void _move_unit(UnitID id, Position pos);
-    void _kill_unit(UnitID id);
+    void _kill_unit(UnitID id, UnitID killer_id);
 
     void _update_mana();
 
-    BattleResult _play_move(unsigned unit, Vector2i move);
+    BattleResult _play_move(unsigned unit, Vector2i move, int8_t spell_id);
 
 protected:
     static void _bind_methods();
@@ -70,17 +79,24 @@ public:
         int attack_strength, int defense_strength, int ranged_reach,
         bool is_counter, int push_force, bool parries
     );
+
     void set_unit_mana(int army, int idx, int mana);
     void set_unit_score(int army, int idx, int score);
+
+    void set_unit_vengeance(int army, int idx);
+    void set_unit_martyr(int army, int idx, int martyr_id);
+
+    void insert_spell(int army, int unit, int spell_id, godot::String spell_name);
     void set_army_cyclone_timer(int army, int timer);
     void set_tile_grid(TileGridFastCpp* tilegrid);
     void set_current_participant(int army);
+
     void finish_initialization();
     void force_battle_ongoing();
     void force_battle_sacrifice();
     
     BattleResult play_move(Move move);
-    int play_move_gd(unsigned unit, Vector2i move);
+    int play_move_gd(godot::Array libspear_tuple);
     
     /// Get winner team, or -1 if the battle has not yet ended. On error returns -2.
     int get_winner_team();
@@ -96,7 +112,7 @@ public:
     /// Get moves that are likely to increase score/win the game/avoid losses. If there are no notable moves, returns all moves
     const std::vector<Move>& get_heuristically_good_moves();
 
-    bool is_occupied(Position pos, int team, TeamRelation relation) const;
+    bool is_occupied(Position pos, const Army& army, TeamRelation relation) const;
     godot::Array get_unit_id_on_position(Vector2i pos) const;
 
     // Getters, primarily for testing correctness with regular BattleManager
@@ -136,6 +152,33 @@ public:
     inline int get_army_team(int army) const {
         return _armies[army].team;
     }
+
+    inline bool get_unit_vengeance(int army, int idx) const {
+        return _armies[army].units[idx].is_vengeance_active();
+    }
+    
+    inline int get_unit_martyr_id(int army, int idx) const {
+        return _armies[army].units[idx].martyr_id.first;
+    }
+
+    inline int get_unit_martyr_team(int army, int idx) const {
+        return _armies[army].units[idx].martyr_id.second;
+    }
+
+    inline bool skip_army(const Army& army, const Army& other_army, TeamRelation relation) const {
+        switch(relation) {
+            case TeamRelation::ME:
+                return &army != &other_army;
+            case TeamRelation::ALLY:
+                return army.team != other_army.team;
+            case TeamRelation::ENEMY:
+                return army.team == other_army.team;
+            case TeamRelation::ANY:
+                return false;
+        }
+        return false;
+    } 
+
 private:
     std::pair<Unit*, Army*> _get_unit(UnitID id) {
         if(id == NO_UNIT) {

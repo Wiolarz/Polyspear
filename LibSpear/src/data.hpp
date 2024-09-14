@@ -30,6 +30,10 @@ struct Position {
         return Position(x - other.x, y - other.y);
     }
 
+    inline Position operator*(const int mult) const {
+        return Position(x * mult, y * mult);
+    }
+
     inline bool operator==(const Position other) const {
         return x == other.x && y == other.y;
     }

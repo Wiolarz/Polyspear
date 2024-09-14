@@ -10,11 +10,6 @@
 
 using godot::Vector2i;
 
-using UnitID = std::pair<int8_t, int8_t>;
-
-static constexpr UnitID NO_UNIT = std::make_pair(-1, -1);
-static UnitID _err_return_dummy_uid = std::make_pair(-1, -1);
-
 
 class CacheGrid {
     using T = UnitID;
