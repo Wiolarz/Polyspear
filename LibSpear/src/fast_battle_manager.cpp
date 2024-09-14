@@ -59,7 +59,7 @@ BattleResult BattleManagerFastCpp::_play_move(unsigned unit_id, Vector2i pos, in
     ERR_FAIL_COND_V_MSG(_state == BattleState::INITIALIZING, _result, "BMFast - Please call finish_initialization() before playing a move");
     CHECK_UNIT(unit_id, _result);
     
-    UnitID uid = std::make_pair(_current_army, unit_id);
+    UnitID uid = UnitID(_current_army, unit_id);
     auto& unit = _armies[_current_army].units[unit_id];
 
     if(_state == BattleState::SUMMONING) {
@@ -91,17 +91,14 @@ BattleResult BattleManagerFastCpp::_play_move(unsigned unit_id, Vector2i pos, in
         }
     }
     else if(_state == BattleState::ONGOING) {
-        auto rot_new = get_rotation(unit.pos, pos);
+        if(spell_id == Move::NO_SPELL) {
+            auto rot_new = get_rotation(unit.pos, pos);
 
-        if(rot_new == 6) {
-            WARN_PRINT("BMFast - target position is not a neighbor\n");
-            return _result;
-        }
+            if(rot_new == 6) {
+                WARN_PRINT("BMFast - target position is not a neighbor\n");
+                return _result;
+            }
 
-        if(spell_id != Move::NO_SPELL) {
-            _process_spell(uid, spell_id, pos);
-        }
-        else {
             unit.rotation = rot_new;
             _process_unit(uid, true);
             
@@ -109,6 +106,9 @@ BattleResult BattleManagerFastCpp::_play_move(unsigned unit_id, Vector2i pos, in
                 _move_unit(uid, pos);
                 _process_unit(uid, true);
             }
+        }
+        else {
+            _process_spell(uid, spell_id, pos);
         }
 
         int limit = _current_army;
@@ -132,7 +132,7 @@ BattleResult BattleManagerFastCpp::_play_move(unsigned unit_id, Vector2i pos, in
             return _result;
         }
         
-        auto uid = std::make_pair(_current_army, unit_id);
+        auto uid = UnitID(_current_army, unit_id);
         _kill_unit(uid, NO_UNIT);
 
         int limit = _current_army;
@@ -234,20 +234,24 @@ void BattleManagerFastCpp::_process_bow(UnitID unit_id) {
 void BattleManagerFastCpp::_process_spell(UnitID uid, int8_t spell_id, Position target) {
     auto spell = _spells[spell_id];
     auto uid2 = _unit_cache.get(target);
-    auto caster_team = get_army_team(uid.second);
+    auto caster_team = get_army_team(uid.army);
 
     switch(spell.state) {
         case BattleSpell::State::FIREBALL:
             {
+                // const size array - enough to hold target's surroundings
                 std::array<UnitID, 7> ally_targets;
                 int last_ally_target = 0;
+                printf("dupa\n");
 
                 if(uid2 != NO_UNIT) {
-                    if(get_army_team(uid.second) == caster_team) {
+                    if(get_army_team(uid2.army) == caster_team) {
                         ally_targets[last_ally_target++] = uid2;
+                        printf("yes i killed ally 2\n");
                     }
                     else {
                         _kill_unit(uid2, uid);
+                        printf("yes i killed uid2\n");
                     }
                 }
 
@@ -255,11 +259,13 @@ void BattleManagerFastCpp::_process_spell(UnitID uid, int8_t spell_id, Position 
                     auto pos = target + i;
                     auto neighbor_id = _unit_cache.get(pos);
                     if(neighbor_id != NO_UNIT) {
-                        if(get_army_team(uid.second) == caster_team) {
-                            ally_targets[last_ally_target++] = uid2;
+                        if(get_army_team(neighbor_id.army) == caster_team) {
+                            ally_targets[last_ally_target++] = neighbor_id;
+                            printf("ally neighbor\n");
                         }
                         else {
                             _kill_unit(neighbor_id, uid);
+                            printf("fucker neighbor\n");
                         }
                     }
                 }
@@ -270,12 +276,14 @@ void BattleManagerFastCpp::_process_spell(UnitID uid, int8_t spell_id, Position 
                             break;
                         }
                         _kill_unit(ally_id, uid);
+                        printf("wielu z was zginie, ale jest to poswiecenie na ktore jestem gotow\n");
                     }
                 }
             }
             break;
         case BattleSpell::State::TELEPORT:
             _move_unit(uid, target);
+            _process_unit(uid, true);
             break;
         case BattleSpell::State::VENGEANCE:
             _get_unit(uid2).first->flags |= Unit::FLAG_VENGEANCE;
@@ -292,6 +300,7 @@ void BattleManagerFastCpp::_process_spell(UnitID uid, int8_t spell_id, Position 
             WARN_PRINT("Invalid spell type");
             return;
     }
+    spell.state = BattleSpell::State::NONE;
 }
 
 void BattleManagerFastCpp::_update_mana() {
@@ -477,16 +486,20 @@ void BattleManagerFastCpp::_refresh_legal_moves() {
 void BattleManagerFastCpp::_spells_append_moves() {
     for(int i = 0; i < _spells.size(); i++) {
         auto& spell = _spells[i];
-        if(spell.unit.first != _current_army) {
+        auto [unit, _army] = _get_unit(spell.unit);
+        if(spell.unit.army != _current_army) {
             continue;
+        }
+        if(spell.state == BattleSpell::State::SENTINEL) {
+            break;
         }
 
         switch(spell.state) {
             case BattleSpell::State::TELEPORT:
-                _append_moves_lines(spell.unit, i, _get_unit(spell.unit).first->pos, 1, 3);
+                _append_moves_line(spell.unit, i, unit->pos, unit->rotation, 1, 3);
                 break;
             case BattleSpell::State::FIREBALL:
-                _append_moves_all_tiles(spell.unit, i);
+                _append_moves_all_tiles(spell.unit, i, true);
                 break;
             case BattleSpell::State::VENGEANCE:
                 _append_moves_unit(spell.unit, i, TeamRelation::ALLY, true);
@@ -643,22 +656,22 @@ void BattleManagerFastCpp::_append_moves_unit(UnitID uid, int8_t spell_id, TeamR
 
         for(int i = 0; i < other_army.units.size(); i++) {
             auto& unit = other_army.units[i];
-            if(unit.status != UnitStatus::ALIVE || (!include_self && i == uid.second)) {
+            if(unit.status != UnitStatus::ALIVE || (!include_self && i == uid.unit)) {
                 continue;
             }
 
-            _moves.emplace_back(uid.second, unit.pos, spell_id);
+            _moves.emplace_back(uid.unit, unit.pos, spell_id);
         }
     }
 }
 
-void BattleManagerFastCpp::_append_moves_all_tiles(UnitID uid, int8_t spell_id) {
+void BattleManagerFastCpp::_append_moves_all_tiles(UnitID uid, int8_t spell_id, bool include_impassable) {
     auto dims = _tiles->get_dims();
     for(int y = 0; y < dims.y; y++) {
         for(int x = 0; x < dims.x; x++) {
             auto pos = Position(x,y);
-            if(_tiles->get_tile(pos).is_passable() && _unit_cache[pos] == NO_UNIT) {
-                _moves.emplace_back(uid.second, pos, spell_id);
+            if(include_impassable || (_tiles->get_tile(pos).is_passable() && _unit_cache[pos] == NO_UNIT)) {
+                _moves.emplace_back(uid.unit, pos, spell_id);
             }
         }
     }
@@ -667,16 +680,20 @@ void BattleManagerFastCpp::_append_moves_all_tiles(UnitID uid, int8_t spell_id) 
 void BattleManagerFastCpp::_append_moves_lines(UnitID uid, int8_t spell_id, Position center, int range_min, int range_max) {
     int range_min_real = (range_min >= 1) ? range_min : 1;
     if(range_min == 0 && _tiles->get_tile(center).is_passable()) {
-        _moves.emplace_back(uid.second, center, spell_id);
+        _moves.emplace_back(uid.unit, center, spell_id);
     }
 
     for(int dir = 0; dir < 6; dir++) {
-        for(int r = range_min_real; r <= range_max; r++) {
-            Position pos = center + DIRECTIONS[dir] * r;
-            
-            if(_tiles->get_tile(pos).is_passable() && _unit_cache[pos] == NO_UNIT) {
-                _moves.emplace_back(uid.second, center, spell_id);
-            }
+        _append_moves_line(uid, spell_id, center, dir, range_min, range_max);
+    }
+}
+
+void BattleManagerFastCpp::_append_moves_line(UnitID uid, int8_t spell_id, Position center, uint8_t dir, int range_min, int range_max) {
+    for(int r = range_min; r <= range_max; r++) {
+        Position pos = center + DIRECTIONS[dir] * r;
+        
+        if(_tiles->get_tile(pos).is_passable() && _unit_cache[pos] == NO_UNIT) {
+            _moves.emplace_back(uid.unit, pos, spell_id);
         }
     }
 }
@@ -817,8 +834,8 @@ void BattleManagerFastCpp::set_unit_martyr(int army, int idx, int martyr_idx) {
     CHECK_UNIT(idx,);
     CHECK_ARMY(army,);
     
-    _armies[army].units[idx].martyr_id = std::make_pair(army, martyr_idx);
-    _armies[army].units[martyr_idx].martyr_id = std::make_pair(army, idx);
+    _armies[army].units[idx].martyr_id = UnitID(army, martyr_idx);
+    _armies[army].units[martyr_idx].martyr_id = UnitID(army, idx);
 }
 
 void BattleManagerFastCpp::set_current_participant(int army) {
@@ -859,7 +876,7 @@ void BattleManagerFastCpp::insert_spell(int army, int unit, int spell_id, godot:
     CHECK_ARMY(army,);
     ERR_FAIL_COND_MSG(spell_id >= MAX_SPELLS, "Invalid spell id when inserting spell");
 
-    _spells[spell_id] = BattleSpell(str, std::make_pair(army, unit));
+    _spells[spell_id] = BattleSpell(str, UnitID(army, unit));
 }
 
 void BattleManagerFastCpp::_bind_methods() {

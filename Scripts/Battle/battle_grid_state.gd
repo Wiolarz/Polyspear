@@ -733,7 +733,8 @@ func is_spell_target_valid(unit : Unit, coord : Vector2i, spell : BattleSpell) -
 		"Fireball": # any hex target is valid
 			return true
 		"Teleport": # tile in range that is in front of the caster
-			if _is_faced_tile_in_range(unit.coord, coord, unit.unit_rotation, 3):
+			if _is_faced_tile_in_range(unit.coord, coord, unit.unit_rotation, 3) \
+					and _is_movable(coord) and get_unit(coord) == null:
 				return true
 		_:
 			printerr("Spell targeting not supported: ", spell.name)
@@ -892,8 +893,18 @@ func _get_all_unit_moves() -> Array[MoveInfo]:
 			var move_dir = _get_move_direction_if_valid(unit, new_coord)
 			if move_dir != BattleGridState.MOVE_IS_INVALID:
 				legal_moves.append(MoveInfo.make_move(unit.coord, new_coord))
+		for spell in unit.spells:
+			legal_moves.append_array(_get_magic_moves(unit, spell))
 	return legal_moves
 
+func _get_magic_moves(unit: Unit, spell: BattleSpell) -> Array[MoveInfo]:
+	# TODO lazy but very inefficient method, perhaps needs a rewrite?
+	var ret : Array[MoveInfo] = []
+	for x in width:
+		for y in height:
+			if is_spell_target_valid(unit, Vector2i(x,y), spell):
+				ret.push_back(MoveInfo.make_magic(unit.coord, Vector2i(x,y), spell))
+	return ret
 
 func _get_all_sacrifice_moves() -> Array[MoveInfo]:
 	var legal_moves : Array[MoveInfo] = []

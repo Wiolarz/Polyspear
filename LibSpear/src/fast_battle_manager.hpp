@@ -51,8 +51,9 @@ class BattleManagerFastCpp : public Node {
     void _spells_append_moves();
 
     void _append_moves_unit(UnitID uid, int8_t spell_id, TeamRelation relation, bool include_self);
-    void _append_moves_all_tiles(UnitID uid, int8_t spell_id);
+    void _append_moves_all_tiles(UnitID uid, int8_t spell_id, bool include_impassable);
     void _append_moves_lines(UnitID uid, int8_t spell_id, Position center, int range_min, int range_max);
+    void _append_moves_line(UnitID uid, int8_t spell_id, Position center, uint8_t dir, int range_min, int range_max);
 
     void _refresh_legal_moves();
     void _refresh_heuristically_good_moves();
@@ -158,11 +159,11 @@ public:
     }
     
     inline int get_unit_martyr_id(int army, int idx) const {
-        return _armies[army].units[idx].martyr_id.first;
+        return _armies[army].units[idx].martyr_id.unit;
     }
 
     inline int get_unit_martyr_team(int army, int idx) const {
-        return _armies[army].units[idx].martyr_id.second;
+        return _armies[army].units[idx].martyr_id.army;
     }
 
     inline bool skip_army(const Army& army, const Army& other_army, TeamRelation relation) const {
@@ -184,7 +185,7 @@ private:
         if(id == NO_UNIT) {
             return std::make_pair(nullptr, nullptr);
         }
-        return std::make_pair(&_armies[id.first].units[id.second], &_armies[id.first]);
+        return std::make_pair(&_armies[id.army].units[id.unit], &_armies[id.army]);
     }
 
     std::pair<Unit*, Army*> _get_unit(Position coord) {

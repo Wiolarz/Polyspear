@@ -29,10 +29,19 @@ struct BattleResult {
 };
 
 
-using UnitID = std::pair<int8_t, int8_t>;
+struct UnitID {
+    int8_t army;
+    int8_t unit;
 
-static constexpr UnitID NO_UNIT = std::make_pair(-1, -1);
-static UnitID _err_return_dummy_uid = std::make_pair(-1, -1);
+    UnitID() : army(-1), unit(-1) {}
+    UnitID(int8_t _army, int8_t _unit) : army(_army), unit(_unit) {}
+    bool operator==(const UnitID& other) const {
+        return army == other.army && unit == other.unit;
+    }
+};
+
+static const UnitID NO_UNIT = UnitID(-1,-1);
+static UnitID _err_return_dummy_uid = UnitID(-1,-1);
 
 
 struct Unit {

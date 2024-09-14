@@ -53,7 +53,7 @@ public:
                 auto& unit = army.units[unit_id];
 
                 if(unit.status == UnitStatus::ALIVE) {
-                    (*this)[unit.pos] = std::make_pair(army_id, unit_id);
+                    (*this)[unit.pos] = UnitID(army_id, unit_id);
                 }
             }
         }
