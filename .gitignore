@@ -19,3 +19,4 @@ mono_crash.*.json
 LibSpear/.sconsign.dblite
 LibSpear/compile_commands.json
 LibSpear/src/**.os
+LibSpear/build

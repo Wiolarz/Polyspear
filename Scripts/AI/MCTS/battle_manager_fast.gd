@@ -135,9 +135,13 @@ func move_info_to_libspear_tuple(move: MoveInfo) -> Array:
 #region Integrity testing
 
 func check_integrity_before_move(bgs: BattleGridState, move: MoveInfo):
-	if CFG.debug_check_bmfast_integrity:
-		assert(compare_move_list(bgs), "BMFast Integrity check failed before move - check error log for details")
-		assert(compare_grid_state(bgs), "BMFast Integrity check failed before move - check error log for details")
+	if not CFG.debug_check_bmfast_integrity:
+		return
+	
+	set_debug_internals(true)
+	
+	assert(compare_move_list(bgs), "BMFast Integrity check failed before move - check error log for details")
+	assert(compare_grid_state(bgs), "BMFast Integrity check failed before move - check error log for details")
 	
 	if move.move_type == MoveInfo.TYPE_SUMMON: # Do not check summon after move
 		move = null
@@ -152,12 +156,13 @@ func check_integrity_before_move(bgs: BattleGridState, move: MoveInfo):
 
 
 func check_integrity_after_move(bgs: BattleGridState):
-	if CFG.debug_check_bmfast_integrity and bgs.state != bgs.STATE_BATTLE_FINISHED:
-		#assert(compare_move_list(bgs), "BMFast Integrity check failed after move")
-		
-		if _integrity_check_move: # Only check ongoing battle moves
-			assert(compare_grid_state(bgs), "BMFast Integrity check failed after move - check error log for details")
-		
+	if not CFG.debug_check_bmfast_integrity or bgs.state == bgs.STATE_BATTLE_FINISHED:
+		return
+	#assert(compare_move_list(bgs), "BMFast Integrity check failed after move")
+	
+	if _integrity_check_move: # Only check ongoing battle moves
+		assert(compare_grid_state(bgs), "BMFast Integrity check failed after move - check error log for details")
+
 
 func compare_grid_state(bgs: BattleGridState) -> bool:
 	var ret = true
@@ -181,12 +186,43 @@ func compare_grid_state(bgs: BattleGridState) -> bool:
 				push_error("BMFast mismatch - unit not present in slow - fast id:", army_id, ".", unit_id, "(@", get_unit_position(army_id, unit_id), ")")
 				ret = false
 				continue
+			
+			var unit_str = "%s/%s @%s,%s" % [army_id, unit_id, unit.coord.x, unit.coord.y]
+			
 			if unit.unit_rotation != get_unit_rotation(army_id, unit_id):
-				push_error("BMFast mismsatch - unit: id ", army_id, ".", unit_id, " slow has rotation ", unit.unit_rotation, \
-						   ",  ", " vs fast's rotation ", get_unit_rotation(army_id, unit_id), " (@", unit.coord, ")")
+				push_error("BMFast mismsatch - unit: id ", unit_str, " slow has rotation ", unit.unit_rotation, \
+						   ",  ", " vs fast's rotation ", get_unit_rotation(army_id, unit_id))
 				ret = false
 			
-			# TODO check spells and effects
+			for spell in unit.spells:
+				# TODO check when 
+				if count_spell(spell.name) != 1:
+					push_error("BMFast mismatch - unit id ", unit_str, " fast does not have slow spell ", spell.name)
+					ret = false
+					
+			if get_unit_spell_count(army_id, unit_id) != unit.spells.size():
+				push_error("BMFast mismatch - spell count for unit %s - fast %s vs slow %s" \
+							% [unit_str ,get_unit_spell_count(army_id, unit_id), unit.spells.size()])
+				ret = false
+			
+			var is_martyr = false
+			var is_vengeance = false
+			for eff in unit.effects:
+				match eff.name:
+					"Martyr":
+						is_martyr = true
+					"Vengeance":
+						is_vengeance = true
+			
+			if is_martyr != (get_unit_martyr_id(army_id, unit_id) != -1):
+				push_error("BMFast mismatch - martyr status - slow %s vs fast %s" 
+						   % [is_martyr, get_unit_martyr_id(army_id, unit_id) != -1])
+				ret = false
+				
+			if is_vengeance != get_unit_vengeance(army_id, unit_id):
+				push_error("BMFast mismatch - vengeance status - slow %s vs fast %s" 
+						   % [is_vengeance, get_unit_vengeance(army_id, unit_id)])
+				ret = false
 		
 		var units_alive_in_army = army.units.filter(func(x): return not x.dead).size()
 		if units_nr != units_alive_in_army:

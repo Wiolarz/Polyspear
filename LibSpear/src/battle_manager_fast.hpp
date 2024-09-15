@@ -42,6 +42,7 @@ class BattleManagerFastCpp : public Node {
     std::vector<Move> _heuristic_moves{};
     bool _moves_dirty = true;
     bool _heuristic_moves_dirty = true;
+    bool _debug_internals = false;
 
 
     void _process_unit(UnitID uid, bool process_kills);
@@ -61,6 +62,8 @@ class BattleManagerFastCpp : public Node {
 
     void _move_unit(UnitID id, Position pos);
     void _kill_unit(UnitID id, UnitID killer_id);
+
+    void _next_army();
 
     void _update_mana();
 
@@ -117,6 +120,10 @@ public:
     godot::Array get_unit_id_on_position(Vector2i pos) const;
 
     // Getters, primarily for testing correctness with regular BattleManager
+    
+    int count_spell(godot::String name);
+    inline int get_unit_spell_count(int army, int idx) const;
+
     inline Vector2i get_unit_position(int army, int unit) const {
         auto p = _armies[army].units[unit].pos; 
         return Vector2i(p.x, p.y);
@@ -179,6 +186,10 @@ public:
         }
         return false;
     } 
+
+    inline void set_debug_internals(bool state) {
+        _debug_internals = state;
+    }
 
 private:
     std::pair<Unit*, Army*> _get_unit(UnitID id) {

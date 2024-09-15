@@ -111,11 +111,7 @@ BattleResult BattleManagerFastCpp::_play_move(unsigned unit_id, Vector2i pos, in
             _process_spell(uid, spell_id, pos);
         }
 
-        int limit = _current_army;
-        do {
-            _current_army = (_current_army+1) % _armies.size();
-        } while(_armies[_current_army].is_defeated() && _current_army != limit);
-        
+        _next_army();
 
         if(_previous_army > _current_army) {
             _armies[_cyclone_target].cyclone_timer--;
@@ -135,11 +131,7 @@ BattleResult BattleManagerFastCpp::_play_move(unsigned unit_id, Vector2i pos, in
         auto uid = UnitID(_current_army, unit_id);
         _kill_unit(uid, NO_UNIT);
 
-        int limit = _current_army;
-        do {
-            _current_army = (_current_army+1) % _armies.size();
-        } while(_armies[_current_army].is_defeated() && _current_army != limit);
-
+        _next_army();
         _state = BattleState::ONGOING;
     }
     else {
@@ -150,7 +142,9 @@ BattleResult BattleManagerFastCpp::_play_move(unsigned unit_id, Vector2i pos, in
     _result.winner_team = get_winner_team();
 
     // Test whether all cache updates are correct
-    //unit_cache.self_test(armies);
+    if(_debug_internals) {
+        _unit_cache.self_test(_armies);
+    }
 
     return _result;
 }
@@ -232,7 +226,7 @@ void BattleManagerFastCpp::_process_bow(UnitID unit_id) {
 }
 
 void BattleManagerFastCpp::_process_spell(UnitID uid, int8_t spell_id, Position target) {
-    auto spell = _spells[spell_id];
+    auto& spell = _spells[spell_id];
     auto uid2 = _unit_cache.get(target);
     auto caster_team = get_army_team(uid.army);
 
@@ -242,16 +236,13 @@ void BattleManagerFastCpp::_process_spell(UnitID uid, int8_t spell_id, Position 
                 // const size array - enough to hold target's surroundings
                 std::array<UnitID, 7> ally_targets;
                 int last_ally_target = 0;
-                printf("dupa\n");
 
                 if(uid2 != NO_UNIT) {
                     if(get_army_team(uid2.army) == caster_team) {
                         ally_targets[last_ally_target++] = uid2;
-                        printf("yes i killed ally 2\n");
                     }
                     else {
                         _kill_unit(uid2, uid);
-                        printf("yes i killed uid2\n");
                     }
                 }
 
@@ -261,11 +252,9 @@ void BattleManagerFastCpp::_process_spell(UnitID uid, int8_t spell_id, Position 
                     if(neighbor_id != NO_UNIT) {
                         if(get_army_team(neighbor_id.army) == caster_team) {
                             ally_targets[last_ally_target++] = neighbor_id;
-                            printf("ally neighbor\n");
                         }
                         else {
                             _kill_unit(neighbor_id, uid);
-                            printf("fucker neighbor\n");
                         }
                     }
                 }
@@ -276,7 +265,6 @@ void BattleManagerFastCpp::_process_spell(UnitID uid, int8_t spell_id, Position 
                             break;
                         }
                         _kill_unit(ally_id, uid);
-                        printf("wielu z was zginie, ale jest to poswiecenie na ktore jestem gotow\n");
                     }
                 }
             }
@@ -301,6 +289,7 @@ void BattleManagerFastCpp::_process_spell(UnitID uid, int8_t spell_id, Position 
             return;
     }
     spell.state = BattleSpell::State::NONE;
+    spell.unit = NO_UNIT;
 }
 
 void BattleManagerFastCpp::_update_mana() {
@@ -407,6 +396,13 @@ const std::vector<Move>& BattleManagerFastCpp::get_heuristically_good_moves() {
         return get_legal_moves();
     }
     return _heuristic_moves;
+}
+
+void BattleManagerFastCpp::_next_army() {
+    int limit = _current_army;
+    do {
+        _current_army = (_current_army+1) % _armies.size();
+    } while(_armies[_current_army].is_defeated() && _current_army != limit);
 }
 
 void BattleManagerFastCpp::_refresh_legal_moves() {
@@ -871,6 +867,29 @@ godot::Array BattleManagerFastCpp::get_unit_id_on_position(Vector2i pos) const {
     return ret;
 }
 
+int BattleManagerFastCpp::count_spell(godot::String name) {
+    int i = 0;
+    for(auto& spell : _spells) {
+        if(spell.state == BattleSpell(name, NO_UNIT).state) {
+            i++;
+        }
+    }
+    return i;
+}
+
+int BattleManagerFastCpp::get_unit_spell_count(int army, int idx) const {
+    int i = 0;
+    for(auto& spell : _spells) {
+        if(spell.state != BattleSpell::State::NONE 
+           && spell.state != BattleSpell::State::SENTINEL
+           && spell.unit == UnitID(army, idx)
+        ) {
+                i++;
+        }
+    }
+    return i;
+}
+
 void BattleManagerFastCpp::insert_spell(int army, int unit, int spell_id, godot::String str) {
     CHECK_UNIT(unit,);
     CHECK_ARMY(army,);
@@ -911,5 +930,8 @@ void BattleManagerFastCpp::_bind_methods() {
     ClassDB::bind_method(D_METHOD("get_unit_vengeance", "army", "unit"), &BattleManagerFastCpp::get_unit_vengeance);
     ClassDB::bind_method(D_METHOD("get_unit_martyr_id", "army", "unit"), &BattleManagerFastCpp::get_unit_martyr_id);
     ClassDB::bind_method(D_METHOD("get_unit_martyr_team", "army", "unit"), &BattleManagerFastCpp::get_unit_martyr_team);
+    ClassDB::bind_method(D_METHOD("count_spell", "name"), &BattleManagerFastCpp::count_spell);
+    ClassDB::bind_method(D_METHOD("get_unit_spell_count", "army", "unit"), &BattleManagerFastCpp::get_unit_spell_count);
 
+    ClassDB::bind_method(D_METHOD("set_debug_internals", "name"), &BattleManagerFastCpp::set_debug_internals);
 }
