@@ -436,25 +436,25 @@ func _get_move_direction_if_valid(unit : Unit, coord : Vector2i) -> int:
 		return MOVE_IS_INVALID
 
 	var hex = _get_battle_hex(coord)
-	if hex.special_move and move_direction == unit.unit_rotation:
-		if hex.pit:
-			# check if a landing spot is a viable move
-			var jump_spot : Vector2i = GenericHexGrid.adjacent_coord(coord, move_direction)
-			hex = _get_battle_hex(jump_spot)
-			if not hex.can_be_moved_to:  # landing spot cannot be a special_move place
-				return MOVE_IS_INVALID
-			
-			var unit_on_target = hex.unit
-			# empty field
-			if not unit_on_target:
-				return move_direction
-			else:
-				return MOVE_IS_INVALID  # during jump unit is unable to use their weapon
-
-		return move_direction
 
 	if not hex.can_be_moved_to:
-		return MOVE_IS_INVALID
+		if hex.special_move and move_direction == unit.unit_rotation:
+			pass # its a special move case
+		else:
+			return MOVE_IS_INVALID
+	
+	if hex.pit:
+		# check if a landing spot is a viable move
+		var jump_spot : Vector2i = GenericHexGrid.adjacent_coord(coord, move_direction)
+		hex = _get_battle_hex(jump_spot)
+		if not hex.can_be_moved_to:  # landing spot cannot be a special_move place
+			return MOVE_IS_INVALID
+		
+		# is unit present on landing spot
+		if not hex.unit:
+			return move_direction  # empty field
+		else:
+			return MOVE_IS_INVALID  # during jump unit is unable to use their weapon
 
 	var unit_on_target = hex.unit
 	# empty field
@@ -1199,6 +1199,7 @@ class BattleHex:
 				result.can_be_moved_to = false
 				result.can_shoot_through = false
 				result.special_move = true
+				result.hill = true
 			"swamp":
 				result.swamp = true
 			"empty":
