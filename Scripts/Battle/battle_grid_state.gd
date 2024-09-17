@@ -275,7 +275,7 @@ func _process_offensive_symbols(unit : Unit) -> void:
 
 		# in case enemy defended against attack we check if attacker pushes away enemy
 		if Unit.can_it_push(unit_weapon):
-			_push_enemy(enemy, side)
+			_push_enemy(enemy, side, Unit.push_power(unit_weapon))
 
 
 func _process_bow(unit : Unit, side : int, reach : int) -> void:
@@ -293,28 +293,46 @@ func _process_bow(unit : Unit, side : int, reach : int) -> void:
 
 	_kill_unit(target, armies_in_battle_state[current_army_index])
 
+## pushes enemy in non-relative direction, "power" tiles away [br]
+## checks on each tile if it's possible to be moved to that spot [br]
+## deppending on power value 
+func _push_enemy(enemy : Unit, direction : int, power : int) -> void:
+	
+	for push_power in range(1, power + 1):
+		var target_coord := GenericHexGrid.distant_coord(enemy.coord, direction, 1)
+		var target_hex = get_hex(target_coord)
 
-func _push_enemy(enemy : Unit, direction : int) -> void:
-	var target_coord := GenericHexGrid.distant_coord(enemy.coord, direction, 1)
+		if target_hex.pit:  
+			# TODO replace this "animation" of falling into pit with a custom one
+			_change_unit_coord(enemy, target_coord)
+			enemy.move(target_coord, _get_battle_hex(target_coord).swamp)
 
-	if not _is_movable(target_coord):
-		# Pushing outside the map
-		_kill_unit(enemy, armies_in_battle_state[current_army_index])
-		return
+			_kill_unit(enemy, armies_in_battle_state[current_army_index])
+			return
 
-	var target := get_unit(target_coord)
-	if target != null:
-		# Spot isn't empty
-		_kill_unit(enemy, armies_in_battle_state[current_army_index])
-		return
+		if not target_hex.can_be_moved_to:
+			# push behaves different for power equal to 1
+			if power == 1 or push_power< power:
+				_kill_unit(enemy, armies_in_battle_state[current_army_index])
+				return
+			# push power innsuficient to kill a unit
+			return
+			
+		var target := get_unit(target_coord)
+		if target != null:
+			# Spot isn't empty
+			_kill_unit(enemy, armies_in_battle_state[current_army_index])
+			return
 
-	currently_processed_move_info.register_push(enemy, target_coord)
+		currently_processed_move_info.register_push(enemy, target_coord)
 
-	# MOVE for PUSH (no rotate)
-	_change_unit_coord(enemy, target_coord)
-	enemy.move(target_coord, _get_battle_hex(target_coord).swamp)
+		# MOVE for PUSH (no rotate)
+		_change_unit_coord(enemy, target_coord)
+		enemy.move(target_coord, _get_battle_hex(target_coord).swamp)
+
 
 	# check for counter_attacks
+	# occurs only at last spot enemy was pushed to (push was to quick for allies to react)
 	if _should_die_to_counter_attack(enemy):
 		# special case when we award EXP to the player that pushed the unit instead of spear holder
 		_kill_unit(enemy, armies_in_battle_state[current_army_index])
@@ -403,6 +421,9 @@ func _get_move_direction_if_valid(unit : Unit, coord : Vector2i) -> int:
 		- can be occupied by a new unit:
 			- is empty
 			- contains a unit that would be killed/pushed by the move
+		- in special case that tile has a tag "special_move"
+		  move is possible if the unit is facing that tile
+		  that specific move may behave differently
 
 		@param unit to move
 		@param coord target coord for unit to move to
@@ -415,8 +436,25 @@ func _get_move_direction_if_valid(unit : Unit, coord : Vector2i) -> int:
 		return MOVE_IS_INVALID
 
 	var hex = _get_battle_hex(coord)
+
 	if not hex.can_be_moved_to:
-		return MOVE_IS_INVALID
+		if hex.special_move and move_direction == unit.unit_rotation:
+			pass # its a special move case
+		else:
+			return MOVE_IS_INVALID
+	
+	if hex.pit:
+		# check if a landing spot is a viable move
+		var jump_spot : Vector2i = GenericHexGrid.adjacent_coord(coord, move_direction)
+		hex = _get_battle_hex(jump_spot)
+		if not hex.can_be_moved_to:  # landing spot cannot be a special_move place
+			return MOVE_IS_INVALID
+		
+		# is unit present on landing spot
+		if not hex.unit:
+			return move_direction  # empty field
+		else:
+			return MOVE_IS_INVALID  # during jump unit is unable to use their weapon
 
 	var unit_on_target = hex.unit
 	# empty field
@@ -441,27 +479,23 @@ func _can_kill_or_push(me : Unit, other_unit : Unit, attack_direction : int):
 	elif other_unit.army_in_battle.team == me.army_in_battle.team:
 		return false
 
-	var front_symbol : E.Symbols = me.get_front_symbol()
-	match front_symbol:
-		E.Symbols.EMPTY:
-			# can't deal with enemy_unit
-			return false
-		E.Symbols.SHIELD:
-			# can't deal with enemy_unit
-			return false
-		E.Symbols.PUSH:
-			# push ignores enemy_unit shields etc
-			return true
-		_:
-			# assume other attack symbol
-			# Does enemy_unit has a shield?
-			var defense_direction = GenericHexGrid.opposite_direction(attack_direction)
-			var shield_power = Unit.defense_power(other_unit.get_symbol(defense_direction))
+	var defense_direction = GenericHexGrid.opposite_direction(attack_direction)
+	var enemy_symbol = other_unit.get_symbol(defense_direction)
+	
+	if Unit.does_it_parry(enemy_symbol):
+		return false  # parry ignores our melee symbols
 
-			if shield_power >= Unit.attack_power(front_symbol):
-				return false
-			# no shield, attack ok
-			return true
+	var front_symbol : E.Symbols = me.get_front_symbol()
+
+	if Unit.can_it_push(front_symbol):
+		return true  # push ignores enemy_unit shields
+
+
+	var shield_power = Unit.defense_power(enemy_symbol)
+
+	if shield_power >= Unit.attack_power(front_symbol):
+		return false
+	return true  # unit attack is sufficient
 
 
 func _get_player_army(player : Player) -> BattleGridState.ArmyInBattleState:
@@ -575,8 +609,13 @@ func _perform_move(unit : Unit, direction : int, target_tile_coord : Vector2i) -
 		return
 	currently_processed_move_info.register_turning_complete()
 	# MOVE
+	var target_tile : BattleGridState.BattleHex = _get_battle_hex(target_tile_coord)
+	if target_tile.pit:
+		# we assume move is possible
+		target_tile_coord += GenericHexGrid.DIRECTION_TO_OFFSET[direction]
+
 	_change_unit_coord(unit, target_tile_coord)
-	unit.move(target_tile_coord, _get_battle_hex(target_tile_coord).swamp)
+	unit.move(target_tile_coord, target_tile.swamp)
 	currently_processed_move_info.register_locomote_complete()
 	if _process_symbols(unit):
 		return
@@ -699,7 +738,8 @@ func _get_spawn_rotation(coord : Vector2i) -> int:
 
 func _put_unit_on_grid(unit : Unit, coord : Vector2i) -> void:
 	var hex := _get_battle_hex(coord)
-	assert(hex.can_be_moved_to, "summoning unit to an invalid tile")
+	# TODO discuss this assert as it conflicts with special move tiles
+	#assert(hex.can_be_moved_to, "summoning unit to an invalid tile")
 	assert(not hex.unit, "summoning unit to an occupied tile")
 	hex.unit = unit
 
@@ -1108,8 +1148,17 @@ class BattleHex:
 	var spawn_direction : int
 	var can_be_moved_to : bool = true
 	var can_shoot_through : bool = true
-	var swamp : bool = false # TODO REFACTOR THIS NAME
+
+	# Tile types (some tiles in the future may have )
+	var swamp : bool = false 
 	var mana : bool = false
+	var pit : bool = false
+	var hill : bool = false
+
+	## allows unit to "enter" the tile under the condition 
+	## that it's facing it
+	var special_move : bool = false  
+
 
 	static var sentinel: BattleHex = BattleHex.create_sentinel()
 
@@ -1144,9 +1193,13 @@ class BattleHex:
 		match data.type:
 			"hole":
 				result.can_be_moved_to = false
+				result.pit = true
+				result.special_move = true
 			"wall":
 				result.can_be_moved_to = false
 				result.can_shoot_through = false
+				result.special_move = true
+				result.hill = true
 			"swamp":
 				result.swamp = true
 			"empty":
