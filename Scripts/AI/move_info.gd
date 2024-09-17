@@ -6,6 +6,8 @@ const TYPE_SUMMON = "summon"
 const TYPE_SACRIFICE = "sacrifice"
 const TYPE_MAGIC = "magic"
 
+const TYPE_SURRENDER = "surrender"
+
 @export var move_type : String = ""
 ## if TYPE_SUMMON, determines summoned unit
 @export var summon_unit : DataUnit
@@ -63,6 +65,14 @@ static func make_magic(move_source_ : Vector2i, target_tile_coord_ : Vector2i, s
 	result.target_tile_coord = target_tile_coord_
 	result.spell = spell_
 	return result
+
+
+#TODO implement surrender functionality for multiplayer + replays
+static func make_surrender() -> MoveInfo:
+	var result := MoveInfo.new()
+	result.move_type = TYPE_SURRENDER
+	return result
+
 
 #endregion Constructors
 

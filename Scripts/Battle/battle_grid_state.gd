@@ -888,6 +888,7 @@ func _perform_magic(unit : Unit, target_tile_coord : Vector2i, spell : BattleSpe
 #region End Battle
 
 func _kill_army(army_idx : int):
+	currently_processed_move_info = MoveInfo.make_surrender()
 	armies_in_battle_state[army_idx].kill_army()
 	_check_battle_end()
 
