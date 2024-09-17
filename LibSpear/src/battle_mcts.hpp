@@ -90,8 +90,7 @@ public:
     /// Get the optimal move. Return zero unit/position on fail
     Move get_optimal_move(int nth_best_move);
 
-    int get_optimal_move_unit(int nth_best_move = 0);
-    Vector2i get_optimal_move_position(int nth_best_move = 0);
+    godot::Array get_optimal_move_gd(int nth_best_move);
 };
 
 

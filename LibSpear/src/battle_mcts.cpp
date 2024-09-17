@@ -227,14 +227,9 @@ Move BattleMCTSManager::get_optimal_move(int nth_best_move) {
     return chosen;
 }
 
-int BattleMCTSManager::get_optimal_move_unit(int nth_best_move) {
-    return get_optimal_move(nth_best_move).unit;
+godot::Array BattleMCTSManager::get_optimal_move_gd(int nth_best_move) {
+    return get_optimal_move(nth_best_move).as_libspear_tuple();
 }
-
-Vector2i BattleMCTSManager::get_optimal_move_position(int nth_best_move) {
-    return Vector2i(get_optimal_move(nth_best_move).pos.x, get_optimal_move(nth_best_move).pos.y);
-}
-
 
 void BattleMCTSManager::set_root(BattleManagerFastCpp* bm) {
     root = new BattleMCTSNode(*bm, this, nullptr);
@@ -249,12 +244,10 @@ BattleMCTSManager::~BattleMCTSManager() {
 }
 
 void BattleMCTSManager::_bind_methods() {
-    ClassDB::bind_method(D_METHOD("get_optimal_move_unit", "nth_best_move"), &BattleMCTSManager::get_optimal_move_unit);
-    ClassDB::bind_method(D_METHOD("get_optimal_move_position", "nth_best_move"), &BattleMCTSManager::get_optimal_move_position);
-
+    ClassDB::bind_method(D_METHOD("get_optimal_move", "nth_best_move"), &BattleMCTSManager::get_optimal_move_gd);
     ClassDB::bind_method(D_METHOD("iterate", "iterations"), &BattleMCTSManager::iterate);
-
     ClassDB::bind_method(D_METHOD("set_root", "battle_manager"), &BattleMCTSManager::set_root);
+
     ADD_SIGNAL(MethodInfo("complete"));
     ADD_SIGNAL(MethodInfo("_assert_params_are_set"));
 

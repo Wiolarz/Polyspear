@@ -47,10 +47,8 @@ func choose_move(state: BattleGridState) -> MoveInfo:
 	)
 	await complete
 	
-	var unit = mcts.get_optimal_move_unit(0)
-	var position = mcts.get_optimal_move_position(0)
-	
-	return bm.libspear_tuple_to_move_info([unit, position])
+	var tuple = mcts.get_optimal_move(0)
+	return bm.libspear_tuple_to_move_info(tuple)
 
 func cleanup_after_move():
 	if thread:
