@@ -26,6 +26,7 @@ var bot_paths : Array[String]
 	$VBoxContainer/OptionButtonUnit5,
 ]
 @onready var button_bot = $VBoxContainer/HBoxContainer/OptionButtonBot
+@onready var player_info = $VBoxContainer/HBoxContainer/PlayerInfoPanel
 
 
 @onready var team_list : OptionButton = $VBoxContainer/HBoxContainer/OptionButtonTeam
@@ -64,11 +65,13 @@ func set_visible_take_leave_button_state(state : TakeLeaveButtonState):
 	# maybe better get this from battle setup, but this is simpler
 	button_take_leave_state = state
 	button_bot.visible = false
+	player_info.visible = true
 	match state:
 		TakeLeaveButtonState.FREE:
 			button_take_leave.text = "Take"
 			button_take_leave.disabled = false
 			button_bot.visible = true
+			player_info.visible = false
 		TakeLeaveButtonState.TAKEN_BY_YOU:
 			button_take_leave.text = "Leave"
 			button_take_leave.disabled = false
