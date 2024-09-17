@@ -663,10 +663,14 @@ func _kill_unit(target : Unit, killer_army : ArmyInBattleState = null) -> void:
 	# check magic to confirm if it dies
 	var replaced_target : Unit = null
 	var new_target_pos : Vector2i
-	for spell in target.effects:
+	
+	# reversed for loop to avoid problems with removing spells mid search
+	for spell_idx in range(target.effects.size() - 1, -1, -1):
 		#spell.enchanted_unit_dies()
+		var spell = target.effects[spell_idx]
 		match spell.name:
 			"Martyr":
+				target.effects.erase(spell)
 				for unit in target_army.units:
 					if replaced_target:
 						break
@@ -818,6 +822,9 @@ func is_spell_target_valid(unit : Unit, coord : Vector2i, spell : BattleSpell) -
 		"Fireball": # any hex target is valid
 			return true
 		"Teleport": # tile in range that is in front of the caster
+			if get_unit(coord):  # tile has to be empty
+				return false
+			
 			if _is_faced_tile_in_range(unit.coord, coord, unit.unit_rotation, 3):
 				return true
 		_:
