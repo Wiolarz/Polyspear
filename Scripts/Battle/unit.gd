@@ -5,7 +5,11 @@ signal unit_died()
 signal unit_turned()
 signal unit_moved()
 
+## TODO remove this
 var controller : Player
+
+## reference to army to which the unit belongs
+var army_in_battle : BattleGridState.ArmyInBattleState
 
 ## units constant stats resource
 var template : DataUnit
@@ -29,9 +33,11 @@ var is_on_swamp : bool = false
 static func create(new_controller : Player, \
 		new_template : DataUnit, \
 		new_coord : Vector2i, \
-		new_rotation : GenericHexGrid.GridDirections) -> Unit:
+		new_rotation : GenericHexGrid.GridDirections, \
+		new_army_in_battle_state : BattleGridState.ArmyInBattleState) -> Unit:
 	var result = Unit.new()
 	result.controller = new_controller
+	result.army_in_battle = new_army_in_battle_state
 	result.template = new_template
 	result.coord = new_coord
 	result.unit_rotation = new_rotation
@@ -122,18 +128,27 @@ static func attack_power(symbol : E.Symbols) -> int:
 		_:
 			return 0
 
+#region push
+
 ## returns true if symbol can push
 static func can_it_push(symbol : E.Symbols) -> bool:
-	match symbol:
-		E.Symbols.MACE, E.Symbols.FIST:
-			return true
-		E.Symbols.STRONG_TOWERSHIELD, E.Symbols.TOWERSHIELD: # shields
-			return true
-		E.Symbols.PUSH: # classic
-			return true
-		_:
-			return false
+	return Unit.push_power(symbol) > 0
 
+
+## return how many tiles does range weapon attack can reach [br]
+## -1 = infinite
+static func push_power(symbol : E.Symbols) -> int:
+	match symbol:
+		E.Symbols.FIST:
+			return 3
+		E.Symbols.MACE:
+			return 2
+		E.Symbols.PUSH, E.Symbols.STRONG_TOWERSHIELD, E.Symbols.TOWERSHIELD:
+			return 1
+		_:
+			return 0
+
+#endregion push
 
 static func does_it_parry(symbol : E.Symbols) -> bool:
 	match symbol:

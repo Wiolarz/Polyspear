@@ -5,7 +5,7 @@ extends Node
 var template : DataHero
 
 # code
-var controller : Player
+var controller_index : int
 var army : Army
 var coord : Vector2i
 # visual
@@ -25,23 +25,30 @@ var movement_points = 3
 var xp = 0
 var level = 1
 
-static func create_hero(data_hero : DataHero, player : Player) -> Hero:
-	for dead_hero in player.dead_heroes:
-		if dead_hero.template == data_hero:
-			dead_hero.revive()
-			dead_hero.controller = player
-			return dead_hero
-
-	return construct_hero(data_hero, player)
+## DESIGN should current level determine how many exp is needed for level up
+static func level_threshold_at(_level : int) -> int:
+	return 2
 
 
-# TODO change name
-static func construct_hero(data_hero : DataHero, player : Player) -> Hero:
+# static func create_hero(data_hero : DataHero, player : Player) -> Hero:
+# 	for dead_hero in player.dead_heroes:
+# 		if dead_hero.template == data_hero:
+# 			dead_hero.revive()
+# 			dead_hero.controller = player
+# 			return dead_hero
+
+# 	return construct_hero(data_hero, player)
+
+
+## this function only creates structure -- it has to be later added to state
+## properly as it is done by WorldState.recruit_hero function
+static func construct_hero(data_hero : DataHero,
+		player_index : int) -> Hero:
 	var new_hero = Hero.new()
 	new_hero.template = data_hero
 	new_hero.hero_name = data_hero.hero_name
 	new_hero.name = "Hero_" + data_hero.hero_name
-	new_hero.controller = player
+	new_hero.controller_index = player_index
 	new_hero.data_unit = data_hero.data_unit
 	new_hero.max_army_size = data_hero.max_army_size
 	new_hero.max_movement_points = data_hero.max_movement_points
@@ -61,25 +68,19 @@ func move(target : TileForm):
 	target_tile = target
 
 
-func add_xp_for_casualties(killed : Array[DataUnit], enemy_hero : Hero) -> void:
-	var levels = []
-	for u in killed:
-		levels.append(u.level)
-	if enemy_hero:
-		levels.append(enemy_hero.level)
-	levels.sort()
-	for l in levels:
-		if l >= level:
-			xp += 1
-			print("%s gained xp, now has %d" % [hero_name, xp])
-			if xp >= 2:
-				level_up()
+func add_xp(gained_xp : int) -> void:
+	if gained_xp <= 0:
+		return
+	xp += gained_xp
+	while xp >= Hero.level_threshold_at(level):
+		_level_up()
 
 
-func level_up() -> void:
+func _level_up() -> void:
 	if level == CFG.HERO_LEVEL_CAP:
 		return
-	xp = 0
+	var threshold = Hero.level_threshold_at(level)
+	xp -= threshold
 	level += 1
 	print("%s leveled up, now has level %d" % [hero_name, level])
 	var old_max_move = max_movement_points
@@ -102,10 +103,9 @@ func to_network_serializable() -> Dictionary:
 	return dict
 
 
-static func from_network_serializable(dict : Dictionary, player : Player) \
-		-> Hero:
+static func from_network_serializable(dict : Dictionary, controller_index_ : int) -> Hero:
 	var data_hero = DataHero.from_network_id(dict["data_hero"])
-	var hero : Hero = Hero.construct_hero(data_hero, player)
+	var hero : Hero = Hero.construct_hero(data_hero, controller_index_)
 	hero.hero_name = dict["name"]
 	hero.movement_points = dict["movement_points"]
 	hero.xp = dict["xp"]

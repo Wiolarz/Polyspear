@@ -5,26 +5,13 @@ var slot : GameSetupInfo.Slot
 
 var bot_engine : AIInterface
 
-var goods : Goods = Goods.new()
+var index : int:
+	get: return slot.index
+	set(_value): assert(false, "no set here")
 
-var capital_city : City:
-	get:
-		if cities.size() == 0:
-			return null
-		return cities[0]
-	set(_wrong_value):
-		assert(false, "attempt to modify read only value of player capital_city")
-
-var cities : Array[City]
-var outposts : Array[Outpost]
-var outpost_buildings : Array[DataBuilding]
-
-var hero_armies : Array[ArmyForm] = []
-
-var dead_heroes: Array[Hero] = []
-
-var team : int = 0
-
+var team : int:
+	get: return slot.team
+	set(_value): assert(false, "no set here")
 
 static func create(new_slot : GameSetupInfo.Slot) -> Player:
 	var result := Player.new()
@@ -37,8 +24,7 @@ static func create(new_slot : GameSetupInfo.Slot) -> Player:
 		assert(result.bot_engine != null, "Bot '%s' does not exist" % new_slot.battle_bot_path)
 
 	result.name = "Player_" + result.get_player_name()
-	result.goods = CFG.get_start_goods()
-	
+
 	return result
 
 
@@ -49,10 +35,12 @@ func _init(): #?
 #region Getters
 
 func get_player_name() -> String:
+	# TODO make these names same as elsewhere
 	if slot.is_bot():
 		return "AI"
 	if slot.is_local():
-		return "LOCAL"
+		return "LOCAL" # TODO use the same identifier which is "(( you ))" when
+					   # offline
 	# network login
 	return slot.occupier
 
@@ -62,93 +50,45 @@ func get_player_color() -> DataPlayerColor:
 
 
 func get_faction() -> DataFaction:
+	# TODO store faction in state
 	return slot.faction
 
 #endregion Getters
 
-func set_capital(capital : City):
-	capital.controller = self
-	cities.append(capital)
+
+## let player know its his turn,
+## in case play is AI, call his decision maker
+func your_turn(battle_state : BattleGridState):
+	var color_name = CFG.TEAM_COLORS[slot.color].name
+	print("your move %s - %s" % [get_player_name(), color_name])
+
+	if bot_engine != null and not NET.client: # AI is simulated on server only
+		bot_engine.play_move(battle_state)
 
 
 ## Checks if player has enough goods for purchase
-func has_enough(cost : Goods) -> bool:
-	return goods.has_enough(cost)
+func has_enough(world_state : WorldState, cost : Goods) -> bool:
+	return world_state.has_player_enough(index, cost)
 
 
 ## If there are sufficient goods returns true + goods are subtracted
-func purchase(cost : Goods) -> bool:
-	if goods.has_enough(cost):
-		goods.subtract(cost)
-		return true
-	print("not enough money")
-	return false
+func purchase(world_state : WorldState, cost : Goods) -> bool:
+	return world_state.player_purchase(index, cost)
 
 
 #region Heroes
 
-func hero_recruited(hero : ArmyForm):
-	hero_armies.append(hero)
+func has_hero(world_state : WorldState, data_hero: DataHero):
+	return world_state.has_player_a_hero(index, data_hero)
 
 
-func hero_died(hero : Hero):
-	var i = 0
-	while i < hero_armies.size():
-		if hero_armies[i].entity.hero == hero:
-			hero_armies.remove_at(i)
-		else:
-			i += 1
-
-	dead_heroes.append(hero)
+func has_dead_hero(world_state : WorldState, data_hero: DataHero):
+	return world_state.has_player_a_dead_hero(index, data_hero)
 
 
-func has_hero(data_hero: DataHero):
-	for ha in hero_armies:
-		if ha.entity.hero.template == data_hero:
-			return true
-	return false
-
-
-func has_dead_hero(data_hero: DataHero):
-	for dh in dead_heroes:
-		if dh.template == data_hero:
-			return true
-	return false
-
-
-func get_hero_cost(data_hero: DataHero):
-	if has_dead_hero(data_hero):
-		return data_hero.revive_cost
-	return data_hero.cost
+func get_hero_cost(world_state : WorldState, data_hero: DataHero):
+	return world_state.get_hero_cost_for_player(index, data_hero)
 
 #endregion Heroes
 
 
-#region Outposts
-
-func outpost_add(outpost : Outpost) -> void:
-	outposts.append(outpost)
-
-func outpost_remove(outpost : Outpost) -> void:
-	assert(outpost in outposts, "attempt to remove outpost that wasnt assigned to the player")
-
-	outposts.erase(outpost)
-
-	if not outpost_requirement(outpost.outpost_type):
-		outpost_demolish(outpost.outpost_type)
-
-func outpost_requirement(outpost_type_needed : String) -> bool:
-	if outpost_type_needed == "":
-		return true
-	for outpost in outposts:
-		if outpost.outpost_type == outpost_type_needed:
-			return true
-	return false
-
-func outpost_demolish(demolish_type : String):
-	for building_idx in range(outpost_buildings.size() -1, -1, -1):
-		if outpost_buildings[building_idx].outpost_requirement == demolish_type:
-			outpost_buildings.pop_at(building_idx)
-
-
-#endregion Outposts

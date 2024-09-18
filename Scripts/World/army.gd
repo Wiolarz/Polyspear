@@ -5,7 +5,7 @@ var units_data : Array[DataUnit]
 
 var hero : Hero
 
-var controller : Player
+var controller_index : int
 
 var coord : Vector2i
 
@@ -37,8 +37,27 @@ func heal_in_city():
 		print("hero healed")
 
 
-static func create_army_from_preset(army_preset : PresetArmy) -> Army:
+func get_movement_points() -> int:
+	if hero:
+		return hero.movement_points
+	return 0
+
+
+func add_xp(gained_xp : int) -> void:
+	if hero:
+		hero.add_xp(gained_xp)
+
+
+func on_end_of_turn(player_index : int):
+	if player_index == controller_index and hero:
+		hero.movement_points = hero.max_movement_points
+
+
+## remember that is some player's army is created, it also needs to be
+static func create_from_preset(army_preset : PresetArmy) \
+		-> Army:
 	var new_army = Army.new()
 	new_army.units_data = army_preset.units
+	new_army.controller_index = -1
 	#new_army.hero = army_preset.hero  # TODO ARMY PRESET HERO
 	return new_army

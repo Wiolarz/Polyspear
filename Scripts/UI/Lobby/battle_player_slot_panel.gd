@@ -134,7 +134,7 @@ func apply_army_preset(army : PresetArmy):
 	var slot_index = setup_ui.slot_to_index(self)
 
 	IM.game_setup_info.set_team(slot_index, army.team)
-	
+
 	var idx = 0
 	for u in army.units:
 		if not u:
@@ -191,8 +191,7 @@ func _on_button_take_leave_pressed():
 			try_to_take()
 		TakeLeaveButtonState.TAKEN_BY_YOU:
 			try_to_leave()
-		_:
-			pass
+
 
 
 func _on_button_color_pressed():
