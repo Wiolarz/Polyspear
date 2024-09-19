@@ -176,22 +176,42 @@ void BattleManagerFastCpp::_process_unit(UnitID unit_id, bool process_kills) {
                 _kill_unit(neighbor_id, unit_id);
             }
 
-            if(unit_symbol.pushes()) {
-                auto new_pos = neighbor->pos + neighbor->pos - unit->pos;
-                if(!(_tiles->get_tile(new_pos).is_passable()) || _get_unit(new_pos).first != nullptr) {
-                    _kill_unit(neighbor_id, unit_id);
-                }
-                else {
-                    _move_unit(neighbor_id, new_pos);
-                    _process_unit(neighbor_id, false);
-                }
-            }
+            auto direction = neighbor->pos - unit->pos;
+            _process_push(neighbor_id, unit_id, direction, unit_symbol.get_push_force());
         }
     }
 
     if(process_kills) {
         _process_bow(unit_id);
     }
+}
+
+void BattleManagerFastCpp::_process_push(UnitID pushed, UnitID pusher, Position direction, uint8_t max_power) {
+    auto [pushed_unit, pushed_army] = _get_unit(pushed);
+    auto pos = pushed_unit->pos;
+
+    for(int power = 1; power <= max_power; power++) {
+        pos = pos + direction;
+        
+        // TODO pit
+        if(_get_unit(pos).first != nullptr) {
+            _kill_unit(pushed, pusher);
+            return;
+        }
+        
+        if(!(_tiles->get_tile(pos).is_passable())) {
+            if(power == 1 || power < max_power) {
+                _kill_unit(pushed, pusher);
+                return;
+            }
+            else {
+                break;
+            }
+        }
+    }
+
+    _move_unit(pushed, pos);
+    _process_unit(pushed, false);
 }
 
 void BattleManagerFastCpp::_process_bow(UnitID unit_id) {
@@ -454,8 +474,9 @@ void BattleManagerFastCpp::_refresh_legal_moves() {
                     }
 
                     auto neighbor_symbol = other_unit->symbol_at_abs_side(flip(side));
+                    auto unit_symbol = unit.sides[0];
 
-                    if(neighbor_symbol.get_defense_force() >= Symbol::MIN_SHIELD_DEFENSE) {
+                    if(neighbor_symbol.holds_ground_against(unit_symbol, true)) {
                         continue;
                     }
                 }
@@ -498,10 +519,10 @@ void BattleManagerFastCpp::_spells_append_moves() {
                 _append_moves_all_tiles(spell.unit, i, true);
                 break;
             case BattleSpell::State::VENGEANCE:
-                _append_moves_unit(spell.unit, i, TeamRelation::ALLY, true);
+                _append_moves_unit(spell.unit, i, TeamRelation::ME, true);
                 break;
             case BattleSpell::State::MARTYR:
-                _append_moves_unit(spell.unit, i, TeamRelation::ALLY, false);
+                _append_moves_unit(spell.unit, i, TeamRelation::ME, false);
                 break;
             case BattleSpell::State::NONE:
             case BattleSpell::State::SENTINEL:
@@ -666,7 +687,7 @@ void BattleManagerFastCpp::_append_moves_all_tiles(UnitID uid, int8_t spell_id, 
     for(int y = 0; y < dims.y; y++) {
         for(int x = 0; x < dims.x; x++) {
             auto pos = Position(x,y);
-            if(include_impassable || (_tiles->get_tile(pos).is_passable() && _unit_cache[pos] == NO_UNIT)) {
+            if(include_impassable || (_tiles->get_tile(pos).is_passable() && _unit_cache.get(pos) == NO_UNIT)) {
                 _moves.emplace_back(uid.unit, pos, spell_id);
             }
         }
@@ -688,7 +709,7 @@ void BattleManagerFastCpp::_append_moves_line(UnitID uid, int8_t spell_id, Posit
     for(int r = range_min; r <= range_max; r++) {
         Position pos = center + DIRECTIONS[dir] * r;
         
-        if(_tiles->get_tile(pos).is_passable() && _unit_cache[pos] == NO_UNIT) {
+        if(_tiles->get_tile(pos).is_passable() && _unit_cache.get(pos) == NO_UNIT) {
             _moves.emplace_back(uid.unit, pos, spell_id);
         }
     }
@@ -712,14 +733,15 @@ bool BattleManagerFastCpp::is_occupied(Position pos, const Army& army, TeamRelat
 void BattleManagerFastCpp::_move_unit(UnitID id, Position pos) {
     auto [unit, army] = _get_unit(id);
 
+    if(_unit_cache.get(pos) != NO_UNIT) {
+        ERR_FAIL_MSG("Unexpected unit during moving - units should be killed manually");
+    }
+
     if(unit->status == UnitStatus::ALIVE) {
         _unit_cache[unit->pos] = NO_UNIT;
     }
 
     unit->pos = pos;
-    if(_unit_cache.get(pos) != NO_UNIT) {
-        ERR_FAIL_MSG("Unexpected unit during moving - units should be killed manually");
-    }
     _unit_cache[pos] = id;
 }
 
@@ -789,10 +811,9 @@ void BattleManagerFastCpp::set_unit_symbol(
     ERR_FAIL_COND_MSG(push_force != 0 && push_force != 1, "Invalid push value (stronger pushes are not yet supported)");
 
     uint8_t flags = (Symbol::FLAG_PARRY & parries) 
-                  | (Symbol::FLAG_COUNTER_ATTACK & is_counter)
-                  | (Symbol::FLAG_PUSH & (push_force == 1));
+                  | (Symbol::FLAG_COUNTER_ATTACK & is_counter);
 
-    _armies[army].units[unit].sides[side] = Symbol(attack_strength, defense_strength, ranged_reach, flags);
+    _armies[army].units[unit].sides[side] = Symbol(attack_strength, defense_strength, push_force, ranged_reach, flags);
 }
 
 void BattleManagerFastCpp::set_army_team(int army, int team) {

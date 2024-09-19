@@ -14,8 +14,8 @@ using godot::Vector2i;
 class CacheGrid {
     using T = UnitID;
 
-    std::vector<T> _grid;
-    Vector2i _dims;
+    std::vector<T> _grid{};
+    Vector2i _dims{};
 public:
     CacheGrid() = default;
     CacheGrid(TileGridFastCpp& tg) 
@@ -27,7 +27,6 @@ public:
     _FORCE_INLINE_ T& operator[](Position pos) {
         unsigned idx = pos.x + pos.y * _dims.x;
         if(idx >= _grid.size()) {
-            raise(SIGINT);
             ERR_FAIL_V_MSG(_err_return_dummy_uid , std::format("Position {},{} not present in CacheGrid", pos.x, pos.y).c_str());
         }
         return _grid[idx];
@@ -69,7 +68,6 @@ public:
         new_cache.update_armies(armies);
         for(int i = 0; i < _grid.size(); i++) {
             if(new_cache._grid[i] != _grid[i]) {
-                raise(SIGINT);
                 ERR_FAIL_V_MSG(false , std::format("CacheGrid mismatch").c_str());
             }
         }

@@ -27,17 +27,17 @@ using godot::Vector2i;
 class BattleManagerFastCpp : public Node {
     GDCLASS(BattleManagerFastCpp, Node);
 
-    int8_t _current_army;
-    int8_t _previous_army;
-    int8_t _cyclone_target;
+    int8_t _current_army = -1;
+    int8_t _previous_army = -1;
+    int8_t _cyclone_target = -1;
     BattleState _state = BattleState::INITIALIZING;
     ArmyList _armies{};
     std::array<BattleSpell, MAX_SPELLS> _spells{};
-    TileGridFastCpp* _tiles;
+    TileGridFastCpp* _tiles = nullptr;
 
-    BattleResult _result;
+    BattleResult _result{};
 
-    CacheGrid _unit_cache;
+    CacheGrid _unit_cache{};
     std::vector<Move> _moves{};
     std::vector<Move> _heuristic_moves{};
     bool _moves_dirty = true;
@@ -47,6 +47,7 @@ class BattleManagerFastCpp : public Node {
 
     void _process_unit(UnitID uid, bool process_kills);
     void _process_bow(UnitID uid);
+    void _process_push(UnitID pushed, UnitID pusher, Position direction, uint8_t max_power);
     void _process_spell(UnitID uid, int8_t spell_id, Position target);
 
     void _spells_append_moves();

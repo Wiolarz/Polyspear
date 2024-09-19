@@ -28,8 +28,9 @@ static func from(bgstate: BattleGridState, tgrid: TileGridFast = null) -> Battle
 	for army_idx in range(bgstate.armies_in_battle_state.size()):
 		var army = bgstate.armies_in_battle_state[army_idx]
 		
-		var team = army.army_reference.controller.team
-		var team_id = team if team == 0 else (army_idx + 1000000)
+		var player_idx = army.army_reference.controller_index
+		var team = IM.get_player_by_index(player_idx).team
+		var team_id = team if team != 0 else (army_idx + 1000000)
 		if team_id not in new.team_mapping:
 			new.team_mapping[team_id] = max_team
 			max_team += 1
@@ -91,7 +92,7 @@ func set_unit_symbol(army_idx: int, unit_idx: int, symbol_idx: int, symbol: E.Sy
 	set_unit_symbol_cpp(
 		army_idx, unit_idx, symbol_idx, 
 		Unit.attack_power(symbol), Unit.defense_power(symbol), Unit.ranged_weapon_reach(symbol),
-		Unit.does_it_counter_attack(symbol), 1 if Unit.can_it_push(symbol) else 0, Unit.does_it_parry(symbol)
+		Unit.does_it_counter_attack(symbol), Unit.push_power(symbol), Unit.does_it_parry(symbol)
 	)
 
 #region Libspear tuple <-> MoveInfo conversion

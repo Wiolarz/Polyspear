@@ -836,7 +836,7 @@ func is_spell_target_valid(unit : Unit, coord : Vector2i, spell : BattleSpell) -
 		"Fireball": # any hex target is valid
 			return true
 		"Teleport": # tile in range that is in front of the caster
-			if get_unit(coord):  # tile has to be empty
+			if get_unit(coord) or not _get_battle_hex(coord).can_be_moved_to:  # tile has to be empty
 				return false
 			
 			if _is_faced_tile_in_range(unit.coord, coord, unit.unit_rotation, 3):

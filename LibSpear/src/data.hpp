@@ -49,20 +49,21 @@ struct Position {
 class Symbol {
     uint8_t _attack_strength = 0;
     uint8_t _defense_strength = 0;
+    uint8_t _push_strength = 0;
     uint8_t _ranged_reach = 0;
     uint8_t _flags = 0;
 
 public:
     static const uint8_t FLAG_COUNTER_ATTACK = 0x01;
-    static const uint8_t FLAG_PUSH = 0x02;
-    static const uint8_t FLAG_PARRY = 0x04;
+    static const uint8_t FLAG_PARRY = 0x02;
     
     static const int MIN_SHIELD_DEFENSE = 2;
 
     Symbol() = default;
-    Symbol(uint8_t attack_strength, uint8_t defense_strength, uint8_t ranged_reach, uint8_t flags) 
+    Symbol(uint8_t attack_strength, uint8_t defense_strength, uint8_t push_force, uint8_t ranged_reach, uint8_t flags) 
         : _attack_strength(attack_strength),
         _defense_strength(defense_strength),
+        _push_strength(push_force),
         _ranged_reach(ranged_reach),
         _flags(flags) 
     {
@@ -99,12 +100,16 @@ public:
         return other_force <= get_defense_force();
     }
 
+    inline bool holds_ground_against(Symbol other, bool active) {
+        return protects_against(other, active) && other.get_push_force() <= 0;
+    }
+
     inline bool dies_to(Symbol other, bool active) {
         return !protects_against(other, active);
     }
     
-    inline bool pushes() {
-        return (_flags & FLAG_PUSH);
+    inline bool get_push_force() {
+        return _push_strength;
     }
 
     inline bool parries() {
