@@ -5,295 +5,295 @@
 
 [sub_resource type="Resource" id="Resource_4rxjm"]
 script = ExtResource("1_r6ovr")
-type = "elf_city"
+type = "city 0"
 texture_path = "res://Art/world_map/elven_city.png"
 flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_dvl46"]
 script = ExtResource("1_r6ovr")
-type = "empty"
+type = "EMPTY"
 texture_path = "res://Art/world_map/grass_basic.png"
 flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_mlpys"]
 script = ExtResource("1_r6ovr")
-type = "ruby_cave"
+type = "outpost ruby"
 texture_path = "res://Art/world_map/ruby_cave.png"
 flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_t4mwh"]
 script = ExtResource("1_r6ovr")
-type = "empty"
+type = "EMPTY"
 texture_path = "res://Art/world_map/grass_basic.png"
 flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_v6cnb"]
 script = ExtResource("1_r6ovr")
-type = "wall"
+type = "WALL"
 texture_path = "res://Art/world_map/mountains.png"
 flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_503yo"]
 script = ExtResource("1_r6ovr")
-type = "wall"
+type = "WALL"
 texture_path = "res://Art/world_map/mountains.png"
 flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_vej3j"]
 script = ExtResource("1_r6ovr")
-type = "ruby_cave"
+type = "outpost ruby"
 texture_path = "res://Art/world_map/ruby_cave.png"
 flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_xkdxi"]
 script = ExtResource("1_r6ovr")
-type = "empty"
+type = "EMPTY"
 texture_path = "res://Art/world_map/grass_basic.png"
 flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_g100i"]
 script = ExtResource("1_r6ovr")
-type = "empty"
+type = "EMPTY"
 texture_path = "res://Art/world_map/road_straight.png"
 flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_i7aod"]
 script = ExtResource("1_r6ovr")
-type = "empty"
+type = "EMPTY"
 texture_path = "res://Art/world_map/grass_basic.png"
 flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_j3146"]
 script = ExtResource("1_r6ovr")
-type = "wall"
+type = "WALL"
 texture_path = "res://Art/world_map/mountains.png"
 flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_up0k1"]
 script = ExtResource("1_r6ovr")
-type = "iron_mine"
+type = "outpost iron"
 texture_path = "res://Art/world_map/iron_mine.png"
 flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_u2lwg"]
 script = ExtResource("1_r6ovr")
-type = "empty"
+type = "EMPTY"
 texture_path = "res://Art/world_map/road_straight.png"
 flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_acj2v"]
 script = ExtResource("1_r6ovr")
-type = "wall"
+type = "WALL"
 texture_path = "res://Art/world_map/mountains.png"
 flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_hsr4i"]
 script = ExtResource("1_r6ovr")
-type = "empty"
+type = "EMPTY"
 texture_path = "res://Art/world_map/road_three_endings.png"
 flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_8110y"]
 script = ExtResource("1_r6ovr")
-type = "empty"
+type = "EMPTY"
 texture_path = "res://Art/world_map/grass_basic.png"
 flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_ie36i"]
 script = ExtResource("1_r6ovr")
-type = "empty"
+type = "EMPTY"
 texture_path = "res://Art/world_map/road_straight.png"
 flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_i2616"]
 script = ExtResource("1_r6ovr")
-type = "wall"
+type = "WALL"
 texture_path = "res://Art/world_map/mountains.png"
 flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_0lr87"]
 script = ExtResource("1_r6ovr")
-type = "empty"
+type = "EMPTY"
 texture_path = "res://Art/world_map/road_straight.png"
 flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_b6h6p"]
 script = ExtResource("1_r6ovr")
-type = "wall"
+type = "WALL"
 texture_path = "res://Art/world_map/mountains.png"
 flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_j3mm4"]
 script = ExtResource("1_r6ovr")
-type = "empty"
+type = "EMPTY"
 texture_path = "res://Art/world_map/road_straight.png"
 flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_hba4a"]
 script = ExtResource("1_r6ovr")
-type = "empty"
+type = "EMPTY"
 texture_path = "res://Art/world_map/road_curved.png"
 flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_0raot"]
 script = ExtResource("1_r6ovr")
-type = "empty"
+type = "EMPTY"
 texture_path = "res://Art/world_map/road_three_endings.png"
 flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_ctr3k"]
 script = ExtResource("1_r6ovr")
-type = "sawmill"
+type = "outpost wood"
 texture_path = "res://Art/world_map/sawmill.png"
 flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_hbkxr"]
 script = ExtResource("1_r6ovr")
-type = "empty"
+type = "EMPTY"
 texture_path = "res://Art/world_map/road_straight.png"
 flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_utefr"]
 script = ExtResource("1_r6ovr")
-type = "wall"
+type = "WALL"
 texture_path = "res://Art/world_map/mountains.png"
 flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_m38ca"]
 script = ExtResource("1_r6ovr")
-type = "empty"
+type = "EMPTY"
 texture_path = "res://Art/world_map/road_straight.png"
 flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_gqaqb"]
 script = ExtResource("1_r6ovr")
-type = "iron_mine"
+type = "outpost iron"
 texture_path = "res://Art/world_map/iron_mine.png"
 flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_dj2ex"]
 script = ExtResource("1_r6ovr")
-type = "empty"
+type = "EMPTY"
 texture_path = "res://Art/world_map/grass_basic.png"
 flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_g0mwg"]
 script = ExtResource("1_r6ovr")
-type = "empty"
+type = "EMPTY"
 texture_path = "res://Art/world_map/road_curved.png"
 flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_aogob"]
 script = ExtResource("1_r6ovr")
-type = "empty"
+type = "EMPTY"
 texture_path = "res://Art/world_map/road_three_endings.png"
 flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_2q5e6"]
 script = ExtResource("1_r6ovr")
-type = "wall"
+type = "WALL"
 texture_path = "res://Art/world_map/mountains.png"
 flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_1nvq6"]
 script = ExtResource("1_r6ovr")
-type = "empty"
+type = "EMPTY"
 texture_path = "res://Art/world_map/road_straight.png"
 flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_568ge"]
 script = ExtResource("1_r6ovr")
-type = "empty"
+type = "EMPTY"
 texture_path = "res://Art/world_map/grass_basic.png"
 flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_ws2pb"]
 script = ExtResource("1_r6ovr")
-type = "empty"
+type = "EMPTY"
 texture_path = "res://Art/world_map/road_straight.png"
 flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_am1cs"]
 script = ExtResource("1_r6ovr")
-type = "empty"
+type = "EMPTY"
 texture_path = "res://Art/world_map/grass_basic.png"
 flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_towtv"]
 script = ExtResource("1_r6ovr")
-type = "wall"
+type = "WALL"
 texture_path = "res://Art/world_map/mountains.png"
 flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_c1vqu"]
 script = ExtResource("1_r6ovr")
-type = "empty"
+type = "EMPTY"
 texture_path = "res://Art/world_map/road_curved.png"
 flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_acwyp"]
 script = ExtResource("1_r6ovr")
-type = "empty"
+type = "EMPTY"
 texture_path = "res://Art/world_map/road_three_endings.png"
 flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_ivvqf"]
 script = ExtResource("1_r6ovr")
-type = "empty"
+type = "EMPTY"
 texture_path = "res://Art/world_map/grass_basic.png"
 flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_b38jq"]
 script = ExtResource("1_r6ovr")
-type = "empty"
+type = "EMPTY"
 texture_path = "res://Art/world_map/road_straight.png"
 flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_cbkrs"]
 script = ExtResource("1_r6ovr")
-type = "empty"
+type = "EMPTY"
 texture_path = "res://Art/world_map/grass_basic.png"
 flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_k1isd"]
 script = ExtResource("1_r6ovr")
-type = "empty"
+type = "EMPTY"
 texture_path = "res://Art/world_map/grass_basic.png"
 flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_44pku"]
 script = ExtResource("1_r6ovr")
-type = "sawmill"
+type = "outpost wood"
 texture_path = "res://Art/world_map/sawmill.png"
 flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_co4b6"]
 script = ExtResource("1_r6ovr")
-type = "iron_mine"
+type = "outpost iron"
 texture_path = "res://Art/world_map/iron_mine.png"
 flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_3muoy"]
 script = ExtResource("1_r6ovr")
-type = "empty"
+type = "EMPTY"
 texture_path = "res://Art/world_map/road_curved.png"
 flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_o4rad"]
 script = ExtResource("1_r6ovr")
-type = "empty"
+type = "EMPTY"
 texture_path = "res://Art/world_map/road_three_endings.png"
 flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_nwe6x"]
 script = ExtResource("1_r6ovr")
-type = "empty"
+type = "EMPTY"
 texture_path = "res://Art/world_map/grass_basic.png"
 flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_26alf"]
 script = ExtResource("1_r6ovr")
-type = "orc_city"
+type = "city 1"
 texture_path = "res://Art/world_map/orc_city.png"
 flip_horizontal = false
 
