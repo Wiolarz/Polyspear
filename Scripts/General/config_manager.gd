@@ -160,6 +160,7 @@ var debug_check_bmfast_integrity := true
 var debug_check_bmfast_internals := true
 var debug_mcts_max_saved_fail_replays := 16
 var debug_mcts_save_failed_replays_to_file := true
+var debug_save_failed_bmfast_integrity := true
 
 #endregion
 

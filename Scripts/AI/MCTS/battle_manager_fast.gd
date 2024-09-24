@@ -149,8 +149,8 @@ func check_integrity_before_move(bgs: BattleGridState, move: MoveInfo):
 	
 	set_debug_internals(true)
 	
-	assert(compare_move_list(bgs), "BMFast Integrity check failed before move - check error log for details")
-	assert(compare_grid_state(bgs), "BMFast Integrity check failed before move - check error log for details")
+	assert_integrity_check(compare_move_list(bgs), "Integrity check failed before move")
+	assert_integrity_check(compare_grid_state(bgs), "Integrity check failed before move")
 	
 	if move.move_type == MoveInfo.TYPE_SUMMON: # Do not check summon after move
 		move = null
@@ -158,7 +158,7 @@ func check_integrity_before_move(bgs: BattleGridState, move: MoveInfo):
 	
 	var unit = bgs.get_unit(move.move_source)
 	var unit_id = bgs.armies_in_battle_state[bgs.current_army_index].units.find(unit)
-	assert(unit_id != -1, "BMFast Integrity check failed before move - unit on coords %s not found in fast" % move.move_source)
+	assert_integrity_check(unit_id != -1, "BMFast Integrity check failed before move - unit on coords %s not found in fast" % move.move_source)
 	
 	play_move(move_info_to_libspear_tuple(move))
 	_integrity_check_move = move
@@ -170,7 +170,14 @@ func check_integrity_after_move(bgs: BattleGridState):
 	#assert(compare_move_list(bgs), "BMFast Integrity check failed after move")
 	
 	if _integrity_check_move: # Only check ongoing battle moves
-		assert(compare_grid_state(bgs), "BMFast Integrity check failed after move - check error log for details")
+		assert_integrity_check(compare_grid_state(bgs), "Integrity check failed after move")
+
+
+func assert_integrity_check(condition: bool, message: String):
+	if not condition:
+		if CFG.debug_save_failed_bmfast_integrity:
+			BM._replay_data.save_as("BMFast Mismatch")
+		assert(false, "BMFast - %s  - check error log for details" % [message])
 
 
 func compare_grid_state(bgs: BattleGridState) -> bool:
