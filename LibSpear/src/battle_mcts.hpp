@@ -6,7 +6,6 @@
 #endif
 
 #include "battle_manager_fast.hpp"
-#include <optional>
 #include <unordered_map>
 
 #include "godot_cpp/core/object.hpp"

@@ -6,9 +6,8 @@
 #endif
 
 #include <stdint.h>
+#include <stdio.h>
 #include <array>
-#include <algorithm>
-#include <string>
 
 #include "godot_cpp/variant/vector2i.hpp"
 #include "godot_cpp/variant/string.hpp"

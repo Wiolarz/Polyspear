@@ -1,4 +1,5 @@
 #include "tile_grid_fast.hpp"
+#include <algorithm>
 
 
 void TileGridFastCpp::set_tile(Position pos, Tile type) {

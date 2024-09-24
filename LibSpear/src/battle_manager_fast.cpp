@@ -1,12 +1,9 @@
 #include "battle_manager_fast.hpp"
 #include "godot_cpp/core/class_db.hpp"
-#include "battle_mcts.hpp"
  
-#include <algorithm>
 #include <stdlib.h>
 #include <random>
 #include <csignal>
-#include <format>
 
 
 #define CHECK_UNIT(idx, ret) ERR_FAIL_COND_V_MSG(idx >= MAX_UNITS_IN_ARMY, ret, std::format("BMFast - invalid unit id {}", idx).c_str())
@@ -507,9 +504,7 @@ void BattleManagerFastCpp::_refresh_legal_moves() {
             }
         }
     }
-    else {
-        WARN_PRINT("Trying to get moves in an invalid state");
-    }
+    // else battle finished, no moves possible
 }
 
 void BattleManagerFastCpp::_spells_append_moves() {

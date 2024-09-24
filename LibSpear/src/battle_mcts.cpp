@@ -4,18 +4,13 @@
 #include <assert.h>
 #include <limits>
 #include <utility>
-#include <random>
 #include <algorithm>
-#include <numeric>
-#include <thread>
-#include <signal.h>
 #include <chrono>
 
 #include "BS_thread_pool.hpp"
 
 
 BS::thread_pool mcts_workers;
-std::mutex mcts_lock;
 
 BattleMCTSNode::BattleMCTSNode(BattleManagerFastCpp bm, BattleMCTSManager* manager, BattleMCTSNode* parent, Move move) 
     : _bm(bm),

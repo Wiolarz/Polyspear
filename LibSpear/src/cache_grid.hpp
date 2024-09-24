@@ -6,7 +6,6 @@
 #include "godot_cpp/core/error_macros.hpp"
 #include "godot_cpp/variant/vector2i.hpp"
 #include <format>
-#include <signal.h>
 
 using godot::Vector2i;
 

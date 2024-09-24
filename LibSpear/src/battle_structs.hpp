@@ -3,8 +3,6 @@
 
 #include <stdint.h>
 #include <array>
-#include <vector>
-#include <algorithm>
 #include "godot_cpp/variant/array.hpp"
 #include "godot_cpp/variant/vector2i.hpp"
 #include "godot_cpp/variant/variant.hpp"

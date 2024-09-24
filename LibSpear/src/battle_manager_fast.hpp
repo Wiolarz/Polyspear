@@ -6,12 +6,10 @@
 #endif
 
 #include "godot_cpp/classes/node.hpp"
-#include "godot_cpp/core/class_db.hpp"
 #include "godot_cpp/variant/vector2i.hpp"
 #include <stdint.h>
 #include <array>
 #include <vector>
-#include <algorithm>
 
 #include "data.hpp"
 #include "battle_structs.hpp"
