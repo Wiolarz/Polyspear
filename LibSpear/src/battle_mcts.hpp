@@ -12,8 +12,8 @@
 #include "godot_cpp/core/object.hpp"
 
 
-#define DEFINE_MCTS_PARAMETER(type, name) \
-    type name = -1; \
+#define DEFINE_MCTS_PARAMETER(type, name, unset_value) \
+    type name = unset_value; \
     inline type get_##name () const {return name;} \
     inline void set_##name (const type new_##name) {name = new_##name;} 
 
@@ -30,6 +30,7 @@ class BattleMCTSNode {
     BattleMCTSNode* _parent = nullptr;
     std::unordered_map<Move, BattleMCTSNode> _children{};
     BattleManagerFastCpp _bm;
+    Move _move;
 
     unsigned _mcts_iterations = 0;
     float _reward = 0.0f;
@@ -41,7 +42,7 @@ class BattleMCTSNode {
     friend class BattleMCTSManager;
 
 public:
-    BattleMCTSNode(BattleManagerFastCpp bm, BattleMCTSManager* manager, BattleMCTSNode* parent);
+    BattleMCTSNode(BattleManagerFastCpp bm, BattleMCTSManager* manager, BattleMCTSNode* parent, Move _move);
     ~BattleMCTSNode() = default;
 
     float uct() const;
@@ -63,17 +64,21 @@ public:
 class BattleMCTSManager : public Node {
     GDCLASS(BattleMCTSManager, Node);
 
-    DEFINE_MCTS_PARAMETER(int, max_sim_iterations);
-    DEFINE_MCTS_PARAMETER(float, heuristic_probability);
-    DEFINE_MCTS_PARAMETER(float, heuristic_prior_reward_per_iteration);
-    DEFINE_MCTS_PARAMETER(int, max_playouts_per_visit);
+    DEFINE_MCTS_PARAMETER(int, max_sim_iterations, -1);
+    DEFINE_MCTS_PARAMETER(float, heuristic_probability, -1);
+    DEFINE_MCTS_PARAMETER(float, heuristic_prior_reward_per_iteration, -1);
+    DEFINE_MCTS_PARAMETER(int, max_playouts_per_visit, -1);
+    DEFINE_MCTS_PARAMETER(bool, debug_bmfast_internals, false);
+    DEFINE_MCTS_PARAMETER(int, debug_max_saved_fail_replays, -1);
 
     // i wanted it to not be a pointer, but c++ was stronger
     BattleMCTSNode* root = nullptr;
     int army_team;
     int army_id;
+    godot::Array error_playouts;
 
-    friend BattleResult _simulate_thread(BattleManagerFastCpp bm, const BattleMCTSManager& mcts);
+
+    friend BattleResult _simulate_thread(BattleManagerFastCpp bmnew, BattleMCTSManager& mcts, const BattleMCTSNode& node);
     friend class BattleMCTSNode;
     
 protected:
@@ -89,8 +94,17 @@ public:
 
     /// Get the optimal move. Return zero unit/position on fail
     Move get_optimal_move(int nth_best_move);
-
     godot::Array get_optimal_move_gd(int nth_best_move);
+
+    /// Add an error playout, based on a node and a list of extra moves from a playout
+    void add_error_playout(const BattleMCTSNode& node, std::vector<Move> extra_moves);
+    
+    /// Return an array of arrays of moves (as LibSpear tuples) of playouts that encountered internal errors
+    godot::Array get_error_replays();
+
+    inline bool should_save_replays() {
+        return error_playouts.size() < debug_max_saved_fail_replays;
+    }
 };
 
 

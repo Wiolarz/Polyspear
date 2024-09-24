@@ -22,6 +22,7 @@ using Score = int16_t;
 
 struct BattleResult {
     int8_t winner_team = -1;
+    bool error = false;
     std::array<Score, MAX_ARMIES> max_scores{0};
     std::array<Score, MAX_ARMIES> total_scores{0};
     std::array<Score, MAX_ARMIES> score_gained{0};

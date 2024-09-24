@@ -46,6 +46,13 @@ int BattleManagerFastCpp::play_move_gd(godot::Array libspear_tuple) {
     return ret.winner_team;
 }
 
+int BattleManagerFastCpp::play_moves(godot::Array libspear_tuples) {
+    for(int i = 0; i < libspear_tuples.size(); i++) {
+        play_move_gd(libspear_tuples[i]);
+    }
+    return _result.winner_team;
+}
+
 BattleResult BattleManagerFastCpp::_play_move(unsigned unit_id, Vector2i pos, int8_t spell_id) {
     _moves_dirty = true;
     _heuristic_moves_dirty = true;
@@ -143,7 +150,9 @@ BattleResult BattleManagerFastCpp::_play_move(unsigned unit_id, Vector2i pos, in
 
     // Test whether all cache updates are correct
     if(_debug_internals) {
-        _unit_cache.self_test(_armies);
+        if(!_unit_cache.self_test(_armies)) {
+            _result.error = true;
+        }
     }
 
     return _result;
@@ -177,7 +186,9 @@ void BattleManagerFastCpp::_process_unit(UnitID unit_id, bool process_kills) {
             }
 
             auto direction = neighbor->pos - unit->pos;
-            _process_push(neighbor_id, unit_id, direction, unit_symbol.get_push_force());
+            if(neighbor->status != UnitStatus::DEAD && unit_symbol.get_push_force() > 0) {
+                _process_push(neighbor_id, unit_id, direction, unit_symbol.get_push_force());
+            }
         }
     }
 
@@ -387,6 +398,7 @@ int BattleManagerFastCpp::get_winner_team() {
     if(teams_alive == 0) {
         ERR_PRINT("C++ Assertion failed: no teams alive after battle, should not be possible");
         _state = BattleState::FINISHED;
+        _result.error = true;
         return -2;
     }
 
@@ -733,7 +745,13 @@ bool BattleManagerFastCpp::is_occupied(Position pos, const Army& army, TeamRelat
 void BattleManagerFastCpp::_move_unit(UnitID id, Position pos) {
     auto [unit, army] = _get_unit(id);
 
+    if(unit == nullptr || unit->status == UnitStatus::DEAD) {
+        _result.error = true;
+        ERR_FAIL_MSG("Trying to move a dead or non-existent unit");
+    }
+
     if(_unit_cache.get(pos) != NO_UNIT) {
+        _result.error = true;
         ERR_FAIL_MSG("Unexpected unit during moving - units should be killed manually");
     }
 
@@ -747,7 +765,10 @@ void BattleManagerFastCpp::_move_unit(UnitID id, Position pos) {
 
 void BattleManagerFastCpp::_kill_unit(UnitID id, UnitID killer_id) {
     auto [unit, army] = _get_unit(id);
-    ERR_FAIL_COND_MSG(unit == nullptr, "Trying to kill a non-existent unit");
+    if(unit == nullptr || unit->status != UnitStatus::ALIVE) {
+        _result.error = true;
+        ERR_FAIL_COND_MSG(unit == nullptr, "Trying to kill a dead or non-existent unit");
+    }
     auto victim_team = army->team;
 
 
@@ -939,6 +960,7 @@ void BattleManagerFastCpp::_bind_methods() {
     ClassDB::bind_method(D_METHOD("force_battle_sacrifice"), &BattleManagerFastCpp::force_battle_sacrifice);
     ClassDB::bind_method(D_METHOD("finish_initialization"), &BattleManagerFastCpp::finish_initialization);
     ClassDB::bind_method(D_METHOD("play_move", "libspear_tuple"), &BattleManagerFastCpp::play_move_gd);
+    ClassDB::bind_method(D_METHOD("play_moves", "libspear_tuples"), &BattleManagerFastCpp::play_moves);
 
     ClassDB::bind_method(D_METHOD("get_unit_position", "army", "unit"), &BattleManagerFastCpp::get_unit_position);
     ClassDB::bind_method(D_METHOD("get_unit_rotation", "army", "unit"), &BattleManagerFastCpp::get_unit_rotation);
@@ -948,11 +970,13 @@ void BattleManagerFastCpp::_bind_methods() {
     ClassDB::bind_method(D_METHOD("get_legal_moves"), &BattleManagerFastCpp::get_legal_moves_gd);
     ClassDB::bind_method(D_METHOD("get_unit_id_on_position", "position"), &BattleManagerFastCpp::get_unit_id_on_position);
     ClassDB::bind_method(D_METHOD("is_in_sacrifice_phase"), &BattleManagerFastCpp::is_in_sacrifice_phase);
+    ClassDB::bind_method(D_METHOD("is_in_summoning_phase"), &BattleManagerFastCpp::is_in_summoning_phase);
     ClassDB::bind_method(D_METHOD("get_unit_vengeance", "army", "unit"), &BattleManagerFastCpp::get_unit_vengeance);
     ClassDB::bind_method(D_METHOD("get_unit_martyr_id", "army", "unit"), &BattleManagerFastCpp::get_unit_martyr_id);
     ClassDB::bind_method(D_METHOD("get_unit_martyr_team", "army", "unit"), &BattleManagerFastCpp::get_unit_martyr_team);
     ClassDB::bind_method(D_METHOD("count_spell", "name"), &BattleManagerFastCpp::count_spell);
     ClassDB::bind_method(D_METHOD("get_unit_spell_count", "army", "unit"), &BattleManagerFastCpp::get_unit_spell_count);
+    ClassDB::bind_method(D_METHOD("get_max_units_in_army"), &BattleManagerFastCpp::get_max_units_in_army);
 
     ClassDB::bind_method(D_METHOD("set_debug_internals", "name"), &BattleManagerFastCpp::set_debug_internals);
 }

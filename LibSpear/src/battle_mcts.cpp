@@ -15,12 +15,13 @@
 
 
 BS::thread_pool mcts_workers;
+std::mutex mcts_lock;
 
-
-BattleMCTSNode::BattleMCTSNode(BattleManagerFastCpp bm, BattleMCTSManager* manager, BattleMCTSNode* parent) 
+BattleMCTSNode::BattleMCTSNode(BattleManagerFastCpp bm, BattleMCTSManager* manager, BattleMCTSNode* parent, Move move) 
     : _bm(bm),
       _manager(manager),
-      _parent(parent)
+      _parent(parent),
+      _move(move)
 {
     
 }
@@ -68,7 +69,7 @@ void BattleMCTSNode::expand() {
     if(_children.count(move) == 0) {
         _children.emplace(std::piecewise_construct,
                 std::forward_as_tuple(move), 
-                std::forward_as_tuple(_bm, _manager, this)
+                std::forward_as_tuple(_bm, _manager, this, move)
         );
         auto& child = _children.at(move);
         child._bm.play_move(move);
@@ -82,17 +83,40 @@ void BattleMCTSNode::expand() {
     }
 }
 
-BattleResult _simulate_thread(BattleManagerFastCpp bmnew, const BattleMCTSManager& mcts) {
-    BattleResult result;
+BattleResult _simulate_thread(BattleManagerFastCpp bmnew, BattleMCTSManager& mcts, const BattleMCTSNode& node) {
+    BattleResult* result;
     Move move;
     int i = 0;
 
-    do {
-        move = bmnew.get_random_move(mcts.heuristic_probability).first;
-        i++;
-    } while((result = bmnew.play_move(move)).winner_team == -1 && i < mcts.max_sim_iterations);
+    auto save_replay = false;
+    std::vector<Move> replay;
 
-    return result;
+    float heuristic_probability, max_sim_iterations;
+    bool should_save_replays;
+
+    heuristic_probability = mcts.heuristic_probability;
+    max_sim_iterations = mcts.max_sim_iterations;
+    should_save_replays = mcts.should_save_replays();
+
+    do {
+        move = bmnew.get_random_move(heuristic_probability).first;
+        if(!save_replay && should_save_replays) {
+            replay.push_back(move);
+        }
+
+        bmnew.play_move(move);
+        result = &bmnew.get_result();
+        if(result->error) {
+            save_replay = true;
+        }
+
+    } while(result->winner_team == -1 && !result->error && i++ < max_sim_iterations);
+
+    if(save_replay && should_save_replays) {
+        mcts.add_error_playout(node, replay);
+    }
+
+    return *result;
 }
 
 BattleResult BattleMCTSNode::simulate(int max_sim_iterations, int simulations) {
@@ -106,7 +130,7 @@ BattleResult BattleMCTSNode::simulate(int max_sim_iterations, int simulations) {
 
     for(int i = 0; i < simulations; i++) {
         results.push_back(mcts_workers.submit_task([*this]() {
-            return _simulate_thread(_bm, *this->_manager);
+            return _simulate_thread(_bm, *this->_manager, *this);
         }));
     }
 
@@ -158,7 +182,7 @@ bool BattleMCTSNode::is_explored() {
 }
 
 void BattleMCTSManager::iterate(int iterations) {
-    emit_signal("_assert_params_are_set");
+    root->_bm.set_debug_internals(debug_bmfast_internals);
     root->_mcts_iterations = iterations;
     root->iterate(iterations);
     emit_signal("complete");
@@ -231,8 +255,34 @@ godot::Array BattleMCTSManager::get_optimal_move_gd(int nth_best_move) {
     return get_optimal_move(nth_best_move).as_libspear_tuple();
 }
 
+void BattleMCTSManager::add_error_playout(const BattleMCTSNode& node_arg, std::vector<Move> extra_moves) {
+    godot::Array replay;
+    auto node = &node_arg;
+
+    if(!should_save_replays()) {
+        return;
+    }
+
+    while(node->_parent) {
+        replay.push_back(node->_move.as_libspear_tuple());
+        node = node->_parent;
+    }
+
+    replay.reverse();
+    
+    for(auto i : extra_moves) {
+        replay.push_back(i.as_libspear_tuple());
+    }
+
+    error_playouts.push_back(replay);
+}
+
+godot::Array BattleMCTSManager::get_error_replays() {
+    return error_playouts;
+}
+
 void BattleMCTSManager::set_root(BattleManagerFastCpp* bm) {
-    root = new BattleMCTSNode(*bm, this, nullptr);
+    root = new BattleMCTSNode(*bm, this, nullptr, Move());
     army_id = bm->get_current_participant();
     army_team = bm->get_army_team(army_id);
 }
@@ -247,13 +297,15 @@ void BattleMCTSManager::_bind_methods() {
     ClassDB::bind_method(D_METHOD("get_optimal_move", "nth_best_move"), &BattleMCTSManager::get_optimal_move_gd);
     ClassDB::bind_method(D_METHOD("iterate", "iterations"), &BattleMCTSManager::iterate);
     ClassDB::bind_method(D_METHOD("set_root", "battle_manager"), &BattleMCTSManager::set_root);
+    ClassDB::bind_method(D_METHOD("get_error_replays"), &BattleMCTSManager::get_error_replays);
 
     ADD_SIGNAL(MethodInfo("complete"));
-    ADD_SIGNAL(MethodInfo("_assert_params_are_set"));
 
     BIND_MCTS_PARAMETER(Variant::INT, max_sim_iterations);
     BIND_MCTS_PARAMETER(Variant::FLOAT, heuristic_probability);
     BIND_MCTS_PARAMETER(Variant::FLOAT, heuristic_prior_reward_per_iteration);
     BIND_MCTS_PARAMETER(Variant::INT, max_playouts_per_visit);
+    BIND_MCTS_PARAMETER(Variant::BOOL, debug_bmfast_internals);
+    BIND_MCTS_PARAMETER(Variant::INT, debug_max_saved_fail_replays);
 }
 

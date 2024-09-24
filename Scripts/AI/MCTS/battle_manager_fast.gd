@@ -5,9 +5,11 @@ class_name BattleManagerFast extends BattleManagerFastCpp
 
 var _integrity_check_move: MoveInfo
 
-## Maps BMFast's integer IDs to DataUnit (for summons) or Unit (for already summoned)
-var unit_mapping: Array = []
-## Maps BMFast's integer IDs to BattleSpells
+## Maps BMFast's unit IDs (in format [army, unit]) and DataUnit
+var summon_mapping_cpp2gd: Dictionary = {}
+## Maps BMFast's unit IDs (in format [army, unit]) and DataUnit
+var summon_mapping_gd2cpp: Dictionary = {}
+## Maps BMFast's spell IDs to BattleSpells
 var spell_mapping: Array = []
 
 ## Maps team ids to BMFast's team ids (BMFast's team ids must be less than max army number)
@@ -40,6 +42,7 @@ static func from(bgstate: BattleGridState, tgrid: TileGridFast = null) -> Battle
 		
 		var martyrs = []
 		
+		# Alive unit processing
 		for unit_idx in range(army.units.size()):
 			var unit: Unit = army.units[unit_idx]
 			if unit.dead:
@@ -51,8 +54,6 @@ static func from(bgstate: BattleGridState, tgrid: TileGridFast = null) -> Battle
 			
 			for i in range(6):
 				new.set_unit_symbol(army_idx, unit_idx, i, unit.template.symbols[i].type)
-			if army_idx == bgstate.current_army_index:
-				new.unit_mapping.push_back(unit)
 			
 			for spell in unit.spells:
 				new.insert_spell(army_idx, unit_idx, new.spell_mapping.size(), spell.name)
@@ -71,13 +72,17 @@ static func from(bgstate: BattleGridState, tgrid: TileGridFast = null) -> Battle
 		if martyrs.size() == 2:
 			new.set_unit_martyr(army_idx, martyrs[0], martyrs[1])
 	
-		for unit_idx in range(army.units_to_summon.size()):
-			var unit = army.units_to_summon[unit_idx]
-			new.insert_unit(army_idx, unit_idx + army.units.size(), Vector2i.ZERO, 0, true)
+		# Summon processing
+		for summon_idx in range(army.units_to_summon.size()):
+			var unit = army.units_to_summon[summon_idx]
+			var unit_idx = summon_idx + army.units.size()
+			
+			new.insert_unit(army_idx, unit_idx, Vector2i.ZERO, 0, true)
 			for i in range(6):
-				new.set_unit_symbol(army_idx, unit_idx + army.units.size(), i, unit.symbols[i].type)
-			if army_idx == bgstate.current_army_index:
-				new.unit_mapping.push_back(unit)
+				new.set_unit_symbol(army_idx, unit_idx, i, unit.symbols[i].type)
+				
+			new.summon_mapping_cpp2gd[[army_idx, unit_idx]] = unit
+			new.summon_mapping_gd2cpp[unit] = [army_idx, unit_idx]
 
 	new.finish_initialization()
 	
@@ -87,6 +92,7 @@ static func from(bgstate: BattleGridState, tgrid: TileGridFast = null) -> Battle
 		new.force_battle_sacrifice()
 
 	return new
+
 
 func set_unit_symbol(army_idx: int, unit_idx: int, symbol_idx: int, symbol: E.Symbols):
 	set_unit_symbol_cpp(
@@ -101,15 +107,17 @@ func set_unit_symbol(army_idx: int, unit_idx: int, symbol_idx: int, symbol: E.Sy
 func libspear_tuple_to_move_info(tuple: Array) -> MoveInfo:
 	var unit: int = tuple[0]
 	var position: Vector2i = tuple[1]
+	var unit_position = get_unit_position(get_current_participant(), unit)
+	var uid = [get_current_participant(), unit]
 	
 	if is_in_sacrifice_phase():
-		return MoveInfo.make_sacrifice(unit_mapping[unit].coord)
-	elif unit_mapping[unit] is DataUnit: # Summon
-		return MoveInfo.make_summon(unit_mapping[unit], position)
+		return MoveInfo.make_sacrifice(unit_position)
+	elif is_in_summoning_phase():
+		return MoveInfo.make_summon(summon_mapping_cpp2gd[uid], position)
 	elif tuple.size() == 3: # Magic
-		return MoveInfo.make_magic(unit_mapping[unit].coord, position, spell_mapping[tuple[2]])
+		return MoveInfo.make_magic(unit_position, position, spell_mapping[tuple[2]])
 	else:
-		return MoveInfo.make_move(unit_mapping[unit].coord, position)
+		return MoveInfo.make_move(unit_position, position)
 
 func move_info_to_libspear_tuple(move: MoveInfo) -> Array:
 	var unit: int
@@ -117,7 +125,7 @@ func move_info_to_libspear_tuple(move: MoveInfo) -> Array:
 	
 	match move.move_type:
 		MoveInfo.TYPE_SUMMON:
-			unit = unit_mapping.find(move.summon_unit)
+			unit = summon_mapping_gd2cpp[move.summon_unit][1]
 		MoveInfo.TYPE_MOVE:
 			unit = get_unit_id_on_position(move.move_source)[1]
 		MoveInfo.TYPE_SACRIFICE:
@@ -173,7 +181,7 @@ func compare_grid_state(bgs: BattleGridState) -> bool:
 		ret = false
 	
 	for army_id in range(bgs.armies_in_battle_state.size()):
-		var units_nr = 5
+		var units_nr = get_max_units_in_army()
 		var army = bgs.armies_in_battle_state[army_id]
 		
 		assert(army.units.size() + army.units_to_summon.size() <= 5, "No support for more than 5 units in fast BM")
@@ -196,7 +204,7 @@ func compare_grid_state(bgs: BattleGridState) -> bool:
 				ret = false
 			
 			for spell in unit.spells:
-				# TODO check when 
+				# TODO check when there are several instances of the same spell?
 				if count_spell(spell.name) != 1:
 					push_error("BMFast mismatch - unit id ", unit_str, " fast does not have slow spell ", spell.name)
 					ret = false

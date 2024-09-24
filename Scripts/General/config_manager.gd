@@ -156,7 +156,10 @@ const CHESS_CLOCK_BATTLE_TURN_INCREMENT_MS = 2 * 1000
 
 #region Debugging & tests
 
-var debug_check_bmfast_integrity = true
+var debug_check_bmfast_integrity := true
+var debug_check_bmfast_internals := true
+var debug_mcts_max_saved_fail_replays := 16
+var debug_mcts_save_failed_replays_to_file := true
 
 #endregion
 

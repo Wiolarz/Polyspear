@@ -102,10 +102,11 @@ public:
     
     BattleResult play_move(Move move);
     int play_move_gd(godot::Array libspear_tuple);
+    int play_moves(godot::Array libspear_tuple_array);
     
     /// Get winner team, or -1 if the battle has not yet ended. On error returns -2.
     int get_winner_team();
-    inline BattleResult get_result() {return _result;}
+    inline BattleResult& get_result() {return _result;}
 
     const std::vector<Move>& get_legal_moves();
     /// Get legal moves in an array of arrays [[unit, position], ...]
@@ -158,6 +159,10 @@ public:
         return _state == BattleState::SACRIFICE;
     }
 
+    inline bool is_in_summoning_phase() const {
+        return _state == BattleState::SUMMONING;
+    }
+
     inline int get_army_team(int army) const {
         return _armies[army].team;
     }
@@ -172,6 +177,10 @@ public:
 
     inline int get_unit_martyr_team(int army, int idx) const {
         return _armies[army].units[idx].martyr_id.army;
+    }
+
+    inline int get_max_units_in_army() const {
+        return MAX_UNITS_IN_ARMY;
     }
 
     inline bool skip_army(const Army& army, const Army& other_army, TeamRelation relation) const {
