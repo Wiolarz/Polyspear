@@ -14,8 +14,8 @@
 
 
 struct Position {
-    uint8_t x;
-    uint8_t y;
+    int8_t x;
+    int8_t y;
 
     inline Position() : x(0), y(0) {};
     inline Position(uint8_t x, uint8_t y) : x(x), y(y) {};
@@ -107,7 +107,7 @@ public:
         return !protects_against(other, active);
     }
     
-    inline bool get_push_force() {
+    inline int get_push_force() {
         return _push_strength;
     }
 
@@ -146,7 +146,7 @@ class Tile {
     uint8_t _spawning_direction;
 
 public:
-    Tile() : _flags(FORBIDDEN), _spawning_army(-1) {}
+    Tile() : _flags(FORBIDDEN | WALL), _spawning_army(-1) {}
     Tile(bool passable, bool wall, bool swamp, bool mana_well, int army, unsigned direction) :
         _flags(
             (passable ? PASSABLE : 0)

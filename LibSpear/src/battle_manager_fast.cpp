@@ -183,8 +183,9 @@ void BattleManagerFastCpp::_process_unit(UnitID unit_id, bool process_kills) {
             }
 
             auto direction = neighbor->pos - unit->pos;
-            if(neighbor->status != UnitStatus::DEAD && unit_symbol.get_push_force() > 0) {
-                _process_push(neighbor_id, unit_id, direction, unit_symbol.get_push_force());
+            auto push_force = unit_symbol.get_push_force();
+            if(neighbor->status != UnitStatus::DEAD && push_force > 0) {
+                _process_push(neighbor_id, unit_id, direction, push_force);
             }
         }
     }
@@ -213,6 +214,7 @@ void BattleManagerFastCpp::_process_push(UnitID pushed, UnitID pusher, Position 
                 return;
             }
             else {
+                pos = pos - direction;
                 break;
             }
         }
@@ -232,23 +234,27 @@ void BattleManagerFastCpp::_process_bow(UnitID unit_id) {
         }
 
         auto iter = DIRECTIONS[i];
+        auto pos = unit->pos + iter;
 
-        for(auto pos = unit->pos + iter; !(_tiles->get_tile(pos).is_wall()); pos = pos + iter) {
+        for(int range = 1; range <= symbol.get_reach(); range++) {
             auto other_id = _unit_cache.get(pos);
             auto [other, other_army] = _get_unit(other_id);
 
             if(!other && !other_army) {
+                pos = pos + iter;
                 continue;
             }
 
-            if(other_army->team == army->team) {
-                break;
+            if(_tiles->get_tile(pos).is_wall() || other_army->team == army->team) {
+                break; // Unit can't shoot through walls and allies
             }
 
             if(other != nullptr && other->symbol_at_abs_side(flip(i)).dies_to(symbol, true)) {
                 _kill_unit(other_id, unit_id);
                 break;
             }
+            
+            pos = pos + iter;
         }
     }
 }
@@ -824,7 +830,6 @@ void BattleManagerFastCpp::set_unit_symbol(
 ) {
     CHECK_UNIT(unit,);
     CHECK_ARMY(army,);
-    ERR_FAIL_COND_MSG(push_force != 0 && push_force != 1, "Invalid push value (stronger pushes are not yet supported)");
 
     uint8_t flags = (Symbol::FLAG_PARRY & parries) 
                   | (Symbol::FLAG_COUNTER_ATTACK & is_counter);
