@@ -68,6 +68,7 @@ class BattleMCTSManager : public Node {
     DEFINE_MCTS_PARAMETER(float, heuristic_prior_reward_per_iteration, -1);
     DEFINE_MCTS_PARAMETER(int, max_playouts_per_visit, -1);
     DEFINE_MCTS_PARAMETER(bool, debug_bmfast_internals, false);
+    DEFINE_MCTS_PARAMETER(bool, debug_print_move_lists, false);
     DEFINE_MCTS_PARAMETER(int, debug_max_saved_fail_replays, -1);
 
     // i wanted it to not be a pointer, but c++ was stronger
@@ -91,15 +92,18 @@ public:
 
     void iterate(int iterations = 1);
 
-    /// Get the optimal move. Return zero unit/position on fail
-    Move get_optimal_move(int nth_best_move);
-    godot::Array get_optimal_move_gd(int nth_best_move);
+    /// Get the optimal move. Return zero unit/position on fail. 
+    /// The 'reward_per_visit_dither' parameter is described in ai_battle_bot_mcts.gd
+    Move get_optimal_move(float reward_per_visit_dither);
+    godot::Array get_optimal_move_gd(float reward_per_visit_dither);
 
     /// Add an error playout, based on a node and a list of extra moves from a playout
     void add_error_playout(const BattleMCTSNode& node, std::vector<Move> extra_moves);
     
     /// Return an array of arrays of moves (as LibSpear tuples) of playouts that encountered internal errors
     godot::Array get_error_replays();
+
+    void print_move_list();
 
     inline bool should_save_replays() {
         return error_playouts.size() < debug_max_saved_fail_replays;

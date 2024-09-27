@@ -648,7 +648,8 @@ void BattleManagerFastCpp::_refresh_heuristically_good_summon_moves() {
 
 
 std::pair<Move, bool> BattleManagerFastCpp::get_random_move(float heuristic_probability) {
-    static thread_local std::minstd_rand rand_engine;
+    static thread_local std::random_device rand_dev;
+    static thread_local std::minstd_rand rand_engine{rand_dev()};
     static thread_local std::uniform_real_distribution heur_dist(0.0f, 1.0f);
 
     auto heur_chosen = heur_dist(rand_engine) < heuristic_probability;

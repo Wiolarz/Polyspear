@@ -6,6 +6,7 @@
 #include <utility>
 #include <algorithm>
 #include <chrono>
+#include <random>
 
 #include "BS_thread_pool.hpp"
 
@@ -26,7 +27,6 @@ float BattleMCTSNode::uct() const {
 
     if(abs(_visits) < 1e-5f) {
         // not explored, a large number to force exploring it
-        // idea - dither - this + a tiny bit of pseudorandom noise to select a random node vs first/last found
         return 10000.0f;
     }
     auto parent_visits = _parent ? _parent->_visits : _visits;
@@ -216,38 +216,44 @@ void BattleMCTSNode::iterate(int iterations) {
     printf("Iterate finished in %fs\n", seconds.count());
 }
 
-Move BattleMCTSManager::get_optimal_move(int nth_best_move) {
-    // TODO? nth best move
+Move BattleMCTSManager::get_optimal_move(float reward_per_visit_dither) {
+    static thread_local std::random_device rand_dev;
+    static thread_local std::mt19937 rand_engine{rand_dev()};
+    std::uniform_real_distribution<float> dither_dist{0.0, reward_per_visit_dither};
     
-    if(nth_best_move != 0) {
-        ERR_PRINT_ONCE_ED("ERROR - Nth best move is not implemented for BattleMCTSManager yet");
+    if(debug_print_move_lists) {
+        print_move_list();
     }
-
-    for(auto& [move, node] : root->_children) {
-        auto& hm = root->_bm.get_heuristically_good_moves();
-        bool heur_move = std::find(hm.begin(), hm.end(), move) != hm.end();
-        printf("Child %c %d->%d,%d UCT=%f, R/V=%f (reward: %f, visits: %f)\n", 
-                heur_move ? 'H':' ', move.unit, move.pos.x, move.pos.y, 
-                node.uct(), node._reward / node._visits, node._reward, node._visits
-        );
-    }
-    printf("%i/%i/%i\n", root->_wins, root->_draws, root->_loses);
 
     float max_ratio = -1.0f;
     Move chosen;
 
     for(auto& [move, node] : root->_children) {
-        if(node._reward / node._visits > max_ratio) {
+        auto new_ratio = (node._reward / node._visits) + dither_dist(rand_engine);
+        if(new_ratio > max_ratio) {
             chosen = move;
-            max_ratio = node._reward / node._visits;
+            max_ratio = new_ratio;
         }
     }
 
     return chosen;
 }
 
-godot::Array BattleMCTSManager::get_optimal_move_gd(int nth_best_move) {
-    return get_optimal_move(nth_best_move).as_libspear_tuple();
+godot::Array BattleMCTSManager::get_optimal_move_gd(float reward_per_visit_dither) {
+    return get_optimal_move(reward_per_visit_dither).as_libspear_tuple();
+}
+
+void BattleMCTSManager::print_move_list() {
+    for(auto& [move, node] : root->_children) {
+        auto& hm = root->_bm.get_heuristically_good_moves();
+        bool heur_move = std::find(hm.begin(), hm.end(), move) != hm.end();
+
+        printf("Child %c %d->%d,%d UCT=%f, R/V=%f (reward: %f, visits: %f)\n", 
+                heur_move ? 'H':' ', move.unit, move.pos.x, move.pos.y, 
+                node.uct(), node._reward / node._visits, node._reward, node._visits
+        );
+    }
+    printf("%i/%i/%i\n", root->_wins, root->_draws, root->_loses);
 }
 
 void BattleMCTSManager::add_error_playout(const BattleMCTSNode& node_arg, std::vector<Move> extra_moves) {
@@ -289,7 +295,7 @@ BattleMCTSManager::~BattleMCTSManager() {
 }
 
 void BattleMCTSManager::_bind_methods() {
-    ClassDB::bind_method(D_METHOD("get_optimal_move", "nth_best_move"), &BattleMCTSManager::get_optimal_move_gd);
+    ClassDB::bind_method(D_METHOD("get_optimal_move", "reward_per_visit_dither"), &BattleMCTSManager::get_optimal_move_gd);
     ClassDB::bind_method(D_METHOD("iterate", "iterations"), &BattleMCTSManager::iterate);
     ClassDB::bind_method(D_METHOD("set_root", "battle_manager"), &BattleMCTSManager::set_root);
     ClassDB::bind_method(D_METHOD("get_error_replays"), &BattleMCTSManager::get_error_replays);
@@ -301,6 +307,7 @@ void BattleMCTSManager::_bind_methods() {
     BIND_MCTS_PARAMETER(Variant::FLOAT, heuristic_prior_reward_per_iteration);
     BIND_MCTS_PARAMETER(Variant::INT, max_playouts_per_visit);
     BIND_MCTS_PARAMETER(Variant::BOOL, debug_bmfast_internals);
+    BIND_MCTS_PARAMETER(Variant::BOOL, debug_print_move_lists);
     BIND_MCTS_PARAMETER(Variant::INT, debug_max_saved_fail_replays);
 }
 

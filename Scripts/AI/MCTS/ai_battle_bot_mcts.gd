@@ -13,6 +13,10 @@ class_name AIBattleBotMCTS extends AIInterface
 ## Higher value yields better performance on multicore systems
 ## at the possible expense of accuracy
 @export var max_playouts_per_visit := 32
+## When calculating a move with best reward per visit, add a pseudorandom
+## noise to R/V so that suboptimal moves can be chosen [br]
+## This is useful if the AI is too deterministic
+@export_range(0.0, 1.0) var reward_per_visit_dither := 0.0
 
 var iterate_complete_mutex := Mutex.new()
 var is_iterate_complete: bool = false
@@ -65,7 +69,7 @@ func choose_move(state: BattleGridState) -> MoveInfo:
 		replay.save_as("MCTS Fail %s" % [i])
 		i += 1
 	
-	var tuple = mcts.get_optimal_move(0)
+	var tuple = mcts.get_optimal_move(reward_per_visit_dither)
 	return bm.libspear_tuple_to_move_info(tuple)
 
 func cleanup_after_move():
