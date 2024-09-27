@@ -14,6 +14,8 @@ static func from(bgstate: BattleGridState):
 				not hex.can_shoot_through,
 				hex.swamp,
 				hex.is_mana_tile(),
+				hex.pit,
+				hex.hill,
 				hex.spawn_point_army_idx,
 				hex.spawn_direction
 			)

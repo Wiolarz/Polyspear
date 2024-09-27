@@ -41,8 +41,11 @@ public:
     }
 
     void set_tile(Position pos, Tile tile);
-    inline void set_tile_gd(Vector2i pos, bool passable, bool wall, bool swamp, bool mana_well, int army, unsigned direction) {
-        set_tile(Position(pos.x, pos.y), Tile(passable, wall, swamp, mana_well, army, direction));
+    inline void set_tile_gd(
+            Vector2i pos, bool passable, bool wall, bool swamp, 
+            bool mana_well, bool pit, bool hill, int army, unsigned direction
+    ) {
+        set_tile(Position(pos.x, pos.y), Tile(passable, wall, swamp, mana_well, pit, hill, army, direction));
     }
 
     constexpr const std::vector<Position>& get_spawns(int army) const {

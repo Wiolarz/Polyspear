@@ -98,6 +98,10 @@ BattleResult BattleManagerFastCpp::_play_move(unsigned unit_id, Vector2i pos, in
         if(spell_id == Move::NO_SPELL) {
             auto rot_new = get_rotation(unit.pos, pos);
 
+            if(_tiles->get_tile(pos).is_pit()) {
+                pos = pos + Vector2i(DIRECTIONS[rot_new].x, DIRECTIONS[rot_new].y);
+            }
+
             if(rot_new == 6) {
                 WARN_PRINT("BMFast - target position is not a neighbor\n");
                 return _result;
@@ -214,9 +218,8 @@ void BattleManagerFastCpp::_process_push(UnitID pushed, UnitID pusher, Position 
 
     for(int power = 1; power <= max_power; power++) {
         pos = pos + direction;
-        
-        // TODO pit
-        if(_get_unit(pos).first != nullptr) {
+
+        if(_get_unit(pos).first != nullptr || _tiles->get_tile(pos).is_pit()) {
             _kill_unit(pushed, pusher);
             return;
         }
@@ -491,13 +494,23 @@ void BattleManagerFastCpp::_refresh_legal_moves() {
                 move.unit = unit_id;
                 move.pos = unit.pos + DIRECTIONS[side];
 
+                bool going_across_pit = _tiles->get_tile(move.pos).is_pit();
+                if(going_across_pit) {
+                    if(side == unit.rotation) {
+                        move.pos = move.pos + DIRECTIONS[side];
+                    }
+                    else {
+                        continue;
+                    }
+                }
+
                 if(!_tiles->get_tile(move.pos).is_passable()) {
                     continue;
                 }
                 
                 auto [other_unit, other_army] = _get_unit(move.pos);
                 if(other_unit && other_army) {
-                    if(other_army->team == army.team) {
+                    if(other_army->team == army.team || going_across_pit) {
                         continue;
                     }
 
@@ -507,6 +520,10 @@ void BattleManagerFastCpp::_refresh_legal_moves() {
                     if(neighbor_symbol.holds_ground_against(unit_symbol, true)) {
                         continue;
                     }
+                }
+
+                if(going_across_pit) {
+                    move.pos = move.pos - DIRECTIONS[side];
                 }
 
                 _moves.push_back(move);

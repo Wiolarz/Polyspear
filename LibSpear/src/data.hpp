@@ -14,8 +14,8 @@
 
 
 struct Position {
-    int8_t x;
-    int8_t y;
+    int8_t x{};
+    int8_t y{};
 
     inline Position() : x(0), y(0) {};
     inline Position(uint8_t x, uint8_t y) : x(x), y(y) {};
@@ -88,6 +88,10 @@ public:
     inline int get_reach() {
         return _ranged_reach;
     }
+    
+    inline int get_push_force() {
+        return _push_strength;
+    }
 
     inline bool protects_against(Symbol other, bool active) {
         // Parry disables melee attacks
@@ -105,10 +109,6 @@ public:
 
     inline bool dies_to(Symbol other, bool active) {
         return !protects_against(other, active);
-    }
-    
-    inline int get_push_force() {
-        return _push_strength;
     }
 
     inline bool parries() {
@@ -140,19 +140,23 @@ class Tile {
     static const uint8_t SWAMP = 0x4;
     static const uint8_t FORBIDDEN = 0x8;
     static const uint8_t MANA_WELL = 0x10;
+    static const uint8_t PIT = 0x20;
+    static const uint8_t HILL = 0x40;
 
-    uint8_t _flags;
-    int8_t _spawning_army;
-    uint8_t _spawning_direction;
+    uint8_t _flags{};
+    int8_t _spawning_army{};
+    uint8_t _spawning_direction{};
 
 public:
     Tile() : _flags(FORBIDDEN | WALL), _spawning_army(-1) {}
-    Tile(bool passable, bool wall, bool swamp, bool mana_well, int army, unsigned direction) :
+    Tile(bool passable, bool wall, bool swamp, bool mana_well, bool pit, bool hill, int army, unsigned direction) :
         _flags(
             (passable ? PASSABLE : 0)
           | (wall ? WALL : 0)
           | (swamp ? SWAMP : 0)
           | (mana_well ? MANA_WELL : 0)
+          | (pit ? PIT : 0)
+          | (hill ? HILL : 0)
         ),
         _spawning_army(army),
         _spawning_direction(direction)
@@ -168,6 +172,14 @@ public:
 
     inline bool is_mana_well() {
         return (_flags & MANA_WELL) != 0;
+    }
+
+    inline bool is_hill() {
+        return (_flags & HILL) != 0;
+    }
+
+    inline bool is_pit() {
+        return (_flags & PIT) != 0;
     }
 
     inline int get_spawning_army() {
