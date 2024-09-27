@@ -176,23 +176,36 @@ void BattleManagerFastCpp::_process_unit(UnitID unit_id, bool process_kills) {
             _kill_unit(unit_id, neighbor_id);
             return;
         }
+    }
+    
+    if(!process_kills) {
+        return;
+    }
 
-        if(process_kills) {
-            if(neighbor_symbol.dies_to(unit_symbol, true)) {
-                _kill_unit(neighbor_id, unit_id);
-            }
+    for(int side = 0; side < 6; side++) {
+        auto pos = unit->pos + DIRECTIONS[side];
+        auto neighbor_id = _unit_cache.get(pos);
+        auto [neighbor, enemy_army] = _get_unit(neighbor_id);
 
-            auto direction = neighbor->pos - unit->pos;
-            auto push_force = unit_symbol.get_push_force();
-            if(neighbor->status != UnitStatus::DEAD && push_force > 0) {
-                _process_push(neighbor_id, unit_id, direction, push_force);
-            }
+        if(!neighbor || !enemy_army || neighbor->status != UnitStatus::ALIVE || enemy_army->team == army->team) {
+            continue;
+        }
+
+        auto unit_symbol = unit->symbol_at_abs_side(side);
+        auto neighbor_symbol = neighbor->symbol_at_abs_side(flip(side));
+    
+        if(neighbor_symbol.dies_to(unit_symbol, true)) {
+            _kill_unit(neighbor_id, unit_id);
+        }
+
+        auto direction = neighbor->pos - unit->pos;
+        auto push_force = unit_symbol.get_push_force();
+        if(neighbor->status != UnitStatus::DEAD && push_force > 0) {
+            _process_push(neighbor_id, unit_id, direction, push_force);
         }
     }
 
-    if(process_kills) {
-        _process_bow(unit_id);
-    }
+    _process_bow(unit_id);
 }
 
 void BattleManagerFastCpp::_process_push(UnitID pushed, UnitID pusher, Position direction, uint8_t max_power) {

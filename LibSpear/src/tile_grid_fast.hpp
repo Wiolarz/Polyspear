@@ -34,7 +34,7 @@ public:
     
     _FORCE_INLINE_ Tile get_tile(Position pos) {
         int idx = pos.x + pos.y * _dims.x;
-        if(idx >= _tiles.size()) {
+        if(pos.x < 0 || pos.x >= _dims.x || pos.y < 0 || pos.y >= _dims.y) {
             return Tile();
         }
         return _tiles[idx];

@@ -25,7 +25,7 @@ public:
 
     _FORCE_INLINE_ T& operator[](Position pos) {
         unsigned idx = pos.x + pos.y * _dims.x;
-        if(idx >= _grid.size()) {
+        if(pos.x < 0 || pos.x >= _dims.x || pos.y < 0 || pos.y >= _dims.y) {
             ERR_FAIL_V_MSG(_err_return_dummy_uid , std::format("Position {},{} not present in CacheGrid", pos.x, pos.y).c_str());
         }
         return _grid[idx];
@@ -33,7 +33,7 @@ public:
 
     _FORCE_INLINE_ const T get(Position pos) const {
         unsigned idx = pos.x + pos.y * _dims.x;
-        if(idx >= _grid.size()) {
+        if(pos.x < 0 || pos.x >= _dims.x || pos.y < 0 || pos.y >= _dims.y) {
             return NO_UNIT;
         }
         return _grid[idx];

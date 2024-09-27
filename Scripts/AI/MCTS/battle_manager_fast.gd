@@ -191,15 +191,28 @@ func compare_grid_state(bgs: BattleGridState) -> bool:
 		var units_nr = get_max_units_in_army()
 		var army = bgs.armies_in_battle_state[army_id]
 		
-		assert(army.units.size() + army.units_to_summon.size() <= 5, "No support for more than 5 units in fast BM")
-		for unit_id in range(5):
+		assert(
+			army.units.size() + army.units_to_summon.size() <= get_max_units_in_army(), 
+			"No support for more than %s units in fast BM" % [get_max_units_in_army()]
+		)
+		
+		for unit in army.units:
+			var uid = get_unit_id_on_position(unit.coord)
+			if uid[1] == -1:
+				push_error("BMFast mismatch - unit not present in fast - slow coord: @", unit.coord, "")
+				ret = false
+			elif uid[0] != army_id:
+				push_error("BMFast mismatch - unit on slow coord: @", unit.coord, " belongs to army id ", uid[0], ", expected ", army_id)
+				ret = false
+		
+		for unit_id in range(get_max_units_in_army()):
 			if not is_unit_alive(army_id, unit_id):
 				units_nr -= 1
 				continue # probably no need to check summons/dead
 			
 			var unit: Unit = bgs.get_unit(get_unit_position(army_id, unit_id))
 			if unit == null:
-				push_error("BMFast mismatch - unit not present in slow - fast id:", army_id, ".", unit_id, "(@", get_unit_position(army_id, unit_id), ")")
+				push_error("BMFast mismatch - unit not present in slow - fast id:", army_id, "/", unit_id, " @", get_unit_position(army_id, unit_id), "")
 				ret = false
 				continue
 			
@@ -218,7 +231,7 @@ func compare_grid_state(bgs: BattleGridState) -> bool:
 					
 			if get_unit_spell_count(army_id, unit_id) != unit.spells.size():
 				push_error("BMFast mismatch - spell count for unit %s - fast %s vs slow %s" \
-							% [unit_str ,get_unit_spell_count(army_id, unit_id), unit.spells.size()])
+							% [unit_str, get_unit_spell_count(army_id, unit_id), unit.spells.size()])
 				ret = false
 			
 			var is_martyr = false
