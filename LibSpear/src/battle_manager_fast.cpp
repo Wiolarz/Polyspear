@@ -91,12 +91,14 @@ BattleResult BattleManagerFastCpp::_play_move(unsigned unit_id, Vector2i pos, in
         }
 
         if(end_summon) {
+            _current_army = 0;
             _state = BattleState::ONGOING;
         }
     }
     else if(_state == BattleState::ONGOING) {
         if(spell_id == Move::NO_SPELL) {
             auto rot_new = get_rotation(unit.pos, pos);
+            auto old_pos = unit.pos;
 
             if(_tiles->get_tile(pos).is_pit()) {
                 pos = pos + Vector2i(DIRECTIONS[rot_new].x, DIRECTIONS[rot_new].y);
@@ -110,7 +112,7 @@ BattleResult BattleManagerFastCpp::_play_move(unsigned unit_id, Vector2i pos, in
             unit.rotation = rot_new;
             _process_unit(uid, true);
             
-            if(unit.status == UnitStatus::ALIVE) {
+            if(unit.status == UnitStatus::ALIVE && unit.pos == old_pos) {
                 _move_unit(uid, pos);
                 _process_unit(uid, true);
             }
@@ -172,8 +174,8 @@ void BattleManagerFastCpp::_process_unit(UnitID unit_id, bool process_kills) {
             continue;
         }
 
-        auto unit_symbol = unit->symbol_at_abs_side(side);
-        auto neighbor_symbol = neighbor->symbol_at_abs_side(flip(side));
+        auto unit_symbol = unit->symbol_when_rotated(side);
+        auto neighbor_symbol = neighbor->symbol_when_rotated(flip(side));
 
         // counter/spear
         if(unit_symbol.dies_to(neighbor_symbol, false)) {
@@ -195,8 +197,8 @@ void BattleManagerFastCpp::_process_unit(UnitID unit_id, bool process_kills) {
             continue;
         }
 
-        auto unit_symbol = unit->symbol_at_abs_side(side);
-        auto neighbor_symbol = neighbor->symbol_at_abs_side(flip(side));
+        auto unit_symbol = unit->symbol_when_rotated(side);
+        auto neighbor_symbol = neighbor->symbol_when_rotated(flip(side));
     
         if(neighbor_symbol.dies_to(unit_symbol, true)) {
             _kill_unit(neighbor_id, unit_id);
@@ -244,7 +246,7 @@ void BattleManagerFastCpp::_process_bow(UnitID unit_id) {
     auto [unit, army] = _get_unit(unit_id);
 
     for(int i = 0; i < 6; i++) {
-        auto symbol = unit->symbol_at_abs_side(i);
+        auto symbol = unit->symbol_when_rotated(i);
         if(symbol.get_bow_force() == 0) {
             continue;
         }
@@ -261,13 +263,17 @@ void BattleManagerFastCpp::_process_bow(UnitID unit_id) {
                 continue;
             }
 
-            if(_tiles->get_tile(pos).is_wall() || other_army->team == army->team) {
-                break; // Unit can't shoot through walls and allies
+            if(other_army->team == army->team) {
+                break;
             }
 
-            if(other != nullptr && other->symbol_at_abs_side(flip(i)).dies_to(symbol, true)) {
+            if(other != nullptr && other->symbol_when_rotated(flip(i)).dies_to(symbol, true)) {
                 _kill_unit(other_id, unit_id);
                 break;
+            }
+
+            if(_tiles->get_tile(pos).is_wall()) {
+                break; // Can't shoot past walls, but can shoot enemies on hills
             }
             
             pos = pos + iter;
@@ -504,7 +510,8 @@ void BattleManagerFastCpp::_refresh_legal_moves() {
                     }
                 }
 
-                if(!_tiles->get_tile(move.pos).is_passable()) {
+                auto tile = _tiles->get_tile(move.pos);
+                if(!(tile.is_passable()) && !(tile.is_hill() && side == unit.rotation)) {
                     continue;
                 }
                 
@@ -514,14 +521,15 @@ void BattleManagerFastCpp::_refresh_legal_moves() {
                         continue;
                     }
 
-                    auto neighbor_symbol = other_unit->symbol_at_abs_side(flip(side));
-                    auto unit_symbol = unit.sides[0];
+                    auto neighbor_symbol = other_unit->symbol_when_rotated(flip(side));
+                    auto unit_symbol = unit.front_symbol();
 
                     if(neighbor_symbol.holds_ground_against(unit_symbol, true)) {
                         continue;
                     }
                 }
 
+                // Align so that it is consistent with GDScript moves
                 if(going_across_pit) {
                     move.pos = move.pos - DIRECTIONS[side];
                 }
@@ -552,6 +560,9 @@ void BattleManagerFastCpp::_spells_append_moves() {
         }
         if(spell.state == BattleSpell::State::SENTINEL) {
             break;
+        }
+        if(unit->status == UnitStatus::DEAD) {
+            spell.state = BattleSpell::State::NONE;
         }
 
         switch(spell.state) {
@@ -627,7 +638,7 @@ void BattleManagerFastCpp::_refresh_heuristically_good_summon_moves() {
         }
 
         for(auto& enemy : enemy_army.units) {
-            if(enemy.status == UnitStatus::SUMMONING && enemy.sides[0].get_bow_force() > 0) {
+            if(enemy.status == UnitStatus::SUMMONING && enemy.front_symbol().get_bow_force() > 0) {
                 enemy_has_unsummoned_bowman = true;
                 break;
             }
@@ -638,7 +649,7 @@ void BattleManagerFastCpp::_refresh_heuristically_good_summon_moves() {
     for(auto& m : get_legal_moves()) {
         auto& unit = army.units[m.unit];
 
-        bool is_bowman = unit.sides[0].get_bow_force() > 0;
+        bool is_bowman = unit.front_symbol().get_bow_force() > 0;
         // Behavior when the spawn position is empty
         // At this moment assumes every spawn is not safe from bowman - good for now, but TODO?
         
@@ -653,8 +664,8 @@ void BattleManagerFastCpp::_refresh_heuristically_good_summon_moves() {
             }
 
             for(auto& enemy : enemy_army.units) {
-                bool can_shoot_enemy      = unit.sides[0].protects_against(enemy.sides[0], true);
-                bool enemy_can_shoot_unit = enemy.sides[0].protects_against(unit.sides[0], true);
+                bool can_shoot_enemy      = unit.front_symbol().protects_against(enemy.front_symbol(), true);
+                bool enemy_can_shoot_unit = enemy.front_symbol().protects_against(unit.front_symbol(), true);
 
                 if(enemy.status != UnitStatus::ALIVE || !m.pos.is_in_line_with(enemy.pos)) {
                     continue;
@@ -793,6 +804,12 @@ void BattleManagerFastCpp::_move_unit(UnitID id, Position pos) {
 
     unit->pos = pos;
     _unit_cache[pos] = id;
+    if(_tiles->get_tile(pos).is_swamp()) {
+        unit->flags |= Unit::FLAG_ON_SWAMP;
+    }
+    else {
+        unit->flags &= ~Unit::FLAG_ON_SWAMP;
+    }
 }
 
 void BattleManagerFastCpp::_kill_unit(UnitID id, UnitID killer_id) {
@@ -840,7 +857,7 @@ void BattleManagerFastCpp::_kill_unit(UnitID id, UnitID killer_id) {
         _update_mana();
     }
 
-    if(unit->is_vengeance_active() && killer_id != NO_UNIT) {
+    if(unit->is_vengeance_active() && killer_id != NO_UNIT && get_winner_team() == -1) {
         _kill_unit(killer_id, NO_UNIT);
     }
 }
@@ -852,6 +869,9 @@ void BattleManagerFastCpp::insert_unit(int army, int idx, Vector2i pos, int rota
     _armies[army].units[idx].pos = pos;
     _armies[army].units[idx].rotation = rotation;
     _armies[army].units[idx].status = is_summoning ? UnitStatus::SUMMONING : UnitStatus::ALIVE;
+    if(_tiles->get_tile(pos).is_swamp()) {
+        _armies[army].units[idx].flags |= Unit::FLAG_ON_SWAMP;
+    }
 }
 
 void BattleManagerFastCpp::set_unit_symbol(

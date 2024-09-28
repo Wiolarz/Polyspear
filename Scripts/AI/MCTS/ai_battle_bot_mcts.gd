@@ -64,7 +64,7 @@ func choose_move(state: BattleGridState) -> MoveInfo:
 		var replay: BattleReplay = BM._replay_data.duplicate()
 		var bm_replay_helper = BattleManagerFast.from(state)
 		for move in moves:
-			replay.record_move(bm_replay_helper.libspear_tuple_to_move_info(move), 100)
+			replay.record_move(bm_replay_helper.libspear_tuple_to_move_info(move), 1000000)
 			bm_replay_helper.play_move(move)
 		replay.save_as("MCTS Fail %s" % [i])
 		i += 1

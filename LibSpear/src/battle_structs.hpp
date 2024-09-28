@@ -54,9 +54,20 @@ struct Unit {
     std::array<Symbol, 6> sides{};
 
     static const uint8_t FLAG_VENGEANCE = 0x01;
+    static const uint8_t FLAG_ON_SWAMP = 0x02;
 
-    inline Symbol symbol_at_abs_side(int side) const {
+    inline Symbol symbol_when_rotated(int side) const {
+        if(flags & FLAG_ON_SWAMP) {
+            return Symbol();
+        }
         return sides[(6-rotation + side) % 6];
+    }
+
+    inline Symbol front_symbol() const {
+        if(flags & FLAG_ON_SWAMP) {
+            return Symbol();
+        }
+        return sides[0];
     }
 
     inline bool is_vengeance_active() const {

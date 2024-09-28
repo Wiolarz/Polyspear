@@ -1240,7 +1240,7 @@ class BattleHex:
 			"mana_well":
 				result.mana = true
 			_:
-				pass #TODO push error that tile type is not supported
+				assert(false, "'%s' tile type is not supported" % [data.type])
 
 		return result
 

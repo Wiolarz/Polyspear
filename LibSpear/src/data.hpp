@@ -170,6 +170,10 @@ public:
         return (_flags & WALL) != 0;
     }
 
+    inline bool is_swamp() {
+        return (_flags & SWAMP) != 0;
+    }
+
     inline bool is_mana_well() {
         return (_flags & MANA_WELL) != 0;
     }
