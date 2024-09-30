@@ -139,10 +139,14 @@ func _on_chat_line_edit_text_submitted(new_text):
 				int(array_get.call(args, 2)),
 				int(array_get.call(args, 3))
 			)
+			print("money cheat")
 		if cheat == "fast":
 			if WM.selected_hero:
 				WM.selected_hero.entity.hero.movement_points += 100
 				print("travel cheat")
+		if cheat == "levelup":
+			WM.hero_level_up(int(array_get.call(args, 1)))
+			print("levelup cheat")
 	else:
 		send_chat_message(new_text)
 
