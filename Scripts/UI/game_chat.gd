@@ -133,20 +133,22 @@ func _on_chat_line_edit_text_submitted(new_text):
 	if new_text.length() >= 1 and new_text[0] == '/':
 		var args = new_text.split(" ", false)
 		var cheat = args[0].substr(1).strip_edges().to_lower()
-		if cheat == "money":
-			WM.cheat_money(
-				int(array_get.call(args, 1)),
-				int(array_get.call(args, 2)),
-				int(array_get.call(args, 3))
-			)
-			print("money cheat")
-		if cheat == "fast":
-			if WM.selected_hero:
-				WM.selected_hero.entity.hero.movement_points += 100
+		match cheat:
+			"money":
+				WM.cheat_money(
+					int(array_get.call(args, 1)),
+					int(array_get.call(args, 2)),
+					int(array_get.call(args, 3))
+				)
+				print("money cheat")
+			"fast":
+				WM.hero_speed_cheat(int(array_get.call(args, 1)))
 				print("travel cheat")
-		if cheat == "levelup":
-			WM.hero_level_up(int(array_get.call(args, 1)))
-			print("levelup cheat")
+			"levelup":
+				WM.hero_level_up(int(array_get.call(args, 1)))
+				print("levelup cheat")
+			_:
+				print("unknown cheat")
 	else:
 		send_chat_message(new_text)
 
