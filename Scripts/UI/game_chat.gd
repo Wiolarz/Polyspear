@@ -124,12 +124,21 @@ func _on_message_arrived(content : String):
 
 
 func _on_chat_line_edit_text_submitted(new_text):
+	# TODO: Move it somewhere else
+	var array_get = func (array: PackedStringArray, index: int) \
+		-> String:
+		if array.size() <= index: return ""
+		else: return array[index]
+	
 	if new_text.length() >= 1 and new_text[0] == '/':
-		var cheat = new_text.substr(1).strip_edges().to_lower()
+		var args = new_text.split(" ", false)
+		var cheat = args[0].substr(1).strip_edges().to_lower()
 		if cheat == "money":
-			WM.cheat_money()
-			#WM.current_player.goods.add(Goods.new(100,100,100))
-			print("money cheat")
+			WM.cheat_money(
+				int(array_get.call(args, 1)),
+				int(array_get.call(args, 2)),
+				int(array_get.call(args, 3))
+			)
 		if cheat == "fast":
 			if WM.selected_hero:
 				WM.selected_hero.entity.hero.movement_points += 100

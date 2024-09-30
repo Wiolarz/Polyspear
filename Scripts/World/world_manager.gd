@@ -484,3 +484,12 @@ func callback_combat_started(armies_ : Array, coord_ : Vector2i) -> void:
 
 
 #endregion
+
+#region cheats
+
+func cheat_money(new_wood, new_iron, new_ruby):
+	world_state.get_current_player().goods.add(
+		Goods.new(new_wood, new_iron, new_ruby)
+	)
+
+#endregion
