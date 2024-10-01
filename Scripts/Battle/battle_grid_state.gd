@@ -1257,8 +1257,8 @@ class ArmyInBattleState:
 		result.army_reference = army
 		if army.hero: #TEMP
 			var hero_unit : DataUnit = army.hero.template.data_unit
-			if hero_unit:
-				result.units_to_summon.append(hero_unit)
+			result.units_to_summon.append(hero_unit)
+
 		# unit list
 		for unit : DataUnit in army.units_data:
 			result.units_to_summon.append(unit)

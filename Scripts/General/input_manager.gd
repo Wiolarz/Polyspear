@@ -133,7 +133,6 @@ func _start_game_battle(battle_state : SerializableBattleState):
 func create_army_for(player : Player) -> Army:
 	var army = Army.new()
 	army.controller_index = player.index
-	player.team = player.slot.team
 
 	var hero_data : DataHero = player.slot.selected_hero
 	if hero_data:

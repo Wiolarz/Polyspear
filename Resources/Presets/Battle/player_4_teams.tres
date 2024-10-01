@@ -5,7 +5,7 @@
 [ext_resource type="Resource" uid="uid://lijo3rfcpr7n" path="res://Resources/Battle/Units/Orcs/orc_1_brute.tres" id="5_btdh5"]
 [ext_resource type="Resource" uid="uid://dddn4h4ttpirx" path="res://Resources/Battle/Units/Neutral/iron_golem.tres" id="6_p7kl3"]
 [ext_resource type="Resource" uid="uid://8xis8qlhr7te" path="res://Resources/Battle/Units/Neutral/ruby_bird.tres" id="7_6l73q"]
-[ext_resource type="Resource" uid="uid://dwaj6gcm5loaw" path="res://Resources/Battle/Battle_Maps/4players.tres" id="8_uwmea"]
+[ext_resource type="Resource" uid="uid://bab3p6m72sprh" path="res://Resources/Battle/Battle_Maps/4players.tres" id="8_uwmea"]
 [ext_resource type="Script" path="res://Resources/Presets/preset_battle.gd" id="11_bka4l"]
 
 [sub_resource type="Resource" id="Resource_8gfw6"]
