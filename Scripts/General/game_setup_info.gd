@@ -44,7 +44,13 @@ func set_unit(slot_index : int, unit_index : int, unit_data : DataUnit):
 
 ## Gameplay setting a hero to memory
 func set_hero(slot_index : int, hero_data : DataHero):
-	slots[slot_index].selected_hero = hero_data
+	slots[slot_index].slot_hero = hero_data
+
+
+## Gameplay setting Timer to memory
+func set_timer(slot_index : int, reserve_sec : int, increment_sec : int):
+	slots[slot_index].timer_reserve_sec = reserve_sec
+	slots[slot_index].timer_increment_sec = increment_sec
 
 
 func to_dictionary(local_username : String = "") -> Dictionary:
@@ -63,6 +69,8 @@ func to_dictionary(local_username : String = "") -> Dictionary:
 			"units_list": GameSetupInfo.units_list_prepare_for_network( \
 					slot.units_list),
 			"team": slot.team,
+			"timer_reserve": slot.timer_reserve_sec,
+			"timer_increment": slot.timer_increment_sec,
 		})
 	return result
 
@@ -94,6 +102,12 @@ static func from_dictionary(dict : Dictionary, \
 						GameSetupInfo.units_list_receive_from_network(read_slot["units_list"])
 			if "team" in read_slot and read_slot["team"] is int:
 				new_slot.team = read_slot["team"]
+			
+			if "timer_reserve" in read_slot and read_slot["timer_reserve"] is int:
+				new_slot.timer_reserve_sec = int(read_slot["timer_reserve"])
+			if "timer_increment" in read_slot and read_slot["timer_increment"] is int:
+				new_slot.timer_increment_sec = int(read_slot["timer_increment"])
+
 			result.slots.append(new_slot)
 	return result
 
@@ -228,19 +242,24 @@ class Slot extends RefCounted: # check if this is good base
 	## `String != ""` -> remote player with specified network name [br]
 	var occupier = ""
 
-	## index of color see `CFG.TEAM_COLORS`
-	var color : int = 0
+	## used for some simpleness at player in world
+	var index : int = -1
+
+	var team : int = 0
+
+	var timer_reserve_sec : int = CFG.CHESS_CLOCK_BATTLE_TIME_PER_PLAYER_MS
+	var timer_increment_sec : int = CFG.CHESS_CLOCK_BATTLE_TURN_INCREMENT_MS
 
 	var faction : DataFaction = null
 
 	## for battle only mode
 	var units_list : Array[DataUnit] = [null,null,null,null,null] #TODO refactor to change variable to private as we have a clean getter for it
-	var selected_hero : DataHero = null
+	var slot_hero : DataHero = null
 
-	## used for some simpleness at player in world
-	var index : int = -1
+	## index of color see `CFG.TEAM_COLORS`
+	var color : int = 0
 
-	var team : int = 0
+	
 
 	func _init():
 		if CFG.player_options.use_default_AI_players:

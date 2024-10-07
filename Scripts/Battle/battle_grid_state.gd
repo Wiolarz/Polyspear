@@ -1265,6 +1265,10 @@ class ArmyInBattleState:
 
 			result.mana_points += unit.mana # MANA
 
+		#TEMP
+		result.start_turn_clock_time_left_ms = army.timer_reserve_sec * 1000
+		result.turn_increment_ms = army.timer_increment_sec * 1000
+
 		result.turn_started() # TEMP - FIXME - better init for chess clock
 
 		return result

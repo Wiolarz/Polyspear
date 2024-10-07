@@ -10,6 +10,11 @@ var controller_index : int
 var coord : Vector2i
 
 
+#TEMP
+var timer_reserve_sec : int
+var timer_increment_sec : int
+
+
 func destroy_army():
 	if hero != null:
 		WM.kill_hero(hero)

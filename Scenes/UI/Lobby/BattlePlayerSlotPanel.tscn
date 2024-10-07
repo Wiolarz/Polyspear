@@ -44,7 +44,6 @@ theme_override_constants/separation = 10
 [node name="PlayerInfoPanel" type="Panel" parent="GeneralVContainer/TopBarHContainer"]
 custom_minimum_size = Vector2(150, 0)
 layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_nhatr")
 
 [node name="Label" type="Label" parent="GeneralVContainer/TopBarHContainer/PlayerInfoPanel"]
 layout_mode = 1
@@ -98,7 +97,6 @@ theme_override_constants/separation = 10
 custom_minimum_size = Vector2(150, 30)
 layout_direction = 2
 layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_nhatr")
 
 [node name="Label" type="Label" parent="GeneralVContainer/TopBarHContainerTimer/Timer note"]
 layout_mode = 2
@@ -113,7 +111,7 @@ max_value = 60.0
 value = 3.0
 alignment = 1
 
-[node name="ReserveTime_Sec_Edit2" type="SpinBox" parent="GeneralVContainer/TopBarHContainerTimer"]
+[node name="ReserveTime_Sec_Edit" type="SpinBox" parent="GeneralVContainer/TopBarHContainerTimer"]
 layout_mode = 2
 max_value = 59.0
 alignment = 1
@@ -162,3 +160,6 @@ layout_mode = 2
 [connection signal="pressed" from="GeneralVContainer/TopBarHContainer/ButtonColor" to="." method="_on_button_color_pressed"]
 [connection signal="item_selected" from="GeneralVContainer/TopBarHContainer/OptionButtonTeam" to="." method="_on_option_button_team_item_selected"]
 [connection signal="pressed" from="GeneralVContainer/TopBarHContainer/ButtonLevelUp" to="." method="_on_button_level_up_pressed"]
+[connection signal="value_changed" from="GeneralVContainer/TopBarHContainerTimer/ReserveTime_Min_Edit" to="." method="timer_changed" unbinds=1]
+[connection signal="value_changed" from="GeneralVContainer/TopBarHContainerTimer/ReserveTime_Sec_Edit" to="." method="timer_changed" unbinds=1]
+[connection signal="value_changed" from="GeneralVContainer/TopBarHContainerTimer/IncrementTimeEdit" to="." method="timer_changed" unbinds=1]

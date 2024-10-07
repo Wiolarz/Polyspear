@@ -134,12 +134,16 @@ func create_army_for(player : Player) -> Army:
 	var army = Army.new()
 	army.controller_index = player.index
 
-	var hero_data : DataHero = player.slot.selected_hero
+	var hero_data : DataHero = player.slot.slot_hero
 	if hero_data:
 		var new_hero = Hero.construct_hero(hero_data, player.index)
 		army.hero = new_hero
 
 	army.units_data = player.slot.get_units_list()
+
+	#TEMP
+	army.timer_reserve_sec = player.slot.timer_reserve_sec
+	army.timer_increment_sec = player.slot.timer_increment_sec
 
 	return army
 

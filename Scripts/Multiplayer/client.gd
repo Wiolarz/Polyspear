@@ -97,6 +97,13 @@ func queue_lobby_set_team(slot_index : int, team_index : int):
 			))
 
 
+func queue_lobby_set_timer(slot_index : int, reserve_sec : int, increment_sec : int):
+	queue_message_to_server( \
+			LobbySetTimerCommand.create_packet( \
+				slot_index, reserve_sec, increment_sec \
+			))
+
+
 func queue_request_move(move : MoveInfo):
 	queue_message_to_server(ClientRequestedMoveCommand.create_packet(move))
 
