@@ -585,6 +585,8 @@ func _switch_participant_turn() -> void:
 				cyclone_target.cyclone_timer -= 1
 
 				# end of cyclone timer = 0 | stalemate detection = -1
+				assert(cyclone_target.cyclone_timer >= -1,
+				"_switch_participant_turn()cyclone_target.cyclone_timer < -1" + str(cyclone_target.cyclone_timer))
 				if cyclone_target.cyclone_timer in [0, -1]:  
 					current_army_index = _get_army_index(cyclone_target)
 					state = STATE_SACRIFICE
