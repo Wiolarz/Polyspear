@@ -1,8 +1,10 @@
-[gd_resource type="Resource" script_class="BattleSpell" load_steps=2 format=3 uid="uid://34m12aa1mich"]
+[gd_resource type="Resource" script_class="BattleSpell" load_steps=3 format=3 uid="uid://34m12aa1mich"]
 
 [ext_resource type="Script" path="res://Scripts/Battle/battle_spell.gd" id="1_m0up1"]
+[ext_resource type="Resource" uid="uid://b6gerphgv4qih" path="res://Resources/Battle/Battle_Spells/Battle_Magic_Effects/martyr_effect.tres" id="2_uu874"]
 
 [resource]
 script = ExtResource("1_m0up1")
 name = "Martyr"
 icon_path = "res://Art/items/shields/blue shield.png"
+spell_effects = Array[Resource("res://Scripts/Battle/battle_magic_effect.gd")]([ExtResource("2_uu874")])

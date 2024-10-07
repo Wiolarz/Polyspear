@@ -133,8 +133,6 @@ func move_info_execute(move_info : MoveInfo) -> void:
 			move_info.register_whole_move_complete() # TEMP check what it was supposed to do
 
 	turn_counter += 1
-	currently_processed_move_info = null
-
 
 	_check_battle_end()
 	if battle_is_ongoing():
@@ -578,8 +576,12 @@ func _switch_participant_turn() -> void:
 			while not armies_in_battle_state[current_army_index].can_fight():
 				current_army_index += 1
 				current_army_index %= armies_in_battle_state.size()
+			
+			# new Turn starts -> all player made their moves
+			if prev_idx > current_army_index: 
+				_end_of_turn_magic()
 
-			if prev_idx > current_army_index: # Cyclone timer update
+				# Cyclone timer update
 				cyclone_target.cyclone_timer -= 1
 
 				if cyclone_target.cyclone_timer == 0:
@@ -595,7 +597,11 @@ func _switch_participant_turn() -> void:
 
 	var next_player := armies_in_battle_state[current_army_index]
 	# chess clock is updated in turn_ended() and turn_started()
+	
+	_end_of_move_magic()
+	
 	prev_player.turn_ended()
+
 	next_player.turn_started()
 
 
@@ -704,16 +710,10 @@ func _kill_unit(target : Unit, killer_army : ArmyInBattleState = null) -> void:
 	if replaced_target: # "Martyr" spell quick hack
 		_perform_teleport(replaced_target, new_target_pos)
 
-	# trigger any post death spell efefect
+	# trigger any post death spell effect
 	for spell in target.effects:
-		#spell.enchanted_unit_dies()
-		match spell.name:
-			"Vengeance":
-				#TODO check if this temp solution should be used
-				_kill_unit(currently_active_unit, target_army)
-
-			_:
-				continue
+		#TEMP passing "currently_active_unit" here works only for vengeance
+		spell.apply_effect(currently_active_unit, "post death spell effect")
 
 	mana_values_changed() # TEMP occurs every time after death
 
@@ -838,13 +838,14 @@ func _perform_magic(unit : Unit, target_tile_coord : Vector2i, spell : BattleSpe
 
 	match spell.name:
 		"Vengeance":
-			get_unit(target_tile_coord).effects.append(spell)
-			print(get_unit(target_tile_coord).effects)
+			spell.cast_effect(get_unit(target_tile_coord), "casting")
+			#print(get_unit(target_tile_coord).effects)
 
 		"Martyr":
-			unit.effects.append(spell)  # target as well as caster both get affected
-			get_unit(target_tile_coord).effects.append(spell)
-			print(get_unit(target_tile_coord).effects)
+			# target as well as caster both get affected
+			spell.cast_effect(unit, "casting")
+			spell.cast_effect(get_unit(target_tile_coord), "casting")
+			#print(get_unit(target_tile_coord).effects)
 
 		"Fireball":
 			var enemy_targets : Array[Unit] = []
@@ -881,6 +882,30 @@ func _perform_magic(unit : Unit, target_tile_coord : Vector2i, spell : BattleSpe
 			return
 
 	unit.spells.erase(spell) # Remove to test casting multiple times
+
+
+## spell effects that occur after allmove related event already took place [br]
+## runs for all units
+func _end_of_move_magic() -> void:
+	for army in armies_in_battle_state:
+		for unit : Unit in army.units:
+			for magic_effect in unit.effects:
+				match magic_effect.name:
+					"Death Mark":
+						_kill_unit(unit)
+						break
+			
+
+## STUB for proper countdown system
+## spell effects that occur only after all players made their moves [br]
+## runs for all units
+func _end_of_turn_magic() -> void:
+	for army in armies_in_battle_state:
+		for unit : Unit in army.units:
+			for magic_effect in unit.effects:
+				match magic_effect:
+					_:
+						pass
 
 #endregion Magic
 
