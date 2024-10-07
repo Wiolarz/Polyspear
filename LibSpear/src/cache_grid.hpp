@@ -44,10 +44,10 @@ public:
             i = NO_UNIT;
         }
 
-        for(int army_id = 0; army_id < armies.size(); army_id++) {
+        for(unsigned army_id = 0; army_id < armies.size(); army_id++) {
             auto& army = armies[army_id];
 
-            for(int unit_id = 0; unit_id < army.units.size(); unit_id++) {
+            for(unsigned unit_id = 0; unit_id < army.units.size(); unit_id++) {
                 auto& unit = army.units[unit_id];
 
                 if(unit.status == UnitStatus::ALIVE) {
@@ -65,7 +65,7 @@ public:
     inline bool self_test(ArmyList& armies) {
         CacheGrid new_cache = *this;
         new_cache.update_armies(armies);
-        for(int i = 0; i < _grid.size(); i++) {
+        for(unsigned i = 0; i < _grid.size(); i++) {
             if(new_cache._grid[i] != _grid[i]) {
                 ERR_FAIL_V_MSG(false , std::format("CacheGrid mismatch").c_str());
             }

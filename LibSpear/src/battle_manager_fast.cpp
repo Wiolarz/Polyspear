@@ -1,36 +1,51 @@
 #include "battle_manager_fast.hpp"
 #include "godot_cpp/core/class_db.hpp"
+#include "godot_cpp/core/error_macros.hpp"
  
 #include <stdlib.h>
 #include <random>
 #include <csignal>
 
 
-#define CHECK_UNIT(idx, ret) ERR_FAIL_COND_V_MSG(idx >= MAX_UNITS_IN_ARMY, ret, std::format("BMFast - invalid unit id {}", idx).c_str())
-#define CHECK_ARMY(idx, ret) ERR_FAIL_COND_V_MSG(idx >= MAX_ARMIES, ret, std::format("BMFast - invalid army id {}", idx).c_str())
+#define BM_ASSERT_V(cond, v, ...)                                                   \
+    do {                                                                            \
+        if(!(cond)) {                                                               \
+            WARN_PRINT(std::format("BMFast assert failed: " __VA_ARGS__).c_str());  \
+            _result.error = true; return v;                                         \
+        }                                                                           \
+    } while(0)
+
+#define BM_ASSERT(cond, ...) BM_ASSERT_V(cond, , __VA_ARGS__)
+
+#define CHECK_UNIT(idx, ret) BM_ASSERT_V(unsigned(idx) < MAX_UNITS_IN_ARMY, ret, "Invalid unit id {}", idx)
+#define CHECK_ARMY(idx, ret) BM_ASSERT_V(unsigned(idx) < MAX_ARMIES, ret, "Invalid unit id {}", idx)
+
 
 void BattleManagerFastCpp::finish_initialization() {
-    if(_state == BattleState::INITIALIZING) {
-        _state = BattleState::SUMMONING;
-        for(int i = 0; i < _armies.size(); i++) {
-            _armies[i].id = i;
-            _armies[i].mana_points = 1;
+    BM_ASSERT(_state == BattleState::INITIALIZING, "BMFast already initialized");
 
-            for(auto& unit: _armies[i].units) {
-                if(unit.status != UnitStatus::DEAD) {
-                    _result.total_scores[i] += unit.score;
-                    _result.max_scores[i]   += unit.score;
-                    _armies[i].mana_points += unit.mana;
-                }
+    _state = BattleState::SUMMONING;
+    for(unsigned i = 0; i < _armies.size(); i++) {
+        if(_armies[i].is_defeated()) {
+            continue;
+        }
+        BM_ASSERT(_armies[i].cyclone_timer != -1, "Uninitialized cyclone timer in army {}", i);
+        BM_ASSERT(_armies[i].team != -1, "Uninitialized team id in army {}", i);
+
+        _armies[i].id = i;
+        _armies[i].mana_points = 1;
+
+        for(auto& unit: _armies[i].units) {
+            if(unit.status != UnitStatus::DEAD) {
+                _result.total_scores[i] += unit.score;
+                _result.max_scores[i]   += unit.score;
+                _armies[i].mana_points += unit.mana;
             }
         }
+    }
 
-        _unit_cache.update_armies(_armies);
-        _update_mana();
-    }
-    else {
-        WARN_PRINT("BMFast already initialized");
-    }
+    _unit_cache.update_armies(_armies);
+    _update_mana();
 }
 
 BattleResult BattleManagerFastCpp::play_move(Move move) {
@@ -60,22 +75,18 @@ BattleResult BattleManagerFastCpp::_play_move(unsigned unit_id, Vector2i pos, in
 
     _previous_army = _current_army;
 
-    ERR_FAIL_COND_V_MSG(_state == BattleState::INITIALIZING, _result, "BMFast - Please call finish_initialization() before playing a move");
+    BM_ASSERT_V(_state != BattleState::INITIALIZING, _result, "Please call finish_initialization() before playing a move");
     CHECK_UNIT(unit_id, _result);
+    CHECK_ARMY(_current_army, _result);
     
     UnitID uid = UnitID(_current_army, unit_id);
     auto& unit = _armies[_current_army].units[unit_id];
 
     if(_state == BattleState::SUMMONING) {
-        if(unit.status != UnitStatus::SUMMONING) {
-            WARN_PRINT("BMFast - unit is not in summoning state\n");
-            return _result;
-        }
-
-        if(_tiles->get_tile(pos).get_spawning_army() != _current_army) {
-            WARN_PRINT("BMFast - target spawn does not belong to current army, aborting\n");
-            return _result;
-        }
+        BM_ASSERT_V(unit.status == UnitStatus::SUMMONING, _result, "Unit id {} is not in summoning state", unit_id);
+        BM_ASSERT_V(_tiles->get_tile(pos).get_spawning_army() == _current_army, _result, 
+                "Target spawn {},{} does not belong to current army", pos.x, pos.y
+        );
 
         _move_unit(uid, pos);
         unit.rotation = _tiles->get_tile(pos).get_spawn_rotation();
@@ -104,10 +115,8 @@ BattleResult BattleManagerFastCpp::_play_move(unsigned unit_id, Vector2i pos, in
                 pos = pos + Vector2i(DIRECTIONS[rot_new].x, DIRECTIONS[rot_new].y);
             }
 
-            if(rot_new == 6) {
-                WARN_PRINT("BMFast - target position is not a neighbor\n");
-                return _result;
-            }
+            BM_ASSERT_V(unit.status == UnitStatus::ALIVE, _result, "Trying to move a non-alive unit {} to position {},{}", unit_id, pos.x, pos.y);
+            BM_ASSERT_V(rot_new != 6, _result, "Target position {},{} is not a neighbor", pos.x, pos.y);
 
             unit.rotation = rot_new;
             _process_unit(uid, true);
@@ -133,10 +142,7 @@ BattleResult BattleManagerFastCpp::_play_move(unsigned unit_id, Vector2i pos, in
     }
     else if(_state == BattleState::SACRIFICE) {
         auto& unit = _armies[_current_army].units[unit_id];
-        if(unit.status != UnitStatus::ALIVE) {
-            WARN_PRINT("BMFast - invalid sacrifice\n");
-            return _result;
-        }
+        BM_ASSERT_V(unit.status == UnitStatus::ALIVE, _result, "Invalid sacrifice id {}", unit_id);
         
         auto uid = UnitID(_current_army, unit_id);
         _kill_unit(uid, NO_UNIT);
@@ -153,9 +159,7 @@ BattleResult BattleManagerFastCpp::_play_move(unsigned unit_id, Vector2i pos, in
 
     // Test whether all cache updates are correct
     if(_debug_internals) {
-        if(!_unit_cache.self_test(_armies)) {
-            _result.error = true;
-        }
+        BM_ASSERT_V(_unit_cache.self_test(_armies), _result, "Cache mismatch detected");
     }
 
     return _result;
@@ -216,6 +220,8 @@ void BattleManagerFastCpp::_process_unit(UnitID unit_id, bool process_kills) {
 
 void BattleManagerFastCpp::_process_push(UnitID pushed, UnitID pusher, Position direction, uint8_t max_power) {
     auto [pushed_unit, pushed_army] = _get_unit(pushed);
+    BM_ASSERT(pushed_unit != nullptr, "Invalid pushed unit id {}", pushed.unit);
+
     auto pos = pushed_unit->pos;
 
     for(int power = 1; power <= max_power; power++) {
@@ -330,18 +336,22 @@ void BattleManagerFastCpp::_process_spell(UnitID uid, int8_t spell_id, Position 
             _process_unit(uid, true);
             break;
         case BattleSpell::State::VENGEANCE:
+            BM_ASSERT(_get_unit(uid2).first != nullptr, "Unknown unit id for vengeance spell");
             _get_unit(uid2).first->flags |= Unit::FLAG_VENGEANCE;
             break;
         case BattleSpell::State::MARTYR:
-            _get_unit(uid2).first->martyr_id = uid;
+            BM_ASSERT(_get_unit(uid).first != nullptr, "Unknown unit id for martyr spell");
             _get_unit(uid).first->martyr_id = uid2;
+
+            BM_ASSERT(_get_unit(uid2).first != nullptr, "Unknown unit id for martyr spell");
+            _get_unit(uid2).first->martyr_id = uid;
             break;
         case BattleSpell::State::NONE:
         case BattleSpell::State::SENTINEL:
-            WARN_PRINT("Invalid spell id chosen in a move");
+            BM_ASSERT(false, "Invalid spell id chosen in a move");
             return;
         default:
-            WARN_PRINT("Invalid spell type");
+            BM_ASSERT(false, "Invalid spell type");
             return;
     }
     spell.state = BattleSpell::State::NONE;
@@ -351,7 +361,7 @@ void BattleManagerFastCpp::_process_spell(UnitID uid, int8_t spell_id, Position 
 void BattleManagerFastCpp::_update_mana() {
     int best_idx = -1, worst_idx = -1;
 
-    for(int i = 0; i < _armies.size(); i++) {
+    for(unsigned i = 0; i < _armies.size(); i++) {
         if(!_armies[i].is_defeated()) {
             worst_idx = i;
             break;
@@ -365,7 +375,7 @@ void BattleManagerFastCpp::_update_mana() {
         }
     }
 
-    for(int i = 0; i < _armies.size(); i++) {
+    for(unsigned i = 0; i < _armies.size(); i++) {
         if(_armies[i].is_defeated()) {
             continue;
         }
@@ -381,7 +391,7 @@ void BattleManagerFastCpp::_update_mana() {
 
     auto mana_difference = _armies[best_idx].mana_points - _armies[worst_idx].mana_points;
     auto cyclone_mult = (1 > 5-mana_difference) ? 1 : 5-mana_difference;
-    auto new_cyclone_counter = (_tiles->get_number_of_mana_wells() * 10) * cyclone_mult;
+    int16_t new_cyclone_counter = (_tiles->get_number_of_mana_wells() * 10) * cyclone_mult;
 
     if(_tiles->get_number_of_mana_wells()) {
         new_cyclone_counter = 999;
@@ -405,13 +415,13 @@ int BattleManagerFastCpp::get_winner_team() {
     int teams_alive = MAX_ARMIES;
     std::array<int, MAX_ARMIES> armies_in_teams_alive = {0,0,0,0};
 
-    for(int i = 0; i < _armies.size(); i++) {
+    for(unsigned i = 0; i < _armies.size(); i++) {
         if(!_armies[i].is_defeated()) {
             armies_in_teams_alive[_armies[i].team] += 1;
         }
     }
     
-    for(int i = 0; i < MAX_ARMIES; i++) {
+    for(unsigned i = 0; i < MAX_ARMIES; i++) {
         if(armies_in_teams_alive[i] == 0) {
             teams_alive--;
         }
@@ -420,12 +430,7 @@ int BattleManagerFastCpp::get_winner_team() {
         }
     }
 
-    if(teams_alive == 0) {
-        ERR_PRINT("C++ Assertion failed: no teams alive after battle, should not be possible");
-        _state = BattleState::FINISHED;
-        _result.error = true;
-        return -2;
-    }
+    BM_ASSERT_V(teams_alive > 0, -2, "No teams alive after battle, should not be possible");
 
     if(teams_alive == 1) {
         _state = BattleState::FINISHED;
@@ -477,7 +482,7 @@ void BattleManagerFastCpp::_refresh_legal_moves() {
                 continue;
             }
 
-            for(int i = 0; i < army.units.size(); i++) {
+            for(unsigned i = 0; i < army.units.size(); i++) {
                 if(army.units[i].status != UnitStatus::SUMMONING) {
                     continue;
                 }
@@ -490,7 +495,7 @@ void BattleManagerFastCpp::_refresh_legal_moves() {
     }
     else if(_state == BattleState::ONGOING) {
 
-        for(int unit_id = 0; unit_id < army.units.size(); unit_id++) {
+        for(unsigned unit_id = 0; unit_id < army.units.size(); unit_id++) {
             auto& unit = army.units[unit_id];
             if(unit.status != UnitStatus::ALIVE) {
                 continue;
@@ -541,7 +546,7 @@ void BattleManagerFastCpp::_refresh_legal_moves() {
     }
     else if(_state == BattleState::SACRIFICE) {
         move.pos = Position();
-        for(int i = 0; i < army.units.size(); i++) {
+        for(unsigned i = 0; i < army.units.size(); i++) {
             if(army.units[i].status == UnitStatus::ALIVE) {
                 move.unit = i;
                 _moves.push_back(move);
@@ -552,7 +557,7 @@ void BattleManagerFastCpp::_refresh_legal_moves() {
 }
 
 void BattleManagerFastCpp::_spells_append_moves() {
-    for(int i = 0; i < _spells.size(); i++) {
+    for(unsigned i = 0; i < _spells.size(); i++) {
         auto& spell = _spells[i];
         auto [unit, _army] = _get_unit(spell.unit);
         if(spell.unit.army != _current_army) {
@@ -656,7 +661,7 @@ void BattleManagerFastCpp::_refresh_heuristically_good_summon_moves() {
         // Default - empty tile
         int move_score = (enemy_has_unsummoned_bowman || is_bowman) ? 0 : 1;
 
-        for(int enemy_army_id = 0; enemy_army_id < _armies.size(); enemy_army_id++) {
+        for(unsigned enemy_army_id = 0; enemy_army_id < _armies.size(); enemy_army_id++) {
             auto& enemy_army = _armies[enemy_army_id];
 
             if(enemy_army.team == army.team) {
@@ -670,7 +675,7 @@ void BattleManagerFastCpp::_refresh_heuristically_good_summon_moves() {
                 if(enemy.status != UnitStatus::ALIVE || !m.pos.is_in_line_with(enemy.pos)) {
                     continue;
                 }
-                if(enemy_can_shoot_unit && !(can_shoot_enemy && _current_army > enemy_army_id) ) {
+                if(enemy_can_shoot_unit && !(can_shoot_enemy && _current_army > int(enemy_army_id)) ) {
                     move_score = -100000;
                     break;
                 }
@@ -696,7 +701,7 @@ std::pair<Move, bool> BattleManagerFastCpp::get_random_move(float heuristic_prob
     auto heur_chosen = heur_dist(rand_engine) < heuristic_probability;
     auto moves_arr = heur_chosen ? get_heuristically_good_moves() : get_legal_moves();
 
-    ERR_FAIL_COND_V_MSG(moves_arr.size() == 0, std::make_pair(Move{}, false), "BMFast - get_random_move has 0 moves to choose");
+    BM_ASSERT_V(moves_arr.size() != 0, std::make_pair(Move{}, false), "BMFast - get_random_move has 0 moves to choose");
     
     std::uniform_int_distribution dist{0, int(moves_arr.size() - 1)};
     auto move = dist(rand_engine);
@@ -704,7 +709,7 @@ std::pair<Move, bool> BattleManagerFastCpp::get_random_move(float heuristic_prob
     return std::make_pair(moves_arr[move], heur_chosen);
 }
 
-int BattleManagerFastCpp::get_move_count() {
+unsigned BattleManagerFastCpp::get_move_count() {
     return get_legal_moves().size();
 }
 
@@ -726,9 +731,9 @@ void BattleManagerFastCpp::_append_moves_unit(UnitID uid, int8_t spell_id, TeamR
             continue;
         }
 
-        for(int i = 0; i < other_army.units.size(); i++) {
+        for(unsigned i = 0; i < other_army.units.size(); i++) {
             auto& unit = other_army.units[i];
-            if(unit.status != UnitStatus::ALIVE || (!include_self && i == uid.unit)) {
+            if(unit.status != UnitStatus::ALIVE || (!include_self && int(i) == uid.unit)) {
                 continue;
             }
 
@@ -756,7 +761,7 @@ void BattleManagerFastCpp::_append_moves_lines(UnitID uid, int8_t spell_id, Posi
     }
 
     for(int dir = 0; dir < 6; dir++) {
-        _append_moves_line(uid, spell_id, center, dir, range_min, range_max);
+        _append_moves_line(uid, spell_id, center, dir, range_min_real, range_max);
     }
 }
 
@@ -788,15 +793,8 @@ bool BattleManagerFastCpp::is_occupied(Position pos, const Army& army, TeamRelat
 void BattleManagerFastCpp::_move_unit(UnitID id, Position pos) {
     auto [unit, army] = _get_unit(id);
 
-    if(unit == nullptr || unit->status == UnitStatus::DEAD) {
-        _result.error = true;
-        ERR_FAIL_MSG("Trying to move a dead or non-existent unit");
-    }
-
-    if(_unit_cache.get(pos) != NO_UNIT) {
-        _result.error = true;
-        ERR_FAIL_MSG("Unexpected unit during moving - units should be killed manually");
-    }
+    BM_ASSERT(unit != nullptr && unit->status != UnitStatus::DEAD, "Trying to move a dead or non-existent unit");
+    BM_ASSERT(_unit_cache.get(pos) == NO_UNIT, "Unexpected unit during moving - units should be killed manually");
 
     if(unit->status == UnitStatus::ALIVE) {
         _unit_cache[unit->pos] = NO_UNIT;
@@ -814,20 +812,15 @@ void BattleManagerFastCpp::_move_unit(UnitID id, Position pos) {
 
 void BattleManagerFastCpp::_kill_unit(UnitID id, UnitID killer_id) {
     auto [unit, army] = _get_unit(id);
-    if(unit == nullptr || unit->status != UnitStatus::ALIVE) {
-        _result.error = true;
-        ERR_FAIL_COND_MSG(unit == nullptr, "Trying to kill a dead or non-existent unit");
-    }
-    auto victim_team = army->team;
+    BM_ASSERT(unit != nullptr && unit->status == UnitStatus::ALIVE, "Trying to kill a dead, unsummoned or non-existent unit");
 
+    auto victim_team = army->team;
 
     if(unit->martyr_id != NO_UNIT) {
         auto [martyr, _] = _get_unit(unit->martyr_id);
         
-        if(martyr == nullptr) {
-            WARN_PRINT("Invalid martyr id");
-            return;
-        }
+        BM_ASSERT(martyr != nullptr, "Invalid martyr id");
+        return;
 
         auto pos = martyr->pos;
         auto martyr_id = unit->martyr_id;
@@ -842,7 +835,7 @@ void BattleManagerFastCpp::_kill_unit(UnitID id, UnitID killer_id) {
     _unit_cache[unit->pos] = NO_UNIT;
     unit->status = UnitStatus::DEAD;
 
-    for(int i = 0; i < MAX_ARMIES; i++) {
+    for(unsigned i = 0; i < MAX_ARMIES; i++) {
         if(_armies[i].team == victim_team) {
             _result.score_lost[victim_team] -= unit->score;
             _result.total_scores[victim_team] -= unit->score;
@@ -938,16 +931,12 @@ void BattleManagerFastCpp::set_tile_grid(TileGridFastCpp* tg) {
 }
 
 void BattleManagerFastCpp::force_battle_ongoing() {
-    if(_state == BattleState::INITIALIZING) {
-        ERR_FAIL_MSG("Must finish_initialization() before calling force_battle_ongoing()");
-    }
+    BM_ASSERT(_state != BattleState::INITIALIZING, "Must finish_initialization() before calling force_battle_ongoing()");
     _state = BattleState::ONGOING;
 }
 
 void BattleManagerFastCpp::force_battle_sacrifice() {
-    if(_state == BattleState::INITIALIZING) {
-        ERR_FAIL_MSG("Must finish_initialization() before calling force_battle_sacrifice()");
-    }
+    BM_ASSERT(_state != BattleState::INITIALIZING, "Must finish_initialization() before calling force_battle_sacrifice()");
     _state = BattleState::SACRIFICE;
 }
 
@@ -986,7 +975,7 @@ int BattleManagerFastCpp::get_unit_spell_count(int army, int idx) const {
 void BattleManagerFastCpp::insert_spell(int army, int unit, int spell_id, godot::String str) {
     CHECK_UNIT(unit,);
     CHECK_ARMY(army,);
-    ERR_FAIL_COND_MSG(spell_id >= MAX_SPELLS, "Invalid spell id when inserting spell");
+    BM_ASSERT(unsigned(spell_id) < MAX_SPELLS, "Invalid spell id when inserting spell");
 
     _spells[spell_id] = BattleSpell(str, UnitID(army, unit));
 }

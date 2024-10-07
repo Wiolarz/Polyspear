@@ -111,7 +111,7 @@ public:
     godot::Array get_legal_moves_gd();
     /// Return a random move with a custom bias towards heuristically sensible moves, and whether such a move was chosen
     std::pair<Move, bool> get_random_move(float heuristic_probability);
-    int get_move_count();
+    unsigned get_move_count();
 
     /// Get moves that are likely to increase score/win the game/avoid losses. If there are no notable moves, returns all moves
     const std::vector<Move>& get_heuristically_good_moves();

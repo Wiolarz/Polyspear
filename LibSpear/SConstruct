@@ -7,8 +7,17 @@ env = SConscript("godot-cpp/SConstruct")
 env.Append(CPPPATH=["src/", "deps/thread-pool/include"])
 source_files = Glob("src/*.cpp")
 sources = env.SharedObject(
-        source=source_files, 
-        CXXFLAGS=["-std=c++20", "-Wno-template-id-cdtor"],
+        source=source_files,
+        CXXFLAGS=[
+                "-std=c++20", "-Wall", "-Wextra", 
+                "-Wpointer-arith", "-Wreturn-type", 
+                "-Wuninitialized", "-Wmaybe-uninitialized", 
+                "-Wnonnull", "-Wnull-dereference", "-Wdangling-pointer",
+                "-Wtype-limits", "-Wcast-align",
+                "-Wno-template-id-cdtor", # ignore warnings about feature deprecated in C++20 from godot headers
+                "-Wno-unused-parameter", "-Wno-unused-but-set-parameter", # godot-cpp warnings
+                "-Wno-deprecated-copy", # GDCLASS macro declares a custom copy operator in a class, TODO might be worth looking into
+        ],
         SHOBJPREFIX="#build/"
 )
 

@@ -34,7 +34,7 @@ struct UnitID {
 
     UnitID() : army(-1), unit(-1) {}
     UnitID(int8_t _army, int8_t _unit) : army(_army), unit(_unit) {}
-    bool operator==(const UnitID& other) const {
+    inline bool operator==(const UnitID& other) const {
         return army == other.army && unit == other.unit;
     }
 };
@@ -79,8 +79,8 @@ struct Army {
     int8_t id = 0;
     int8_t team = -1;
 
-    uint16_t mana_points;
-    uint16_t cyclone_timer;
+    int16_t mana_points = -1;
+    int16_t cyclone_timer = -1;
 
     std::array<Unit, MAX_UNITS_IN_ARMY> units{};
 
@@ -99,7 +99,7 @@ struct Move {
     Position pos;
 
     Move() = default;
-    Move(uint8_t _unit, Position _pos, int8_t _spell_id = NO_SPELL) : unit(_unit), pos(_pos), spell_id(_spell_id) {}
+    Move(uint8_t _unit, Position _pos, int8_t _spell_id = NO_SPELL) : spell_id(_spell_id), unit(_unit), pos(_pos) {}
     Move(godot::Array libspear_tuple) {
         ERR_FAIL_COND_MSG(libspear_tuple.size() < 2 || libspear_tuple.size() > 3, "Invalid LibSpear tuple size");
         unit = libspear_tuple[0];
@@ -124,7 +124,7 @@ struct Move {
 
 template<>
 struct std::hash<Move> {
-    const std::size_t operator()(const Move& move) const {
+     std::size_t operator()(const Move& move) const {
         auto h1 = std::hash<unsigned>{}(move.unit);
         auto h2 = std::hash<unsigned>{}(move.pos.x);
         auto h3 = std::hash<unsigned>{}(move.pos.y);

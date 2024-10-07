@@ -14,9 +14,9 @@
 BS::thread_pool mcts_workers;
 
 BattleMCTSNode::BattleMCTSNode(BattleManagerFastCpp bm, BattleMCTSManager* manager, BattleMCTSNode* parent, Move move) 
-    : _bm(bm),
-      _manager(manager),
+    : _manager(manager),
       _parent(parent),
+      _bm(bm),
       _move(move)
 {
     
@@ -40,7 +40,7 @@ std::pair<Move, BattleMCTSNode*> BattleMCTSNode::select() {
 
     float uct_max = -std::numeric_limits<float>::infinity();
     BattleMCTSNode* uct_max_idx = nullptr;
-    Move best_move;
+    Move best_move{};
 
     for(auto& [move, node] : _children) {
         auto uct = node.uct();
@@ -131,7 +131,7 @@ BattleResult BattleMCTSNode::simulate(int max_sim_iterations, int simulations) {
 
     for(auto& fut : results) {
         auto result = fut.get();
-        for(int i = 0; i < ret.total_scores.size(); i++) {
+        for(unsigned i = 0; i < ret.total_scores.size(); i++) {
             ret.total_scores[i] += result.total_scores[i];
             ret.max_scores[i] += result.max_scores[i];
         }
@@ -145,7 +145,7 @@ void BattleMCTSNode::backpropagate(BattleResult& result, int new_visits) {
     auto ally_score = 0.0f, enemy_score = 0.0f;
     auto max_ally_score = 0.0f, max_enemy_score = 0.0f;
 
-    for(int i = 0; i < result.total_scores.size(); i++) {
+    for(unsigned i = 0; i < result.total_scores.size(); i++) {
         if(_bm.get_army_team(i) == current_team) {
             ally_score += result.total_scores[i];
             max_ally_score += result.max_scores[i];

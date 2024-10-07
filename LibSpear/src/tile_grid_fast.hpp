@@ -56,7 +56,7 @@ public:
         return _dims;
     }
 
-    const inline unsigned get_number_of_mana_wells() const {
+    inline unsigned get_number_of_mana_wells() const {
         return _number_of_mana_wells;
     }
 };

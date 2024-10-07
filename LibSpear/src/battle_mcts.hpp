@@ -28,8 +28,8 @@ class BattleMCTSNode {
     BattleMCTSManager* _manager = nullptr;
     BattleMCTSNode* _parent = nullptr;
     std::unordered_map<Move, BattleMCTSNode> _children{};
-    BattleManagerFastCpp _bm;
-    Move _move;
+    BattleManagerFastCpp _bm{};
+    Move _move{};
 
     unsigned _mcts_iterations = 0;
     float _reward = 0.0f;
