@@ -1,11 +1,30 @@
-[gd_resource type="Theme" load_steps=3 format=3 uid="uid://dmv43h86d07fy"]
+[gd_resource type="Theme" load_steps=8 format=3 uid="uid://dmv43h86d07fy"]
 
 [ext_resource type="FontFile" uid="uid://da2ubx3hyhcma" path="res://Art/UI/fonts/kurland/Kurland.ttf" id="1_8bjnq"]
 [ext_resource type="FontVariation" uid="uid://cwve433e1tc2u" path="res://Art/UI/default_font.tres" id="1_rnx0e"]
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_2rjd0"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_87rpk"]
+bg_color = Color(0.243137, 0.0313726, 0.0313726, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_rlg6u"]
+bg_color = Color(0.470588, 0.145098, 0.0745098, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jnh7b"]
+bg_color = Color(0, 0, 0, 0.698039)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tfj6u"]
+bg_color = Color(0.156863, 0.156863, 0.156863, 1)
+
 [resource]
 default_font = ExtResource("1_rnx0e")
 Button/font_sizes/font_size = 40
+Button/styles/disabled = SubResource("StyleBoxFlat_2rjd0")
+Button/styles/focus = SubResource("StyleBoxFlat_87rpk")
+Button/styles/hover = SubResource("StyleBoxFlat_rlg6u")
+Button/styles/normal = SubResource("StyleBoxFlat_jnh7b")
+Button/styles/pressed = SubResource("StyleBoxFlat_tfj6u")
 CheckBox/font_sizes/font_size = 40
 CheckButton/font_sizes/font_size = 40
 CodeEdit/font_sizes/font_size = 40
