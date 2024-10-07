@@ -584,11 +584,14 @@ func _switch_participant_turn() -> void:
 				# Cyclone timer update
 				cyclone_target.cyclone_timer -= 1
 
-				if cyclone_target.cyclone_timer == 0:
+				# in case of stalemate this value is equal to -1
+				if cyclone_target.cyclone_timer <= 0:  
 					current_army_index = _get_army_index(cyclone_target)
 					state = STATE_SACRIFICE
-
-		STATE_SACRIFICE:  # New turn starts
+		
+		# Sacrifice already occured, select the first player
+		# move to STATE_FIGHTING
+		STATE_SACRIFICE:  
 			current_army_index = 0  # first army may no longer be present
 			while not armies_in_battle_state[current_army_index].can_fight():
 				current_army_index += 1
@@ -719,9 +722,10 @@ func _kill_unit(target : Unit, killer_army : ArmyInBattleState = null) -> void:
 
 ## Rare event when all players repeated their moves -> it pushes cyclone timer to activate next turn
 func end_stalemate() -> void:
-	print("END OFF STALEMATE")
-	cyclone_target.cyclone_timer = 1
-
+	print_rich("[color=pink]END OFF STALEMATE")
+	# it has to be 0 in case if value where to be
+	# 1 leads to bugs
+	cyclone_target.cyclone_timer = 0  
 #endregion Gameplay Events
 
 
@@ -769,7 +773,11 @@ func set_displayed_time_left_ms(time_left_ms : int) -> void:
 ## Occurs any time a unit is killed [br]
 ## It may change the cyclone_target
 func mana_values_changed() -> void:
+	# TODO this function needs to account for teams rather than individual armies
+
+	# we search for army with lowest amount of mana points
 	var current_worst = armies_in_battle_state[0]
+	# we also search for an army with the biggest amount of points,
 	var current_best = armies_in_battle_state[-1]
 
 	# player later in an array win on ties between mana values - it's intentional
@@ -787,9 +795,10 @@ func mana_values_changed() -> void:
 		new_cylone_counter = 999
 	#new_cylone_counter = 1 # use to test
 
-	if current_worst.cyclone_timer == 0:  # Cycle killed a unit now it resets
+	if current_worst.cyclone_timer == 0:  # Cyclone just killed a unit, so now it resets
 		current_worst.cyclone_timer = new_cylone_counter
-	elif current_worst.cyclone_timer > new_cylone_counter:
+
+	elif current_worst.cyclone_timer > new_cylone_counter:  # cyclone target timer simply got lower
 		current_worst.cyclone_timer = new_cylone_counter
 
 
@@ -902,7 +911,15 @@ func _end_of_move_magic() -> void:
 func _end_of_turn_magic() -> void:
 	for army in armies_in_battle_state:
 		for unit : Unit in army.units:
-			for magic_effect in unit.effects:
+			for effect_idx in range(unit.effects.size() -1, -1, -1):
+				var magic_effect : BattleMagicEffect = unit.effects[effect_idx]
+				
+				# Duration
+				magic_effect.duration_counter -= 1
+				if magic_effect.duration_counter == 0:
+					unit.effects.pop_at(effect_idx)
+					continue
+					
 				match magic_effect:
 					_:
 						pass
