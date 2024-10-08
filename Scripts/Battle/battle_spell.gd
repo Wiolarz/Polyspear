@@ -4,6 +4,8 @@ extends Resource
 @export var name : String = ""
 @export var icon_path : String = ""
 
+@export var spell_effects : Array[BattleMagicEffect]
+
 ## used to debug
 func _to_string() -> String:
 	return "BattleSpell: " + name
@@ -19,3 +21,17 @@ func enchanted_unit_dies() -> void:
 			pass
 		_:
 			return
+
+
+
+func cast_effect(target : Unit, event_type : String) -> void:
+	match name:
+		"Vengeance":
+			if event_type == "casting":
+				target.try_adding_magic_effect(spell_effects[0])
+		"Martyr":
+			if event_type == "casting":
+				target.try_adding_magic_effect(spell_effects[0])
+
+				
+				
