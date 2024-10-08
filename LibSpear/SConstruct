@@ -9,7 +9,7 @@ source_files = Glob("src/*.cpp")
 sources = env.SharedObject(
         source=source_files,
         CXXFLAGS=[
-                "-std=c++20", "-Wall", "-Wextra", 
+                "-std=c++20", "-Wall", "-Wextra", "-Werror",
                 "-Wpointer-arith", "-Wreturn-type", 
                 "-Wuninitialized", "-Wmaybe-uninitialized", 
                 "-Wnonnull", "-Wnull-dereference", "-Wdangling-pointer",

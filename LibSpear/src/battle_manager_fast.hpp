@@ -17,6 +17,21 @@
 #include "tile_grid_fast.hpp"
 #include "battle_spell.hpp"
 
+// Assertions used (only in) BattleManagerFastCpp
+
+#define BM_ASSERT_V(cond, v, ...)                                                   \
+    do {                                                                            \
+        if(!(cond)) {                                                               \
+            WARN_PRINT(std::format("BMFast assert failed: " __VA_ARGS__).c_str());  \
+            _result.error = true; return v;                                         \
+        }                                                                           \
+    } while(0)
+
+#define BM_ASSERT(cond, ...) BM_ASSERT_V(cond, , __VA_ARGS__)
+
+#define CHECK_UNIT(idx, ret) BM_ASSERT_V(unsigned(idx) < MAX_UNITS_IN_ARMY, ret, "Invalid unit id {}", idx)
+#define CHECK_ARMY(idx, ret) BM_ASSERT_V(unsigned(idx) < MAX_ARMIES, ret, "Invalid unit id {}", idx)
+
 
 using godot::Node;
 using godot::Vector2i;
@@ -200,14 +215,19 @@ public:
     }
 
 private:
-    std::pair<Unit*, Army*> _get_unit(UnitID id) {
-        if(id == NO_UNIT) {
-            return std::make_pair(nullptr, nullptr);
+    _FORCE_INLINE_ std::pair<Unit*, Army*> _get_unit(UnitID id) {
+        constexpr auto no_unit = std::make_pair(nullptr, nullptr);
+        if(id == NO_UNIT) { // The only valid null value, any other hints at an error
+            return no_unit;
         }
+
+        BM_ASSERT_V(unsigned(id.army) < _armies.size(), no_unit, "Invalid army id {}", id.army); 
+        BM_ASSERT_V(unsigned(id.unit) < _armies[id.army].units.size(), no_unit, "Invalid unit id {}/{}", id.army, id.unit);
+
         return std::make_pair(&_armies[id.army].units[id.unit], &_armies[id.army]);
     }
 
-    std::pair<Unit*, Army*> _get_unit(Position coord) {
+    _FORCE_INLINE_ std::pair<Unit*, Army*> _get_unit(Position coord) {
         return _get_unit(_unit_cache.get(coord));
     }
 };

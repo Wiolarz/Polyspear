@@ -7,20 +7,6 @@
 #include <csignal>
 
 
-#define BM_ASSERT_V(cond, v, ...)                                                   \
-    do {                                                                            \
-        if(!(cond)) {                                                               \
-            WARN_PRINT(std::format("BMFast assert failed: " __VA_ARGS__).c_str());  \
-            _result.error = true; return v;                                         \
-        }                                                                           \
-    } while(0)
-
-#define BM_ASSERT(cond, ...) BM_ASSERT_V(cond, , __VA_ARGS__)
-
-#define CHECK_UNIT(idx, ret) BM_ASSERT_V(unsigned(idx) < MAX_UNITS_IN_ARMY, ret, "Invalid unit id {}", idx)
-#define CHECK_ARMY(idx, ret) BM_ASSERT_V(unsigned(idx) < MAX_ARMIES, ret, "Invalid unit id {}", idx)
-
-
 void BattleManagerFastCpp::finish_initialization() {
     BM_ASSERT(_state == BattleState::INITIALIZING, "BMFast already initialized");
 
@@ -336,15 +322,21 @@ void BattleManagerFastCpp::_process_spell(UnitID uid, int8_t spell_id, Position 
             _process_unit(uid, true);
             break;
         case BattleSpell::State::VENGEANCE:
-            BM_ASSERT(_get_unit(uid2).first != nullptr, "Unknown unit id for vengeance spell");
-            _get_unit(uid2).first->flags |= Unit::FLAG_VENGEANCE;
+            {
+                auto [unit, _] = _get_unit(uid2);
+                BM_ASSERT(unit != nullptr, "Unknown unit id for vengeance spell");
+                unit->flags |= Unit::FLAG_VENGEANCE;
+            }
             break;
         case BattleSpell::State::MARTYR:
-            BM_ASSERT(_get_unit(uid).first != nullptr, "Unknown unit id for martyr spell");
-            _get_unit(uid).first->martyr_id = uid2;
-
-            BM_ASSERT(_get_unit(uid2).first != nullptr, "Unknown unit id for martyr spell");
-            _get_unit(uid2).first->martyr_id = uid;
+            {
+                auto [unit1, _] = _get_unit(uid);
+                auto [unit2, __] = _get_unit(uid2);
+                BM_ASSERT(unit1 != nullptr, "Unknown unit id for martyr spell");
+                BM_ASSERT(unit2 != nullptr, "Unknown unit id for martyr spell");
+                unit1->martyr_id = uid2;
+                unit2->martyr_id = uid;
+            }
             break;
         case BattleSpell::State::NONE:
         case BattleSpell::State::SENTINEL:
