@@ -1,0 +1,61 @@
+[gd_scene load_steps=2 format=3 uid="uid://bukisun1sjf4t"]
+
+[ext_resource type="Script" path="res://Scripts/UI/LevelUp/tier_panel.gd" id="1_xb5c6"]
+
+[node name="TierPanel" type="PanelContainer"]
+offset_right = 482.0
+offset_bottom = 268.0
+size_flags_stretch_ratio = 0.0
+script = ExtResource("1_xb5c6")
+
+[node name="MainContainer" type="VBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 23
+
+[node name="TierLabel" type="Label" parent="MainContainer"]
+layout_mode = 2
+text = "Tier 1"
+
+[node name="TierUpgrades" type="HBoxContainer" parent="MainContainer"]
+layout_mode = 2
+theme_override_constants/separation = 150
+alignment = 1
+
+[node name="PowerPassiveButton" type="Button" parent="MainContainer/TierUpgrades"]
+layout_mode = 2
+toggle_mode = true
+text = "Power Passive"
+
+[node name="TacticPassiveButton" type="Button" parent="MainContainer/TierUpgrades"]
+layout_mode = 2
+toggle_mode = true
+text = "Tactic Passive"
+
+[node name="MagicPassiveButton" type="Button" parent="MainContainer/TierUpgrades"]
+layout_mode = 2
+toggle_mode = true
+text = "Magic Passive"
+
+[node name="Skill label" type="Label" parent="MainContainer"]
+layout_mode = 2
+text = "List of skills:"
+
+[node name="TierSkills" type="HBoxContainer" parent="MainContainer"]
+layout_mode = 2
+theme_override_constants/separation = 150
+alignment = 1
+
+[node name="PowerSkillButton" type="Button" parent="MainContainer/TierSkills"]
+layout_mode = 2
+toggle_mode = true
+text = "Power"
+
+[node name="TacticSkillButton" type="Button" parent="MainContainer/TierSkills"]
+layout_mode = 2
+toggle_mode = true
+text = "Magic"
+
+[node name="MagicSkillButton" type="Button" parent="MainContainer/TierSkills"]
+layout_mode = 2
+toggle_mode = true
+text = "Tactic"

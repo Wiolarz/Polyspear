@@ -115,6 +115,7 @@ func _start_game_world(world_state : SerializableWorldState):
 	else:
 		WM.start_world_in_state(map, world_state)
 
+
 ## new game <=> battle_state == null
 func _start_game_battle(battle_state : SerializableBattleState):
 	var map_data = game_setup_info.battle_map
@@ -127,11 +128,23 @@ func _start_game_battle(battle_state : SerializableBattleState):
 	var x_offset = 0.0
 	BM.start_battle(armies, map_data, battle_state, x_offset)
 
+
 ## Creates army based on player slot data
 func create_army_for(player : Player) -> Army:
 	var army = Army.new()
 	army.controller_index = player.index
+
+	var hero_data : DataHero = player.slot.slot_hero
+	if hero_data:
+		var new_hero = Hero.construct_hero(hero_data, player.index)
+		army.hero = new_hero
+
 	army.units_data = player.slot.get_units_list()
+
+	#TEMP
+	army.timer_reserve_sec = player.slot.timer_reserve_sec
+	army.timer_increment_sec = player.slot.timer_increment_sec
+
 	return army
 
 #endregion Game setup
