@@ -14,18 +14,26 @@ var setup_ui : BattleSetup = null
 var button_take_leave_state : TakeLeaveButtonState = TakeLeaveButtonState.FREE
 
 var unit_paths : Array[String]
+var hero_paths : Array[String]
 
-@onready var button_take_leave = $VBoxContainer/HBoxContainer/ButtonTakeLeave
-@onready var label_name = $VBoxContainer/HBoxContainer/PlayerInfoPanel/Label
+@onready var button_take_leave = $GeneralVContainer/TopBarHContainer/ButtonTakeLeave
+@onready var label_name = $GeneralVContainer/TopBarHContainer/PlayerInfoPanel/Label
 @onready var buttons_units : Array[OptionButton] = [
-	$VBoxContainer/OptionButtonUnit1,
-	$VBoxContainer/OptionButtonUnit2,
-	$VBoxContainer/OptionButtonUnit3,
-	$VBoxContainer/OptionButtonUnit4,
-	$VBoxContainer/OptionButtonUnit5,
+	$GeneralVContainer/OptionButtonUnit1,
+	$GeneralVContainer/OptionButtonUnit2,
+	$GeneralVContainer/OptionButtonUnit3,
+	$GeneralVContainer/OptionButtonUnit4,
+	$GeneralVContainer/OptionButtonUnit5,
 ]
 
-@onready var team_list : OptionButton = $VBoxContainer/HBoxContainer/OptionButtonTeam
+@onready var team_list : OptionButton = $GeneralVContainer/TopBarHContainer/OptionButtonTeam
+@onready var hero_list : OptionButton = $GeneralVContainer/TopBarHContainer/OptionButtonHero
+
+
+@onready var timer_reserve_minutes : SpinBox = $GeneralVContainer/TopBarHContainerTimer/ReserveTime_Min_Edit
+@onready var timer_reserve_seconds : SpinBox = $GeneralVContainer/TopBarHContainerTimer/ReserveTime_Sec_Edit
+@onready var timer_increment_seconds : SpinBox = $GeneralVContainer/TopBarHContainerTimer/IncrementTimeEdit
+
 
 func try_to_take():
 	if not setup_ui:
@@ -77,6 +85,9 @@ func set_visible_take_leave_button_state(state : TakeLeaveButtonState):
 
 
 func _ready():
+	hero_paths = FileSystemHelpers.list_files_in_folder(CFG.HEROES_PATH, true, true)
+	init_hero_list(hero_list)
+	
 	unit_paths = FileSystemHelpers.list_files_in_folder(CFG.UNITS_PATH, true, true)
 	for index in buttons_units.size():
 		var button : OptionButton = buttons_units[index]
@@ -91,7 +102,29 @@ func init_unit_button(button : OptionButton, index : int):
 	button.item_selected.connect(unit_in_army_changed.bind(index))
 
 
-func unit_in_army_changed(selected_index, unit_index):
+func init_hero_list(button : OptionButton) -> void:
+	button.clear() #XD
+	button.add_item(EMPTY_UNIT_TEXT)
+	for hero_path in hero_paths:
+		button.add_item(hero_path.trim_prefix(CFG.HEROES_PATH))
+	button.item_selected.connect(hero_in_army_changed.bind())
+	
+
+func hero_in_army_changed(hero_index) -> void:
+	var hero_path = hero_list.get_item_text(hero_index)
+	var hero_data : DataHero = null
+	if hero_path != EMPTY_UNIT_TEXT:
+		hero_data = load(CFG.HEROES_PATH+"/"+hero_path)
+	var slot_index = setup_ui.slot_to_index(self)
+	
+	IM.game_setup_info.set_hero(slot_index, hero_data)
+	if NET.server:
+		NET.server.broadcast_full_game_setup(IM.game_setup_info) #TODO add multi support
+	if NET.client:
+		pass#NET.client.queue_lobby_set_unit(slot_index, unit_index, unit_data) #TODO STUB
+	
+
+func unit_in_army_changed(selected_index, unit_index) -> void:
 	var unit_path = buttons_units[unit_index].get_item_text(selected_index)
 	var unit_data : DataUnit = null
 	if unit_path != EMPTY_UNIT_TEXT:
@@ -104,10 +137,25 @@ func unit_in_army_changed(selected_index, unit_index):
 		NET.client.queue_lobby_set_unit(slot_index, unit_index, unit_data)
 
 
+func timer_changed() -> void:
+	var slot_index = setup_ui.slot_to_index(self)
+
+	var seconds_reserve = timer_reserve_minutes.value * 60 + timer_reserve_seconds.value
+	
+	IM.game_setup_info.set_timer(slot_index, seconds_reserve, timer_increment_seconds.value)
+	if NET.server:
+		NET.server.broadcast_full_game_setup(IM.game_setup_info) #TODO add multi support
+	if NET.client:
+		NET.client.queue_lobby_set_timer(slot_index, seconds_reserve, timer_increment_seconds.value)
+
+
 func apply_army_preset(army : PresetArmy):
 	var slot_index = setup_ui.slot_to_index(self)
 
 	IM.game_setup_info.set_team(slot_index, army.team)
+	
+	if army.hero:
+		IM.game_setup_info.set_hero(slot_index, army.hero)
 
 	var idx = 0
 	for u in army.units:
@@ -127,13 +175,13 @@ func apply_army_preset(army : PresetArmy):
 func set_army(units_list : Array[DataUnit]):
 	while buttons_units.size() > units_list.size():
 		var b = buttons_units.pop_back()
-		$VBoxContainer.remove_child(b)
+		$GeneralVContainer.remove_child(b)
 		b.queue_free()
 	while buttons_units.size() < units_list.size():
 		var b := OptionButton.new()
 		init_unit_button(b, buttons_units.size())
 		buttons_units.append(b)
-		$VBoxContainer.add_child(b)
+		$GeneralVContainer.add_child(b)
 		b.custom_minimum_size = Vector2(200, 0)
 
 	for index in units_list.size():
@@ -152,11 +200,10 @@ func set_unit(unit_button : OptionButton, unit : DataUnit):
 
 
 func fill_team_list(max_player_number : int) -> void:
-	#team_list.clear()
+	team_list.clear()
 	team_list.add_item("No Team")
 	for idx in range(1, max_player_number + 1):
 		team_list.add_item("Team " + str(idx))
-
 
 
 func _on_button_take_leave_pressed():
@@ -180,3 +227,7 @@ func _on_option_button_team_item_selected(index : int):
 		NET.server.broadcast_full_game_setup(IM.game_setup_info)
 	if NET.client:
 		NET.client.queue_lobby_set_team(slot_index, index)
+
+
+func _on_button_level_up_pressed():
+	UI.show_hero_level_up()

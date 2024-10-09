@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="BattleMagicEffect" load_steps=2 format=3 uid="uid://b6gerphgv4qih"]
+
+[ext_resource type="Script" path="res://Scripts/Battle/battle_magic_effect.gd" id="1_kxq8m"]
+
+[resource]
+script = ExtResource("1_kxq8m")
+name = "Martyr"
+icon_path = "res://Art/items/shields/blue shield.png"

@@ -25,7 +25,8 @@ var dead : bool
 
 var spells : Array[BattleSpell] = []
 
-var effects : Array[BattleSpell] = []
+## magic effects, size_limit == 2
+var effects : Array[BattleMagicEffect] = []
 
 var is_on_swamp : bool = false
 
@@ -44,6 +45,7 @@ static func create(new_controller : Player, \
 	result.spells = new_template.spells.duplicate() # spells reset every battle
 	return result
 
+#region Main
 
 ## turns unit front to a given side, can be awaited see waits_for_form
 func turn(side : GenericHexGrid.GridDirections):
@@ -69,10 +71,10 @@ func unit_killed():
 	dead = true
 	unit_died.emit()
 
+#endregion Main
 
-func can_defend(side : int) -> bool:
-	return get_symbol(side) == E.Symbols.SHIELD
 
+#region Unit Symbols
 
 ## gets symbol facing specified directin on the battle map
 func get_symbol(side_world : int) -> E.Symbols:
@@ -95,13 +97,34 @@ func get_front_symbol() -> E.Symbols:
 		return E.Symbols.EMPTY
 	return template.symbols[GenericHexGrid.DIRECTION_FRONT].type
 
+#endregion Unit Symbols
+
+
+#region Magic
+
+## attempts to add magical effect to a unit (there is limit of 2) [br]
+## returns bool if it was succesful
+func try_adding_magic_effect(effect : BattleMagicEffect) -> bool:
+	if effects.size() >= 2:
+		return false
+	effects.append(effect)
+	return true
+
+
+#endregion Magic
+
+
+#region UI
 
 func get_player_color() -> DataPlayerColor:
 	if not controller:
 		return CFG.NEUTRAL_COLOR
 	return controller.get_player_color()
 
+#endregion UI
 
+
+#region Static Symbols
 
 ## 0 no shield, 1 weak shield (any symbol), 2 normal shield, 3 strong shield
 static func defense_power(symbol : E.Symbols) -> int:
@@ -128,7 +151,6 @@ static func attack_power(symbol : E.Symbols) -> int:
 		_:
 			return 0
 
-#region push
 
 ## returns true if symbol can push
 static func can_it_push(symbol : E.Symbols) -> bool:
@@ -148,7 +170,6 @@ static func push_power(symbol : E.Symbols) -> int:
 		_:
 			return 0
 
-#endregion push
 
 static func does_it_parry(symbol : E.Symbols) -> bool:
 	match symbol:
@@ -184,3 +205,5 @@ static func ranged_weapon_reach(symbol : E.Symbols) -> int:
 			return 2
 		_:
 			return 0
+
+#endregion Static Symbols
