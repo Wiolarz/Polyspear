@@ -105,11 +105,11 @@ BattleResult BattleManagerFastCpp::_play_move(unsigned unit_id, Vector2i pos, in
             BM_ASSERT_V(rot_new != 6, _result, "Target position {},{} is not a neighbor", pos.x, pos.y);
 
             unit.rotation = rot_new;
-            _process_unit(uid, true);
+            _process_unit(uid, MovePhase::TURN);
             
             if(unit.status == UnitStatus::ALIVE && unit.pos == old_pos) {
                 _move_unit(uid, pos);
-                _process_unit(uid, true);
+                _process_unit(uid, MovePhase::LEAP);
             }
         }
         else {
@@ -152,7 +152,7 @@ BattleResult BattleManagerFastCpp::_play_move(unsigned unit_id, Vector2i pos, in
 }
 
 
-void BattleManagerFastCpp::_process_unit(UnitID unit_id, bool process_kills) {
+void BattleManagerFastCpp::_process_unit(UnitID unit_id, MovePhase phase) {
     auto [unit, army] = _get_unit(unit_id);
 
     for(int side = 0; side < 6; side++) {
@@ -168,13 +168,13 @@ void BattleManagerFastCpp::_process_unit(UnitID unit_id, bool process_kills) {
         auto neighbor_symbol = neighbor->symbol_when_rotated(flip(side));
 
         // counter/spear
-        if(unit_symbol.dies_to(neighbor_symbol, false)) {
+        if(unit_symbol.dies_to(neighbor_symbol, MovePhase::PASSIVE)) {
             _kill_unit(unit_id, neighbor_id);
             return;
         }
     }
     
-    if(!process_kills) {
+    if(phase == MovePhase::PASSIVE) {
         return;
     }
 
@@ -190,7 +190,7 @@ void BattleManagerFastCpp::_process_unit(UnitID unit_id, bool process_kills) {
         auto unit_symbol = unit->symbol_when_rotated(side);
         auto neighbor_symbol = neighbor->symbol_when_rotated(flip(side));
     
-        if(neighbor_symbol.dies_to(unit_symbol, true)) {
+        if(neighbor_symbol.dies_to(unit_symbol, phase)) {
             _kill_unit(neighbor_id, unit_id);
         }
 
@@ -201,7 +201,7 @@ void BattleManagerFastCpp::_process_unit(UnitID unit_id, bool process_kills) {
         }
     }
 
-    _process_bow(unit_id);
+    _process_bow(unit_id, phase);
 }
 
 void BattleManagerFastCpp::_process_push(UnitID pushed, UnitID pusher, Position direction, uint8_t max_power) {
@@ -231,10 +231,10 @@ void BattleManagerFastCpp::_process_push(UnitID pushed, UnitID pusher, Position 
     }
 
     _move_unit(pushed, pos);
-    _process_unit(pushed, false);
+    _process_unit(pushed, MovePhase::PASSIVE);
 }
 
-void BattleManagerFastCpp::_process_bow(UnitID unit_id) {
+void BattleManagerFastCpp::_process_bow(UnitID unit_id, MovePhase phase) {
     auto [unit, army] = _get_unit(unit_id);
 
     for(int i = 0; i < 6; i++) {
@@ -259,7 +259,7 @@ void BattleManagerFastCpp::_process_bow(UnitID unit_id) {
                 break;
             }
 
-            if(other != nullptr && other->symbol_when_rotated(flip(i)).dies_to(symbol, true)) {
+            if(other != nullptr && other->symbol_when_rotated(flip(i)).dies_to(symbol, phase)) {
                 _kill_unit(other_id, unit_id);
                 break;
             }
@@ -319,7 +319,7 @@ void BattleManagerFastCpp::_process_spell(UnitID uid, int8_t spell_id, Position 
             break;
         case BattleSpell::State::TELEPORT:
             _move_unit(uid, target);
-            _process_unit(uid, true);
+            _process_unit(uid, MovePhase::LEAP);
             break;
         case BattleSpell::State::VENGEANCE:
             {
@@ -521,7 +521,7 @@ void BattleManagerFastCpp::_refresh_legal_moves() {
                     auto neighbor_symbol = other_unit->symbol_when_rotated(flip(side));
                     auto unit_symbol = unit.front_symbol();
 
-                    if(neighbor_symbol.holds_ground_against(unit_symbol, true)) {
+                    if(neighbor_symbol.holds_ground_against(unit_symbol, MovePhase::LEAP)) {
                         continue;
                     }
                 }
@@ -661,8 +661,8 @@ void BattleManagerFastCpp::_refresh_heuristically_good_summon_moves() {
             }
 
             for(auto& enemy : enemy_army.units) {
-                bool can_shoot_enemy      = unit.front_symbol().protects_against(enemy.front_symbol(), true);
-                bool enemy_can_shoot_unit = enemy.front_symbol().protects_against(unit.front_symbol(), true);
+                bool can_shoot_enemy      = unit.front_symbol().protects_against(enemy.front_symbol(), MovePhase::LEAP);
+                bool enemy_can_shoot_unit = enemy.front_symbol().protects_against(unit.front_symbol(), MovePhase::LEAP);
 
                 if(enemy.status != UnitStatus::ALIVE || !m.pos.is_in_line_with(enemy.pos)) {
                     continue;

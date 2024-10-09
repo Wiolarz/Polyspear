@@ -45,6 +45,12 @@ struct Position {
 };
 
 
+enum class MovePhase: uint8_t {
+    TURN,
+    LEAP,
+    PASSIVE
+};
+
 class Symbol {
     uint8_t _attack_strength = 0;
     uint8_t _defense_strength = 0;
@@ -93,22 +99,22 @@ public:
         return _push_strength;
     }
 
-    inline bool protects_against(Symbol other, bool active) {
+    inline bool protects_against(Symbol other, MovePhase phase) {
         // Parry disables melee attacks
         if(other.get_bow_force() <= 0 && parries()) {
             return true;
         }
         
-        int other_force = active ? other.get_attack_force() : other.get_counter_force();
+        int other_force = (phase == MovePhase::PASSIVE) ? other.get_counter_force() : other.get_attack_force();
         return other_force <= get_defense_force();
     }
 
-    inline bool holds_ground_against(Symbol other, bool active) {
-        return protects_against(other, active) && other.get_push_force() <= 0;
+    inline bool holds_ground_against(Symbol other, MovePhase phase) {
+        return protects_against(other, phase) && other.get_push_force() <= 0;
     }
 
-    inline bool dies_to(Symbol other, bool active) {
-        return !protects_against(other, active);
+    inline bool dies_to(Symbol other, MovePhase phase) {
+        return !protects_against(other, phase);
     }
 
     inline bool parries() {

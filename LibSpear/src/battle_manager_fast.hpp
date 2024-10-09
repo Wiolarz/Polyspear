@@ -58,8 +58,8 @@ class BattleManagerFastCpp : public Node {
     bool _debug_internals = false;
 
 
-    void _process_unit(UnitID uid, bool process_kills);
-    void _process_bow(UnitID uid);
+    void _process_unit(UnitID uid, MovePhase phase);
+    void _process_bow(UnitID uid, MovePhase phase);
     void _process_push(UnitID pushed, UnitID pusher, Position direction, uint8_t max_power);
     void _process_spell(UnitID uid, int8_t spell_id, Position target);
 
