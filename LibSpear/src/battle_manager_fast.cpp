@@ -829,8 +829,10 @@ void BattleManagerFastCpp::_kill_unit(UnitID id, UnitID killer_id) {
 
     for(unsigned i = 0; i < MAX_ARMIES; i++) {
         if(_armies[i].team == victim_team) {
-            _result.score_lost[victim_team] -= unit->score;
-            _result.total_scores[victim_team] -= unit->score;
+            _result.score_lost[i] -= unit->score;
+            _result.total_scores[i] -= unit->score;
+
+            BM_ASSERT(_result.total_scores[i] >= 0, "Total score for army {} = {} < 0", i, _result.total_scores[i]);
         }
         else {
             _result.score_gained[i] += unit->score;

@@ -13,6 +13,26 @@
 #include "godot_cpp/variant/string.hpp"
 
 
+enum class UnitStatus: uint8_t {
+    SUMMONING,
+    ALIVE,
+    DEAD
+};
+
+enum class BattleState: uint8_t {
+    INITIALIZING,
+    SUMMONING,
+    ONGOING,
+    SACRIFICE,
+    FINISHED
+};
+
+enum class MovePhase: uint8_t {
+    TURN,
+    LEAP,
+    PASSIVE
+};
+
 struct Position {
     int8_t x{};
     int8_t y{};
@@ -42,13 +62,6 @@ struct Position {
         return delta.x == -delta.y || delta.x == 0 || delta.y == 0;
     }
 
-};
-
-
-enum class MovePhase: uint8_t {
-    TURN,
-    LEAP,
-    PASSIVE
 };
 
 class Symbol {
@@ -124,20 +137,6 @@ public:
     inline void print() {
         printf("a%dc%dd%d", get_attack_force(), get_counter_force(), get_defense_force());
     }
-};
-
-enum class UnitStatus: uint8_t {
-    SUMMONING,
-    ALIVE,
-    DEAD
-};
-
-enum class BattleState: uint8_t {
-    INITIALIZING,
-    SUMMONING,
-    ONGOING,
-    SACRIFICE,
-    FINISHED
 };
 
 class Tile {
