@@ -44,41 +44,41 @@ func _prepare_to_start_game() -> void:
 	UI.go_to_main_menu()
 
 
-## starts a new game based on game_setup_info
-func start_new_game() -> void:
-
-	_prepare_to_start_game()
-
-	if game_setup_info.is_in_mode_world():
-		_start_game_world(null)
-		UI.set_camera(E.CameraPosition.WORLD)
-	if game_setup_info.is_in_mode_battle():
-		_start_game_battle(null)
-		UI.set_camera(E.CameraPosition.BATTLE)
-	if NET.server:
-		NET.server.broadcast_start_game()
-
-
-## starts a game in some state based on provided states and on game_setup_info
-func start_game_in_state(world_state : SerializableWorldState, \
+## Starts a game in some state based on provided states and on game_setup_info.
+## [br]
+## If both states are null, then game is started as new and no state load is
+## performed -- only game_setup_info is taken into account.
+func start_game(world_state : SerializableWorldState, \
 		battle_state : SerializableBattleState) -> void:
 
+	assert(not battle_state or battle_state.valid())
+	assert(not world_state or world_state.valid())
+
 	_prepare_to_start_game()
 
-	if game_setup_info.is_in_mode_battle() and battle_state.valid():
+	if game_setup_info.is_in_mode_battle():
+		# in battle mode we can only have battle state
+		assert(not world_state)
+
 		_start_game_battle(battle_state)
 		UI.set_camera(E.CameraPosition.BATTLE)
-		UI.go_to_custom_ui(BM._battle_ui)
-	elif game_setup_info.is_in_mode_world() and world_state.valid():
+
+	elif game_setup_info.is_in_mode_world():
+		# in world mode we can have no states, only world state or both states
+
+		assert((not battle_state and not world_state) or
+			(world_state))
+
 		_start_game_world(world_state)
 		UI.set_camera(E.CameraPosition.WORLD)
-		UI.go_to_custom_ui(WM.world_ui)
-		if battle_state.valid():
+		if battle_state:
 			var armies : Array[Army] = []
 			for army_coord in battle_state.world_armies:
 				armies.append(WM.world_state.get_army_at(army_coord))
 			WM.start_combat(armies, battle_state.combat_coord, battle_state)
-			UI.go_to_custom_ui(BM._battle_ui)
+
+	if NET.server:
+		NET.server.broadcast_start_game()
 
 
 func perform_replay(path):
@@ -96,7 +96,7 @@ func perform_replay(path):
 		slot.occupier = replay.get_player_name(slot_id)
 		slot.set_units(units_array)
 
-	start_new_game()
+	start_game(null, null)
 	BM.perform_replay(replay)
 
 
@@ -115,6 +115,7 @@ func _start_game_world(world_state : SerializableWorldState):
 	else:
 		WM.start_world_in_state(map, world_state)
 
+
 ## new game <=> battle_state == null
 func _start_game_battle(battle_state : SerializableBattleState):
 	var map_data = game_setup_info.battle_map
@@ -127,11 +128,23 @@ func _start_game_battle(battle_state : SerializableBattleState):
 	var x_offset = 0.0
 	BM.start_battle(armies, map_data, battle_state, x_offset)
 
+
 ## Creates army based on player slot data
 func create_army_for(player : Player) -> Army:
 	var army = Army.new()
 	army.controller_index = player.index
+
+	var hero_data : DataHero = player.slot.slot_hero
+	if hero_data:
+		var new_hero = Hero.construct_hero(hero_data, player.index)
+		army.hero = new_hero
+
 	army.units_data = player.slot.get_units_list()
+
+	#TEMP
+	army.timer_reserve_sec = player.slot.timer_reserve_sec
+	army.timer_increment_sec = player.slot.timer_increment_sec
+
 	return army
 
 #endregion Game setup

@@ -131,6 +131,8 @@ func _on_preset_list_item_selected(index) -> void:
 
 
 func apply_preset(preset : PresetBattle):
+	
+	# loading map
 	var map_name = preset.battle_map.resource_path.get_file()
 	var found_a_map : bool = false
 	for i in range(maps_list.item_count):
@@ -141,6 +143,7 @@ func apply_preset(preset : PresetBattle):
 			break
 	assert(found_a_map, "preset map not present in map pool")
 
+	# loading player armies
 	for player_idx in preset.armies.size():
 		var army = preset.armies[player_idx]
 		player_slot_panels[player_idx].apply_army_preset(army)

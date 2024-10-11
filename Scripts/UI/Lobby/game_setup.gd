@@ -32,7 +32,7 @@ func _ready():
 		_on_button_battle_pressed()
 	else:
 		_on_button_world_pressed()
-	
+
 	if client_side:
 		button_battle.disabled = true
 		button_world.disabled = true
@@ -194,4 +194,4 @@ func _on_button_battle_pressed():
 
 
 func _on_button_confirm_pressed():
-	IM.start_new_game()
+	IM.start_game(null, null)

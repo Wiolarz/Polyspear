@@ -1,5 +1,6 @@
-[gd_resource type="Resource" script_class="PresetBattle" load_steps=10 format=3 uid="uid://dahoaf4wo5bur"]
+[gd_resource type="Resource" script_class="PresetBattle" load_steps=13 format=3 uid="uid://dahoaf4wo5bur"]
 
+[ext_resource type="Resource" uid="uid://cdlvyh2fl2ii1" path="res://Resources/Battle/Heroes/Orcs/orc_hero_chaplain.tres" id="1_3c5dn"]
 [ext_resource type="Script" path="res://Resources/Presets/preset_army.gd" id="1_umbg4"]
 [ext_resource type="Resource" uid="uid://dddn4h4ttpirx" path="res://Resources/Battle/Units/Neutral/iron_golem.tres" id="2_qru71"]
 [ext_resource type="Resource" uid="uid://dijlu74nk5d07" path="res://Resources/Battle/Units/Elves/elf_unit_hero_druid.tres" id="3_brqxc"]
@@ -10,7 +11,8 @@
 
 [sub_resource type="Resource" id="Resource_8gfw6"]
 script = ExtResource("1_umbg4")
-units = Array[Resource("res://Resources/Battle/data_unit.gd")]([ExtResource("2_qru71"), ExtResource("3_brqxc"), ExtResource("4_vcgns")])
+units = Array[Resource("res://Resources/Battle/data_unit.gd")]([ExtResource("2_13q74"), ExtResource("3_brqxc"), ExtResource("4_vcgns")])
+hero = ExtResource("1_3c5dn")
 team = 0
 
 [sub_resource type="Resource" id="Resource_renb5"]

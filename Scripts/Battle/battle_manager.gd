@@ -406,10 +406,9 @@ func _grid_input_sacrifice(coord : Vector2i) -> MoveInfo:
 			"_grid_input_fighting called in an incorrect state")
 
 	var new_unit : Unit = _battle_grid_state.get_unit(coord)
-	if new_unit and new_unit.controller == _battle_grid_state.cyclone_target.army_reference.controller:
-
-		# Reselect the same target OR new one if that
+	if new_unit and new_unit.army_in_battle == _battle_grid_state.cyclone_target:
 		return MoveInfo.make_sacrifice(coord)
+
 	return null
 
 
