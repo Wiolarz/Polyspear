@@ -21,7 +21,7 @@ int Army::find_unit_id_to_summon(int i) {
 
 bool Army::is_defeated() {
     for(auto& unit: units) {
-        if(unit.status == UnitStatus::ALIVE) {
+        if(unit.status != UnitStatus::DEAD) {
             return false;
         }
     }

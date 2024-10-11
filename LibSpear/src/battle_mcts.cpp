@@ -158,8 +158,8 @@ void BattleMCTSNode::backpropagate(BattleResult& result, int new_visits) {
 
     auto reward_add = (ally_score + max_enemy_score - enemy_score) / (max_ally_score+max_enemy_score); 
     // just in case
-    if(reward_add < 0.0f || std::isnan(reward_add) || std::isinf(reward_add)) {
-        WARN_PRINT("invalid reward");
+    if(reward_add < 0.0f || reward_add > 1.0f || std::isnan(reward_add) || std::isinf(reward_add)) {
+        WARN_PRINT(std::format("invalid reward {} (ally:{}/{}, enemy:{}/{})", reward_add, ally_score, max_ally_score, enemy_score, max_enemy_score).c_str());
         _reward += 0.5f;
     }
     else {
