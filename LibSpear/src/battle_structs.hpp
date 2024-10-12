@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <array>
+#include <format>
 #include "godot_cpp/variant/array.hpp"
 #include "godot_cpp/variant/vector2i.hpp"
 #include "godot_cpp/variant/variant.hpp"
@@ -13,6 +14,8 @@
 const unsigned MAX_ARMIES = 4;
 const unsigned MAX_UNITS_IN_ARMY = 5;
 const unsigned MAX_UNIT_KILLS_PER_TURN = 10;
+const unsigned MAX_EFFECTS_PER_UNIT = 2;
+const unsigned DEFAULT_EFFECT_DURATION = 6;
 
 class BattleManagerFastCpp;
 class BattleMCTSManager;
@@ -43,6 +46,12 @@ struct UnitID {
 static const UnitID NO_UNIT = UnitID(-1,-1);
 static UnitID _err_return_dummy_uid = UnitID(-1,-1);
 
+struct Effect {
+    uint8_t mask = 0;
+    int8_t counter = 0;
+};
+
+static const Effect NO_EFFECT = Effect{.mask = 0, .counter = 0};
 
 struct Unit {
     UnitStatus status = UnitStatus::DEAD;
@@ -50,12 +59,18 @@ struct Unit {
     uint8_t rotation{};
     uint8_t score = 1;
     uint8_t mana = 0;
-    UnitID martyr_id = NO_UNIT;
     uint8_t flags = 0;
     std::array<Symbol, 6> sides{};
+    std::array<Effect, MAX_EFFECTS_PER_UNIT> effects{};
 
-    static const uint8_t FLAG_VENGEANCE = 0x01;
-    static const uint8_t FLAG_ON_SWAMP = 0x02;
+private:
+    UnitID _martyr_id = NO_UNIT;
+public:
+
+    static const uint8_t FLAG_ON_SWAMP = 0x01;
+    static const uint8_t FLAG_EFFECT_VENGEANCE = 0x02;
+    static const uint8_t FLAG_EFFECT_DEATH_MARK = 0x04;
+    static const uint8_t FLAG_EFFECT_MARTYR = 0x08;
 
     inline Symbol symbol_when_rotated(int side) const {
         if(flags & FLAG_ON_SWAMP) {
@@ -71,8 +86,88 @@ struct Unit {
         return sides[0];
     }
 
-    inline bool is_vengeance_active() const {
-        return (flags & FLAG_VENGEANCE);
+    inline bool try_apply_effect(uint8_t mask, uint8_t duration = DEFAULT_EFFECT_DURATION) {
+        for(auto& eff : effects) {
+            if(eff.mask == 0) {
+                flags |= mask;
+                eff.mask |= mask;
+                eff.counter = duration;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    inline bool try_apply_martyr(UnitID id, uint8_t duration = DEFAULT_EFFECT_DURATION) {
+        _martyr_id = id;
+        return try_apply_effect(FLAG_EFFECT_MARTYR, duration);
+    }
+
+    inline void remove_martyr() {
+        _martyr_id = NO_UNIT;
+        remove_effect(FLAG_EFFECT_MARTYR);
+    }
+
+    inline void remove_effect(uint8_t mask) {
+        for(auto& eff : effects) {
+            eff.mask &= ~mask;
+        }
+    }
+
+    inline UnitID get_martyr_id() const {
+        return _martyr_id;
+    }
+
+    inline bool is_effect_active(uint8_t effect_mask) const {
+        return (flags & effect_mask);
+    }
+
+    inline void on_turn_end() {
+        for(auto& eff : effects) {
+            if(eff.counter == 0 || eff.mask == 0) {
+                continue;
+            }
+
+            eff.counter--;
+            if(eff.counter == 0) {
+                if(eff.mask & FLAG_EFFECT_MARTYR) {
+                    _martyr_id = NO_UNIT;
+                }
+                flags &= ~eff.mask;
+                eff.mask = 0;
+            }
+        }
+    }
+
+    static inline uint8_t effect_string_to_flag(godot::String str) {
+        if(str == godot::String("Vengeance")) {
+            return FLAG_EFFECT_VENGEANCE;
+        }
+        else if(str == godot::String("Death Mark")) {
+            return FLAG_EFFECT_DEATH_MARK;
+        }
+        else if(str == godot::String("Martyr")) {
+            return FLAG_EFFECT_MARTYR;
+        }
+        else {
+            ERR_FAIL_V_MSG(0, std::format("Unknown effect: '{}'", str.ascii().get_data()).c_str());
+        }
+    }
+
+    /// Convert Godot effects (except Martyr) to LibSpear flags
+    inline void set_effect_gd(godot::String str, int duration) {
+        if(!try_apply_effect(effect_string_to_flag(str), duration)) {
+            ERR_FAIL_MSG(std::format("Failed to apply effect: '{}'", str.ascii().get_data()).c_str());
+        }
+    }
+
+    inline int get_effect_duration_counter(uint8_t mask) const {
+        for(auto& eff : effects) {
+            if(eff.mask & mask) {
+                return eff.counter;
+            }
+        }
+        return -1;
     }
 };
 

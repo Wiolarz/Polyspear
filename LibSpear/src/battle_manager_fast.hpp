@@ -53,8 +53,6 @@ class BattleManagerFastCpp : public Node {
     CacheGrid _unit_cache{};
     std::vector<Move> _moves{};
     std::vector<Move> _heuristic_moves{};
-    std::array<UnitID, 7> _units_to_kill;
-    uint8_t _units_to_kill_num = 0;
     bool _moves_dirty = true;
     bool _heuristic_moves_dirty = true;
     bool _debug_internals = false;
@@ -64,6 +62,8 @@ class BattleManagerFastCpp : public Node {
     void _process_bow(UnitID uid, MovePhase phase);
     void _process_push(UnitID pushed, UnitID pusher, Position direction, uint8_t max_power);
     void _process_spell(UnitID uid, int8_t spell_id, Position target);
+    void _update_move_end();
+    void _update_turn_end();
 
     void _spells_append_moves();
 
@@ -83,8 +83,6 @@ class BattleManagerFastCpp : public Node {
 
     void _update_mana();
 
-    BattleResult _play_move(unsigned unit, Vector2i move, int8_t spell_id);
-
 protected:
     static void _bind_methods();
 
@@ -103,8 +101,8 @@ public:
     void set_unit_mana(int army, int idx, int mana);
     void set_unit_score(int army, int idx, int score);
 
-    void set_unit_vengeance(int army, int idx);
-    void set_unit_martyr(int army, int idx, int martyr_id);
+    void set_unit_effect(int army, int idx, godot::String effect, int duration);
+    void set_unit_martyr(int army, int idx, int martyr_id, int duration);
 
     void insert_spell(int army, int unit, int spell_id, godot::String spell_name);
     void set_army_cyclone_timer(int army, int timer);
@@ -115,7 +113,7 @@ public:
     void force_battle_ongoing();
     void force_battle_sacrifice();
     
-    BattleResult play_move(Move move);
+    void play_move(Move move);
     int play_move_gd(godot::Array libspear_tuple);
     int play_moves(godot::Array libspear_tuple_array);
     
@@ -138,8 +136,8 @@ public:
 
     // Getters, primarily for testing correctness with regular BattleManager
     
-    int count_spell(godot::String name);
-    inline int get_unit_spell_count(int army, int idx) const;
+    int count_spell(int army, int idx, godot::String name);
+    inline int get_unit_spell_count(int army, int idx);
 
     inline Vector2i get_unit_position(int army, int unit) const {
         auto p = _armies[army].units[unit].pos; 
@@ -182,16 +180,22 @@ public:
         return _armies[army].team;
     }
 
-    inline bool get_unit_vengeance(int army, int idx) const {
-        return _armies[army].units[idx].is_vengeance_active();
+    inline bool get_unit_effect(int army, int idx, godot::String str) const {
+        return _armies[army].units[idx].is_effect_active(Unit::effect_string_to_flag(str));
     }
+
+    inline int get_unit_effect_duration_counter(int army, int idx, godot::String str) const {
+        return _armies[army].units[idx].get_effect_duration_counter(Unit::effect_string_to_flag(str));
+    }
+
+    inline int get_unit_effect_count(int army, int idx);
     
     inline int get_unit_martyr_id(int army, int idx) const {
-        return _armies[army].units[idx].martyr_id.unit;
+        return _armies[army].units[idx].get_martyr_id().unit;
     }
 
     inline int get_unit_martyr_team(int army, int idx) const {
-        return _armies[army].units[idx].martyr_id.army;
+        return _armies[army].units[idx].get_martyr_id().army;
     }
 
     inline int get_max_units_in_army() const {

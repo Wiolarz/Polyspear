@@ -41,6 +41,7 @@ static func from(bgstate: BattleGridState, tgrid: TileGridFast = null) -> Battle
 		new.set_army_cyclone_timer(army_idx, army.cyclone_timer)
 		
 		var martyrs = []
+		var martyr_duration = -50
 		
 		# Alive unit processing
 		for unit_idx in range(army.units.size()):
@@ -63,15 +64,13 @@ static func from(bgstate: BattleGridState, tgrid: TileGridFast = null) -> Battle
 				match eff.name:
 					"Martyr":
 						martyrs.push_back(unit_idx)
-						print("martyr")
-					"Vengeance":
-						new.set_unit_vengeance(army_idx, unit_idx)
+						martyr_duration = eff.duration_counter
 					_:
-						assert(false, "Unknown effect %s" % [eff.name])
-		
-		assert(martyrs.size() in [0,1,2], "Invalid martyr number")
+						new.set_unit_effect(army_idx, unit_idx, eff.name, eff.duration_counter)
+					
+		assert(martyrs.size() in [0,1,2], "Unsupported martyr number")
 		if martyrs.size() == 2:
-			new.set_unit_martyr(army_idx, martyrs[0], martyrs[1])
+			new.set_unit_martyr(army_idx, martyrs[0], martyrs[1], martyr_duration)
 	
 		# Summon processing
 		for summon_idx in range(army.units_to_summon.size()):
@@ -226,7 +225,7 @@ func compare_grid_state(bgs: BattleGridState) -> bool:
 			
 			for spell in unit.spells:
 				# TODO check when there are several instances of the same spell?
-				if count_spell(spell.name) != 1:
+				if count_spell(army_id, unit_id, spell.name) != 1:
 					push_error("BMFast mismatch - unit id ", unit_str, " fast does not have slow spell ", spell.name)
 					ret = false
 					
@@ -235,23 +234,29 @@ func compare_grid_state(bgs: BattleGridState) -> bool:
 							% [unit_str, get_unit_spell_count(army_id, unit_id), unit.spells.size()])
 				ret = false
 			
+			if get_unit_effect_count(army_id, unit_id) != unit.effects.size():
+				push_error("BMFast mismatch - effect count for unit %s - fast %s vs slow %s" \
+							% [unit_str, get_unit_effect_count(army_id, unit_id), unit.effects.size()])
+				ret = false
+			
 			var is_martyr = false
-			var is_vengeance = false
 			for eff in unit.effects:
 				match eff.name:
 					"Martyr":
 						is_martyr = true
-					"Vengeance":
-						is_vengeance = true
+					_:
+						var eff_fast = get_unit_effect(army_id, unit_id, eff.name)
+						if not eff_fast:
+							push_error("BMFast mismatch - effect '%s' present in slow but not fast" % [eff.name])
+							ret = false
+				var duration_fast = get_unit_effect_duration_counter(army_id, unit_id, eff.name)
+				if eff.duration_counter != duration_fast:
+					push_error("BMFast mismatch - effect '%s' has duration %s in slow and %s in fast" % [eff.name, eff.duration_counter, duration_fast])
+					ret = false
 			
 			if is_martyr != (get_unit_martyr_id(army_id, unit_id) != -1):
 				push_error("BMFast mismatch - martyr status for unit %s - slow %s vs fast %s" 
 						   % [unit_str ,is_martyr, get_unit_martyr_id(army_id, unit_id) != -1])
-				ret = false
-				
-			if is_vengeance != get_unit_vengeance(army_id, unit_id):
-				push_error("BMFast mismatch - vengeance status - slow %s vs fast %s" 
-						   % [is_vengeance, get_unit_vengeance(army_id, unit_id)])
 				ret = false
 		
 		var units_alive_in_army = army.units.filter(func(x): return not x.dead).size()
