@@ -12,6 +12,7 @@
 
 const unsigned MAX_ARMIES = 4;
 const unsigned MAX_UNITS_IN_ARMY = 5;
+const unsigned MAX_UNIT_KILLS_PER_TURN = 10;
 
 class BattleManagerFastCpp;
 class BattleMCTSManager;

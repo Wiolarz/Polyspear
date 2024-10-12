@@ -63,6 +63,7 @@ static func from(bgstate: BattleGridState, tgrid: TileGridFast = null) -> Battle
 				match eff.name:
 					"Martyr":
 						martyrs.push_back(unit_idx)
+						print("martyr")
 					"Vengeance":
 						new.set_unit_vengeance(army_idx, unit_idx)
 					_:
@@ -244,8 +245,8 @@ func compare_grid_state(bgs: BattleGridState) -> bool:
 						is_vengeance = true
 			
 			if is_martyr != (get_unit_martyr_id(army_id, unit_id) != -1):
-				push_error("BMFast mismatch - martyr status - slow %s vs fast %s" 
-						   % [is_martyr, get_unit_martyr_id(army_id, unit_id) != -1])
+				push_error("BMFast mismatch - martyr status for unit %s - slow %s vs fast %s" 
+						   % [unit_str ,is_martyr, get_unit_martyr_id(army_id, unit_id) != -1])
 				ret = false
 				
 			if is_vengeance != get_unit_vengeance(army_id, unit_id):

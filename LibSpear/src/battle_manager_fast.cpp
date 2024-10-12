@@ -812,7 +812,6 @@ void BattleManagerFastCpp::_kill_unit(UnitID id, UnitID killer_id) {
         auto [martyr, _] = _get_unit(unit->martyr_id);
         
         BM_ASSERT(martyr != nullptr, "Invalid martyr id");
-        return;
 
         auto pos = martyr->pos;
         auto martyr_id = unit->martyr_id;

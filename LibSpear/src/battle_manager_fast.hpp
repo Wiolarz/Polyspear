@@ -53,6 +53,8 @@ class BattleManagerFastCpp : public Node {
     CacheGrid _unit_cache{};
     std::vector<Move> _moves{};
     std::vector<Move> _heuristic_moves{};
+    std::array<UnitID, 7> _units_to_kill;
+    uint8_t _units_to_kill_num = 0;
     bool _moves_dirty = true;
     bool _heuristic_moves_dirty = true;
     bool _debug_internals = false;

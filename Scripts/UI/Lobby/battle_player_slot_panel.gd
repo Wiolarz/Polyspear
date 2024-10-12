@@ -26,8 +26,8 @@ var hero_paths : Array[String]
 	$GeneralVContainer/OptionButtonUnit4,
 	$GeneralVContainer/OptionButtonUnit5,
 ]
-@onready var button_bot = $VBoxContainer/HBoxContainer/OptionButtonBot
-@onready var player_info = $VBoxContainer/HBoxContainer/PlayerInfoPanel
+@onready var button_bot = $GeneralVContainer/TopBarHContainer/OptionButtonBot
+@onready var player_info = $GeneralVContainer/TopBarHContainer/PlayerInfoPanel
 
 
 @onready var team_list : OptionButton = $GeneralVContainer/TopBarHContainer/OptionButtonTeam
