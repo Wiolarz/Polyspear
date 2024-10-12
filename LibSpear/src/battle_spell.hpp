@@ -6,7 +6,7 @@
 
 #include "battle_structs.hpp"
 
-const unsigned MAX_SPELLS = 16;
+const unsigned MAX_SPELLS = 100;
 
 struct BattleSpell {
     /// Spell's state - currently only represents type, but in the future might represent more complex spells as state machines

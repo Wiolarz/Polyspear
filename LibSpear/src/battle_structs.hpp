@@ -12,8 +12,7 @@
 #include "data.hpp"
 
 const unsigned MAX_ARMIES = 4;
-const unsigned MAX_UNITS_IN_ARMY = 5;
-const unsigned MAX_UNIT_KILLS_PER_TURN = 10;
+const unsigned MAX_UNITS_IN_ARMY = 12;
 const unsigned MAX_EFFECTS_PER_UNIT = 2;
 const unsigned DEFAULT_EFFECT_DURATION = 6;
 
