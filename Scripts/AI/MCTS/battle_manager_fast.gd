@@ -98,7 +98,7 @@ func set_unit_symbol(army_idx: int, unit_idx: int, symbol_idx: int, symbol: E.Sy
 	set_unit_symbol_cpp(
 		army_idx, unit_idx, symbol_idx, 
 		Unit.attack_power(symbol), Unit.defense_power(symbol), Unit.ranged_weapon_reach(symbol),
-		Unit.does_it_counter_attack(symbol), Unit.push_power(symbol), Unit.does_it_parry(symbol)
+		Unit.does_it_counter_attack(symbol), Unit.push_power(symbol), Unit.does_it_parry(symbol), Unit.does_it_parry_break(symbol)
 	)
 
 #region Libspear tuple <-> MoveInfo conversion

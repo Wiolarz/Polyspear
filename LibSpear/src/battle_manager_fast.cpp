@@ -903,12 +903,13 @@ void BattleManagerFastCpp::insert_unit(int army, int idx, Vector2i pos, int rota
 void BattleManagerFastCpp::set_unit_symbol(
         int army, int unit, int side, 
         int attack_strength, int defense_strength, int ranged_reach,
-        bool is_counter, int push_force, bool parries
+        bool is_counter, int push_force, bool parries, bool breaks_parry
 ) {
     CHECK_UNIT(unit,);
     CHECK_ARMY(army,);
 
     uint8_t flags = (Symbol::FLAG_PARRY & parries) 
+                  | (Symbol::FLAG_PARRY_BREAK & breaks_parry) 
                   | (Symbol::FLAG_COUNTER_ATTACK & is_counter);
 
     _armies[army].units[unit].sides[side] = Symbol(attack_strength, defense_strength, push_force, ranged_reach, flags);
@@ -1041,7 +1042,7 @@ void BattleManagerFastCpp::_bind_methods() {
     ClassDB::bind_method(D_METHOD(
         "set_unit_symbol_cpp", "army", "unit", "side", 
         "attack_strength", "defense_strength", "ranged_reach",
-        "is_counter", "push_force", "parries"
+        "is_counter", "push_force", "parries", "breaks_parry"
  ), &BattleManagerFastCpp::set_unit_symbol);
     ClassDB::bind_method(D_METHOD("set_army_team", "army", "team"), &BattleManagerFastCpp::set_army_team);
     ClassDB::bind_method(D_METHOD("set_unit_score", "army", "unit", "score"), &BattleManagerFastCpp::set_unit_score);

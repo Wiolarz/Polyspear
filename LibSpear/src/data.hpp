@@ -74,6 +74,7 @@ class Symbol {
 public:
     static const uint8_t FLAG_COUNTER_ATTACK = 0x01;
     static const uint8_t FLAG_PARRY = 0x02;
+    static const uint8_t FLAG_PARRY_BREAK = 0x04;
     
     static const int MIN_SHIELD_DEFENSE = 2;
 
@@ -114,7 +115,7 @@ public:
 
     inline bool protects_against(Symbol other, MovePhase phase) {
         // Parry disables melee attacks
-        if(other.get_bow_force() <= 0 && parries()) {
+        if(other.get_bow_force() <= 0 && (parries() && !other.breaks_parry())) {
             return true;
         }
         
@@ -132,6 +133,10 @@ public:
 
     inline bool parries() {
         return (_flags & FLAG_PARRY);
+    }
+
+    inline bool breaks_parry() {
+        return (_flags & FLAG_PARRY_BREAK);
     }
 
     inline void print() {

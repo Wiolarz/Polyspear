@@ -95,7 +95,7 @@ public:
     void set_unit_symbol(
         int army, int unit, int side, 
         int attack_strength, int defense_strength, int ranged_reach,
-        bool is_counter, int push_force, bool parries
+        bool is_counter, int push_force, bool parries, bool breaks_parry
     );
 
     void set_unit_mana(int army, int idx, int mana);
