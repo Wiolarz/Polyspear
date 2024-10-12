@@ -20,4 +20,4 @@ func apply_effect(target : Unit, event_type : String) -> void:
 	match name:
 		"Vengeance":
 			if event_type == "post death spell effect":
-				target.try_adding_magic_effect(spell_effects[0])
+				target.try_adding_magic_effect(spell_effects[0].duplicate())
