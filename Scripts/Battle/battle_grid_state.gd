@@ -1307,7 +1307,7 @@ class ArmyInBattleState:
 		var result = ArmyInBattleState.new()
 		result.battle_grid_state = weakref(state)
 		result.army_reference = army
-		if army.hero: #TEMP
+		if army.hero and not army.hero.wounded: #TEMP
 			var hero_unit : DataUnit = army.hero.template.data_unit
 			result.units_to_summon.append(hero_unit)
 
@@ -1316,6 +1316,10 @@ class ArmyInBattleState:
 			result.units_to_summon.append(unit)
 
 			result.mana_points += unit.mana # MANA
+
+		#Temp solution for world map, where proper clock system isn't implemented yet
+		if army.timer_reserve_sec == 0:
+			army.timer_reserve_sec = 3000
 
 		#TEMP
 		result.start_turn_clock_time_left_ms = army.timer_reserve_sec * 1000
