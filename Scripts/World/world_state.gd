@@ -375,7 +375,6 @@ func do_recruit_hero(player_index : int, data_hero : DataHero,
 	army.hero = hero
 	army.controller_index = city.controller_index
 	army.coord = coord
-	army.units_data.append(data_hero.data_unit)
 
 	grid.get_hex(coord).army = army
 	player.hero_armies.append(army)
