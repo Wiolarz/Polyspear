@@ -254,12 +254,14 @@ func _process_offensive_symbols(unit : Unit) -> void:
 			var reach = Unit.ranged_weapon_reach(unit_weapon)
 			_process_bow(unit, side, reach)
 			continue  # bow is special case
-		if not adjacent[side]:
+		
+		var adjacent_unit := _get_adjacent_unit(unit.coord, side)
+		if not adjacent_unit:
 			continue # nothing to interact with
-		if adjacent[side].army_in_battle.team == unit.army_in_battle.team:
+		if adjacent_unit.army_in_battle.team == unit.army_in_battle.team:
 			continue # no friendly fire within team
 
-		var enemy = adjacent[side]
+		var enemy = adjacent_unit
 		var opposite_side := GenericHexGrid.opposite_direction(side)
 		var enemy_weapon = enemy.get_symbol(opposite_side)
 		if Unit.does_it_parry(enemy_weapon):
@@ -375,6 +377,11 @@ func _get_adjacent_units(coord : Vector2i) -> Array[Unit]:
 		var target_coord := GenericHexGrid.adjacent_coord(coord, dir)
 		result.append(get_unit(target_coord))
 	return result
+
+
+func _get_adjacent_unit(coord : Vector2i, dir : int) -> Unit:
+	var target_coord := GenericHexGrid.adjacent_coord(coord, dir)
+	return get_unit(target_coord)
 
 
 ## reach - number of tiles missle can reach [br]
@@ -636,7 +643,7 @@ func _perform_move(unit : Unit, direction : int, target_tile_coord : Vector2i) -
 ## unit - that is going to move |
 ## target_title_coord - hex tile it's going to move toward (doesn't have to be adjacent)
 ##  direction -
-func _perform_teleport(unit : Unit, target_tile_coord : Vector2i, direction : int = -1) -> void:
+func _perform_teleport(unit : Unit, target_tile_coord : Vector2i, direction : int = -1, martyr : bool = false) -> void:
 	# TURN
 	if direction != -1:
 		unit.turn(direction)
@@ -647,8 +654,8 @@ func _perform_teleport(unit : Unit, target_tile_coord : Vector2i, direction : in
 	_change_unit_coord(unit, target_tile_coord)
 	unit.move(target_tile_coord, _get_battle_hex(target_tile_coord).swamp)
 	currently_processed_move_info.register_locomote_complete()
-	if _process_symbols(unit):
-		return
+	if not martyr:
+		_process_symbols(unit)
 
 
 ## changes coordinates of the unit ONLY (doesn't activate attack or anything like that)
@@ -713,7 +720,7 @@ func _kill_unit(target : Unit, killer_army : ArmyInBattleState = null) -> void:
 		return
 
 	if replaced_target: # "Martyr" spell quick hack
-		_perform_teleport(replaced_target, new_target_pos)
+		_perform_teleport(replaced_target, new_target_pos, -1, true) # martyr teleport temp fix
 
 	# trigger any post death spell effect
 	for spell in target.effects:
