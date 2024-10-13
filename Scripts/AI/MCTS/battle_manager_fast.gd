@@ -31,7 +31,9 @@ static func from(bgstate: BattleGridState, tgrid: TileGridFast = null) -> Battle
 		var army = bgstate.armies_in_battle_state[army_idx]
 		
 		var player_idx = army.army_reference.controller_index
-		var team = IM.get_player_by_index(player_idx).team
+		var player = IM.get_player_by_index(player_idx)
+		# TODO temp hack for world battles
+		var team = player.team if player else max_team + 10000000
 		var team_id = team if team != 0 else (army_idx + 1000000)
 		if team_id not in new.team_mapping:
 			new.team_mapping[team_id] = max_team

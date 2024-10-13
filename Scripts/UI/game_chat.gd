@@ -134,6 +134,9 @@ func _on_chat_line_edit_text_submitted(new_text):
 			if WM.selected_hero:
 				WM.selected_hero.entity.hero.movement_points += 100
 				print("travel cheat")
+		if cheat == "brain":
+			BM.toggle_ai_preview()
+			print("ai move preview cheat")
 	else:
 		send_chat_message(new_text)
 

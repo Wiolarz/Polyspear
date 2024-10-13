@@ -120,13 +120,16 @@ func _start_game_world(world_state : SerializableWorldState):
 func _start_game_battle(battle_state : SerializableBattleState):
 	var map_data = game_setup_info.battle_map
 	var armies : Array[Army]  = []
+	var is_spectator = true
 
 	for player in players:
 		armies.append(create_army_for(player))
+		if player.bot_engine or player.get_player_name() == "LOCAL":
+			is_spectator = false
 
 	UI.go_to_main_menu()
 	var x_offset = 0.0
-	BM.start_battle(armies, map_data, battle_state, x_offset)
+	BM.start_battle(armies, map_data, battle_state, x_offset, is_spectator)
 
 
 ## Creates army based on player slot data

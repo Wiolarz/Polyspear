@@ -243,6 +243,14 @@ godot::Array BattleMCTSManager::get_optimal_move_gd(float reward_per_visit_dithe
     return get_optimal_move(reward_per_visit_dither).as_libspear_tuple();
 }
 
+godot::Dictionary BattleMCTSManager::get_move_scores() {
+    godot::Dictionary ret{};
+    for(auto& [move, node] : root->_children) {
+        ret[move.as_libspear_tuple()] = node._reward / node._visits;
+    }
+    return ret;
+}
+
 void BattleMCTSManager::print_move_list() {
     for(auto& [move, node] : root->_children) {
         auto& hm = root->_bm.get_heuristically_good_moves();
@@ -299,6 +307,7 @@ void BattleMCTSManager::_bind_methods() {
     ClassDB::bind_method(D_METHOD("iterate", "iterations"), &BattleMCTSManager::iterate);
     ClassDB::bind_method(D_METHOD("set_root", "battle_manager"), &BattleMCTSManager::set_root);
     ClassDB::bind_method(D_METHOD("get_error_replays"), &BattleMCTSManager::get_error_replays);
+    ClassDB::bind_method(D_METHOD("get_move_scores"), &BattleMCTSManager::get_move_scores);
 
     ADD_SIGNAL(MethodInfo("complete"));
 

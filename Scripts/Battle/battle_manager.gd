@@ -22,7 +22,7 @@ var _replay_data : BattleReplay
 var _replay_is_playing : bool = false
 
 var _batch_mode : bool = false # flagged true when recreating game state
-
+var _ai_move_preview : AIMovePreview = null
 
 func _ready():
 	_battle_ui = load("res://Scenes/UI/BattleUi.tscn").instantiate()
@@ -47,7 +47,7 @@ func _process(_delta):
 
 ## x_offset is used to place battle to the right of world map
 func start_battle(new_armies : Array[Army], battle_map : DataBattleMap, \
-		battle_state : SerializableBattleState, x_offset : float) -> void:
+		battle_state : SerializableBattleState, x_offset : float, is_spectator : bool) -> void:
 
 	assert(_is_clear(), "cannot start battle map, map already loaded")
 
@@ -76,6 +76,9 @@ func start_battle(new_armies : Array[Army], battle_map : DataBattleMap, \
 			_perform_replay_move(m)
 		_batch_mode = false
 
+	if is_spectator: 
+		enable_ai_preview()
+	
 	# first turn does not get a signal emit
 	_on_turn_started(_battle_grid_state.get_current_player())
 
@@ -308,8 +311,11 @@ func  _end_move() -> void:
 			_battle_grid_state.end_stalemate() # could end the battle
 
 	if _battle_grid_state.battle_is_ongoing():
+		if _ai_move_preview:
+			_ai_move_preview.update(_battle_grid_state)
+		
 		_on_turn_started(_battle_grid_state.get_current_player())
-	else :
+	else:
 		_on_battle_ended()
 
 #endregion Ongoing battle
@@ -565,6 +571,8 @@ func _on_battle_ended() -> void:
 		return
 	_battle_is_ongoing = false
 	deselect_unit()
+	
+	disable_ai_preview()
 
 	await get_tree().create_timer(1).timeout # TEMP, don't exit immediately
 	while _replay_is_playing:
@@ -585,6 +593,7 @@ func _close_battle() -> void:
 	_turn_off_battle_ui()
 	_reset_grid_and_unit_forms()
 	deselect_unit()
+	disable_ai_preview()
 
 	if not WM.world_game_is_active():
 		print("end of test battle")
@@ -712,6 +721,32 @@ func force_surrender():
 	_battle_grid_state.force_surrender()
 	_end_move()
 
+
+func enable_ai_preview():
+	if not _battle_grid_state:
+		push_error("Failed to enahle AI preview - _battle_grid_state == null")
+		return
+	
+	if _ai_move_preview:
+		return
+	
+	_ai_move_preview = AIMovePreview.new()
+	add_child(_ai_move_preview)
+	_ai_move_preview.name = "AIMovePreview"
+	_ai_move_preview.update(_battle_grid_state)
+
+
+func disable_ai_preview():
+	if _ai_move_preview:
+		_ai_move_preview.queue_free()
+		_ai_move_preview = null
+
+
+func toggle_ai_preview():
+	if _ai_move_preview:
+		disable_ai_preview()
+	else:
+		enable_ai_preview()
 
 #endregion cheats
 

@@ -32,8 +32,8 @@ class BattleMCTSNode {
     Move _move{};
 
     unsigned _mcts_iterations = 0;
-    float _reward = 0.0f;
-    float _visits = 0.0f;
+    double _reward = 0.0f;
+    double _visits = 0.0f;
     unsigned _draws = 0;
     unsigned _wins = 0;
     unsigned _loses = 0;
@@ -96,6 +96,9 @@ public:
     /// The 'reward_per_visit_dither' parameter is described in ai_battle_bot_mcts.gd
     Move get_optimal_move(float reward_per_visit_dither);
     godot::Array get_optimal_move_gd(float reward_per_visit_dither);
+
+    /// Return a dictionary mapping rewards per visit for each move
+    godot::Dictionary get_move_scores();
 
     /// Add an error playout, based on a node and a list of extra moves from a playout
     void add_error_playout(const BattleMCTSNode& node, std::vector<Move> extra_moves);

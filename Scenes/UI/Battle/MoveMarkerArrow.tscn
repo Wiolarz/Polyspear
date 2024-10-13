@@ -1,0 +1,4 @@
+[gd_scene format=3 uid="uid://cyd82fl7gmqab"]
+
+[node name="MoveMarkerArrow" type="Polygon2D"]
+polygon = PackedVector2Array(-56, -10, 36, -10, 36, -35, 77, 0, 36, 35, 36, 10, -56, 10)
