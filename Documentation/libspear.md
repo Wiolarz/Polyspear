@@ -40,4 +40,10 @@ TODO (might be worth looking into WSL or MSYS2)
 
 # Diagnostics
 
-BattleManager currently has a variable called `debug_check_fast_bm_integrity` which checks each time a move is done whether results of a move replicated in BattleManagerFast match results in a regular BM.
+In config_manager.gd there are currently a few configurable variables:
+- `debug_check_fast_bm_integrity` - checks each time a move is done whether results of a move replicated in BattleManagerFast match results in a regular BM.
+- `debug_check_bmfast_internals` - enables additional BattleManagerFast internal integrity checks, which may slightly reduce performance
+- `debug_mcts_max_saved_fail_replays` - when greater than zero, saves 
+- `debug_save_failed_bmfast_integrity` - when true, immediately save replays from BattleManagerFast mismatches with an appropriate name
+
+Additionally, there's a builtin AI move trainer, which is automatically enabled for spectators and can be toggled with a "/brain" cheat.
