@@ -616,6 +616,7 @@ func _create_summary() -> DataBattleSummary:
 	for army_in_battle in armies_in_battle_state:
 		var player_stats := DataBattleSummaryPlayer.new()
 
+		var temp_points : int = 0
 		# Generate casulties info
 		if army_in_battle.dead_units.size() == 0:
 			player_stats.losses = "< none >"
@@ -623,12 +624,13 @@ func _create_summary() -> DataBattleSummary:
 			for dead in army_in_battle.dead_units:
 				var unit_description = "%s\n" % dead.unit_name
 				player_stats.losses += unit_description
+				temp_points += dead.level
 
 		var army_controller_index : int = army_in_battle.army_reference.controller_index
 		var army_controller = IM.get_player_by_index(army_controller_index)
 
 		# generates player names for their info column
-		player_stats.player_description = IM.get_full_player_description(army_controller)
+		player_stats.player_description = IM.get_full_player_description(army_controller) + " " + str(temp_points)
 
 		if army_in_battle.team == winning_team:
 			player_stats.state = "winner"
