@@ -240,6 +240,10 @@ func grid_input(coord : Vector2i) -> void:
 		print("ai playing, input ignored")
 		return
 
+	if not current_player.slot.is_local():
+		print("Attempt to play a move of an another player")
+		return
+
 	var move_info : MoveInfo
 
 	match _battle_grid_state.state:
