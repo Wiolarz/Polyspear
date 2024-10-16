@@ -124,11 +124,13 @@ func _on_message_arrived(content : String):
 
 
 func _on_chat_line_edit_text_submitted(new_text):
-	# TODO: Move it somewhere else
-	var array_get = func (array: PackedStringArray, index: int) \
+	var array_get = func (array: PackedStringArray, index: int, default: String = "") \
 		-> String:
-		if array.size() <= index: return ""
-		else: return array[index]
+		if array.size() <= index:
+			print("Non-standard number of arguments")
+			return default
+		else: 
+			return array[index]
 	
 	if new_text.length() >= 1 and new_text[0] == '/':
 		var args = new_text.split(" ", false)
@@ -136,16 +138,16 @@ func _on_chat_line_edit_text_submitted(new_text):
 		match cheat:
 			"money":
 				WM.cheat_money(
-					int(array_get.call(args, 1)),
-					int(array_get.call(args, 2)),
-					int(array_get.call(args, 3))
+					int(array_get.call(args, 1, "100")),
+					int(array_get.call(args, 2, "100")),
+					int(array_get.call(args, 3, "100"))
 				)
 				print("money cheat")
 			"fast":
-				WM.hero_speed_cheat(int(array_get.call(args, 1)))
+				WM.hero_speed_cheat(int(array_get.call(args, 1, "1")))
 				print("travel cheat")
 			"levelup":
-				WM.hero_level_up(int(array_get.call(args, 1)))
+				WM.hero_level_up(int(array_get.call(args, 1, "1")))
 				print("levelup cheat")
 			_:
 				print("unknown cheat")
