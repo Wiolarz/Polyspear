@@ -511,4 +511,14 @@ func hero_level_up(levels: int) -> void:
 	selected_hero.entity.hero.xp = 0
 
 
+func city_upgrade_cheat() -> void:
+	var current_player: WorldPlayerState = world_state.get_current_player()
+	
+	for building in current_player.faction.buildings:
+		current_player.goods.add(building.cost)
+		if not world_ui.city_ui.city.build_building(world_state, building):
+			current_player.goods.subtract(building.cost)
+	world_ui.city_ui._refresh_buildings_display()
+
+
 #endregion

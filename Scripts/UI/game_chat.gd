@@ -149,6 +149,9 @@ func _on_chat_line_edit_text_submitted(new_text):
 			"levelup":
 				WM.hero_level_up(int(array_get.call(args, 1, "1")))
 				print("levelup cheat")
+			"maxupgrade":
+				WM.city_upgrade_cheat()
+				print("city max upgrade cheat")
 			_:
 				print("unknown cheat")
 	else:
