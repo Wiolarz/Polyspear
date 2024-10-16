@@ -240,6 +240,10 @@ func grid_input(coord : Vector2i) -> void:
 		print("ai playing, input ignored")
 		return
 
+	if not current_player.slot.is_local():
+		print("Attempt to play a move of an another player")
+		return
+
 	var move_info : MoveInfo
 
 	match _battle_grid_state.state:
@@ -469,7 +473,7 @@ func _try_select_unit(coord : Vector2i) -> bool:
 
 ## Main way to deselect unit -> use every time, its safe
 func deselect_unit() -> void:
-	if _selected_unit:
+	if _selected_unit and _selected_unit in _unit_to_unit_form:
 		_unit_to_unit_form[_selected_unit].set_selected(false)
 	_selected_unit = null
 	_battle_ui.selected_spell = null
