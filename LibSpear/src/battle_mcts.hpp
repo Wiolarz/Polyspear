@@ -7,6 +7,7 @@
 
 #include "battle_manager_fast.hpp"
 #include <unordered_map>
+#include <memory>
 
 #include "godot_cpp/core/object.hpp"
 
@@ -27,9 +28,10 @@ class BattleMCTSManager;
 class BattleMCTSNode {
     BattleMCTSManager* _manager = nullptr;
     BattleMCTSNode* _parent = nullptr;
-    std::unordered_map<Move, BattleMCTSNode> _children{};
+    std::unordered_map<Move, std::shared_ptr<BattleMCTSNode>> _children{};
     BattleManagerFastCpp _bm{};
     Move _move{};
+    BattleMCTSNode* self{this};
 
     unsigned _mcts_iterations = 0;
     double _reward = 0.0f;
@@ -52,7 +54,7 @@ public:
     /// Select the currently best child. May return nullptr as the second return value
     std::pair<Move, BattleMCTSNode*> select();
     /// Find a new child node
-    void expand();
+    BattleMCTSNode& expand();
     /// Simulate a number of complete playouts in parallel
     BattleResult simulate(int max_sim_iterations, int simulations);
     /// Backpropagate the result

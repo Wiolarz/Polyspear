@@ -21,6 +21,7 @@ class_name AIBattleBotMCTS extends AIInterface
 var iterate_complete_mutex := Mutex.new()
 var is_iterate_complete: bool = false
 var thread: Thread
+var mcts: BattleMCTSManager
 
 signal complete
 
@@ -28,6 +29,7 @@ signal complete
 func choose_move(state: BattleGridState) -> MoveInfo:
 	var bm = BattleManagerFast.from(state)
 	var mcts = BattleMCTSManager.new()
+	add_child(mcts)
 
 	mcts.set_root(bm)
 	mcts.max_sim_iterations = max_sim_turns
@@ -68,9 +70,23 @@ func choose_move(state: BattleGridState) -> MoveInfo:
 			bm_replay_helper.play_move(move)
 		replay.save_as("MCTS Fail %s" % [i])
 		i += 1
-	
+	mcts.debug_print_move_lists = true
 	var tuple = mcts.get_optimal_move(reward_per_visit_dither)
-	return bm.libspear_tuple_to_move_info(tuple)
+	var move = bm.libspear_tuple_to_move_info(tuple)
+	
+	# Just in case of bugs
+	if move.target_tile_coord.x < 0 or move.target_tile_coord.y < 0:
+		push_warning("Moves: %s" % [mcts.get_move_scores()])
+		
+		if CFG.debug_check_bmfast_integrity:
+			assert(false, "MCTS AI tried to perform an invalid move")
+		else:
+			push_error("MCTS AI tried to perform an invalid move, falling back to random...")
+		
+		return AiBotStateRandom.choose_move_static(state)
+	
+	mcts.queue_free()
+	return move
 
 func cleanup_after_move():
 	if thread:

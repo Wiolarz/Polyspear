@@ -39,7 +39,10 @@ func update(bgs: BattleGridState):
 	run_mcts = false
 	
 	root = BattleManagerFast.from(bgs)
+	if mcts:
+		mcts.queue_free()
 	mcts = BattleMCTSManager.new()
+	add_child(mcts)
 	var ref : AIBattleBotMCTS = reference_bot.instantiate()
 	
 	mcts.set_root(root)

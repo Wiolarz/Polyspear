@@ -7,4 +7,5 @@ script = ExtResource("1_nohmd")
 iterations = 100
 max_sim_turns = 20
 heuristic_probability = 0.95
+max_playouts_per_visit = 1
 reward_per_visit_dither = 0.2

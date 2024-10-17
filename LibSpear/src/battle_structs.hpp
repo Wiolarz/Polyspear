@@ -175,9 +175,13 @@ struct Army {
     int8_t team = -1;
 
     int16_t mana_points = -1;
-    int16_t cyclone_timer = -1;
+    int16_t cyclone_timer = CYCLONE_UNINITIALIZED;
 
     std::array<Unit, MAX_UNITS_IN_ARMY> units{};
+
+
+    static const int16_t CYCLONE_UNINITIALIZED = -1000;
+
 
     Unit* get_unit(Position coord);
     int find_unit_id_to_summon(int from = 0);
@@ -190,8 +194,8 @@ struct Move {
     static const int8_t NO_SPELL = -1;
 
     int8_t spell_id = NO_SPELL;
-    uint8_t unit;
-    Position pos;
+    uint8_t unit = 255;
+    Position pos{-1, -1};
 
     Move() = default;
     Move(uint8_t _unit, Position _pos, int8_t _spell_id = NO_SPELL) : spell_id(_spell_id), unit(_unit), pos(_pos) {}

@@ -148,6 +148,10 @@ public:
         return _armies[army].units[unit].rotation;
     }
 
+    inline int get_army_cyclone_timer(int army) const {
+        return _armies[army].cyclone_timer;
+    }
+
     inline bool is_unit_alive(int army, int unit) const {
         return _armies[army].units[unit].status == UnitStatus::ALIVE;
     }

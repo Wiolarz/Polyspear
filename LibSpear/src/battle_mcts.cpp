@@ -43,10 +43,11 @@ std::pair<Move, BattleMCTSNode*> BattleMCTSNode::select() {
     Move best_move{};
 
     for(auto& [move, node] : _children) {
-        auto uct = node.uct();
+        auto uct = node->uct();
         if(uct >= uct_max) {
             uct_max = uct;
-            uct_max_idx = &node;
+            // Safe as long as it doesn't outlive parent
+            uct_max_idx = &(*node);
             best_move = move;
         }
     }
@@ -54,19 +55,16 @@ std::pair<Move, BattleMCTSNode*> BattleMCTSNode::select() {
     return std::make_pair(best_move, uct_max_idx);
 }
 
-void BattleMCTSNode::expand() {
+BattleMCTSNode& BattleMCTSNode::expand() {
     if(_bm.is_battle_finished()) {
-        return;
+        return *this;
     }
 
     auto [move, heur_chosen] = _bm.get_random_move(_manager->heuristic_probability);
 
     if(_children.count(move) == 0) {
-        _children.emplace(std::piecewise_construct,
-                std::forward_as_tuple(move), 
-                std::forward_as_tuple(_bm, _manager, this, move)
-        );
-        auto& child = _children.at(move);
+        _children.emplace(move, std::make_shared<BattleMCTSNode>(_bm, _manager, this, move));
+        auto& child = *_children.at(move);
         child._bm.play_move(move);
         child._mcts_iterations = _mcts_iterations;
 
@@ -75,7 +73,9 @@ void BattleMCTSNode::expand() {
             child._visits += prior_reward;
             child._reward += prior_reward;
         }
+        return child;
     }
+    return *this;
 }
 
 BattleResult _simulate_thread(BattleManagerFastCpp bmnew, BattleMCTSManager& mcts, const BattleMCTSNode& node) {
@@ -180,13 +180,18 @@ void BattleMCTSManager::iterate(int iterations) {
     root->_bm.set_debug_internals(debug_bmfast_internals);
     root->_mcts_iterations = iterations;
     root->iterate(iterations);
-    emit_signal("complete");
+    call_deferred("emit_signal", "complete");
 }
 
 void BattleMCTSNode::iterate(int iterations) {
 
     auto visits = _manager->max_playouts_per_visit;
     auto begin = std::chrono::high_resolution_clock::now();
+
+    // Make sure the first level is explored to ensure every move will have at least one visit (select prioritizes nodes with 0 moves)
+    while(!is_explored()) {
+        expand();
+    }
 
     for(int i = 0; i < iterations; i+=visits) {
         BattleMCTSNode* node = this, *temp_node;
@@ -195,8 +200,8 @@ void BattleMCTSNode::iterate(int iterations) {
             node = temp_node;
         }
 
-        node->expand();
-        BattleResult result = node->simulate(_manager->max_sim_iterations, visits);    
+        node = &node->expand();
+        BattleResult result = node->simulate(_manager->max_sim_iterations, visits);
 
         node->backpropagate(result, visits);
 
@@ -225,11 +230,14 @@ Move BattleMCTSManager::get_optimal_move(float reward_per_visit_dither) {
         print_move_list();
     }
 
-    float max_ratio = -1.0f;
-    Move chosen;
+    double max_ratio = -1.0;
+    Move chosen{};
 
     for(auto& [move, node] : root->_children) {
-        auto new_ratio = (node._reward / node._visits) + dither_dist(rand_engine);
+        auto new_ratio = (node->_reward / node->_visits) + dither_dist(rand_engine);
+        if(node->_visits < 1.0) {
+            new_ratio = 0.0;
+        }
         if(new_ratio > max_ratio) {
             chosen = move;
             max_ratio = new_ratio;
@@ -246,7 +254,7 @@ godot::Array BattleMCTSManager::get_optimal_move_gd(float reward_per_visit_dithe
 godot::Dictionary BattleMCTSManager::get_move_scores() {
     godot::Dictionary ret{};
     for(auto& [move, node] : root->_children) {
-        ret[move.as_libspear_tuple()] = node._reward / node._visits;
+        ret[move.as_libspear_tuple()] = node->_reward / node->_visits;
     }
     return ret;
 }
@@ -258,7 +266,7 @@ void BattleMCTSManager::print_move_list() {
 
         printf("Child %c %d->%d,%d UCT=%f, R/V=%f (reward: %f, visits: %f)\n", 
                 heur_move ? 'H':' ', move.unit, move.pos.x, move.pos.y, 
-                node.uct(), node._reward / node._visits, node._reward, node._visits
+                node->uct(), node->_reward / node->_visits, node->_reward, node->_visits
         );
     }
     printf("%i/%i/%i\n", root->_wins, root->_draws, root->_loses);

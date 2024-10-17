@@ -38,7 +38,7 @@ struct Position {
     int8_t y{};
 
     inline Position() : x(0), y(0) {};
-    inline Position(uint8_t x, uint8_t y) : x(x), y(y) {};
+    inline Position(int8_t x, int8_t y) : x(x), y(y) {};
     inline Position(godot::Vector2i p) : x(p.x), y(p.y) {};
 
     inline Position operator+(const Position& other) const {

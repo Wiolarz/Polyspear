@@ -15,7 +15,7 @@ void BattleManagerFastCpp::finish_initialization() {
         if(_armies[i].is_defeated()) {
             continue;
         }
-        BM_ASSERT(_armies[i].cyclone_timer != -1, "Uninitialized cyclone timer in army {}", i);
+        BM_ASSERT(_armies[i].cyclone_timer != Army::CYCLONE_UNINITIALIZED, "Uninitialized cyclone timer in army {}", i);
         BM_ASSERT(_armies[i].team != -1, "Uninitialized team id in army {}", i);
 
         _armies[i].id = i;
@@ -117,7 +117,7 @@ void BattleManagerFastCpp::play_move(Move move) {
             _update_turn_end();
 
             _armies[_cyclone_target].cyclone_timer--;
-            if(_armies[_cyclone_target].cyclone_timer == 0) {
+            if(_armies[_cyclone_target].cyclone_timer <= 0) {
                 _current_army = _cyclone_target;
                 _state = BattleState::SACRIFICE;
             }
@@ -128,7 +128,7 @@ void BattleManagerFastCpp::play_move(Move move) {
         _kill_unit(uid, NO_UNIT);
         _current_army = MAX_ARMIES-1;
         _next_army();
-        _state = BattleState::ONGOING;
+        _state = get_winner_team() < 0 ? BattleState::ONGOING : BattleState::FINISHED;
     }
     else {
         BM_ASSERT(false, "Battle already ended, did not expect that");
@@ -543,7 +543,7 @@ void BattleManagerFastCpp::_refresh_legal_moves() {
                 }
 
                 auto tile = _tiles->get_tile(move.pos);
-                if(!(tile.is_passable()) && !(tile.is_hill() && side == unit.rotation)) {
+                if(!(tile.is_passable()) && !(tile.is_hill() && side == unit.rotation && !going_across_pit)) {
                     continue;
                 }
                 
@@ -1063,6 +1063,7 @@ void BattleManagerFastCpp::_bind_methods() {
     ClassDB::bind_method(D_METHOD("get_unit_rotation", "army", "unit"), &BattleManagerFastCpp::get_unit_rotation);
     ClassDB::bind_method(D_METHOD("is_unit_alive", "army", "unit"), &BattleManagerFastCpp::is_unit_alive);
     ClassDB::bind_method(D_METHOD("is_unit_being_summoned", "army", "unit"), &BattleManagerFastCpp::is_unit_being_summoned);
+    ClassDB::bind_method(D_METHOD("get_army_cyclone_timer", "army"), &BattleManagerFastCpp::get_army_cyclone_timer);
     ClassDB::bind_method(D_METHOD("get_current_participant"), &BattleManagerFastCpp::get_current_participant);
     ClassDB::bind_method(D_METHOD("get_legal_moves"), &BattleManagerFastCpp::get_legal_moves_gd);
     ClassDB::bind_method(D_METHOD("get_unit_id_on_position", "position"), &BattleManagerFastCpp::get_unit_id_on_position);

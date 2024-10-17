@@ -2,6 +2,5 @@
 
 [ext_resource type="Script" path="res://Scripts/AI/example_bot.gd" id="1_vi3vs"]
 
-[node name="Random" type="Node" node_paths=PackedStringArray("current_state")]
+[node name="Random" type="Node"]
 script = ExtResource("1_vi3vs")
-current_state = NodePath("")

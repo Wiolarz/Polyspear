@@ -109,6 +109,7 @@ func set_unit_symbol(army_idx: int, unit_idx: int, symbol_idx: int, symbol: E.Sy
 func libspear_tuple_to_move_info(tuple: Array) -> MoveInfo:
 	var unit: int = tuple[0]
 	var position: Vector2i = tuple[1]
+	
 	var unit_position = get_unit_position(get_current_participant(), unit)
 	var uid = [get_current_participant(), unit]
 	
