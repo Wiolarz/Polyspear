@@ -25,6 +25,10 @@ var cyclone_target : ArmyInBattleState
 #TEMP HACK for proper awarding of exp in spear kills
 var spear_holding_killer_teams : Array[int] = []
 
+
+var stalemate_failsafe_on : bool = false
+var stalemate_failsafe_start : int = 0
+
 #region init
 
 func _init(width_ : int, height_ : int):
@@ -133,6 +137,16 @@ func move_info_execute(move_info : MoveInfo) -> void:
 			move_info.register_whole_move_complete() # TEMP check what it was supposed to do
 
 	turn_counter += 1
+	
+	if stalemate_failsafe_on and stalemate_failsafe_start + 6 < turn_counter:
+		for army in armies_in_battle_state:
+			for _unit in army.units:
+				if _unit.template.unit_name != "orc_2": continue
+				
+				var vengeance_effect : BattleMagicEffect = \
+					load("res://Resources/Battle/Battle_Spells/Battle_Magic_Effects/vengeance_effect.tres")
+				
+				vengeance_effect.apply_effect(_unit, "post death spell effect")
 
 	_check_battle_end()
 	if battle_is_ongoing():
@@ -730,6 +744,17 @@ func _kill_unit(target : Unit, killer_army : ArmyInBattleState = null) -> void:
 		spell.apply_effect(currently_active_unit, "post death spell effect")
 
 	mana_values_changed() # TEMP occurs every time after death
+	
+	var units_on_board : Dictionary = {}
+	
+	for army in armies_in_battle_state:
+		for unit in army.units:
+			units_on_board[unit.template.unit_name] = unit
+	
+	if units_on_board.size() == 2 and units_on_board.has("elf_3") \
+	and units_on_board.has("orc_2"):
+		stalemate_failsafe_on = true
+		stalemate_failsafe_start = turn_counter
 
 ## Rare event when all players repeated their moves -> it pushes cyclone timer to activate next turn
 func end_stalemate() -> void:
