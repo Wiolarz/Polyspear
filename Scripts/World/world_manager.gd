@@ -292,7 +292,7 @@ func start_combat( \
 	combat_tile = combat_coord
 	var battle_map : DataBattleMap = world_state.get_battle_map_at(combat_tile, biggest_army_size)
 	var x_offset = get_bounds_global_position().end.x + CFG.MAPS_OFFSET_X
-	BM.start_battle(armies_, battle_map, battle_state, x_offset)
+	BM.start_battle(armies_, battle_map, battle_state, x_offset, false)
 	UI.switch_camera()
 
 

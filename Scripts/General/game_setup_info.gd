@@ -41,6 +41,8 @@ func set_team(slot_index : int, team_idx : int):
 func set_unit(slot_index : int, unit_index : int, unit_data : DataUnit):
 	slots[slot_index].units_list[unit_index] = unit_data
 
+func set_battle_bot(slot_index: int, path: String):
+	slots[slot_index].battle_bot_path = path
 
 ## Gameplay setting a hero to memory
 func set_hero(slot_index : int, hero_data : DataHero):
@@ -241,6 +243,7 @@ class Slot extends RefCounted: # check if this is good base
 	## `String == ""` -> we (local player) [br]
 	## `String != ""` -> remote player with specified network name [br]
 	var occupier = ""
+	var battle_bot_path: String = ""
 
 	## used for some simpleness at player in world
 	var index : int = -1

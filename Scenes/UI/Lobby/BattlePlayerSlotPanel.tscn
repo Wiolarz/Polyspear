@@ -57,6 +57,12 @@ text = "Zdzichu"
 horizontal_alignment = 1
 vertical_alignment = 1
 
+[node name="OptionButtonBot" type="OptionButton" parent="GeneralVContainer/TopBarHContainer"]
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+allow_reselect = true
+
 [node name="ButtonTakeLeave" type="Button" parent="GeneralVContainer/TopBarHContainer"]
 custom_minimum_size = Vector2(50, 0)
 layout_mode = 2
