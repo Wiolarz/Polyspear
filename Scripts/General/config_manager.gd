@@ -23,6 +23,8 @@ var animation_speed_frames : AnimationSpeed = AnimationSpeed.NORMAL
 ## battle map is placed this far to the right after world map bounds
 const MAPS_OFFSET_X = 7000
 
+const BATTLE_BORDER_WIDTH = 15
+const BATTLE_BORDER_HEIGHT = 8
 
 #region Paths
 
