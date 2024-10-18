@@ -15,7 +15,6 @@ texture = ExtResource("2_uxjol")
 
 [node name="sprite_unit" type="Sprite2D" parent="."]
 texture = ExtResource("3_jdgie")
-flip_h = true
 
 [node name="sprite_border" type="Sprite2D" parent="."]
 texture = ExtResource("4_ybg78")

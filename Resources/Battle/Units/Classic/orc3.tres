@@ -1,9 +1,9 @@
-[gd_resource type="Resource" script_class="DataUnit" load_steps=6 format=3 uid="uid://cyw7ujcmsbdq2"]
+[gd_resource type="Resource" script_class="DataUnit" load_steps=6 format=3]
 
 [ext_resource type="Script" path="res://Resources/Battle/data_unit.gd" id="1_4uymu"]
 [ext_resource type="Script" path="res://Scripts/World/Economy/goods.gd" id="1_ykmhh"]
-[ext_resource type="Resource" uid="uid://bp747guikipcb" path="res://Resources/Battle/Symbols/spear.tres" id="3_6wlcv"]
-[ext_resource type="Resource" uid="uid://o4rlmfc33rsh" path="res://Resources/Battle/Symbols/empty.tres" id="4_5cbmw"]
+[ext_resource type="Resource" path="res://Resources/Battle/Symbols/spear.tres" id="3_6wlcv"]
+[ext_resource type="Resource" path="res://Resources/Battle/Symbols/empty.tres" id="4_5cbmw"]
 
 [sub_resource type="Resource" id="Resource_lnog6"]
 script = ExtResource("1_ykmhh")
@@ -14,7 +14,7 @@ ruby = 0
 [resource]
 script = ExtResource("1_4uymu")
 unit_name = "orc_3"
-texture_path = "res://Art/units/orc/orc_champion.png"
+texture_path = "res://Art/units/new_classic/orc_halbard.png"
 symbols = Array[Resource("res://Resources/Battle/data_symbol.gd")]([ExtResource("3_6wlcv"), ExtResource("3_6wlcv"), ExtResource("4_5cbmw"), ExtResource("4_5cbmw"), ExtResource("4_5cbmw"), ExtResource("3_6wlcv")])
 cost = SubResource("Resource_lnog6")
 level = 4
