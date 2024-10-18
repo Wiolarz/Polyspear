@@ -11,9 +11,17 @@ extends Resource
 ## if false all slots are by default controlled by host (human player)
 @export var use_default_AI_players : bool
 
+@export var bmfast_integrity_checks : bool = true
+
 ## Default first option after opening the game should be last selected one
 @export var last_used_battle_preset : PresetBattle
 @export var last_used_world_preset : PresetWorld
+
+@export var fullscreen : bool:
+	set(new):
+		if new != fullscreen:
+			(func(): UI.set_fullscreen(new)).call_deferred()
+		fullscreen = new
 
 @export var login : String
 ## if true adds a random number suffix at the end of a login string

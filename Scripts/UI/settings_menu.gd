@@ -1,32 +1,35 @@
 extends Control
 
+var connected_nodes := {}
+
+
+func _ready():
+	UI.update_settings.connect(refresh)
+
 
 func refresh():
-	$VBoxContainer/ToggleAutoStart.button_pressed = CFG.AUTO_START_GAME
-	$VBoxContainer/ToggleBattleDefault.button_pressed = CFG.DEFAULT_MODE_IS_BATTLE
-	$VBoxContainer/ToggleDefaultAIPlayers.button_pressed = CFG.player_options.use_default_AI_players
+	_refresh_toggle($VBoxContainer/ToggleAutoStart, "autostart_map")
+	_refresh_toggle($VBoxContainer/ToggleBattleDefault, "use_default_battle")
+	_refresh_toggle($VBoxContainer/ToggleDefaultAIPlayers, "use_default_AI_players")
+	_refresh_toggle($VBoxContainer/ToggleFullscreen, "fullscreen")
+	_refresh_toggle($VBoxContainer/ToggleBMFastIntegrityChecks, "bmfast_integrity_checks")
 
 
-func _on_toggle_auto_start_pressed():
-	# TODO refactor code copying
-	CFG.player_options.autostart_map = not CFG.player_options.autostart_map
+func _refresh_toggle(node : CheckButton, option: StringName):
+	node.button_pressed = CFG.player_options.get(option)
+	if node not in connected_nodes:
+		connected_nodes[node] = true
+		node.pressed.connect(_toggle_option.bind(node, option))
+
+
+func _toggle_option(node : CheckButton, option: StringName):
+	var old_option = CFG.player_options.get(option)
+	CFG.player_options.set(option, not old_option)
 	CFG.save_player_options()
-	$VBoxContainer/ToggleAutoStart.button_pressed = CFG.AUTO_START_GAME
-
-
-func _on_toggle_battle_default_pressed():
-	CFG.player_options.use_default_battle = not CFG.player_options.use_default_battle
-	CFG.save_player_options()
-	$VBoxContainer/ToggleBattleDefault.button_pressed = CFG.DEFAULT_MODE_IS_BATTLE
+	UI.update_settings.emit()
 
 
 func _on_toggle_auto_start_visibility_changed():
 	if visible:
 		refresh()
 
-
-func _on_toggle_default_ai_players_pressed():
-	#TODO quick refactor
-	CFG.player_options.use_default_AI_players = not CFG.player_options.use_default_AI_players
-	CFG.save_player_options()
-	$VBoxContainer/ToggleDefaultAIPlayers.button_pressed = CFG.player_options.use_default_AI_players

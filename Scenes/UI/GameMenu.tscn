@@ -1,7 +1,8 @@
-[gd_scene load_steps=6 format=3 uid="uid://bi1yq2awm2kc0"]
+[gd_scene load_steps=7 format=3 uid="uid://bi1yq2awm2kc0"]
 
 [ext_resource type="Script" path="res://Scripts/UI/in_game_menu.gd" id="1_4iw1x"]
 [ext_resource type="Shortcut" uid="uid://fuvss5hfg4q2" path="res://Resources/Shortcuts/go_back.tres" id="2_48g4r"]
+[ext_resource type="PackedScene" uid="uid://b6eoph2qpu0d" path="res://Scenes/UI/SettingsMenu.tscn" id="3_315la"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fdxbp"]
 bg_color = Color(0.172549, 0.290196, 0.180392, 1)
@@ -58,6 +59,7 @@ text = "Surrender
 "
 
 [node name="ToggleBattleDefault" type="CheckButton" parent="MenuContainer"]
+visible = false
 layout_mode = 2
 theme_override_styles/normal = SubResource("StyleBoxFlat_ju7ji")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_ju7ji")
@@ -68,6 +70,7 @@ text = "Use battle as default"
 alignment = 1
 
 [node name="ToggleAutoStart" type="CheckButton" parent="MenuContainer"]
+visible = false
 layout_mode = 2
 theme_override_styles/normal = SubResource("StyleBoxFlat_ju7ji")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_ju7ji")
@@ -82,7 +85,12 @@ visible = false
 layout_mode = 2
 text = "Restart"
 
+[node name="Settings" type="Button" parent="MenuContainer"]
+layout_mode = 2
+text = "Settings"
+
 [node name="FullScreen" type="Button" parent="MenuContainer"]
+visible = false
 layout_mode = 2
 text = "Turn on/off full screen"
 
@@ -94,12 +102,52 @@ text = "Quit"
 layout_mode = 2
 text = "Return To Main Menu"
 
+[node name="SettingsModal" type="Panel" parent="."]
+visible = false
+custom_minimum_size = Vector2(800, 1000)
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -400.0
+offset_top = -500.0
+offset_right = 400.0
+offset_bottom = 500.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ScrollContainer" type="ScrollContainer" parent="SettingsModal"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="SettingsMenu" parent="SettingsModal/ScrollContainer" instance=ExtResource("3_315la")]
+layout_mode = 2
+
+[node name="SettingsExit" type="Button" parent="SettingsModal"]
+custom_minimum_size = Vector2(75, 75)
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -26.0
+offset_bottom = 48.0
+grow_horizontal = 0
+theme_override_styles/normal = SubResource("StyleBoxFlat_p527t")
+text = "X"
+
 [connection signal="visibility_changed" from="." to="." method="_on_visibility_changed"]
 [connection signal="pressed" from="MenuContainer/BackToGame" to="." method="_on_back_to_game_pressed"]
 [connection signal="pressed" from="MenuContainer/WinBattle" to="." method="_on_win_battle_pressed"]
 [connection signal="pressed" from="MenuContainer/Surrender" to="." method="_on_surrender_pressed"]
 [connection signal="pressed" from="MenuContainer/ToggleBattleDefault" to="." method="_on_toggle_battle_default_pressed"]
 [connection signal="pressed" from="MenuContainer/ToggleAutoStart" to="." method="_on_toggle_auto_start_pressed"]
+[connection signal="pressed" from="MenuContainer/Settings" to="." method="_on_settings_pressed"]
 [connection signal="pressed" from="MenuContainer/FullScreen" to="." method="_on_full_screen_pressed"]
 [connection signal="pressed" from="MenuContainer/Quit" to="." method="_on_quit_pressed"]
 [connection signal="pressed" from="MenuContainer/ReturnToMainMenu" to="." method="_on_return_to_main_menu_pressed"]
+[connection signal="pressed" from="SettingsModal/SettingsExit" to="." method="_on_settings_exit_pressed"]

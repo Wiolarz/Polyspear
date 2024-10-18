@@ -88,9 +88,9 @@ func perform_replay(path):
 	game_setup_info.game_mode = GameSetupInfo.GameMode.BATTLE
 	game_setup_info.battle_map = replay.battle_map
 
-	assert(game_setup_info.slots.size() == replay.units_at_start.size(), \
-			"for now only 1v1 implemented")
 	for slot_id in range(replay.units_at_start.size()):
+		if game_setup_info.slots.size() == slot_id:
+			game_setup_info.slots.push_back(GameSetupInfo.Slot.new())
 		var slot = game_setup_info.slots[slot_id]
 		var units_array = replay.units_at_start[slot_id]
 		slot.occupier = replay.get_player_name(slot_id)

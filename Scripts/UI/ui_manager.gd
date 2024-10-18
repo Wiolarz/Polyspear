@@ -1,6 +1,8 @@
 # Singleton - UI
 extends Node
 
+signal update_settings()
+
 var in_game_menu
 var main_menu
 var ui_overlay
@@ -12,6 +14,7 @@ var hero_level_up
 
 var camera : PolyCamera
 var current_camera_position = E.CameraPosition.WORLD
+
 
 func _ready():
 	process_mode = Node.PROCESS_MODE_ALWAYS
@@ -201,8 +204,8 @@ func set_camera(pos : E.CameraPosition) -> void:
 
 
 ## NOTE: fullscreen uses old style exclusive fullscreen because of Godot bug
-func toggle_fullscreen():
-	if DisplayServer.window_get_mode() == DisplayServer.WINDOW_MODE_WINDOWED:
+func set_fullscreen(fullscreen):
+	if fullscreen:
 		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_EXCLUSIVE_FULLSCREEN)
 		# DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
 		# TODO: change to borderless when Godot bug is fixed
@@ -211,6 +214,11 @@ func toggle_fullscreen():
 	else:
 		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
 
+
+func toggle_fullscreen():
+	# automatically launches set_fullscreen
+	CFG.player_options.fullscreen = not CFG.player_options.fullscreen
+	CFG.save_player_options()
 
 
 ## Toggle of default godot Debug tool - visible collision shapes

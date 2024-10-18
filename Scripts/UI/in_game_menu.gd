@@ -52,5 +52,15 @@ func _on_toggle_battle_default_pressed():
 
 
 func _on_visibility_changed():
+	$SettingsModal.visible = false
 	if visible:
 		refresh()
+
+
+func _on_settings_pressed():
+	$SettingsModal.visible = true
+
+
+func _on_settings_exit_pressed():
+	$SettingsModal.visible = false
+
