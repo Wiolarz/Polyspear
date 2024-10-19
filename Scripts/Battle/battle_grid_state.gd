@@ -1266,7 +1266,7 @@ class BattleHex:
 
 
 	static func create(data : DataTile) -> BattleHex:
-		if data.type == "sentinel":
+		if data.type == "SENTINEL":
 			return null
 
 		var result = BattleHex.new()
@@ -1289,7 +1289,7 @@ class BattleHex:
 				result.hill = true
 			"swamp":
 				result.swamp = true
-			"empty":
+			"EMPTY":
 				pass
 			"mana_well":
 				result.mana = true

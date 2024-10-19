@@ -133,7 +133,7 @@ func get_start_goods() -> Goods:
 	return Goods.new(10,5,3)
 
 const WORLD_MOVABLE_TILES = [
-	"empty",
+	"EMPTY",
 	"iron_mine",
 	"sawmill",
 	"ruby_cave",
