@@ -204,11 +204,8 @@ static func does_it_counter_attack(symbol : E.Symbols) -> bool:
 
 
 static func does_it_shoot(symbol : E.Symbols) -> bool:
-	match symbol:
-		E.Symbols.BOW, E.Symbols.DAGGER:
-			return true
-		_:
-			return false
+	return Unit.ranged_weapon_reach(symbol) > 0
+
 
 
 ## return how many tiles does range weapon attack can reach [br]
