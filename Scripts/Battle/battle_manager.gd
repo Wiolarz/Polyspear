@@ -478,6 +478,10 @@ func _try_select_unit(coord : Vector2i) -> bool:
 	if new_unit.controller != _battle_grid_state.get_current_player():
 		return false
 
+	if new_unit == _selected_unit:  # Selecting the same unit twice deselects it
+		deselect_unit()
+		return false
+
 	# deselect visually old unit if new one selected
 	if _selected_unit:
 		deselect_unit()
