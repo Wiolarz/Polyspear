@@ -24,6 +24,7 @@ var _replay_data : BattleReplay
 var _replay_is_playing : bool = false
 
 var _batch_mode : bool = false # flagged true when recreating game state
+var _in_editor : bool = false
 
 
 func _ready():
@@ -100,20 +101,11 @@ func _load_map(map : DataBattleMap) -> void:
 			tile_form.position = to_position(coord)
 			_grid_tiles_node.add_child(tile_form)
 	
-	for x in range(-CFG.BATTLE_BORDER_WIDTH, map.grid_width + CFG.BATTLE_BORDER_WIDTH):
-		for y in range(-CFG.BATTLE_BORDER_HEIGHT, map.grid_height + CFG.BATTLE_BORDER_HEIGHT):
-			
-			var coord = Vector2i(x, y)
-			if (x >= 0 and x < map.grid_width) and (y >= 0 and y < map.grid_height):
-				continue
-			
-			var tile_form = TileForm.create_battle_tile(
-				load("res://Resources/Battle/Battle_tiles/sentinel.tres"), coord
-			)
-			_border.push_back(tile_form)
-			tile_form.position = to_position(coord)
-			_border_node.add_child(tile_form)
-
+	if not _in_editor:
+		create_borders(Vector2i(map.grid_width, map.grid_height), func(coord):
+			return TileForm.create_battle_tile(load("res://Resources/Battle/Battle_tiles/sentinel.tres"), coord)
+		)
+	
 
 ## space needed for battle tiles in global position
 func get_bounds_global_position() -> Rect2:
@@ -125,6 +117,20 @@ func get_bounds_global_position() -> Rect2:
 			get_tile_global_position(Vector2i(_tile_grid.width-1, _tile_grid.height-1))
 	var size : Vector2 = bottom_right_tile_position - top_left_tile_position
 	return Rect2(top_left_tile_position, size)
+
+
+## sentinel_factory is a function in a form of func(coords: Vector2i) -> TileForm
+func create_borders(dims: Vector2i, sentinel_factory : Callable):
+	for x in range(-CFG.BATTLE_BORDER_WIDTH, dims.x + CFG.BATTLE_BORDER_WIDTH):
+		for y in range(-CFG.BATTLE_BORDER_HEIGHT, dims.y + CFG.BATTLE_BORDER_HEIGHT):
+			if (x >= 0 and x < dims.x) and (y >= 0 and y < dims.y):
+				continue
+			
+			var coord = Vector2i(x, y)
+			var tile_form = sentinel_factory.call(coord)
+			_border.push_back(tile_form)
+			tile_form.position = to_position(coord)
+			_border_node.add_child(tile_form)
 
 
 #endregion
@@ -735,10 +741,12 @@ func force_surrender():
 #region map editor
 
 func load_editor_map(map : DataBattleMap) -> void:
+	_in_editor = true
 	_load_map(map)
 
 
 func unload_for_editor() -> void:
+	_in_editor = false
 	_reset_grid_and_unit_forms()
 
 
