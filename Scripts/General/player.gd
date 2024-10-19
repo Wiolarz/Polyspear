@@ -1,7 +1,7 @@
 class_name Player
 extends Node
 
-var slot : GameSetupInfo.Slot
+var slot : Slot
 
 var bot_engine : AIInterface
 
@@ -13,7 +13,7 @@ var team : int:
 	get: return slot.team
 	set(_value): assert(false, "no set here")
 
-static func create(new_slot : GameSetupInfo.Slot) -> Player:
+static func create(new_slot : Slot) -> Player:
 	var result := Player.new()
 	result.slot = new_slot
 
