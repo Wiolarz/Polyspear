@@ -32,7 +32,6 @@ static func create(new_unit : Unit) -> UnitForm:
 	result.rotation_degrees = new_unit.unit_rotation * 60
 	result._target_rotation_degrees = result.rotation_degrees
 	result.get_node("sprite_unit").rotation = -result.rotation
-	result.get_node("sprite_unit/UnitLevel").text = UnitForm._get_unit_roman_level(new_unit.template.level)
 	return result
 
 ## HACK, this is for visuals only for summon UI
@@ -51,11 +50,6 @@ func _physics_process(delta):
 	if _animate_movement():
 		return
 	_animate_death(delta)
-
-
-static func _get_unit_roman_level(level) -> String:
-	const roman_numbers = ["0", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"]
-	return roman_numbers[level]
 
 
 func start_turn_anim():
@@ -192,6 +186,7 @@ func apply_graphics(template : DataUnit, color : DataPlayerColor):
 	var unit_texture = load(template.texture_path) as Texture2D
 	_apply_unit_texture(unit_texture)
 	_apply_color_texture(color)
+	_apply_level_number(template.level)
 	for dir in range(0,6):
 		var symbol_texture = template.symbols[dir].texture_path
 		_apply_symbol_sprite(dir, symbol_texture)
@@ -233,3 +228,7 @@ func _apply_color_texture(color : DataPlayerColor) -> void:
 	var texture = load(path) as Texture2D
 	assert(texture, "failed to load background " + path)
 	$sprite_color.texture = texture
+
+func _apply_level_number(level) -> void:
+	const roman_numbers = ["0", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"]
+	$sprite_unit/UnitLevel.text = roman_numbers[level]
