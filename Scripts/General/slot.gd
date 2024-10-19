@@ -82,3 +82,14 @@ func _get_bot_name(all_slots: Array[Slot]) -> String:
 	if number_of_ais == 1:
 		return "AI"
 	return "AI %s" % index_of_this_ai
+
+
+func get_player_name() -> String:
+	# TODO make these names same as elsewhere
+	if is_bot():
+		return "AI"
+	if is_local():
+		return "LOCAL" # TODO use the same identifier which is "(( you ))" when
+					   # offline
+	# network login
+	return occupier

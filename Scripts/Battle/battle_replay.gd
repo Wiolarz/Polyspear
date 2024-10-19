@@ -9,6 +9,7 @@ extends Resource
 ## list of all actions made by players
 @export var moves : Array[MoveInfo] = []
 @export var player_names : Array[String] = []
+@export var player_colors : Array[int] = []
 @export var summary: DataBattleSummary = null
 
 
@@ -17,9 +18,11 @@ static func create(armies : Array[Army], c_battle_map: DataBattleMap):
 
 	for army in armies:
 		var player = IM.get_player_by_index(army.controller_index)
-
+		
 		var player_name = IM.get_player_name(player)
+		
 		result.player_names.append(player_name)
+		result.player_colors.append(player.slot.color)
 
 	result.timestamp = Time.get_datetime_string_from_system()
 	result.battle_map = c_battle_map
@@ -43,10 +46,18 @@ func save():
 	BattleReplay.prepare_replay_directory()
 	ResourceSaver.save(self, CFG.REPLAY_DIRECTORY + get_filename())
 
+
 func get_player_name(army_idx : int) -> String:
 	if not player_names or army_idx >= player_names.size():
 		return "unknown"
 	return player_names[army_idx]
+
+
+func get_player_color(army_idx : int) -> int:
+	if player_colors.size() <= army_idx:
+		return -1
+	return player_colors[army_idx]
+
 
 static func prepare_replay_directory():
 	DirAccess.make_dir_recursive_absolute(CFG.REPLAY_DIRECTORY)
