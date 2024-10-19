@@ -9,6 +9,7 @@ extends Resource
 ## list of all actions made by players
 @export var moves : Array[MoveInfo] = []
 @export var player_names : Array[String] = []
+@export var summary: DataBattleSummary = null
 
 
 static func create(armies : Array[Army], c_battle_map: DataBattleMap):

@@ -582,6 +582,9 @@ func _on_battle_ended() -> void:
 		await get_tree().create_timer(0.1).timeout
 
 	_current_summary = _create_summary()
+	_replay_data.summary = _current_summary
+	_replay_data.save()
+	
 	if WM.world_game_is_active():
 		_close_battle()
 		# show battle summary over world map
