@@ -24,8 +24,13 @@ static func create(new_unit : Unit) -> UnitForm:
 	result.name = new_unit.template.unit_name
 	result.entity = new_unit
 
-	result.apply_graphics(new_unit.template,
-			new_unit.get_player_color())
+	var color : DataPlayerColor
+	if not new_unit.controller:
+		color = CFG.NEUTRAL_COLOR
+	else:
+		color = new_unit.controller.get_player_color()
+
+	result.apply_graphics(new_unit.template, color)
 
 	result.global_position = BM.get_tile_global_position(new_unit.coord)
 	result._target_global_position = result.global_position
@@ -229,6 +234,10 @@ func _apply_color_texture(color : DataPlayerColor) -> void:
 	assert(texture, "failed to load background " + path)
 	$sprite_color.texture = texture
 
-func _apply_level_number(level) -> void:
+
+func _apply_level_number(level : int) -> void:
 	const roman_numbers = ["0", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"]
+	if level < 10 and level >= 0:
+		assert(false, "Design wise higher level units don't make sense")
+		level = 1
 	$sprite_unit/UnitLevel.text = roman_numbers[level]
