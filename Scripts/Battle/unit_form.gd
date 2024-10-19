@@ -237,7 +237,7 @@ func _apply_color_texture(color : DataPlayerColor) -> void:
 
 func _apply_level_number(level : int) -> void:
 	const roman_numbers = ["0", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"]
-	if level < 10 and level >= 0:
+	if level > 10 or level < 0:
 		assert(false, "Design wise higher level units don't make sense")
 		level = 1
 	$sprite_unit/UnitLevel.text = roman_numbers[level]
