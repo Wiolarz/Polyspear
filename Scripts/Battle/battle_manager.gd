@@ -690,6 +690,7 @@ func _create_summary() -> DataBattleSummary:
 
 func perform_replay(replay : BattleReplay) -> void:
 	_replay_is_playing = true
+	_battle_grid_state.set_clock_enabled(false)
 
 	for m in replay.moves:
 		if not _battle_is_ongoing:

@@ -801,6 +801,11 @@ func get_current_time_left() -> int:
 func set_displayed_time_left_ms(time_left_ms : int) -> void:
 	armies_in_battle_state[current_army_index].set_time_left_ms(time_left_ms)
 
+## only for replays
+func set_clock_enabled(state):
+	for i in armies_in_battle_state:
+		i.clock_enabled = state
+
 #endregion Timer
 
 
@@ -1329,7 +1334,8 @@ class ArmyInBattleState:
 		set(_no_value):
 			assert(false, "don't change the hero here")
 
-
+	## may be disabled by a replay
+	var clock_enabled := true
 	## when turn started - for local time calculation
 	var turn_start_timestamp
 	##  miliseconds on the clock when turn started - will be synched in multiplayer
@@ -1371,6 +1377,8 @@ class ArmyInBattleState:
 
 	func get_time_left_ms() -> int:
 		var turn_time_local_passed_ms = Time.get_ticks_msec() - turn_start_timestamp
+		if not clock_enabled:
+			turn_time_local_passed_ms = 0
 		return start_turn_clock_time_left_ms - turn_time_local_passed_ms
 
 
