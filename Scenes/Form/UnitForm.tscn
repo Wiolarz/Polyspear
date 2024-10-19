@@ -16,6 +16,13 @@ texture = ExtResource("2_uxjol")
 [node name="sprite_unit" type="Sprite2D" parent="."]
 texture = ExtResource("3_jdgie")
 
+[node name="UnitLevel" type="Label" parent="sprite_unit"]
+offset_left = -173.0
+offset_top = -125.0
+offset_right = -133.0
+offset_bottom = -77.0
+text = "I"
+
 [node name="sprite_border" type="Sprite2D" parent="."]
 texture = ExtResource("4_ybg78")
 

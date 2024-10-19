@@ -32,7 +32,7 @@ static func create(new_unit : Unit) -> UnitForm:
 	result.rotation_degrees = new_unit.unit_rotation * 60
 	result._target_rotation_degrees = result.rotation_degrees
 	result.get_node("sprite_unit").rotation = -result.rotation
-
+	result.get_node("sprite_unit/UnitLevel").text = UnitForm._get_unit_roman_level(new_unit.template.level)
 	return result
 
 ## HACK, this is for visuals only for summon UI
@@ -51,6 +51,11 @@ func _physics_process(delta):
 	if _animate_movement():
 		return
 	_animate_death(delta)
+
+
+static func _get_unit_roman_level(level) -> String:
+	const roman_numbers = ["0", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"]
+	return roman_numbers[level]
 
 
 func start_turn_anim():
