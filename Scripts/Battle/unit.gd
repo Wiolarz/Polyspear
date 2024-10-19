@@ -126,8 +126,12 @@ func get_player_color() -> DataPlayerColor:
 
 #region Static Symbols
 
+static func does_attack_succeed(attack_symbol : E.Symbols, defense_symbol : E.Symbols):
+	return Unit._attack_power(attack_symbol) > Unit._defense_power(defense_symbol)
+
+
 ## 0 no shield, 1 weak shield (any symbol), 2 normal shield, 3 strong shield
-static func defense_power(symbol : E.Symbols) -> int:
+static func _defense_power(symbol : E.Symbols) -> int:
 	match symbol:
 		E.Symbols.EMPTY:
 			return 0
@@ -140,7 +144,7 @@ static func defense_power(symbol : E.Symbols) -> int:
 			return 1
 
 ## power has to bigger than defense power to kill a unit
-static func attack_power(symbol : E.Symbols) -> int:
+static func _attack_power(symbol : E.Symbols) -> int:
 	match symbol:
 		E.Symbols.STRONG_AXE, E.Symbols.STRONG_SPEAR:
 			return 3  # strong attack pierces normal shields
@@ -172,10 +176,10 @@ static func push_power(symbol : E.Symbols) -> int:
 
 
 static func will_parry_occur(attack_symbol : E.Symbols, defense_symbol : E.Symbols):
-	return Unit.does_it_parry(defense_symbol) and not Unit.does_it_parry_break(attack_symbol)
+	return Unit._does_it_parry(defense_symbol) and not Unit._does_it_parry_break(attack_symbol)
 
 
-static func does_it_parry(symbol : E.Symbols) -> bool:
+static func _does_it_parry(symbol : E.Symbols) -> bool:
 	match symbol:
 		E.Symbols.SWORD, E.Symbols.GREAT_SWORD:
 			return true
@@ -183,7 +187,7 @@ static func does_it_parry(symbol : E.Symbols) -> bool:
 			return false
 
 
-static func does_it_parry_break(symbol : E.Symbols) -> bool:
+static func _does_it_parry_break(symbol : E.Symbols) -> bool:
 	match symbol:
 		E.Symbols.SCYTHE, E.Symbols.SICKLE:
 			return true
