@@ -273,6 +273,17 @@ func _animate_death(delta) -> bool:
 
 #region UI
 
+func set_effects() -> void:
+	var spell_effects_slots : Array[Sprite2D] = [$RigidUI/SpellEffect1, $RigidUI/SpellEffect2]
+	for slot_idx in range(spell_effects_slots.size()):
+		if entity.effects.size() - 1 < slot_idx:
+			spell_effects_slots[slot_idx].texture = null
+			continue
+
+		var spell_texture = load(entity.effects[slot_idx].icon_path)  #TEMP spell icon path
+		spell_effects_slots[slot_idx].texture = spell_texture
+
+
 func set_selected(is_selected : bool):
 	var c = Color.RED if is_selected else Color.WHITE
 	$sprite_unit.modulate = c

@@ -374,6 +374,7 @@ func _on_unit_summoned(unit : Unit) -> void:
 	unit.unit_died.connect(_on_unit_killed.bind(unit))
 	unit.unit_turned.connect(_on_unit_turned.bind(unit))
 	unit.unit_moved.connect(_on_unit_moved.bind(unit))
+	unit.unit_magic_effect.connect(_on_unit_magic_effect.bind(unit))
 
 
 ## handles player input while during the summoning phase
@@ -537,29 +538,6 @@ func _perform_move_info(move_info : MoveInfo) -> void:
 			assert(false, "Move move_type not supported in perform, " + str(move_info.move_type))
 
 	_end_move()
-
-
-func _on_unit_killed(unit: Unit) -> void:
-	if _batch_mode:
-		_unit_to_unit_form[unit].update_death_immediately()
-	else:
-		_anim_queue.push_back(AnimInQueue.create_die(_unit_to_unit_form[unit]))
-	_unit_to_unit_form.erase(unit)
-
-
-func _on_unit_turned(unit: Unit) -> void:
-	if _batch_mode:
-		_unit_to_unit_form[unit].update_turn_immediately()
-	else:
-		_anim_queue.push_back(AnimInQueue.create_turn(_unit_to_unit_form[unit]))
-
-
-func _on_unit_moved(unit: Unit) -> void:
-	if _batch_mode:
-		_unit_to_unit_form[unit].update_death_immediately()
-	else:
-		_anim_queue.push_back(AnimInQueue.create_move(_unit_to_unit_form[unit]))
-
 
 #endregion Fighting Phase
 
@@ -797,6 +775,32 @@ func _clear_anim_queue():
 	for anim in _anim_queue:
 		anim.on_anim_end()
 	_anim_queue.clear()
+
+
+func _on_unit_killed(unit : Unit) -> void:
+	if _batch_mode:
+		_unit_to_unit_form[unit].update_death_immediately()
+	else:
+		_anim_queue.push_back(AnimInQueue.create_die(_unit_to_unit_form[unit]))
+	_unit_to_unit_form.erase(unit)
+
+
+func _on_unit_turned(unit : Unit) -> void:
+	if _batch_mode:
+		_unit_to_unit_form[unit].update_turn_immediately()
+	else:
+		_anim_queue.push_back(AnimInQueue.create_turn(_unit_to_unit_form[unit]))
+
+
+func _on_unit_moved(unit : Unit) -> void:
+	if _batch_mode:
+		_unit_to_unit_form[unit].update_death_immediately()
+	else:
+		_anim_queue.push_back(AnimInQueue.create_move(_unit_to_unit_form[unit]))
+
+
+func _on_unit_magic_effect(unit : Unit) -> void:
+	_unit_to_unit_form[unit].set_effects()
 
 
 class AnimInQueue:

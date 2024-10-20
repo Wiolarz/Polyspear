@@ -705,6 +705,8 @@ func _kill_unit(target : Unit, killer_army : ArmyInBattleState = null) -> void:
 		match spell.name:
 			"Martyr":
 				target.effects.erase(spell)
+				target.effect_state_changed()
+				
 				for unit in target_army.units:
 					if replaced_target:
 						break

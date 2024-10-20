@@ -4,6 +4,7 @@ extends RefCounted # default
 signal unit_died()
 signal unit_turned()
 signal unit_moved()
+signal unit_magic_effect()
 
 ## TODO remove this
 var controller : Player
@@ -108,8 +109,13 @@ func try_adding_magic_effect(effect : BattleMagicEffect) -> bool:
 	if effects.size() >= 2:
 		return false
 	effects.append(effect)
+	unit_magic_effect.emit()
 	return true
 
+
+## currently used only to update UI
+func effect_state_changed() -> void:
+	unit_magic_effect.emit()
 
 #endregion Magic
 
