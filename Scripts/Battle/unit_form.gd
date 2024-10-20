@@ -71,6 +71,9 @@ func apply_graphics(template : DataUnit, color : DataPlayerColor):
 		_apply_symbol_sprite(dir, symbol_texture)
 	
 	_flip_unit_sprite()
+	$RigidUI/SpellEffect1.texture = null
+	$RigidUI/SpellEffect2.texture = null
+	$RigidUI/TerrainEffect.texture = null
 
 
 ## WARNING: called directly in UNIT EDITOR
@@ -93,9 +96,9 @@ func _flip_symbol_sprite(symbol_sprite : Sprite2D, dir : int):
 	if entity != null:
 		abstract_rotation = (entity.unit_rotation + dir) % 6
 	if abstract_rotation in [0, 1, 5]:  # LEFT
-		symbol_sprite.flip_h = false
+		symbol_sprite.flip_v = false
 	else:
-		symbol_sprite.flip_h = true
+		symbol_sprite.flip_v = true
 
 func _flip_unit_sprite():
 	var abstract_rotation : int = 0
@@ -144,6 +147,7 @@ func update_turn_immediately():
 	$sprite_unit.rotation = -rotation
 	$RigidUI.rotation = -rotation
 	_rotation_symbol_flip()
+	_flip_unit_sprite()
 
 
 func update_death_immediately():
@@ -156,9 +160,6 @@ func update_death_immediately():
 #region Animations
 
 func _rotation_symbol_flip():
-	#TEMP placed here
-	_flip_unit_sprite()
-
 	_symbols_flipped = true
 
 	for dir in range(6):
@@ -200,6 +201,7 @@ func _animate_rotation() -> bool:
 
 	if not _symbols_flipped:
 		_rotation_symbol_flip()
+		_flip_unit_sprite()
 
 	if CFG.animation_speed_frames == CFG.AnimationSpeed.INSTANT:
 		rotation_degrees = _target_rotation_degrees
