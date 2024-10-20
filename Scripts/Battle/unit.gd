@@ -31,6 +31,10 @@ var effects : Array[BattleMagicEffect] = []
 
 var is_on_swamp : bool = false
 
+# TEMP implementation, should be merged with is_on_swamp and other terrain based effects
+## this information is only for visual representation
+var is_on_rock : bool = false
+var is_on_mana : bool = false
 
 static func create(new_controller : Player, \
 		new_template : DataUnit, \
@@ -58,8 +62,11 @@ func turn(side : GenericHexGrid.GridDirections):
 
 
 ## puts unit to a given coordinate, can be awaited see waits_for_form
-func move(new_coord : Vector2i, is_swamp : bool):
-	is_on_swamp = is_swamp
+func move(new_coord : Vector2i, battle_tile : BattleGridState.BattleHex):
+	is_on_swamp = battle_tile.swamp
+	is_on_rock = battle_tile.hill
+	is_on_mana = battle_tile.mana
+	unit_magic_effect.emit()
 
 	var old = coord
 	coord = new_coord

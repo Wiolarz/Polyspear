@@ -7,7 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://bc4yv21yc35fw" path="res://Scenes/Form/SymbolForm.tscn" id="5_2gor3"]
 [ext_resource type="Texture2D" uid="uid://dwtcshhcc5ulr" path="res://Art/items/blue_knife.png" id="6_a6bly"]
 [ext_resource type="Texture2D" uid="uid://ctvcj6y3fsafe" path="res://Art/items/shields/blue shield.png" id="7_5nisa"]
-[ext_resource type="Texture2D" uid="uid://cc8ms0smrplht" path="res://Art/items/red_tower_shield.png" id="8_axe0a"]
+[ext_resource type="Texture2D" uid="uid://cb6b5qgltj1bc" path="res://Art/battle_map/swamp.png" id="8_i7m4u"]
 
 [node name="Unit" type="Node2D"]
 script = ExtResource("1_ep020")
@@ -77,4 +77,5 @@ position = Vector2(154, -88)
 texture = ExtResource("7_5nisa")
 
 [node name="TerrainEffect" type="Sprite2D" parent="RigidUI"]
-texture = ExtResource("8_axe0a")
+scale = Vector2(0.3, 0.3)
+texture = ExtResource("8_i7m4u")

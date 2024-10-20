@@ -274,6 +274,17 @@ func _animate_death(delta) -> bool:
 #region UI
 
 func set_effects() -> void:
+	# Terrain effects
+	if entity.is_on_swamp:
+		$RigidUI/TerrainEffect.texture = load(CFG.SWAMP_ICON_PATH)
+	elif entity.is_on_rock:
+		$RigidUI/TerrainEffect.texture = load(CFG.ROCK_ICON_PATH)
+	elif entity.is_on_mana:
+		$RigidUI/TerrainEffect.texture = load(CFG.MANA_ICON_PATH)
+	else:
+		$RigidUI/TerrainEffect.texture = null
+
+	# Magical effects
 	var spell_effects_slots : Array[Sprite2D] = [$RigidUI/SpellEffect1, $RigidUI/SpellEffect2]
 	for slot_idx in range(spell_effects_slots.size()):
 		if entity.effects.size() - 1 < slot_idx:

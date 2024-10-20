@@ -198,7 +198,7 @@ func _undo_main_locomotion(move_info : MoveInfo) -> void:
 	var m_unit := get_unit(move_info.target_tile_coord)
 	_change_unit_coord(m_unit, move_info.move_source)
 	var m_hex = _get_battle_hex(move_info.move_source)
-	m_unit.move(move_info.move_source, m_hex.swamp)
+	m_unit.move(move_info.move_source, m_hex)
 
 
 func _undo_kill(_move: MoveInfo , killed : MoveInfo.KilledUnit) -> Unit:
@@ -211,7 +211,7 @@ func _undo_push(_move : MoveInfo , pushed : MoveInfo.PushedUnit) -> void:
 	var p_unit := get_unit(pushed.to_coord)
 	_change_unit_coord(p_unit, pushed.from_coord)
 	var p_hex = _get_battle_hex(pushed.from_coord)
-	p_unit.move(pushed.from_coord, p_hex.swamp)
+	p_unit.move(pushed.from_coord, p_hex)
 
 #endregion Undo
 
@@ -320,7 +320,7 @@ func _push_enemy(enemy : Unit, direction : int, power : int) -> void:
 		if target_hex.pit:  
 			# TODO replace this "animation" of falling into pit with a custom one
 			_change_unit_coord(enemy, target_coord)
-			enemy.move(target_coord, _get_battle_hex(target_coord).swamp)
+			enemy.move(target_coord, _get_battle_hex(target_coord))
 
 			_kill_unit(enemy, armies_in_battle_state[current_army_index])
 			return
@@ -343,7 +343,7 @@ func _push_enemy(enemy : Unit, direction : int, power : int) -> void:
 
 		# MOVE for PUSH (no rotate)
 		_change_unit_coord(enemy, target_coord)
-		enemy.move(target_coord, _get_battle_hex(target_coord).swamp)
+		enemy.move(target_coord, _get_battle_hex(target_coord))
 
 
 	# check for counter_attacks
@@ -649,7 +649,7 @@ func _perform_move(unit : Unit, direction : int, target_tile_coord : Vector2i) -
 		target_tile_coord += GenericHexGrid.DIRECTION_TO_OFFSET[direction]
 
 	_change_unit_coord(unit, target_tile_coord)
-	unit.move(target_tile_coord, target_tile.swamp)
+	unit.move(target_tile_coord, target_tile)
 	currently_processed_move_info.register_locomote_complete()
 	if _process_symbols(unit):
 		return
@@ -668,7 +668,7 @@ func _perform_teleport(unit : Unit, target_tile_coord : Vector2i, direction : in
 		currently_processed_move_info.register_turning_complete()
 	# MOVE
 	_change_unit_coord(unit, target_tile_coord)
-	unit.move(target_tile_coord, _get_battle_hex(target_tile_coord).swamp)
+	unit.move(target_tile_coord, _get_battle_hex(target_tile_coord))
 	currently_processed_move_info.register_locomote_complete()
 	if not martyr:
 		_process_symbols(unit)
@@ -706,7 +706,7 @@ func _kill_unit(target : Unit, killer_army : ArmyInBattleState = null) -> void:
 			"Martyr":
 				target.effects.erase(spell)
 				target.effect_state_changed()
-				
+
 				for unit in target_army.units:
 					if replaced_target:
 						break
