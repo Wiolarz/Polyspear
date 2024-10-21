@@ -126,6 +126,10 @@ func get_player_color() -> DataPlayerColor:
 
 #region Static Symbols
 
+static func does_attack_succeed(attack_symbol : E.Symbols, defense_symbol : E.Symbols):
+	return Unit.attack_power(attack_symbol) > Unit.defense_power(defense_symbol)
+
+
 ## 0 no shield, 1 weak shield (any symbol), 2 normal shield, 3 strong shield
 static func defense_power(symbol : E.Symbols) -> int:
 	match symbol:
@@ -200,11 +204,8 @@ static func does_it_counter_attack(symbol : E.Symbols) -> bool:
 
 
 static func does_it_shoot(symbol : E.Symbols) -> bool:
-	match symbol:
-		E.Symbols.BOW, E.Symbols.DAGGER:
-			return true
-		_:
-			return false
+	return Unit.ranged_weapon_reach(symbol) > 0
+
 
 
 ## return how many tiles does range weapon attack can reach [br]
