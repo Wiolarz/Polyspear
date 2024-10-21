@@ -72,7 +72,22 @@ target_compile_options(libspear PUBLIC
   ${SPEAR_COMPILE_OPTIONS}
 )
 
+
 set_target_properties(libspear PROPERTIES PREFIX "")
 # set_target_properties(libspear PROPERTIES OUTPUT_NAME "")
+
+string(TOLOWER ${CMAKE_BUILD_TYPE} BUILD_TYPE_LOWERCASE)
+set (ARCHITECTURE "x86_64") # TODO
+string(TOLOWER ${CMAKE_SYSTEM_NAME} OS_LOWERCASE)
+set (EXTENSION "so")
+IF (WIN32)
+  set (EXTENSION "dll")
+ENDIF()
+
 set_target_properties(libspear PROPERTIES SUFFIX
-  ".linux.template_debug.x86_64.so") # TODO build type and worse OS
+  ".${OS_LOWERCASE}.template_${BUILD_TYPE_LOWERCASE}.${ARCHITECTURE}.${EXTENSION}")
+
+add_custom_command(
+  TARGET libspear POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE:libspear>" "${CMAKE_CURRENT_SOURCE_DIR}/bin"
+)
