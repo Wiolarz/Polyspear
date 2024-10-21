@@ -33,3 +33,5 @@ As the entirety of the documentation is written in Markdown, we recommend to rea
 Simply open this "Documentation" folder using "Open Vault" option.
 
 You can enable zoom with `Ctrl + mouse wheel` in Options / Appearance / Fonts -> Quick Font Adjustment
+
+To enable text filling full screen width you have to disable -> Options / Editor / Display -> Readable Line Length
