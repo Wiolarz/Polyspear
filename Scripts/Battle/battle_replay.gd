@@ -13,7 +13,7 @@ extends Resource
 @export var summary: DataBattleSummary = null
 
 
-static func create(armies : Array[Army], c_battle_map: DataBattleMap):
+static func create(armies : Array[Army], c_battle_map: DataBattleMap) -> BattleReplay:
 	var result = BattleReplay.new()
 
 	for army in armies:
@@ -28,6 +28,14 @@ static func create(armies : Array[Army], c_battle_map: DataBattleMap):
 	result.battle_map = c_battle_map
 	for a in armies:
 		result.units_at_start.append(a.get_units_list())
+	return result
+
+
+static func from_template(template : BattleReplay) -> BattleReplay:
+	var result : BattleReplay = template.duplicate()
+	result.moves = []
+	result.summary = null
+	result.timestamp = Time.get_datetime_string_from_system()
 	return result
 
 

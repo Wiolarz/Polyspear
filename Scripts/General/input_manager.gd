@@ -48,8 +48,9 @@ func _prepare_to_start_game() -> void:
 ## [br]
 ## If both states are null, then game is started as new and no state load is
 ## performed -- only game_setup_info is taken into account.
-func start_game(world_state : SerializableWorldState, \
-		battle_state : SerializableBattleState) -> void:
+func start_game(world_state : SerializableWorldState,
+		battle_state : SerializableBattleState,
+		replay_template : BattleReplay = null) -> void:
 
 	assert(not battle_state or battle_state.valid())
 	assert(not world_state or world_state.valid())
@@ -60,7 +61,7 @@ func start_game(world_state : SerializableWorldState, \
 		# in battle mode we can only have battle state
 		assert(not world_state)
 
-		_start_game_battle(battle_state)
+		_start_game_battle(battle_state, replay_template)
 		UI.set_camera(E.CameraPosition.BATTLE)
 
 	elif game_setup_info.is_in_mode_world():
@@ -88,8 +89,21 @@ func perform_replay(path):
 	game_setup_info.game_mode = GameSetupInfo.GameMode.BATTLE
 	game_setup_info.battle_map = replay.battle_map
 
-	assert(game_setup_info.slots.size() == replay.units_at_start.size(), \
-			"for now only 1v1 implemented")
+	# Temporarily move slots from game setup
+	"""
+	var old_slots = game_setup_info.slots.duplicate()
+	var old_map = game_setup_info.battle_map
+	var old_player_slot_mapping = {}
+	game_setup_info.slots = []
+	
+	game_setup_info.set_battle_map(replay.battle_map)
+	"""
+	var old_info = game_setup_info
+	game_setup_info = GameSetupInfo.create_empty()
+	game_setup_info.game_mode = GameSetupInfo.GameMode.BATTLE
+	game_setup_info.set_battle_map(replay.battle_map)
+	game_setup_info.set_slots_number(replay.units_at_start.size())
+	
 	for slot_id in range(replay.units_at_start.size()):
 		var slot = game_setup_info.slots[slot_id]
 		var units_array = replay.units_at_start[slot_id]
@@ -97,8 +111,11 @@ func perform_replay(path):
 		slot.color = replay.get_player_color(slot_id)
 		slot.set_units(units_array)
 
-	start_game(null, null)
+	start_game(null, null, replay)
 	BM.perform_replay(replay)
+	
+	# Setup done, move back old info
+	game_setup_info = old_info #.slots = old_slots
 
 
 func go_to_map_editor():
@@ -118,7 +135,8 @@ func _start_game_world(world_state : SerializableWorldState):
 
 
 ## new game <=> battle_state == null
-func _start_game_battle(battle_state : SerializableBattleState):
+func _start_game_battle(battle_state : SerializableBattleState, 
+		replay_template : BattleReplay = null):
 	var map_data = game_setup_info.battle_map
 	var armies : Array[Army]  = []
 
@@ -127,7 +145,7 @@ func _start_game_battle(battle_state : SerializableBattleState):
 
 	UI.go_to_main_menu()
 	var x_offset = 0.0
-	BM.start_battle(armies, map_data, battle_state, x_offset)
+	BM.start_battle(armies, map_data, battle_state, x_offset, replay_template)
 
 
 ## Creates army based on player slot data

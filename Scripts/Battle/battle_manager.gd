@@ -52,13 +52,20 @@ func _process(_delta):
 #region Battle Setup
 
 ## x_offset is used to place battle to the right of world map
+## replay_template - used in replays to avoid juggling player data
 func start_battle(new_armies : Array[Army], battle_map : DataBattleMap, \
-		battle_state : SerializableBattleState, x_offset : float) -> void:
+		battle_state : SerializableBattleState, x_offset : float,
+		replay_template : BattleReplay = null) -> void:
 
 	assert(_is_clear(), "cannot start battle map, map already loaded")
 
-	_replay_data = BattleReplay.create(new_armies, battle_map)
-	_replay_data.save()
+	if replay_template:
+		_replay_data = BattleReplay.from_template(replay_template)
+	else:
+		_replay_data = BattleReplay.create(new_armies, battle_map)
+	
+	if not _replay_is_playing and not replay_template:
+		_replay_data.save()
 
 	UI.ensure_camera_is_spawned()
 	UI.go_to_custom_ui(_battle_ui)
@@ -517,7 +524,9 @@ func _perform_move_info(move_info : MoveInfo) -> void:
 	print(NET.get_role_name(), " performing move ", move_info)
 
 	_replay_data.record_move(move_info, get_current_time_left_ms())
-	_replay_data.save()
+	if not _replay_is_playing:
+		_replay_data.save()
+	
 	if NET.server:
 		NET.server.broadcast_move(move_info)
 
@@ -583,7 +592,8 @@ func _on_battle_ended() -> void:
 
 	_current_summary = _create_summary()
 	_replay_data.summary = _current_summary
-	_replay_data.save()
+	if not _replay_is_playing:
+		_replay_data.save()
 	
 	if WM.world_game_is_active():
 		_close_battle()
@@ -599,6 +609,7 @@ func _close_battle() -> void:
 	_turn_off_battle_ui()
 	_reset_grid_and_unit_forms()
 	deselect_unit()
+	_replay_is_playing = false # revert to default value for the next battle
 
 	if not WM.world_game_is_active():
 		print("end of test battle")
@@ -691,8 +702,9 @@ func _create_summary() -> DataBattleSummary:
 
 #region Replays
 
+## Plays a replay and returns to the normal state afterwards
 func perform_replay(replay : BattleReplay) -> void:
-	_replay_is_playing = true
+	_replay_is_playing = true # _replay_is_playing is reset in _close_battle
 	_battle_grid_state.set_clock_enabled(false)
 
 	for m in replay.moves:
@@ -700,7 +712,6 @@ func perform_replay(replay : BattleReplay) -> void:
 			return # terminating battle while watching
 		_perform_replay_move(m)
 		await _replay_move_delay()
-	_replay_is_playing = false
 
 
 func _replay_move_delay() -> void:
