@@ -53,4 +53,4 @@ that better defensive positions
 
 #### Notes
 
-[More battle notes](B_structure.md)
+[More battle notes](Battle%20Mode%20Structure.md)
