@@ -961,6 +961,7 @@ func _end_of_turn_magic() -> void:
 				match magic_effect:
 					_:
 						pass
+				unit.effect_state_changed()
 
 #endregion Magic
 

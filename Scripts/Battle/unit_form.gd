@@ -73,6 +73,8 @@ func apply_graphics(template : DataUnit, color : DataPlayerColor):
 	_flip_unit_sprite()
 	$RigidUI/SpellEffect1.texture = null
 	$RigidUI/SpellEffect2.texture = null
+	$RigidUI/SpellEffectCounter1.text = ""
+	$RigidUI/SpellEffectCounter2.text = ""
 	$RigidUI/TerrainEffect.texture = null
 
 
@@ -286,13 +288,17 @@ func set_effects() -> void:
 
 	# Magical effects
 	var spell_effects_slots : Array[Sprite2D] = [$RigidUI/SpellEffect1, $RigidUI/SpellEffect2]
+	var spell_counters_slots : Array[Label] = [$RigidUI/SpellEffectCounter1, $RigidUI/SpellEffectCounter2]
 	for slot_idx in range(spell_effects_slots.size()):
 		if entity.effects.size() - 1 < slot_idx:
 			spell_effects_slots[slot_idx].texture = null
+			spell_counters_slots[slot_idx].text = ""
 			continue
 
 		var spell_texture = load(entity.effects[slot_idx].icon_path)  #TEMP spell icon path
 		spell_effects_slots[slot_idx].texture = spell_texture
+		spell_counters_slots[slot_idx].text = str(entity.effects[slot_idx].duration_counter)
+
 
 
 func set_selected(is_selected : bool):

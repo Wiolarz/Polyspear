@@ -69,13 +69,28 @@ offset_bottom = -77.0
 text = "I"
 
 [node name="SpellEffect1" type="Sprite2D" parent="RigidUI"]
-position = Vector2(-140, 76)
+position = Vector2(151, -88)
 texture = ExtResource("6_a6bly")
 
 [node name="SpellEffect2" type="Sprite2D" parent="RigidUI"]
-position = Vector2(154, -88)
+position = Vector2(151, 71)
 texture = ExtResource("7_5nisa")
 
 [node name="TerrainEffect" type="Sprite2D" parent="RigidUI"]
-scale = Vector2(0.3, 0.3)
+position = Vector2(-142, 88)
+scale = Vector2(0.2, 0.2)
 texture = ExtResource("8_i7m4u")
+
+[node name="SpellEffectCounter1" type="Label" parent="RigidUI"]
+offset_left = 155.0
+offset_top = -104.0
+offset_right = 195.0
+offset_bottom = -56.0
+text = "6"
+
+[node name="SpellEffectCounter2" type="Label" parent="RigidUI"]
+offset_left = 150.0
+offset_top = 48.0
+offset_right = 190.0
+offset_bottom = 96.0
+text = "6"
