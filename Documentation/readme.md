@@ -21,8 +21,15 @@
 
 - [Multiplayer](multiplayer_doc.md)
 - [Testing](Testing_Documentation.md)
-- [Battle - notes](<Battle System/B_structure.md>)
+- [Battle - notes](<Battle Mode Structure.md>)
 - [Ai](AI/ai_interface.md)
   - [Tags for AI](AI/doc_TagStateMachine.md)
 - [Graphics technical notes](<Graphics/Technical.md>)
 - [Ui](<UI/Menu_UI.md>)
+
+# Obsidian tips
+
+As the entirety of the documentation is written in Markdown, we recommend to read it using Obsidian software.
+Simply open this "Documentation" folder using "Open Vault" option.
+
+You can enable zoom with `Ctrl + mouse wheel` in Options / Appearance / Fonts -> Quick Font Adjustment
