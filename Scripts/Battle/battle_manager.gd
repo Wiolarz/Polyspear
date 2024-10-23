@@ -24,7 +24,7 @@ var _replay_data : BattleReplay
 var _replay_is_playing : bool = false
 
 var _batch_mode : bool = false # flagged true when recreating game state
-
+var _ai_move_preview : AIMovePreview = null
 
 func _ready():
 	_battle_ui = load("res://Scenes/UI/BattleUi.tscn").instantiate()
@@ -53,7 +53,7 @@ func _process(_delta):
 
 ## x_offset is used to place battle to the right of world map
 func start_battle(new_armies : Array[Army], battle_map : DataBattleMap, \
-		battle_state : SerializableBattleState, x_offset : float) -> void:
+		battle_state : SerializableBattleState, x_offset : float, is_spectator : bool) -> void:
 
 	assert(_is_clear(), "cannot start battle map, map already loaded")
 
@@ -68,7 +68,6 @@ func start_battle(new_armies : Array[Army], battle_map : DataBattleMap, \
 	_current_summary = null
 	deselect_unit()
 
-	# GAMEPLAY GRID and Armies state:
 	_battle_grid_state = BattleGridState.create(battle_map, new_armies)
 
 	# GRAPHICS GRID:
@@ -83,6 +82,9 @@ func start_battle(new_armies : Array[Army], battle_map : DataBattleMap, \
 			_perform_replay_move(m)
 		_batch_mode = false
 
+	if is_spectator: 
+		enable_ai_preview()
+	
 	# first turn does not get a signal emit
 	_on_turn_started(_battle_grid_state.get_current_player())
 
@@ -200,14 +202,27 @@ func _on_turn_started(player : Player) -> void:
 
 	if player.bot_engine and not NET.client: # AI is simulated on server only
 		print("AI starts thinking")
+		
 		var my_cancel_token = CancellationToken.new()
-		assert(latest_ai_cancel_token == null)
+		#assert(latest_ai_cancel_token == null)
 		latest_ai_cancel_token = my_cancel_token
-		var move = player.bot_engine.choose_move(_battle_grid_state)
-		await _ai_thinking_delay() # moving too fast feels weird
+		
+		var bot = player.bot_engine
+		
+		var thinking_begin_s = Time.get_ticks_msec() / 1000.0
+		var move = await bot.choose_move(_battle_grid_state)
+		await _ai_thinking_delay(thinking_begin_s) # moving too fast feels weird
+		
+		bot.cleanup_after_move()
+		if _battle_grid_state == null: # Player quit to main menu before finishing
+			return
+		
 		if not my_cancel_token.is_canceled():
-			latest_ai_cancel_token = null
+			assert(_battle_grid_state.is_move_possible(move), "AI tried to perform an invalid move")
 			_perform_ai_move(move)
+			latest_ai_cancel_token = null
+
+
 
 
 func perform_network_move(move_info : MoveInfo) -> void:
@@ -320,8 +335,11 @@ func  _end_move() -> void:
 			_battle_grid_state.end_stalemate() # could end the battle
 
 	if _battle_grid_state.battle_is_ongoing():
+		if _ai_move_preview:
+			_ai_move_preview.update(_battle_grid_state)
+		
 		_on_turn_started(_battle_grid_state.get_current_player())
-	else :
+	else:
 		_on_battle_ended()
 
 #endregion Ongoing battle
@@ -335,9 +353,9 @@ func cancel_pending_ai_move() ->  void:
 		latest_ai_cancel_token = null
 
 
-func _ai_thinking_delay() -> void:
-	var seconds = CFG.bot_speed_frames / 60.0
-	print("ai wait %f s" % [seconds])
+func _ai_thinking_delay(thinking_begin_s) -> void:
+	var max_seconds = CFG.bot_speed_frames / 60.0
+	var seconds = max(0.01, max_seconds - (Time.get_ticks_msec()/1000.0 - thinking_begin_s))
 	await get_tree().create_timer(seconds).timeout
 	while IM.is_game_paused() or CFG.bot_speed_frames == CFG.BotSpeed.FREEZE:
 		await get_tree().create_timer(0.1).timeout
@@ -516,6 +534,7 @@ func _perform_move_info(move_info : MoveInfo) -> void:
 		return
 	print(NET.get_role_name(), " performing move ", move_info)
 
+
 	_replay_data.record_move(move_info, get_current_time_left_ms())
 	_replay_data.save()
 	if NET.server:
@@ -576,6 +595,8 @@ func _on_battle_ended() -> void:
 		return
 	_battle_is_ongoing = false
 	deselect_unit()
+	
+	disable_ai_preview()
 
 	await get_tree().create_timer(1).timeout # TEMP, don't exit immediately
 	while _replay_is_playing:
@@ -596,6 +617,7 @@ func _close_battle() -> void:
 	_turn_off_battle_ui()
 	_reset_grid_and_unit_forms()
 	deselect_unit()
+	disable_ai_preview()
 
 	if not WM.world_game_is_active():
 		print("end of test battle")
@@ -728,6 +750,32 @@ func force_surrender():
 	_battle_grid_state.force_surrender()
 	_end_move()
 
+
+func enable_ai_preview():
+	if not _battle_grid_state:
+		push_error("Failed to enahle AI preview - _battle_grid_state == null")
+		return
+	
+	if _ai_move_preview:
+		return
+	
+	_ai_move_preview = AIMovePreview.new()
+	add_child(_ai_move_preview)
+	_ai_move_preview.name = "AIMovePreview"
+	_ai_move_preview.update(_battle_grid_state)
+
+
+func disable_ai_preview():
+	if _ai_move_preview:
+		_ai_move_preview.queue_free()
+		_ai_move_preview = null
+
+
+func toggle_ai_preview():
+	if _ai_move_preview:
+		disable_ai_preview()
+	else:
+		enable_ai_preview()
 
 #endregion cheats
 
