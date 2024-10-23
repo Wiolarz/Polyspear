@@ -124,13 +124,18 @@ func _on_message_arrived(content : String):
 
 
 func _on_chat_line_edit_text_submitted(new_text):
+	# Check if message is a cheat
 	if new_text.length() >= 1 and new_text[0] == '/':
+		# Split message by arguments
 		var args = new_text.split(" ", false)
 		var cheat = args[0].substr(1).strip_edges().to_lower()
 		
-		args = Array(args).filter(func(arg): return arg.is_valid_int)
-		args = Array(args).slice(1).map(func(arg): return int(arg))
+		# Get number values from cheat arguments
+		args = Array(args).filter(func(arg): return arg.is_valid_int())
+		# Convert number values from string to int
+		args = Array(args).map(func(arg): return int(arg))
 		
+		# Cheats
 		match cheat:
 			"money":
 				WM.cheat_money.callv(args)
