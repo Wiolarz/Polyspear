@@ -101,6 +101,7 @@ func move_info_summon_unit(move_info : MoveInfo) -> Unit:
 func move_info_execute(move_info : MoveInfo) -> void:
 	currently_processed_move_info = move_info
 
+	# BMFast integrity check - live testing purposes only
 	var bmfast = BattleManagerFast.from(self)
 	bmfast.check_integrity_before_move(self, move_info)
 	
@@ -143,6 +144,7 @@ func move_info_execute(move_info : MoveInfo) -> void:
 
 	currently_processed_move_info = null
 	
+	# BMFast integrity check contd. - live testing purposes only
 	bmfast.check_integrity_after_move(self)
 
 
@@ -403,7 +405,9 @@ func _get_shot_target(coord : Vector2i, direction : int, reach : int = -1) -> Un
 
 func is_move_possible(move: MoveInfo) -> bool:
 	for i in get_possible_moves():
-		if i._to_string() == move._to_string():
+		# Regular comparison isn't guaranteed to actually do what we want
+		# Move descriptions for effectively the same moves are always the same
+		if str(i) == str(move):
 			return true
 	return false
 
@@ -1058,12 +1062,12 @@ func _get_all_unit_moves() -> Array[MoveInfo]:
 
 func _get_magic_moves(unit: Unit, spell: BattleSpell) -> Array[MoveInfo]:
 	# TODO lazy but very inefficient method, perhaps needs a rewrite?
-	var ret : Array[MoveInfo] = []
+	var result : Array[MoveInfo] = []
 	for x in width:
 		for y in height:
 			if is_spell_target_valid(unit, Vector2i(x,y), spell):
-				ret.push_back(MoveInfo.make_magic(unit.coord, Vector2i(x,y), spell))
-	return ret
+				result.push_back(MoveInfo.make_magic(unit.coord, Vector2i(x,y), spell))
+	return result
 
 func _get_all_sacrifice_moves() -> Array[MoveInfo]:
 	var legal_moves : Array[MoveInfo] = []

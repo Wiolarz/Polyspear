@@ -126,11 +126,11 @@ func _update_marker(cppmove):
 
 
 func get_modulate_for_score(score: float) -> Color:
-	var ret = Color.WHITE
-	ret.r = remap(score, min_score, max_score, 0.0, 1.0)
-	ret.g = remap(score, min_score, max_score, 0.0, 1.0)
-	ret.a = remap(score, min_score, max_score, 0.1, 1.0)
-	return ret
+	var result = Color.WHITE
+	result.r = remap(score, min_score, max_score, 0.0, 1.0)
+	result.g = remap(score, min_score, max_score, 0.0, 1.0)
+	result.a = remap(score, min_score, max_score, 0.1, 1.0)
+	return result
 
 
 func _thread_process():

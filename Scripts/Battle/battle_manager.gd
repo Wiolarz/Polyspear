@@ -1,5 +1,5 @@
 # Singleton - BM
-class_name BattleManager extends GridNode2D
+extends GridNode2D
 
 var _battle_is_ongoing : bool = false
 

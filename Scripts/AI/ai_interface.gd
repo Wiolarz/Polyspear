@@ -1,4 +1,5 @@
-class_name AIInterface extends Node
+class_name AIInterface
+extends Node
 
 var me : Player
 
@@ -13,4 +14,5 @@ func choose_move(_battle_state : BattleGridState) -> MoveInfo:
 	return null
 
 func cleanup_after_move():
+	# An OPTIONAL interface function
 	pass

@@ -1,4 +1,5 @@
-class_name TileGridFast extends TileGridFastCpp
+class_name TileGridFast
+extends TileGridFastCpp
 
 
 static func from(bgstate: BattleGridState):

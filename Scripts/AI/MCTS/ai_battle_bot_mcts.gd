@@ -1,4 +1,5 @@
-class_name AIBattleBotMCTS extends AIInterface
+class_name AIBattleBotMCTS
+extends AIInterface
 
 ## Number of total playouts to be performed
 @export var iterations := 100000

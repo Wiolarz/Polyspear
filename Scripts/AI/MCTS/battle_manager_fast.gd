@@ -1,4 +1,5 @@
-class_name BattleManagerFast extends BattleManagerFastCpp
+class_name BattleManagerFast
+extends BattleManagerFastCpp
 
 ## A helper class wrapping C++ battle manager 
 ## and adding useful integration/testing functions
@@ -184,11 +185,11 @@ func assert_integrity_check(condition: bool, message: String):
 
 
 func compare_grid_state(bgs: BattleGridState) -> bool:
-	var ret = true
+	var is_ok = true
 	
 	if bgs.current_army_index != get_current_participant():
-		push_error("BMFast mismatch - current army: slow ", bgs.current_army_index, " fast", get_current_participant())
-		ret = false
+		push_error("BMFast mismatch - current army: slow ", bgs.current_army_index, ", fast ", get_current_participant())
+		is_ok = false
 	
 	for army_id in range(bgs.armies_in_battle_state.size()):
 		var units_nr = get_max_units_in_army()
@@ -203,10 +204,10 @@ func compare_grid_state(bgs: BattleGridState) -> bool:
 			var uid = get_unit_id_on_position(unit.coord)
 			if uid[1] == -1:
 				push_error("BMFast mismatch - unit not present in fast - slow coord: @", unit.coord, "")
-				ret = false
+				is_ok = false
 			elif uid[0] != army_id:
 				push_error("BMFast mismatch - unit on slow coord: @", unit.coord, " belongs to army id ", uid[0], ", expected ", army_id)
-				ret = false
+				is_ok = false
 		
 		for unit_id in range(get_max_units_in_army()):
 			if not is_unit_alive(army_id, unit_id):
@@ -216,7 +217,7 @@ func compare_grid_state(bgs: BattleGridState) -> bool:
 			var unit: Unit = bgs.get_unit(get_unit_position(army_id, unit_id))
 			if unit == null:
 				push_error("BMFast mismatch - unit not present in slow - fast id:", army_id, "/", unit_id, " @", get_unit_position(army_id, unit_id), "")
-				ret = false
+				is_ok = false
 				continue
 			
 			var unit_str = "%s/%s @%s,%s" % [army_id, unit_id, unit.coord.x, unit.coord.y]
@@ -224,23 +225,23 @@ func compare_grid_state(bgs: BattleGridState) -> bool:
 			if unit.unit_rotation != get_unit_rotation(army_id, unit_id):
 				push_error("BMFast mismsatch - unit: id ", unit_str, " slow has rotation ", unit.unit_rotation, \
 						   ",  ", " vs fast's rotation ", get_unit_rotation(army_id, unit_id))
-				ret = false
+				is_ok = false
 			
 			for spell in unit.spells:
 				# TODO check when there are several instances of the same spell?
 				if count_spell(army_id, unit_id, spell.name) != 1:
 					push_error("BMFast mismatch - unit id ", unit_str, " fast does not have slow spell ", spell.name)
-					ret = false
+					is_ok = false
 					
 			if get_unit_spell_count(army_id, unit_id) != unit.spells.size():
 				push_error("BMFast mismatch - spell count for unit %s - fast %s vs slow %s" \
 							% [unit_str, get_unit_spell_count(army_id, unit_id), unit.spells.size()])
-				ret = false
+				is_ok = false
 			
 			if get_unit_effect_count(army_id, unit_id) != unit.effects.size():
 				push_error("BMFast mismatch - effect count for unit %s - fast %s vs slow %s" \
 							% [unit_str, get_unit_effect_count(army_id, unit_id), unit.effects.size()])
-				ret = false
+				is_ok = false
 			
 			var is_martyr = false
 			for eff in unit.effects:
@@ -251,26 +252,26 @@ func compare_grid_state(bgs: BattleGridState) -> bool:
 						var eff_fast = get_unit_effect(army_id, unit_id, eff.name)
 						if not eff_fast:
 							push_error("BMFast mismatch - effect '%s' present in slow but not fast" % [eff.name])
-							ret = false
+							is_ok = false
 				var duration_fast = get_unit_effect_duration_counter(army_id, unit_id, eff.name)
 				if eff.duration_counter != duration_fast:
 					push_error("BMFast mismatch - effect '%s' has duration %s in slow and %s in fast" % [eff.name, eff.duration_counter, duration_fast])
-					ret = false
+					is_ok = false
 			
 			if is_martyr != (get_unit_martyr_id(army_id, unit_id) != -1):
 				push_error("BMFast mismatch - martyr status for unit %s - slow %s vs fast %s" 
 						   % [unit_str ,is_martyr, get_unit_martyr_id(army_id, unit_id) != -1])
-				ret = false
+				is_ok = false
 		
 		var units_alive_in_army = army.units.filter(func(x): return not x.dead).size()
 		if units_nr != units_alive_in_army:
 			push_error("BMFast mismatch - number of units in army ", army_id, ": slow ", units_alive_in_army, ", fast ", units_nr)
-			ret = false
+			is_ok = false
 	
-	return ret
+	return is_ok
 
 func compare_move_list(bgs: BattleGridState) -> bool:
-	var ret = true
+	var is_ok = true
 	
 	var fast_moves = get_legal_moves()
 	var slow_moves = bgs.get_possible_moves()
@@ -280,13 +281,13 @@ func compare_move_list(bgs: BattleGridState) -> bool:
 		
 		if not bgs.is_move_possible(move):
 			push_error("BMFast move mismatch - fast action %s (%s) not present in slow" % [move, i])
-			ret = false
+			is_ok = false
 	
 	for i in slow_moves:
 		if move_info_to_libspear_tuple(i) not in fast_moves:
 			push_error("BMFast move mismatch - slow action %s not present in fast" % [i])
-			ret = false
+			is_ok = false
 
-	return ret
+	return is_ok
 	
 #endregion
