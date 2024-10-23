@@ -26,6 +26,15 @@ Approve PRs using gif:
     - GOOD: `UnitForm.create(unit) -> UnitForm`
     - BAD: `Unit.createForm() -> UnitForm`
 
+
+# Naming Scheme
+
+## Resources Values
+
+### Tile types
+
+Default tile types are written using SCREAMING_CASE as those are always one word only, and they don’t possess any specific related logic.
+
 ## DataXyz, XyzForm
 
 (not fully implemented yet, work in progress, use for new code, migrate existing)
