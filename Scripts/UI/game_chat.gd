@@ -124,30 +124,22 @@ func _on_message_arrived(content : String):
 
 
 func _on_chat_line_edit_text_submitted(new_text):
-	var array_get = func (array: PackedStringArray, index: int, default: String = "") \
-		-> String:
-		if array.size() <= index:
-			print("Non-standard number of arguments")
-			return default
-		else: 
-			return array[index]
-	
 	if new_text.length() >= 1 and new_text[0] == '/':
 		var args = new_text.split(" ", false)
 		var cheat = args[0].substr(1).strip_edges().to_lower()
+		
+		args = Array(args).filter(func(arg): return arg.is_valid_int)
+		args = Array(args).slice(1).map(func(arg): return int(arg))
+		
 		match cheat:
 			"money":
-				WM.cheat_money(
-					int(array_get.call(args, 1, "100")),
-					int(array_get.call(args, 2, "100")),
-					int(array_get.call(args, 3, "100"))
-				)
+				WM.cheat_money.callv(args)
 				print("money cheat")
 			"fast":
-				WM.hero_speed_cheat(int(array_get.call(args, 1, "1")))
+				WM.hero_speed_cheat.callv(args)
 				print("travel cheat")
 			"levelup":
-				WM.hero_level_up(int(array_get.call(args, 1, "1")))
+				WM.hero_level_up.callv(args)
 				print("levelup cheat")
 			"maxupgrade":
 				WM.city_upgrade_cheat()

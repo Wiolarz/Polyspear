@@ -489,20 +489,20 @@ func callback_combat_started(armies_ : Array, coord_ : Vector2i) -> void:
 #region cheats
 
 
-func cheat_money(new_wood: int, new_iron: int, new_ruby: int) -> void:
+func cheat_money(new_wood: int = 100, new_iron: int = 100, new_ruby: int = 100) -> void:
 	world_state.get_current_player().goods.add(
 		Goods.new(new_wood, new_iron, new_ruby)
 	)
 
 
-func hero_speed_cheat(speed: int) -> void:
+func hero_speed_cheat(speed: int = 1) -> void:
 	if not selected_hero:
 		print("no selected hero")
 		return
 	WM.selected_hero.entity.hero.movement_points += speed
 
 
-func hero_level_up(levels: int) -> void:
+func hero_level_up(levels: int = 1) -> void:
 	if not selected_hero:
 		print("no selected hero")
 		return
