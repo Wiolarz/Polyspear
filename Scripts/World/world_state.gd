@@ -588,7 +588,7 @@ func get_interactable_type_at(coord : Vector2i) -> String:
 	if get_city_at(coord):
 		return "city"
 
-	return "empty"
+	return "EMPTY"
 
 
 func get_army_at(coord : Vector2i) -> Army:
