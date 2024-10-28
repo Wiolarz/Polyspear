@@ -100,3 +100,10 @@ func _process(_delta):
 		is_iterate_complete = false
 		complete.emit()
 	iterate_complete_mutex.unlock()
+
+func _exit_tree():
+	# Force graceful exit, good enough for now, but 
+	# TODO consider making it not hang the game for the duration of AI finishing its thinking
+	if thread:
+		thread.wait_to_finish()
+	print("dupa")
