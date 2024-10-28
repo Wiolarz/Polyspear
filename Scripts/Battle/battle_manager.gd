@@ -62,6 +62,7 @@ func start_battle(new_armies : Array[Army], battle_map : DataBattleMap, \
 	_current_summary = null
 	deselect_unit()
 
+	# CORE GAMEPLAY logic initialization
 	_battle_grid_state = BattleGridState.create(battle_map, new_armies)
 
 	# GRAPHICS GRID:
@@ -81,7 +82,7 @@ func start_battle(new_armies : Array[Army], battle_map : DataBattleMap, \
 		if player.slot.is_local():
 			is_spectator = false
 	
-	if is_spectator: 
+	if is_spectator and CFG.ENABLE_AUTO_BRAIN:
 		_enable_ai_preview()
 	
 	# first turn does not get a signal emit

@@ -175,6 +175,8 @@ var player_options : PlayerOptions
 
 const DEFAULT_USER_NAME : String = "(( you ))"
 
+const ENABLE_AUTO_BRAIN := false
+
 var DEFAULT_MODE_IS_BATTLE : bool :
 	get: return player_options.use_default_battle
 var AUTO_START_GAME : bool :
@@ -184,6 +186,7 @@ var LAST_USED_BATTLE_PRESET : PresetBattle :
 	get: return player_options.last_used_battle_preset
 var LAST_USED_WORLD_PRESET : PresetWorld : # TODO implement this
 	get: return player_options.last_used_world_preset
+
 
 func save_last_used_for_host_setup(\
 		address : String, port : int, username : String) -> void:
