@@ -55,7 +55,6 @@ func start_game(world_state : SerializableWorldState, \
 	assert(not world_state or world_state.valid())
 
 	_prepare_to_start_game()
-	
 	if game_setup_info.is_in_mode_battle():
 		# in battle mode we can only have battle state
 		assert(not world_state)
