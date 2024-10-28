@@ -596,7 +596,6 @@ func _close_battle() -> void:
 	_turn_off_battle_ui()
 	_reset_grid_and_unit_forms()
 	deselect_unit()
-	_disable_ai_preview()
 
 	if not WM.world_game_is_active():
 		print("end of test battle")
