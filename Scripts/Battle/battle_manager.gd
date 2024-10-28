@@ -47,7 +47,7 @@ func _process(_delta):
 
 ## x_offset is used to place battle to the right of world map
 func start_battle(new_armies : Array[Army], battle_map : DataBattleMap, \
-		battle_state : SerializableBattleState, x_offset : float, is_spectator : bool) -> void:
+		battle_state : SerializableBattleState, x_offset : float) -> void:
 
 	assert(_is_clear(), "cannot start battle map, map already loaded")
 
@@ -76,6 +76,11 @@ func start_battle(new_armies : Array[Army], battle_map : DataBattleMap, \
 			_perform_replay_move(m)
 		_batch_mode = false
 
+	var is_spectator = true
+	for player in IM.players:
+		if player.slot.is_local():
+			is_spectator = false
+	
 	if is_spectator: 
 		_enable_ai_preview()
 	

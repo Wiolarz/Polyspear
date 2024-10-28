@@ -55,17 +55,12 @@ func start_game(world_state : SerializableWorldState, \
 	assert(not world_state or world_state.valid())
 
 	_prepare_to_start_game()
-
-	var is_spectator = true
-	for player in players:
-		if player.slot.is_local():
-			is_spectator = false
 	
 	if game_setup_info.is_in_mode_battle():
 		# in battle mode we can only have battle state
 		assert(not world_state)
 
-		_start_game_battle(battle_state, is_spectator)
+		_start_game_battle(battle_state)
 		UI.set_camera(E.CameraPosition.BATTLE)
 
 	elif game_setup_info.is_in_mode_world():
@@ -122,7 +117,7 @@ func _start_game_world(world_state : SerializableWorldState):
 
 
 ## new game <=> battle_state == null
-func _start_game_battle(battle_state : SerializableBattleState, is_spectator: bool):
+func _start_game_battle(battle_state : SerializableBattleState):
 	var map_data = game_setup_info.battle_map
 	var armies : Array[Army]  = []
 
@@ -131,7 +126,7 @@ func _start_game_battle(battle_state : SerializableBattleState, is_spectator: bo
 
 	UI.go_to_main_menu()
 	var x_offset = 0.0
-	BM.start_battle(armies, map_data, battle_state, x_offset, is_spectator)
+	BM.start_battle(armies, map_data, battle_state, x_offset)
 
 
 ## Creates army based on player slot data
