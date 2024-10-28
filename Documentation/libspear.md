@@ -40,11 +40,11 @@ TODO (might be worth looking into WSL or MSYS2)
 
 # Diagnostics
 
-In config_manager.gd there are currently a few configurable variables:
+In config_manager.gd there are currently a few configurable variables. These are also documented in the `config_manager.gd` file:
 - `debug_check_fast_bm_integrity` - checks each time a move is done whether results of a move replicated in BattleManagerFast match results in a regular BM.
 - `debug_check_bmfast_internals` - enables additional BattleManagerFast internal integrity checks, which may slightly reduce performance
-- `debug_mcts_max_saved_fail_replays` - when greater than zero, saves 
-- `debug_save_failed_bmfast_integrity` - when true, immediately save replays from BattleManagerFast mismatches with an appropriate name
+- `debug_mcts_max_saved_fail_replays` - when greater than zero, saves replays from playouts where errors were detected
+- `debug_save_failed_bmfast_integrity` - when true, immediately save replays from BattleManagerFast mismatches with an appropriate name with a suffix "BMFast Mismatch"
 
 Additionally, there's a builtin AI move evaluator, which is automatically enabled for spectators and can be toggled with a "/brain" cheat.
 

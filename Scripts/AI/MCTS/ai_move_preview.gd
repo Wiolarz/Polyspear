@@ -73,12 +73,15 @@ func _update_markers():
 	for pos in pos_markers:
 		var marker_id = 0.0
 		var no_markers = float(pos_markers[pos].size())
+		
+		# Create a circle of markers on a tile
 		for marker_data : PositionMarker in pos_markers[pos]:
 			var marker = Sprite2D.new()
 			var offset = Vector2(0, -128).rotated(2*PI*marker_id/no_markers)
 			
 			marker.position = BM.to_position(pos) + offset
 			marker.texture = load(marker_data.icon_path)
+			# Make sure sprites are scaled properly regardless of their resolution
 			marker.scale *= 196.0 / float(marker.texture.get_width())
 			marker.modulate = get_modulate_for_score(marker_data.score)
 			

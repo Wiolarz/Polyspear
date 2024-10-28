@@ -56,11 +56,16 @@ func start_game(world_state : SerializableWorldState, \
 
 	_prepare_to_start_game()
 
+	var is_spectator = true
+	for player in players:
+		if player.slot.is_local():
+			is_spectator = false
+	
 	if game_setup_info.is_in_mode_battle():
 		# in battle mode we can only have battle state
 		assert(not world_state)
 
-		_start_game_battle(battle_state)
+		_start_game_battle(battle_state, is_spectator)
 		UI.set_camera(E.CameraPosition.BATTLE)
 
 	elif game_setup_info.is_in_mode_world():
@@ -117,15 +122,12 @@ func _start_game_world(world_state : SerializableWorldState):
 
 
 ## new game <=> battle_state == null
-func _start_game_battle(battle_state : SerializableBattleState):
+func _start_game_battle(battle_state : SerializableBattleState, is_spectator: bool):
 	var map_data = game_setup_info.battle_map
 	var armies : Array[Army]  = []
-	var is_spectator = true
 
 	for player in players:
 		armies.append(create_army_for(player))
-		if player.bot_engine or player.get_player_name() == "LOCAL":
-			is_spectator = false
 
 	UI.go_to_main_menu()
 	var x_offset = 0.0

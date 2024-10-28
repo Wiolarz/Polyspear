@@ -77,7 +77,7 @@ func start_battle(new_armies : Array[Army], battle_map : DataBattleMap, \
 		_batch_mode = false
 
 	if is_spectator: 
-		enable_ai_preview()
+		_enable_ai_preview()
 	
 	# first turn does not get a signal emit
 	_on_turn_started(_battle_grid_state.get_current_player())
@@ -199,7 +199,7 @@ func _on_turn_started(player : Player) -> void:
 		
 		if not my_cancel_token.is_canceled():
 			assert(_battle_grid_state.is_move_possible(move), "AI tried to perform an invalid move")
-			_perform_ai_move(move)
+			_perform_move_info(move)
 			latest_ai_cancel_token = null
 
 
@@ -337,16 +337,12 @@ func _ai_thinking_delay(thinking_begin_s) -> void:
 		await get_tree().create_timer(0.1).timeout
 
 
-func _perform_ai_move(move_info : MoveInfo) -> void:
-	_perform_move_info(move_info)
-
-
 func ai_move() -> void:
 	if latest_ai_cancel_token:
 		push_warning("ai is already moving, dont stack two simultaneous ai moves race")
 		return
 	var move := AiBotStateRandom.choose_move_static(_battle_grid_state)
-	_perform_ai_move(move)
+	_perform_move_info(move)
 
 #endregion AI Support
 
@@ -561,6 +557,7 @@ func close_when_quiting_game() -> void:
 	deselect_unit()
 	_clear_anim_queue()
 	_reset_grid_and_unit_forms()
+	_disable_ai_preview()
 
 
 ## called when battle simulation decided battle was won
@@ -572,7 +569,7 @@ func _on_battle_ended() -> void:
 	_battle_is_ongoing = false
 	deselect_unit()
 	
-	disable_ai_preview()
+	_disable_ai_preview()
 
 	await get_tree().create_timer(1).timeout # TEMP, don't exit immediately
 	while _replay_is_playing:
@@ -593,7 +590,7 @@ func _close_battle() -> void:
 	_turn_off_battle_ui()
 	_reset_grid_and_unit_forms()
 	deselect_unit()
-	disable_ai_preview()
+	_disable_ai_preview()
 
 	if not WM.world_game_is_active():
 		print("end of test battle")
@@ -722,7 +719,7 @@ func force_surrender():
 	_end_move()
 
 
-func enable_ai_preview():
+func _enable_ai_preview():
 	if not _battle_grid_state:
 		push_error("Failed to enahle AI preview - _battle_grid_state == null")
 		return
@@ -736,7 +733,7 @@ func enable_ai_preview():
 	_ai_move_preview.update(_battle_grid_state)
 
 
-func disable_ai_preview():
+func _disable_ai_preview():
 	if _ai_move_preview:
 		_ai_move_preview.queue_free()
 		_ai_move_preview = null
@@ -744,9 +741,9 @@ func disable_ai_preview():
 
 func toggle_ai_preview():
 	if _ai_move_preview:
-		disable_ai_preview()
+		_disable_ai_preview()
 	else:
-		enable_ai_preview()
+		_enable_ai_preview()
 
 #endregion cheats
 

@@ -22,7 +22,6 @@ extends AIInterface
 var iterate_complete_mutex := Mutex.new()
 var is_iterate_complete: bool = false
 var thread: Thread
-var mcts: BattleMCTSManager
 
 signal complete
 

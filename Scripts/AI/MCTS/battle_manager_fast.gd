@@ -22,6 +22,7 @@ static func from(bgstate: BattleGridState, tgrid: TileGridFast = null) -> Battle
 	var new = BattleManagerFast.new()
 	if tgrid == null:
 		tgrid = TileGridFast.from(bgstate)
+		new.add_child(tgrid)
 	
 	new.set_tile_grid(tgrid)
 	new.set_current_participant(bgstate.current_army_index)
@@ -71,6 +72,7 @@ static func from(bgstate: BattleGridState, tgrid: TileGridFast = null) -> Battle
 					_:
 						new.set_unit_effect(army_idx, unit_idx, eff.name, eff.duration_counter)
 					
+		# TODO in future there might potentially be more martyrs simultaneously
 		assert(martyrs.size() in [0,1,2], "Unsupported martyr number")
 		if martyrs.size() == 2:
 			new.set_unit_martyr(army_idx, martyrs[0], martyrs[1], martyr_duration)
