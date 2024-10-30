@@ -496,7 +496,7 @@ func cheat_money(new_wood : int = 100, new_iron : int = 100, new_ruby : int = 10
 	)
 
 
-func hero_speed_cheat(speed : int = 1) -> void:
+func hero_speed_cheat(speed : int = 100) -> void:
 	if not selected_hero:
 		print("no selected hero")
 		return
