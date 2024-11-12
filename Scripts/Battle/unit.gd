@@ -5,6 +5,8 @@ signal unit_died()
 signal unit_turned()
 signal unit_moved()
 
+const MAX_EFFECTS_PER_UNIT = 2
+
 ## TODO remove this
 var controller : Player
 
@@ -105,7 +107,7 @@ func get_front_symbol() -> E.Symbols:
 ## attempts to add magical effect to a unit (there is limit of 2) [br]
 ## returns bool if it was succesful
 func try_adding_magic_effect(effect : BattleMagicEffect) -> bool:
-	if effects.size() >= 2:
+	if effects.size() >= MAX_EFFECTS_PER_UNIT:
 		return false
 	effects.append(effect)
 	return true

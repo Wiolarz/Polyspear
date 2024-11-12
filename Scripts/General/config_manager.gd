@@ -38,6 +38,7 @@ const SENTINEL_TILE_PATH = "res://Resources/World/World_tiles/sentinel.tres"
 const BATTLE_MAP_TILES_PATH = "res://Resources/Battle/Battle_tiles/"
 const WORLD_MAP_TILES_PATH = "res://Resources/World/World_tiles/"
 const SYMBOLS_PATH = "res://Resources/Battle/Symbols/"
+const BATTLE_BOTS_PATH = "res://Resources/Battle/Bots"
 
 const REPLAY_DIRECTORY = "user://replays/"
 const PLAYER_OPTIONS_PATH = "user://player_options.tres"
@@ -155,10 +156,28 @@ const CHESS_CLOCK_BATTLE_TURN_INCREMENT_MS = 2 * 1000
 #endregion chess clock
 
 
+#region Debugging & tests
+
+# Also documented in Documentation/libspear.md
+## Checks each time a move is done whether results of a move replicated in BattleManagerFast match results in a regular BM
+var debug_check_bmfast_integrity := true
+## Enables additional BattleManagerFast internal integrity checks, which may slightly reduce performance
+var debug_check_bmfast_internals := true
+## When greater than zero, saves replays from playouts where errors were detected
+var debug_mcts_max_saved_fail_replays := 16
+## When true, immediately save replays from BattleManagerFast mismatches with an appropriate name with a suffix "BMFast Mismatch"
+var debug_save_failed_bmfast_integrity := true
+
+#endregion
+
+
 #region Player Options
+
 var player_options : PlayerOptions
 
 const DEFAULT_USER_NAME : String = "(( you ))"
+
+const ENABLE_AUTO_BRAIN := false
 
 var DEFAULT_MODE_IS_BATTLE : bool :
 	get: return player_options.use_default_battle
@@ -169,6 +188,7 @@ var LAST_USED_BATTLE_PRESET : PresetBattle :
 	get: return player_options.last_used_battle_preset
 var LAST_USED_WORLD_PRESET : PresetWorld : # TODO implement this
 	get: return player_options.last_used_world_preset
+
 
 func save_last_used_for_host_setup(\
 		address : String, port : int, username : String) -> void:
