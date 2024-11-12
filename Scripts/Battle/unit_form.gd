@@ -4,6 +4,8 @@ extends Node2D
 ## emitted when anim ends (move, turn, die)
 signal anim_end()
 
+const SIDE_NAMES = ["FrontSymbol", "FrontRightSymbol", "BackRightSymbol", "BackSymbol", "BackLeftSymbol", "FrontLeftSymbol"]
+
 var entity : Unit
 
 var _play_move_anim : bool
@@ -80,7 +82,8 @@ func apply_graphics(template : DataUnit, color : DataPlayerColor):
 
 ## WARNING: called directly in UNIT EDITOR
 func _apply_symbol_sprite(dir : int, texture_path : String) -> void:
-	var symbol_sprite = $"Symbols".get_children()[dir].get_child(0).get_child(0)
+	var sprite_path = "Symbols/%s/SymbolForm/Sprite2D" % [SIDE_NAMES[dir]]
+	var symbol_sprite = get_node(sprite_path)
 	if texture_path == null or texture_path.is_empty():
 		symbol_sprite.texture = null
 		symbol_sprite.hide()
