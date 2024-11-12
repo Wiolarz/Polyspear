@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="DataUnit" load_steps=6 format=3 uid="uid://cf6xqr1v08v0c"]
+[gd_resource type="Resource" script_class="DataUnit" load_steps=6 format=3 uid="uid://bwyu6qg7dsisg"]
 
 [ext_resource type="Script" path="res://Scripts/World/Economy/goods.gd" id="1_21ti4"]
 [ext_resource type="Script" path="res://Resources/Battle/data_unit.gd" id="1_fdqsc"]
@@ -18,5 +18,5 @@ texture_path = "res://Art/units/new_classic/orc_grunt.png"
 symbols = Array[Resource("res://Resources/Battle/data_symbol.gd")]([ExtResource("3_5uj6u"), ExtResource("3_5uj6u"), ExtResource("2_84fw4"), ExtResource("2_84fw4"), ExtResource("2_84fw4"), ExtResource("3_5uj6u")])
 cost = SubResource("Resource_7jod1")
 level = 2
-mana = 0
+mana = 2
 spells = Array[Resource("res://Scripts/Battle/battle_spell.gd")]([])

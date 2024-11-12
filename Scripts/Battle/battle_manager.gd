@@ -320,6 +320,7 @@ func  _end_move() -> void:
 			_battle_grid_state.end_stalemate() # could end the battle
 
 	if _battle_grid_state.battle_is_ongoing():
+		_battle_ui.update_mana() # TEMP placement here
 		_on_turn_started(_battle_grid_state.get_current_player())
 	else :
 		_on_battle_ended()
@@ -403,6 +404,11 @@ func get_cyclone_target() -> Player:
 
 func get_cyclone_timer() -> int:
 	return _battle_grid_state.cyclone_get_current_target_turns_left()
+
+
+func get_player_mana(player : Player) -> int:
+	var player_army = _battle_grid_state._get_player_army(player) # TEMP? or should it be public
+	return player_army.mana_points
 
 #endregion Mana Cyclone Timer
 
@@ -558,6 +564,7 @@ func _on_battle_ended() -> void:
 		return
 	_battle_is_ongoing = false
 	deselect_unit()
+	_battle_ui.update_mana()
 
 	await get_tree().create_timer(1).timeout # TEMP, don't exit immediately
 	while _replay_is_playing:

@@ -17,7 +17,7 @@ extends CanvasLayer
 @onready var book = $SpellBook
 
 
-
+var fighting_players_idx = []
 var armies_reference : Array[BattleGridState.ArmyInBattleState]
 
 var selected_unit : DataUnit = null
@@ -43,10 +43,11 @@ func load_armies(army_list : Array[BattleGridState.ArmyInBattleState]):
 		players_box.remove_child(c)
 
 	units_box.show()
-
+	fighting_players_idx = []
 	var idx = 0
 	for army in army_list:
 		var controller = IM.get_player_by_index(army.army_reference.controller_index)
+		fighting_players_idx.append(army.army_reference.controller_index)
 		# create player buttons
 		var n = Button.new()
 		n.text = get_text_for(controller, idx == 0)
@@ -65,6 +66,18 @@ func _process(_delta):
 	if BM.battle_is_active():
 		update_clock()
 		update_cyclone()
+
+
+func update_mana() -> void:
+	var i = -1
+	var temp_skip_label = true
+	for player_button in players_box.get_children():
+		if temp_skip_label:
+			temp_skip_label = false
+			continue
+		i += 1
+		var player_idx = fighting_players_idx[i]
+		player_button.text = get_text_for(IM.get_player_by_index(player_idx), false)  # TEMP func doesn't know if a player was selected
 
 
 func update_cyclone():
@@ -100,7 +113,7 @@ func get_text_for(controller : Player, selected : bool):
 	var player_name = "Neutral"
 	if controller:
 		player_name = controller.get_player_name()
-	return prefix + "Player " + player_name
+	return prefix + "Player " + player_name + "_" + str(BM.get_player_mana(controller))
 
 
 #region Summon Phase

@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="DataUnit" load_steps=7 format=3 uid="uid://46pcsemjtriw"]
+[gd_resource type="Resource" script_class="DataUnit" load_steps=7 format=3 uid="uid://syrr32f2nn6u"]
 
 [ext_resource type="Script" path="res://Resources/Battle/data_unit.gd" id="1_4uymu"]
 [ext_resource type="Script" path="res://Scripts/World/Economy/goods.gd" id="1_o1urn"]
@@ -19,5 +19,5 @@ texture_path = "res://Art/units/new_classic/orc_monk.png"
 symbols = Array[Resource("res://Resources/Battle/data_symbol.gd")]([ExtResource("2_b4ilc"), ExtResource("4_7olf8"), ExtResource("5_q20rr"), ExtResource("4_7olf8"), ExtResource("5_q20rr"), ExtResource("4_7olf8")])
 cost = SubResource("Resource_gb762")
 level = 3
-mana = 0
+mana = 3
 spells = Array[Resource("res://Scripts/Battle/battle_spell.gd")]([])

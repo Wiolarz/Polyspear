@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="DataUnit" load_steps=7 format=3 uid="uid://cygxppuvwghk7"]
+[gd_resource type="Resource" script_class="DataUnit" load_steps=7 format=3 uid="uid://bh4qurujj27rh"]
 
 [ext_resource type="Script" path="res://Resources/Battle/data_unit.gd" id="1_g5mkx"]
 [ext_resource type="Script" path="res://Scripts/World/Economy/goods.gd" id="1_jct27"]
@@ -19,5 +19,5 @@ texture_path = "res://Art/units/new_classic/elf_shieldguy.png"
 symbols = Array[Resource("res://Resources/Battle/data_symbol.gd")]([ExtResource("3_sfuyx"), ExtResource("4_e5mpw"), ExtResource("2_e1x8y"), ExtResource("2_e1x8y"), ExtResource("2_e1x8y"), ExtResource("4_e5mpw")])
 cost = SubResource("Resource_dh0jd")
 level = 4
-mana = 1
+mana = 4
 spells = Array[Resource("res://Scripts/Battle/battle_spell.gd")]([])

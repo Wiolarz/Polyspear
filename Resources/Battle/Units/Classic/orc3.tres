@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="DataUnit" load_steps=6 format=3 uid="uid://jrkp6au30d2h"]
+[gd_resource type="Resource" script_class="DataUnit" load_steps=6 format=3 uid="uid://bxb7842q7rrib"]
 
 [ext_resource type="Script" path="res://Resources/Battle/data_unit.gd" id="1_4uymu"]
 [ext_resource type="Script" path="res://Scripts/World/Economy/goods.gd" id="1_ykmhh"]
@@ -18,5 +18,5 @@ texture_path = "res://Art/units/new_classic/orc_halbard.png"
 symbols = Array[Resource("res://Resources/Battle/data_symbol.gd")]([ExtResource("3_6wlcv"), ExtResource("3_6wlcv"), ExtResource("4_5cbmw"), ExtResource("4_5cbmw"), ExtResource("4_5cbmw"), ExtResource("3_6wlcv")])
 cost = SubResource("Resource_lnog6")
 level = 4
-mana = 0
+mana = 4
 spells = Array[Resource("res://Scripts/Battle/battle_spell.gd")]([])

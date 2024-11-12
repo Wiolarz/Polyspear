@@ -1323,7 +1323,7 @@ class ArmyInBattleState:
 	#STUB - the only relevant information about killed units is their level
 	var killed_units : Array[int]
 
-	var mana_points : int = 1
+	var mana_points : int = 0  # TEMP CHANGE to 0 for tournament
 	var cyclone_timer : int = 100
 
 	var hero : Hero:
