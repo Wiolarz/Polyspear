@@ -121,7 +121,7 @@ func _apply_unit_texture(texture : Texture2D) -> void:
 
 func _apply_color_texture(color : DataPlayerColor) -> void:
 	var color_texture_name : String = color.hexagon_texture
-	var path = "res://Art/player_colors/%s.png" % color_texture_name
+	var path = "%s%s.png" % [CFG.PLAYER_COLORS_PATH, color_texture_name]
 	var texture = load(path) as Texture2D
 	assert(texture, "failed to load background " + path)
 	$sprite_color.texture = texture

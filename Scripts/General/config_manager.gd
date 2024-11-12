@@ -43,6 +43,7 @@ const ROCK_ICON_PATH = "res://Art/battle_map/rock.png"
 const SWAMP_ICON_PATH = "res://Art/battle_map/swamp.png"
 const MANA_ICON_PATH = "res://Art/battle_map/mana_well.png"
 
+const PLAYER_COLORS_PATH = "res://Art/player_colors/"
 
 const REPLAY_DIRECTORY = "user://replays/"
 const PLAYER_OPTIONS_PATH = "user://player_options.tres"
@@ -81,12 +82,12 @@ const OUTPOST_RUBY_PATH : String = "res://Resources/Presets/Army/outpost_defende
 #region Colors
 
 var TEAM_COLORS : Array[DataPlayerColor] = [
+	DataPlayerColor.create("orange", Color(0.9, 0.5, 0.0)),
+	DataPlayerColor.create("blue", Color(0.0, 0.4, 1.0)),
+	DataPlayerColor.create("red", Color(1.0, 0.0, 0.0)),
 	DataPlayerColor.create("purple", Color(0.9, 0.2, 0.85)),
 	DataPlayerColor.create("green", Color(0.0, 0.9, 0.0)),
 	DataPlayerColor.create("yellow", Color(0.9, 0.8, 0.0)),
-	DataPlayerColor.create("red", Color(1.0, 0.0, 0.0)),
-	DataPlayerColor.create("blue", Color(0.0, 0.4, 1.0)),
-	DataPlayerColor.create("orange", Color(0.9, 0.5, 0.0)),
 ]
 
 var NEUTRAL_COLOR := \
