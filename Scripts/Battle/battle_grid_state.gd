@@ -25,6 +25,10 @@ var cyclone_target : ArmyInBattleState
 #TEMP HACK for proper awarding of exp in spear kills
 var spear_holding_killer_teams : Array[int] = []
 
+
+var stalemate_failsafe_on : bool = false
+var stalemate_failsafe_start : int = 0
+
 #region init
 
 func _init(width_ : int, height_ : int):
@@ -137,6 +141,16 @@ func move_info_execute(move_info : MoveInfo) -> void:
 			move_info.register_whole_move_complete() # TEMP check what it was supposed to do
 
 	turn_counter += 1
+	
+	if stalemate_failsafe_on and stalemate_failsafe_start + 6 < turn_counter:
+		for army in armies_in_battle_state:
+			for _unit in army.units:
+				if _unit.template.unit_name != "orc_2": continue
+				
+				var vengeance_effect : BattleMagicEffect = \
+					load("res://Resources/Battle/Battle_Spells/Battle_Magic_Effects/vengeance_effect.tres")
+				
+				vengeance_effect.apply_effect(_unit, "post death spell effect")
 
 	_check_battle_end()
 	if battle_is_ongoing():
@@ -243,8 +257,7 @@ func _should_die_to_counter_attack(unit : Unit) -> bool:
 			continue  # parry prevents counter attacks
 		
 		if Unit.does_it_counter_attack(enemy_symbol):
-			var shield_power : int = Unit.defense_power(unit_symbol)
-			if Unit.attack_power(enemy_symbol) > shield_power:
+			if Unit.does_attack_succeed(enemy_symbol, unit_symbol):
 				# found killer
 				spear_holding_killer_teams.append(adjacent_units[side].army_in_battle.team)
 
@@ -254,29 +267,28 @@ func _should_die_to_counter_attack(unit : Unit) -> bool:
 
 
 func _process_offensive_symbols(unit : Unit) -> void:
-	var adjacent := _get_adjacent_units(unit.coord)
-
 	for side in range(6):
 		var unit_weapon = unit.get_symbol(side)
 		if unit_weapon == E.Symbols.EMPTY:
 			continue  # We don't have any weapon
 		if Unit.does_it_shoot(unit_weapon):
-			var reach = Unit.ranged_weapon_reach(unit_weapon)
-			_process_bow(unit, side, reach)
+			_process_bow(unit, side, unit_weapon)
 			continue  # bow is special case
-		if not adjacent[side]:
+		
+		var adjacent_unit := _get_adjacent_unit(unit.coord, side)
+		if not adjacent_unit:
 			continue # nothing to interact with
-		if adjacent[side].army_in_battle.team == unit.army_in_battle.team:
+		if adjacent_unit.army_in_battle.team == unit.army_in_battle.team:
 			continue # no friendly fire within team
 
-		var enemy = adjacent[side]
+		var enemy = adjacent_unit
 		var opposite_side := GenericHexGrid.opposite_direction(side)
 		var enemy_weapon = enemy.get_symbol(opposite_side)
 		if Unit.will_parry_occur(unit_weapon, enemy_weapon):
 			continue  # parry disables all melee symbols
 
 		# we check if attacking symbol power is able to kill
-		if Unit.defense_power(enemy_weapon) < Unit.attack_power(unit_weapon):
+		if Unit.does_attack_succeed(unit_weapon, enemy_weapon):
 			# in case of winning battle - further attack checks won't break anything
 			_kill_unit(enemy, armies_in_battle_state[current_army_index])
 			continue  # enemy unit died
@@ -286,7 +298,9 @@ func _process_offensive_symbols(unit : Unit) -> void:
 			_push_enemy(enemy, side, Unit.push_power(unit_weapon))
 
 
-func _process_bow(unit : Unit, side : int, reach : int) -> void:
+func _process_bow(unit : Unit, side : int, weapon : E.Symbols) -> void:
+	var reach = Unit.ranged_weapon_reach(weapon)
+
 	var target := _get_shot_target(unit.coord, side, reach)
 
 	if target == null:
@@ -295,8 +309,8 @@ func _process_bow(unit : Unit, side : int, reach : int) -> void:
 		return # no friendly fire within team
 
 	var opposite_side := GenericHexGrid.opposite_direction(side)
-	var shield_power : int = Unit.defense_power(target.get_symbol(opposite_side))
-	if Unit.attack_power(unit.get_symbol(side)) <= shield_power:
+	var enemy_weapon : E.Symbols = target.get_symbol(opposite_side)
+	if not Unit.does_attack_succeed(weapon, enemy_weapon):
 		return  # blocked by shield
 
 	_kill_unit(target, armies_in_battle_state[current_army_index])
@@ -385,6 +399,11 @@ func _get_adjacent_units(coord : Vector2i) -> Array[Unit]:
 		var target_coord := GenericHexGrid.adjacent_coord(coord, dir)
 		result.append(get_unit(target_coord))
 	return result
+
+
+func _get_adjacent_unit(coord : Vector2i, dir : int) -> Unit:
+	var target_coord := GenericHexGrid.adjacent_coord(coord, dir)
+	return get_unit(target_coord)
 
 
 ## reach - number of tiles missle can reach [br]
@@ -503,17 +522,11 @@ func _can_kill_or_push(me : Unit, other_unit : Unit, attack_direction : int):
 	if Unit.will_parry_occur(front_symbol, enemy_symbol):
 		return false  # parry ignores our melee symbols
 
-	
-
 	if Unit.can_it_push(front_symbol):
 		return true  # push ignores enemy_unit shields
 
-
-	var shield_power = Unit.defense_power(enemy_symbol)
-
-	if shield_power >= Unit.attack_power(front_symbol):
-		return false
-	return true  # unit attack is sufficient
+	# checks if unit attack power is sufficient
+	return Unit.does_attack_succeed(front_symbol, enemy_symbol)
 
 
 func _get_player_army(player : Player) -> BattleGridState.ArmyInBattleState:
@@ -656,7 +669,7 @@ func _perform_move(unit : Unit, direction : int, target_tile_coord : Vector2i) -
 ## unit - that is going to move |
 ## target_title_coord - hex tile it's going to move toward (doesn't have to be adjacent)
 ##  direction -
-func _perform_teleport(unit : Unit, target_tile_coord : Vector2i, direction : int = -1) -> void:
+func _perform_teleport(unit : Unit, target_tile_coord : Vector2i, direction : int = -1, martyr : bool = false) -> void:
 	# TURN
 	if direction != -1:
 		unit.turn(direction)
@@ -667,8 +680,8 @@ func _perform_teleport(unit : Unit, target_tile_coord : Vector2i, direction : in
 	_change_unit_coord(unit, target_tile_coord)
 	unit.move(target_tile_coord, _get_battle_hex(target_tile_coord).swamp)
 	currently_processed_move_info.register_locomote_complete()
-	if _process_symbols(unit):
-		return
+	if not martyr:
+		_process_symbols(unit)
 
 
 ## changes coordinates of the unit ONLY (doesn't activate attack or anything like that)
@@ -733,7 +746,7 @@ func _kill_unit(target : Unit, killer_army : ArmyInBattleState = null) -> void:
 		return
 
 	if replaced_target: # "Martyr" spell quick hack
-		_perform_teleport(replaced_target, new_target_pos)
+		_perform_teleport(replaced_target, new_target_pos, -1, true) # martyr teleport temp fix
 
 	# trigger any post death spell effect
 	for spell in target.effects:
@@ -741,6 +754,17 @@ func _kill_unit(target : Unit, killer_army : ArmyInBattleState = null) -> void:
 		spell.apply_effect(currently_active_unit, "post death spell effect")
 
 	mana_values_changed() # TEMP occurs every time after death
+	
+	var units_on_board : Dictionary = {}
+	
+	for army in armies_in_battle_state:
+		for unit in army.units:
+			units_on_board[unit.template.unit_name] = unit
+	
+	if units_on_board.size() == 2 and units_on_board.has("elf_3") \
+	and units_on_board.has("orc_2"):
+		stalemate_failsafe_on = true
+		stalemate_failsafe_start = turn_counter
 
 ## Rare event when all players repeated their moves -> it pushes cyclone timer to activate next turn
 func end_stalemate() -> void:
@@ -1117,8 +1141,7 @@ func _ai_should_die_to_counter_attack(unit : Unit, direction : int, coord : Vect
 			continue  # parry prevents counter attacks
 		
 		if Unit.does_it_counter_attack(enemy_symbol):
-			var shield_power : int = Unit.defense_power(unit_symbol)
-			if Unit.attack_power(enemy_symbol) > shield_power:
+			if Unit.does_attack_succeed(enemy_symbol, unit_symbol):
 				return true
 
 	return false
@@ -1145,7 +1168,7 @@ func _ai_will_melee_kill_someone(unit : Unit, direction : int, coord : Vector2i)
 			continue  # parry disables all melee symbols
 
 		# we check if attacking symbol power is able to kill
-		if Unit.defense_power(enemy_weapon) < Unit.attack_power(unit_weapon):
+		if Unit.does_attack_succeed(unit_weapon, enemy_weapon):
 			return true
 		# in case enemy defended against attack we check if attacker pushes away enemy
 		if Unit.can_it_push(unit_weapon):
@@ -1203,7 +1226,7 @@ func _is_kill_move(move : MoveInfo) -> bool:
 			var opposite_side = GenericHexGrid.opposite_direction(side)
 			var target_symbol = target.get_symbol(opposite_side)
 
-			if Unit.defense_power(target_symbol) < Unit.attack_power(symbol):
+			if Unit.does_attack_succeed(symbol, target_symbol):
 				return true  # can shoot enemy in this direction
 
 	# step 3 melee weapon on first rotation
@@ -1263,7 +1286,7 @@ class BattleHex:
 
 
 	static func create(data : DataTile) -> BattleHex:
-		if data.type == "sentinel":
+		if data.type == "SENTINEL":
 			return null
 
 		var result = BattleHex.new()
@@ -1286,7 +1309,7 @@ class BattleHex:
 				result.hill = true
 			"swamp":
 				result.swamp = true
-			"empty":
+			"EMPTY":
 				pass
 			"mana_well":
 				result.mana = true
@@ -1339,7 +1362,7 @@ class ArmyInBattleState:
 		var result = ArmyInBattleState.new()
 		result.battle_grid_state = weakref(state)
 		result.army_reference = army
-		if army.hero: #TEMP
+		if army.hero and not army.hero.wounded: #TEMP
 			var hero_unit : DataUnit = army.hero.template.data_unit
 			result.units_to_summon.append(hero_unit)
 
@@ -1348,6 +1371,10 @@ class ArmyInBattleState:
 			result.units_to_summon.append(unit)
 
 			result.mana_points += unit.mana # MANA
+
+		#Temp solution for world map, where proper clock system isn't implemented yet
+		if army.timer_reserve_sec == 0:
+			army.timer_reserve_sec = 3000
 
 		#TEMP
 		result.start_turn_clock_time_left_ms = army.timer_reserve_sec * 1000

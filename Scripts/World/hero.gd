@@ -22,6 +22,8 @@ var max_army_size : int
 var max_movement_points = 3
 var movement_points = 3
 
+var wounded : bool = false
+
 var xp = 0
 var level = 1
 

@@ -113,7 +113,7 @@ func _optimize_grid_size(local_tile_grid : Array) -> Array:
 	var found_any_tiles = false
 	for x in local_tile_grid.size():
 		for y in local_tile_grid[0].size():
-			if local_tile_grid[x][y].type != "sentinel":
+			if local_tile_grid[x][y].type != "SENTINEL":
 				found_any_tiles = true
 				if left_pos > x:
 					left_pos = x

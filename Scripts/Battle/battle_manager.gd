@@ -6,9 +6,11 @@ var _battle_is_ongoing : bool = false
 var _battle_grid_state : BattleGridState # GAMEPLAY combat state
 
 var _tile_grid : GenericHexGrid # Grid<TileForm> - VISUALs in a grid
+var _border : Array[TileForm] # A visual border made out of sentinels
 var _unit_to_unit_form : Dictionary # gameplay unit to VISUAL mapping
 var _grid_tiles_node : Node2D # parent for tiles VISUAL
 var _unit_forms_node : Node2D # parent for units VISUAL
+var _border_node : Node2D # parent for units VISUAL
 
 var _battle_ui : BattleUI
 var _anim_queue : Array[AnimInQueue] = []
@@ -34,6 +36,10 @@ func _ready():
 	_unit_forms_node = Node2D.new()
 	_unit_forms_node.name = "UNITS"
 	add_child(_unit_forms_node)
+	
+	_border_node = Node2D.new()
+	_border_node.name = "BORDER"
+	add_child(_border_node)
 
 	UI.add_custom_screen(_battle_ui)
 
@@ -101,6 +107,20 @@ func _load_map(map : DataBattleMap) -> void:
 			_tile_grid.set_hex(coord, tile_form)
 			tile_form.position = to_position(coord)
 			_grid_tiles_node.add_child(tile_form)
+	
+	for x in range(-CFG.BATTLE_BORDER_WIDTH, map.grid_width + CFG.BATTLE_BORDER_WIDTH):
+		for y in range(-CFG.BATTLE_BORDER_HEIGHT, map.grid_height + CFG.BATTLE_BORDER_HEIGHT):
+			
+			var coord = Vector2i(x, y)
+			if (x >= 0 and x < map.grid_width) and (y >= 0 and y < map.grid_height):
+				continue
+			
+			var tile_form = TileForm.create_battle_tile(
+				load("res://Resources/Battle/Battle_tiles/sentinel.tres"), coord
+			)
+			_border.push_back(tile_form)
+			tile_form.position = to_position(coord)
+			_border_node.add_child(tile_form)
 
 
 ## space needed for battle tiles in global position
@@ -259,6 +279,10 @@ func grid_input(coord : Vector2i) -> void:
 	var current_player : Player =  _battle_grid_state.get_current_player()
 	if current_player != null and current_player.bot_engine:
 		print("ai playing, input ignored")
+		return
+
+	if not current_player.slot.is_local():
+		print("Attempt to play a move of an another player")
 		return
 
 	var move_info : MoveInfo
@@ -489,7 +513,7 @@ func _try_select_unit(coord : Vector2i) -> bool:
 
 ## Main way to deselect unit -> use every time, its safe
 func deselect_unit() -> void:
-	if _selected_unit:
+	if _selected_unit and _selected_unit in _unit_to_unit_form:
 		_unit_to_unit_form[_selected_unit].set_selected(false)
 	_selected_unit = null
 	_battle_ui.selected_spell = null
@@ -616,6 +640,9 @@ func _reset_grid_and_unit_forms() -> void:
 	_unit_to_unit_form.clear()
 	Helpers.remove_all_children(_grid_tiles_node)
 	Helpers.remove_all_children(_unit_forms_node)
+	for i in _border:
+		i.queue_free()
+	_border.clear()
 	_battle_grid_state = null
 
 ## Major function which fully generates information panel at the end of the battle
@@ -636,6 +663,7 @@ func _create_summary() -> DataBattleSummary:
 	for army_in_battle in armies_in_battle_state:
 		var player_stats := DataBattleSummaryPlayer.new()
 
+		var temp_points : int = 0
 		# Generate casulties info
 		if army_in_battle.dead_units.size() == 0:
 			player_stats.losses = "< none >"
@@ -643,12 +671,13 @@ func _create_summary() -> DataBattleSummary:
 			for dead in army_in_battle.dead_units:
 				var unit_description = "%s\n" % dead.unit_name
 				player_stats.losses += unit_description
+				temp_points += dead.level
 
 		var army_controller_index : int = army_in_battle.army_reference.controller_index
 		var army_controller = IM.get_player_by_index(army_controller_index)
 
 		# generates player names for their info column
-		player_stats.player_description = IM.get_full_player_description(army_controller)
+		player_stats.player_description = IM.get_full_player_description(army_controller) + " " + str(temp_points)
 
 		if army_in_battle.team == winning_team:
 			player_stats.state = "winner"

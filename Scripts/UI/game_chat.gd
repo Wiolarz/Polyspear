@@ -124,19 +124,37 @@ func _on_message_arrived(content : String):
 
 
 func _on_chat_line_edit_text_submitted(new_text):
+	# Check if message is a cheat
 	if new_text.length() >= 1 and new_text[0] == '/':
-		var cheat = new_text.substr(1).strip_edges().to_lower()
-		if cheat == "money":
-			WM.cheat_money()
-			#WM.current_player.goods.add(Goods.new(100,100,100))
-			print("money cheat")
-		if cheat == "fast":
-			if WM.selected_hero:
-				WM.selected_hero.entity.hero.movement_points += 100
+		# Split message by arguments
+		var args = new_text.split(" ", false)
+		var cheat = args[0].substr(1).strip_edges().to_lower()
+		
+		# Get number values from cheat arguments
+		args = Array(args).filter(func(arg): return arg.is_valid_int())
+		# Convert number values from string to int
+		args = Array(args).map(func(arg): return int(arg))
+		
+		# Cheats
+		match cheat:
+			"money":
+				WM.cheat_money.callv(args)
+				print("money cheat")
+			"fast":
+				WM.hero_speed_cheat.callv(args)
 				print("travel cheat")
-		if cheat == "brain":
-			BM.toggle_ai_preview()
-			print("ai move preview cheat")
+		  "brain":
+        BM.toggle_ai_preview()
+        print("ai move preview cheat")
+			"levelup":
+				WM.hero_level_up.callv(args)
+				print("levelup cheat")
+			"maxupgrade":
+				WM.city_upgrade_cheat()
+				print("city max upgrade cheat")
+			_:
+				print("unknown cheat")
+
 	else:
 		send_chat_message(new_text)
 

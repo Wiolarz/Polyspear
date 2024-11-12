@@ -5,13 +5,13 @@
 
 [sub_resource type="Resource" id="Resource_2tcj1"]
 script = ExtResource("1_c1dlm")
-type = "sentinel"
+type = "SENTINEL"
 texture_path = "res://Art/world_map/sentinel.png"
 flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_4rcj0"]
 script = ExtResource("1_c1dlm")
-type = "sentinel"
+type = "SENTINEL"
 texture_path = "res://Art/world_map/sentinel.png"
 flip_horizontal = false
 
@@ -35,13 +35,13 @@ flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_uuldc"]
 script = ExtResource("1_c1dlm")
-type = "sentinel"
+type = "SENTINEL"
 texture_path = "res://Art/world_map/sentinel.png"
 flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_u5mp2"]
 script = ExtResource("1_c1dlm")
-type = "sentinel"
+type = "SENTINEL"
 texture_path = "res://Art/world_map/sentinel.png"
 flip_horizontal = false
 
@@ -53,37 +53,37 @@ flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_oricg"]
 script = ExtResource("1_c1dlm")
-type = "empty"
+type = "EMPTY"
 texture_path = "res://Art/battle_map/grass.png"
 flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_gur6f"]
 script = ExtResource("1_c1dlm")
-type = "empty"
+type = "EMPTY"
 texture_path = "res://Art/battle_map/grass.png"
 flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_64y8a"]
 script = ExtResource("1_c1dlm")
-type = "empty"
+type = "EMPTY"
 texture_path = "res://Art/battle_map/grass.png"
 flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_i2b2k"]
 script = ExtResource("1_c1dlm")
-type = "empty"
+type = "EMPTY"
 texture_path = "res://Art/battle_map/grass.png"
 flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_ywqa7"]
 script = ExtResource("1_c1dlm")
-type = "empty"
+type = "EMPTY"
 texture_path = "res://Art/battle_map/grass.png"
 flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_8x0k3"]
 script = ExtResource("1_c1dlm")
-type = "empty"
+type = "EMPTY"
 texture_path = "res://Art/battle_map/grass.png"
 flip_horizontal = false
 
@@ -101,37 +101,37 @@ flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_q1wow"]
 script = ExtResource("1_c1dlm")
-type = "empty"
+type = "EMPTY"
 texture_path = "res://Art/battle_map/grass.png"
 flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_kqx7w"]
 script = ExtResource("1_c1dlm")
-type = "empty"
+type = "EMPTY"
 texture_path = "res://Art/battle_map/grass.png"
 flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_vpssk"]
 script = ExtResource("1_c1dlm")
-type = "empty"
+type = "EMPTY"
 texture_path = "res://Art/battle_map/grass.png"
 flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_qit5o"]
 script = ExtResource("1_c1dlm")
-type = "empty"
+type = "EMPTY"
 texture_path = "res://Art/battle_map/grass.png"
 flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_dxi2l"]
 script = ExtResource("1_c1dlm")
-type = "empty"
+type = "EMPTY"
 texture_path = "res://Art/battle_map/grass.png"
 flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_aiq2h"]
 script = ExtResource("1_c1dlm")
-type = "empty"
+type = "EMPTY"
 texture_path = "res://Art/battle_map/grass.png"
 flip_horizontal = false
 
@@ -143,13 +143,13 @@ flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_lry2d"]
 script = ExtResource("1_c1dlm")
-type = "sentinel"
+type = "SENTINEL"
 texture_path = "res://Art/world_map/sentinel.png"
 flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_gujja"]
 script = ExtResource("1_c1dlm")
-type = "sentinel"
+type = "SENTINEL"
 texture_path = "res://Art/world_map/sentinel.png"
 flip_horizontal = false
 
@@ -173,13 +173,13 @@ flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_dcfmx"]
 script = ExtResource("1_c1dlm")
-type = "sentinel"
+type = "SENTINEL"
 texture_path = "res://Art/world_map/sentinel.png"
 flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_woxt8"]
 script = ExtResource("1_c1dlm")
-type = "sentinel"
+type = "SENTINEL"
 texture_path = "res://Art/world_map/sentinel.png"
 flip_horizontal = false
 

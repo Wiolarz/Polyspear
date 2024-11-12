@@ -4,7 +4,7 @@ extends Area2D
 
 var coord : Vector2i
 
-var type : String = "sentinel"
+var type : String = "SENTINEL"
 
 var hex = null # WorldHex in world
 
