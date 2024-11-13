@@ -320,6 +320,7 @@ func  _end_move() -> void:
 			_battle_grid_state.end_stalemate() # could end the battle
 
 	if _battle_grid_state.battle_is_ongoing():
+		_battle_ui.update_mana() # TEMP placement here
 		_on_turn_started(_battle_grid_state.get_current_player())
 	else :
 		_on_battle_ended()
@@ -374,6 +375,7 @@ func _on_unit_summoned(unit : Unit) -> void:
 	unit.unit_died.connect(_on_unit_killed.bind(unit))
 	unit.unit_turned.connect(_on_unit_turned.bind(unit))
 	unit.unit_moved.connect(_on_unit_moved.bind(unit))
+	unit.unit_magic_effect.connect(_on_unit_magic_effect.bind(unit))
 
 
 ## handles player input while during the summoning phase
@@ -402,6 +404,11 @@ func get_cyclone_target() -> Player:
 
 func get_cyclone_timer() -> int:
 	return _battle_grid_state.cyclone_get_current_target_turns_left()
+
+
+func get_player_mana(player : Player) -> int:
+	var player_army = _battle_grid_state._get_player_army(player) # TEMP? or should it be public
+	return player_army.mana_points
 
 #endregion Mana Cyclone Timer
 
@@ -478,6 +485,10 @@ func _try_select_unit(coord : Vector2i) -> bool:
 	if new_unit.controller != _battle_grid_state.get_current_player():
 		return false
 
+	if new_unit == _selected_unit:  # Selecting the same unit twice deselects it
+		deselect_unit()
+		return false
+
 	# deselect visually old unit if new one selected
 	if _selected_unit:
 		deselect_unit()
@@ -534,29 +545,6 @@ func _perform_move_info(move_info : MoveInfo) -> void:
 
 	_end_move()
 
-
-func _on_unit_killed(unit: Unit) -> void:
-	if _batch_mode:
-		_unit_to_unit_form[unit].update_death_immediately()
-	else:
-		_anim_queue.push_back(AnimInQueue.create_die(_unit_to_unit_form[unit]))
-	_unit_to_unit_form.erase(unit)
-
-
-func _on_unit_turned(unit: Unit) -> void:
-	if _batch_mode:
-		_unit_to_unit_form[unit].update_turn_immediately()
-	else:
-		_anim_queue.push_back(AnimInQueue.create_turn(_unit_to_unit_form[unit]))
-
-
-func _on_unit_moved(unit: Unit) -> void:
-	if _batch_mode:
-		_unit_to_unit_form[unit].update_death_immediately()
-	else:
-		_anim_queue.push_back(AnimInQueue.create_move(_unit_to_unit_form[unit]))
-
-
 #endregion Fighting Phase
 
 
@@ -576,6 +564,7 @@ func _on_battle_ended() -> void:
 		return
 	_battle_is_ongoing = false
 	deselect_unit()
+	_battle_ui.update_mana()
 
 	await get_tree().create_timer(1).timeout # TEMP, don't exit immediately
 	while _replay_is_playing:
@@ -793,6 +782,32 @@ func _clear_anim_queue():
 	for anim in _anim_queue:
 		anim.on_anim_end()
 	_anim_queue.clear()
+
+
+func _on_unit_killed(unit : Unit) -> void:
+	if _batch_mode:
+		_unit_to_unit_form[unit].update_death_immediately()
+	else:
+		_anim_queue.push_back(AnimInQueue.create_die(_unit_to_unit_form[unit]))
+	_unit_to_unit_form.erase(unit)
+
+
+func _on_unit_turned(unit : Unit) -> void:
+	if _batch_mode:
+		_unit_to_unit_form[unit].update_turn_immediately()
+	else:
+		_anim_queue.push_back(AnimInQueue.create_turn(_unit_to_unit_form[unit]))
+
+
+func _on_unit_moved(unit : Unit) -> void:
+	if _batch_mode:
+		_unit_to_unit_form[unit].update_death_immediately()
+	else:
+		_anim_queue.push_back(AnimInQueue.create_move(_unit_to_unit_form[unit]))
+
+
+func _on_unit_magic_effect(unit : Unit) -> void:
+	_unit_to_unit_form[unit].set_effects()
 
 
 class AnimInQueue:

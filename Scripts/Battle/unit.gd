@@ -4,6 +4,7 @@ extends RefCounted # default
 signal unit_died()
 signal unit_turned()
 signal unit_moved()
+signal unit_magic_effect()
 
 ## TODO remove this
 var controller : Player
@@ -30,6 +31,10 @@ var effects : Array[BattleMagicEffect] = []
 
 var is_on_swamp : bool = false
 
+# TEMP implementation, should be merged with is_on_swamp and other terrain based effects
+## this information is only for visual representation
+var is_on_rock : bool = false
+var is_on_mana : bool = false
 
 static func create(new_controller : Player, \
 		new_template : DataUnit, \
@@ -57,8 +62,11 @@ func turn(side : GenericHexGrid.GridDirections):
 
 
 ## puts unit to a given coordinate, can be awaited see waits_for_form
-func move(new_coord : Vector2i, is_swamp : bool):
-	is_on_swamp = is_swamp
+func move(new_coord : Vector2i, battle_tile : BattleGridState.BattleHex):
+	is_on_swamp = battle_tile.swamp
+	is_on_rock = battle_tile.hill
+	is_on_mana = battle_tile.mana
+	unit_magic_effect.emit()
 
 	var old = coord
 	coord = new_coord
@@ -108,20 +116,15 @@ func try_adding_magic_effect(effect : BattleMagicEffect) -> bool:
 	if effects.size() >= 2:
 		return false
 	effects.append(effect)
+	unit_magic_effect.emit()
 	return true
 
 
+## currently used only to update UI
+func effect_state_changed() -> void:
+	unit_magic_effect.emit()
+
 #endregion Magic
-
-
-#region UI
-
-func get_player_color() -> DataPlayerColor:
-	if not controller:
-		return CFG.NEUTRAL_COLOR
-	return controller.get_player_color()
-
-#endregion UI
 
 
 #region Static Symbols
