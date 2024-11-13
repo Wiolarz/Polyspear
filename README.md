@@ -84,7 +84,12 @@ Unreal - C++
 # Authors
 
 - Wiolarz
-- Zephyr (NamespaceV)
-- Carcinizer
-- Trupen (MrTrupen)
 - Pierożek (PieroganoReggiano)
+- Carcinizer
+- Deathguard12 (bartoszstepien01)
+- Toksyczna
+
+## Former Contributors
+
+- Trupen (MrTrupen)
+- Zephyr (NamespaceV)
