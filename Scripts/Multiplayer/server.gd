@@ -10,6 +10,7 @@ var server_username : String = ""
 @onready var enet_network : ENetConnection = null
 var server_local_address : String = ""
 var server_external_address : String = "-needs fetch-"
+var settings : ServerSettings = ServerSettings.new()
 
 func _init():
 	name = "Server"
@@ -175,6 +176,10 @@ func broadcast_world_move(move : WorldMoveInfo):
 
 
 func send_additional_callbacks_to_logging_client(peer : ENetPacketPeer):
+	# share settings
+	var settings_packet = ShareServerSettings.create_packet(settings.content)
+	send_to_peer(peer, settings_packet)
+
 	var game_in_progress : bool = \
 		BM.battle_is_active() or WM.world_game_is_active()
 	if game_in_progress:

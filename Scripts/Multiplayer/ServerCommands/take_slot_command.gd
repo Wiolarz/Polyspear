@@ -24,7 +24,7 @@ static func process_command(server : Server, peer : ENetPacketPeer, \
 	if index < 0 or index >= slots.size():
 		return FAILED
 	var slot = IM.game_setup_info.slots[index]
-	if slot.occupier is int:
+	if slot.occupier is int or server.settings.allow_slot_steal():
 		slot.occupier = session.username
 		server.broadcast_full_game_setup(IM.game_setup_info)
 		IM.game_setup_info_changed.emit()
