@@ -6,6 +6,7 @@ var username : String = ""
 var peer : ENetPacketPeer = null
 var send_queue : Array = []
 var incoming_commands : Dictionary = {}
+var server_settings_cache : ServerSettings
 
 @onready var enet_network : ENetConnection = null
 
@@ -217,3 +218,7 @@ func roll() -> void:
 
 
 #endregion
+
+
+func is_slot_steal_allowed() -> bool:
+	return server_settings_cache.allow_slot_steal()

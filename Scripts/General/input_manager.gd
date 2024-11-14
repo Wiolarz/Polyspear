@@ -236,4 +236,12 @@ func get_serializable_battle_state() -> SerializableBattleState:
 			state.combat_coord = WM.combat_tile
 	return state
 
+
+func is_slot_steal_allowed() -> bool:
+	if NET.server:
+		return true # host always can steal slots
+	elif NET.client:
+		return NET.client.is_slot_steal_allowed()
+	return true # local game
+
 #endregion Information
