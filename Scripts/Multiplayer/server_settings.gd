@@ -9,4 +9,4 @@ func allow_slot_steal() -> bool:
 
 
 func all_can_start() -> bool:
-	return content.get("all_can_start", false)
+	return content.get("all_can_start", true)

@@ -117,6 +117,10 @@ func queue_request_game_state_sync():
 	queue_message_to_server(RequestedStateSync.create_packet())
 
 
+func queue_request_start():
+	queue_message_to_server(RequestStart.create_packet())
+
+
 func logout_if_needed() -> void:
 	if username == "":
 		return

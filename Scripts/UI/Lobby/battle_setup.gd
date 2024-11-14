@@ -130,7 +130,7 @@ func _on_preset_list_item_selected(index) -> void:
 
 
 func apply_preset(preset : PresetBattle):
-	
+
 	# loading map
 	var map_name = preset.battle_map.resource_path.get_file()
 	var found_a_map : bool = false
