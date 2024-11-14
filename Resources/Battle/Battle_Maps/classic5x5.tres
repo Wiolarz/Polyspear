@@ -30,7 +30,7 @@ flip_horizontal = false
 [sub_resource type="Resource" id="Resource_lfwxh"]
 script = ExtResource("1_4t034")
 type = "1_player_spawn"
-texture_path = "res://Art/battle_map/red_player_spawn.png"
+texture_path = "res://Art/battle_map/blue_player_spawn.png"
 flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_rncdp"]
@@ -48,13 +48,13 @@ flip_horizontal = false
 [sub_resource type="Resource" id="Resource_vapqf"]
 script = ExtResource("1_4t034")
 type = "1_player_spawn"
-texture_path = "res://Art/battle_map/red_player_spawn.png"
+texture_path = "res://Art/battle_map/blue_player_spawn.png"
 flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_n8rkd"]
 script = ExtResource("1_4t034")
 type = "1_player_spawn"
-texture_path = "res://Art/battle_map/red_player_spawn.png"
+texture_path = "res://Art/battle_map/blue_player_spawn.png"
 flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_b3xa7"]
@@ -66,13 +66,13 @@ flip_horizontal = false
 [sub_resource type="Resource" id="Resource_qps48"]
 script = ExtResource("1_4t034")
 type = "1_player_spawn"
-texture_path = "res://Art/battle_map/red_player_spawn.png"
+texture_path = "res://Art/battle_map/blue_player_spawn.png"
 flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_m0qmt"]
 script = ExtResource("1_4t034")
 type = "1_player_spawn"
-texture_path = "res://Art/battle_map/red_player_spawn.png"
+texture_path = "res://Art/battle_map/blue_player_spawn.png"
 flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_andyp"]
@@ -144,13 +144,13 @@ flip_horizontal = false
 [sub_resource type="Resource" id="Resource_diyou"]
 script = ExtResource("1_4t034")
 type = "2_player_spawn"
-texture_path = "res://Art/battle_map/blue_player_spawn.png"
+texture_path = "res://Art/battle_map/red_player_spawn.png"
 flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_cmmkb"]
 script = ExtResource("1_4t034")
 type = "2_player_spawn"
-texture_path = "res://Art/battle_map/blue_player_spawn.png"
+texture_path = "res://Art/battle_map/red_player_spawn.png"
 flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_uspw0"]
@@ -162,13 +162,13 @@ flip_horizontal = false
 [sub_resource type="Resource" id="Resource_o1tqm"]
 script = ExtResource("1_4t034")
 type = "2_player_spawn"
-texture_path = "res://Art/battle_map/blue_player_spawn.png"
+texture_path = "res://Art/battle_map/red_player_spawn.png"
 flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_g2xaf"]
 script = ExtResource("1_4t034")
 type = "2_player_spawn"
-texture_path = "res://Art/battle_map/blue_player_spawn.png"
+texture_path = "res://Art/battle_map/red_player_spawn.png"
 flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_sk4ej"]
@@ -186,7 +186,7 @@ flip_horizontal = false
 [sub_resource type="Resource" id="Resource_m02rt"]
 script = ExtResource("1_4t034")
 type = "2_player_spawn"
-texture_path = "res://Art/battle_map/blue_player_spawn.png"
+texture_path = "res://Art/battle_map/red_player_spawn.png"
 flip_horizontal = false
 
 [sub_resource type="Resource" id="Resource_i1swb"]
