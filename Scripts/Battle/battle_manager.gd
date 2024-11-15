@@ -6,11 +6,10 @@ var _battle_is_ongoing : bool = false
 var _battle_grid_state : BattleGridState # GAMEPLAY combat state
 
 var _tile_grid : GenericHexGrid # Grid<TileForm> - VISUALs in a grid
-var _border : Array[TileForm] # A visual border made out of sentinels
 var _unit_to_unit_form : Dictionary # gameplay unit to VISUAL mapping
 var _grid_tiles_node : Node2D # parent for tiles VISUAL
 var _unit_forms_node : Node2D # parent for units VISUAL
-var _border_node : Node2D # parent for units VISUAL
+var _border_node : Node2D # parent for border tiles VISUAL
 
 var _battle_ui : BattleUI
 var _anim_queue : Array[AnimInQueue] = []
@@ -36,10 +35,6 @@ func _ready():
 	_unit_forms_node = Node2D.new()
 	_unit_forms_node.name = "UNITS"
 	add_child(_unit_forms_node)
-	
-	_border_node = Node2D.new()
-	_border_node.name = "BORDER"
-	add_child(_border_node)
 
 	UI.add_custom_screen(_battle_ui)
 
@@ -100,19 +95,9 @@ func _load_map(map : DataBattleMap) -> void:
 			tile_form.position = to_position(coord)
 			_grid_tiles_node.add_child(tile_form)
 	
-	for x in range(-CFG.BATTLE_BORDER_WIDTH, map.grid_width + CFG.BATTLE_BORDER_WIDTH):
-		for y in range(-CFG.BATTLE_BORDER_HEIGHT, map.grid_height + CFG.BATTLE_BORDER_HEIGHT):
-			
-			var coord = Vector2i(x, y)
-			if (x >= 0 and x < map.grid_width) and (y >= 0 and y < map.grid_height):
-				continue
-			
-			var tile_form = TileForm.create_battle_tile(
-				load("res://Resources/Battle/Battle_tiles/sentinel.tres"), coord
-			)
-			_border.push_back(tile_form)
-			tile_form.position = to_position(coord)
-			_border_node.add_child(tile_form)
+	if not IM.in_map_editor:
+		_border_node = MapBorder.from_map(map)
+		add_child(_border_node)
 
 
 ## space needed for battle tiles in global position
@@ -125,7 +110,6 @@ func get_bounds_global_position() -> Rect2:
 			get_tile_global_position(Vector2i(_tile_grid.width-1, _tile_grid.height-1))
 	var size : Vector2 = bottom_right_tile_position - top_left_tile_position
 	return Rect2(top_left_tile_position, size)
-
 
 #endregion
 
@@ -605,9 +589,9 @@ func _reset_grid_and_unit_forms() -> void:
 	_unit_to_unit_form.clear()
 	Helpers.remove_all_children(_grid_tiles_node)
 	Helpers.remove_all_children(_unit_forms_node)
-	for i in _border:
-		i.queue_free()
-	_border.clear()
+	if _border_node:
+		_border_node.queue_free()
+		_border_node = null
 	_battle_grid_state = null
 
 ## Major function which fully generates information panel at the end of the battle
