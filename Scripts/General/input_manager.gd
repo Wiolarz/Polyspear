@@ -11,7 +11,7 @@ var game_setup_info : GameSetupInfo
 var players : Array[Player] = []
 
 ## flag for MAP EDITOR
-var draw_mode : bool = false
+var in_map_editor : bool = false
 
 
 func init_game_setup():
@@ -102,7 +102,7 @@ func perform_replay(path):
 
 func go_to_map_editor():
 	UI.ensure_camera_is_spawned()
-	draw_mode = true
+	in_map_editor = true
 	UI.go_to_map_editor()
 
 
@@ -153,7 +153,7 @@ func create_army_for(player : Player) -> Army:
 #region Gameplay UI
 
 func go_to_main_menu():
-	draw_mode = false
+	in_map_editor = false
 	BM.close_when_quiting_game()
 	WM.close_world()
 	UI.go_to_main_menu()

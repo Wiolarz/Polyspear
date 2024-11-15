@@ -23,7 +23,6 @@ var _replay_data : BattleReplay
 var _replay_is_playing : bool = false
 
 var _batch_mode : bool = false # flagged true when recreating game state
-var _in_editor : bool = false
 
 
 func _ready():
@@ -96,7 +95,7 @@ func _load_map(map : DataBattleMap) -> void:
 			tile_form.position = to_position(coord)
 			_grid_tiles_node.add_child(tile_form)
 	
-	if not _in_editor:
+	if not IM.in_map_editor:
 		_border_node = MapBorder.from_map(map)
 		add_child(_border_node)
 
@@ -603,7 +602,7 @@ func _reset_grid_and_unit_forms() -> void:
 	Helpers.remove_all_children(_unit_forms_node)
 	if _border_node:
 		_border_node.queue_free()
-	_border_node = null
+		_border_node = null
 	_battle_grid_state = null
 
 ## Major function which fully generates information panel at the end of the battle
@@ -720,12 +719,10 @@ func force_surrender():
 #region map editor
 
 func load_editor_map(map : DataBattleMap) -> void:
-	_in_editor = true
 	_load_map(map)
 
 
 func unload_for_editor() -> void:
-	_in_editor = false
 	_reset_grid_and_unit_forms()
 
 

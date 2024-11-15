@@ -308,7 +308,6 @@ func _on_file_dialog_file_selected(path : String):
 
 func _on_back_button_pressed():
 	hide()
-	BM.unload_for_editor()
 	IM.go_to_main_menu()
 
 #endregion
