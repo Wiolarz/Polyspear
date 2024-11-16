@@ -105,9 +105,10 @@ func get_server_status_string() -> String:
 
 	var result = ""
 	result += "host login: %s\n" % NET.server.server_username
-	result += "LOCAL address %s:%d\n"% \
-		[NET.server.server_local_address,
-			NET.server.enet_network.get_local_port()]
+	if not CFG.player_options.streamer_mode:
+		result += "LOCAL address %s:%d\n"% \
+			[NET.server.server_local_address,
+				NET.server.enet_network.get_local_port()]
 	result += "peers:\n"
 	var has_peers := false
 	for peer in NET.server.enet_network.get_peers():
@@ -125,13 +126,16 @@ func get_server_status_string() -> String:
 func describe_peer(peer : ENetPacketPeer):
 	var connection_state : String = describe_peer_state(peer)
 	var session = NET.server.get_session_by_peer(peer)
+	var info : String
 	if not session:
-		return " - (no session) [%s] from %s:%d " % [ \
-			connection_state, \
-			peer.get_remote_address(), peer.get_remote_port() ]
-	return "- %s [%s] from %s:%d" % [ \
-			session.username, connection_state, \
-			peer.get_remote_address(), peer.get_remote_port()]
+		info = "- (no session) [%s]" % [ \
+			connection_state]
+	else:
+		info = "- %s [%s]" % [ \
+			session.username, connection_state]
+	if not CFG.player_options.streamer_mode:
+		info += " %s:%d" % [peer.get_remote_address(), peer.get_remote_port()]
+	return info
 
 
 func describe_peer_state(peer:ENetPacketPeer) -> String:
