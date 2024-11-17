@@ -48,10 +48,8 @@ text = "Kick all players"
 clip_contents = true
 custom_minimum_size = Vector2(0, 360)
 layout_mode = 2
-current_tab = 1
 
 [node name="Info" type="ScrollContainer" parent="MarginContainer/VBoxContainer/Details"]
-visible = false
 custom_minimum_size = Vector2(0, 300)
 layout_mode = 2
 size_flags_vertical = 3
@@ -66,6 +64,7 @@ text = "server info asd as das das das das das das server info asd as das das da
 autowrap_mode = 3
 
 [node name="Settings" type="VBoxContainer" parent="MarginContainer/VBoxContainer/Details"]
+visible = false
 layout_mode = 2
 
 [node name="AllowSlotSteal" type="CheckButton" parent="MarginContainer/VBoxContainer/Details/Settings"]
