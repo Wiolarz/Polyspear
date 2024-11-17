@@ -11,6 +11,9 @@ extends Resource
 ## if false all slots are by default controlled by host (human player)
 @export var use_default_AI_players : bool
 
+## if true, peer ip addresses are hidden
+@export var streamer_mode : bool
+
 ## Default first option after opening the game should be last selected one
 @export var last_used_battle_preset : PresetBattle
 @export var last_used_world_preset : PresetWorld
