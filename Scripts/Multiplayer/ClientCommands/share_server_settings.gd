@@ -20,4 +20,5 @@ static func process_command(client : Client, params : Dictionary) -> int:
 	if not client.server_settings_cache:
 		client.server_settings_cache = ServerSettings.new()
 	client.server_settings_cache.content = content
+	NET.server_settings_changed.emit()
 	return OK
