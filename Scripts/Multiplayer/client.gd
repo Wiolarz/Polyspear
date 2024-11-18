@@ -13,11 +13,11 @@ var server_settings_cache : ServerSettings
 
 func _init():
 	name = "Client"
-	var client_command_paths = FileSystemHelpers.list_files_in_folder( \
-			"res://Scripts/Multiplayer/ClientCommands/", true)
-	for path in client_command_paths:
+	var order_paths = FileSystemHelpers.list_files_in_folder( \
+			"res://Scripts/Multiplayer/Commands/Orders/", true)
+	for path in order_paths:
 		var script = load(path)
-		print("registering command '", script.COMMAND_NAME, \
+		print("registering order command '", script.COMMAND_NAME, \
 				"' from file ", path.get_file())
 		assert( not incoming_commands.has(script.COMMAND_NAME), \
 				"dulicated server command: '%s'" % script.COMMAND_NAME)

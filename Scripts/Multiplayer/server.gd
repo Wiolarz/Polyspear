@@ -15,11 +15,11 @@ var settings : ServerSettings = ServerSettings.new()
 func _init():
 	name = "Server"
 
-	var server_command_paths = FileSystemHelpers.list_files_in_folder( \
-			"res://Scripts/Multiplayer/ServerCommands/", true)
-	for path in server_command_paths:
+	var request_paths = FileSystemHelpers.list_files_in_folder( \
+			"res://Scripts/Multiplayer/Commands/Requests/", true)
+	for path in request_paths:
 		var script = load(path)
-		print("registering command '", script.COMMAND_NAME, \
+		print("registering request command '", script.COMMAND_NAME, \
 				"' from file ", path.get_file())
 		assert( not incoming_commands.has(script.COMMAND_NAME), \
 				"dulicated server command: '%s'" % script.COMMAND_NAME)
