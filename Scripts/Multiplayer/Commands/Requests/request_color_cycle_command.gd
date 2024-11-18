@@ -1,10 +1,10 @@
-class_name RequestColorCycleCommand
+class_name RequestColorCycle
 
-const COMMAND_NAME = "request_color_cycle"
+const COMMAND_NAME = "color_cycle"
 
 static func register(commands : Dictionary):
 	commands[COMMAND_NAME] = \
-			Command.create_on_server(RequestColorCycleCommand.process_command)
+			Command.create_on_server(RequestColorCycle.process_command)
 
 static func create_packet(slot_index : int, backwards : bool = false):
 	return {

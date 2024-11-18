@@ -53,68 +53,68 @@ func connect_to_server(address : String, port : int) -> void:
 
 
 func queue_login(desired_username : String) -> void:
-	var packet : Dictionary = LoginCommand.create_packet(desired_username)
+	var packet : Dictionary = RequestLogin.create_packet(desired_username)
 	queue_message_to_server(packet)
 
 
 func queue_say(message : String):
-	var packet : Dictionary = SayCommand.create_packet(message)
+	var packet : Dictionary = RequestSay.create_packet(message)
 	queue_message_to_server(packet)
 
 
 func queue_cycle_color(slot_index : int, backwards : bool = false):
 	var packet : Dictionary = \
-		RequestColorCycleCommand.create_packet(slot_index, backwards)
+		RequestColorCycle.create_packet(slot_index, backwards)
 	queue_message_to_server(packet)
 
 
 func queue_cycle_faction(slot_index : int, backwards : bool = false):
 	var packet : Dictionary = \
-		RequestFactionCycleCommand.create_packet(slot_index, backwards)
+		RequestFactionCycle.create_packet(slot_index, backwards)
 	queue_message_to_server(packet)
 
 
 func queue_take_slot(slot_index : int):
-	var packet : Dictionary = TakeSlotCommand.create_packet(slot_index)
+	var packet : Dictionary = RequestTakeSlot.create_packet(slot_index)
 	queue_message_to_server(packet)
 
 
 func queue_leave_slot(slot_index : int):
-	var packet : Dictionary = LeaveSlotCommand.create_packet(slot_index)
+	var packet : Dictionary = RequestLeaveSlot.create_packet(slot_index)
 	queue_message_to_server(packet)
 
 
 func queue_lobby_set_unit(slot_index:int, unit_index:int, unit_data:DataUnit):
 	queue_message_to_server( \
-			LobbySetUnitCommand.create_packet( \
+			RequestLobbySetUnit.create_packet( \
 				slot_index, unit_index, unit_data \
 			))
 
 
 func queue_lobby_set_team(slot_index : int, team_index : int):
 	queue_message_to_server( \
-			LobbySetTeamCommand.create_packet( \
+			RequestLobbySetTeam.create_packet( \
 				slot_index, team_index \
 			))
 
 
 func queue_lobby_set_timer(slot_index : int, reserve_sec : int, increment_sec : int):
 	queue_message_to_server( \
-			LobbySetTimerCommand.create_packet( \
+			RequestLobbySetTimer.create_packet( \
 				slot_index, reserve_sec, increment_sec \
 			))
 
 
 func queue_request_move(move : MoveInfo):
-	queue_message_to_server(ClientRequestedMoveCommand.create_packet(move))
+	queue_message_to_server(RequestBattleMove.create_packet(move))
 
 
 func queue_request_world_move(move : WorldMoveInfo):
-	queue_message_to_server(ClientRequestedWorldMoveCommand.create_packet(move))
+	queue_message_to_server(RequestWorldMove.create_packet(move))
 
 
 func queue_request_game_state_sync():
-	queue_message_to_server(RequestedStateSync.create_packet())
+	queue_message_to_server(RequestStateSync.create_packet())
 
 
 func queue_request_start():
@@ -124,7 +124,7 @@ func queue_request_start():
 func logout_if_needed() -> void:
 	if username == "":
 		return
-	var packet : Dictionary = LogoutCommand.create_packet()
+	var packet : Dictionary = RequestLogout.create_packet()
 	username = ""
 	send_message_to_server_immediately(packet)
 	# TODO consider unrealiable packet send here

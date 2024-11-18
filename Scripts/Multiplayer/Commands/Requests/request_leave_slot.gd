@@ -1,10 +1,10 @@
-class_name LeaveSlotCommand
+class_name RequestLeaveSlot
 
 const COMMAND_NAME = "leave_slot"
 
 static func register(commands : Dictionary):
 	commands[COMMAND_NAME] = \
-			Command.create_on_server(LeaveSlotCommand.process_command)
+			Command.create_on_server(RequestLeaveSlot.process_command)
 
 static func create_packet(slot_index : int):
 	return {

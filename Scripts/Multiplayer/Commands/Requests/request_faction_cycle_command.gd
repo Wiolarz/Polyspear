@@ -1,10 +1,10 @@
-class_name RequestFactionCycleCommand
+class_name RequestFactionCycle
 
-const COMMAND_NAME = "request_faction_cycle"
+const COMMAND_NAME = "faction_cycle"
 
 static func register(commands : Dictionary):
 	commands[COMMAND_NAME] = \
-			Command.create_on_server(RequestFactionCycleCommand.process_command)
+			Command.create_on_server(RequestFactionCycle.process_command)
 
 static func create_packet(slot_index : int, backwards : bool = false):
 	return {
