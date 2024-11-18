@@ -62,9 +62,13 @@ func set_visible_take_leave_button_state(state : TakeLeaveButtonState):
 			button_take_leave.text = "Leave"
 			button_take_leave.disabled = false
 		TakeLeaveButtonState.TAKEN_BY_OTHER:
-			# ">> TAKEN <<" -- simple "Taken" would be too similar to "Take"
-			button_take_leave.text = ">> TAKEN <<"
-			button_take_leave.disabled = true
+			if IM.is_slot_steal_allowed():
+				button_take_leave.text = "Steal"
+				button_take_leave.disabled = false
+			else:
+				# ">> TAKEN <<" -- simple "Taken" would be too similar to "Take"
+				button_take_leave.text = ">> TAKEN <<"
+				button_take_leave.disabled = true
 		TakeLeaveButtonState.GHOST:
 			button_take_leave.text = "ghost"
 			button_take_leave.disabled = true
@@ -83,6 +87,9 @@ func _on_button_take_leave_pressed():
 			try_to_take()
 		TakeLeaveButtonState.TAKEN_BY_YOU:
 			try_to_leave()
+		TakeLeaveButtonState.TAKEN_BY_OTHER:
+			if IM.is_slot_steal_allowed():
+				try_to_take()
 
 
 func _on_button_color_pressed():

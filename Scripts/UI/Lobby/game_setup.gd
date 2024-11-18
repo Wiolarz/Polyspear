@@ -26,6 +26,7 @@ var current_player_to_set : String = "" # if empty we select for us
 
 func _ready():
 	IM.game_setup_info_changed.connect(refresh_after_connection_change)
+	NET.server_settings_changed.connect(refresh_after_connection_change)
 	## button/world toggle buttons, default world
 	button_battle.button_group = button_world.button_group
 	if CFG.DEFAULT_MODE_IS_BATTLE:

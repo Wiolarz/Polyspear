@@ -175,6 +175,10 @@ func broadcast_world_move(move : WorldMoveInfo):
 	broadcast(MakeWorldMoveCommand.create_packet(move))
 
 
+func broadcast_server_settings():
+	broadcast(ShareServerSettings.create_packet(settings.content))
+
+
 func send_additional_callbacks_to_logging_client(peer : ENetPacketPeer):
 	# share settings
 	var settings_packet = ShareServerSettings.create_packet(settings.content)
@@ -200,6 +204,11 @@ func send_full_state_sync(peer : ENetPacketPeer):
 		SetFullStateCommand.create_packet(game_setup, world_state, battle_state,
 			server_username)
 	send_to_peer(peer, packet)
+
+
+func set_setting(name : String, value) -> void:
+	settings.content[name] = value
+	broadcast_server_settings()
 
 
 func roll() -> void:

@@ -10,6 +10,9 @@ var chat_log : String
 signal chat_message_arrived(content : String)
 signal chat_log_cleared
 
+## notifies when server settings are changed TODO consider merging with
+## IM.game_setup_info_changed
+signal server_settings_changed
 
 func get_role_name() -> String:
 	if server:
