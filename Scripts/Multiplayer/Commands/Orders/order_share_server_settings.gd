@@ -1,10 +1,10 @@
-class_name ShareServerSettings
+class_name OrderShareServerSettings
 
 const COMMAND_NAME = "share_server_settings"
 
 static func register(commands : Dictionary):
 	commands[COMMAND_NAME] = \
-			Command.create_on_client(ShareServerSettings.process_command)
+			Command.create_on_client(OrderShareServerSettings.process_command)
 
 static func create_packet(content : Dictionary):
 	return {

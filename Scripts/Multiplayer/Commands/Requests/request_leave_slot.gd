@@ -1,10 +1,10 @@
-class_name TakeSlotCommand
+class_name RequestLeaveSlot
 
-const COMMAND_NAME = "take_slot"
+const COMMAND_NAME = "leave_slot"
 
 static func register(commands : Dictionary):
 	commands[COMMAND_NAME] = \
-			Command.create_on_server(TakeSlotCommand.process_command)
+			Command.create_on_server(RequestLeaveSlot.process_command)
 
 static func create_packet(slot_index : int):
 	return {
@@ -24,8 +24,7 @@ static func process_command(server : Server, peer : ENetPacketPeer, \
 	if index < 0 or index >= slots.size():
 		return FAILED
 	var slot = IM.game_setup_info.slots[index]
-	if slot.occupier is int or server.settings.allow_slot_steal():
-		slot.occupier = session.username
-		server.broadcast_full_game_setup(IM.game_setup_info)
-		IM.game_setup_info_changed.emit()
+	slot.occupier = 0  # AI takes over the player that left
+	server.broadcast_full_game_setup(IM.game_setup_info)
+	IM.game_setup_info_changed.emit()
 	return OK

@@ -1,10 +1,10 @@
-class_name SetSessionCommand
+class_name OrderSetSession
 
 const COMMAND_NAME = "set_session"
 
 static func register(commands : Dictionary):
 	commands[COMMAND_NAME] = \
-			Command.create_on_client(SetSessionCommand.process_command)
+			Command.create_on_client(OrderSetSession.process_command)
 
 static func create_packet(login : String):
 	return {

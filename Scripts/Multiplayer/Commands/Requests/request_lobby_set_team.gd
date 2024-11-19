@@ -1,10 +1,10 @@
-class_name LobbySetTeamCommand
+class_name RequestLobbySetTeam
 
 const COMMAND_NAME = "lobby_set_team"
 
 static func register(commands : Dictionary):
 	commands[COMMAND_NAME] = \
-			Command.create_on_server(LobbySetTeamCommand.process_command)
+			Command.create_on_server(RequestLobbySetTeam.process_command)
 
 static func create_packet(slot_index : int, team_index : int):
 	return {

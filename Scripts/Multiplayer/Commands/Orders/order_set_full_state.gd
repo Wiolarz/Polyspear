@@ -1,10 +1,10 @@
-class_name SetFullStateCommand
+class_name OrderSetFullState
 
 const COMMAND_NAME = "set_full_state"
 
 static func register(commands : Dictionary):
 	commands[COMMAND_NAME] = \
-			Command.create_on_client(SetFullStateCommand.process_command)
+			Command.create_on_client(OrderSetFullState.process_command)
 
 static func create_packet(game_setup : GameSetupInfo, \
 		world_state : SerializableWorldState, \

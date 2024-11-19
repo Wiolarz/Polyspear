@@ -1,10 +1,10 @@
-class_name KickedCommand
+class_name OrderKicked
 
 const COMMAND_NAME = "kicked"
 
 static func register(commands : Dictionary):
 	commands[COMMAND_NAME] = \
-			Command.create_on_client(KickedCommand.process_command)
+			Command.create_on_client(OrderKicked.process_command)
 
 static func create_packet(reason : String):
 	return {

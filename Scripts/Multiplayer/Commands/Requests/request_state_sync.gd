@@ -1,10 +1,10 @@
-class_name RequestedStateSync
+class_name RequestStateSync
 
-const COMMAND_NAME = "requested_state_sync"
+const COMMAND_NAME = "state_sync"
 
 static func register(commands : Dictionary):
 	commands[COMMAND_NAME] = \
-			Command.create_on_server(RequestedStateSync.process_command)
+			Command.create_on_server(RequestStateSync.process_command)
 
 static func create_packet():
 	return {

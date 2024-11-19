@@ -1,10 +1,10 @@
-class_name ChatCommand
+class_name OrderChat
 
 const COMMAND_NAME = "chat"
 
 static func register(commands : Dictionary):
 	commands[COMMAND_NAME] = \
-			Command.create_on_client(ChatCommand.process_command)
+			Command.create_on_client(OrderChat.process_command)
 
 static func create_packet(message : String, author : String):
 	return {
