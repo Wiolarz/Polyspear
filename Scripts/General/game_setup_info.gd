@@ -247,8 +247,8 @@ class Slot extends RefCounted: # check if this is good base
 
 	var team : int = 0
 
-	var timer_reserve_sec : int = CFG.CHESS_CLOCK_BATTLE_TIME_PER_PLAYER_MS
-	var timer_increment_sec : int = CFG.CHESS_CLOCK_BATTLE_TURN_INCREMENT_MS
+	var timer_reserve_sec : int = CFG.CHESS_CLOCK_BATTLE_TIME_PER_PLAYER_MS / 1000
+	var timer_increment_sec : int = CFG.CHESS_CLOCK_BATTLE_TURN_INCREMENT_MS / 1000
 
 	var faction : DataFaction = null
 
