@@ -20,7 +20,7 @@ func init_game_setup():
 
 ## called:
 ## * by UI when button is clicked or game starts (host is true)
-## * (probably not) by client when server orders, then host is false
+## * by client when server orders, then host is false
 func init_battle_mode(host : bool):
 	game_setup_info.game_mode = GameSetupInfo.GameMode.BATTLE
 
