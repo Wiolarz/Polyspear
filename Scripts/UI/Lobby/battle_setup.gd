@@ -27,7 +27,6 @@ func _ready():
 
 	# TODO somehow select current preset in UI as previously, if it is possible
 
-	refresh()
 
 ## used to know if changes in gui are made by user and should be passed to
 ## backend (change setup info and send over network) OR made by refreshing
