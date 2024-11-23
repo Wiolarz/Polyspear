@@ -169,7 +169,7 @@ func _select_setup_page(page):
 	container.add_child(setup)
 	if client_side:
 		setup.make_client_side()
-	setup.refresh() #TODO verify if its needed here -- WTF it is
+	#setup.refresh() #TODO verify if its needed here -- WTF it is
 
 
 func select_world():
@@ -179,8 +179,9 @@ func select_world():
 		NET.server.broadcast_full_game_setup(IM.game_setup_info)
 
 
+## called only on host
 func select_battle():
-	IM.game_setup_info.game_mode = GameSetupInfo.GameMode.BATTLE
+	IM.init_battle_mode(true)
 	_select_setup_page(multi_battle_setup_scene)
 	if NET.server:
 		NET.server.broadcast_full_game_setup(IM.game_setup_info)

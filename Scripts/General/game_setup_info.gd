@@ -102,7 +102,7 @@ static func from_dictionary(dict : Dictionary, \
 						GameSetupInfo.units_list_receive_from_network(read_slot["units_list"])
 			if "team" in read_slot and read_slot["team"] is int:
 				new_slot.team = read_slot["team"]
-			
+
 			if "timer_reserve" in read_slot and read_slot["timer_reserve"] is int:
 				new_slot.timer_reserve_sec = int(read_slot["timer_reserve"])
 			if "timer_increment" in read_slot and read_slot["timer_increment"] is int:
@@ -192,6 +192,32 @@ func set_world_map(map: DataWorldMap):
 		taken_colors.append(slot.color)
 
 
+## used at start with some default preset, also used when preset is chosen
+## in UI
+## Also, this skips refreshing UI and broadcasting over network -- it should
+## be done elsewhere, when this function is called
+func apply_battle_preset(preset : PresetBattle) -> void:
+	var map_name = preset.battle_map.resource_path.get_file()
+
+	var map : DataBattleMap = load(CFG.BATTLE_MAPS_PATH + "/" + map_name)
+	assert(map, "map with name %s does not exist" % map_name)
+	set_battle_map(map)
+
+	# now we need to set armies and teams from preset
+	for i in range(slots.size()):
+		var slot : Slot = slots[i]
+		var army_preset : PresetArmy = preset.armies[i]
+		slot.team = army_preset.team
+		slot.slot_hero = army_preset.hero
+
+		var units := slot.units_list
+		for ii in units.size():
+			var unit : DataUnit = null
+			if ii < army_preset.units.size():
+				unit = army_preset.units[ii]
+			units[ii] = unit
+
+
 static func create_empty() -> GameSetupInfo:
 	var slot_count = 2
 	var result = GameSetupInfo.new()
@@ -259,7 +285,7 @@ class Slot extends RefCounted: # check if this is good base
 	## index of color see `CFG.TEAM_COLORS`
 	var color : int = 0
 
-	
+
 
 	func _init():
 		if CFG.player_options.use_default_AI_players:

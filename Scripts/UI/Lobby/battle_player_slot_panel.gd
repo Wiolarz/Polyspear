@@ -16,8 +16,6 @@ var button_take_leave_state : TakeLeaveButtonState = TakeLeaveButtonState.FREE
 var unit_paths : Array[String]
 var hero_paths : Array[String]
 
-var settings_are_being_refreshed : bool = true
-
 @onready var button_take_leave = $GeneralVContainer/TopBarHContainer/ButtonTakeLeave
 @onready var label_name = $GeneralVContainer/TopBarHContainer/PlayerInfoPanel/Label
 @onready var buttons_units : Array[OptionButton] = [
@@ -35,6 +33,18 @@ var settings_are_being_refreshed : bool = true
 @onready var timer_reserve_minutes : SpinBox = $GeneralVContainer/TopBarHContainerTimer/ReserveTime_Min_Edit
 @onready var timer_reserve_seconds : SpinBox = $GeneralVContainer/TopBarHContainerTimer/ReserveTime_Sec_Edit
 @onready var timer_increment_seconds : SpinBox = $GeneralVContainer/TopBarHContainerTimer/IncrementTimeEdit
+
+
+## used to know if changes in gui are made by user and should be passed to
+## backend (change setup info and send over network) OR made by refreshing
+## gui to state in backend
+func should_react_to_changes() -> bool:
+	var node := get_parent()
+	while node:
+		if node.has_method("should_react_to_changes"):
+			return node.should_react_to_changes()
+		node = node.get_parent()
+	return false
 
 
 func try_to_take():
@@ -156,7 +166,7 @@ func unit_in_army_changed(selected_index, unit_index) -> void:
 
 
 func timer_changed() -> void:
-	if settings_are_being_refreshed:
+	if not should_react_to_changes():
 		return
 
 	var slot_index = setup_ui.slot_to_index(self)
@@ -168,29 +178,6 @@ func timer_changed() -> void:
 		NET.server.broadcast_full_game_setup(IM.game_setup_info) #TODO add multi support
 	if NET.client:
 		NET.client.queue_lobby_set_timer(slot_index, seconds_reserve, timer_increment_seconds.value)
-
-
-func apply_army_preset(army : PresetArmy):
-	var slot_index = setup_ui.slot_to_index(self)
-
-	IM.game_setup_info.set_team(slot_index, army.team)
-
-	if army.hero:
-		IM.game_setup_info.set_hero(slot_index, army.hero)
-
-	var idx = 0
-	for u in army.units:
-		if not u:
-			continue
-		set_unit(buttons_units[idx], u)
-		IM.game_setup_info.set_unit(slot_index, idx, u)
-		idx += 1
-	while idx < buttons_units.size():
-		buttons_units[idx].select(0)
-		IM.game_setup_info.set_unit(slot_index, idx, null)
-		idx += 1
-	if NET.server:
-		NET.server.broadcast_full_game_setup(IM.game_setup_info)
 
 
 func set_army(units_list : Array[DataUnit]):
@@ -228,6 +215,8 @@ func fill_team_list(max_player_number : int) -> void:
 
 
 func _on_button_take_leave_pressed():
+	if not should_react_to_changes():
+		return
 	match button_take_leave_state:
 		TakeLeaveButtonState.FREE:
 			try_to_take()
@@ -240,11 +229,13 @@ func _on_button_take_leave_pressed():
 
 
 func _on_button_color_pressed():
+	if not should_react_to_changes():
+		return
 	cycle_color()
 
 
 func _on_option_button_team_item_selected(index : int):
-	if settings_are_being_refreshed:
+	if not should_react_to_changes():
 		return
 	var slot_index = setup_ui.slot_to_index(self) # determine on which slot player is
 
@@ -256,4 +247,6 @@ func _on_option_button_team_item_selected(index : int):
 
 
 func _on_button_level_up_pressed():
+	if not should_react_to_changes():
+		return
 	UI.show_hero_level_up()
