@@ -71,7 +71,7 @@ func apply_graphics(template : DataUnit, color : DataPlayerColor):
 	for dir in range(0,6):
 		var symbol_texture = template.symbols[dir].texture_path
 		_apply_symbol_sprite(dir, symbol_texture)
-	
+
 	_flip_unit_sprite()
 	$RigidUI/SpellEffect1.texture = null
 	$RigidUI/SpellEffect2.texture = null
