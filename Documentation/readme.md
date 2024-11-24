@@ -6,7 +6,7 @@
 
 ## Code
 
-- [Code Structure and basic game flow](code_structure.md)
+- [Code Structure and basic game flow](Code%20Structure.md)
 - [Coding guidelines](coding_guidelines.md)
 
 ## Core / Technical Design
@@ -20,7 +20,7 @@
 ## Notes
 
 - [Multiplayer](multiplayer_doc.md)
-- [Testing](Testing_Documentation.md)
+- [Testing](Testing%20Documentation.md)
 - [Battle - notes](<Battle Mode Structure.md>)
 - [Ai](AI/ai_interface.md)
   - [Tags for AI](AI/doc_TagStateMachine.md)
