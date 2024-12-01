@@ -29,7 +29,7 @@ func test_map_start_and_close() -> void:
 	var full_game_button = get_node(WORLD_MODE_BUTTON_PATH)
 	assert_true( full_game_button.is_visible_in_tree(), \
 		"Full Game button not visible")
-	full_game_button.toggled.emit(true)
+	full_game_button.pressed.emit()
 
 	gut.p("click 'Start' button in lobby")
 	var lobby_start_button = get_node(START_GAME_BUTTON_PATH)
@@ -43,9 +43,9 @@ func test_map_start_and_close() -> void:
 	assert_true(world_ui.visible, "World UI not visible")
 	# TODO: stabilize default map so that this test doesnt need to be updated
 	# when new map is added and happens to be picked as first
-	assert_eq(W_GRID.get_child_count(), DEFAULT_MAP_TILES_COUNT, \
+	assert_eq(WM.get_node("GRID").get_child_count(), DEFAULT_MAP_TILES_COUNT, \
 		"Map spawned, but tiles count not 12*8")
-	assert_is(W_GRID.get_child(0), TileForm, "Map spawned, but tiles are not TileForm")
+	assert_is(WM.get_node("GRID").get_child(0), TileForm, "Map spawned, but tiles are not TileForm")
 
 	gut.p("open in game menu")
 	var open_menu_button = get_node(OPEN_IN_GAME_MENU_PATH)
@@ -64,7 +64,7 @@ func test_map_start_and_close() -> void:
 
 	gut.p("check that main menu looks ok")
 	assert_false(world_ui.visible, "World UI still visible")
-	assert_eq(W_GRID.get_child_count(), 0, "Map should be cleared")
+	assert_eq(WM.get_node("GRID").get_child_count(), 0, "Map should be cleared")
 	assert_true( get_node(MAIN_MENU_UI_PATH).visible, \
 		"main menu is not visible")
 	assert_true( get_node(START_GAME_BUTTON_PATH).is_visible_in_tree(), \
