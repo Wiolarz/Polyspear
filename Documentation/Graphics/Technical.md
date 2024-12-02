@@ -10,10 +10,9 @@ all tiles Z Index in their sprite assets from 0 to -1
 
 ## Spacing_of_the_Grid
 
+Those values will updated with the release of HD update.
 ```
 const TileHorizontalOffset : float = 700.0
 const TileVerticalOffset : float = 606.2
 const OddRowHorizontalOffset : float = 350.0
 ```
-
-this approach is temporary as the aim is to add units that can occupy multiple tiles.

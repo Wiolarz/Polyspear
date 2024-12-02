@@ -1,19 +1,19 @@
-# Code Structure
-
 ## Singletons
 
 Global singletons provide key facades over core systems.
 
-see: "Project Settings >> Autoload" for full list
+Links to their respective files can be found in: "Project Settings >> Autoload"
 
+- `CFG` (Configuration Manager)
+- `UI` (User Interface Manager)
+- `NET` (Network Manager)
 - `IM` (Input Manager)
-	- `WM` (World Manager)
-		- `W_GRID` (World Grid Manager)
-	- `BM` (Battle Manager)
+- `WM` (World Manager)
+- `BM` (Battle Manager)
 
 `IM` is notified when tiles are clicked. Then sends calls `WM` or `BM` depending on the game state (is battle or world map active).
 
-`WM`/`BM` control the game using maps loaded to `W_GRID` or internal variables respectively. Grids handle positional queries etc.
+`WM`/`BM` Manage their respective `world_state` / `battle_grid_state` handling everything which is visible to the player while those objects process the gameplay logic.
 
 `IM` contains a list of `Players` based on `Slots` set up in lobby and knows if there is an active battle that needs to be resolved.
 

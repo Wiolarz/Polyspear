@@ -49,8 +49,3 @@ Orc is first so in any ties he looses, elf as a second wins any ties with orc by
 
 that better defensive positions 
 			# have those players that are later in the array
-
-
-#### Notes
-
-[More battle notes](B_structure.md)

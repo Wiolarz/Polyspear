@@ -24,6 +24,7 @@ var unit_rotation : int
 ## unit died
 var dead : bool
 
+## list of spells unit can cast (all of those are one-time use only)
 var spells : Array[BattleSpell] = []
 
 ## magic effects, size_limit == 2
