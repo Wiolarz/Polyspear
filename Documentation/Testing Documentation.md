@@ -1,6 +1,6 @@
 # Checklist before submitting a Pull Request
 1 Run all GUT tests for more information about simply running a GUT tests read this: https://gut.readthedocs.io/en/v9.3.0/
-2 If PR adds a new complex feature: Write or Add to a TODO list a new GUT unit tests covering this new feature.
+2 If PR adds a new complex feature: Write or Add to a TODO list - a new GUT unit tests covering this new feature.
 # Things that generally fail to work
 
 Feature works, in single-player but doesn't in multiplayer.

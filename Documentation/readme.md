@@ -27,6 +27,10 @@
 - [Graphics technical notes](<Graphics/Technical.md>)
 - [Ui](<UI/Menu_UI.md>)
 
+# General Project tips
+### Location of Replays Folder
+example: C:\\Users\\user_name\\AppData\\Roaming\\Godot\\app_userdata\\Krong
+in editor simply click: “Project → Open User Data Folder”
 # Obsidian tips
 
 As the entirety of the documentation is written in Markdown, we recommend to read it using Obsidian software.

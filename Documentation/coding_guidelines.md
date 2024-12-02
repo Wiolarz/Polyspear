@@ -44,3 +44,15 @@ Classes that are pure resources configuration and have only **constant values** 
 Classes for main logic including AI simulation, dedicated server etc have no special naming convention. They contain state that changes over the course of the game, e.g. unit position. If they are based on Data classes, variable that references data is named `template`
 
 Classes that are audiovisual representations are named Form e.g. UnitForm, they refer to core classes using variable `entity`. Entity should provide signals for Form to update (not implemented yet) Forms should not contain variables needed for AI simulation or on dedicated server. Example - selected unit is ui only, AI doesnt need to select units to move them. Similarly all animations, visual effects etc.
+
+## Classes Variables
+
+### Tile types
+
+Default tile types are written using SCREAMING_CASE as those are always one word only, and they don’t possess any specific related logic.
+
+## Function Variables
+In constructors/generators when you want to pass a value from the function to a newly made class, you should apply the same variable name but with underscore at the end.
+example:
+``
+
