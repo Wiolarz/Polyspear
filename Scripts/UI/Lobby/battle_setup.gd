@@ -177,6 +177,7 @@ func _on_map_list_item_selected(index):
 	refresh()
 
 
+## in this function we adjust GUI slots number to logical slots number
 func prepare_player_slots() -> void:
 
 	var old_ui_slots = player_list.get_children()
@@ -184,16 +185,23 @@ func prepare_player_slots() -> void:
 	var logic_slots_count : int = IM.game_setup_info.slots.size()
 	var ui_slots_count : int = old_ui_slots.size()
 
+	# go through all slots which are on either side
 	var slots_count = max(logic_slots_count, ui_slots_count)
 
 	for i in slots_count:
 		var ui_slot : BattlePlayerSlotPanel = null
+
+		# if UI slot does not exist, create it and assign to `ui_slot`
 		if i >= ui_slots_count:
 			ui_slot = load(PLAYER_SLOT_PANEL_PATH).instantiate()
 			ui_slot.setup_ui = self
 			player_list.add_child(ui_slot)
+
+		# we didn't assign `ui_slot`, so use existing UI slot
 		if not ui_slot:
 			ui_slot = old_ui_slots[i]
+
+		# UI slot is not needed
 		if i >= logic_slots_count:
 			player_list.remove_child(ui_slot)
 			ui_slot.queue_free()
