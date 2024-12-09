@@ -1,10 +1,10 @@
-class_name StartGameCommand
+class_name OrderStartGame
 
 const COMMAND_NAME = "start_game"
 
 static func register(commands : Dictionary):
 	commands[COMMAND_NAME] = \
-			Command.create_on_client(StartGameCommand.process_command)
+			Command.create_on_client(OrderStartGame.process_command)
 
 static func create_packet():
 	return {

@@ -1,9 +1,9 @@
 extends GutTest
 
 const ALLOWED_WORLD_TILE_TYPES = {
-	"sentinel" : true,
+	"SENTINEL" : true,
 	"elf_city": true,
-	"empty": true,
+	"EMPTY": true,
 	"orc_city": true,
 	"wall": true,
 	"iron_mine": true,

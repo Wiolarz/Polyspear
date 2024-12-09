@@ -39,6 +39,12 @@ const BATTLE_MAP_TILES_PATH = "res://Resources/Battle/Battle_tiles/"
 const WORLD_MAP_TILES_PATH = "res://Resources/World/World_tiles/"
 const SYMBOLS_PATH = "res://Resources/Battle/Symbols/"
 
+const ROCK_ICON_PATH = "res://Art/battle_map/rock.png"
+const SWAMP_ICON_PATH = "res://Art/battle_map/swamp.png"
+const MANA_ICON_PATH = "res://Art/battle_map/mana_well.png"
+
+const PLAYER_COLORS_PATH = "res://Art/player_colors/"
+
 const REPLAY_DIRECTORY = "user://replays/"
 const PLAYER_OPTIONS_PATH = "user://player_options.tres"
 
@@ -76,12 +82,12 @@ const OUTPOST_RUBY_PATH : String = "res://Resources/Presets/Army/outpost_defende
 #region Colors
 
 var TEAM_COLORS : Array[DataPlayerColor] = [
+	DataPlayerColor.create("blue", Color(0.0, 0.4, 1.0)),
+	DataPlayerColor.create("orange", Color(0.9, 0.5, 0.0)),
+	DataPlayerColor.create("red", Color(1.0, 0.0, 0.0)),
 	DataPlayerColor.create("purple", Color(0.9, 0.2, 0.85)),
 	DataPlayerColor.create("green", Color(0.0, 0.9, 0.0)),
 	DataPlayerColor.create("yellow", Color(0.9, 0.8, 0.0)),
-	DataPlayerColor.create("red", Color(1.0, 0.0, 0.0)),
-	DataPlayerColor.create("blue", Color(0.0, 0.4, 1.0)),
-	DataPlayerColor.create("orange", Color(0.9, 0.5, 0.0)),
 ]
 
 var NEUTRAL_COLOR := \
@@ -133,7 +139,7 @@ func get_start_goods() -> Goods:
 	return Goods.new(10,5,3)
 
 const WORLD_MOVABLE_TILES = [
-	"empty",
+	"EMPTY",
 	"iron_mine",
 	"sawmill",
 	"ruby_cave",
@@ -149,7 +155,7 @@ const WORLD_MOVABLE_TILES = [
 
 #region Chess clock
 
-const CHESS_CLOCK_BATTLE_TIME_PER_PLAYER_MS = 3 * 60 * 1000 * 69
+const CHESS_CLOCK_BATTLE_TIME_PER_PLAYER_MS = 3 * 60 * 1000
 const CHESS_CLOCK_BATTLE_TURN_INCREMENT_MS = 2 * 1000
 
 #endregion chess clock

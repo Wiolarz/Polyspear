@@ -10,15 +10,16 @@ var server_username : String = ""
 @onready var enet_network : ENetConnection = null
 var server_local_address : String = ""
 var server_external_address : String = "-needs fetch-"
+var settings : ServerSettings = ServerSettings.new()
 
 func _init():
 	name = "Server"
 
-	var server_command_paths = FileSystemHelpers.list_files_in_folder( \
-			"res://Scripts/Multiplayer/ServerCommands/", true)
-	for path in server_command_paths:
+	var request_paths = FileSystemHelpers.list_files_in_folder( \
+			"res://Scripts/Multiplayer/Commands/Requests/", true)
+	for path in request_paths:
 		var script = load(path)
-		print("registering command '", script.COMMAND_NAME, \
+		print("registering request command '", script.COMMAND_NAME, \
 				"' from file ", path.get_file())
 		assert( not incoming_commands.has(script.COMMAND_NAME), \
 				"dulicated server command: '%s'" % script.COMMAND_NAME)
@@ -96,7 +97,7 @@ func kick_peer(peer : ENetPacketPeer, reason : String) -> void:
 	var session = get_session_by_peer(peer)
 	if session:
 		sessions.erase(session)
-	var message = KickedCommand.create_packet(reason)
+	var message = OrderKicked.create_packet(reason)
 	send_to_peer(peer, message)
 	peer.peer_disconnect_later()
 
@@ -145,7 +146,7 @@ func broadcast(command_dictionary : Dictionary):
 
 
 func broadcast_chat_message(message : String, author : String):
-	var packet : Dictionary = ChatCommand.create_packet(message, author)
+	var packet : Dictionary = OrderChat.create_packet(message, author)
 	broadcast(packet)
 
 
@@ -157,24 +158,32 @@ func broadcast_full_game_setup(game_setup : GameSetupInfo):
 	if game_setup == null:
 		game_setup = IM.game_setup_info
 	var packet : Dictionary = \
-		FillGameSetupCommand.create_packet(game_setup, server_username)
+		OrderFillGameSetup.create_packet(game_setup, server_username)
 	# print("sending \n", packet)
 	broadcast(packet)
 
 
 func broadcast_start_game():
-	broadcast(StartGameCommand.create_packet())
+	broadcast(OrderStartGame.create_packet())
 
 
 func broadcast_move(move : MoveInfo):
-	broadcast(MakeMoveCommand.create_packet(move))
+	broadcast(OrderMakeBattleMove.create_packet(move))
 
 
 func broadcast_world_move(move : WorldMoveInfo):
-	broadcast(MakeWorldMoveCommand.create_packet(move))
+	broadcast(OrderMakeWorldMove.create_packet(move))
+
+
+func broadcast_server_settings():
+	broadcast(OrderShareServerSettings.create_packet(settings.content))
 
 
 func send_additional_callbacks_to_logging_client(peer : ENetPacketPeer):
+	# share settings
+	var settings_packet = OrderShareServerSettings.create_packet(settings.content)
+	send_to_peer(peer, settings_packet)
+
 	var game_in_progress : bool = \
 		BM.battle_is_active() or WM.world_game_is_active()
 	if game_in_progress:
@@ -183,7 +192,7 @@ func send_additional_callbacks_to_logging_client(peer : ENetPacketPeer):
 		# sync lobby
 		var game_setup = IM.game_setup_info
 		var packet : Dictionary = \
-			FillGameSetupCommand.create_packet(game_setup, server_username)
+			OrderFillGameSetup.create_packet(game_setup, server_username)
 		send_to_peer(peer, packet)
 
 
@@ -192,9 +201,14 @@ func send_full_state_sync(peer : ENetPacketPeer):
 	var world_state = IM.get_serializable_world_state()
 	var battle_state = IM.get_serializable_battle_state()
 	var packet : Dictionary = \
-		SetFullStateCommand.create_packet(game_setup, world_state, battle_state,
+		OrderSetFullState.create_packet(game_setup, world_state, battle_state,
 			server_username)
 	send_to_peer(peer, packet)
+
+
+func set_setting(name : String, value) -> void:
+	settings.content[name] = value
+	broadcast_server_settings()
 
 
 func roll() -> void:

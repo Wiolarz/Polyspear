@@ -80,6 +80,7 @@ func _refresh_slot(index : int) -> void:
 		return
 
 	var ui_slot : BattlePlayerSlotPanel = player_slot_panels[index]
+	ui_slot.timers_are_being_synced = true
 	var logic_slot : Slot = \
 		IM.game_setup_info.slots[index] if IM.game_setup_info.has_slot(index) \
 			else null
@@ -88,6 +89,8 @@ func _refresh_slot(index : int) -> void:
 	var faction : DataFaction = null
 	var take_leave_button_state : BattlePlayerSlotPanel.TakeLeaveButtonState =\
 		BattlePlayerSlotPanel.TakeLeaveButtonState.GHOST
+	var reserve_seconds : int = 0
+	var increment_seconds : int = 0
 	if logic_slot:
 		ui_slot.set_army(logic_slot.units_list)
 		if logic_slot.occupier is String:
@@ -105,10 +108,14 @@ func _refresh_slot(index : int) -> void:
 				BattlePlayerSlotPanel.TakeLeaveButtonState.FREE
 		faction = logic_slot.faction
 		color = CFG.get_team_color_at(logic_slot.color)
+		reserve_seconds = logic_slot.timer_reserve_sec
+		increment_seconds = logic_slot.timer_increment_sec
 	ui_slot.set_visible_color(color.color)
 	ui_slot.set_visible_name(username)
 	ui_slot.set_visible_take_leave_button_state(take_leave_button_state)
+	ui_slot.set_visible_timers(reserve_seconds, increment_seconds)
 	ui_slot.setup_ui = self
+	ui_slot.timers_are_being_synced = false
 
 
 func slot_to_index(slot) -> int:
@@ -130,7 +137,7 @@ func _on_preset_list_item_selected(index) -> void:
 
 
 func apply_preset(preset : PresetBattle):
-	
+
 	# loading map
 	var map_name = preset.battle_map.resource_path.get_file()
 	var found_a_map : bool = false

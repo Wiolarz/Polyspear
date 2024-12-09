@@ -1,10 +1,10 @@
-class_name LogoutCommand
+class_name RequestLogout
 
 const COMMAND_NAME = "logout"
 
 static func register(commands : Dictionary):
 	commands[COMMAND_NAME] = \
-			Command.create_on_server(LogoutCommand.process_command)
+			Command.create_on_server(RequestLogout.process_command)
 
 static func create_packet():
 	return {

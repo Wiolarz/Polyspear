@@ -1,10 +1,10 @@
-class_name SayCommand
+class_name RequestSay
 
 const COMMAND_NAME = "say"
 
 static func register(commands : Dictionary):
 	commands[COMMAND_NAME] = \
-			Command.create_on_server(SayCommand.process_command)
+			Command.create_on_server(RequestSay.process_command)
 
 static func create_packet(message : String):
 	return {

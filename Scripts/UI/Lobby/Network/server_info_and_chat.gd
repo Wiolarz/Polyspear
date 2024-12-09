@@ -8,6 +8,10 @@ UI - Server Admin tools + chat box
 
 var host_menu : HostMenu = null
 
+## not very pretty HACK to avoid sharing settings with every button
+## state initialization
+var ui_initialized : bool = false
+
 @onready var chat_line_edit = \
 	$MarginContainer/VBoxContainer/Chat/Writing/ChatMessage
 
@@ -15,23 +19,32 @@ var host_menu : HostMenu = null
 	$MarginContainer/VBoxContainer/Chat/LogScroll
 
 @onready var server_status_label = \
-	$MarginContainer/VBoxContainer/ServerInfo/Log
+	$MarginContainer/VBoxContainer/Details/Info/Log
 
 @onready var external_ip_poll_button = \
-	$MarginContainer/VBoxContainer/ButtonsRow2/ButtonPollIp
+	$MarginContainer/VBoxContainer/Details/Public/ButtonsRow2/ButtonPollIp
 
 @onready var external_ip_edit = \
-	$MarginContainer/VBoxContainer/ButtonsRow2/ExternalIpLineEdit
+	$MarginContainer/VBoxContainer/Details/Public/ButtonsRow2/ExternalIpLineEdit
 
 @onready var external_port_edit = \
-	$MarginContainer/VBoxContainer/ButtonsRow3/ExternalPortLineEdit
+	$MarginContainer/VBoxContainer/Details/Public/ButtonsRow3/ExternalPortLineEdit
 
+@onready var settings = \
+	$MarginContainer/VBoxContainer/Details/Settings
 
 func _ready():
 	external_ip_poll_button.text = \
 		"Fetch external ip by\ncalling '%s'" % [CFG.FETCH_EXTERNAL_IP_GET_URL]
 	external_ip_edit.text = NET.server.server_external_address
 	external_port_edit.text = str(NET.server.enet_network.get_local_port())
+
+	settings.get_node("AllowSlotSteal").button_pressed = \
+		NET.server.settings.allow_slot_steal()
+	settings.get_node("AllowAllStart").button_pressed = \
+		NET.server.settings.all_can_start()
+
+	ui_initialized = true
 
 func _process(_delta):
 	update_server_info()
@@ -105,9 +118,10 @@ func get_server_status_string() -> String:
 
 	var result = ""
 	result += "host login: %s\n" % NET.server.server_username
-	result += "LOCAL address %s:%d\n"% \
-		[NET.server.server_local_address,
-			NET.server.enet_network.get_local_port()]
+	if not CFG.player_options.streamer_mode:
+		result += "LOCAL address %s:%d\n"% \
+			[NET.server.server_local_address,
+				NET.server.enet_network.get_local_port()]
 	result += "peers:\n"
 	var has_peers := false
 	for peer in NET.server.enet_network.get_peers():
@@ -125,13 +139,16 @@ func get_server_status_string() -> String:
 func describe_peer(peer : ENetPacketPeer):
 	var connection_state : String = describe_peer_state(peer)
 	var session = NET.server.get_session_by_peer(peer)
+	var info : String
 	if not session:
-		return " - (no session) [%s] from %s:%d " % [ \
-			connection_state, \
-			peer.get_remote_address(), peer.get_remote_port() ]
-	return "- %s [%s] from %s:%d" % [ \
-			session.username, connection_state, \
-			peer.get_remote_address(), peer.get_remote_port()]
+		info = "- (no session) [%s]" % [ \
+			connection_state]
+	else:
+		info = "- %s [%s]" % [ \
+			session.username, connection_state]
+	if not CFG.player_options.streamer_mode:
+		info += " %s:%d" % [peer.get_remote_address(), peer.get_remote_port()]
+	return info
 
 
 func describe_peer_state(peer:ENetPacketPeer) -> String:
@@ -175,3 +192,15 @@ func _on_is_public_check_box_toggled(toggled_on):
 		await PolyApi.post_server(server_description)
 	else:
 		await PolyApi.delete_server(NET.server.server_username)
+
+
+func _on_allow_slot_steal_toggled(toggled_on : bool):
+	if not ui_initialized:
+		return
+	NET.server.set_setting("allow_slot_steal", toggled_on)
+
+
+func _on_allow_all_start_toggled(toggled_on):
+	if not ui_initialized:
+		return
+	NET.server.set_setting("all_can_start", toggled_on)

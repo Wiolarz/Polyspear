@@ -16,6 +16,8 @@ var button_take_leave_state : TakeLeaveButtonState = TakeLeaveButtonState.FREE
 var unit_paths : Array[String]
 var hero_paths : Array[String]
 
+var timers_are_being_synced : bool = false
+
 @onready var button_take_leave = $GeneralVContainer/TopBarHContainer/ButtonTakeLeave
 @onready var label_name = $GeneralVContainer/TopBarHContainer/PlayerInfoPanel/Label
 @onready var buttons_units : Array[OptionButton] = [
@@ -65,6 +67,14 @@ func set_visible_name(player_name : String):
 	label_name.text = player_name
 
 
+func set_visible_timers(reserve : int, increment : int):
+	var reserve_minutes := int(reserve / 60)
+	var reserve_seconds := reserve % 60
+	timer_reserve_minutes.value = reserve_minutes
+	timer_reserve_seconds.value = reserve_seconds
+	timer_increment_seconds.value = increment
+
+
 func set_visible_take_leave_button_state(state : TakeLeaveButtonState):
 	# maybe better get this from battle setup, but this is simpler
 	button_take_leave_state = state
@@ -76,9 +86,13 @@ func set_visible_take_leave_button_state(state : TakeLeaveButtonState):
 			button_take_leave.text = "Leave"
 			button_take_leave.disabled = false
 		TakeLeaveButtonState.TAKEN_BY_OTHER:
-			# ">> TAKEN <<" -- simple "Taken" would be too similar to "Take"
-			button_take_leave.text = ">> TAKEN <<"
-			button_take_leave.disabled = true
+			if IM.is_slot_steal_allowed():
+				button_take_leave.text = "Steal"
+				button_take_leave.disabled = false
+			else:
+				# ">> TAKEN <<" -- simple "Taken" would be too similar to "Take"
+				button_take_leave.text = ">> TAKEN <<"
+				button_take_leave.disabled = true
 		TakeLeaveButtonState.GHOST:
 			button_take_leave.text = "ghost"
 			button_take_leave.disabled = true
@@ -138,6 +152,9 @@ func unit_in_army_changed(selected_index, unit_index) -> void:
 
 
 func timer_changed() -> void:
+	if timers_are_being_synced:
+		return
+
 	var slot_index = setup_ui.slot_to_index(self)
 
 	var seconds_reserve = timer_reserve_minutes.value * 60 + timer_reserve_seconds.value
@@ -212,6 +229,9 @@ func _on_button_take_leave_pressed():
 			try_to_take()
 		TakeLeaveButtonState.TAKEN_BY_YOU:
 			try_to_leave()
+		TakeLeaveButtonState.TAKEN_BY_OTHER:
+			if IM.is_slot_steal_allowed():
+				try_to_take()
 
 
 

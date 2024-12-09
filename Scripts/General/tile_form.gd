@@ -4,7 +4,7 @@ extends Area2D
 
 var coord : Vector2i
 
-var type : String = "sentinel"
+var type : String = "SENTINEL"
 
 var hex = null # WorldHex in world
 
@@ -82,8 +82,7 @@ func _process(_delta):
 func controller_changed():
 	$ControlerSprite.visible = true
 	var color_name : String = hex.place.controller.get_player_color().name
-
-	var path = "res://Art/player_colors/%s_color.png" % color_name
+	var path =  "%s%s_color.png" % [CFG.PLAYER_COLORS_PATH, color_name]
 	var texture = load(path) as Texture2D
 	assert(texture, "failed to load background " + path)
 	$ControlerSprite.texture = texture

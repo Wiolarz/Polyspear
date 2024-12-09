@@ -20,7 +20,7 @@ extends CanvasLayer
 @onready var replay_move_count = $ReplayControls/MoveCount
 @onready var replay_status = $ReplayControls/Status
 
-
+var fighting_players_idx = []
 var armies_reference : Array[BattleGridState.ArmyInBattleState]
 
 var selected_unit : DataUnit = null
@@ -46,10 +46,11 @@ func load_armies(army_list : Array[BattleGridState.ArmyInBattleState]):
 		players_box.remove_child(c)
 
 	units_box.show()
-
+	fighting_players_idx = []
 	var idx = 0
 	for army in army_list:
 		var controller = IM.get_player_by_index(army.army_reference.controller_index)
+		fighting_players_idx.append(army.army_reference.controller_index)
 		# create player buttons
 		var n = Button.new()
 		n.text = get_text_for(controller, idx == 0)
@@ -68,6 +69,18 @@ func _process(_delta):
 	if BM.battle_is_active():
 		update_clock()
 		update_cyclone()
+
+
+func update_mana() -> void:
+	var i = -1
+	var temp_skip_label = true
+	for player_button in players_box.get_children():
+		if temp_skip_label:
+			temp_skip_label = false
+			continue
+		i += 1
+		var player_idx = fighting_players_idx[i]
+		player_button.text = get_text_for(IM.get_player_by_index(player_idx), false)  # TEMP func doesn't know if a player was selected
 
 
 func update_cyclone():
@@ -120,7 +133,7 @@ func get_text_for(controller : Player, selected : bool):
 	var player_name = "Neutral"
 	if controller:
 		player_name = controller.get_player_name()
-	return prefix + "Player " + player_name
+	return prefix + "Player " + player_name + "_" + str(BM.get_player_mana(controller))
 
 
 #region Summon Phase
@@ -150,23 +163,28 @@ func on_player_selected(army_index : int, preview : bool = false):
 	if units_controller:
 		bg_color = units_controller.get_player_color()
 	for unit in armies_reference[army_index].units_to_summon:
-		var b := TextureButton.new()
-		b.texture_normal = CFG.SUMMON_BUTTON_TEXTURE
+		var button := TextureButton.new()
+		button.texture_normal = CFG.SUMMON_BUTTON_TEXTURE
 
 		var unit_display := UnitForm.create_for_summon_ui(unit, bg_color)
-		unit_display.position = b.texture_normal.get_size()/2
-		b.add_child(unit_display)
+		unit_display.position = button.texture_normal.get_size()/2
+		button.add_child(unit_display)
 
-		units_box.add_child(b)
+		units_box.add_child(button)
 		var lambda = func on_click():
 			if (current_player != army_index):
 				return
-			if selected_unit_button:
+			if selected_unit_button:  # Deselects previously selected unit
 				selected_unit_button.modulate = Color.WHITE
-			selected_unit = unit
-			selected_unit_button = b
-			selected_unit_button.modulate = Color.RED
-		b.pressed.connect(lambda)
+			
+			if selected_unit_button == button: # Selecting the same unit twice deselects it
+				selected_unit = null
+				selected_unit_button = null
+			else:
+				selected_unit = unit
+				selected_unit_button = button
+				selected_unit_button.modulate = Color.RED
+		button.pressed.connect(lambda)
 
 
 func unit_summoned(summon_phase_end : bool):
@@ -198,33 +216,28 @@ func load_spells(army_index : int, spells : Array[BattleSpell], preview : bool =
 
 
 	for spell in spells:
-		var b := TextureButton.new()
+		var button := TextureButton.new()
 
-		b.texture_normal = CFG.SUMMON_BUTTON_TEXTURE # TEMP replace for proper default spell background
+		#TODO create a proper icon creation (after higher resolution update)
 
-		#TEMP
-		b.texture_normal = load(spell.icon_path)
-		#var spell_icon : Texture2D = load(spell.icon_path) #:= UnitForm.create_for_summon_ui(unit, bg_color)
+		button.texture_normal = CFG.SUMMON_BUTTON_TEXTURE
+		button.texture_normal = load(spell.icon_path)
 
-		#spell_icon.position = b.texture_normal.get_size() / 2
-		#b.add_child(spell_icon)
-
-		book.add_child(b)
+		book.add_child(button)
 		var lambda = func on_click():
 			if (current_player != army_index):
 				return
-			if selected_spell_button:
+			if selected_spell_button:  # Deselects previously selected spell
 				selected_spell_button.modulate = Color.WHITE
 
-			if selected_spell_button == b: # Deselct a spell
-				selected_spell_button.modulate = Color.WHITE
+			if selected_spell_button == button: # Selecting the same spell twice deselects it
 				selected_spell = null
 				selected_spell_button = null
 			else:
 				selected_spell = spell
-				selected_spell_button = b
+				selected_spell_button = button
 				selected_spell_button.modulate = Color.RED
-		b.pressed.connect(lambda)
+		button.pressed.connect(lambda)
 
 
 ## removes avalaible spells from the list upon desecting a unit

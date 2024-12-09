@@ -1,10 +1,13 @@
-[gd_scene load_steps=6 format=3 uid="uid://sh62rfw7ulr8"]
+[gd_scene load_steps=9 format=3 uid="uid://sh62rfw7ulr8"]
 
 [ext_resource type="Script" path="res://Scripts/Battle/unit_form.gd" id="1_ep020"]
 [ext_resource type="Texture2D" uid="uid://b4mva4lnbe13v" path="res://Art/player_colors/red_color.png" id="2_uxjol"]
 [ext_resource type="Texture2D" uid="uid://bul31ap566nua" path="res://Art/world_heroes/elf_druid.png" id="3_jdgie"]
 [ext_resource type="Texture2D" uid="uid://2b8vj8hwfu51" path="res://Art/items/unit_border.png" id="4_ybg78"]
 [ext_resource type="PackedScene" uid="uid://bc4yv21yc35fw" path="res://Scenes/Form/SymbolForm.tscn" id="5_2gor3"]
+[ext_resource type="Texture2D" uid="uid://dwtcshhcc5ulr" path="res://Art/items/blue_knife.png" id="6_a6bly"]
+[ext_resource type="Texture2D" uid="uid://ctvcj6y3fsafe" path="res://Art/items/shields/blue shield.png" id="7_5nisa"]
+[ext_resource type="Texture2D" uid="uid://cb6b5qgltj1bc" path="res://Art/battle_map/swamp.png" id="8_i7m4u"]
 
 [node name="Unit" type="Node2D"]
 script = ExtResource("1_ep020")
@@ -55,3 +58,39 @@ position = Vector2(-100, 199)
 rotation = 5.23599
 
 [node name="SymbolForm" parent="Symbols/FrontLeftSymbol" instance=ExtResource("5_2gor3")]
+
+[node name="RigidUI" type="Node2D" parent="."]
+
+[node name="UnitLevel" type="Label" parent="RigidUI"]
+offset_left = -173.0
+offset_top = -125.0
+offset_right = -133.0
+offset_bottom = -77.0
+text = "I"
+
+[node name="SpellEffect1" type="Sprite2D" parent="RigidUI"]
+position = Vector2(151, -88)
+texture = ExtResource("6_a6bly")
+
+[node name="SpellEffect2" type="Sprite2D" parent="RigidUI"]
+position = Vector2(151, 71)
+texture = ExtResource("7_5nisa")
+
+[node name="TerrainEffect" type="Sprite2D" parent="RigidUI"]
+position = Vector2(-142, 88)
+scale = Vector2(0.2, 0.2)
+texture = ExtResource("8_i7m4u")
+
+[node name="SpellEffectCounter1" type="Label" parent="RigidUI"]
+offset_left = 155.0
+offset_top = -104.0
+offset_right = 195.0
+offset_bottom = -56.0
+text = "6"
+
+[node name="SpellEffectCounter2" type="Label" parent="RigidUI"]
+offset_left = 150.0
+offset_top = 48.0
+offset_right = 190.0
+offset_bottom = 96.0
+text = "6"
