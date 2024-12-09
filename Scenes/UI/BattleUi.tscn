@@ -113,6 +113,33 @@ offset_right = 495.0
 offset_bottom = 114.0
 text = "3 : 00 : 000"
 
+[node name="ReplayControls" type="ColorRect" parent="."]
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -480.0
+offset_top = -272.0
+offset_right = 480.0
+offset_bottom = -72.0
+grow_horizontal = 2
+grow_vertical = 0
+color = Color(0, 0, 0, 0.423529)
+
+[node name="MoveCount" type="Label" parent="ReplayControls"]
+layout_mode = 1
+offset_right = 489.0
+offset_bottom = 50.0
+text = "21/37"
+
+[node name="Status" type="Label" parent="ReplayControls"]
+layout_mode = 1
+offset_top = 53.0
+offset_right = 489.0
+offset_bottom = 103.0
+text = "Replay status: Lorem Ipsum"
+
 [node name="CycloneTimer" type="ColorRect" parent="."]
 offset_left = 1308.0
 offset_top = 34.0

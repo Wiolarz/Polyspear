@@ -16,6 +16,9 @@ extends CanvasLayer
 
 @onready var book = $SpellBook
 
+@onready var replay_controls = $ReplayControls
+@onready var replay_move_count = $ReplayControls/MoveCount
+@onready var replay_status = $ReplayControls/Status
 
 
 var armies_reference : Array[BattleGridState.ArmyInBattleState]
@@ -93,6 +96,23 @@ func update_clock() -> void:
 	clock.modulate = BM.get_current_slot_color().color
 
 	turns.text = "Turn %d" % [BM.get_current_turn()]
+
+
+func show_replay_controls():
+	replay_controls.visible = true
+	
+func hide_replay_controls():
+	replay_controls.visible = false
+	
+	
+func update_replay_controls(move_nr: int, total_replay_moves: int, summary: DataBattleSummary = null):
+	replay_move_count.text = "%d/%d" % [move_nr, total_replay_moves]
+	if move_nr != total_replay_moves:
+		replay_status.text = ""
+	elif summary:
+		replay_status.text = "Battle ended - all enemy units killed"
+	else:
+		replay_status.text = "Battle ended - timeout"
 
 
 func get_text_for(controller : Player, selected : bool):

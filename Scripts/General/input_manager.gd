@@ -90,14 +90,6 @@ func perform_replay(path):
 	game_setup_info.battle_map = replay.battle_map
 
 	# Temporarily move slots from game setup
-	"""
-	var old_slots = game_setup_info.slots.duplicate()
-	var old_map = game_setup_info.battle_map
-	var old_player_slot_mapping = {}
-	game_setup_info.slots = []
-	
-	game_setup_info.set_battle_map(replay.battle_map)
-	"""
 	var old_info = game_setup_info
 	game_setup_info = GameSetupInfo.create_empty()
 	game_setup_info.game_mode = GameSetupInfo.GameMode.BATTLE
@@ -115,7 +107,7 @@ func perform_replay(path):
 	BM.perform_replay(replay)
 	
 	# Setup done, move back old info
-	game_setup_info = old_info #.slots = old_slots
+	game_setup_info = old_info
 
 
 func go_to_map_editor():

@@ -22,6 +22,7 @@ var _selected_unit : Unit
 
 var _replay_data : BattleReplay
 var _replay_is_playing : bool = false
+var _replay_length : int = 0
 
 var _batch_mode : bool = false # flagged true when recreating game state
 
@@ -197,6 +198,7 @@ func _on_turn_started(player : Player) -> void:
 		return
 
 	_battle_ui.start_player_turn(_battle_grid_state.current_army_index)
+	_battle_ui.update_replay_controls(_replay_data.moves.size(), _replay_length)
 
 	if not player:
 		print("uncontrolled army's turn")
@@ -572,9 +574,13 @@ func _on_unit_moved(unit: Unit) -> void:
 #region Battle End
 
 func close_when_quiting_game() -> void:
-	deselect_unit()
 	_clear_anim_queue()
+	_turn_off_battle_ui()
 	_reset_grid_and_unit_forms()
+	deselect_unit()
+	
+	_replay_is_playing = false # revert to default value for the next battle
+	_battle_ui.hide_replay_controls()
 
 
 ## called when battle simulation decided battle was won
@@ -584,11 +590,8 @@ func _on_battle_ended() -> void:
 		assert(false, "battle ended when it was not ongoing...")
 		return
 	_battle_is_ongoing = false
-	deselect_unit()
 
 	await get_tree().create_timer(1).timeout # TEMP, don't exit immediately
-	while _replay_is_playing:
-		await get_tree().create_timer(0.1).timeout
 
 	_current_summary = _create_summary()
 	_replay_data.summary = _current_summary
@@ -596,23 +599,22 @@ func _on_battle_ended() -> void:
 		_replay_data.save()
 	
 	if WM.world_game_is_active():
-		_close_battle()
+		_close_battle_and_return()
 		# show battle summary over world map
 		UI.ui_overlay.show_summary(_current_summary, null)
+	elif _replay_is_playing:
+		_battle_ui.update_replay_controls(_replay_length, _replay_length, _current_summary)
+		# do not exit immediately
 	else:
-		UI.ui_overlay.show_summary(_current_summary, _close_battle)
+		UI.ui_overlay.show_summary(_current_summary, _close_battle_and_return)
 
 
-func _close_battle() -> void:
+func _close_battle_and_return() -> void:
 	var state_for_world = _battle_grid_state.armies_in_battle_state
-	_clear_anim_queue()
-	_turn_off_battle_ui()
-	_reset_grid_and_unit_forms()
-	deselect_unit()
-	_replay_is_playing = false # revert to default value for the next battle
-
+	
+	close_when_quiting_game()
+	
 	if not WM.world_game_is_active():
-		print("end of test battle")
 		IM.go_to_main_menu()
 		return
 
@@ -704,8 +706,10 @@ func _create_summary() -> DataBattleSummary:
 
 ## Plays a replay and returns to the normal state afterwards
 func perform_replay(replay : BattleReplay) -> void:
-	_replay_is_playing = true # _replay_is_playing is reset in _close_battle
+	_replay_is_playing = true # _replay_is_playing is reset in close_when_quitting_game
+	_battle_ui.show_replay_controls()
 	_battle_grid_state.set_clock_enabled(false)
+	_replay_length = replay.moves.size()
 
 	for m in replay.moves:
 		if not _battle_is_ongoing:
