@@ -81,7 +81,7 @@ func _refresh_slot(index : int) -> void:
 
 	var ui_slot : BattlePlayerSlotPanel = player_slot_panels[index]
 	ui_slot.timers_are_being_synced = true
-	var logic_slot : GameSetupInfo.Slot = \
+	var logic_slot : Slot = \
 		IM.game_setup_info.slots[index] if IM.game_setup_info.has_slot(index) \
 			else null
 	var color : DataPlayerColor = CFG.DEFAULT_TEAM_COLOR

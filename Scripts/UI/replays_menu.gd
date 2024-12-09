@@ -34,10 +34,29 @@ func refresh_replays_list():
 			var i = 0
 			for army in _replay.units_at_start:
 				var army_controller_name = _replay.get_player_name(i)
-				i += 1
-				_description.text += "\n%s army:" % [army_controller_name]
+				var losses : PackedStringArray
+				var is_winner = false
+				
+				if _replay.summary:
+					is_winner = _replay.summary.players[i].state == "winner"
+					losses = _replay.summary.players[i].losses.split("\n")
+				
+				_description.text += "\n%s%s army:" % [
+					"👑 " if is_winner else "" , army_controller_name
+				]
+					
 				for unit : DataUnit in army:
-					_description.text += "\n  - " + unit.unit_name
+					var has_died = false
+					var idx = losses.find(unit.unit_name)
+					if idx != -1:
+						losses.remove_at(idx)
+						has_died = true
+					
+					_description.text += "\n  - %s%s" % [
+						"☠️ " if has_died else "", unit.unit_name
+					]
+				
+				i += 1
 
 			_play_button.disabled = false
 		)
