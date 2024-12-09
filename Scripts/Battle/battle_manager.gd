@@ -345,6 +345,10 @@ func ai_move() -> void:
 	if latest_ai_cancel_token:
 		push_warning("ai is already moving, dont stack two simultaneous ai moves race")
 		return
+	
+	if _replay_is_playing:
+		return
+	
 	var move := AiBotStateRandom.choose_move_static(_battle_grid_state)
 	_perform_ai_move(move)
 

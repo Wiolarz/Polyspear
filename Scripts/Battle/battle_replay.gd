@@ -10,6 +10,7 @@ extends Resource
 @export var moves : Array[MoveInfo] = []
 @export var player_names : Array[String] = []
 @export var player_colors : Array[int] = []
+@export var player_initial_timers_ms : Array[int] = []
 @export var summary: DataBattleSummary = null
 
 
@@ -23,6 +24,7 @@ static func create(armies : Array[Army], c_battle_map: DataBattleMap) -> BattleR
 		
 		result.player_names.append(player_name)
 		result.player_colors.append(player.slot.color)
+		result.player_initial_timers_ms.append(army.timer_reserve_sec)
 
 	result.timestamp = Time.get_datetime_string_from_system()
 	result.battle_map = c_battle_map

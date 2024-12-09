@@ -101,6 +101,7 @@ func perform_replay(path):
 		var units_array = replay.units_at_start[slot_id]
 		slot.occupier = replay.get_player_name(slot_id)
 		slot.color = replay.get_player_color(slot_id)
+		slot.timer_reserve_sec = replay.player_initial_timers_ms[slot_id]
 		slot.set_units(units_array)
 
 	start_game(null, null, replay)

@@ -1418,8 +1418,10 @@ class ArmyInBattleState:
 
 
 	func turn_ended() -> void:
-		start_turn_clock_time_left_ms = get_time_left_ms()
-		start_turn_clock_time_left_ms += turn_increment_ms
+		# clock disabled in replays, otherwise this messes with timer
+		if clock_enabled:
+			start_turn_clock_time_left_ms = get_time_left_ms()
+			start_turn_clock_time_left_ms += turn_increment_ms
 
 	## Manages unit relation to it's related army object [br]
 	## Used in so that "summary"
