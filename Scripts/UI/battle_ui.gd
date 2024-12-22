@@ -16,6 +16,8 @@ extends CanvasLayer
 
 @onready var book = $SpellBook
 
+@onready var chat = $GameChat
+
 @onready var replay_controls = $ReplayControls
 @onready var replay_move_count = $ReplayControls/MoveCount
 @onready var replay_status = $ReplayControls/Status
@@ -113,10 +115,12 @@ func update_clock() -> void:
 
 func show_replay_controls():
 	replay_controls.visible = true
+	chat.visible = false
+	
 	
 func hide_replay_controls():
 	replay_controls.visible = false
-	
+	chat.visible = true
 	
 func update_replay_controls(move_nr: int, total_replay_moves: int, summary: DataBattleSummary = null):
 	replay_move_count.text = "%d/%d" % [move_nr, total_replay_moves]

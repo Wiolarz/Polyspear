@@ -1,4 +1,5 @@
-class_name Slot extends Resource
+class_name Slot
+extends Resource
 
 ## occupier identifies who uses this slot [br]
 ## its an `int` or a `String` [br]

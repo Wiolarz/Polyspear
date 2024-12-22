@@ -832,9 +832,9 @@ func set_displayed_time_left_ms(time_left_ms : int) -> void:
 	armies_in_battle_state[current_army_index].set_time_left_ms(time_left_ms)
 
 ## only for replays
-func set_clock_enabled(state):
-	for i in armies_in_battle_state:
-		i.clock_enabled = state
+func set_clock_enabled(enabled: bool):
+	for army in armies_in_battle_state:
+		army.clock_enabled = enabled
 
 #endregion Timer
 
@@ -1408,7 +1408,7 @@ class ArmyInBattleState:
 	func get_time_left_ms() -> int:
 		var turn_time_local_passed_ms = Time.get_ticks_msec() - turn_start_timestamp
 		if not clock_enabled:
-			turn_time_local_passed_ms = 0
+			return start_turn_clock_time_left_ms # Time shouldn't pass in replays
 		return start_turn_clock_time_left_ms - turn_time_local_passed_ms
 
 
@@ -1418,7 +1418,7 @@ class ArmyInBattleState:
 
 
 	func turn_ended() -> void:
-		# clock disabled in replays, otherwise this messes with timer
+		# clock disabled in replays, otherwise this messes with timer - adds a large time value to timer
 		if clock_enabled:
 			start_turn_clock_time_left_ms = get_time_left_ms()
 			start_turn_clock_time_left_ms += turn_increment_ms

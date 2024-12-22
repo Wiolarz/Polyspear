@@ -21,7 +21,8 @@ var _selected_unit : Unit
 
 var _replay_data : BattleReplay
 var _replay_is_playing : bool = false
-var _replay_length : int = 0
+var _replay_move_counter : int = 0
+var _replay_number_of_moves : int = 0
 
 var _batch_mode : bool = false # flagged true when recreating game state
 
@@ -59,6 +60,8 @@ func start_battle(new_armies : Array[Army], battle_map : DataBattleMap, \
 		_replay_data = BattleReplay.from_template(replay_template)
 	else:
 		_replay_data = BattleReplay.create(new_armies, battle_map)
+	
+	_replay_move_counter = 0
 	
 	if not _replay_is_playing and not replay_template:
 		_replay_data.save()
@@ -182,7 +185,8 @@ func _on_turn_started(player : Player) -> void:
 		return
 
 	_battle_ui.start_player_turn(_battle_grid_state.current_army_index)
-	_battle_ui.update_replay_controls(_replay_data.moves.size(), _replay_length)
+	if _replay_is_playing:
+		_battle_ui.update_replay_controls(_replay_move_counter, _replay_number_of_moves)
 
 	if not player:
 		print("uncontrolled army's turn")
@@ -524,8 +528,10 @@ func _perform_move_info(move_info : MoveInfo) -> void:
 		return
 	print(NET.get_role_name(), " performing move ", move_info)
 
-	_replay_data.record_move(move_info, get_current_time_left_ms())
+	_replay_move_counter += 1
+
 	if not _replay_is_playing:
+		_replay_data.record_move(move_info, get_current_time_left_ms())
 		_replay_data.save()
 	
 	if NET.server:
@@ -550,13 +556,13 @@ func _perform_move_info(move_info : MoveInfo) -> void:
 #region Battle End
 
 func close_when_quiting_game() -> void:
+	deselect_unit()
 	_clear_anim_queue()
+	_battle_ui.hide_replay_controls()
 	_turn_off_battle_ui()
 	_reset_grid_and_unit_forms()
-	deselect_unit()
 	
 	_replay_is_playing = false # revert to default value for the next battle
-	_battle_ui.hide_replay_controls()
 
 
 ## called when battle simulation decided battle was won
@@ -573,8 +579,8 @@ func _on_battle_ended() -> void:
 	await get_tree().create_timer(1).timeout # TEMP, don't exit immediately
 
 	_current_summary = _create_summary()
-	_replay_data.summary = _current_summary
 	if not _replay_is_playing:
+		_replay_data.summary = _current_summary
 		_replay_data.save()
 	
 	if WM.world_game_is_active():
@@ -582,7 +588,7 @@ func _on_battle_ended() -> void:
 		# show battle summary over world map
 		UI.ui_overlay.show_summary(_current_summary, null)
 	elif _replay_is_playing:
-		_battle_ui.update_replay_controls(_replay_length, _replay_length, _current_summary)
+		_battle_ui.update_replay_controls(_replay_number_of_moves, _replay_number_of_moves, _current_summary)
 		# do not exit immediately
 	else:
 		UI.ui_overlay.show_summary(_current_summary, _close_battle_and_return)
@@ -688,7 +694,7 @@ func perform_replay(replay : BattleReplay) -> void:
 	_replay_is_playing = true # _replay_is_playing is reset in close_when_quitting_game
 	_battle_ui.show_replay_controls()
 	_battle_grid_state.set_clock_enabled(false)
-	_replay_length = replay.moves.size()
+	_replay_number_of_moves = replay.moves.size()
 
 	for m in replay.moves:
 		if not _battle_is_ongoing:
