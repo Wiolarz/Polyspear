@@ -8,7 +8,7 @@
 script = ExtResource("1_uelmv")
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="."]
-polygon = PackedVector2Array(-264, -151, -7, -304, 264, -148, 264, 153, -1, 303, -264, 155)
+polygon = PackedVector2Array(-826, -478, -16, -948, 832, -468, 841, 483, 1, 954, -829, 487)
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 texture = ExtResource("2_utlft")
