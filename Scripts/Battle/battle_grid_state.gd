@@ -1,6 +1,13 @@
 class_name BattleGridState
 extends GenericHexGrid
 
+enum MoveConsequences {
+	NONE,
+	KILL,
+	DEATH,
+	SACRIFICE # Both kills and dies
+}
+
 const STATE_SUMMONNING = "summonning"
 const STATE_FIGHTING = "fighting"
 const STATE_SACRIFICE = "sacrifice"
@@ -1202,6 +1209,10 @@ func _ai_will_melee_kill_someone(unit : Unit, direction : int, coord : Vector2i)
 ## returns true if that move will lead to enemy death [br]
 ## doesn't account that in may after killing someone die instantly
 func _is_kill_move(move : MoveInfo) -> bool:
+	var consequences = get_move_consequences(move)
+	return consequences == MoveConsequences.KILL or consequences == MoveConsequences.SACRIFICE
+
+func get_move_consequences(move : MoveInfo) -> MoveConsequences:
 	# list of checks:
 	# 1 verify if turning in (starting move with that unit) will even work
 	# 2 moving in that direction would shoot someone
@@ -1209,8 +1220,10 @@ func _is_kill_move(move : MoveInfo) -> bool:
 	# 4 you can survive entering that tile
 	# 5 you can kill someone entering that tile
 
-	if move.move_type != MoveInfo.TYPE_MOVE:  # TODO add support for spells
-		return false # summons don't kill
+	var kill_registered = false
+
+	if move.move_type != MoveInfo.TYPE_MOVE:  # TODO add support for spells and sacrifices
+		return MoveConsequences.NONE # summons don't kill
 
 	# TODO change to get army, not player because player can have other team
 	# than aarmy in battle and player can be null
@@ -1222,7 +1235,7 @@ func _is_kill_move(move : MoveInfo) -> bool:
 
 	# step 1
 	if _ai_should_die_to_counter_attack(attacker, move_direction, move.move_source):
-		return false  # will die to a spear befor it can kill
+		return MoveConsequences.DEATH  # will die to a spear befor it can kill
 
 	# step 2 BOW
 	for side in range(6):  # we check each side for a ranged attack symbol
@@ -1238,21 +1251,22 @@ func _is_kill_move(move : MoveInfo) -> bool:
 			var target_symbol = target.get_symbol(opposite_side)
 
 			if Unit.does_attack_succeed(symbol, target_symbol):
-				return true  # can shoot enemy in this direction
+				kill_registered = true  # can shoot enemy in this direction
 
 	# step 3 melee weapon on first rotation
 	if _ai_will_melee_kill_someone(attacker, move_direction, move.move_source):
-		return true
+		kill_registered = true
 
 	# step 4
 	if _ai_should_die_to_counter_attack(attacker, move_direction, move.target_tile_coord):
-		return false  # will die to a spear befor it can kill
+		# will die to a spear before it can kill
+		return MoveConsequences.SACRIFICE if kill_registered else MoveConsequences.DEATH
 
 	# step 5
 	if _ai_will_melee_kill_someone(attacker, move_direction, move.target_tile_coord):
-		return true
+		kill_registered = true
 
-	return false
+	return MoveConsequences.KILL if kill_registered else MoveConsequences.NONE
 
 #endregion AI Helpers
 
