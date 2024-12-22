@@ -1,9 +1,9 @@
 [gd_scene load_steps=9 format=3 uid="uid://sh62rfw7ulr8"]
 
 [ext_resource type="Script" path="res://Scripts/Battle/unit_form.gd" id="1_ep020"]
-[ext_resource type="Texture2D" uid="uid://b4mva4lnbe13v" path="res://Art/player_colors/red_color.png" id="2_uxjol"]
-[ext_resource type="Texture2D" uid="uid://bul31ap566nua" path="res://Art/world_heroes/elf_druid.png" id="3_jdgie"]
-[ext_resource type="Texture2D" uid="uid://2b8vj8hwfu51" path="res://Art/items/unit_border.png" id="4_ybg78"]
+[ext_resource type="Texture2D" uid="uid://ptkmhxptot0q" path="res://Art/player_colors/blue_color.png" id="2_0q625"]
+[ext_resource type="Texture2D" uid="uid://cukwcwy4fikm1" path="res://Art/elf_hero_noble.png" id="3_3flaq"]
+[ext_resource type="Texture2D" uid="uid://bqq6e75vlykjd" path="res://Art/items/hex_border.png" id="4_tejs1"]
 [ext_resource type="PackedScene" uid="uid://bc4yv21yc35fw" path="res://Scenes/Form/SymbolForm.tscn" id="5_2gor3"]
 [ext_resource type="Texture2D" uid="uid://dwtcshhcc5ulr" path="res://Art/items/blue_knife.png" id="6_a6bly"]
 [ext_resource type="Texture2D" uid="uid://ctvcj6y3fsafe" path="res://Art/items/shields/blue shield.png" id="7_5nisa"]
@@ -13,48 +13,47 @@
 script = ExtResource("1_ep020")
 
 [node name="sprite_color" type="Sprite2D" parent="."]
-scale = Vector2(0.8, 0.8)
-texture = ExtResource("2_uxjol")
+texture = ExtResource("2_0q625")
 
 [node name="sprite_unit" type="Sprite2D" parent="."]
-texture = ExtResource("3_jdgie")
+texture = ExtResource("3_3flaq")
 
 [node name="sprite_border" type="Sprite2D" parent="."]
-texture = ExtResource("4_ybg78")
+texture = ExtResource("4_tejs1")
 
 [node name="Symbols" type="Node2D" parent="."]
 
 [node name="FrontSymbol" type="Marker2D" parent="Symbols"]
-position = Vector2(-216, 1)
+position = Vector2(-775, 1)
 
 [node name="SymbolForm" parent="Symbols/FrontSymbol" instance=ExtResource("5_2gor3")]
 
 [node name="FrontRightSymbol" type="Marker2D" parent="Symbols"]
-position = Vector2(-97, -196)
+position = Vector2(-386, -673)
 rotation = 1.0472
 
 [node name="SymbolForm" parent="Symbols/FrontRightSymbol" instance=ExtResource("5_2gor3")]
 
 [node name="BackRightSymbol" type="Marker2D" parent="Symbols"]
-position = Vector2(128, -181)
+position = Vector2(363, -682)
 rotation = 2.0944
 
 [node name="SymbolForm" parent="Symbols/BackRightSymbol" instance=ExtResource("5_2gor3")]
 
 [node name="BackSymbol" type="Marker2D" parent="Symbols"]
-position = Vector2(224, 9)
+position = Vector2(775, 9)
 rotation = 3.14159
 
 [node name="SymbolForm" parent="Symbols/BackSymbol" instance=ExtResource("5_2gor3")]
 
 [node name="BackLeftSymbol" type="Marker2D" parent="Symbols"]
-position = Vector2(133, 182)
+position = Vector2(405, 661)
 rotation = 4.18879
 
 [node name="SymbolForm" parent="Symbols/BackLeftSymbol" instance=ExtResource("5_2gor3")]
 
 [node name="FrontLeftSymbol" type="Marker2D" parent="Symbols"]
-position = Vector2(-100, 199)
+position = Vector2(-362, 684)
 rotation = 5.23599
 
 [node name="SymbolForm" parent="Symbols/FrontLeftSymbol" instance=ExtResource("5_2gor3")]
@@ -62,35 +61,36 @@ rotation = 5.23599
 [node name="RigidUI" type="Node2D" parent="."]
 
 [node name="UnitLevel" type="Label" parent="RigidUI"]
-offset_left = -173.0
-offset_top = -125.0
-offset_right = -133.0
-offset_bottom = -77.0
-text = "I"
+offset_left = -567.0
+offset_top = -433.0
+offset_right = -423.0
+offset_bottom = -256.0
+theme_override_font_sizes/font_size = 150
+text = "IV"
 
 [node name="SpellEffect1" type="Sprite2D" parent="RigidUI"]
-position = Vector2(151, -88)
+position = Vector2(484, -88)
 texture = ExtResource("6_a6bly")
 
 [node name="SpellEffect2" type="Sprite2D" parent="RigidUI"]
-position = Vector2(151, 71)
+position = Vector2(484, 71)
 texture = ExtResource("7_5nisa")
 
 [node name="TerrainEffect" type="Sprite2D" parent="RigidUI"]
-position = Vector2(-142, 88)
+position = Vector2(-331, 328)
 scale = Vector2(0.2, 0.2)
 texture = ExtResource("8_i7m4u")
 
 [node name="SpellEffectCounter1" type="Label" parent="RigidUI"]
-offset_left = 155.0
+offset_left = 488.0
 offset_top = -104.0
-offset_right = 195.0
+offset_right = 528.0
 offset_bottom = -56.0
 text = "6"
 
 [node name="SpellEffectCounter2" type="Label" parent="RigidUI"]
-offset_left = 150.0
+offset_left = 483.0
 offset_top = 48.0
-offset_right = 190.0
+offset_right = 523.0
 offset_bottom = 96.0
 text = "6"
