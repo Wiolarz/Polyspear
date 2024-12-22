@@ -20,6 +20,9 @@ var world_map : DataWorldMap ## used only in full world mode
 var battle_map : DataBattleMap ## used only in battle mode
 var slots : Array[Slot] ## slot for each player color on the map picked
 
+var battle_preset_name_hint : String ## used for UI in battle setup
+var battle_map_name_hint : String ## used for UI in battle setup
+
 func is_in_mode_world():
 	return game_mode == GameMode.WORLD
 
@@ -153,7 +156,8 @@ static func units_list_receive_from_network(serialized: Array) -> Array[DataUnit
 	return result
 
 
-func set_battle_map(map : DataBattleMap):
+## also gets optional map name (for UI)
+func set_battle_map(map : DataBattleMap, map_name : String = ""):
 	assert(game_mode == GameMode.BATTLE, "setting battle map in game mode: " + str(game_mode))
 	battle_map = map
 
@@ -163,6 +167,8 @@ func set_battle_map(map : DataBattleMap):
 	for slot_idx in slots.size():
 		var number_of_unit_slots = map.player_slots[slot_idx + 1] - 1  # -1 space is reserved for hero unit
 		slots[slot_idx].set_units_length(number_of_unit_slots)
+
+	battle_map_name_hint = map_name
 
 
 func set_world_map(map: DataWorldMap):
@@ -194,14 +200,16 @@ func set_world_map(map: DataWorldMap):
 
 ## used at start with some default preset, also used when preset is chosen
 ## in UI
-## Also, this skips refreshing UI and broadcasting over network -- it should
+## Also, this do not refresh UI and broadcast over network itself -- it should
 ## be done elsewhere, when this function is called
-func apply_battle_preset(preset : PresetBattle) -> void:
+## preset_name is optional -- only used for auto select at start
+func apply_battle_preset( \
+	preset : PresetBattle, preset_name : String = "") -> void:
 	var map_name = preset.battle_map.resource_path.get_file()
 
 	var map : DataBattleMap = load(CFG.BATTLE_MAPS_PATH + "/" + map_name)
 	assert(map, "map with name %s does not exist" % map_name)
-	set_battle_map(map)
+	set_battle_map(map, map_name)
 
 	# now we need to set armies and teams from preset
 	for i in range(slots.size()):
@@ -216,6 +224,8 @@ func apply_battle_preset(preset : PresetBattle) -> void:
 			if ii < army_preset.units.size():
 				unit = army_preset.units[ii]
 			units[ii] = unit
+
+	battle_preset_name_hint = preset_name
 
 
 static func create_empty() -> GameSetupInfo:

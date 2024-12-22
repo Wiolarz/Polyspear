@@ -25,8 +25,6 @@ func _ready():
 	fill_maps_list()
 	fill_presets_list()
 
-	# TODO somehow select current preset in UI as previously, if it is possible
-
 
 ## used to know if changes in gui are made by user and should be passed to
 ## backend (change setup info and send over network) OR made by refreshing
@@ -49,6 +47,30 @@ func fill_presets_list() -> void:
 		presets_list.add_item(preset.trim_prefix(CFG.BATTLE_PRESETS_PATH))
 
 
+func update_presets_list_selection() -> void:
+	if not presets_list:
+		return # on client
+	var target : String = IM.game_setup_info.battle_preset_name_hint
+	if target != "":
+		for i in presets_list.item_count:
+			var item : String = presets_list.get_item_text(i)
+			if target == item:
+				presets_list.select(i)
+				return
+	presets_list.select(-1)
+
+
+func update_maps_list_selection() -> void:
+	if not maps_list:
+		return # on client
+	var target : String = IM.game_setup_info.battle_map_name_hint
+	if target != "":
+		for i in maps_list.item_count:
+			var item : String = maps_list.get_item_text(i)
+			if target == item:
+				maps_list.select(i)
+				return
+	maps_list.select(-1)
 
 
 ## Called upon join, applies changes to the UI to make it Client UI not Host UI
@@ -71,6 +93,9 @@ func refresh() -> void:
 	settings_are_being_refreshed = true # destructor or finally whould be nice
 
 	prepare_player_slots()
+
+	update_presets_list_selection()
+	update_maps_list_selection()
 
 	for index in player_list.get_child_count():
 		_refresh_slot(index)
@@ -145,23 +170,31 @@ func _on_preset_list_item_selected(index : int) -> void:
 
 func select_preset_by_index(index : int):
 	var preset_file = presets_list.get_item_text(index)
-	var preset_data : PresetBattle = \
-			load(CFG.BATTLE_PRESETS_PATH + "/" + preset_file)
-	apply_preset(preset_data)
+	apply_preset_by_name(preset_file)
+	refresh()
 
 	# TODO - verify if its neccesary to imrpove on this simple solution
-	CFG.player_options.last_used_battle_preset = preset_data
+	CFG.player_options.last_used_battle_preset_name = preset_file
 	CFG.save_player_options()
 
 
-func apply_preset(preset : PresetBattle):
+## returns true on successful load and false otherwise
+func apply_preset_by_name(preset_name : String) -> bool:
 
-	IM.game_setup_info.apply_battle_preset(preset)
+	var preset_data : PresetBattle = \
+			load(CFG.BATTLE_PRESETS_PATH + "/" + preset_name) as PresetBattle
+
+	if not preset_data:
+		return false
+
+	# TODO check map is good
+
+	IM.game_setup_info.apply_battle_preset(preset_data, preset_name)
 
 	if NET.server:
 		NET.server.broadcast_full_game_setup(IM.game_setup_info)
 
-	refresh()
+	return true
 
 
 func _on_map_list_item_selected(index):
@@ -169,7 +202,7 @@ func _on_map_list_item_selected(index):
 		return
 	var map_name : String = maps_list.get_item_text(index)
 	var map : DataBattleMap = load(CFG.BATTLE_MAPS_PATH + "/" + map_name)
-	IM.game_setup_info.set_battle_map(map)
+	IM.game_setup_info.set_battle_map(map, map_name)
 
 	if NET.server:
 		NET.server.broadcast_full_game_setup(IM.game_setup_info)

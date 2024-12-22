@@ -160,6 +160,3 @@ layout_mode = 2
 [connection signal="pressed" from="GeneralVContainer/TopBarHContainer/ButtonColor" to="." method="_on_button_color_pressed"]
 [connection signal="item_selected" from="GeneralVContainer/TopBarHContainer/OptionButtonTeam" to="." method="_on_option_button_team_item_selected"]
 [connection signal="pressed" from="GeneralVContainer/TopBarHContainer/ButtonLevelUp" to="." method="_on_button_level_up_pressed"]
-[connection signal="value_changed" from="GeneralVContainer/TopBarHContainerTimer/ReserveTime_Min_Edit" to="." method="timer_changed" unbinds=1]
-[connection signal="value_changed" from="GeneralVContainer/TopBarHContainerTimer/ReserveTime_Sec_Edit" to="." method="timer_changed" unbinds=1]
-[connection signal="value_changed" from="GeneralVContainer/TopBarHContainerTimer/IncrementTimeEdit" to="." method="timer_changed" unbinds=1]
