@@ -10,6 +10,7 @@ var _unit_to_unit_form : Dictionary # gameplay unit to VISUAL mapping
 var _grid_tiles_node : Node2D # parent for tiles VISUAL
 var _unit_forms_node : Node2D # parent for units VISUAL
 var _border_node : Node2D # parent for border tiles VISUAL
+var _move_highlights_node : Node2D
 
 var _battle_ui : BattleUI
 var _anim_queue : Array[AnimInQueue] = []
@@ -35,6 +36,10 @@ func _ready():
 	_unit_forms_node = Node2D.new()
 	_unit_forms_node.name = "UNITS"
 	add_child(_unit_forms_node)
+	
+	_move_highlights_node = Node2D.new()
+	_move_highlights_node.name = "MOVE_HIGHLIGHTS"
+	add_child(_move_highlights_node)
 
 	UI.add_custom_screen(_battle_ui)
 
@@ -479,6 +484,7 @@ func _try_select_unit(coord : Vector2i) -> bool:
 
 	_selected_unit = new_unit
 	_unit_to_unit_form[_selected_unit].set_selected(true)
+	_update_move_highlights(_selected_unit)
 
 	# attempt to display spells available to selected unit
 	_show_spells(_selected_unit)
@@ -493,7 +499,38 @@ func deselect_unit() -> void:
 	_selected_unit = null
 	_battle_ui.selected_spell = null
 	_battle_ui.reset_spells()
+	_update_move_highlights(null)
 
+
+func _update_move_highlights(selected_unit: Unit):
+	Helpers.remove_all_children(_move_highlights_node)
+	if not selected_unit:
+		return
+
+	for move in _battle_grid_state.get_possible_moves():
+		if move.move_source != selected_unit.coord:
+			continue
+		if move.move_type != MoveInfo.TYPE_MOVE: # TODO highlighting other move types
+			continue
+
+		var color = Color.DEEP_PINK # just in case to detect potential bugs
+
+		match _battle_grid_state.get_move_consequences(move):
+			BattleGridState.MoveConsequences.NONE:
+				color = Color.WHITE_SMOKE
+			BattleGridState.MoveConsequences.KILL:
+				color = Color.LIGHT_GREEN
+			BattleGridState.MoveConsequences.DEATH:
+				color = Color.INDIAN_RED
+			BattleGridState.MoveConsequences.SACRIFICE:
+				color = Color.YELLOW
+
+		var offset = move.move_source - move.target_tile_coord
+		var highlight = CFG.MOVE_HIGHLIGHT_SCENE.instantiate()
+		highlight.modulate = color
+		highlight.position = BM.to_position(move.target_tile_coord)
+		highlight.rotation = GenericHexGrid.DIRECTION_TO_OFFSET.find(offset) * PI/3
+		_move_highlights_node.add_child(highlight)
 
 
 func _show_spells(unit : Unit) -> void:
