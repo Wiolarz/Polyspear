@@ -207,7 +207,7 @@ func _undo_main_locomotion(move_info : MoveInfo) -> void:
 	var m_unit := get_unit(move_info.target_tile_coord)
 	_change_unit_coord(m_unit, move_info.move_source)
 	var m_hex = _get_battle_hex(move_info.move_source)
-	m_unit.move(move_info.move_source, m_hex.swamp)
+	m_unit.move(move_info.move_source, m_hex)
 
 
 func _undo_kill(_move: MoveInfo , killed : MoveInfo.KilledUnit) -> Unit:
@@ -220,7 +220,7 @@ func _undo_push(_move : MoveInfo , pushed : MoveInfo.PushedUnit) -> void:
 	var p_unit := get_unit(pushed.to_coord)
 	_change_unit_coord(p_unit, pushed.from_coord)
 	var p_hex = _get_battle_hex(pushed.from_coord)
-	p_unit.move(pushed.from_coord, p_hex.swamp)
+	p_unit.move(pushed.from_coord, p_hex)
 
 #endregion Undo
 
@@ -298,6 +298,39 @@ func _process_offensive_symbols(unit : Unit) -> void:
 			_push_enemy(enemy, side, Unit.push_power(unit_weapon))
 
 
+func _process_passive_symbols(unit : Unit) -> void:
+	for side in range(6):
+		var unit_weapon = unit.get_symbol(side)
+		if not Unit.does_it_counter_attack(unit_weapon):
+			continue
+		
+		if Unit.does_it_shoot(unit_weapon):
+			_process_bow(unit, side, unit_weapon)
+			continue  # bow is special case
+		
+		var adjacent_unit := _get_adjacent_unit(unit.coord, side)
+		if not adjacent_unit:
+			continue # nothing to interact with
+		if adjacent_unit.army_in_battle.team == unit.army_in_battle.team:
+			continue # no friendly fire within team
+
+		var enemy = adjacent_unit
+		var opposite_side := GenericHexGrid.opposite_direction(side)
+		var enemy_weapon = enemy.get_symbol(opposite_side)
+		if Unit.will_parry_occur(unit_weapon, enemy_weapon):
+			continue  # parry disables all melee symbols
+
+		# we check if attacking symbol power is able to kill
+		if Unit.does_attack_succeed(unit_weapon, enemy_weapon):
+			# in case of winning battle - further attack checks won't break anything
+			_kill_unit(enemy, armies_in_battle_state[current_army_index])
+			continue  # enemy unit died
+
+		# in case enemy defended against attack we check if attacker pushes away enemy
+		if Unit.can_it_push(unit_weapon):
+			_push_enemy(enemy, side, Unit.push_power(unit_weapon))
+
+
 func _process_bow(unit : Unit, side : int, weapon : E.Symbols) -> void:
 	var reach = Unit.ranged_weapon_reach(weapon)
 
@@ -327,7 +360,7 @@ func _push_enemy(enemy : Unit, direction : int, power : int) -> void:
 		if target_hex.pit:  
 			# TODO replace this "animation" of falling into pit with a custom one
 			_change_unit_coord(enemy, target_coord)
-			enemy.move(target_coord, _get_battle_hex(target_coord).swamp)
+			enemy.move(target_coord, _get_battle_hex(target_coord))
 
 			_kill_unit(enemy, armies_in_battle_state[current_army_index])
 			return
@@ -350,7 +383,7 @@ func _push_enemy(enemy : Unit, direction : int, power : int) -> void:
 
 		# MOVE for PUSH (no rotate)
 		_change_unit_coord(enemy, target_coord)
-		enemy.move(target_coord, _get_battle_hex(target_coord).swamp)
+		enemy.move(target_coord, _get_battle_hex(target_coord))
 
 
 	# check for counter_attacks
@@ -358,6 +391,9 @@ func _push_enemy(enemy : Unit, direction : int, power : int) -> void:
 	if _should_die_to_counter_attack(enemy):
 		# special case when we award EXP to the player that pushed the unit instead of spear holder
 		_kill_unit(enemy, armies_in_battle_state[current_army_index])
+		return
+
+	_process_passive_symbols(enemy)  # occurs only if moved unit survived the push
 
 #endregion Symbols
 
@@ -659,7 +695,7 @@ func _perform_move(unit : Unit, direction : int, target_tile_coord : Vector2i) -
 		target_tile_coord += GenericHexGrid.DIRECTION_TO_OFFSET[direction]
 
 	_change_unit_coord(unit, target_tile_coord)
-	unit.move(target_tile_coord, target_tile.swamp)
+	unit.move(target_tile_coord, target_tile)
 	currently_processed_move_info.register_locomote_complete()
 	if _process_symbols(unit):
 		return
@@ -678,7 +714,7 @@ func _perform_teleport(unit : Unit, target_tile_coord : Vector2i, direction : in
 		currently_processed_move_info.register_turning_complete()
 	# MOVE
 	_change_unit_coord(unit, target_tile_coord)
-	unit.move(target_tile_coord, _get_battle_hex(target_tile_coord).swamp)
+	unit.move(target_tile_coord, _get_battle_hex(target_tile_coord))
 	currently_processed_move_info.register_locomote_complete()
 	if not martyr:
 		_process_symbols(unit)
@@ -715,6 +751,8 @@ func _kill_unit(target : Unit, killer_army : ArmyInBattleState = null) -> void:
 		match spell.name:
 			"Martyr":
 				target.effects.erase(spell)
+				target.effect_state_changed()
+
 				for unit in target_army.units:
 					if replaced_target:
 						break
@@ -969,6 +1007,7 @@ func _end_of_turn_magic() -> void:
 				match magic_effect:
 					_:
 						pass
+				unit.effect_state_changed()
 
 #endregion Magic
 
@@ -1340,7 +1379,7 @@ class ArmyInBattleState:
 	#STUB - the only relevant information about killed units is their level
 	var killed_units : Array[int]
 
-	var mana_points : int = 1
+	var mana_points : int = 0  # TEMP CHANGE to 0 for tournament
 	var cyclone_timer : int = 100
 
 	var hero : Hero:

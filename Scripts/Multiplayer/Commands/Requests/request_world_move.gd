@@ -1,14 +1,13 @@
-class_name ClientRequestedWorldMoveCommand
+class_name RequestWorldMove
 
 # TODO something with the fact that this command is almost identical to
 # make_world_move
 
-const COMMAND_NAME = "client_requested_world_move"
+const COMMAND_NAME = "world_move"
 
 static func register(commands : Dictionary):
 	commands[COMMAND_NAME] = \
-			Command.create_on_server( \
-				ClientRequestedWorldMoveCommand.process_command)
+			Command.create_on_server(RequestWorldMove.process_command)
 
 static func create_packet(move: WorldMoveInfo):
 	var packet : Dictionary = {
@@ -78,7 +77,7 @@ static func process_command(_server : Server, _peer : ENetPacketPeer, \
 		_:
 			return FAILED
 	# TODO check move legality before performing on server
-	var world_move_info = MakeWorldMoveCommand.create_from(params)
+	var world_move_info = OrderMakeWorldMove.create_from(params)
 	WM.perform_network_move(world_move_info)
 	return OK
 

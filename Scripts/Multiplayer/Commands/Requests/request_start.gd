@@ -1,10 +1,10 @@
-class_name RequestedStateSync
+class_name RequestStart
 
-const COMMAND_NAME = "requested_state_sync"
+const COMMAND_NAME = "request_start"
 
 static func register(commands : Dictionary):
 	commands[COMMAND_NAME] = \
-			Command.create_on_server(RequestedStateSync.process_command)
+			Command.create_on_server(RequestStart.process_command)
 
 static func create_packet():
 	return {
@@ -12,9 +12,10 @@ static func create_packet():
 	}
 
 static func process_command(server : Server, peer : ENetPacketPeer, \
-		_params : Dictionary) -> int:
+		params : Dictionary) -> int:
 	var session : Server.Session = server.get_session_by_peer(peer)
 	if session == null:
 		return FAILED
-	server.send_full_state_sync(peer)
+	if server.settings.all_can_start():
+		IM.start_game(null, null)
 	return OK

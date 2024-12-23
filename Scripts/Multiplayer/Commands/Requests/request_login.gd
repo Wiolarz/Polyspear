@@ -1,10 +1,10 @@
-class_name LoginCommand
+class_name RequestLogin
 
 const COMMAND_NAME = "login"
 
 static func register(commands : Dictionary):
 	commands[COMMAND_NAME] = \
-			Command.create_on_server(LoginCommand.process_command)
+			Command.create_on_server(RequestLogin.process_command)
 
 static func create_packet(desired_username : String):
 	return {
@@ -24,7 +24,7 @@ static func process_command(server : Server, peer : ENetPacketPeer, \
 	if session != null:
 		var previous_peer : ENetPacketPeer = \
 		  server.connect_peer_to_session(peer, session)
-		var response_packet = SetSessionCommand.create_packet(username)
+		var response_packet = OrderSetSession.create_packet(username)
 		print("created a session for user %s" % username)
 		server.send_to_peer(peer, response_packet)
 		if previous_peer:

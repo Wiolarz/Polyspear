@@ -1,4 +1,4 @@
-class_name MakeWorldMoveCommand
+class_name OrderMakeWorldMove
 
 
 const COMMAND_NAME = "make_world_move"
@@ -6,7 +6,7 @@ const COMMAND_NAME = "make_world_move"
 
 static func register(commands : Dictionary):
 	commands[COMMAND_NAME] = \
-			Command.create_on_client(MakeWorldMoveCommand.process_command)
+			Command.create_on_client(OrderMakeWorldMove.process_command)
 
 
 static func create_packet(move: WorldMoveInfo):
@@ -75,7 +75,7 @@ static func process_command(_client : Client, params : Dictionary) -> int:
 			pass # end turn has no parameters
 		_:
 			return FAILED
-	var world_move_info = MakeWorldMoveCommand.create_from(params)
+	var world_move_info = OrderMakeWorldMove.create_from(params)
 	WM.perform_network_move(world_move_info)
 	return OK
 

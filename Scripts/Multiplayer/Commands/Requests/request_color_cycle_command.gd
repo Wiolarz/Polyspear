@@ -1,10 +1,10 @@
-class_name RequestFactionCycleCommand
+class_name RequestColorCycle
 
-const COMMAND_NAME = "request_faction_cycle"
+const COMMAND_NAME = "color_cycle"
 
 static func register(commands : Dictionary):
 	commands[COMMAND_NAME] = \
-			Command.create_on_server(RequestFactionCycleCommand.process_command)
+			Command.create_on_server(RequestColorCycle.process_command)
 
 static func create_packet(slot_index : int, backwards : bool = false):
 	return {
@@ -27,11 +27,20 @@ static func process_command(server : Server, peer : ENetPacketPeer, \
 	var index = params["slot"] as int
 	if index < 0 or index >= slots.size():
 		return FAILED
-	var slot = slots[index]
-	var faction_index = CFG.FACTIONS_LIST.find(slot.faction)
-	var new_faction_index = \
-		(faction_index + diff) % CFG.FACTIONS_LIST.size()
-	slot.faction = CFG.FACTIONS_LIST[new_faction_index]
+	var new_color_index = slots[index].color
+	# TODO move this logic elsewhere
+	while true:
+		new_color_index = (new_color_index + diff) % CFG.TEAM_COLORS.size()
+		if new_color_index == slots[index].color: # all colors are taken
+			return false
+		var is_color_unique = func() -> bool:
+			for slot_to_compare in slots:
+				if slot_to_compare.color == new_color_index:
+					return false
+			return true
+		if is_color_unique.call():
+			slots[index].color = new_color_index
+			break
 	server.broadcast_full_game_setup(IM.game_setup_info)
 	IM.game_setup_info_changed.emit()
 	return OK

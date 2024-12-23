@@ -6,11 +6,10 @@ var _battle_is_ongoing : bool = false
 var _battle_grid_state : BattleGridState # GAMEPLAY combat state
 
 var _tile_grid : GenericHexGrid # Grid<TileForm> - VISUALs in a grid
-var _border : Array[TileForm] # A visual border made out of sentinels
 var _unit_to_unit_form : Dictionary # gameplay unit to VISUAL mapping
 var _grid_tiles_node : Node2D # parent for tiles VISUAL
 var _unit_forms_node : Node2D # parent for units VISUAL
-var _border_node : Node2D # parent for units VISUAL
+var _border_node : Node2D # parent for border tiles VISUAL
 
 var _battle_ui : BattleUI
 var _anim_queue : Array[AnimInQueue] = []
@@ -36,10 +35,6 @@ func _ready():
 	_unit_forms_node = Node2D.new()
 	_unit_forms_node.name = "UNITS"
 	add_child(_unit_forms_node)
-	
-	_border_node = Node2D.new()
-	_border_node.name = "BORDER"
-	add_child(_border_node)
 
 	UI.add_custom_screen(_battle_ui)
 
@@ -108,19 +103,9 @@ func _load_map(map : DataBattleMap) -> void:
 			tile_form.position = to_position(coord)
 			_grid_tiles_node.add_child(tile_form)
 	
-	for x in range(-CFG.BATTLE_BORDER_WIDTH, map.grid_width + CFG.BATTLE_BORDER_WIDTH):
-		for y in range(-CFG.BATTLE_BORDER_HEIGHT, map.grid_height + CFG.BATTLE_BORDER_HEIGHT):
-			
-			var coord = Vector2i(x, y)
-			if (x >= 0 and x < map.grid_width) and (y >= 0 and y < map.grid_height):
-				continue
-			
-			var tile_form = TileForm.create_battle_tile(
-				load("res://Resources/Battle/Battle_tiles/sentinel.tres"), coord
-			)
-			_border.push_back(tile_form)
-			tile_form.position = to_position(coord)
-			_border_node.add_child(tile_form)
+	if not IM.in_map_editor:
+		_border_node = MapBorder.from_map(map)
+		add_child(_border_node)
 
 
 ## space needed for battle tiles in global position
@@ -133,7 +118,6 @@ func get_bounds_global_position() -> Rect2:
 			get_tile_global_position(Vector2i(_tile_grid.width-1, _tile_grid.height-1))
 	var size : Vector2 = bottom_right_tile_position - top_left_tile_position
 	return Rect2(top_left_tile_position, size)
-
 
 #endregion
 
@@ -344,6 +328,7 @@ func  _end_move() -> void:
 		if _ai_move_preview:
 			_ai_move_preview.update(_battle_grid_state)
 		
+		_battle_ui.update_mana() # TEMP placement here
 		_on_turn_started(_battle_grid_state.get_current_player())
 	else:
 		_on_battle_ended()
@@ -394,6 +379,7 @@ func _on_unit_summoned(unit : Unit) -> void:
 	unit.unit_died.connect(_on_unit_killed.bind(unit))
 	unit.unit_turned.connect(_on_unit_turned.bind(unit))
 	unit.unit_moved.connect(_on_unit_moved.bind(unit))
+	unit.unit_magic_effect.connect(_on_unit_magic_effect.bind(unit))
 
 
 ## handles player input while during the summoning phase
@@ -422,6 +408,11 @@ func get_cyclone_target() -> Player:
 
 func get_cyclone_timer() -> int:
 	return _battle_grid_state.cyclone_get_current_target_turns_left()
+
+
+func get_player_mana(player : Player) -> int:
+	var player_army = _battle_grid_state._get_player_army(player) # TEMP? or should it be public
+	return player_army.mana_points
 
 #endregion Mana Cyclone Timer
 
@@ -498,6 +489,10 @@ func _try_select_unit(coord : Vector2i) -> bool:
 	if new_unit.controller != _battle_grid_state.get_current_player():
 		return false
 
+	if new_unit == _selected_unit:  # Selecting the same unit twice deselects it
+		deselect_unit()
+		return false
+
 	# deselect visually old unit if new one selected
 	if _selected_unit:
 		deselect_unit()
@@ -555,29 +550,6 @@ func _perform_move_info(move_info : MoveInfo) -> void:
 
 	_end_move()
 
-
-func _on_unit_killed(unit: Unit) -> void:
-	if _batch_mode:
-		_unit_to_unit_form[unit].update_death_immediately()
-	else:
-		_anim_queue.push_back(AnimInQueue.create_die(_unit_to_unit_form[unit]))
-	_unit_to_unit_form.erase(unit)
-
-
-func _on_unit_turned(unit: Unit) -> void:
-	if _batch_mode:
-		_unit_to_unit_form[unit].update_turn_immediately()
-	else:
-		_anim_queue.push_back(AnimInQueue.create_turn(_unit_to_unit_form[unit]))
-
-
-func _on_unit_moved(unit: Unit) -> void:
-	if _batch_mode:
-		_unit_to_unit_form[unit].update_death_immediately()
-	else:
-		_anim_queue.push_back(AnimInQueue.create_move(_unit_to_unit_form[unit]))
-
-
 #endregion Fighting Phase
 
 
@@ -598,8 +570,9 @@ func _on_battle_ended() -> void:
 		return
 	_battle_is_ongoing = false
 	deselect_unit()
-	
+
 	_disable_ai_preview()
+	_battle_ui.update_mana()
 
 	await get_tree().create_timer(1).timeout # TEMP, don't exit immediately
 	while _replay_is_playing:
@@ -640,9 +613,9 @@ func _reset_grid_and_unit_forms() -> void:
 	_unit_to_unit_form.clear()
 	Helpers.remove_all_children(_grid_tiles_node)
 	Helpers.remove_all_children(_unit_forms_node)
-	for i in _border:
-		i.queue_free()
-	_border.clear()
+	if _border_node:
+		_border_node.queue_free()
+		_border_node = null
 	_battle_grid_state = null
 
 ## Major function which fully generates information panel at the end of the battle
@@ -843,6 +816,32 @@ func _clear_anim_queue():
 	for anim in _anim_queue:
 		anim.on_anim_end()
 	_anim_queue.clear()
+
+
+func _on_unit_killed(unit : Unit) -> void:
+	if _batch_mode:
+		_unit_to_unit_form[unit].update_death_immediately()
+	else:
+		_anim_queue.push_back(AnimInQueue.create_die(_unit_to_unit_form[unit]))
+	_unit_to_unit_form.erase(unit)
+
+
+func _on_unit_turned(unit : Unit) -> void:
+	if _batch_mode:
+		_unit_to_unit_form[unit].update_turn_immediately()
+	else:
+		_anim_queue.push_back(AnimInQueue.create_turn(_unit_to_unit_form[unit]))
+
+
+func _on_unit_moved(unit : Unit) -> void:
+	if _batch_mode:
+		_unit_to_unit_form[unit].update_death_immediately()
+	else:
+		_anim_queue.push_back(AnimInQueue.create_move(_unit_to_unit_form[unit]))
+
+
+func _on_unit_magic_effect(unit : Unit) -> void:
+	_unit_to_unit_form[unit].set_effects()
 
 
 class AnimInQueue:
