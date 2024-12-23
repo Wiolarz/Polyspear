@@ -420,7 +420,7 @@ void BattleManagerFastCpp::_update_mana() {
 	auto cyclone_mult = (1 > 5-mana_difference) ? 1 : 5-mana_difference;
 	int16_t new_cyclone_counter = (_tiles->get_number_of_mana_wells() * 10) * cyclone_mult;
 
-	if(_tiles->get_number_of_mana_wells()) {
+	if(_tiles->get_number_of_mana_wells() == 0) {
 		new_cyclone_counter = 999;
 	}
 	

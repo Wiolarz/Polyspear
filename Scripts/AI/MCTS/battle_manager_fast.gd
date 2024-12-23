@@ -193,6 +193,18 @@ func compare_grid_state(bgs: BattleGridState) -> bool:
 		push_error("BMFast mismatch - current army: slow ", bgs.current_army_index, ", fast ", get_current_participant())
 		is_ok = false
 	
+	if is_in_sacrifice_phase() and bgs.state != bgs.STATE_SACRIFICE:
+		push_error("BMFast mismatch - state mismatch - fast: sacrifice, slow: " + bgs.state)
+		is_ok = false
+	
+	if is_in_summoning_phase() and bgs.state != bgs.STATE_SUMMONNING:
+		push_error("BMFast mismatch - state mismatch - fast: summoning, slow: " + bgs.state)
+		is_ok = false
+	
+	if not is_in_sacrifice_phase() and not is_in_summoning_phase() and bgs.state != bgs.STATE_FIGHTING:
+		push_error("BMFast mismatch - state mismatch - fast: fighting, slow: " + bgs.state)
+		is_ok = false
+	
 	for army_id in range(bgs.armies_in_battle_state.size()):
 		var units_nr = get_max_units_in_army()
 		var army = bgs.armies_in_battle_state[army_id]
@@ -201,6 +213,14 @@ func compare_grid_state(bgs: BattleGridState) -> bool:
 			army.units.size() + army.units_to_summon.size() <= get_max_units_in_army(), 
 			"No support for more than %s units in fast BM" % [get_max_units_in_army()]
 		)
+		
+		var cyclone_timer_slow = bgs.armies_in_battle_state[army_id].cyclone_timer
+		var cyclone_timer_fast = get_army_cyclone_timer(army_id)
+		if cyclone_timer_fast != cyclone_timer_slow:
+			push_error("BMFast mismatch - cyclone timer - fast: %s, slow: %s" % [
+				cyclone_timer_fast, cyclone_timer_slow
+			])
+			is_ok = false
 		
 		for unit in army.units:
 			var uid = get_unit_id_on_position(unit.coord)

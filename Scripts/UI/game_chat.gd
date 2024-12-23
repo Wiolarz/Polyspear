@@ -143,9 +143,9 @@ func _on_chat_line_edit_text_submitted(new_text):
 			"fast":
 				WM.hero_speed_cheat.callv(args)
 				print("travel cheat")
-		  "brain":
-        BM.toggle_ai_preview()
-        print("ai move preview cheat")
+			"brain":
+				BM.toggle_ai_preview()
+				print("ai move preview cheat")
 			"levelup":
 				WM.hero_level_up.callv(args)
 				print("levelup cheat")

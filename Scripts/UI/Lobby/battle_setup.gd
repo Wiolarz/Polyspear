@@ -23,7 +23,7 @@ var client_side_map_label : Label
 
 func _ready():
 	fill_maps_list()
-Resources/Battle/Units/Elves/elf_unit_hero_druid_test.tres	fill_presets_list()
+	fill_presets_list()
 
 	var number_of_presets = FileSystemHelpers.list_files_in_folder(CFG.BATTLE_PRESETS_PATH, true, true).size()
 	if number_of_presets > 0:
