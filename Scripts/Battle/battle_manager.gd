@@ -513,7 +513,7 @@ func _update_move_highlights(selected_unit: Unit):
 		if move.move_type != MoveInfo.TYPE_MOVE: # TODO highlighting other move types
 			continue
 
-		var color = Color.DEEP_PINK # just in case to detect potential bugs
+		var color: Color
 
 		match _battle_grid_state.get_move_consequences(move):
 			BattleGridState.MoveConsequences.NONE:
@@ -522,8 +522,10 @@ func _update_move_highlights(selected_unit: Unit):
 				color = Color.LIGHT_GREEN
 			BattleGridState.MoveConsequences.DEATH:
 				color = Color.INDIAN_RED
-			BattleGridState.MoveConsequences.SACRIFICE:
+			BattleGridState.MoveConsequences.KAMIKAZE:
 				color = Color.YELLOW
+			var x:
+				assert(false, "Unimplemented move consequence type %s" % [x])
 
 		var offset = move.move_source - move.target_tile_coord
 		var highlight = CFG.MOVE_HIGHLIGHT_SCENE.instantiate()

@@ -5,7 +5,7 @@ enum MoveConsequences {
 	NONE,
 	KILL,
 	DEATH,
-	SACRIFICE # Both kills and dies
+	KAMIKAZE # Both kills and dies
 }
 
 const STATE_SUMMONNING = "summonning"
@@ -1210,7 +1210,7 @@ func _ai_will_melee_kill_someone(unit : Unit, direction : int, coord : Vector2i)
 ## doesn't account that in may after killing someone die instantly
 func _is_kill_move(move : MoveInfo) -> bool:
 	var consequences = get_move_consequences(move)
-	return consequences == MoveConsequences.KILL or consequences == MoveConsequences.SACRIFICE
+	return consequences == MoveConsequences.KILL or consequences == MoveConsequences.KAMIKAZE
 
 func get_move_consequences(move : MoveInfo) -> MoveConsequences:
 	# list of checks:
@@ -1260,7 +1260,7 @@ func get_move_consequences(move : MoveInfo) -> MoveConsequences:
 	# step 4
 	if _ai_should_die_to_counter_attack(attacker, move_direction, move.target_tile_coord):
 		# will die to a spear before it can kill
-		return MoveConsequences.SACRIFICE if kill_registered else MoveConsequences.DEATH
+		return MoveConsequences.KAMIKAZE if kill_registered else MoveConsequences.DEATH
 
 	# step 5
 	if _ai_will_melee_kill_someone(attacker, move_direction, move.target_tile_coord):
