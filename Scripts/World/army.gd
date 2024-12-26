@@ -15,15 +15,6 @@ var timer_reserve_sec : int
 var timer_increment_sec : int
 
 
-func destroy_army():
-	if hero != null:
-		WM.kill_hero(hero)
-	else:
-		WM.grid[coord.x][coord.y].army = null
-
-	free()
-
-
 func get_units_list():
 	return units_data.duplicate()
 
