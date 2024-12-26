@@ -106,4 +106,3 @@ func _exit_tree():
 	# TODO consider making it not hang the game for the duration of AI finishing its thinking
 	if thread:
 		thread.wait_to_finish()
-	print("dupa")
