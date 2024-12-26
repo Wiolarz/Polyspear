@@ -15,7 +15,7 @@ func _on_visibility_changed():
 	if _play_button:
 		refresh_replays_list()
 
-
+		
 func refresh_replays_list():
 	_play_button.disabled = true
 	_replay = null
@@ -26,22 +26,47 @@ func refresh_replays_list():
 		var button = Button.new()
 		button.text = replay_path
 		button.name = replay_path
-		button.pressed.connect(func on_replay_clicked():
-			_replay = load(CFG.REPLAY_DIRECTORY + replay_path)
-			_description.text = replay_path \
-				+ "\n map : " + DataBattleMap.get_network_id(_replay.battle_map) \
-				+ "\n moves : " + str(_replay.moves.size())
-			var i = 0
-			for army in _replay.units_at_start:
-				var army_controller_name = _replay.get_player_name(i)
-				i += 1
-				_description.text += "\n%s army:" % [army_controller_name]
-				for unit : DataUnit in army:
-					_description.text += "\n  - " + unit.unit_name
-
-			_play_button.disabled = false
-		)
+		button.pressed.connect(_on_replay_clicked.bind(replay_path))
 		_replay_buttons_container.add_child(button)
+
+
+func _on_replay_clicked(replay_path: String):
+	_replay = load(CFG.REPLAY_DIRECTORY + replay_path)
+	_description.text = replay_path \
+		+ "\n map : " + DataBattleMap.get_network_id(_replay.battle_map) \
+		+ "\n moves : " + str(_replay.moves.size())
+	var i = -1
+	for army in _replay.units_at_start:
+		i += 1
+		var army_controller_name = _replay.get_player_name(i)
+		var losses : PackedStringArray
+		var is_winner = false
+		var timer = _replay.player_initial_timers_ms[i] \
+				if _replay.player_initial_timers_ms.size() > i else 0
+		var increment = _replay.player_increments_ms[i] \
+				if _replay.player_increments_ms.size() > i else 0
+		
+		if _replay.summary:
+			is_winner = _replay.summary.players[i].state == "winner"
+			losses = _replay.summary.players[i].losses.split("\n")
+		
+		_description.text += "\n%s%s army:  [%02d:%02d +%ds/turn]" % [
+			"👑 " if is_winner else "" , army_controller_name,
+			(timer/1000) / 60, (timer/1000) % 60, increment / 1000
+		]
+			
+		for unit : DataUnit in army:
+			var has_died = false
+			var idx = losses.find(unit.unit_name)
+			if idx != -1:
+				losses.remove_at(idx)
+				has_died = true
+			
+			_description.text += "\n  - %s%s" % [
+				"☠️ " if has_died else "", unit.unit_name
+			]
+
+	_play_button.disabled = false
 
 
 func _on_play_button_pressed():

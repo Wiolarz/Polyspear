@@ -113,6 +113,77 @@ offset_right = 495.0
 offset_bottom = 114.0
 text = "3 : 00 : 000"
 
+[node name="ReplayControls" type="ColorRect" parent="."]
+visible = false
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -740.0
+offset_top = -157.0
+offset_right = -20.0
+offset_bottom = -20.0
+grow_horizontal = 0
+grow_vertical = 0
+color = Color(0, 0, 0, 0.423529)
+
+[node name="MoveCount" type="Label" parent="ReplayControls"]
+layout_mode = 1
+offset_left = 16.0
+offset_top = 17.0
+offset_right = 505.0
+offset_bottom = 67.0
+text = "21/37"
+
+[node name="Status" type="Label" parent="ReplayControls"]
+layout_mode = 1
+offset_left = 16.0
+offset_top = 73.0
+offset_right = 505.0
+offset_bottom = 123.0
+text = "Replay status: Lorem Ipsum"
+
+[node name="ShowSummary" type="Button" parent="ReplayControls"]
+layout_mode = 0
+offset_left = 455.0
+offset_top = 6.0
+offset_right = 712.0
+offset_bottom = 60.0
+text = "Show summary"
+
+[node name="Pause" type="Button" parent="ReplayControls"]
+layout_mode = 0
+offset_left = 151.0
+offset_top = 6.0
+offset_right = 212.0
+offset_bottom = 59.0
+text = "⏸️"
+
+[node name="Step" type="Button" parent="ReplayControls"]
+layout_mode = 0
+offset_left = 219.0
+offset_top = 7.0
+offset_right = 280.0
+offset_bottom = 60.0
+text = "⏯️"
+
+[node name="Play" type="Button" parent="ReplayControls"]
+layout_mode = 0
+offset_left = 288.0
+offset_top = 7.0
+offset_right = 349.0
+offset_bottom = 60.0
+text = "▶️"
+
+[node name="Fast" type="Button" parent="ReplayControls"]
+layout_mode = 0
+offset_left = 358.0
+offset_top = 7.0
+offset_right = 419.0
+offset_bottom = 60.0
+text = "⏩"
+
 [node name="CycloneTimer" type="ColorRect" parent="."]
 offset_left = 1308.0
 offset_top = 34.0
@@ -148,3 +219,7 @@ text = "Spell"
 
 [connection signal="pressed" from="SwitchCamera" to="." method="_on_switch_camera_pressed"]
 [connection signal="pressed" from="Menu" to="." method="_on_menu_pressed"]
+[connection signal="pressed" from="ReplayControls/Pause" to="." method="_on_pause_pressed"]
+[connection signal="pressed" from="ReplayControls/Step" to="." method="_on_step_pressed"]
+[connection signal="pressed" from="ReplayControls/Play" to="." method="_on_play_pressed"]
+[connection signal="pressed" from="ReplayControls/Fast" to="." method="_on_fast_pressed"]

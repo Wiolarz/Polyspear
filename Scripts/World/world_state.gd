@@ -29,7 +29,7 @@ func _init(width_ : int, height_ : int):
 
 
 static func create(map: DataWorldMap,
-		slots : Array[GameSetupInfo.Slot],
+		slots : Array[Slot],
 		ser : SerializableWorldState) -> WorldState:
 	var result = WorldState.new(map.grid_width, map.grid_height)
 

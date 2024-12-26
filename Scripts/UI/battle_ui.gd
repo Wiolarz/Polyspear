@@ -16,6 +16,12 @@ extends CanvasLayer
 
 @onready var book = $SpellBook
 
+@onready var chat = $GameChat
+
+@onready var replay_controls = $ReplayControls
+@onready var replay_move_count = $ReplayControls/MoveCount
+@onready var replay_status = $ReplayControls/Status
+@onready var replay_show_summary = $ReplayControls/ShowSummary
 
 var fighting_players_idx = []
 var armies_reference : Array[BattleGridState.ArmyInBattleState]
@@ -106,6 +112,36 @@ func update_clock() -> void:
 	clock.modulate = BM.get_current_slot_color().color
 
 	turns.text = "Turn %d" % [BM.get_current_turn()]
+
+
+func show_replay_controls():
+	replay_controls.visible = true
+	chat.visible = false
+	
+	
+func hide_replay_controls():
+	replay_controls.visible = false
+	chat.visible = true
+	
+func update_replay_controls(move_nr: int, total_replay_moves: int, summary: DataBattleSummary = null):
+	replay_move_count.text = "%d/%d" % [move_nr, total_replay_moves]
+	if move_nr != total_replay_moves:
+		replay_status.text = ""
+	elif summary:
+		replay_status.text = "Battle ended - all enemy units killed"
+	else:
+		replay_status.text = "Battle ended - timeout"
+	
+	for i in replay_show_summary.pressed.get_connections():
+		replay_show_summary.pressed.disconnect(i.callable)
+	
+	if summary:
+		replay_show_summary.disabled = false
+		replay_show_summary.pressed.connect(
+			UI.ui_overlay.show_summary.bind(summary, null)
+		)
+	else:
+		replay_show_summary.disabled = true
 
 
 func get_text_for(controller : Player, selected : bool):
@@ -248,3 +284,26 @@ func _on_switch_camera_pressed():
 
 func _on_menu_pressed():
 	IM.toggle_in_game_menu()
+
+
+func _on_pause_pressed():
+	CFG.animation_speed_frames = CFG.AnimationSpeed.NORMAL
+	CFG.bot_speed_frames = CFG.BotSpeed.FREEZE
+
+
+func _on_step_pressed():
+	# TODO improve/un-DRUTify playback (especially step) controls
+	CFG.animation_speed_frames = CFG.AnimationSpeed.NORMAL
+	CFG.bot_speed_frames = CFG.BotSpeed.NORMAL
+	await get_tree().create_timer(0.1).timeout
+	CFG.bot_speed_frames = CFG.BotSpeed.FREEZE
+
+
+func _on_play_pressed():
+	CFG.animation_speed_frames = CFG.AnimationSpeed.NORMAL
+	CFG.bot_speed_frames = CFG.BotSpeed.NORMAL
+
+
+func _on_fast_pressed():
+	CFG.animation_speed_frames = CFG.AnimationSpeed.INSTANT
+	CFG.bot_speed_frames = CFG.BotSpeed.FAST
