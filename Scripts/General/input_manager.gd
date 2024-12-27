@@ -18,6 +18,16 @@ func init_game_setup():
 	game_setup_info = GameSetupInfo.create_empty()
 
 
+## called:
+## * by UI when button is clicked or game starts (host is true)
+## * by client when server orders, then host is false
+func init_battle_mode(host : bool):
+	game_setup_info.game_mode = GameSetupInfo.GameMode.BATTLE
+
+	if host:
+		var preset : Dictionary = get_default_or_last_battle_preset()
+		game_setup_info.apply_battle_preset(preset["data"], preset["name"])
+
 #region Game setup
 
 func get_world_maps_list() -> Array[String]:
@@ -146,6 +156,26 @@ func create_army_for(player : Player) -> Army:
 	army.timer_increment_sec = player.slot.timer_increment_sec
 
 	return army
+
+
+func get_default_or_last_battle_preset() -> Dictionary:
+	var last_preset_name : String = CFG.LAST_USED_BATTLE_PRESET_NAME
+	var last_preset_data : PresetBattle = \
+			load(CFG.BATTLE_PRESETS_PATH + "/" + last_preset_name) as PresetBattle
+	if last_preset_data:
+		return { "data": last_preset_data, "name": last_preset_name }
+	var presets = FileSystemHelpers.list_files_in_folder(
+		CFG.BATTLE_PRESETS_PATH,
+		true,
+		true
+	)
+	assert(presets.size() > 0)
+	var preset : PresetBattle = load(presets[0])
+	assert(preset is PresetBattle)
+	return {
+	"data": preset,
+	"name": presets[0].trim_prefix(CFG.BATTLE_PRESETS_PATH) }
+
 
 #endregion Game setup
 

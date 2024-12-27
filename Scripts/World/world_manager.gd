@@ -517,7 +517,7 @@ func hero_level_up(levels : int = 1) -> void:
 
 func city_upgrade_cheat() -> void:
 	var current_player : WorldPlayerState = world_state.get_current_player()
-	
+
 	# Iterate over every faction building
 	for building in current_player.faction.buildings:
 		# Copied from build_building function
