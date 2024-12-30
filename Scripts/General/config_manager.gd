@@ -63,6 +63,7 @@ const SUMMON_BUTTON_TEXTURE:Texture2D = preload("res://Art/battle_map/grass.png"
 
 const DEFAULT_ARMY_FORM = preload("res://Scenes/Form/ArmyForm.tscn")
 
+const MOVE_HIGHLIGHT_SCENE = preload("res://Scenes/UI/Battle/BattleMoveHighlight.tscn")
 
 # Neutral Units armies
 const HUNT_WOOD_PATH : String = "res://Resources/Presets/Army/hunt_wood/"
