@@ -47,7 +47,7 @@ func _refresh_slot(index : int):
 	if not index in range(player_slot_panels.size()):
 		return
 	var ui_slot : WorldPlayerSlotPanel = player_slot_panels[index]
-	var logic_slot : GameSetupInfo.Slot = \
+	var logic_slot : Slot = \
 		IM.game_setup_info.slots[index] if index in \
 				range(IM.game_setup_info.slots.size()) \
 			else null
