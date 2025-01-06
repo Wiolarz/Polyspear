@@ -1,0 +1,10 @@
+[gd_scene format=3 uid="uid://dlxyx8pqmeel5"]
+
+[node name="BattleMoveHighlight" type="Node2D"]
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="."]
+polygon = PackedVector2Array(-264, -151, -7, -304, 264, -148, 264, 153, -1, 303, -264, 155)
+
+[node name="Polygon2D" type="Polygon2D" parent="."]
+position = Vector2(-89, 0)
+polygon = PackedVector2Array(200, 0, 87, -195, 12, -163, 100, -2, 12, 163, 87, 195)
