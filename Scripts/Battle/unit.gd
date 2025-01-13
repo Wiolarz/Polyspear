@@ -5,6 +5,12 @@ signal unit_died()
 signal unit_turned()
 signal unit_moved()
 signal unit_magic_effect()
+signal unit_is_shooting(side : int)
+signal unit_is_slashing(side : int)
+signal unit_is_pushing(side : int)
+signal unit_is_blocking(side : int)
+signal unit_is_counter_attacking(side : int)
+
 
 ## TODO remove this
 var controller : Player
@@ -51,7 +57,7 @@ static func create(new_controller : Player, \
 	result.spells = new_template.spells.duplicate() # spells reset every battle
 	return result
 
-#region Main
+#region Emit Animation Signals
 
 ## turns unit front to a given side, can be awaited see waits_for_form
 func turn(side : GenericHexGrid.GridDirections):
@@ -80,7 +86,27 @@ func unit_killed():
 	dead = true
 	unit_died.emit()
 
-#endregion Main
+
+func unit_shoots(side : int):
+	unit_is_shooting.emit(side)
+
+
+func unit_slashes(side : int):
+	unit_is_slashing.emit(side)
+
+
+func unit_pushes(side : int):
+	unit_is_pushing.emit(side)
+
+
+func unit_blocks(side : int):
+	unit_is_blocking.emit(side)
+
+
+func unit_counter_attacks(side : int):
+	unit_is_counter_attacking.emit(side)
+
+#endregion Emit Animation Signals
 
 
 #region Unit Symbols
