@@ -21,7 +21,7 @@ var _play_death_anim : bool
 var _symbols_flipped : bool = true  # flag used for unit rotation
 
 
-func _physics_process(delta):
+func _process(delta):
 	if entity:
 		$Symbols.modulate = Color.RED if entity.is_on_swamp else Color.WHITE
 	if _animate_rotation():
@@ -68,9 +68,9 @@ func apply_graphics(template : DataUnit, color : DataPlayerColor):
 	_apply_unit_texture(unit_texture)
 	_apply_color_texture(color)
 	_apply_level_number(template.level)
-	for dir in range(0,6):
-		var symbol_texture = template.symbols[dir].texture_path
-		_apply_symbol_sprite(dir, symbol_texture)
+	for side in range(0,6):
+		var symbol_texture = template.symbols[side].texture_path
+		_apply_symbol_sprite(side, symbol_texture)
 	
 	_flip_unit_sprite()
 	$RigidUI/SpellEffect1.texture = null
@@ -81,8 +81,8 @@ func apply_graphics(template : DataUnit, color : DataPlayerColor):
 
 
 ## WARNING: called directly in UNIT EDITOR
-func _apply_symbol_sprite(dir : int, texture_path : String) -> void:
-	var sprite_path = "Symbols/%s/SymbolForm/Sprite2D" % [SIDE_NAMES[dir]]
+func _apply_symbol_sprite(side : int, texture_path : String) -> void:
+	var sprite_path = "Symbols/%s/SymbolForm/Sprite2D" % [SIDE_NAMES[side]]
 	var symbol_sprite = get_node(sprite_path)
 	if texture_path == null or texture_path.is_empty():
 		symbol_sprite.texture = null
@@ -90,7 +90,7 @@ func _apply_symbol_sprite(dir : int, texture_path : String) -> void:
 		return
 	symbol_sprite.texture = load(texture_path)
 
-	_flip_symbol_sprite(symbol_sprite, dir)
+	_flip_symbol_sprite(symbol_sprite, side)
 
 	symbol_sprite.show()
 

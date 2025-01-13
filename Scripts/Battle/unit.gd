@@ -86,26 +86,6 @@ func unit_killed():
 	dead = true
 	unit_died.emit()
 
-
-func unit_shoots(side : int):
-	unit_is_shooting.emit(side)
-
-
-func unit_slashes(side : int):
-	unit_is_slashing.emit(side)
-
-
-func unit_pushes(side : int):
-	unit_is_pushing.emit(side)
-
-
-func unit_blocks(side : int):
-	unit_is_blocking.emit(side)
-
-
-func unit_counter_attacks(side : int):
-	unit_is_counter_attacking.emit(side)
-
 #endregion Emit Animation Signals
 
 
