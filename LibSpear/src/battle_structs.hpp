@@ -206,8 +206,14 @@ struct Move {
 		spell_id = (libspear_tuple.size() >= 3) ? int8_t(libspear_tuple[2]) : NO_SPELL;
 	}
 
+	std::strong_ordering operator<=>(const Move& other) const {
+		return
+			std::tie(unit, pos, spell_id) <=>
+			std::tie(other.unit, other.pos, other.spell_id);
+	}
+
 	bool operator==(const Move& other) const {
-		return unit == other.unit && pos == other.pos;
+		return *this <=> other == 0;
 	}
 
 	godot::Array as_libspear_tuple() const {
