@@ -10,6 +10,7 @@ const ALLOWED_BATTLE_TILE_TYPES = {
 	"wall": true,
 	"swamp": true,
 	"hole": true,
+	"mana_well": true,
 }
 
 func test_battle_tiles_set():

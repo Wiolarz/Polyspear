@@ -1,6 +1,13 @@
 class_name BattleGridState
 extends GenericHexGrid
 
+enum MoveConsequences {
+	NONE,
+	KILL,
+	DEATH,
+	KAMIKAZE # Both kills and dies
+}
+
 const STATE_SUMMONNING = "summonning"
 const STATE_FIGHTING = "fighting"
 const STATE_SACRIFICE = "sacrifice"
@@ -831,6 +838,11 @@ func get_current_time_left() -> int:
 func set_displayed_time_left_ms(time_left_ms : int) -> void:
 	armies_in_battle_state[current_army_index].set_time_left_ms(time_left_ms)
 
+## only for replays
+func set_clock_enabled(enabled: bool):
+	for army in armies_in_battle_state:
+		army.clock_enabled = enabled
+
 #endregion Timer
 
 
@@ -1135,29 +1147,6 @@ func filter_only_kill_moves(all_moves : Array[MoveInfo]) -> Array[MoveInfo]:
 	return all_kill_moves
 
 
-func _ai_should_die_to_counter_attack(unit : Unit, direction : int, coord : Vector2i) -> bool:
-	# Returns true if Enemy counter_attack can kill the target
-	var adjacent_units = _get_adjacent_units(coord)
-
-	for side in range(6):
-		if not adjacent_units[side]:
-			continue  # no unit
-		if adjacent_units[side].army_in_battle.team == unit.army_in_battle.team:
-			continue  # no friendly fire within team
-		var unit_symbol : E.Symbols = unit.get_symbol_when_rotated(side, direction)
-		var opposite_side := GenericHexGrid.opposite_direction(side)
-		var enemy_symbol : E.Symbols = adjacent_units[side].get_symbol(opposite_side)
-
-		if Unit.will_parry_occur(unit_symbol, enemy_symbol):
-			continue  # parry prevents counter attacks
-		
-		if Unit.does_it_counter_attack(enemy_symbol):
-			if Unit.does_attack_succeed(enemy_symbol, unit_symbol):
-				return true
-
-	return false
-
-
 func _ai_will_melee_kill_someone(unit : Unit, direction : int, coord : Vector2i) -> bool:
 	var adjacent_units : Array[Unit] = _get_adjacent_units(coord)
 
@@ -1193,15 +1182,47 @@ func _ai_will_melee_kill_someone(unit : Unit, direction : int, coord : Vector2i)
 			if unit_on_target:
 				return true # unit would get crushed
 
-			if _ai_should_die_to_counter_attack(enemy, enemy.unit_rotation, pushed_cord):
+			if _get_counter_attack_killers(enemy, enemy.unit_rotation, pushed_cord).size() > 0:
 				return true
 
 	return false
 
 
+func _get_counter_attack_killers(unit : Unit, direction : int, coord : Vector2i) -> Array[Unit]:
+	# Returns all units that will kill this unit it were present on this tile
+	var killer_units : Array[Unit] = []	
+
+
+	var adjacent_units = _get_adjacent_units(coord)
+
+	for side in range(6):
+		var enemy_unit = adjacent_units[side]
+		if not enemy_unit:
+			continue  # no unit
+		if enemy_unit.army_in_battle.team == unit.army_in_battle.team:
+			continue  # no friendly fire within team
+
+		var unit_symbol : E.Symbols = unit.get_symbol_when_rotated(side, direction)
+		var opposite_side := GenericHexGrid.opposite_direction(side)
+		var enemy_symbol : E.Symbols = enemy_unit.get_symbol(opposite_side)
+
+		if Unit.will_parry_occur(unit_symbol, enemy_symbol):
+			continue  # parry prevents counter attacks
+		
+		if Unit.does_it_counter_attack(enemy_symbol):
+			if Unit.does_attack_succeed(enemy_symbol, unit_symbol):
+				killer_units.append(enemy_unit)
+
+	return killer_units
+
+
 ## returns true if that move will lead to enemy death [br]
 ## doesn't account that in may after killing someone die instantly
 func _is_kill_move(move : MoveInfo) -> bool:
+	var consequences = get_move_consequences(move)
+	return consequences == MoveConsequences.KILL or consequences == MoveConsequences.KAMIKAZE
+
+func get_move_consequences(move : MoveInfo) -> MoveConsequences:
 	# list of checks:
 	# 1 verify if turning in (starting move with that unit) will even work
 	# 2 moving in that direction would shoot someone
@@ -1209,20 +1230,18 @@ func _is_kill_move(move : MoveInfo) -> bool:
 	# 4 you can survive entering that tile
 	# 5 you can kill someone entering that tile
 
-	if move.move_type != MoveInfo.TYPE_MOVE:  # TODO add support for spells
-		return false # summons don't kill
+	var kill_registered = false
 
-	# TODO change to get army, not player because player can have other team
-	# than aarmy in battle and player can be null
-	var me = get_current_player()
+	if move.move_type != MoveInfo.TYPE_MOVE:  # TODO add support for spells and sacrifices
+		return MoveConsequences.NONE # summons don't kill
 
 	var attacker = get_unit(move.move_source)
 	var move_direction = GenericHexGrid.direction_to_adjacent( \
 			move.move_source, move.target_tile_coord);
 
 	# step 1
-	if _ai_should_die_to_counter_attack(attacker, move_direction, move.move_source):
-		return false  # will die to a spear befor it can kill
+	if _get_counter_attack_killers(attacker, move_direction, move.move_source).size() > 0:
+		return MoveConsequences.DEATH  # will die to a spear befor it can kill
 
 	# step 2 BOW
 	for side in range(6):  # we check each side for a ranged attack symbol
@@ -1233,26 +1252,42 @@ func _is_kill_move(move : MoveInfo) -> bool:
 
 		var reach = Unit.ranged_weapon_reach(symbol)
 		var target : Unit = _get_shot_target(move.move_source, side, reach)
-		if target != null and target.army_in_battle.team != me.team:
+		if target and target.army_in_battle.team != attacker.army_in_battle.team:
 			var opposite_side = GenericHexGrid.opposite_direction(side)
 			var target_symbol = target.get_symbol(opposite_side)
 
 			if Unit.does_attack_succeed(symbol, target_symbol):
-				return true  # can shoot enemy in this direction
+				kill_registered = true  # can shoot enemy in this direction
 
 	# step 3 melee weapon on first rotation
+	
 	if _ai_will_melee_kill_someone(attacker, move_direction, move.move_source):
-		return true
+		kill_registered = true
 
 	# step 4
-	if _ai_should_die_to_counter_attack(attacker, move_direction, move.target_tile_coord):
-		return false  # will die to a spear befor it can kill
+	var counter_attack_killers = _get_counter_attack_killers(attacker, move_direction, move.target_tile_coord)
+	
+	# Check for rare specific case when archer walks into a single enemy spear killing it during rotation
+	if counter_attack_killers.size() == 1:  # there is only a single spear pointing
+		var front_symbol = attacker.get_front_symbol()
+		var enemy_unit = _get_adjacent_unit(move.target_tile_coord, move_direction)
+		if enemy_unit:
+			var enemy_symbol = enemy_unit.get_symbol(GenericHexGrid.opposite_direction(move_direction))
+
+			if enemy_unit == counter_attack_killers[0] \
+				and Unit.does_it_shoot(front_symbol) \
+				and Unit.does_attack_succeed(front_symbol, enemy_symbol):
+				# unit we would kill with our arrow is that killer
+					return MoveConsequences.KILL
+	
+	if counter_attack_killers.size() > 0: # will die to a spear before it can kill
+		return MoveConsequences.KAMIKAZE if kill_registered else MoveConsequences.DEATH
 
 	# step 5
 	if _ai_will_melee_kill_someone(attacker, move_direction, move.target_tile_coord):
-		return true
+		kill_registered = true
 
-	return false
+	return MoveConsequences.KILL if kill_registered else MoveConsequences.NONE
 
 #endregion AI Helpers
 
@@ -1359,7 +1394,8 @@ class ArmyInBattleState:
 		set(_no_value):
 			assert(false, "don't change the hero here")
 
-
+	## may be disabled by a replay
+	var clock_enabled := true
 	## when turn started - for local time calculation
 	var turn_start_timestamp
 	##  miliseconds on the clock when turn started - will be synched in multiplayer
@@ -1401,6 +1437,8 @@ class ArmyInBattleState:
 
 	func get_time_left_ms() -> int:
 		var turn_time_local_passed_ms = Time.get_ticks_msec() - turn_start_timestamp
+		if not clock_enabled:
+			return start_turn_clock_time_left_ms # Time shouldn't pass in replays
 		return start_turn_clock_time_left_ms - turn_time_local_passed_ms
 
 
@@ -1410,8 +1448,10 @@ class ArmyInBattleState:
 
 
 	func turn_ended() -> void:
-		start_turn_clock_time_left_ms = get_time_left_ms()
-		start_turn_clock_time_left_ms += turn_increment_ms
+		# clock disabled in replays, otherwise this messes with timer - adds a large time value to timer
+		if clock_enabled:
+			start_turn_clock_time_left_ms = get_time_left_ms()
+			start_turn_clock_time_left_ms += turn_increment_ms
 
 	## Manages unit relation to it's related army object [br]
 	## Used in so that "summary"

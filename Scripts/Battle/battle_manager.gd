@@ -10,6 +10,7 @@ var _unit_to_unit_form : Dictionary # gameplay unit to VISUAL mapping
 var _grid_tiles_node : Node2D # parent for tiles VISUAL
 var _unit_forms_node : Node2D # parent for units VISUAL
 var _border_node : Node2D # parent for border tiles VISUAL
+var _move_highlights_node : Node2D
 
 var _battle_ui : BattleUI
 var _anim_queue : Array[AnimInQueue] = []
@@ -21,6 +22,8 @@ var _selected_unit : Unit
 
 var _replay_data : BattleReplay
 var _replay_is_playing : bool = false
+var _replay_move_counter : int = 0
+var _replay_number_of_moves : int = 0
 
 var _batch_mode : bool = false # flagged true when recreating game state
 
@@ -35,6 +38,10 @@ func _ready():
 	_unit_forms_node = Node2D.new()
 	_unit_forms_node.name = "UNITS"
 	add_child(_unit_forms_node)
+	
+	_move_highlights_node = Node2D.new()
+	_move_highlights_node.name = "MOVE_HIGHLIGHTS"
+	add_child(_move_highlights_node)
 
 	UI.add_custom_screen(_battle_ui)
 
@@ -47,13 +54,22 @@ func _process(_delta):
 #region Battle Setup
 
 ## x_offset is used to place battle to the right of world map
+## replay_template - used in replays to avoid juggling player data
 func start_battle(new_armies : Array[Army], battle_map : DataBattleMap, \
-		battle_state : SerializableBattleState, x_offset : float) -> void:
+		battle_state : SerializableBattleState, x_offset : float,
+		replay_template : BattleReplay = null) -> void:
 
 	assert(_is_clear(), "cannot start battle map, map already loaded")
 
-	_replay_data = BattleReplay.create(new_armies, battle_map)
-	_replay_data.save()
+	if replay_template:
+		_replay_data = BattleReplay.from_template(replay_template)
+	else:
+		_replay_data = BattleReplay.create(new_armies, battle_map)
+	
+	_replay_move_counter = 0
+	
+	if not _replay_is_playing and not replay_template:
+		_replay_data.save()
 
 	UI.ensure_camera_is_spawned()
 	UI.go_to_custom_ui(_battle_ui)
@@ -174,6 +190,8 @@ func _on_turn_started(player : Player) -> void:
 		return
 
 	_battle_ui.start_player_turn(_battle_grid_state.current_army_index)
+	if _replay_is_playing:
+		_battle_ui.update_replay_controls(_replay_move_counter, _replay_number_of_moves)
 
 	if not player:
 		print("uncontrolled army's turn")
@@ -336,6 +354,10 @@ func ai_move() -> void:
 	if latest_ai_cancel_token:
 		push_warning("ai is already moving, dont stack two simultaneous ai moves race")
 		return
+	
+	if _replay_is_playing:
+		return
+	
 	var move := AiBotStateRandom.choose_move_static(_battle_grid_state)
 	_perform_ai_move(move)
 
@@ -479,6 +501,7 @@ func _try_select_unit(coord : Vector2i) -> bool:
 
 	_selected_unit = new_unit
 	_unit_to_unit_form[_selected_unit].set_selected(true)
+	_update_move_highlights(_selected_unit)
 
 	# attempt to display spells available to selected unit
 	_show_spells(_selected_unit)
@@ -493,7 +516,40 @@ func deselect_unit() -> void:
 	_selected_unit = null
 	_battle_ui.selected_spell = null
 	_battle_ui.reset_spells()
+	_update_move_highlights(null)
 
+
+func _update_move_highlights(selected_unit: Unit):
+	Helpers.remove_all_children(_move_highlights_node)
+	if not selected_unit:
+		return
+
+	for move in _battle_grid_state.get_possible_moves():
+		if move.move_source != selected_unit.coord:
+			continue
+		if move.move_type != MoveInfo.TYPE_MOVE: # TODO highlighting other move types
+			continue
+
+		var color: Color
+
+		match _battle_grid_state.get_move_consequences(move):
+			BattleGridState.MoveConsequences.NONE:
+				color = Color.WHITE_SMOKE
+			BattleGridState.MoveConsequences.KILL:
+				color = Color.LIGHT_GREEN
+			BattleGridState.MoveConsequences.DEATH:
+				color = Color.INDIAN_RED
+			BattleGridState.MoveConsequences.KAMIKAZE:
+				color = Color.YELLOW
+			var x:
+				assert(false, "Unimplemented move consequence type %s" % [x])
+
+		var offset = move.move_source - move.target_tile_coord
+		var highlight = CFG.MOVE_HIGHLIGHT_SCENE.instantiate()
+		highlight.modulate = color
+		highlight.position = BM.to_position(move.target_tile_coord)
+		highlight.rotation = GenericHexGrid.DIRECTION_TO_OFFSET.find(offset) * PI/3
+		_move_highlights_node.add_child(highlight)
 
 
 func _show_spells(unit : Unit) -> void:
@@ -511,8 +567,12 @@ func _perform_move_info(move_info : MoveInfo) -> void:
 		return
 	print(NET.get_role_name(), " performing move ", move_info)
 
-	_replay_data.record_move(move_info, get_current_time_left_ms())
-	_replay_data.save()
+	_replay_move_counter += 1
+
+	if not _replay_is_playing:
+		_replay_data.record_move(move_info, get_current_time_left_ms())
+		_replay_data.save()
+	
 	if NET.server:
 		NET.server.broadcast_move(move_info)
 
@@ -537,7 +597,11 @@ func _perform_move_info(move_info : MoveInfo) -> void:
 func close_when_quiting_game() -> void:
 	deselect_unit()
 	_clear_anim_queue()
+	_battle_ui.hide_replay_controls()
+	_turn_off_battle_ui()
 	_reset_grid_and_unit_forms()
+	
+	_replay_is_playing = false # revert to default value for the next battle
 
 
 ## called when battle simulation decided battle was won
@@ -547,31 +611,34 @@ func _on_battle_ended() -> void:
 		assert(false, "battle ended when it was not ongoing...")
 		return
 	_battle_is_ongoing = false
+
 	deselect_unit()
 	_battle_ui.update_mana()
 
 	await get_tree().create_timer(1).timeout # TEMP, don't exit immediately
-	while _replay_is_playing:
-		await get_tree().create_timer(0.1).timeout
 
 	_current_summary = _create_summary()
+	if not _replay_is_playing:
+		_replay_data.summary = _current_summary
+		_replay_data.save()
+	
 	if WM.world_game_is_active():
-		_close_battle()
+		_close_battle_and_return()
 		# show battle summary over world map
 		UI.ui_overlay.show_summary(_current_summary, null)
+	elif _replay_is_playing:
+		_battle_ui.update_replay_controls(_replay_number_of_moves, _replay_number_of_moves, _current_summary)
+		# do not exit immediately
 	else:
-		UI.ui_overlay.show_summary(_current_summary, _close_battle)
+		UI.ui_overlay.show_summary(_current_summary, _close_battle_and_return)
 
 
-func _close_battle() -> void:
+func _close_battle_and_return() -> void:
 	var state_for_world = _battle_grid_state.armies_in_battle_state
-	_clear_anim_queue()
-	_turn_off_battle_ui()
-	_reset_grid_and_unit_forms()
-	deselect_unit()
-
+	
+	close_when_quiting_game()
+	
 	if not WM.world_game_is_active():
-		print("end of test battle")
 		IM.go_to_main_menu()
 		return
 
@@ -661,15 +728,18 @@ func _create_summary() -> DataBattleSummary:
 
 #region Replays
 
+## Plays a replay and returns to the normal state afterwards
 func perform_replay(replay : BattleReplay) -> void:
-	_replay_is_playing = true
+	_replay_is_playing = true # _replay_is_playing is reset in close_when_quitting_game
+	_battle_ui.show_replay_controls()
+	_battle_grid_state.set_clock_enabled(false)
+	_replay_number_of_moves = replay.moves.size()
 
 	for m in replay.moves:
 		if not _battle_is_ongoing:
 			return # terminating battle while watching
 		_perform_replay_move(m)
 		await _replay_move_delay()
-	_replay_is_playing = false
 
 
 func _replay_move_delay() -> void:
