@@ -1,5 +1,4 @@
-
-cmake_minimum_required(VERSION 3.30)
+cmake_minimum_required(VERSION 3.20)
 
 project(libspear CXX C)
 
@@ -13,42 +12,48 @@ set (CMAKE_C_EXTENSIONS OFF)
 
 set (CMAKE_USE_RELATIVE_PATHS ON)
 
-list (APPEND SPEAR_COMPILE_OPTIONS
-  "-fPIC"
-  "-pthread"
-  "-Wall"
-  "-Wextra"
-  "-Wpointer-arith"
-  "-Werror=return-type"
-  "-Werror=old-style-cast"
-  "-Werror=uninitialized"
-  "-Werror=maybe-uninitialized"
-  "-Werror=nonnull"
-  "-Werror=cast-qual"
-  "-Werror=cast-align"
-  "-Werror=dangling-pointer"
-  "-Werror=date-time"
-  "-Wno-type-limits"
-  "-Wno-unused-parameter"
-  "-Wno-missing-field-initializers"
-  "-Wno-useless-cast"
-)
+set (SPEAR_COMPILE_OPTIONS )
 
-if (CMAKE_BUILD_TYPE STREQUAL "Debug")
-  list (APPEND SPEAR_COMPILE_OPTIONS
-    "-Werror=null-dereference"
-  )
+if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+  set (NICE_COMPILER ON)
 else ()
-  list (APPEND SPEAR_COMPILE_OPTIONS
-    "-Wno-null-dereference"
-  )
+  message (WARNING "Using not fully supported compiler")
 endif ()
 
+if (NICE_COMPILER)
+  list (APPEND SPEAR_COMPILE_OPTIONS
+    "-fPIC"
+    "-pthread"
+    "-Wall"
+    "-Wextra"
+    "-Wpointer-arith"
+    "-Werror=return-type"
+    "-Werror=old-style-cast"
+    "-Werror=uninitialized"
+    "-Werror=maybe-uninitialized"
+    "-Werror=nonnull"
+    "-Werror=cast-qual"
+    "-Werror=cast-align"
+    "-Werror=dangling-pointer"
+    "-Werror=date-time"
+    "-Wno-type-limits"
+    "-Wno-unused-parameter"
+    "-Wno-missing-field-initializers"
+    "-Wno-useless-cast"
+  )
 
+  if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+    list (APPEND SPEAR_COMPILE_OPTIONS
+      "-Werror=null-dereference"
+    )
+  else ()
+    list (APPEND SPEAR_COMPILE_OPTIONS
+      "-Wno-null-dereference"
+    )
+  endif ()
+endif ()
 
 add_subdirectory(godot-cpp        godot-cpp    EXCLUDE_FROM_ALL)
-# add_subdirectory(deps/thread-pool thread-pool  EXCLUDE_FROM_ALL)
-
 
 include_directories("${GODOT_GDEXTENSION_DIR}")
 include_directories("src")
@@ -76,7 +81,11 @@ target_compile_options(libspear PUBLIC
 set_target_properties(libspear PROPERTIES PREFIX "")
 # set_target_properties(libspear PROPERTIES OUTPUT_NAME "")
 
-string(TOLOWER ${CMAKE_BUILD_TYPE} BUILD_TYPE_LOWERCASE)
+if (CMAKE_BUILD_TYPE STREQUAL "")
+  set (BUILD_TYPE_LOWERCASE debug)
+else ()
+  string(TOLOWER ${CMAKE_BUILD_TYPE} BUILD_TYPE_LOWERCASE)
+endif ()
 set (ARCHITECTURE "x86_64") # TODO
 string(TOLOWER ${CMAKE_SYSTEM_NAME} OS_LOWERCASE)
 set (EXTENSION "so")
