@@ -136,6 +136,33 @@ func _apply_level_number(level : int) -> void:
 
 #endregion Init
 
+## Calculate animation duration, passing duration for normal speed as an argument
+func get_anim_speed(seconds: float):
+	return seconds * CFG.AnimationSpeed.NORMAL / CFG.animation_speed_frames
+
+func anim_move():
+	var target = BM.get_tile_global_position(entity.coord)
+	BM.anim_move_tween.tween_property(self, "position", target, get_anim_speed(0.3))
+
+func anim_turn():
+	var time = get_anim_speed(0.3)
+	var angle_rel = angle_difference(rotation, deg_to_rad(entity.unit_rotation * 60))
+	BM.anim_move_tween.tween_property(self, "rotation", angle_rel, time).as_relative()
+	BM.anim_move_tween.parallel().tween_property($sprite_unit, "rotation", -angle_rel, time).as_relative()
+	BM.anim_move_tween.parallel().tween_property($RigidUI, "rotation", -angle_rel, time).as_relative()
+
+func anim_die():
+	BM.anim_move_tween.tween_property(self, "scale", Vector2.ZERO, get_anim_speed(0.3))
+	BM.anim_move_tween.tween_callback(queue_free)
+
+func anim_symbol(side: int):
+	var symbol = get_node(SIDE_NAMES[side])
+	BM.anim_move_tween.tween_property(symbol, "scale", 1.3, 0.0)
+	BM.anim_move_tween.tween_property(symbol, "scale", 1.0, get_anim_speed(0.3))
+
+func anim_magic():
+	# TODO
+	pass
 
 #region Instant Animation Mode
 ## Used only when animation speed is set to instant

@@ -27,6 +27,9 @@ var _replay_number_of_moves : int = 0
 
 var _batch_mode : bool = false # flagged true when recreating game state
 
+# Public, used by e.g. UnitForm
+var anim_move_tween : Tween
+
 
 func _ready():
 	_battle_ui = load("res://Scenes/UI/BattleUi.tscn").instantiate()
@@ -378,10 +381,10 @@ func _on_unit_summoned(unit : Unit) -> void:
 
 	_battle_ui.unit_summoned(not _battle_grid_state.is_during_summoning_phase())
 
-	unit.unit_died.connect(_on_unit_killed.bind(unit))
-	unit.unit_turned.connect(_on_unit_turned.bind(unit))
-	unit.unit_moved.connect(_on_unit_moved.bind(unit))
-	unit.unit_magic_effect.connect(_on_unit_magic_effect.bind(unit))
+	unit.unit_died.connect(form.anim_die)
+	unit.unit_turned.connect(form.anim_turn)
+	unit.unit_moved.connect(form.anim_move)
+	unit.unit_magic_effect.connect(form.anim_magic)
 
 
 ## handles player input while during the summoning phase
@@ -566,6 +569,15 @@ func _perform_move_info(move_info : MoveInfo) -> void:
 	if not _battle_is_ongoing:
 		return
 	print(NET.get_role_name(), " performing move ", move_info)
+	
+	# finish current animation
+	if anim_move_tween and anim_move_tween.is_valid():
+		anim_move_tween.custom_step(anim_move_tween.get_total_elapsed_time())
+		anim_move_tween.kill()
+	
+	anim_move_tween = create_tween() \
+		.set_trans(Tween.TRANS_QUAD) \
+		.set_ease(Tween.EASE_OUT)
 
 	_replay_move_counter += 1
 
@@ -586,6 +598,10 @@ func _perform_move_info(move_info : MoveInfo) -> void:
 
 		_ :
 			assert(false, "Move move_type not supported in perform, " + str(move_info.move_type))
+	
+	# Make sure there's anything to tween to avoid errors
+	anim_move_tween.parallel().tween_interval(0.01)
+	anim_move_tween.play()
 
 	_end_move()
 
@@ -836,32 +852,6 @@ func _clear_anim_queue():
 	for anim in _anim_queue:
 		anim.on_anim_end()
 	_anim_queue.clear()
-
-
-func _on_unit_killed(unit : Unit) -> void:
-	if _batch_mode:
-		_unit_to_unit_form[unit].update_death_immediately()
-	else:
-		_anim_queue.push_back(AnimInQueue.create_die(_unit_to_unit_form[unit]))
-	_unit_to_unit_form.erase(unit)
-
-
-func _on_unit_turned(unit : Unit) -> void:
-	if _batch_mode:
-		_unit_to_unit_form[unit].update_turn_immediately()
-	else:
-		_anim_queue.push_back(AnimInQueue.create_turn(_unit_to_unit_form[unit]))
-
-
-func _on_unit_moved(unit : Unit) -> void:
-	if _batch_mode:
-		_unit_to_unit_form[unit].update_death_immediately()
-	else:
-		_anim_queue.push_back(AnimInQueue.create_move(_unit_to_unit_form[unit]))
-
-
-func _on_unit_magic_effect(unit : Unit) -> void:
-	_unit_to_unit_form[unit].set_effects()
 
 
 class AnimInQueue:
