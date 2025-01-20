@@ -81,8 +81,8 @@ func get_army_at_start() -> PresetArmy:
 	return null
 
 
-func interact(world_state : WorldState, army : Army) -> bool:
-	return collect(world_state, army.controller_index)
+func interact(world_state : WorldState, army : Army) -> void:
+	collect(world_state, army.controller_index)
 
 
 func on_end_of_turn(world_state : WorldState):
@@ -116,13 +116,11 @@ func get_map_description() -> String:
 	return _present_goods.to_string_short("empty")
 
 
-func collect(world_state : WorldState, player_index : int) -> bool:
+func collect(world_state : WorldState, player_index : int) -> void:
 	var player = world_state.get_player_by_index(player_index)
-	if not player:
-		return false
+	assert(player, "heroes are always assigned to a player")
 	player.goods.add(_present_goods)
 	_present_goods.clear()
-	return true
 
 
 static func get_hunt_army_presets(folder_path : String) -> Array[PresetArmy]:

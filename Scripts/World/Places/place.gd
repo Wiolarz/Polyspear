@@ -25,6 +25,8 @@ static func create_basic(coord_ : Vector2i, movable_ : bool, basic_type_ : Strin
 	return place
 
 
+#region Overridable functions
+
 static func create_place(_args : PackedStringArray, coord_ : Vector2i) -> Place:
 	# TODO add grid to args -- it would ge great also to add hex *atomically*
 	# in this funciton
@@ -37,9 +39,8 @@ func get_army_at_start() -> PresetArmy:
 	return null
 
 
-func interact(_world_state : WorldState, army : Army) -> bool:
+func interact(_world_state : WorldState, army : Army) -> void:
 	print(army)
-	return false
 
 
 ## this is overridden by other places and does nothing in empty places
@@ -52,9 +53,11 @@ func get_map_description() -> String:
 	return ""
 
 
-## STUB -- left for later to make some capture specific things
-func capture(_world_state : WorldState, _player_index : int) -> bool:
-	return false
+## Overidable function [br]
+## player index is used to mark which player captures that tile [br]
+## used in places like outpost (which acts like a mine)
+func capture(_world_state : WorldState, _player_index : int) -> void:
+	return
 
 
 static func get_network_serializable(place : Place) -> Dictionary:
@@ -94,8 +97,6 @@ func get_type() -> String:
 		return basic_type
 
 
-
-
 ## should be overridden by each place
 ## This function has to copy such information of state that it would be
 ## possible to add it to the state after "create_place" call
@@ -109,3 +110,5 @@ func to_specific_serializable(_dict : Dictionary) -> void:
 ## earlier
 func paste_specific_serializable_state(_dict : Dictionary) -> void:
 	pass # does nothing for empty places
+
+#endregion Overridable functions

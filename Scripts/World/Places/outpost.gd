@@ -46,16 +46,16 @@ func get_army_at_start() -> PresetArmy:
 	return neutral_army_preset
 
 
-func interact(world_state : WorldState, army : Army) -> bool:
-	return capture(world_state, army.controller_index)
+func interact(world_state : WorldState, army : Army) -> void:
+	capture(world_state, army.controller_index)
 
 
-func capture(world_state : WorldState, player_index : int) -> bool:
+func capture(world_state : WorldState, player_index : int) -> void:
 	var old_controller_index = controller_index
-	if player_index == old_controller_index:
-		return false # nothing to do
+
 	var old_player = world_state.get_player_by_index(old_controller_index)
 	var new_player = world_state.get_player_by_index(player_index)
+
 	if old_player: # we need to take the outpost from old player first
 		controller_index = -1
 		old_player.outposts.erase(self)
@@ -63,7 +63,6 @@ func capture(world_state : WorldState, player_index : int) -> bool:
 	if new_player:
 		controller_index = player_index
 		new_player.outposts.append(self)
-	return true
 
 
 func on_end_of_turn(world_state : WorldState):

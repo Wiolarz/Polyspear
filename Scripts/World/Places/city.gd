@@ -16,12 +16,9 @@ func get_faction(world_state : WorldState) -> DataRace:
 	return player.faction
 
 
-func interact(world_state : WorldState, army : Army) -> bool:
+func interact(world_state : WorldState, army : Army) -> void:
 	if controller_index != army.controller_index:
-		world_state.win_game(army.controller_index)
-		# FIXME
-		return true
-	return false
+		world_state.win_game(army.controller_index)  # TEMP
 
 
 func on_end_of_turn(world_state : WorldState) -> void:
