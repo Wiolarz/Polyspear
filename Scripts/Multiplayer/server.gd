@@ -206,8 +206,8 @@ func send_full_state_sync(peer : ENetPacketPeer):
 	send_to_peer(peer, packet)
 
 
-func set_setting(name : String, value) -> void:
-	settings.content[name] = value
+func set_setting(setting_name : String, value) -> void:
+	settings.content[setting_name] = value
 	broadcast_server_settings()
 
 

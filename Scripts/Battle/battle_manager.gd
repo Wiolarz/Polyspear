@@ -288,9 +288,6 @@ func grid_input(coord : Vector2i) -> void:
 
 
 func _check_for_stalemate() -> bool:
-	assert(BattleGridState.STALEMATE_TURN_REPEATS == 2,
-	" _check_for_stalemate has wrong STALEMATE_TURN_REPEATS value
-	later parts of this function version wasn't made in mind with more repeats allowed")
 	var limit = BattleGridState.STALEMATE_TURN_REPEATS
 
 	# if number of the armies were to change during last few moves, then it wouldn't be a stalemate

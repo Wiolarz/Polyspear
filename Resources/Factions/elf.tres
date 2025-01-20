@@ -9,7 +9,7 @@
 [ext_resource type="Resource" uid="uid://bdcjijsj36d16" path="res://Resources/Factions/Buildings/Barracks_2.tres" id="3_gomhy"]
 [ext_resource type="Resource" uid="uid://6b1488w8vb1t" path="res://Resources/Battle/Units/Elves/elf_2_archer.tres" id="3_rembp"]
 [ext_resource type="Resource" uid="uid://b2y53doccjmg8" path="res://Resources/Battle/Heroes/Elves/elf_hero_stalker.tres" id="3_y1may"]
-[ext_resource type="Resource" uid="uid://cn8b63tln0enm" path="res://Resources/Battle/Units/Elves/elf_3_swordsmen.tres" id="4_c7pga"]
+[ext_resource type="Resource" uid="uid://nnx5p88p15k7" path="res://Resources/Battle/Units/Elves/elf_3_swordsmen.tres" id="4_c7pga"]
 [ext_resource type="Resource" uid="uid://4to52cd5bq7w" path="res://Resources/Factions/Buildings/Barracks_3.tres" id="4_pcvpr"]
 
 [resource]
