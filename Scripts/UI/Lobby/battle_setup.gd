@@ -228,18 +228,16 @@ func prepare_player_slots() -> void:
 			ui_slot = load(PLAYER_SLOT_PANEL_PATH).instantiate()
 			ui_slot.setup_ui = self
 			player_list.add_child(ui_slot)
-
-		# we didn't assign `ui_slot`, so use existing UI slot
-		if not ui_slot:
+		else:
+			# we didn't assign `ui_slot`, so use existing UI slot
 			ui_slot = old_ui_slots[i]
 
 		# UI slot is not needed
 		if i >= logic_slots_count:
 			player_list.remove_child(ui_slot)
 			ui_slot.queue_free()
-			continue
-
-		ui_slot.fill_team_list(logic_slots_count)
+		else:
+			ui_slot.fill_team_list(logic_slots_count)
 
 
 func try_to_take_slot(slot) -> bool: # true means something changed
