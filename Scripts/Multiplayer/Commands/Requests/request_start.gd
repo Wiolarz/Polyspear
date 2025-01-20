@@ -11,8 +11,11 @@ static func create_packet():
 		"name": COMMAND_NAME,
 	}
 
+## this method is called indirectly alongside multiple other functions, with the same name and arguments [br]
+## So there is a need for paramas variable to be included despite not being used [br]
+## TODO verify if this comment is correct
 static func process_command(server : Server, peer : ENetPacketPeer, \
-		params : Dictionary) -> int:
+		_params : Dictionary) -> int:
 	var session : Server.Session = server.get_session_by_peer(peer)
 	if session == null:
 		return FAILED

@@ -1,10 +1,10 @@
-[gd_resource type="Resource" script_class="DataUnit" load_steps=7 format=3]
+[gd_resource type="Resource" script_class="DataUnit" load_steps=7 format=3 uid="uid://nnx5p88p15k7"]
 
 [ext_resource type="Script" path="res://Resources/Battle/data_unit.gd" id="1_exjyy"]
 [ext_resource type="Script" path="res://Scripts/World/Economy/goods.gd" id="1_glgq7"]
-[ext_resource type="Resource" path="res://Resources/Factions/Buildings/Barracks_3.tres" id="2_dml52"]
-[ext_resource type="Resource" path="res://Resources/Battle/Symbols/empty.tres" id="3_bfjrc"]
-[ext_resource type="Resource" path="res://Resources/Battle/Symbols/sword.tres" id="4_it0ww"]
+[ext_resource type="Resource" uid="uid://4to52cd5bq7w" path="res://Resources/Factions/Buildings/Barracks_3.tres" id="2_dml52"]
+[ext_resource type="Resource" uid="uid://o4rlmfc33rsh" path="res://Resources/Battle/Symbols/empty.tres" id="3_bfjrc"]
+[ext_resource type="Resource" uid="uid://dy85xcp8g7gbq" path="res://Resources/Battle/Symbols/sword.tres" id="4_it0ww"]
 
 [sub_resource type="Resource" id="Resource_6r5q3"]
 script = ExtResource("1_glgq7")

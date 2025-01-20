@@ -172,12 +172,13 @@ func timer_changed() -> void:
 	var slot_index = setup_ui.slot_to_index(self)
 
 	var seconds_reserve = timer_reserve_minutes.value * 60 + timer_reserve_seconds.value
-
-	IM.game_setup_info.set_timer(slot_index, seconds_reserve, timer_increment_seconds.value)
+	
+	
+	IM.game_setup_info.set_timer(slot_index, seconds_reserve, int(timer_increment_seconds.value))
 	if NET.server:
 		NET.server.broadcast_full_game_setup(IM.game_setup_info) #TODO add multi support
 	if NET.client:
-		NET.client.queue_lobby_set_timer(slot_index, seconds_reserve, timer_increment_seconds.value)
+		NET.client.queue_lobby_set_timer(slot_index, seconds_reserve, int(timer_increment_seconds.value))
 
 
 func set_army(units_list : Array[DataUnit]):
