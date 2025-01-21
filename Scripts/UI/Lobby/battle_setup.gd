@@ -26,7 +26,7 @@ func _ready():
 	fill_presets_list()
 
 
-## used to know if changes in gui are made by user and should be passed to
+## It is used to know if changes in gui are made by user and should be passed to
 ## backend (change setup info and send over network) OR made by refreshing
 ## gui to state in backend
 func should_react_to_changes() -> bool:
