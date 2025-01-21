@@ -110,7 +110,7 @@ func _load_map(map : DataBattleMap) -> void:
 			_tile_grid.set_hex(coord, tile_form)
 			tile_form.position = to_position(coord)
 			_grid_tiles_node.add_child(tile_form)
-	
+
 	if not IM.in_map_editor:
 		_border_node = MapBorder.from_map(map)
 		add_child(_border_node)

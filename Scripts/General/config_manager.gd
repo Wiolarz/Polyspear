@@ -172,8 +172,8 @@ var DEFAULT_MODE_IS_BATTLE : bool :
 var AUTO_START_GAME : bool :
 	get: return player_options.autostart_map
 
-var LAST_USED_BATTLE_PRESET : PresetBattle :
-	get: return player_options.last_used_battle_preset
+var LAST_USED_BATTLE_PRESET_NAME : String :
+	get: return player_options.last_used_battle_preset_name
 var LAST_USED_WORLD_PRESET : PresetWorld : # TODO implement this
 	get: return player_options.last_used_world_preset
 
