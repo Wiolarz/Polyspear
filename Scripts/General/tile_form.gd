@@ -67,6 +67,10 @@ func _on_input_event(_viewport : Node, event : InputEvent, _shape_idx : int):
 	# normal gameplay - on click
 	if event.is_action_pressed("KEY_SELECT"):
 		UI.grid_input_listener(coord, grid_type, false)
+	
+	# normal gameplay - on right click (purely visual "planning tool" for players to draw chess arrows)
+	if event.is_action_pressed("KEY_PLAN"):
+		UI.grid_planning_input_listener(coord, grid_type)
 
 	# for map editor - on mouse move while button pressed
 	if Input.is_action_pressed("KEY_SELECT"):

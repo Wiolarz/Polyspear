@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://cl3kkli2o11nj"]
+
+[node name="BattleMoveHighlight" type="Node2D"]
+
+[node name="Polygon2D" type="Polygon2D" parent="."]
+polygon = PackedVector2Array(200, 0, 1, -200, -200, 0, 0, 200)

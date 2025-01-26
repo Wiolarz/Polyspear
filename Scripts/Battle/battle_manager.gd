@@ -11,6 +11,7 @@ var _grid_tiles_node : Node2D # parent for tiles VISUAL
 var _unit_forms_node : Node2D # parent for units VISUAL
 var _border_node : Node2D # parent for border tiles VISUAL
 var _move_highlights_node : Node2D
+var _planner_arrows_node : Node2D  # parent for all chess arrows nodes
 
 var _battle_ui : BattleUI
 var _anim_queue : Array[AnimInQueue] = []
@@ -42,6 +43,10 @@ func _ready():
 	_move_highlights_node = Node2D.new()
 	_move_highlights_node.name = "MOVE_HIGHLIGHTS"
 	add_child(_move_highlights_node)
+
+	_planner_arrows_node = Node2D.new()
+	_planner_arrows_node.name = "PLANNER_ARROWS"
+	add_child(_planner_arrows_node)
 
 	UI.add_custom_screen(_battle_ui)
 
@@ -256,6 +261,9 @@ func grid_input(coord : Vector2i) -> void:
 	if _anim_queue.size() > 0:
 		print("anim playing, input ignored")
 		return
+
+	# any normal input removes all drawn arrows
+	Helpers.remove_all_children(_planner_arrows_node)
 
 	var current_player : Player =  _battle_grid_state.get_current_player()
 	if current_player != null and current_player.bot_engine:
@@ -812,6 +820,21 @@ func get_current_time_left_ms() -> int:
 
 #endregion Chess clock
 
+
+#region Planning (Chess arrows)
+
+## Draws a single pointer on a tile, those are cleared by any normal (left click) input
+## TODO add arrows 
+func planning_input(tile_coord : Vector2i) -> void:
+	var color : Color = Color.WHITE_SMOKE
+
+	var pointer = CFG.PLAN_POINTER_SCENE.instantiate()
+	pointer.modulate = color
+	pointer.position = BM.to_position(tile_coord)
+	_planner_arrows_node.add_child(pointer)
+
+
+#endregion Planning (Chess arrows)
 
 #region anim queue
 
