@@ -20,6 +20,9 @@ enum AnimationSpeed
 ## so unit move takes between X and 2X
 var animation_speed_frames : AnimationSpeed = AnimationSpeed.NORMAL
 
+var animation_default_ease := Tween.EASE_OUT
+var animation_default_trans := Tween.TRANS_CUBIC
+
 ## battle map is placed this far to the right after world map bounds
 const MAPS_OFFSET_X = 7000
 

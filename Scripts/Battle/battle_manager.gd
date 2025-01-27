@@ -27,9 +27,6 @@ var _replay_number_of_moves : int = 0
 
 var _batch_mode : bool = false # flagged true when recreating game state
 
-# Public, used by e.g. UnitForm
-var anim_move_tween : Tween
-
 
 func _ready():
 	_battle_ui = load("res://Scenes/UI/BattleUi.tscn").instantiate()
@@ -385,6 +382,12 @@ func _on_unit_summoned(unit : Unit) -> void:
 	unit.unit_turned.connect(form.anim_turn)
 	unit.unit_moved.connect(form.anim_move)
 	unit.unit_magic_effect.connect(form.anim_magic)
+	
+	unit.unit_is_pushing.connect(form.anim_symbol)
+	unit.unit_is_shooting.connect(form.anim_symbol)
+	unit.unit_is_slashing.connect(form.anim_symbol)
+	unit.unit_is_blocking.connect(form.anim_symbol)
+	unit.unit_is_counter_attacking.connect(form.anim_symbol)
 
 
 ## handles player input while during the summoning phase
@@ -570,14 +573,7 @@ func _perform_move_info(move_info : MoveInfo) -> void:
 		return
 	print(NET.get_role_name(), " performing move ", move_info)
 	
-	# finish current animation
-	if anim_move_tween and anim_move_tween.is_valid():
-		anim_move_tween.custom_step(anim_move_tween.get_total_elapsed_time())
-		anim_move_tween.kill()
-	
-	anim_move_tween = create_tween() \
-		.set_trans(Tween.TRANS_QUAD) \
-		.set_ease(Tween.EASE_OUT)
+	ANIM.fast_forward()
 
 	_replay_move_counter += 1
 
@@ -600,8 +596,8 @@ func _perform_move_info(move_info : MoveInfo) -> void:
 			assert(false, "Move move_type not supported in perform, " + str(move_info.move_type))
 	
 	# Make sure there's anything to tween to avoid errors
-	anim_move_tween.parallel().tween_interval(0.01)
-	anim_move_tween.play()
+	ANIM.main_tween().parallel().tween_interval(0.01)
+	ANIM.main_tween().play()
 
 	_end_move()
 

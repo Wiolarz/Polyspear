@@ -24,6 +24,7 @@ BM="*res://Scripts/Battle/battle_manager.gd"
 IM="*res://Scripts/General/input_manager.gd"
 NET="*res://Scripts/Multiplayer/NET_manager.gd"
 UI="*res://Scripts/UI/ui_manager.gd"
+ANIM="*res://Scripts/General/animation_manager.gd"
 
 [debug]
 
