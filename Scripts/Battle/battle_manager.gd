@@ -383,6 +383,7 @@ func _on_unit_summoned(unit : Unit) -> void:
 
 	_battle_ui.unit_summoned(not _battle_grid_state.is_during_summoning_phase())
 
+
 	unit.unit_died.connect(form.anim_die)
 	unit.unit_turned.connect(form.anim_turn)
 	unit.unit_moved.connect(form.anim_move)
@@ -393,6 +394,8 @@ func _on_unit_summoned(unit : Unit) -> void:
 	unit.unit_is_slashing.connect(form.anim_symbol)
 	unit.unit_is_blocking.connect(form.anim_symbol)
 	unit.unit_is_counter_attacking.connect(form.anim_symbol)
+
+	unit.unit_captured_mana.connect(capture_mana_well.bind(unit))
 
 
 ## handles player input while during the summoning phase
@@ -426,6 +429,21 @@ func get_cyclone_timer() -> int:
 func get_player_mana(player : Player) -> int:
 	var player_army = _battle_grid_state._get_player_army(player) # TEMP? or should it be public
 	return player_army.mana_points
+
+
+## visually captures the well
+## unit get's their coord updated during animation
+func capture_mana_well(coord : Vector2i, unit : Unit) -> void:
+	
+	var controller_sprite = _tile_grid.get_hex(coord).get_node("ControlerSprite")
+	controller_sprite.visible = true
+	var data_color : DataPlayerColor = unit.controller.get_player_color()
+
+	var color_texture_name : String = data_color.hexagon_texture
+	var path = "%s%s.png" % [CFG.PLAYER_COLORS_PATH, color_texture_name]
+	var texture = load(path) as Texture2D
+	assert(texture, "failed to load background " + path)
+	controller_sprite.texture = texture
 
 #endregion Mana Cyclone Timer
 
