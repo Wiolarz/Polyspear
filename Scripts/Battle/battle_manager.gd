@@ -27,9 +27,10 @@ var _replay_move_counter : int = 0
 var _replay_number_of_moves : int = 0
 
 var _batch_mode : bool = false # flagged true when recreating game state
-
+var _painter_node : BattlePainter
 
 func _ready():
+	## Order of nodes determines their visibility, lower ones are on top of the previous ones.
 	_battle_ui = load("res://Scenes/UI/BattleUi.tscn").instantiate()
 
 	_grid_tiles_node = Node2D.new()
@@ -40,13 +41,12 @@ func _ready():
 	_unit_forms_node.name = "UNITS"
 	add_child(_unit_forms_node)
 	
+	_painter_node = load("res://Scenes/UI/Battle/BattlePlanPainter.tscn").instantiate()
+	add_child(_painter_node)
+
 	_move_highlights_node = Node2D.new()
 	_move_highlights_node.name = "MOVE_HIGHLIGHTS"
 	add_child(_move_highlights_node)
-
-	_planner_arrows_node = Node2D.new()
-	_planner_arrows_node.name = "PLANNER_ARROWS"
-	add_child(_planner_arrows_node)
 
 	UI.add_custom_screen(_battle_ui)
 
@@ -263,7 +263,7 @@ func grid_input(coord : Vector2i) -> void:
 		return
 
 	# any normal input removes all drawn arrows
-	Helpers.remove_all_children(_planner_arrows_node)
+	_painter_node.erase()
 
 	var current_player : Player =  _battle_grid_state.get_current_player()
 	if current_player != null and current_player.bot_engine:
@@ -821,20 +821,13 @@ func get_current_time_left_ms() -> int:
 #endregion Chess clock
 
 
-#region Planning (Chess arrows)
+#region Painting
 
-## Draws a single pointer on a tile, those are cleared by any normal (left click) input
-## TODO add arrows 
-func planning_input(tile_coord : Vector2i) -> void:
-	var color : Color = Color.WHITE_SMOKE
+func planning_input(tile_coord : Vector2i, is_it_pressed : bool) -> void:
+	_painter_node.planning_input(tile_coord, is_it_pressed)
 
-	var pointer = CFG.PLAN_POINTER_SCENE.instantiate()
-	pointer.modulate = color
-	pointer.position = BM.to_position(tile_coord)
-	_planner_arrows_node.add_child(pointer)
+#endregion Painting
 
-
-#endregion Planning (Chess arrows)
 
 #region anim queue
 

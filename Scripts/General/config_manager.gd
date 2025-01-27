@@ -65,6 +65,7 @@ const DEFAULT_ARMY_FORM = preload("res://Scenes/Form/ArmyForm.tscn")
 
 const MOVE_HIGHLIGHT_SCENE = preload("res://Scenes/UI/Battle/BattleMoveHighlight.tscn")
 const PLAN_POINTER_SCENE = preload("res://Scenes/UI/Battle/BattlePlanPointer.tscn")
+const PLAN_ARROW_END_SCENE = preload("res://Scenes/UI/Battle/BattlePlanArrowEnd.tscn")
 
 # Neutral Units armies
 const HUNT_WOOD_PATH : String = "res://Resources/Presets/Army/hunt_wood/"
