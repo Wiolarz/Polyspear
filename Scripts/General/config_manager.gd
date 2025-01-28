@@ -1,6 +1,9 @@
 # Singleton - CFG
 extends Node
 
+
+#region Animations
+
 enum BotSpeed
 {
 	FREEZE = 0,
@@ -20,8 +23,16 @@ enum AnimationSpeed
 ## so unit move takes between X and 2X
 var animation_speed_frames : AnimationSpeed = AnimationSpeed.NORMAL
 
-var animation_default_ease := Tween.EASE_OUT
-var animation_default_trans := Tween.TRANS_CUBIC
+var anim_default_ease := Tween.EASE_OUT
+var anim_default_trans := Tween.TRANS_CUBIC
+var anim_move_duration := 0.3
+var anim_turn_duration := 0.3
+var anim_death_duration := 0.3
+var anim_symbol_activation_scale := Vector2(2.0, 2.0)
+# temporarily cranked up to 0.8, TODO change to 0.5 when 
+var anim_symbol_activation_duration := 0.8
+
+#endregion
 
 ## battle map is placed this far to the right after world map bounds
 const MAPS_OFFSET_X = 7000

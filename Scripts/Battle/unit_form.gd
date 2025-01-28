@@ -121,10 +121,10 @@ func _apply_level_number(level : int) -> void:
 
 func anim_move():
 	var target = BM.get_tile_global_position(entity.coord)
-	ANIM.main_tween().tween_property(self, "position", target, 0.3)
+	ANIM.main_tween().tween_property(self, "position", target, CFG.anim_move_duration)
 
 func anim_turn():
-	var time = 0.3
+	var time = CFG.anim_turn_duration
 	var angle_rel = angle_difference(rotation, deg_to_rad(entity.unit_rotation * 60))
 	ANIM.main_tween().tween_property(self, "rotation", angle_rel, time).as_relative()
 	ANIM.main_tween().parallel().tween_property($sprite_unit, "rotation", -angle_rel, time).as_relative()
@@ -133,7 +133,7 @@ func anim_turn():
 	_flip_unit_sprite()
 
 func anim_die():
-	ANIM.main_tween().tween_property(self, "scale", Vector2.ZERO, 0.3)
+	ANIM.main_tween().tween_property(self, "scale", Vector2.ZERO, CFG.anim_death_duration)
 	ANIM.main_tween().tween_callback(queue_free)
 
 func anim_symbol(side: int):
@@ -141,8 +141,8 @@ func anim_symbol(side: int):
 			side as GenericHexGrid.GridDirections, -entity.unit_rotation)
 	var symbol = get_node("Symbols/%s/SymbolForm" % SIDE_NAMES[side_local])
 	var tween = ANIM.subtween()
-	tween.tween_property(symbol, "scale", Vector2(2.0, 2.0), 0.0)
-	tween.tween_property(symbol, "scale", Vector2(1.0, 1.0), 0.5)
+	tween.tween_property(symbol, "scale", CFG.anim_symbol_activation_scale, 0.0)
+	tween.tween_property(symbol, "scale", Vector2(1.0, 1.0), CFG.anim_symbol_activation_duration)
 
 func anim_magic():
 	# TODO

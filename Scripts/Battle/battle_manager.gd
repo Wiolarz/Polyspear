@@ -253,7 +253,7 @@ func grid_input(coord : Vector2i) -> void:
 		print("replay playing, input ignored")
 		return
 
-	if ANIM.playing():
+	if ANIM.is_playing():
 		print("anim playing, input ignored")
 		return
 
@@ -597,7 +597,9 @@ func _perform_move_info(move_info : MoveInfo) -> void:
 	
 	# Make sure there's anything to tween to avoid errors
 	ANIM.main_tween().parallel().tween_interval(0.01)
+	# When the animation's done, emit a signal
 	ANIM.main_tween().tween_callback(func(): move_animation_done.emit())
+	# Play the recorded animation
 	ANIM.main_tween().play()
 
 	_end_move()
@@ -760,7 +762,7 @@ func _replay_move_delay() -> void:
 	
 	var elapsed_ms = Time.get_ticks_msec() - begin
 	# Minimal allowed animation duration - 1 second in normal speed
-	var min_duration = CFG.bot_speed_frames/CFG.BotSpeed.NORMAL
+	var min_duration = CFG.bot_speed_frames / CFG.BotSpeed.NORMAL
 	var delay = max(min_duration - elapsed_ms/1000.0, min_duration/10.0)
 	await get_tree().create_timer(delay).timeout
 	

@@ -1,3 +1,4 @@
+# Singleton - ANIM
 extends Node
 
 enum PlaybackMode {
@@ -12,14 +13,15 @@ var _playback_mode : PlaybackMode = PlaybackMode.NORMAL
 var _speed_scale : float = 1.0
 
 
-func _process(_delta):
+func _process(_delta: float):
+	# Calcula
 	_speed_scale =  CFG.animation_speed_frames / CFG.AnimationSpeed.NORMAL
 	change_speed(_speed_scale)
 
 
 func create_my_tween() -> Tween:
 	var tween = get_tree().create_tween()
-	tween.set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_QUAD)
+	tween.set_ease(CFG.anim_default_ease).set_trans(CFG.anim_default_trans)
 	tween.set_speed_scale(_speed_scale)
 	tween.stop()
 	return tween
@@ -32,7 +34,7 @@ func main_tween() -> Tween:
 
 
 ## Create a subtween, ran at the end of main tween (or a custom defined tween)
-func subtween(parent: Tween = main_tween()) -> Tween:
+func subtween(parent : Tween = main_tween()) -> Tween:
 	var tween = create_my_tween()
 	tween.finished.connect(_tween_finished.bind(tween))
 	parent.tween_callback(_play_tween.bind(tween))
@@ -41,15 +43,15 @@ func subtween(parent: Tween = main_tween()) -> Tween:
 
 
 ## Change the speed of a main tween and all its subtweens
-func change_speed(scale: float):
-	if _main_tween:
+func change_speed(scale : float):
+	if _main_tween: # TODO is this check useful?
 		_main_tween.set_speed_scale(scale)
 	for tween in _running_tweens:
 		tween.set_speed_scale(scale)
 
 
 ## Instantly execute main tween and all its subtweens
-func fast_forward():
+func fast_forward() -> void:
 	_playback_mode = PlaybackMode.FAST_FORWARD
 	if _main_tween and _main_tween.is_valid():
 		_main_tween.custom_step(INF)
@@ -63,11 +65,11 @@ func fast_forward():
 	_playback_mode = PlaybackMode.NORMAL
 
 
-func playing() -> bool:
+func is_playing() -> bool:
 	return _main_tween != null and _main_tween.is_running()
 
 
-func _play_tween(tween: Tween):
+func _play_tween(tween : Tween) -> void:
 	match _playback_mode:
 		PlaybackMode.NORMAL:
 			tween.set_speed_scale(_speed_scale)
@@ -81,6 +83,6 @@ func _play_tween(tween: Tween):
 			tween.custom_step(INF)
 
 
-func _tween_finished(tween: Tween):
+func _tween_finished(tween: Tween) -> void:
 	_running_tweens.erase(tween)
 
