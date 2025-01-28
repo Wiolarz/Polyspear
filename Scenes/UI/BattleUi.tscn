@@ -2,8 +2,8 @@
 
 [ext_resource type="Script" path="res://Scripts/UI/battle_ui.gd" id="1_0rgae"]
 [ext_resource type="Shortcut" uid="uid://fuvss5hfg4q2" path="res://Resources/Shortcuts/go_back.tres" id="2_hku4e"]
-[ext_resource type="Texture2D" uid="uid://bcf50aa63e5x7" path="res://Art/units/elf/elf_archer.png" id="3_tidxc"]
-[ext_resource type="Texture2D" uid="uid://i280h28mqf1x" path="res://Art/units/neutral/wood_dryad.png" id="4_k6rxg"]
+[ext_resource type="Texture2D" uid="uid://cukwcwy4fikm1" path="res://Art/elf_hero_noble.png" id="3_arbmx"]
+[ext_resource type="Texture2D" uid="uid://mohmdyii2gpf" path="res://Art/elf_hero_stalker.png" id="4_bhs22"]
 [ext_resource type="PackedScene" uid="uid://c2tjldwjynnry" path="res://Scenes/UI/GameChat.tscn" id="5_10swj"]
 
 [node name="BattleUI" type="CanvasLayer"]
@@ -53,20 +53,20 @@ text = "Player2"
 anchors_preset = 2
 anchor_top = 1.0
 anchor_bottom = 1.0
-offset_left = 14.0
-offset_top = -188.0
-offset_right = 6294.0
-offset_bottom = 371.0
+offset_left = -1.0
+offset_top = 25.0
+offset_right = 6279.0
+offset_bottom = 1620.0
 grow_vertical = 0
-scale = Vector2(0.3, 0.3)
+scale = Vector2(0.15, 0.15)
 
 [node name="TextureButton" type="TextureButton" parent="Units"]
 layout_mode = 2
-texture_normal = ExtResource("3_tidxc")
+texture_normal = ExtResource("3_arbmx")
 
 [node name="TextureButton2" type="TextureButton" parent="Units"]
 layout_mode = 2
-texture_normal = ExtResource("4_k6rxg")
+texture_normal = ExtResource("4_bhs22")
 
 [node name="GameChat" parent="." instance=ExtResource("5_10swj")]
 anchors_preset = 3
