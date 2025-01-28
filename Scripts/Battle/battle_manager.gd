@@ -26,6 +26,8 @@ var _replay_number_of_moves : int = 0
 
 var _batch_mode : bool = false # flagged true when recreating game state
 
+signal move_animation_done()
+
 
 func _ready():
 	_battle_ui = load("res://Scenes/UI/BattleUi.tscn").instantiate()
@@ -595,6 +597,7 @@ func _perform_move_info(move_info : MoveInfo) -> void:
 	
 	# Make sure there's anything to tween to avoid errors
 	ANIM.main_tween().parallel().tween_interval(0.01)
+	ANIM.main_tween().tween_callback(func(): move_animation_done.emit())
 	ANIM.main_tween().play()
 
 	_end_move()
@@ -752,7 +755,15 @@ func perform_replay(replay : BattleReplay) -> void:
 
 
 func _replay_move_delay() -> void:
-	await get_tree().create_timer(CFG.bot_speed_frames/60).timeout
+	var begin = Time.get_ticks_msec()
+	await move_animation_done
+	
+	var elapsed_ms = Time.get_ticks_msec() - begin
+	# Minimal allowed animation duration - 1 second in normal speed
+	var min_duration = CFG.bot_speed_frames/CFG.BotSpeed.NORMAL
+	var delay = max(min_duration - elapsed_ms/1000.0, min_duration/10.0)
+	await get_tree().create_timer(delay).timeout
+	
 	while IM.is_game_paused() or CFG.bot_speed_frames == CFG.BotSpeed.FREEZE:
 		await get_tree().create_timer(0.1).timeout
 		if not _battle_is_ongoing:
