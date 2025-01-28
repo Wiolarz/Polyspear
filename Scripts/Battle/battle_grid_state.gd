@@ -368,9 +368,9 @@ func _process_bow(unit : Unit, side : int, weapon : E.Symbols) -> void:
 ## pushes enemy in non-relative direction, "power" tiles away [br]
 ## checks on each tile if it's possible to be moved to that spot [br]
 ## deppending on power value 
-func _push_enemy(enemy : Unit, direction : int, power : int) -> void:
+func _push_enemy(enemy : Unit, direction : int, push_power : int) -> void:
 	
-	for push_power in range(1, power + 1):
+	for pushed_distance in range(1, push_power + 1):
 		var target_coord := GenericHexGrid.distant_coord(enemy.coord, direction, 1)
 		var target_hex = get_hex(target_coord)
 
@@ -383,8 +383,8 @@ func _push_enemy(enemy : Unit, direction : int, power : int) -> void:
 			return
 
 		if not target_hex.can_be_moved_to:
-			# push behaves different for power equal to 1
-			if power == 1 or push_power< power:
+			# push behaves different for push_power equal to 1
+			if push_power == 1 or pushed_distance < push_power:
 				_kill_unit(enemy, armies_in_battle_state[current_army_index])
 				return
 			# push power innsuficient to kill a unit
@@ -392,9 +392,10 @@ func _push_enemy(enemy : Unit, direction : int, power : int) -> void:
 			
 		var target := get_unit(target_coord)
 		if target != null:
-			# Spot isn't empty
-			_kill_unit(enemy, armies_in_battle_state[current_army_index])
-			return
+			if push_power == 1 or pushed_distance < push_power:
+				_kill_unit(enemy, armies_in_battle_state[current_army_index])
+				return
+			return # push power innsuficient to kill a unit
 
 		currently_processed_move_info.register_push(enemy, target_coord)
 
@@ -1207,26 +1208,46 @@ func _ai_will_melee_kill_someone(unit : Unit, direction : int, coord : Vector2i)
 			return true
 		# in case enemy defended against attack we check if attacker pushes away enemy
 		if Unit.can_it_push(unit_weapon):
-			var pushed_cord : Vector2i = GenericHexGrid.distant_coord(enemy.coord, side, 1)
-
-			var hex = _get_battle_hex(pushed_cord)
-			if not hex.can_be_moved_to:
-				return true  # unit would get crushed
-
-			var unit_on_target = hex.unit
-			if unit_on_target:
-				return true # unit would get crushed
-
-			if _get_counter_attack_killers(enemy, enemy.unit_rotation, pushed_cord).size() > 0:
+			if _will_push_kill(enemy, side, Unit.push_power(unit_weapon)):
 				return true
 
 	return false
 
 
+func _will_push_kill(pushed_unit : Unit, direction : int, push_power : int) -> bool:
+	var target_coord := pushed_unit.coord
+
+	for pushed_distance in range(1, push_power + 1):
+		target_coord = GenericHexGrid.distant_coord(target_coord, direction, 1)
+		var target_hex = get_hex(target_coord)
+
+		if target_hex.pit:
+			return true
+
+		if not target_hex.can_be_moved_to:
+			# push behaves different for power equal to 1
+			if push_power == 1 or pushed_distance < push_power:
+				return true
+			# push power innsuficient to kill a unit
+			return false
+			
+		var target := get_unit(target_coord)
+		if target != null:
+			# push behaves different for power equal to 1
+			if push_power == 1 or pushed_distance < push_power:
+				return true
+			else:
+				return false
+		
+		var spear_killers = _get_counter_attack_killers(pushed_unit, pushed_unit.unit_rotation, target_coord)
+		if spear_killers.size() > 0:
+			return true
+	return false
+
+
 func _get_counter_attack_killers(unit : Unit, direction : int, coord : Vector2i) -> Array[Unit]:
 	# Returns all units that will kill this unit it were present on this tile
-	var killer_units : Array[Unit] = []	
-
+	var killer_units : Array[Unit] = []
 
 	var adjacent_units = _get_adjacent_units(coord)
 
@@ -1241,7 +1262,7 @@ func _get_counter_attack_killers(unit : Unit, direction : int, coord : Vector2i)
 		var opposite_side := GenericHexGrid.opposite_direction(side)
 		var enemy_symbol : E.Symbols = enemy_unit.get_symbol(opposite_side)
 
-		if Unit.will_parry_occur(unit_symbol, enemy_symbol):
+		if Unit.will_parry_occur(enemy_symbol, unit_symbol):
 			continue  # parry prevents counter attacks
 		
 		if Unit.does_it_counter_attack(enemy_symbol):
@@ -1256,6 +1277,7 @@ func _get_counter_attack_killers(unit : Unit, direction : int, coord : Vector2i)
 func _is_kill_move(move : MoveInfo) -> bool:
 	var consequences = get_move_consequences(move)
 	return consequences == MoveConsequences.KILL or consequences == MoveConsequences.KAMIKAZE
+
 
 func get_move_consequences(move : MoveInfo) -> MoveConsequences:
 	# list of checks:
@@ -1319,6 +1341,14 @@ func get_move_consequences(move : MoveInfo) -> MoveConsequences:
 		return MoveConsequences.KAMIKAZE if kill_registered else MoveConsequences.DEATH
 
 	# step 5
+	# check for rare case when unit has a push weapon in front and it would push enemy unit away while entering that tile
+	var pushed_enemy_unit = get_unit(move.target_tile_coord)
+	if pushed_enemy_unit and not kill_registered:  # no need to check if unit in front was already killed
+		# if kill hasn't occured yet and unit is able to enter tile with enemy it means it ahs push power in front
+		var push_power : int = Unit.push_power(attacker.get_front_symbol()) + 1  # +1 accounts for unit still being on her old spot
+		if _will_push_kill(pushed_enemy_unit, move_direction, push_power):
+			return MoveConsequences.KILL
+
 	if _ai_will_melee_kill_someone(attacker, move_direction, move.target_tile_coord):
 		kill_registered = true
 
