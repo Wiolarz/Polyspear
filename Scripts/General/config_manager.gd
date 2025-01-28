@@ -78,6 +78,8 @@ const SUMMON_BUTTON_TEXTURE:Texture2D = preload("res://Art/battle_map/grass.png"
 const DEFAULT_ARMY_FORM = preload("res://Scenes/Form/ArmyForm.tscn")
 
 const MOVE_HIGHLIGHT_SCENE = preload("res://Scenes/UI/Battle/BattleMoveHighlight.tscn")
+const PLAN_POINTER_SCENE = preload("res://Scenes/UI/Battle/BattlePlanPointer.tscn")
+const PLAN_ARROW_END_SCENE = preload("res://Scenes/UI/Battle/BattlePlanArrowEnd.tscn")
 
 # Neutral Units armies
 const HUNT_WOOD_PATH : String = "res://Resources/Presets/Army/hunt_wood/"
@@ -186,8 +188,8 @@ var DEFAULT_MODE_IS_BATTLE : bool :
 var AUTO_START_GAME : bool :
 	get: return player_options.autostart_map
 
-var LAST_USED_BATTLE_PRESET : PresetBattle :
-	get: return player_options.last_used_battle_preset
+var LAST_USED_BATTLE_PRESET_NAME : String :
+	get: return player_options.last_used_battle_preset_name
 var LAST_USED_WORLD_PRESET : PresetWorld : # TODO implement this
 	get: return player_options.last_used_world_preset
 

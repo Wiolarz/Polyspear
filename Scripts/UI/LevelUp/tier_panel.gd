@@ -17,7 +17,7 @@ var setup_ui : BattleSetup = null
 	$MainContainer/TierSkills/MagicSkillButton,
 ]
 
-
-func init_tier_panel(tier : int, faction : DataFaction) -> void:
+# STUB
+func init_tier_panel(tier : int, _faction : DataFaction) -> void:
 	tier_name.text = "TIER - " + str(tier)
 	pass

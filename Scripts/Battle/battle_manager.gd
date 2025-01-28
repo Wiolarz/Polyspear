@@ -11,6 +11,7 @@ var _grid_tiles_node : Node2D # parent for tiles VISUAL
 var _unit_forms_node : Node2D # parent for units VISUAL
 var _border_node : Node2D # parent for border tiles VISUAL
 var _move_highlights_node : Node2D
+var _planner_arrows_node : Node2D  # parent for all chess arrows nodes
 
 var _battle_ui : BattleUI
 var latest_ai_cancel_token : CancellationToken
@@ -25,11 +26,13 @@ var _replay_move_counter : int = 0
 var _replay_number_of_moves : int = 0
 
 var _batch_mode : bool = false # flagged true when recreating game state
+var _painter_node : BattlePainter
 
 signal move_animation_done()
 
 
 func _ready():
+	## Order of nodes determines their visibility, lower ones are on top of the previous ones.
 	_battle_ui = load("res://Scenes/UI/BattleUi.tscn").instantiate()
 
 	_grid_tiles_node = Node2D.new()
@@ -40,6 +43,9 @@ func _ready():
 	_unit_forms_node.name = "UNITS"
 	add_child(_unit_forms_node)
 	
+	_painter_node = load("res://Scenes/UI/Battle/BattlePlanPainter.tscn").instantiate()
+	add_child(_painter_node)
+
 	_move_highlights_node = Node2D.new()
 	_move_highlights_node.name = "MOVE_HIGHLIGHTS"
 	add_child(_move_highlights_node)
@@ -110,7 +116,7 @@ func _load_map(map : DataBattleMap) -> void:
 			_tile_grid.set_hex(coord, tile_form)
 			tile_form.position = to_position(coord)
 			_grid_tiles_node.add_child(tile_form)
-	
+
 	if not IM.in_map_editor:
 		_border_node = MapBorder.from_map(map)
 		add_child(_border_node)
@@ -257,6 +263,9 @@ func grid_input(coord : Vector2i) -> void:
 		print("anim playing, input ignored")
 		return
 
+	# any normal input removes all drawn arrows
+	_painter_node.erase()
+
 	var current_player : Player =  _battle_grid_state.get_current_player()
 	if current_player != null and current_player.bot_engine:
 		print("ai playing, input ignored")
@@ -288,9 +297,6 @@ func grid_input(coord : Vector2i) -> void:
 
 
 func _check_for_stalemate() -> bool:
-	assert(BattleGridState.STALEMATE_TURN_REPEATS == 2,
-	" _check_for_stalemate has wrong STALEMATE_TURN_REPEATS value
-	later parts of this function version wasn't made in mind with more repeats allowed")
 	var limit = BattleGridState.STALEMATE_TURN_REPEATS
 
 	# if number of the armies were to change during last few moves, then it wouldn't be a stalemate
@@ -836,3 +842,13 @@ func get_current_time_left_ms() -> int:
 	return 0
 
 #endregion Chess clock
+
+#region Painting
+
+func planning_input(tile_coord : Vector2i, is_it_pressed : bool) -> void:
+	_painter_node.planning_input(tile_coord, is_it_pressed)
+
+#endregion Painting
+
+func _on_unit_magic_effect(unit : Unit) -> void:
+	_unit_to_unit_form[unit].set_effects()

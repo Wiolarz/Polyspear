@@ -15,6 +15,7 @@ const STATE_BATTLE_FINISHED = "battle_finished"
 
 const MOVE_IS_INVALID = -1
 
+## BM._check_for_stalemate() doesn't yet handle bigger number of allowed repeats than 2
 const STALEMATE_TURN_REPEATS = 2  # number of repeated moves that fast forward Mana Cyclon Timer
 
 var state : String = STATE_SUMMONNING
