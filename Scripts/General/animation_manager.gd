@@ -14,7 +14,7 @@ var _speed_scale : float = 1.0
 
 
 func _process(_delta: float):
-	# Calcula
+	# Set tweens' speed based on game speed (normal = 1.0, instant >> 1.0)
 	_speed_scale =  CFG.animation_speed_frames / CFG.AnimationSpeed.NORMAL
 	change_speed(_speed_scale)
 
