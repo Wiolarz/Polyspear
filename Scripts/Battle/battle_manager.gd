@@ -14,7 +14,6 @@ var _move_highlights_node : Node2D
 var _planner_arrows_node : Node2D  # parent for all chess arrows nodes
 
 var _battle_ui : BattleUI
-var _anim_queue : Array[AnimInQueue] = []
 var latest_ai_cancel_token : CancellationToken
 
 var _current_summary : DataBattleSummary = null
@@ -28,6 +27,9 @@ var _replay_number_of_moves : int = 0
 
 var _batch_mode : bool = false # flagged true when recreating game state
 var _painter_node : BattlePainter
+
+signal move_animation_done()
+
 
 func _ready():
 	## Order of nodes determines their visibility, lower ones are on top of the previous ones.
@@ -52,7 +54,6 @@ func _ready():
 
 
 func _process(_delta):
-	_process_anim_queue()
 	_check_clock_timer_tick()
 
 
@@ -258,7 +259,7 @@ func grid_input(coord : Vector2i) -> void:
 		print("replay playing, input ignored")
 		return
 
-	if _anim_queue.size() > 0:
+	if ANIM.is_playing():
 		print("anim playing, input ignored")
 		return
 
@@ -383,10 +384,16 @@ func _on_unit_summoned(unit : Unit) -> void:
 
 	_battle_ui.unit_summoned(not _battle_grid_state.is_during_summoning_phase())
 
-	unit.unit_died.connect(_on_unit_killed.bind(unit))
-	unit.unit_turned.connect(_on_unit_turned.bind(unit))
-	unit.unit_moved.connect(_on_unit_moved.bind(unit))
-	unit.unit_magic_effect.connect(_on_unit_magic_effect.bind(unit))
+	unit.unit_died.connect(form.anim_die)
+	unit.unit_turned.connect(form.anim_turn)
+	unit.unit_moved.connect(form.anim_move)
+	unit.unit_magic_effect.connect(form.anim_magic)
+	
+	unit.unit_is_pushing.connect(form.anim_symbol)
+	unit.unit_is_shooting.connect(form.anim_symbol)
+	unit.unit_is_slashing.connect(form.anim_symbol)
+	unit.unit_is_blocking.connect(form.anim_symbol)
+	unit.unit_is_counter_attacking.connect(form.anim_symbol)
 
 
 ## handles player input while during the summoning phase
@@ -571,6 +578,8 @@ func _perform_move_info(move_info : MoveInfo) -> void:
 	if not _battle_is_ongoing:
 		return
 	print(NET.get_role_name(), " performing move ", move_info)
+	
+	ANIM.fast_forward()
 
 	_replay_move_counter += 1
 
@@ -591,6 +600,13 @@ func _perform_move_info(move_info : MoveInfo) -> void:
 
 		_ :
 			assert(false, "Move move_type not supported in perform, " + str(move_info.move_type))
+	
+	# Make sure there's anything to tween to avoid errors
+	ANIM.main_tween().parallel().tween_interval(0.01)
+	# When the animation's done, emit a signal
+	ANIM.main_tween().tween_callback(func(): move_animation_done.emit())
+	# Play the recorded animation
+	ANIM.main_tween().play()
 
 	_end_move()
 
@@ -601,7 +617,6 @@ func _perform_move_info(move_info : MoveInfo) -> void:
 
 func close_when_quiting_game() -> void:
 	deselect_unit()
-	_clear_anim_queue()
 	_battle_ui.hide_replay_controls()
 	_turn_off_battle_ui()
 	_reset_grid_and_unit_forms()
@@ -748,7 +763,15 @@ func perform_replay(replay : BattleReplay) -> void:
 
 
 func _replay_move_delay() -> void:
-	await get_tree().create_timer(CFG.bot_speed_frames/60).timeout
+	var begin = Time.get_ticks_msec()
+	await move_animation_done
+	
+	var elapsed_ms = Time.get_ticks_msec() - begin
+	# Minimal allowed animation duration - 1 second in normal speed
+	var min_duration = CFG.bot_speed_frames / CFG.BotSpeed.NORMAL
+	var delay = max(min_duration - elapsed_ms/1000.0, min_duration/10.0)
+	await get_tree().create_timer(delay).timeout
+	
 	while IM.is_game_paused() or CFG.bot_speed_frames == CFG.BotSpeed.FREEZE:
 		await get_tree().create_timer(0.1).timeout
 		if not _battle_is_ongoing:
@@ -820,7 +843,6 @@ func get_current_time_left_ms() -> int:
 
 #endregion Chess clock
 
-
 #region Painting
 
 func planning_input(tile_coord : Vector2i, is_it_pressed : bool) -> void:
@@ -828,101 +850,5 @@ func planning_input(tile_coord : Vector2i, is_it_pressed : bool) -> void:
 
 #endregion Painting
 
-
-#region anim queue
-
-## called every frame by _process
-func _process_anim_queue() -> void:
-	if _anim_queue.size() == 0:
-		return
-	if not _anim_queue[0].started:
-		_anim_queue[0].start()
-	if _anim_queue[0].ended:
-		_anim_queue.pop_front()
-		return
-	if not _anim_queue[0]._unit_form:
-		var broken = _anim_queue.pop_front()
-		push_warning("poping broken animation from the queue " + str(broken))
-
-
-func _clear_anim_queue():
-	for anim in _anim_queue:
-		anim.on_anim_end()
-	_anim_queue.clear()
-
-
-func _on_unit_killed(unit : Unit) -> void:
-	if _batch_mode:
-		_unit_to_unit_form[unit].update_death_immediately()
-	else:
-		_anim_queue.push_back(AnimInQueue.create_die(_unit_to_unit_form[unit]))
-	_unit_to_unit_form.erase(unit)
-
-
-func _on_unit_turned(unit : Unit) -> void:
-	if _batch_mode:
-		_unit_to_unit_form[unit].update_turn_immediately()
-	else:
-		_anim_queue.push_back(AnimInQueue.create_turn(_unit_to_unit_form[unit]))
-
-
-func _on_unit_moved(unit : Unit) -> void:
-	if _batch_mode:
-		_unit_to_unit_form[unit].update_death_immediately()
-	else:
-		_anim_queue.push_back(AnimInQueue.create_move(_unit_to_unit_form[unit]))
-
-
 func _on_unit_magic_effect(unit : Unit) -> void:
 	_unit_to_unit_form[unit].set_effects()
-
-
-class AnimInQueue:
-	var started : bool
-	var ended : bool
-	var debug_name : String
-	var _unit_form : UnitForm
-	var _animate : Callable
-
-
-	static func create_turn(unit_form_ : UnitForm) -> AnimInQueue:
-		var result = AnimInQueue.new()
-		result.debug_name = "turn_"+unit_form_.entity.template.unit_name
-		result._unit_form = unit_form_
-		unit_form_.anim_end.connect(result.on_anim_end)
-		result._animate = func () : if (unit_form_): unit_form_.start_turn_anim()
-		return result
-
-
-	static func create_move(unit_form_ : UnitForm) -> AnimInQueue:
-		var result = AnimInQueue.new()
-		result.debug_name = "move_"+unit_form_.entity.template.unit_name
-		result._unit_form = unit_form_
-		unit_form_.anim_end.connect(result.on_anim_end)
-		result._animate = func () : if (unit_form_): unit_form_.start_move_anim()
-		return result
-
-
-	static func create_die(unit_form_ : UnitForm) -> AnimInQueue:
-		var result = AnimInQueue.new()
-		result.debug_name = "die_"+unit_form_.entity.template.unit_name
-		result._unit_form = unit_form_
-		unit_form_.anim_end.connect(result.on_anim_end)
-		result._animate = func () : if (unit_form_): unit_form_.start_death_anim()
-		return result
-
-
-	func start() -> void:
-		started = true
-		_animate.call()
-
-
-	func on_anim_end() -> void:
-		ended = true
-		_unit_form.anim_end.disconnect(on_anim_end)
-
-
-	func _to_string():
-		return debug_name
-
-#endregion anim queue
