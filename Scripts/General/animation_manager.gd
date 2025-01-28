@@ -35,8 +35,7 @@ func main_tween() -> Tween:
 func subtween(parent: Tween = main_tween()) -> Tween:
 	var tween = create_my_tween()
 	tween.finished.connect(_tween_finished.bind(tween))
-	
-	_main_tween.tween_callback(_play_tween.bind(tween))
+	parent.tween_callback(_play_tween.bind(tween))
 
 	return tween
 
@@ -62,6 +61,10 @@ func fast_forward():
 	# From now on use a new main tween, since the old tween is invalid
 	_main_tween = null
 	_playback_mode = PlaybackMode.NORMAL
+
+
+func playing() -> bool:
+	return _main_tween != null and _main_tween.is_running()
 
 
 func _play_tween(tween: Tween):

@@ -7,29 +7,12 @@ signal anim_end()
 const SIDE_NAMES = ["FrontSymbol", "FrontRightSymbol", "BackRightSymbol", "BackSymbol", "BackLeftSymbol", "FrontLeftSymbol"]
 
 var entity : Unit
-
-var _play_move_anim : bool
-var _target_global_position : Vector2
-var _move_speed : float
-
-var _play_turn_anim : bool
-var _target_rotation_degrees : float
-var _rotation_speed : float
-
-var _play_death_anim : bool
-
 var _symbols_flipped : bool = true  # flag used for unit rotation
 
 
-func _process(delta):
+func _process(_delta):
 	if entity:
 		$Symbols.modulate = Color.RED if entity.is_on_swamp else Color.WHITE
-	if _animate_rotation():
-		return
-	if _animate_movement():
-		return
-	_animate_death(delta)
-
 
 #region Init
 
@@ -47,9 +30,7 @@ static func create(new_unit : Unit) -> UnitForm:
 	result.apply_graphics(new_unit.template, color)
 
 	result.global_position = BM.get_tile_global_position(new_unit.coord)
-	result._target_global_position = result.global_position
 	result.rotation_degrees = new_unit.unit_rotation * 60
-	result._target_rotation_degrees = result.rotation_degrees
 	result.get_node("sprite_unit").rotation = -result.rotation
 	result.get_node("RigidUI").rotation = -result.rotation
 	return result
@@ -136,6 +117,7 @@ func _apply_level_number(level : int) -> void:
 
 #endregion Init
 
+#region Animations
 
 func anim_move():
 	var target = BM.get_tile_global_position(entity.coord)
@@ -166,32 +148,7 @@ func anim_magic():
 	# TODO
 	pass
 
-#region Instant Animation Mode
-## Used only when animation speed is set to instant
-
-func update_movement_immediately():
-	var tile_position = BM.get_tile_global_position(entity.coord)
-	global_position = tile_position
-
-
-func update_turn_immediately():
-	var side = entity.unit_rotation
-	_target_rotation_degrees = (60 * (side))
-	rotation_degrees = _target_rotation_degrees
-	$sprite_unit.rotation = -rotation
-	$RigidUI.rotation = -rotation
-	_rotation_symbol_flip()
-	_flip_unit_sprite()
-
-
-func update_death_immediately():
-	# TODO maybe check if unit is dead??
-	scale = Vector2(0.0, 0.0)
-
-#endregion Instant Animation Mode
-
-
-#region Animations
+#endregion Animations
 
 func _rotation_symbol_flip():
 	_symbols_flipped = true
@@ -201,109 +158,6 @@ func _rotation_symbol_flip():
 		if symbol_sprite.texture == null:
 			continue
 		_flip_symbol_sprite(symbol_sprite, dir)
-
-
-func start_turn_anim():
-	print("start turn anim")
-	_play_turn_anim = true
-	var new_side = entity.unit_rotation
-	_target_rotation_degrees = (60 * (new_side))
-
-	var current_rotation_degrees = fmod(rotation_degrees + 360, 360)
-	var relative_rotation = _target_rotation_degrees - current_rotation_degrees
-	_rotation_speed = abs(relative_rotation) / CFG.animation_speed_frames
-
-
-func start_move_anim():
-	print("start move anim")
-	_play_move_anim = true
-	var new_coord = entity.coord
-	_target_global_position = BM.get_tile_global_position(new_coord)
-	_move_speed = (_target_global_position - global_position).length() / CFG.animation_speed_frames
-	print("move from ", global_position, " to ", _target_global_position, " coord ", new_coord )
-
-
-func start_death_anim():
-	print("start death anim")
-	_play_death_anim = true
-
-
-func _animate_rotation() -> bool:
-	if not _play_turn_anim:
-		_symbols_flipped = false
-		return false
-
-	if not _symbols_flipped:
-		_rotation_symbol_flip()
-		_flip_unit_sprite()
-
-	if CFG.animation_speed_frames == CFG.AnimationSpeed.INSTANT:
-		rotation_degrees = _target_rotation_degrees
-		$sprite_unit.rotation = -rotation
-		$RigidUI.rotation = -rotation
-		print("instant turn end")
-		anim_end.emit()
-		_play_turn_anim = false
-		return true
-
-	var current_rotation_degrees = fmod(rotation_degrees + 360, 360)
-	var relative_rotation = _target_rotation_degrees - current_rotation_degrees
-	#print(relative_rotation, "  ", p_direction, "   ", current_rotation)
-	if relative_rotation < 0:
-		relative_rotation += 360
-	if relative_rotation > 180:
-		relative_rotation -= 360
-	var this_frame_rotation = clamp(relative_rotation, -1, 1) * _rotation_speed
-	if abs(relative_rotation) < abs(this_frame_rotation):
-		rotation = deg_to_rad(_target_rotation_degrees)
-	else:
-		rotation += deg_to_rad(this_frame_rotation)
-	$sprite_unit.rotation = -rotation
-	$RigidUI.rotation = -rotation
-
-
-	if abs(fposmod(rotation_degrees, 360) - _target_rotation_degrees) < 0.1:
-		print("normal turn end")
-		anim_end.emit()
-		_play_turn_anim = false
-	return true
-
-
-func _animate_movement() -> bool:
-	if not _play_move_anim:
-		return false
-
-	if CFG.animation_speed_frames == CFG.AnimationSpeed.INSTANT:
-		global_position = _target_global_position
-		_play_move_anim = false
-		print("instant move end")
-		anim_end.emit()
-		return true
-
-	global_position = global_position.move_toward(_target_global_position, _move_speed)
-	if (global_position - _target_global_position).length_squared() < 0.01:
-		global_position = _target_global_position
-		_play_move_anim = false
-		print("normal move end")
-		anim_end.emit()
-	return true
-
-
-func _animate_death(delta) -> bool:
-	if not _play_death_anim:
-		return false
-
-	scale.x -= 3 * delta
-	if scale.x < 0:
-		scale.x = 0
-		_play_death_anim = false
-		print("death anim end")
-		anim_end.emit()
-	scale.y = scale.x
-	return true
-
-#endregion Animations
-
 
 #region UI
 

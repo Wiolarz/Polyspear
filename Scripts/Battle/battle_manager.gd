@@ -13,7 +13,6 @@ var _border_node : Node2D # parent for border tiles VISUAL
 var _move_highlights_node : Node2D
 
 var _battle_ui : BattleUI
-var _anim_queue : Array[AnimInQueue] = []
 var latest_ai_cancel_token : CancellationToken
 
 var _current_summary : DataBattleSummary = null
@@ -47,7 +46,6 @@ func _ready():
 
 
 func _process(_delta):
-	_process_anim_queue()
 	_check_clock_timer_tick()
 
 
@@ -253,7 +251,7 @@ func grid_input(coord : Vector2i) -> void:
 		print("replay playing, input ignored")
 		return
 
-	if _anim_queue.size() > 0:
+	if ANIM.playing():
 		print("anim playing, input ignored")
 		return
 
@@ -608,7 +606,6 @@ func _perform_move_info(move_info : MoveInfo) -> void:
 
 func close_when_quiting_game() -> void:
 	deselect_unit()
-	_clear_anim_queue()
 	_battle_ui.hide_replay_controls()
 	_turn_off_battle_ui()
 	_reset_grid_and_unit_forms()
@@ -826,76 +823,3 @@ func get_current_time_left_ms() -> int:
 	return 0
 
 #endregion Chess clock
-
-
-#region anim queue
-
-## called every frame by _process
-func _process_anim_queue() -> void:
-	if _anim_queue.size() == 0:
-		return
-	if not _anim_queue[0].started:
-		_anim_queue[0].start()
-	if _anim_queue[0].ended:
-		_anim_queue.pop_front()
-		return
-	if not _anim_queue[0]._unit_form:
-		var broken = _anim_queue.pop_front()
-		push_warning("poping broken animation from the queue " + str(broken))
-
-
-func _clear_anim_queue():
-	for anim in _anim_queue:
-		anim.on_anim_end()
-	_anim_queue.clear()
-
-
-class AnimInQueue:
-	var started : bool
-	var ended : bool
-	var debug_name : String
-	var _unit_form : UnitForm
-	var _animate : Callable
-
-
-	static func create_turn(unit_form_ : UnitForm) -> AnimInQueue:
-		var result = AnimInQueue.new()
-		result.debug_name = "turn_"+unit_form_.entity.template.unit_name
-		result._unit_form = unit_form_
-		unit_form_.anim_end.connect(result.on_anim_end)
-		result._animate = func () : if (unit_form_): unit_form_.start_turn_anim()
-		return result
-
-
-	static func create_move(unit_form_ : UnitForm) -> AnimInQueue:
-		var result = AnimInQueue.new()
-		result.debug_name = "move_"+unit_form_.entity.template.unit_name
-		result._unit_form = unit_form_
-		unit_form_.anim_end.connect(result.on_anim_end)
-		result._animate = func () : if (unit_form_): unit_form_.start_move_anim()
-		return result
-
-
-	static func create_die(unit_form_ : UnitForm) -> AnimInQueue:
-		var result = AnimInQueue.new()
-		result.debug_name = "die_"+unit_form_.entity.template.unit_name
-		result._unit_form = unit_form_
-		unit_form_.anim_end.connect(result.on_anim_end)
-		result._animate = func () : if (unit_form_): unit_form_.start_death_anim()
-		return result
-
-
-	func start() -> void:
-		started = true
-		_animate.call()
-
-
-	func on_anim_end() -> void:
-		ended = true
-		_unit_form.anim_end.disconnect(on_anim_end)
-
-
-	func _to_string():
-		return debug_name
-
-#endregion anim queue
