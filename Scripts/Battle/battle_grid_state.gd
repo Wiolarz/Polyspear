@@ -819,10 +819,14 @@ func _kill_unit(target : Unit, killer_army : ArmyInBattleState = null) -> void:
 
 ## Rare event when all players repeated their moves -> it pushes cyclone timer to activate next turn
 func end_stalemate() -> void:
-	print_rich("[color=pink]END OFF STALEMATE")
+	print_rich("[color=pink]END OF STALEMATE")
 	# it has to be 0 in case if value where to be
-	# 1 leads to bugs
-	cyclone_target.cyclone_timer = 0  
+	# 1 leads to bugs 
+	
+	#TODO fix stalemate ending action
+	# Temporarly disabled duo to issues with independent refactors that made ths feature broken
+	#cyclone_target.cyclone_timer = 0
+
 #endregion Gameplay Events
 
 

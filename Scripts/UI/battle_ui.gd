@@ -23,6 +23,12 @@ extends CanvasLayer
 @onready var replay_status = $ReplayControls/Status
 @onready var replay_show_summary = $ReplayControls/ShowSummary
 
+# announcement nodes
+@onready var announcement_sacrifice = $SacrificeAnnouncement
+@onready var announcement_sacrifice_player_name_label = $SacrificeAnnouncement/CycloneTarget
+@onready var announcement_end_of_placement_phase = $EndPlacementPhaseAnnouncement
+@onready var announcement_end_of_placement_phase_player_name_label = $EndPlacementPhaseAnnouncement/FirstPlayerToMoveName
+
 var fighting_players_idx = []
 var armies_reference : Array[BattleGridState.ArmyInBattleState]
 
@@ -32,6 +38,9 @@ var current_player : int = 0
 
 var selected_spell : BattleSpell = null
 var selected_spell_button : TextureButton = null
+
+# TEMP until update_cyclone() refactor
+var _shown_sacrifice_announcement : bool = false
 
 #region INIT
 
@@ -71,7 +80,7 @@ func load_armies(army_list : Array[BattleGridState.ArmyInBattleState]):
 func _process(_delta):
 	if BM.battle_is_active():
 		update_clock()
-		update_cyclone()
+		update_cyclone()  # TODO move it to signal that a turn has ended
 
 
 func update_mana() -> void:
@@ -97,8 +106,20 @@ func update_cyclone():
 
 	if timer == 0:
 		cyclone.text = "%s Sacrifice" % [target_color.name]
+		if not _shown_sacrifice_announcement:
+			_shown_sacrifice_announcement = true
+			# show sacrifice announcement
+			announcement_sacrifice_player_name_label.text = BM.get_current_player_name()
+			announcement_sacrifice.modulate = BM.get_current_slot_color().color
+			#IM.get_player_by_index(army.army_reference.controller_index)
+
+			announcement_sacrifice.modulate.a = 1
+			var tween = ANIM.subtween()  # if player makes a quicker move, subtween doesn't cause issues
+			tween.tween_interval(2)
+			tween.tween_property(announcement_sacrifice, "modulate:a", 0, 1)
 	else:
 		cyclone.text = "%s %d turns" % [target_color.name, timer]
+		_shown_sacrifice_announcement = false
 
 
 func update_clock() -> void:
@@ -114,15 +135,26 @@ func update_clock() -> void:
 	turns.text = "Turn %d" % [BM.get_current_turn()]
 
 
+func get_text_for(controller : Player, selected : bool):
+	var prefix = " > " if selected else ""
+	var player_name = "Neutral"
+	if controller:
+		player_name = controller.get_player_name()
+	return prefix + "Player " + player_name + "_" + str(BM.get_player_mana(controller))
+
+
+#region Replay controls
+
 func show_replay_controls():
 	replay_controls.visible = true
 	chat.visible = false
-	
-	
+
+
 func hide_replay_controls():
 	replay_controls.visible = false
 	chat.visible = true
-	
+
+
 func update_replay_controls(move_nr: int, total_replay_moves: int, summary: DataBattleSummary = null):
 	replay_move_count.text = "%d/%d" % [move_nr, total_replay_moves]
 	if move_nr != total_replay_moves:
@@ -143,13 +175,7 @@ func update_replay_controls(move_nr: int, total_replay_moves: int, summary: Data
 	else:
 		replay_show_summary.disabled = true
 
-
-func get_text_for(controller : Player, selected : bool):
-	var prefix = " > " if selected else ""
-	var player_name = "Neutral"
-	if controller:
-		player_name = controller.get_player_name()
-	return prefix + "Player " + player_name + "_" + str(BM.get_player_mana(controller))
+#endregion Replay Controls
 
 
 #region Summon Phase
@@ -209,6 +235,15 @@ func unit_summoned(summon_phase_end : bool):
 
 	units_box.visible = not summon_phase_end
 
+	if summon_phase_end:
+		announcement_end_of_placement_phase_player_name_label.text = BM.get_current_player_name()
+		announcement_end_of_placement_phase.modulate = BM.get_current_slot_color().color
+		#IM.get_player_by_index(army.army_reference.controller_index)
+
+		announcement_end_of_placement_phase.modulate.a = 1
+		var tween = ANIM.subtween()  # if player makes a quicker move, subtween doesn't cause issues
+		tween.tween_interval(1.5)
+		tween.tween_property(announcement_end_of_placement_phase, "modulate:a", 0, 0.5)
 
 #endregion Summon Phase
 

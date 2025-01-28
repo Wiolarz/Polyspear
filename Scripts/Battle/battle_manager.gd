@@ -154,6 +154,16 @@ func get_current_slot_color() -> DataPlayerColor:
 	return player.get_player_color()
 
 
+func get_current_player_name() -> String:
+	if not _battle_is_ongoing:
+		assert(false, "Request current fighting player, while battle is not ongoing")
+		return ""
+	var player = _battle_grid_state.get_current_player()
+	if not player:
+		return "Neutral Player"
+	return player.get_player_name()
+
+
 func get_current_turn() -> int:
 	return _battle_grid_state.turn_counter
 
