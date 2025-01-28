@@ -15,7 +15,7 @@ ruby = 0
 [resource]
 script = ExtResource("1_4uymu")
 unit_name = "Brigand"
-texture_path = "res://Art/units/orc/orc_brigand.png"
+texture_path = "res://Art/orc_spear_thrower.png"
 symbols = Array[Resource("res://Resources/Battle/data_symbol.gd")]([ExtResource("4_n5o08"), ExtResource("4_icg07"), ExtResource("4_icg07"), ExtResource("4_icg07"), ExtResource("4_icg07"), ExtResource("4_icg07")])
 cost = SubResource("Resource_bdqvu")
 required_building = ExtResource("2_70td2")

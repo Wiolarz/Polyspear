@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cukwcwy4fikm1"
-path="res://.godot/imported/elf_hero_noble.png-730a648b8661d92ac37b5047c2370899.ctex"
+uid="uid://3hnweulxtbex"
+path="res://.godot/imported/spear.png-8b330f8768663b11c9600330a2719593.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Art/elf_hero_noble.png"
-dest_files=["res://.godot/imported/elf_hero_noble.png-730a648b8661d92ac37b5047c2370899.ctex"]
+source_file="res://Art/items/spear.png"
+dest_files=["res://.godot/imported/spear.png-8b330f8768663b11c9600330a2719593.ctex"]
 
 [params]
 

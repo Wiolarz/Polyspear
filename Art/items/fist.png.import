@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cukwcwy4fikm1"
-path="res://.godot/imported/elf_hero_noble.png-730a648b8661d92ac37b5047c2370899.ctex"
+uid="uid://cm2fuh1wh87e4"
+path="res://.godot/imported/fist.png-36bc8c57649c4663171bab7746588542.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Art/elf_hero_noble.png"
-dest_files=["res://.godot/imported/elf_hero_noble.png-730a648b8661d92ac37b5047c2370899.ctex"]
+source_file="res://Art/items/fist.png"
+dest_files=["res://.godot/imported/fist.png-36bc8c57649c4663171bab7746588542.ctex"]
 
 [params]
 

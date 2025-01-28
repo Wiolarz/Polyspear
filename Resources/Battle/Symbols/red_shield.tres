@@ -5,4 +5,4 @@
 [resource]
 script = ExtResource("1_yeubp")
 type = 9
-texture_path = "res://Art/items/shield_background.png"
+texture_path = ""

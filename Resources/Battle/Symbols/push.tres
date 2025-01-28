@@ -5,4 +5,4 @@
 [resource]
 script = ExtResource("1_fpy2d")
 type = 5
-texture_path = "res://Art/items/push_no_dmg.png"
+texture_path = "res://Art/items/fist.png"

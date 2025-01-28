@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cukwcwy4fikm1"
-path="res://.godot/imported/elf_hero_noble.png-730a648b8661d92ac37b5047c2370899.ctex"
+uid="uid://os5cuvhyb3sm"
+path="res://.godot/imported/mace.png-b6966955eeb491262011f46ba9ab6427.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Art/elf_hero_noble.png"
-dest_files=["res://.godot/imported/elf_hero_noble.png-730a648b8661d92ac37b5047c2370899.ctex"]
+source_file="res://Art/items/mace.png"
+dest_files=["res://.godot/imported/mace.png-b6966955eeb491262011f46ba9ab6427.ctex"]
 
 [params]
 

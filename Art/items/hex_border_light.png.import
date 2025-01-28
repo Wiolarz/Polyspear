@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cukwcwy4fikm1"
-path="res://.godot/imported/elf_hero_noble.png-730a648b8661d92ac37b5047c2370899.ctex"
+uid="uid://by6lxadhw2amf"
+path="res://.godot/imported/hex_border_light.png-a1e7f79a4e9cffb2187d84f8d0b29b0f.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Art/elf_hero_noble.png"
-dest_files=["res://.godot/imported/elf_hero_noble.png-730a648b8661d92ac37b5047c2370899.ctex"]
+source_file="res://Art/items/hex_border_light.png"
+dest_files=["res://.godot/imported/hex_border_light.png-a1e7f79a4e9cffb2187d84f8d0b29b0f.ctex"]
 
 [params]
 

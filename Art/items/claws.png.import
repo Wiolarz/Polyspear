@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cukwcwy4fikm1"
-path="res://.godot/imported/elf_hero_noble.png-730a648b8661d92ac37b5047c2370899.ctex"
+uid="uid://d1vofsv8lia8m"
+path="res://.godot/imported/claws.png-0c49f57d09140d7b0289dd757117986b.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Art/elf_hero_noble.png"
-dest_files=["res://.godot/imported/elf_hero_noble.png-730a648b8661d92ac37b5047c2370899.ctex"]
+source_file="res://Art/items/claws.png"
+dest_files=["res://.godot/imported/claws.png-0c49f57d09140d7b0289dd757117986b.ctex"]
 
 [params]
 

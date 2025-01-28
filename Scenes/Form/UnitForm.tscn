@@ -3,10 +3,10 @@
 [ext_resource type="Script" path="res://Scripts/Battle/unit_form.gd" id="1_ep020"]
 [ext_resource type="Texture2D" uid="uid://ptkmhxptot0q" path="res://Art/player_colors/blue_color.png" id="2_0q625"]
 [ext_resource type="Texture2D" uid="uid://cukwcwy4fikm1" path="res://Art/elf_hero_noble.png" id="3_3flaq"]
-[ext_resource type="Texture2D" uid="uid://bqq6e75vlykjd" path="res://Art/items/hex_border.png" id="4_tejs1"]
+[ext_resource type="Texture2D" uid="uid://by6lxadhw2amf" path="res://Art/items/hex_border_light.png" id="4_0xhp4"]
 [ext_resource type="PackedScene" uid="uid://bc4yv21yc35fw" path="res://Scenes/Form/SymbolForm.tscn" id="5_2gor3"]
-[ext_resource type="Texture2D" uid="uid://dwtcshhcc5ulr" path="res://Art/items/blue_knife.png" id="6_a6bly"]
-[ext_resource type="Texture2D" uid="uid://ctvcj6y3fsafe" path="res://Art/items/shields/blue shield.png" id="7_5nisa"]
+[ext_resource type="Texture2D" uid="uid://d1vofsv8lia8m" path="res://Art/items/claws.png" id="6_kue6p"]
+[ext_resource type="Texture2D" uid="uid://os5cuvhyb3sm" path="res://Art/items/mace.png" id="7_rdbed"]
 [ext_resource type="Texture2D" uid="uid://cb6b5qgltj1bc" path="res://Art/battle_map/swamp.png" id="8_i7m4u"]
 
 [node name="Unit" type="Node2D"]
@@ -19,7 +19,7 @@ texture = ExtResource("2_0q625")
 texture = ExtResource("3_3flaq")
 
 [node name="sprite_border" type="Sprite2D" parent="."]
-texture = ExtResource("4_tejs1")
+texture = ExtResource("4_0xhp4")
 
 [node name="Symbols" type="Node2D" parent="."]
 
@@ -70,11 +70,12 @@ text = "IV"
 
 [node name="SpellEffect1" type="Sprite2D" parent="RigidUI"]
 position = Vector2(598, -304)
-texture = ExtResource("6_a6bly")
+texture = ExtResource("6_kue6p")
 
 [node name="SpellEffect2" type="Sprite2D" parent="RigidUI"]
 position = Vector2(587, 330)
-texture = ExtResource("7_5nisa")
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("7_rdbed")
 
 [node name="TerrainEffect" type="Sprite2D" parent="RigidUI"]
 position = Vector2(-331, 328)
