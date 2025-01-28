@@ -9,11 +9,18 @@ enum PlaybackMode {
 var _running_tweens : Dictionary # Dictionary[Tween, (bool)] - just a set of tweens
 var _main_tween : Tween
 var _playback_mode : PlaybackMode = PlaybackMode.NORMAL
+var _speed_scale : float = 1.0
+
+
+func _process(_delta):
+	_speed_scale =  CFG.animation_speed_frames / CFG.AnimationSpeed.NORMAL
+	change_speed(_speed_scale)
 
 
 func create_my_tween() -> Tween:
 	var tween = get_tree().create_tween()
 	tween.set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_QUAD)
+	tween.set_speed_scale(_speed_scale)
 	tween.stop()
 	return tween
 
@@ -36,6 +43,8 @@ func subtween(parent: Tween = main_tween()) -> Tween:
 
 ## Change the speed of a main tween and all its subtweens
 func change_speed(scale: float):
+	if _main_tween:
+		_main_tween.set_speed_scale(scale)
 	for tween in _running_tweens:
 		tween.set_speed_scale(scale)
 
@@ -58,11 +67,11 @@ func fast_forward():
 func _play_tween(tween: Tween):
 	match _playback_mode:
 		PlaybackMode.NORMAL:
-			#tween.set_speed_scale(speed_scale)
+			tween.set_speed_scale(_speed_scale)
 			_running_tweens[tween] = true
-			if tween.is_running():
-				# Shouldn't ever happen
-				assert(false, "Subtween is already running")
+			
+			# Shouldn't ever happen
+			assert(not tween.is_running(), "Subtween is already running")
 			tween.play()
 		PlaybackMode.FAST_FORWARD:
 			tween.play()
