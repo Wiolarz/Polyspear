@@ -11,7 +11,6 @@ var _grid_tiles_node : Node2D # parent for tiles VISUAL
 var _unit_forms_node : Node2D # parent for units VISUAL
 var _border_node : Node2D # parent for border tiles VISUAL
 var _move_highlights_node : Node2D
-var _planner_arrows_node : Node2D  # parent for all chess arrows nodes
 
 var _battle_ui : BattleUI
 var _anim_queue : Array[AnimInQueue] = []
