@@ -28,7 +28,7 @@ var currently_active_unit : Unit = null
 
 var number_of_mana_wells : int = 0
 var cyclone_target : ArmyInBattleState
-
+const MANA_WELL_POWER : int = 100
 
 #TEMP HACK for proper awarding of exp in spear kills
 var spear_holding_killer_teams : Array[int] = []
@@ -733,6 +733,11 @@ func _change_unit_coord(unit : Unit, target_coord : Vector2i) -> void:
 	_remove_unit(unit)
 	_put_unit_on_grid(unit, target_coord)
 
+	var target_tile : BattleGridState.BattleHex = _get_battle_hex(target_coord)
+	if target_tile.is_mana_tile():
+		unit.unit_captured_mana.emit(target_coord)
+		capture_mana_well(target_tile, unit.army_in_battle)
+
 
 ## Used for movement, kills, unsummon(undo) [br]
 ## removes Unit from logic hex tile
@@ -814,10 +819,14 @@ func _kill_unit(target : Unit, killer_army : ArmyInBattleState = null) -> void:
 
 ## Rare event when all players repeated their moves -> it pushes cyclone timer to activate next turn
 func end_stalemate() -> void:
-	print_rich("[color=pink]END OFF STALEMATE")
+	print_rich("[color=pink]END OF STALEMATE")
 	# it has to be 0 in case if value where to be
-	# 1 leads to bugs
-	cyclone_target.cyclone_timer = 0  
+	# 1 leads to bugs 
+	
+	#TODO fix stalemate ending action
+	# Temporarly disabled duo to issues with independent refactors that made ths feature broken
+	#cyclone_target.cyclone_timer = 0
+
 #endregion Gameplay Events
 
 
@@ -907,6 +916,13 @@ func cyclone_get_current_target() -> Player:
 func cyclone_get_current_target_turns_left() -> int:
 	return cyclone_target.cyclone_timer
 
+
+func capture_mana_well(hex : BattleHex, army : ArmyInBattleState):
+	if hex.mana_controller:
+		hex.mana_controller.mana_points -= MANA_WELL_POWER
+	hex.mana_controller = army
+	army.mana_points += MANA_WELL_POWER
+	mana_values_changed()
 
 #endregion Mana Cyclone Timer
 
@@ -1330,6 +1346,7 @@ class BattleHex:
 	## that it's facing it
 	var special_move : bool = false  
 
+	var mana_controller : ArmyInBattleState
 
 	static var sentinel: BattleHex = BattleHex.create_sentinel()
 
