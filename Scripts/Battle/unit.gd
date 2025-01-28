@@ -169,9 +169,9 @@ static func can_it_push(symbol : E.Symbols) -> bool:
 ## -1 = infinite
 static func push_power(symbol : E.Symbols) -> int:
 	match symbol:
-		E.Symbols.FIST:
-			return 3
 		E.Symbols.MACE:
+			return 3
+		E.Symbols.FIST:
 			return 2
 		E.Symbols.PUSH, E.Symbols.STRONG_TOWERSHIELD, E.Symbols.TOWERSHIELD:
 			return 1

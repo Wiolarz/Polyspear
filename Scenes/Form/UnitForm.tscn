@@ -69,11 +69,11 @@ theme_override_font_sizes/font_size = 150
 text = "IV"
 
 [node name="SpellEffect1" type="Sprite2D" parent="RigidUI"]
-position = Vector2(484, -88)
+position = Vector2(598, -304)
 texture = ExtResource("6_a6bly")
 
 [node name="SpellEffect2" type="Sprite2D" parent="RigidUI"]
-position = Vector2(484, 71)
+position = Vector2(587, 330)
 texture = ExtResource("7_5nisa")
 
 [node name="TerrainEffect" type="Sprite2D" parent="RigidUI"]
@@ -83,14 +83,18 @@ texture = ExtResource("8_i7m4u")
 
 [node name="SpellEffectCounter1" type="Label" parent="RigidUI"]
 offset_left = 488.0
-offset_top = -104.0
+offset_top = -390.0
 offset_right = 528.0
-offset_bottom = -56.0
+offset_bottom = -314.0
+scale = Vector2(3, 3)
+theme_override_font_sizes/font_size = 64
 text = "6"
 
 [node name="SpellEffectCounter2" type="Label" parent="RigidUI"]
 offset_left = 483.0
-offset_top = 48.0
+offset_top = 215.0
 offset_right = 523.0
-offset_bottom = 96.0
+offset_bottom = 291.0
+scale = Vector2(3, 3)
+theme_override_font_sizes/font_size = 64
 text = "6"
