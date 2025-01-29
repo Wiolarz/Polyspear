@@ -1183,8 +1183,9 @@ func filter_only_kill_moves(all_moves : Array[MoveInfo]) -> Array[MoveInfo]:
 	return all_kill_moves
 
 
-func _ai_will_melee_kill_someone(unit : Unit, direction : int, coord : Vector2i) -> bool:
+func _get_melee_attack_kills(unit : Unit, direction : int, coord : Vector2i) -> Array[Unit]:
 	var adjacent_units : Array[Unit] = _get_adjacent_units(coord)
+	var killed_enemy_units : Array[Unit] = []
 
 	for side in range(6):
 		var unit_weapon = unit.get_symbol_when_rotated(direction, side)
@@ -1205,13 +1206,15 @@ func _ai_will_melee_kill_someone(unit : Unit, direction : int, coord : Vector2i)
 
 		# we check if attacking symbol power is able to kill
 		if Unit.does_attack_succeed(unit_weapon, enemy_weapon):
-			return true
+			killed_enemy_units.append(enemy)
+			continue
 		# in case enemy defended against attack we check if attacker pushes away enemy
 		if Unit.can_it_push(unit_weapon):
 			if _will_push_kill(enemy, side, Unit.push_power(unit_weapon)):
-				return true
+				killed_enemy_units.append(enemy)
+				continue
 
-	return false
+	return killed_enemy_units
 
 
 func _will_push_kill(pushed_unit : Unit, direction : int, push_power : int) -> bool:
@@ -1317,8 +1320,8 @@ func get_move_consequences(move : MoveInfo) -> MoveConsequences:
 				kill_registered = true  # can shoot enemy in this direction
 
 	# step 3 melee weapon on first rotation
-	
-	if _ai_will_melee_kill_someone(attacker, move_direction, move.move_source):
+	var melee_killed_enemy_units = _get_melee_attack_kills(attacker, move_direction, move.move_source)
+	if melee_killed_enemy_units.size() > 0:
 		kill_registered = true
 
 	# step 4
@@ -1337,6 +1340,11 @@ func get_move_consequences(move : MoveInfo) -> MoveConsequences:
 				# unit we would kill with our arrow is that killer
 					return MoveConsequences.KILL
 	
+	# check for rare specific case when spear holder was killed during first rotation using melee
+	for killed in melee_killed_enemy_units:
+		if killed in counter_attack_killers:
+			counter_attack_killers.erase(killed)
+
 	if counter_attack_killers.size() > 0: # will die to a spear before it can kill
 		return MoveConsequences.KAMIKAZE if kill_registered else MoveConsequences.DEATH
 
@@ -1349,7 +1357,8 @@ func get_move_consequences(move : MoveInfo) -> MoveConsequences:
 		if _will_push_kill(pushed_enemy_unit, move_direction, push_power):
 			return MoveConsequences.KILL
 
-	if _ai_will_melee_kill_someone(attacker, move_direction, move.target_tile_coord):
+	melee_killed_enemy_units = _get_melee_attack_kills(attacker, move_direction, move.move_source)
+	if melee_killed_enemy_units.size() > 0:
 		kill_registered = true
 
 	return MoveConsequences.KILL if kill_registered else MoveConsequences.NONE

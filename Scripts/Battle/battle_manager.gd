@@ -331,7 +331,8 @@ func _check_for_stalemate() -> bool:
 				return false
 	return true
 
-func  _end_move() -> void:
+
+func _end_move() -> void:
 	if _battle_grid_state.battle_is_ongoing():
 		if _check_for_stalemate():
 			_battle_grid_state.end_stalemate() # could end the battle
@@ -708,6 +709,7 @@ func _reset_grid_and_unit_forms() -> void:
 		_border_node = null
 	_battle_grid_state = null
 
+
 ## Major function which fully generates information panel at the end of the battle
 func _create_summary() -> DataBattleSummary:
 	var summary := DataBattleSummary.new()
@@ -869,6 +871,7 @@ func get_current_time_left_ms() -> int:
 	return 0
 
 #endregion Chess clock
+
 
 #region Painting
 
