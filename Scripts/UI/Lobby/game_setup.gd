@@ -9,13 +9,13 @@ extends Control
 @export var client_side : bool
 
 @onready var button_world : Button = \
-	$MarginContainer/VBoxContainer/ModeChoice/ButtonWorld
+	$MarginContainer/VBoxContainer/ModeChoice/Columns/ButtonWorld
 @onready var button_battle : Button = \
-	$MarginContainer/VBoxContainer/ModeChoice/ButtonBattle
+	$MarginContainer/VBoxContainer/ModeChoice/Columns/ButtonBattle
 @onready var container : Control = \
 	$MarginContainer/VBoxContainer/SetupContainer
 @onready var button_confirm : Button = \
-	$MarginContainer/VBoxContainer/ButtonConfirm
+	$MarginContainer/VBoxContainer/ButtonMargin/ButtonConfirm
 
 @onready var multi_world_setup_scene = load("res://Scenes/UI/Lobby/WorldSetup.tscn")
 @onready var multi_battle_setup_scene = load("res://Scenes/UI/Lobby/BattleSetup.tscn")

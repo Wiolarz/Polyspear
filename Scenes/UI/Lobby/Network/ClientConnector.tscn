@@ -1,27 +1,10 @@
 [gd_scene load_steps=4 format=3 uid="uid://dunktaeebf6f1"]
 
 [ext_resource type="Script" path="res://Scripts/UI/Lobby/Network/client_connector.gd" id="1_axf84"]
+[ext_resource type="StyleBox" uid="uid://c2e7veyqe1234" path="res://Art/UI/background_frames/sky.tres" id="2_cnvfh"]
+[ext_resource type="StyleBox" uid="uid://c2e7veyqebinm" path="res://Art/UI/background_frames/green.tres" id="2_rgjdf"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_mtx8d"]
-bg_color = Color(0, 0.67451, 0.776471, 1)
-border_width_top = 2
-border_width_bottom = 2
-expand_margin_left = 30.0
-expand_margin_top = 5.0
-expand_margin_right = 30.0
-expand_margin_bottom = 5.0
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_avfjo"]
-bg_color = Color(0, 0.6, 0, 1)
-border_width_top = 2
-border_width_bottom = 2
-expand_margin_left = 30.0
-expand_margin_top = 5.0
-expand_margin_right = 30.0
-expand_margin_bottom = 5.0
-
-[node name="ClientConnector" type="MarginContainer"]
-clip_contents = true
+[node name="ClientConnector" type="ScrollContainer"]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -31,15 +14,16 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("1_axf84")
 
-[node name="MainContainer" type="ScrollContainer" parent="."]
+[node name="MainContainer" type="MarginContainer" parent="."]
 custom_minimum_size = Vector2(640, 480)
 layout_mode = 2
-follow_focus = true
+size_flags_horizontal = 3
+size_flags_vertical = 3
 
 [node name="VBoxContainer" type="VBoxContainer" parent="MainContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_constants/separation = 10
+theme_override_constants/separation = 20
 
 [node name="UserName" type="VBoxContainer" parent="MainContainer/VBoxContainer"]
 layout_mode = 2
@@ -72,7 +56,7 @@ text = "Connect manually"
 [node name="ConnectionParameters" type="PanelContainer" parent="MainContainer/VBoxContainer/ManualConnection"]
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_styles/panel = SubResource("StyleBoxFlat_mtx8d")
+theme_override_styles/panel = ExtResource("2_cnvfh")
 
 [node name="H" type="HBoxContainer" parent="MainContainer/VBoxContainer/ManualConnection/ConnectionParameters"]
 layout_mode = 2
@@ -109,9 +93,6 @@ layout_mode = 2
 size_flags_vertical = 0
 text = "12000"
 
-[node name="Separator" type="Control" parent="MainContainer/VBoxContainer"]
-layout_mode = 2
-
 [node name="ButtonConnect" type="Button" parent="MainContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 60
@@ -119,13 +100,17 @@ text = "CONNECT"
 
 [node name="ServerList" type="VBoxContainer" parent="MainContainer/VBoxContainer"]
 layout_mode = 2
-theme_override_constants/separation = 20
+
+[node name="Label" type="Label" parent="MainContainer/VBoxContainer/ServerList"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "Available servers"
 
 [node name="ColorRect" type="PanelContainer" parent="MainContainer/VBoxContainer/ServerList"]
 custom_minimum_size = Vector2(0, 120)
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_styles/panel = SubResource("StyleBoxFlat_avfjo")
+theme_override_styles/panel = ExtResource("2_rgjdf")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="MainContainer/VBoxContainer/ServerList/ColorRect"]
 layout_mode = 2

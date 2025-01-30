@@ -7,14 +7,14 @@ var game_setup : GameSetup
 
 var client_side_map_label : Label
 
-@onready var player_list = \
-	$Slots/ColorRect/PlayerList
+@onready var preset_select = $VBox/PresetSelect
+@onready var map_select = $VBox/MapSelect
+@onready var slots = $VBox/Slots
 
-@onready var maps_list : OptionButton = \
-	$MapSelect/ColorRect/MapList
-
+@onready var player_list = slots.get_node("ColorRect/PlayerList")
+@onready var maps_list : OptionButton = map_select.get_node("ColorRect/MapList")
 @onready var presets_list : OptionButton = \
-	$PresetSelect/ColorRect/PresetList
+	preset_select.get_node("ColorRect/PresetList")
 
 var uninitialized : bool = true
 var settings_are_being_refreshed : bool = false
@@ -75,13 +75,13 @@ func update_maps_list_selection() -> void:
 
 ## Called upon join, applies changes to the UI to make it Client UI not Host UI
 func make_client_side() -> void:
-	$MapSelect/Label.text = "Selected map"
+	map_select.get_node("Label").text = "Selected map"
 	maps_list.queue_free()
 	maps_list = null
 	client_side_map_label = Label.new()
 	client_side_map_label.text = "some map"
-	$MapSelect/ColorRect.add_child(client_side_map_label)
-	var presets = $PresetSelect
+	map_select.get_node("ColorRect").add_child(client_side_map_label)
+	var presets = preset_select
 	presets.queue_free()
 
 #endregion

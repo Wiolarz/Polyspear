@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://Scripts/UI/Lobby/Network/server_creator.gd" id="1_5bd3v"]
 
-[node name="ServerCreator" type="MarginContainer"]
+[node name="ServerCreator" type="ScrollContainer"]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -10,17 +10,19 @@ grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
+horizontal_scroll_mode = 0
 script = ExtResource("1_5bd3v")
 
-[node name="MainContainer" type="ScrollContainer" parent="."]
+[node name="MainContainer" type="MarginContainer" parent="."]
 layout_mode = 2
-follow_focus = true
+size_flags_horizontal = 3
+size_flags_vertical = 3
 
 [node name="VBoxContainer" type="VBoxContainer" parent="MainContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-theme_override_constants/separation = 25
+theme_override_constants/separation = 20
 
 [node name="ServerName" type="VBoxContainer" parent="MainContainer/VBoxContainer"]
 layout_mode = 2

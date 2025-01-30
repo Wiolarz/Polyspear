@@ -30,9 +30,9 @@ var hero_paths : Array[String]
 @onready var hero_list : OptionButton = $GeneralVContainer/TopBarHContainer/OptionButtonHero
 
 
-@onready var timer_reserve_minutes : SpinBox = $GeneralVContainer/TopBarHContainerTimer/ReserveTime_Min_Edit
-@onready var timer_reserve_seconds : SpinBox = $GeneralVContainer/TopBarHContainerTimer/ReserveTime_Sec_Edit
-@onready var timer_increment_seconds : SpinBox = $GeneralVContainer/TopBarHContainerTimer/IncrementTimeEdit
+@onready var timer_reserve_minutes : SpinBox = $GeneralVContainer/TimerContainer/ReserveTime_Min_Edit
+@onready var timer_reserve_seconds : SpinBox = $GeneralVContainer/TimerContainer/ReserveTime_Sec_Edit
+@onready var timer_increment_seconds : SpinBox = $GeneralVContainer/TimerContainer/IncrementTimeEdit
 
 
 ## used to know if changes in gui are made by user and should be passed to
@@ -172,8 +172,8 @@ func timer_changed() -> void:
 	var slot_index = setup_ui.slot_to_index(self)
 
 	var seconds_reserve = timer_reserve_minutes.value * 60 + timer_reserve_seconds.value
-	
-	
+
+
 	IM.game_setup_info.set_timer(slot_index, seconds_reserve, int(timer_increment_seconds.value))
 	if NET.server:
 		NET.server.broadcast_full_game_setup(IM.game_setup_info) #TODO add multi support
