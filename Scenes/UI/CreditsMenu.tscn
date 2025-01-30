@@ -9,170 +9,171 @@ grow_vertical = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="MainBoxContainer" type="VBoxContainer" parent="."]
+[node name="MarginContainer" type="MarginContainer" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_top = 23.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/separation = 10
 
-[node name="Title" type="Label" parent="MainBoxContainer"]
+[node name="ScrollContainer" type="ScrollContainer" parent="MarginContainer"]
+layout_mode = 2
+follow_focus = true
+
+[node name="MainBoxContainer" type="VBoxContainer" parent="MarginContainer/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 20
+
+[node name="Title" type="Label" parent="MarginContainer/ScrollContainer/MainBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 100
 text = "Credits"
 horizontal_alignment = 1
 
-[node name="CreditsBoxContainer" type="VBoxContainer" parent="MainBoxContainer"]
+[node name="CreditsBoxContainer" type="VBoxContainer" parent="MarginContainer/ScrollContainer/MainBoxContainer"]
 layout_mode = 2
-theme_override_constants/separation = 200
+theme_override_constants/separation = 100
 alignment = 1
 
-[node name="CurrentDevelopersBoxContainer2" type="VBoxContainer" parent="MainBoxContainer/CreditsBoxContainer"]
+[node name="CurrentDevelopersBoxContainer2" type="VBoxContainer" parent="MarginContainer/ScrollContainer/MainBoxContainer/CreditsBoxContainer"]
 layout_mode = 2
+theme_override_constants/separation = 30
 
-[node name="ActiveTeamTitle" type="Label" parent="MainBoxContainer/CreditsBoxContainer/CurrentDevelopersBoxContainer2"]
+[node name="ActiveTeamTitle" type="Label" parent="MarginContainer/ScrollContainer/MainBoxContainer/CreditsBoxContainer/CurrentDevelopersBoxContainer2"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 75
 text = "Current development team"
 horizontal_alignment = 1
 
-[node name="SpacingUIelement1" type="Label" parent="MainBoxContainer/CreditsBoxContainer/CurrentDevelopersBoxContainer2"]
+[node name="RowsBoxContainer" type="HBoxContainer" parent="MarginContainer/ScrollContainer/MainBoxContainer/CreditsBoxContainer/CurrentDevelopersBoxContainer2"]
 layout_mode = 2
-
-[node name="RowsBoxContainer" type="HBoxContainer" parent="MainBoxContainer/CreditsBoxContainer/CurrentDevelopersBoxContainer2"]
-layout_mode = 2
-theme_override_constants/separation = 50
+theme_override_constants/separation = 60
 alignment = 1
 
-[node name="Wiolarz" type="VBoxContainer" parent="MainBoxContainer/CreditsBoxContainer/CurrentDevelopersBoxContainer2/RowsBoxContainer"]
+[node name="Wiolarz" type="VBoxContainer" parent="MarginContainer/ScrollContainer/MainBoxContainer/CreditsBoxContainer/CurrentDevelopersBoxContainer2/RowsBoxContainer"]
 layout_mode = 2
 
-[node name="Title" type="Label" parent="MainBoxContainer/CreditsBoxContainer/CurrentDevelopersBoxContainer2/RowsBoxContainer/Wiolarz"]
+[node name="Title" type="Label" parent="MarginContainer/ScrollContainer/MainBoxContainer/CreditsBoxContainer/CurrentDevelopersBoxContainer2/RowsBoxContainer/Wiolarz"]
 modulate = Color(1, 1, 0, 1)
 layout_mode = 2
 theme_override_font_sizes/font_size = 50
 text = "Design, Art and Programming"
 horizontal_alignment = 1
 
-[node name="Name" type="Label" parent="MainBoxContainer/CreditsBoxContainer/CurrentDevelopersBoxContainer2/RowsBoxContainer/Wiolarz"]
+[node name="Name" type="Label" parent="MarginContainer/ScrollContainer/MainBoxContainer/CreditsBoxContainer/CurrentDevelopersBoxContainer2/RowsBoxContainer/Wiolarz"]
 layout_mode = 2
 text = "Wiolarz"
 horizontal_alignment = 1
 
-[node name="Pierozek" type="VBoxContainer" parent="MainBoxContainer/CreditsBoxContainer/CurrentDevelopersBoxContainer2/RowsBoxContainer"]
+[node name="Pierozek" type="VBoxContainer" parent="MarginContainer/ScrollContainer/MainBoxContainer/CreditsBoxContainer/CurrentDevelopersBoxContainer2/RowsBoxContainer"]
 layout_mode = 2
 
-[node name="Title" type="Label" parent="MainBoxContainer/CreditsBoxContainer/CurrentDevelopersBoxContainer2/RowsBoxContainer/Pierozek"]
+[node name="Title" type="Label" parent="MarginContainer/ScrollContainer/MainBoxContainer/CreditsBoxContainer/CurrentDevelopersBoxContainer2/RowsBoxContainer/Pierozek"]
 modulate = Color(1, 1, 0, 1)
 layout_mode = 2
 theme_override_font_sizes/font_size = 50
 text = "Programming and Music"
 horizontal_alignment = 1
 
-[node name="Name" type="Label" parent="MainBoxContainer/CreditsBoxContainer/CurrentDevelopersBoxContainer2/RowsBoxContainer/Pierozek"]
+[node name="Name" type="Label" parent="MarginContainer/ScrollContainer/MainBoxContainer/CreditsBoxContainer/CurrentDevelopersBoxContainer2/RowsBoxContainer/Pierozek"]
 layout_mode = 2
 text = "Pierożek"
 horizontal_alignment = 1
 
-[node name="Carcinizer" type="VBoxContainer" parent="MainBoxContainer/CreditsBoxContainer/CurrentDevelopersBoxContainer2/RowsBoxContainer"]
+[node name="Carcinizer" type="VBoxContainer" parent="MarginContainer/ScrollContainer/MainBoxContainer/CreditsBoxContainer/CurrentDevelopersBoxContainer2/RowsBoxContainer"]
 layout_mode = 2
 
-[node name="Title" type="Label" parent="MainBoxContainer/CreditsBoxContainer/CurrentDevelopersBoxContainer2/RowsBoxContainer/Carcinizer"]
+[node name="Title" type="Label" parent="MarginContainer/ScrollContainer/MainBoxContainer/CreditsBoxContainer/CurrentDevelopersBoxContainer2/RowsBoxContainer/Carcinizer"]
 modulate = Color(1, 1, 0, 1)
 layout_mode = 2
 theme_override_font_sizes/font_size = 50
 text = "Programming"
 horizontal_alignment = 1
 
-[node name="Name" type="Label" parent="MainBoxContainer/CreditsBoxContainer/CurrentDevelopersBoxContainer2/RowsBoxContainer/Carcinizer"]
+[node name="Name" type="Label" parent="MarginContainer/ScrollContainer/MainBoxContainer/CreditsBoxContainer/CurrentDevelopersBoxContainer2/RowsBoxContainer/Carcinizer"]
 layout_mode = 2
 text = "Carcinizer"
 horizontal_alignment = 1
 
-[node name="SpacingUIelement2" type="Label" parent="MainBoxContainer/CreditsBoxContainer/CurrentDevelopersBoxContainer2"]
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/ScrollContainer/MainBoxContainer/CreditsBoxContainer/CurrentDevelopersBoxContainer2"]
 layout_mode = 2
-
-[node name="HBoxContainer" type="HBoxContainer" parent="MainBoxContainer/CreditsBoxContainer/CurrentDevelopersBoxContainer2"]
-layout_mode = 2
+theme_override_constants/separation = 60
 alignment = 1
 
-[node name="Toksyczna" type="VBoxContainer" parent="MainBoxContainer/CreditsBoxContainer/CurrentDevelopersBoxContainer2/HBoxContainer"]
+[node name="Toksyczna" type="VBoxContainer" parent="MarginContainer/ScrollContainer/MainBoxContainer/CreditsBoxContainer/CurrentDevelopersBoxContainer2/HBoxContainer"]
 layout_mode = 2
 
-[node name="Title" type="Label" parent="MainBoxContainer/CreditsBoxContainer/CurrentDevelopersBoxContainer2/HBoxContainer/Toksyczna"]
+[node name="Title" type="Label" parent="MarginContainer/ScrollContainer/MainBoxContainer/CreditsBoxContainer/CurrentDevelopersBoxContainer2/HBoxContainer/Toksyczna"]
 modulate = Color(1, 1, 0, 1)
 layout_mode = 2
 theme_override_font_sizes/font_size = 50
 text = "       Music      "
 horizontal_alignment = 1
 
-[node name="Name" type="Label" parent="MainBoxContainer/CreditsBoxContainer/CurrentDevelopersBoxContainer2/HBoxContainer/Toksyczna"]
+[node name="Name" type="Label" parent="MarginContainer/ScrollContainer/MainBoxContainer/CreditsBoxContainer/CurrentDevelopersBoxContainer2/HBoxContainer/Toksyczna"]
 layout_mode = 2
 text = "Toksyczna"
 horizontal_alignment = 1
 
-[node name="Deathguard12" type="VBoxContainer" parent="MainBoxContainer/CreditsBoxContainer/CurrentDevelopersBoxContainer2/HBoxContainer"]
+[node name="Deathguard12" type="VBoxContainer" parent="MarginContainer/ScrollContainer/MainBoxContainer/CreditsBoxContainer/CurrentDevelopersBoxContainer2/HBoxContainer"]
 layout_mode = 2
 
-[node name="Title" type="Label" parent="MainBoxContainer/CreditsBoxContainer/CurrentDevelopersBoxContainer2/HBoxContainer/Deathguard12"]
+[node name="Title" type="Label" parent="MarginContainer/ScrollContainer/MainBoxContainer/CreditsBoxContainer/CurrentDevelopersBoxContainer2/HBoxContainer/Deathguard12"]
 modulate = Color(1, 1, 0, 1)
 layout_mode = 2
 theme_override_font_sizes/font_size = 50
 text = "Programming and Art"
 horizontal_alignment = 1
 
-[node name="Name" type="Label" parent="MainBoxContainer/CreditsBoxContainer/CurrentDevelopersBoxContainer2/HBoxContainer/Deathguard12"]
+[node name="Name" type="Label" parent="MarginContainer/ScrollContainer/MainBoxContainer/CreditsBoxContainer/CurrentDevelopersBoxContainer2/HBoxContainer/Deathguard12"]
 layout_mode = 2
 text = "Deathguard12"
 horizontal_alignment = 1
 
-[node name="FormerDevelopersBoxContainer" type="VBoxContainer" parent="MainBoxContainer/CreditsBoxContainer"]
+[node name="FormerDevelopersBoxContainer" type="VBoxContainer" parent="MarginContainer/ScrollContainer/MainBoxContainer/CreditsBoxContainer"]
 layout_mode = 2
-theme_override_constants/separation = 50
+theme_override_constants/separation = 30
 
-[node name="FormerTeamTitle" type="Label" parent="MainBoxContainer/CreditsBoxContainer/FormerDevelopersBoxContainer"]
+[node name="FormerTeamTitle" type="Label" parent="MarginContainer/ScrollContainer/MainBoxContainer/CreditsBoxContainer/FormerDevelopersBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 75
 text = "Former developers"
 horizontal_alignment = 1
 
-[node name="RowsBoxContainer2" type="HBoxContainer" parent="MainBoxContainer/CreditsBoxContainer/FormerDevelopersBoxContainer"]
+[node name="RowsBoxContainer2" type="HBoxContainer" parent="MarginContainer/ScrollContainer/MainBoxContainer/CreditsBoxContainer/FormerDevelopersBoxContainer"]
 layout_mode = 2
-theme_override_constants/separation = 50
+theme_override_constants/separation = 60
 alignment = 1
 
-[node name="Zephyr" type="VBoxContainer" parent="MainBoxContainer/CreditsBoxContainer/FormerDevelopersBoxContainer/RowsBoxContainer2"]
+[node name="Zephyr" type="VBoxContainer" parent="MarginContainer/ScrollContainer/MainBoxContainer/CreditsBoxContainer/FormerDevelopersBoxContainer/RowsBoxContainer2"]
 layout_mode = 2
 
-[node name="Title" type="Label" parent="MainBoxContainer/CreditsBoxContainer/FormerDevelopersBoxContainer/RowsBoxContainer2/Zephyr"]
+[node name="Title" type="Label" parent="MarginContainer/ScrollContainer/MainBoxContainer/CreditsBoxContainer/FormerDevelopersBoxContainer/RowsBoxContainer2/Zephyr"]
 modulate = Color(1, 1, 0, 1)
 layout_mode = 2
 theme_override_font_sizes/font_size = 50
 text = "Programming"
 horizontal_alignment = 1
 
-[node name="Name" type="Label" parent="MainBoxContainer/CreditsBoxContainer/FormerDevelopersBoxContainer/RowsBoxContainer2/Zephyr"]
+[node name="Name" type="Label" parent="MarginContainer/ScrollContainer/MainBoxContainer/CreditsBoxContainer/FormerDevelopersBoxContainer/RowsBoxContainer2/Zephyr"]
 layout_mode = 2
 text = "Zephyr"
 horizontal_alignment = 1
 
-[node name="Trupen" type="VBoxContainer" parent="MainBoxContainer/CreditsBoxContainer/FormerDevelopersBoxContainer/RowsBoxContainer2"]
+[node name="Trupen" type="VBoxContainer" parent="MarginContainer/ScrollContainer/MainBoxContainer/CreditsBoxContainer/FormerDevelopersBoxContainer/RowsBoxContainer2"]
 layout_mode = 2
 
-[node name="Title" type="Label" parent="MainBoxContainer/CreditsBoxContainer/FormerDevelopersBoxContainer/RowsBoxContainer2/Trupen"]
+[node name="Title" type="Label" parent="MarginContainer/ScrollContainer/MainBoxContainer/CreditsBoxContainer/FormerDevelopersBoxContainer/RowsBoxContainer2/Trupen"]
 modulate = Color(1, 1, 0, 1)
 layout_mode = 2
 theme_override_font_sizes/font_size = 50
 text = "Programming"
 horizontal_alignment = 1
 
-[node name="Name" type="Label" parent="MainBoxContainer/CreditsBoxContainer/FormerDevelopersBoxContainer/RowsBoxContainer2/Trupen"]
+[node name="Name" type="Label" parent="MarginContainer/ScrollContainer/MainBoxContainer/CreditsBoxContainer/FormerDevelopersBoxContainer/RowsBoxContainer2/Trupen"]
 layout_mode = 2
 text = "Trupen"
 horizontal_alignment = 1
-
-[node name="RowsBoxContainer" type="HBoxContainer" parent="MainBoxContainer/CreditsBoxContainer/FormerDevelopersBoxContainer"]
-layout_mode = 2

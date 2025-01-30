@@ -10,13 +10,13 @@ var client_menu : ClientMenu = null
 
 
 @onready var username_line = \
-	$MarginContainer/VBoxContainer/UserName/LineEdit
+	$MainContainer/VBoxContainer/UserName/LineEdit
 @onready var randomise_login : CheckBox = \
-	$MarginContainer/VBoxContainer/UserName/RandomiseCheckBox
+	$MainContainer/VBoxContainer/UserName/RandomiseCheckBox
 @onready var server_address_line = \
-	$MarginContainer/VBoxContainer/ManualConnection/ConnectionParameters/H/IPAddress/LineEdit
+	$MainContainer/VBoxContainer/ManualConnection/ConnectionParameters/H/IPAddress/LineEdit
 @onready var server_port_line = \
-	$MarginContainer/VBoxContainer/ManualConnection/ConnectionParameters/H/Port/LineEdit
+	$MainContainer/VBoxContainer/ManualConnection/ConnectionParameters/H/Port/LineEdit
 
 
 func _ready():
@@ -68,7 +68,7 @@ func connect_to_server():
 	NET.client_connect_and_login(get_address(), get_port(), username)
 
 
-func _on_button_listen_pressed():
+func _on_button_connect_pressed():
 	connect_to_server()
 
 
@@ -77,7 +77,7 @@ func _on_button_back_pressed():
 
 
 func _on_refresh_servers_button_pressed():
-	var servers_box = $MarginContainer/VBoxContainer/ServerList/ColorRect/VBoxContainer
+	var servers_box = $MainContainer/VBoxContainer/ServerList/ColorRect/VBoxContainer
 	for c in servers_box.get_children():
 		servers_box.remove_child(c)
 		c.queue_free()
@@ -91,10 +91,10 @@ func _on_refresh_servers_button_pressed():
 		var b := Button.new()
 		b.text = str(s)
 		b.pressed.connect(func on_click():
-			$MarginContainer/VBoxContainer/ManualConnection/ConnectionParameters/H/IPAddress/LineEdit \
+			$MainContainer/VBoxContainer/ManualConnection/ConnectionParameters/H/IPAddress/LineEdit \
 					.text = s.address
-			$MarginContainer/VBoxContainer/ManualConnection/ConnectionParameters/H/Port/LineEdit \
+			$MainContainer/VBoxContainer/ManualConnection/ConnectionParameters/H/Port/LineEdit \
 					.text = str(s.port)
-			($MarginContainer as ScrollContainer).scroll_vertical = 0
+			($MainContainer as ScrollContainer).scroll_vertical = 0
 		)
 		servers_box.add_child(b)
