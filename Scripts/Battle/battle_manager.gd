@@ -392,7 +392,15 @@ func _on_unit_summoned(unit : Unit) -> void:
 	# apply correct BM position offset in world battles
 	form.global_position = get_tile_global_position(unit.coord)
 
-	_battle_ui.unit_summoned(not _battle_grid_state.is_during_summoning_phase())
+	var is_placement_phase_over : bool = not _battle_grid_state.is_during_summoning_phase()
+	_battle_ui.unit_summoned(is_placement_phase_over)
+	if is_placement_phase_over:
+		for row : Array in _tile_grid.hexes:
+			for tile : TileForm in row:
+				# TODO replace it with better map editor features
+				if tile.type in ["1_player_spawn", "2_player_spawn", "3_player_spawn", "4_player_spawn"]:
+					tile.get_node("Sprite2D").texture = load("res://Art/battle_map/darker_4.png")
+
 
 
 	unit.unit_died.connect(form.anim_die)
