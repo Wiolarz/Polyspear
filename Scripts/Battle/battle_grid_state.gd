@@ -896,11 +896,14 @@ func mana_values_changed() -> void:
 
 	cyclone_target = current_worst
 	var mana_difference = current_best.mana_points - current_worst.mana_points
-
-	var new_cylone_counter = (number_of_mana_wells * 10) * max(1, (5 - mana_difference))
-	if number_of_mana_wells == 0:
-		new_cylone_counter = 999
-	#new_cylone_counter = 1 # use to test
+	var new_cylone_counter = 50
+	if mana_difference < 3:
+		new_cylone_counter = 30
+	else:
+		new_cylone_counter = 15
+	
+	#new_cylone_counter = 999  # TEST turning off sacrifice mechanic
+	#new_cylone_counter = 1 # TEST killing with sacrifice
 
 	if current_worst.cyclone_timer == 0:  # Cyclone just killed a unit, so now it resets
 		current_worst.cyclone_timer = new_cylone_counter
@@ -1275,6 +1278,46 @@ func _get_counter_attack_killers(unit : Unit, direction : int, coord : Vector2i)
 	return killer_units
 
 
+## Returns unit references of targets that this unit would have pushed it if were to move in given direction [br]
+## coord argument is optional as it is useful only during teleportation magic prediction
+func _get_pushed_away_targets(unit : Unit, direction : int, coord : Vector2i = Vector2i.ZERO) -> Array[Unit]:
+	var pushed_away_units : Array[Unit] = []
+	if coord == Vector2i.ZERO:
+		coord = unit.coord
+
+	var adjacent_units : Array[Unit] = _get_adjacent_units(coord)
+	for side in range(6):
+		var unit_weapon = unit.get_symbol_when_rotated(direction, side)
+		if unit_weapon == E.Symbols.EMPTY:
+			continue  # We don't have any weapon
+		if Unit.does_it_shoot(unit_weapon):
+			continue  # we don't verify ranged weapons here
+		if not adjacent_units[side]:
+			continue  # nothing to interact with
+		if adjacent_units[side].army_in_battle.team == unit.army_in_battle.team:
+			continue  # no friendly fire within team
+
+		var enemy : Unit = adjacent_units[side]
+		var opposite_side := GenericHexGrid.opposite_direction(side)
+		var enemy_weapon : E.Symbols = enemy.get_symbol(opposite_side)
+		if Unit.will_parry_occur(unit_weapon, enemy_weapon):
+			continue  # parry disables all melee symbols
+
+		# we check if attacking symbol power is able to kill
+		if Unit.does_attack_succeed(unit_weapon, enemy_weapon):
+			#killed_enemy_units.append(enemy)
+			continue
+		# in case enemy defended against attack we check if attacker pushes away enemy
+		if Unit.can_it_push(unit_weapon):
+			pushed_away_units.append(enemy)
+			#TODO consider if removing killed units from result array would be beneficial
+			#if _will_push_kill(enemy, side, Unit.push_power(unit_weapon)):
+			#	killed_enemy_units.append(enemy)
+			#	continue
+
+	return pushed_away_units
+
+
 ## returns true if that move will lead to enemy death [br]
 ## doesn't account that in may after killing someone die instantly
 func _is_kill_move(move : MoveInfo) -> bool:
@@ -1345,6 +1388,13 @@ func get_move_consequences(move : MoveInfo) -> MoveConsequences:
 		if killed in counter_attack_killers:
 			counter_attack_killers.erase(killed)
 
+	# check for rare specific case when spear holder was pushed away during first rotation using melee
+	var pushed_away_units = _get_pushed_away_targets(attacker, move_direction)
+
+	for pushed_target in pushed_away_units:
+		if pushed_target in counter_attack_killers:
+			counter_attack_killers.erase(pushed_target)
+
 	if counter_attack_killers.size() > 0: # will die to a spear before it can kill
 		return MoveConsequences.KAMIKAZE if kill_registered else MoveConsequences.DEATH
 
@@ -1357,7 +1407,7 @@ func get_move_consequences(move : MoveInfo) -> MoveConsequences:
 		if _will_push_kill(pushed_enemy_unit, move_direction, push_power):
 			return MoveConsequences.KILL
 
-	melee_killed_enemy_units = _get_melee_attack_kills(attacker, move_direction, move.move_source)
+	melee_killed_enemy_units = _get_melee_attack_kills(attacker, move_direction, move.target_tile_coord)
 	if melee_killed_enemy_units.size() > 0:
 		kill_registered = true
 
