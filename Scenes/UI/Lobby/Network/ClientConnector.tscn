@@ -42,6 +42,7 @@ placeholder_text = "Type your desired name here"
 
 [node name="RandomiseCheckBox" type="CheckBox" parent="MainContainer/VBoxContainer/UserName"]
 layout_mode = 2
+size_flags_horizontal = 0
 text = "Add random number suffix \"_1234\""
 flat = true
 

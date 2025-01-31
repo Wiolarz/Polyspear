@@ -34,6 +34,7 @@ func refresh_replays_list():
 		button.name = replay_path
 		button.text_overrun_behavior = TextServer.OverrunBehavior.OVERRUN_TRIM_ELLIPSIS
 		button.clip_text = true
+		button.custom_minimum_size = Vector2(0, 64)
 		button.pressed.connect(_on_replay_clicked.bind(replay_path))
 		_replay_buttons_container.add_child(button)
 

@@ -45,9 +45,10 @@ size_flags_horizontal = 3
 [node name="Replays" type="VBoxContainer" parent="MarginContainer/VBoxContainer/Columns/ScrollContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_constants/separation = 10
+theme_override_constants/separation = 8
 
 [node name="ReplayButton" type="Button" parent="MarginContainer/VBoxContainer/Columns/ScrollContainer/Replays"]
+custom_minimum_size = Vector2(0, 64)
 layout_mode = 2
 theme_override_styles/normal = SubResource("StyleBoxFlat_jf720")
 theme_override_styles/hover = SubResource("StyleBoxFlat_jf720")

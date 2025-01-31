@@ -11,7 +11,7 @@ var client_menu : ClientMenu = null
 
 @onready var username_line = \
 	$MainContainer/VBoxContainer/UserName/LineEdit
-@onready var randomise_login : CheckBox = \
+@onready var randomise_login : Button = \
 	$MainContainer/VBoxContainer/UserName/RandomiseCheckBox
 @onready var server_address_line = \
 	$MainContainer/VBoxContainer/ManualConnection/ConnectionParameters/H/IPAddress/LineEdit
