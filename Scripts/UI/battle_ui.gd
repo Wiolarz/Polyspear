@@ -228,6 +228,8 @@ func on_player_selected(army_index : int, preview : bool = false):
 				selected_unit_button.modulate = Color.RED
 		button.pressed.connect(lambda)
 
+	BG.set_player_colors(bg_color)
+
 
 func unit_summoned(summon_phase_end : bool):
 	selected_unit = null

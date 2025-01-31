@@ -1,23 +1,11 @@
-[gd_scene load_steps=12 format=3 uid="uid://b4ndp6v0ts1on"]
+[gd_scene load_steps=8 format=3 uid="uid://b4ndp6v0ts1on"]
 
 [ext_resource type="Script" path="res://Scripts/UI/main_menu.gd" id="1_iln2i"]
 [ext_resource type="PackedScene" uid="uid://b3dmmym31kdbx" path="res://Scenes/UI/Lobby/HostLobby.tscn" id="2_eyp7f"]
-[ext_resource type="Shader" path="res://Art/UI/background.gdshader" id="2_wg7ja"]
-[ext_resource type="Texture2D" uid="uid://cdmdcslalv3ms" path="res://Art/UI/marble.tres" id="3_ki5k8"]
 [ext_resource type="PackedScene" uid="uid://biy1n2dqeqrox" path="res://Scenes/UI/Lobby/ClientLobby.tscn" id="3_rshoh"]
 [ext_resource type="PackedScene" uid="uid://b6eoph2qpu0d" path="res://Scenes/UI/SettingsMenu.tscn" id="4_f2bj7"]
 [ext_resource type="PackedScene" uid="uid://iqku7lopk1xl" path="res://Scenes/UI/CreditsMenu.tscn" id="5_bvo4w"]
 [ext_resource type="PackedScene" uid="uid://cs7ibsdnsrn5v" path="res://Scenes/UI/ReplaysMenu.tscn" id="6_lxdjb"]
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_7ax81"]
-shader = ExtResource("2_wg7ja")
-shader_parameter/color1 = Color(0.329412, 0, 1, 1)
-shader_parameter/color2 = Color(0.0727933, 4.33177e-07, 0.470494, 1)
-
-[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_1k777"]
-texture = ExtResource("3_ki5k8")
-axis_stretch_horizontal = 1
-axis_stretch_vertical = 1
 
 [sub_resource type="StyleBoxLine" id="StyleBoxLine_3lov4"]
 color = Color(0.701961, 0.701961, 0.701961, 1)
@@ -28,15 +16,6 @@ vertical = true
 
 [node name="MainMenu" type="CanvasLayer"]
 script = ExtResource("1_iln2i")
-
-[node name="Panel" type="Panel" parent="."]
-material = SubResource("ShaderMaterial_7ax81")
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_styles/panel = SubResource("StyleBoxTexture_1k777")
 
 [node name="MainContainer" type="VBoxContainer" parent="."]
 anchors_preset = 15

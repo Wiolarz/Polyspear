@@ -7,6 +7,8 @@ extends Control
 @onready var toggle_battle_default = main_container.get_node("ToggleBattleDefault")
 @onready var toggle_default_ai_players = main_container.get_node("ToggleDefaultAIPlayers")
 @onready var toggle_streamer_mode = main_container.get_node("ToggleStreamerMode")
+@onready var toggle_background_color_follows_players = \
+	main_container.get_node("ToggleBackgroundColorFollowsPlayers")
 
 
 func refresh():
@@ -29,6 +31,14 @@ func _on_toggle_battle_default_pressed():
 	toggle_battle_default.button_pressed = CFG.DEFAULT_MODE_IS_BATTLE
 
 
+func _on_toggle_background_color_follows_players():
+	CFG.player_options.background_color_follows_players = \
+		not CFG.player_options.background_color_follows_players
+	CFG.save_player_options()
+	toggle_background_color_follows_players.button_pressed = \
+		CFG.player_options.background_color_follows_players
+
+
 func _on_toggle_auto_start_visibility_changed():
 	if visible:
 		refresh()
@@ -45,3 +55,4 @@ func _on_toggle_streamer_mode_pressed():
 	CFG.player_options.streamer_mode = not CFG.player_options.streamer_mode
 	CFG.save_player_options()
 	toggle_streamer_mode.button_pressed = CFG.player_options.streamer_mode
+

@@ -48,6 +48,7 @@ func add_custom_screen(custom_ui : CanvasLayer):
 func go_to_custom_ui(custom_ui : CanvasLayer):
 	_hide_all()
 	custom_ui.show()
+	BG.set_default_colors()
 
 
 func _hide_all():
@@ -58,17 +59,20 @@ func _hide_all():
 func go_to_main_menu():
 	_hide_all()
 	main_menu.show()
+	BG.set_default_colors()
 
 
 func go_to_unit_editor():
 	_hide_all()
 	unit_editor.show()
+	BG.set_default_colors()
 
 
 ## TEMP
 func go_to_map_editor():
 	_hide_all()
 	map_editor.open_draw_menu()
+	BG.set_player_colors(CFG.NEUTRAL_COLOR)
 
 
 ## TEMP
@@ -189,7 +193,7 @@ func grid_planning_input_listener(tile_coord : Vector2i, \
 		return
 
 	BM.planning_input(tile_coord, is_it_pressed)
-	
+
 
 
 

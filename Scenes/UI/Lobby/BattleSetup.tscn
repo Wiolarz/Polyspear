@@ -5,7 +5,7 @@
 [ext_resource type="StyleBox" uid="uid://c4pw3ug8ebg0e" path="res://Art/UI/background_frames/dark.tres" id="2_c6lvt"]
 [ext_resource type="PackedScene" uid="uid://j6n24hs0xavf" path="res://Scenes/UI/Lobby/BattlePlayerSlotPanel.tscn" id="2_vpapl"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_oqjly"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jgcdk"]
 resource_local_to_scene = true
 content_margin_left = 10.0
 content_margin_top = 10.0
@@ -13,7 +13,7 @@ content_margin_right = 10.0
 content_margin_bottom = 10.0
 bg_color = Color(1, 1, 1, 1)
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_b3j2s"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_e6gkv"]
 resource_local_to_scene = true
 content_margin_left = 10.0
 content_margin_top = 10.0
@@ -89,11 +89,11 @@ theme_override_constants/separation = 15
 
 [node name="BattlePlayerSlotPanel" parent="VBox/Slots/ColorRect/PlayerList" instance=ExtResource("2_vpapl")]
 layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_oqjly")
+theme_override_styles/panel = SubResource("StyleBoxFlat_jgcdk")
 
 [node name="BattlePlayerSlotPanel2" parent="VBox/Slots/ColorRect/PlayerList" instance=ExtResource("2_vpapl")]
 layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_b3j2s")
+theme_override_styles/panel = SubResource("StyleBoxFlat_e6gkv")
 
 [connection signal="item_selected" from="VBox/PresetSelect/ColorRect/PresetList" to="." method="_on_preset_list_item_selected"]
 [connection signal="item_selected" from="VBox/MapSelect/ColorRect/MapList" to="." method="_on_map_list_item_selected"]
