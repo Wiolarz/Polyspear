@@ -11,7 +11,6 @@ enum MapType
 @export var new_map_width : int = 5
 @export var new_map_height : int = 5
 
-
 var current_map_type : MapType
 
 var current_brush : DataTile
@@ -25,6 +24,8 @@ var current_button: TextureButton
 		FileSystemHelpers.list_files_in_folder(CFG.BATTLE_MAP_TILES_PATH, true)
 @onready var message_label : Label = $InfoLabel
 
+@onready var new_world_button = $Bottom/HBox/NewWorldMap
+@onready var new_battle_button = $Bottom/HBox/NewBattleMap
 
 var world_grid : WorldEditGrid
 
@@ -82,11 +83,11 @@ func _set_grid_type(new_type : MapType) -> void:
 
 func _mark_button(selected_type : MapType):
 	if selected_type == MapType.WORLD:
-		$LMenuContainer/NewWorldMap.modulate = Color.FIREBRICK
-		$LMenuContainer/NewBattleMap.modulate = Color.WHITE
+		new_world_button.modulate = Color.FIREBRICK
+		new_battle_button.modulate = Color.WHITE
 	else:
-		$LMenuContainer/NewBattleMap.modulate = Color.FIREBRICK
-		$LMenuContainer/NewWorldMap.modulate = Color.WHITE
+		new_battle_button.modulate = Color.FIREBRICK
+		new_world_button.modulate = Color.WHITE
 
 
 func open_draw_menu():

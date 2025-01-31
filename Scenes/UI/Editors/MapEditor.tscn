@@ -10,44 +10,14 @@ bg_color = Color(0, 0.670588, 0.67451, 0.588235)
 [node name="MapEditor" type="CanvasLayer" node_paths=PackedStringArray("map_file_name_input")]
 process_mode = 3
 script = ExtResource("1_y7q6u")
-map_file_name_input = NodePath("mapFileName")
-
-[node name="mapFileName" type="TextEdit" parent="."]
-custom_minimum_size = Vector2(0, 70)
-offset_left = 112.0
-offset_top = 999.0
-offset_right = 1849.0
-offset_bottom = 1069.0
-text = "editor_test_map"
-
-[node name="LMenuContainer" type="VBoxContainer" parent="."]
-light_mask = 2
-visibility_layer = 2
-offset_left = 5.0
-offset_top = 243.0
-offset_right = 330.0
-offset_bottom = 492.0
-theme_override_constants/separation = 20
-
-[node name="NewWorldMap" type="Button" parent="LMenuContainer"]
-layout_mode = 2
-text = "New World Map"
-
-[node name="NewBattleMap" type="Button" parent="LMenuContainer"]
-layout_mode = 2
-text = "New Battle Map"
-
-[node name="SaveMap" type="Button" parent="LMenuContainer"]
-layout_mode = 2
-text = "Save Map
-"
+map_file_name_input = NodePath("Bottom/HBox/mapFileName")
 
 [node name="RMenuContainer" type="VBoxContainer" parent="."]
-anchors_preset = 1
+anchors_preset = -1
 anchor_left = 1.0
 anchor_right = 1.0
 offset_left = -325.0
-offset_top = 243.0
+offset_top = 293.0
 offset_bottom = 375.0
 grow_horizontal = 0
 theme_override_constants/separation = 20
@@ -121,30 +91,15 @@ layout_mode = 2
 
 [node name="InfoLabel" type="Label" parent="."]
 anchors_preset = -1
-anchor_left = 0.072
-anchor_top = 0.81
-anchor_right = 0.072
-anchor_bottom = 0.81
-offset_left = -17.24
-offset_top = -20.8
-offset_right = 871.76
-offset_bottom = 27.2
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -780.0
+offset_top = -160.0
+offset_right = -20.0
+offset_bottom = -100.0
 text = "Editor"
-
-[node name="OpenButton" type="Button" parent="."]
-offset_left = 8.0
-offset_top = 996.0
-offset_right = 101.0
-offset_bottom = 1065.0
-text = "📁"
-
-[node name="BackButton" type="Button" parent="."]
-offset_left = 9.0
-offset_top = 878.0
-offset_right = 55.0
-offset_bottom = 941.0
-shortcut = ExtResource("3_a1hl2")
-text = "◀"
 
 [node name="FileDialog" type="FileDialog" parent="."]
 title = "Open a File"
@@ -154,11 +109,58 @@ ok_button_text = "Open"
 file_mode = 0
 filters = PackedStringArray("*.tres")
 
-[connection signal="pressed" from="LMenuContainer/NewWorldMap" to="." method="_on_new_world_map_pressed"]
-[connection signal="pressed" from="LMenuContainer/NewBattleMap" to="." method="_on_new_battle_map_pressed"]
-[connection signal="pressed" from="LMenuContainer/SaveMap" to="." method="_on_save_map_pressed"]
+[node name="Bottom" type="MarginContainer" parent="."]
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -100.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="HBox" type="HBoxContainer" parent="Bottom"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="BackButton" type="Button" parent="Bottom/HBox"]
+custom_minimum_size = Vector2(240, 60)
+layout_mode = 2
+shortcut = ExtResource("3_a1hl2")
+text = "Back"
+
+[node name="Pad" type="Control" parent="Bottom/HBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="NewWorldMap" type="Button" parent="Bottom/HBox"]
+layout_mode = 2
+text = "New World Map"
+
+[node name="NewBattleMap" type="Button" parent="Bottom/HBox"]
+layout_mode = 2
+text = "New Battle Map"
+
+[node name="OpenButton" type="Button" parent="Bottom/HBox"]
+custom_minimum_size = Vector2(240, 60)
+layout_mode = 2
+text = "Load"
+
+[node name="mapFileName" type="TextEdit" parent="Bottom/HBox"]
+custom_minimum_size = Vector2(400, 60)
+layout_mode = 2
+text = "editor_test_map"
+
+[node name="SaveMap" type="Button" parent="Bottom/HBox"]
+custom_minimum_size = Vector2(0, 60)
+layout_mode = 2
+text = "Save Map
+"
+
 [connection signal="pressed" from="RMenuContainer/AddRow" to="." method="_on_add_row_pressed"]
 [connection signal="pressed" from="RMenuContainer/AddColumn" to="." method="_on_add_column_pressed"]
-[connection signal="pressed" from="OpenButton" to="." method="_on_open_button_pressed"]
-[connection signal="pressed" from="BackButton" to="." method="_on_back_button_pressed"]
 [connection signal="file_selected" from="FileDialog" to="." method="_on_file_dialog_file_selected"]
+[connection signal="pressed" from="Bottom/HBox/BackButton" to="." method="_on_back_button_pressed"]
+[connection signal="pressed" from="Bottom/HBox/NewWorldMap" to="." method="_on_new_world_map_pressed"]
+[connection signal="pressed" from="Bottom/HBox/NewBattleMap" to="." method="_on_new_battle_map_pressed"]
+[connection signal="pressed" from="Bottom/HBox/OpenButton" to="." method="_on_open_button_pressed"]
+[connection signal="pressed" from="Bottom/HBox/SaveMap" to="." method="_on_save_map_pressed"]
