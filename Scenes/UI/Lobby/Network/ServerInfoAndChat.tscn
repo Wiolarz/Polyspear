@@ -37,6 +37,7 @@ layout_mode = 2
 layout_mode = 2
 size_flags_horizontal = 3
 shortcut = ExtResource("2_x5rgd")
+shortcut_in_tooltip = false
 text = "Stop server"
 
 [node name="ButtonKickAll" type="Button" parent="MarginContainer/VBoxContainer/Buttons"]

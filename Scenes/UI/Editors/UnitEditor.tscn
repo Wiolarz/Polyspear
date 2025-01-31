@@ -1,30 +1,18 @@
 [gd_scene load_steps=10 format=3 uid="uid://dy1m42bfkq2wv"]
 
 [ext_resource type="Script" path="res://Scripts/Development/unit_editor.gd" id="1_77kxj"]
+[ext_resource type="Shader" path="res://Art/UI/background.gdshader" id="2_cswse"]
+[ext_resource type="Texture2D" uid="uid://cdmdcslalv3ms" path="res://Art/UI/marble.tres" id="2_wfcye"]
 [ext_resource type="PackedScene" uid="uid://sh62rfw7ulr8" path="res://Scenes/Form/UnitForm.tscn" id="3_yftbb"]
 [ext_resource type="Shortcut" uid="uid://fuvss5hfg4q2" path="res://Resources/Shortcuts/go_back.tres" id="4_bwq2j"]
 
-[sub_resource type="Gradient" id="Gradient_blneb"]
-interpolation_mode = 2
-colors = PackedColorArray(1, 1, 1, 1, 4.90934e-06, 0.547067, 0.709174, 1)
-
-[sub_resource type="FastNoiseLite" id="FastNoiseLite_yqeej"]
-noise_type = 2
-frequency = 0.0571
-domain_warp_enabled = true
-domain_warp_type = 1
-domain_warp_amplitude = 30.32
-domain_warp_fractal_type = 2
-
-[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_v33iq"]
-width = 1024
-height = 1024
-seamless = true
-color_ramp = SubResource("Gradient_blneb")
-noise = SubResource("FastNoiseLite_yqeej")
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ea3xn"]
+shader = ExtResource("2_cswse")
+shader_parameter/color1 = Color(1, 1, 1, 1)
+shader_parameter/color2 = Color(0, 0.54902, 0.709804, 1)
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_6soeo"]
-texture = SubResource("NoiseTexture2D_v33iq")
+texture = ExtResource("2_wfcye")
 axis_stretch_horizontal = 1
 axis_stretch_vertical = 1
 
@@ -45,6 +33,7 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="Edition" type="PanelContainer" parent="HBoxContainer"]
+material = SubResource("ShaderMaterial_ea3xn")
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_styles/panel = SubResource("StyleBoxTexture_6soeo")
@@ -201,6 +190,7 @@ layout_mode = 2
 layout_mode = 2
 size_flags_horizontal = 3
 shortcut = ExtResource("4_bwq2j")
+shortcut_in_tooltip = false
 text = "Back"
 
 [node name="Sep" type="Control" parent="HBoxContainer/Edition/VBoxContainer/Bottom/HBox"]

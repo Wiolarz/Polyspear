@@ -13,7 +13,7 @@ script = ExtResource("1_y7q6u")
 map_file_name_input = NodePath("Bottom/HBox/mapFileName")
 
 [node name="RMenuContainer" type="VBoxContainer" parent="."]
-anchors_preset = -1
+anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
 offset_left = -325.0
@@ -90,7 +90,7 @@ text = "Selected tile: "
 layout_mode = 2
 
 [node name="InfoLabel" type="Label" parent="."]
-anchors_preset = -1
+anchors_preset = 3
 anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
@@ -126,6 +126,7 @@ theme_override_constants/separation = 20
 custom_minimum_size = Vector2(240, 60)
 layout_mode = 2
 shortcut = ExtResource("3_a1hl2")
+shortcut_in_tooltip = false
 text = "Back"
 
 [node name="Pad" type="Control" parent="Bottom/HBox"]

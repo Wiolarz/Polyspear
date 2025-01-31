@@ -1,9 +1,6 @@
-[gd_scene load_steps=3 format=3 uid="uid://b6eoph2qpu0d"]
+[gd_scene load_steps=2 format=3 uid="uid://b6eoph2qpu0d"]
 
 [ext_resource type="Script" path="res://Scripts/UI/settings_menu.gd" id="1_88deh"]
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jf720"]
-bg_color = Color(0.0401178, 0.126136, 0.355491, 1)
 
 [node name="SettingsMenu" type="Panel"]
 anchors_preset = 15
@@ -33,45 +30,21 @@ theme_override_font_sizes/font_size = 100
 text = "Settings"
 horizontal_alignment = 1
 
-[node name="ToggleBattleDefault" type="CheckButton" parent="Margin/VBox"]
+[node name="ToggleBattleDefault" type="CheckBox" parent="Margin/VBox"]
 layout_mode = 2
-theme_override_styles/normal = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/hover = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/hover_pressed = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/focus = SubResource("StyleBoxFlat_jf720")
 text = "Use battle as default"
-alignment = 1
 
-[node name="ToggleAutoStart" type="CheckButton" parent="Margin/VBox"]
+[node name="ToggleAutoStart" type="CheckBox" parent="Margin/VBox"]
 layout_mode = 2
-theme_override_styles/normal = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/hover = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/hover_pressed = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/focus = SubResource("StyleBoxFlat_jf720")
 text = "Auto start"
-alignment = 1
 
-[node name="ToggleDefaultAIPlayers" type="CheckButton" parent="Margin/VBox"]
+[node name="ToggleDefaultAIPlayers" type="CheckBox" parent="Margin/VBox"]
 layout_mode = 2
-theme_override_styles/normal = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/hover = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/hover_pressed = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/focus = SubResource("StyleBoxFlat_jf720")
 text = "Players start as AI"
-alignment = 1
 
-[node name="ToggleStreamerMode" type="CheckButton" parent="Margin/VBox"]
+[node name="ToggleStreamerMode" type="CheckBox" parent="Margin/VBox"]
 layout_mode = 2
-theme_override_styles/normal = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/hover = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/hover_pressed = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/focus = SubResource("StyleBoxFlat_jf720")
 text = "Streamer mode"
-alignment = 1
 
 [connection signal="pressed" from="Margin/VBox/ToggleBattleDefault" to="." method="_on_toggle_battle_default_pressed"]
 [connection signal="pressed" from="Margin/VBox/ToggleAutoStart" to="." method="_on_toggle_auto_start_pressed"]

@@ -2,7 +2,7 @@
 
 [sub_resource type="Gradient" id="Gradient_blneb"]
 interpolation_mode = 2
-colors = PackedColorArray(1, 1, 1, 1, 4.90934e-06, 0.547067, 0.709174, 1)
+colors = PackedColorArray(1, 1, 1, 1, 0, 0, 0, 1)
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_yqeej"]
 noise_type = 2

@@ -24,6 +24,7 @@ offset_right = 138.0
 offset_bottom = 93.0
 scale = Vector2(2.04, 2.04)
 shortcut = ExtResource("2_hku4e")
+shortcut_in_tooltip = false
 text = "Menu"
 
 [node name="Players" type="VBoxContainer" parent="."]
