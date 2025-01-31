@@ -1,8 +1,32 @@
-[gd_scene load_steps=6 format=3 uid="uid://dy1m42bfkq2wv"]
+[gd_scene load_steps=10 format=3 uid="uid://dy1m42bfkq2wv"]
 
 [ext_resource type="Script" path="res://Scripts/Development/unit_editor.gd" id="1_77kxj"]
 [ext_resource type="PackedScene" uid="uid://sh62rfw7ulr8" path="res://Scenes/Form/UnitForm.tscn" id="3_yftbb"]
 [ext_resource type="Shortcut" uid="uid://fuvss5hfg4q2" path="res://Resources/Shortcuts/go_back.tres" id="4_bwq2j"]
+
+[sub_resource type="Gradient" id="Gradient_blneb"]
+interpolation_mode = 2
+colors = PackedColorArray(1, 1, 1, 1, 4.90934e-06, 0.547067, 0.709174, 1)
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_yqeej"]
+noise_type = 2
+frequency = 0.0571
+domain_warp_enabled = true
+domain_warp_type = 1
+domain_warp_amplitude = 30.32
+domain_warp_fractal_type = 2
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_v33iq"]
+width = 1024
+height = 1024
+seamless = true
+color_ramp = SubResource("Gradient_blneb")
+noise = SubResource("FastNoiseLite_yqeej")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_6soeo"]
+texture = SubResource("NoiseTexture2D_v33iq")
+axis_stretch_horizontal = 1
+axis_stretch_vertical = 1
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_nf1n4"]
 bg_color = Color(0.0235294, 0.227451, 0.372549, 1)
@@ -13,31 +37,186 @@ bg_color = Color(0.188235, 0.317647, 0.105882, 1)
 [node name="UnitEditor" type="CanvasLayer"]
 script = ExtResource("1_77kxj")
 
-[node name="UnitPreview" parent="." instance=ExtResource("3_yftbb")]
-position = Vector2(604, 472)
-scale = Vector2(0.5, 0.5)
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 
-[node name="UnitBrowserTree" type="Tree" parent="."]
-offset_left = 1232.0
-offset_top = 9.0
-offset_right = 1914.0
-offset_bottom = 1073.0
+[node name="Edition" type="PanelContainer" parent="HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleBoxTexture_6soeo")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer/Edition"]
+layout_mode = 2
+
+[node name="Top" type="MarginContainer" parent="HBoxContainer/Edition/VBoxContainer"]
+layout_mode = 2
+
+[node name="PanelContainer" type="PanelContainer" parent="HBoxContainer/Edition/VBoxContainer/Top"]
+layout_mode = 2
+
+[node name="UnitName" type="Label" parent="HBoxContainer/Edition/VBoxContainer/Top/PanelContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 40
+text = "Unit name"
+horizontal_alignment = 1
+vertical_alignment = 1
+text_overrun_behavior = 3
+
+[node name="Preview" type="CenterContainer" parent="HBoxContainer/Edition/VBoxContainer"]
+clip_contents = true
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Center" type="Control" parent="HBoxContainer/Edition/VBoxContainer/Preview"]
+layout_mode = 2
+
+[node name="UnitPreview" parent="HBoxContainer/Edition/VBoxContainer/Preview/Center" instance=ExtResource("3_yftbb")]
+scale = Vector2(0.4, 0.4)
+
+[node name="ChangeNW" type="OptionButton" parent="HBoxContainer/Edition/VBoxContainer/Preview/Center"]
+custom_minimum_size = Vector2(180, 80)
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -300.0
+offset_top = -340.0
+offset_right = -300.0
+offset_bottom = -340.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 32
 metadata/_edit_use_anchors_ = true
 
-[node name="UnitName" type="RichTextLabel" parent="."]
-offset_right = 1209.0
-offset_bottom = 126.0
-theme_override_font_sizes/normal_font_size = 40
-text = "Unit Name"
+[node name="ChangeNE" type="OptionButton" parent="HBoxContainer/Edition/VBoxContainer/Preview/Center"]
+custom_minimum_size = Vector2(180, 80)
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 300.0
+offset_top = -340.0
+offset_right = 300.0
+offset_bottom = -340.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 32
 metadata/_edit_use_anchors_ = true
 
-[node name="PickArt" type="Button" parent="."]
-offset_left = 505.0
-offset_top = 925.0
-offset_right = 666.0
-offset_bottom = 1015.0
+[node name="ChangeE" type="OptionButton" parent="HBoxContainer/Edition/VBoxContainer/Preview/Center"]
+custom_minimum_size = Vector2(180, 80)
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 450.0
+offset_right = 450.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 32
+metadata/_edit_use_anchors_ = true
+
+[node name="ChangeW" type="OptionButton" parent="HBoxContainer/Edition/VBoxContainer/Preview/Center"]
+custom_minimum_size = Vector2(180, 80)
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -450.0
+offset_right = -450.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 32
+metadata/_edit_use_anchors_ = true
+
+[node name="ChangeSW" type="OptionButton" parent="HBoxContainer/Edition/VBoxContainer/Preview/Center"]
+custom_minimum_size = Vector2(180, 80)
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -300.0
+offset_top = 340.0
+offset_right = -300.0
+offset_bottom = 340.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 32
+metadata/_edit_use_anchors_ = true
+
+[node name="ChangeSE" type="OptionButton" parent="HBoxContainer/Edition/VBoxContainer/Preview/Center"]
+custom_minimum_size = Vector2(180, 80)
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 300.0
+offset_top = 340.0
+offset_right = 300.0
+offset_bottom = 340.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 32
+metadata/_edit_use_anchors_ = true
+
+[node name="PickArt" type="Button" parent="HBoxContainer/Edition/VBoxContainer/Preview/Center"]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_top = 375.0
+offset_bottom = 442.0
+grow_horizontal = 2
+grow_vertical = 2
 theme_override_styles/normal = SubResource("StyleBoxFlat_nf1n4")
 text = "pick art"
+metadata/_edit_use_anchors_ = true
+
+[node name="Bottom" type="MarginContainer" parent="HBoxContainer/Edition/VBoxContainer"]
+layout_mode = 2
+
+[node name="HBox" type="HBoxContainer" parent="HBoxContainer/Edition/VBoxContainer/Bottom"]
+layout_mode = 2
+
+[node name="BackButton" type="Button" parent="HBoxContainer/Edition/VBoxContainer/Bottom/HBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+shortcut = ExtResource("4_bwq2j")
+text = "Back"
+
+[node name="Sep" type="Control" parent="HBoxContainer/Edition/VBoxContainer/Bottom/HBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Save" type="Button" parent="HBoxContainer/Edition/VBoxContainer/Bottom/HBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/normal = SubResource("StyleBoxFlat_srvm0")
+text = "Save"
+metadata/_edit_use_anchors_ = true
+
+[node name="UnitBrowserTree" type="Tree" parent="HBoxContainer"]
+custom_minimum_size = Vector2(640, 0)
+layout_mode = 2
 metadata/_edit_use_anchors_ = true
 
 [node name="PickArtDialog" type="FileDialog" parent="."]
@@ -50,66 +229,7 @@ root_subfolder = "res://Art"
 filters = PackedStringArray("*.png ; PNG Images")
 use_native_dialog = true
 
-[node name="ChangeNW" type="OptionButton" parent="."]
-offset_left = 278.0
-offset_top = 107.0
-offset_right = 439.0
-offset_bottom = 197.0
-metadata/_edit_use_anchors_ = true
-
-[node name="ChangeNE" type="OptionButton" parent="."]
-offset_left = 767.0
-offset_top = 85.0
-offset_right = 928.0
-offset_bottom = 175.0
-metadata/_edit_use_anchors_ = true
-
-[node name="ChangeE" type="OptionButton" parent="."]
-offset_left = 942.0
-offset_top = 402.0
-offset_right = 1103.0
-offset_bottom = 492.0
-metadata/_edit_use_anchors_ = true
-
-[node name="ChangeW" type="OptionButton" parent="."]
-offset_left = 109.0
-offset_top = 402.0
-offset_right = 270.0
-offset_bottom = 492.0
-metadata/_edit_use_anchors_ = true
-
-[node name="ChangeSW" type="OptionButton" parent="."]
-offset_left = 282.0
-offset_top = 757.0
-offset_right = 443.0
-offset_bottom = 847.0
-metadata/_edit_use_anchors_ = true
-
-[node name="ChangeSE" type="OptionButton" parent="."]
-offset_left = 763.0
-offset_top = 769.0
-offset_right = 924.0
-offset_bottom = 859.0
-metadata/_edit_use_anchors_ = true
-
-[node name="Save" type="Button" parent="."]
-offset_left = 986.0
-offset_top = 906.0
-offset_right = 1147.0
-offset_bottom = 996.0
-theme_override_styles/normal = SubResource("StyleBoxFlat_srvm0")
-text = "Save"
-metadata/_edit_use_anchors_ = true
-
-[node name="BackButton" type="Button" parent="."]
-offset_left = 5.0
-offset_top = 1012.0
-offset_right = 51.0
-offset_bottom = 1075.0
-shortcut = ExtResource("4_bwq2j")
-text = "◀"
-
-[connection signal="pressed" from="PickArt" to="." method="_on_pick_art_button_pressed"]
+[connection signal="pressed" from="HBoxContainer/Edition/VBoxContainer/Preview/Center/PickArt" to="." method="_on_pick_art_button_pressed"]
+[connection signal="pressed" from="HBoxContainer/Edition/VBoxContainer/Bottom/HBox/BackButton" to="." method="_on_back_button_pressed"]
+[connection signal="pressed" from="HBoxContainer/Edition/VBoxContainer/Bottom/HBox/Save" to="." method="_on_save_pressed"]
 [connection signal="file_selected" from="PickArtDialog" to="." method="_on_pick_art_dialog_file_selected"]
-[connection signal="pressed" from="Save" to="." method="_on_save_pressed"]
-[connection signal="pressed" from="BackButton" to="." method="_on_back_button_pressed"]

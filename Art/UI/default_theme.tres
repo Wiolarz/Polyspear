@@ -7,14 +7,30 @@
 [ext_resource type="Texture2D" uid="uid://domt8tx0d2lu3" path="res://Art/UI/checkbox_unchecked.png" id="2_whbsa"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_2rjd0"]
+content_margin_left = 3.0
+content_margin_top = 3.0
+content_margin_right = 3.0
+content_margin_bottom = 3.0
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_rlg6u"]
+content_margin_left = 3.0
+content_margin_top = 3.0
+content_margin_right = 3.0
+content_margin_bottom = 3.0
 bg_color = Color(0.470588, 0.145098, 0.0745098, 1)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jnh7b"]
+content_margin_left = 3.0
+content_margin_top = 3.0
+content_margin_right = 3.0
+content_margin_bottom = 3.0
 bg_color = Color(0, 0, 0, 0.698039)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tfj6u"]
+content_margin_left = 3.0
+content_margin_top = 3.0
+content_margin_right = 3.0
+content_margin_bottom = 3.0
 bg_color = Color(0.156863, 0.156863, 0.156863, 1)
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_niwlu"]
@@ -63,6 +79,15 @@ MarginContainer/constants/margin_top = 20
 MenuBar/font_sizes/font_size = 40
 MenuButton/font_sizes/font_size = 40
 OptionButton/font_sizes/font_size = 40
+OptionButton/styles/disabled = null
+OptionButton/styles/disabled_mirrored = null
+OptionButton/styles/focus = ExtResource("1_2dd0h")
+OptionButton/styles/hover = null
+OptionButton/styles/hover_mirrored = null
+OptionButton/styles/normal = null
+OptionButton/styles/normal_mirrored = null
+OptionButton/styles/pressed = null
+OptionButton/styles/pressed_mirrored = null
 PopupMenu/font_sizes/font_separator_size = 40
 PopupMenu/font_sizes/font_size = 40
 PopupMenu/fonts/font_separator = ExtResource("1_rnx0e")
