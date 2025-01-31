@@ -265,6 +265,7 @@ func grid_input(coord : Vector2i) -> void:
 		return
 
 	if _replay_is_playing:
+		_painter_node.erase()  # TODO verify if that's a proper fix to allow drawing in replays
 		print("replay playing, input ignored")
 		return
 
@@ -702,6 +703,7 @@ func _close_battle_and_return() -> void:
 
 
 func _turn_off_battle_ui() -> void:
+	_painter_node.erase()
 	_battle_ui.hide()
 	UI.switch_camera()
 
