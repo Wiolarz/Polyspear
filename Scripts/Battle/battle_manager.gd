@@ -315,6 +315,9 @@ func grid_input(coord : Vector2i) -> void:
 func grid_hover(coord : Vector2i, is_hovered : bool) -> void:
 	var tile_form : UnitForm = null
 
+	if not _battle_is_ongoing:
+		return
+
 	# TODO move it to function like '_get_unit_form_at(coord)'
 	var unit : Unit = _battle_grid_state.get_unit(coord)
 	if unit:
