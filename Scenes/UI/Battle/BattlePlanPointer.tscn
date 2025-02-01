@@ -1,0 +1,12 @@
+[gd_scene load_steps=2 format=3 uid="uid://cl3kkli2o11nj"]
+
+[sub_resource type="TextMesh" id="TextMesh_dv5gn"]
+text = "⬡"
+pixel_size = 1.0
+
+[node name="BattlePlanPointer" type="Node2D"]
+
+[node name="MeshInstance2D" type="MeshInstance2D" parent="."]
+position = Vector2(0, 31)
+scale = Vector2(35, 35)
+mesh = SubResource("TextMesh_dv5gn")

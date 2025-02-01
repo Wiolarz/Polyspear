@@ -12,10 +12,10 @@ const MOVE_SPEED = 40.0
 # is exponential -- it means that change speed is proportional to difference
 # betwoon target and current power (so we have kind of two powers here).
 const MAX_ZOOM_POWER = 1
-const MIN_ZOOM_POWER = -10
+const MIN_ZOOM_POWER = -16
 const ZOOM_STEP = pow(2.0, 0.25)
-const START_ZOOM := 3.0 # this start value gives nice zoom out effect at start
-const START_ZOOM_TARGET : int = -6
+const START_ZOOM := 1.0 # this start value gives nice zoom out effect at start
+const START_ZOOM_TARGET : int = -13
 
 var last_mouse_position : Vector2
 var target_zoom_power : int = START_ZOOM_TARGET

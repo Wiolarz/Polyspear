@@ -1,6 +1,13 @@
 class_name BattleGridState
 extends GenericHexGrid
 
+enum MoveConsequences {
+	NONE,
+	KILL,
+	DEATH,
+	KAMIKAZE # Both kills and dies
+}
+
 const STATE_SUMMONNING = "summonning"
 const STATE_FIGHTING = "fighting"
 const STATE_SACRIFICE = "sacrifice"
@@ -8,6 +15,7 @@ const STATE_BATTLE_FINISHED = "battle_finished"
 
 const MOVE_IS_INVALID = -1
 
+## BM._check_for_stalemate() doesn't yet handle bigger number of allowed repeats than 2
 const STALEMATE_TURN_REPEATS = 2  # number of repeated moves that fast forward Mana Cyclon Timer
 
 var state : String = STATE_SUMMONNING
@@ -20,7 +28,7 @@ var currently_active_unit : Unit = null
 
 var number_of_mana_wells : int = 0
 var cyclone_target : ArmyInBattleState
-
+const MANA_WELL_POWER : int = 100
 
 #TEMP HACK for proper awarding of exp in spear kills
 var spear_holding_killer_teams : Array[int] = []
@@ -238,28 +246,34 @@ func _process_symbols(unit : Unit) -> bool:
 		return true
 	return false
 
-## Returns true if Enemy counter_attack can kill the target
+## Returns true if Enemy counter_attack can kill the target [br]
+## Starts animation for stabbing in case
 func _should_die_to_counter_attack(unit : Unit) -> bool:
 	spear_holding_killer_teams = [] #TEMP
 
 	var adjacent_units = _get_adjacent_units(unit.coord)
 
 	for side in range(6):
-		if not adjacent_units[side]:
+		var enemy = adjacent_units[side]
+		if not enemy:
 			continue # no unit
-		if adjacent_units[side].army_in_battle.team == unit.army_in_battle.team:
+		if enemy.army_in_battle.team == unit.army_in_battle.team:
 			continue # no friendly fire within team
 		var unit_symbol : E.Symbols = unit.get_symbol(side)
 		var opposite_side := GenericHexGrid.opposite_direction(side)
-		var enemy_symbol : E.Symbols = adjacent_units[side].get_symbol(opposite_side)
+		var enemy_symbol : E.Symbols = enemy.get_symbol(opposite_side)
 
 		if Unit.will_parry_occur(enemy_symbol, unit_symbol):
+			unit.unit_is_blocking.emit(side)  # animation
 			continue  # parry prevents counter attacks
 		
 		if Unit.does_it_counter_attack(enemy_symbol):
 			if Unit.does_attack_succeed(enemy_symbol, unit_symbol):
 				# found killer
-				spear_holding_killer_teams.append(adjacent_units[side].army_in_battle.team)
+				enemy.unit_is_counter_attacking.emit(opposite_side)  # animation
+				spear_holding_killer_teams.append(enemy.army_in_battle.team)
+			else:
+				unit.unit_is_blocking.emit(side)  # animation
 
 	if spear_holding_killer_teams.size() > 0:
 		return true
@@ -286,18 +300,26 @@ func _process_offensive_symbols(unit : Unit) -> void:
 		var enemy_weapon = enemy.get_symbol(opposite_side)
 		if Unit.will_parry_occur(unit_weapon, enemy_weapon):
 			continue  # parry disables all melee symbols
+		else:
+			enemy.unit_is_blocking.emit(opposite_side)  # animation
 
 		# we check if attacking symbol power is able to kill
 		if Unit.does_attack_succeed(unit_weapon, enemy_weapon):
 			# in case of winning battle - further attack checks won't break anything
+
+			unit.unit_is_slashing.emit(side)  # animation
 			_kill_unit(enemy, armies_in_battle_state[current_army_index])
 			continue  # enemy unit died
+		else:
+			enemy.unit_is_blocking.emit(opposite_side)  # animation
 
 		# in case enemy defended against attack we check if attacker pushes away enemy
 		if Unit.can_it_push(unit_weapon):
+			unit.unit_is_pushing.emit(side)  # animation
 			_push_enemy(enemy, side, Unit.push_power(unit_weapon))
 
 
+## Occurs only when unit is pushed, the that unit performes attacks with passive symbols
 func _process_passive_symbols(unit : Unit) -> void:
 	for side in range(6):
 		var unit_weapon = unit.get_symbol(side)
@@ -323,11 +345,13 @@ func _process_passive_symbols(unit : Unit) -> void:
 		# we check if attacking symbol power is able to kill
 		if Unit.does_attack_succeed(unit_weapon, enemy_weapon):
 			# in case of winning battle - further attack checks won't break anything
+			unit.unit_is_counter_attacking.emit(side)  # animation
 			_kill_unit(enemy, armies_in_battle_state[current_army_index])
 			continue  # enemy unit died
 
 		# in case enemy defended against attack we check if attacker pushes away enemy
 		if Unit.can_it_push(unit_weapon):
+			unit.unit_is_pushing.emit(side)  # animation
 			_push_enemy(enemy, side, Unit.push_power(unit_weapon))
 
 
@@ -344,8 +368,10 @@ func _process_bow(unit : Unit, side : int, weapon : E.Symbols) -> void:
 	var opposite_side := GenericHexGrid.opposite_direction(side)
 	var enemy_weapon : E.Symbols = target.get_symbol(opposite_side)
 	if not Unit.does_attack_succeed(weapon, enemy_weapon):
+		target.unit_is_blocking.emit(opposite_side)  # animation
 		return  # blocked by shield
 
+	unit.unit_is_shooting.emit(side)  # animation
 	_kill_unit(target, armies_in_battle_state[current_army_index])
 
 ## pushes enemy in non-relative direction, "power" tiles away [br]
@@ -725,6 +751,11 @@ func _change_unit_coord(unit : Unit, target_coord : Vector2i) -> void:
 	_remove_unit(unit)
 	_put_unit_on_grid(unit, target_coord)
 
+	var target_tile : BattleGridState.BattleHex = _get_battle_hex(target_coord)
+	if target_tile.is_mana_tile():
+		unit.unit_captured_mana.emit(target_coord)
+		capture_mana_well(target_tile, unit.army_in_battle)
+
 
 ## Used for movement, kills, unsummon(undo) [br]
 ## removes Unit from logic hex tile
@@ -806,10 +837,14 @@ func _kill_unit(target : Unit, killer_army : ArmyInBattleState = null) -> void:
 
 ## Rare event when all players repeated their moves -> it pushes cyclone timer to activate next turn
 func end_stalemate() -> void:
-	print_rich("[color=pink]END OFF STALEMATE")
+	print_rich("[color=pink]END OF STALEMATE")
 	# it has to be 0 in case if value where to be
-	# 1 leads to bugs
-	cyclone_target.cyclone_timer = 0  
+	# 1 leads to bugs 
+	
+	#TODO fix stalemate ending action
+	# Temporarly disabled duo to issues with independent refactors that made ths feature broken
+	#cyclone_target.cyclone_timer = 0
+
 #endregion Gameplay Events
 
 
@@ -848,6 +883,11 @@ func get_current_time_left() -> int:
 ## only for Replays
 func set_displayed_time_left_ms(time_left_ms : int) -> void:
 	armies_in_battle_state[current_army_index].set_time_left_ms(time_left_ms)
+
+## only for replays
+func set_clock_enabled(enabled: bool):
+	for army in armies_in_battle_state:
+		army.clock_enabled = enabled
 
 #endregion Timer
 
@@ -894,6 +934,13 @@ func cyclone_get_current_target() -> Player:
 func cyclone_get_current_target_turns_left() -> int:
 	return cyclone_target.cyclone_timer
 
+
+func capture_mana_well(hex : BattleHex, army : ArmyInBattleState):
+	if hex.mana_controller:
+		hex.mana_controller.mana_points -= MANA_WELL_POWER
+	hex.mana_controller = army
+	army.mana_points += MANA_WELL_POWER
+	mana_values_changed()
 
 #endregion Mana Cyclone Timer
 
@@ -1163,29 +1210,6 @@ func filter_only_kill_moves(all_moves : Array[MoveInfo]) -> Array[MoveInfo]:
 	return all_kill_moves
 
 
-func _ai_should_die_to_counter_attack(unit : Unit, direction : int, coord : Vector2i) -> bool:
-	# Returns true if Enemy counter_attack can kill the target
-	var adjacent_units = _get_adjacent_units(coord)
-
-	for side in range(6):
-		if not adjacent_units[side]:
-			continue  # no unit
-		if adjacent_units[side].army_in_battle.team == unit.army_in_battle.team:
-			continue  # no friendly fire within team
-		var unit_symbol : E.Symbols = unit.get_symbol_when_rotated(side, direction)
-		var opposite_side := GenericHexGrid.opposite_direction(side)
-		var enemy_symbol : E.Symbols = adjacent_units[side].get_symbol(opposite_side)
-
-		if Unit.will_parry_occur(unit_symbol, enemy_symbol):
-			continue  # parry prevents counter attacks
-		
-		if Unit.does_it_counter_attack(enemy_symbol):
-			if Unit.does_attack_succeed(enemy_symbol, unit_symbol):
-				return true
-
-	return false
-
-
 func _ai_will_melee_kill_someone(unit : Unit, direction : int, coord : Vector2i) -> bool:
 	var adjacent_units : Array[Unit] = _get_adjacent_units(coord)
 
@@ -1221,15 +1245,47 @@ func _ai_will_melee_kill_someone(unit : Unit, direction : int, coord : Vector2i)
 			if unit_on_target:
 				return true # unit would get crushed
 
-			if _ai_should_die_to_counter_attack(enemy, enemy.unit_rotation, pushed_cord):
+			if _get_counter_attack_killers(enemy, enemy.unit_rotation, pushed_cord).size() > 0:
 				return true
 
 	return false
 
 
+func _get_counter_attack_killers(unit : Unit, direction : int, coord : Vector2i) -> Array[Unit]:
+	# Returns all units that will kill this unit it were present on this tile
+	var killer_units : Array[Unit] = []	
+
+
+	var adjacent_units = _get_adjacent_units(coord)
+
+	for side in range(6):
+		var enemy_unit = adjacent_units[side]
+		if not enemy_unit:
+			continue  # no unit
+		if enemy_unit.army_in_battle.team == unit.army_in_battle.team:
+			continue  # no friendly fire within team
+
+		var unit_symbol : E.Symbols = unit.get_symbol_when_rotated(side, direction)
+		var opposite_side := GenericHexGrid.opposite_direction(side)
+		var enemy_symbol : E.Symbols = enemy_unit.get_symbol(opposite_side)
+
+		if Unit.will_parry_occur(unit_symbol, enemy_symbol):
+			continue  # parry prevents counter attacks
+		
+		if Unit.does_it_counter_attack(enemy_symbol):
+			if Unit.does_attack_succeed(enemy_symbol, unit_symbol):
+				killer_units.append(enemy_unit)
+
+	return killer_units
+
+
 ## returns true if that move will lead to enemy death [br]
 ## doesn't account that in may after killing someone die instantly
 func _is_kill_move(move : MoveInfo) -> bool:
+	var consequences = get_move_consequences(move)
+	return consequences == MoveConsequences.KILL or consequences == MoveConsequences.KAMIKAZE
+
+func get_move_consequences(move : MoveInfo) -> MoveConsequences:
 	# list of checks:
 	# 1 verify if turning in (starting move with that unit) will even work
 	# 2 moving in that direction would shoot someone
@@ -1237,20 +1293,18 @@ func _is_kill_move(move : MoveInfo) -> bool:
 	# 4 you can survive entering that tile
 	# 5 you can kill someone entering that tile
 
-	if move.move_type != MoveInfo.TYPE_MOVE:  # TODO add support for spells
-		return false # summons don't kill
+	var kill_registered = false
 
-	# TODO change to get army, not player because player can have other team
-	# than aarmy in battle and player can be null
-	var me = get_current_player()
+	if move.move_type != MoveInfo.TYPE_MOVE:  # TODO add support for spells and sacrifices
+		return MoveConsequences.NONE # summons don't kill
 
 	var attacker = get_unit(move.move_source)
 	var move_direction = GenericHexGrid.direction_to_adjacent( \
 			move.move_source, move.target_tile_coord);
 
 	# step 1
-	if _ai_should_die_to_counter_attack(attacker, move_direction, move.move_source):
-		return false  # will die to a spear befor it can kill
+	if _get_counter_attack_killers(attacker, move_direction, move.move_source).size() > 0:
+		return MoveConsequences.DEATH  # will die to a spear befor it can kill
 
 	# step 2 BOW
 	for side in range(6):  # we check each side for a ranged attack symbol
@@ -1261,26 +1315,42 @@ func _is_kill_move(move : MoveInfo) -> bool:
 
 		var reach = Unit.ranged_weapon_reach(symbol)
 		var target : Unit = _get_shot_target(move.move_source, side, reach)
-		if target != null and target.army_in_battle.team != me.team:
+		if target and target.army_in_battle.team != attacker.army_in_battle.team:
 			var opposite_side = GenericHexGrid.opposite_direction(side)
 			var target_symbol = target.get_symbol(opposite_side)
 
 			if Unit.does_attack_succeed(symbol, target_symbol):
-				return true  # can shoot enemy in this direction
+				kill_registered = true  # can shoot enemy in this direction
 
 	# step 3 melee weapon on first rotation
+	
 	if _ai_will_melee_kill_someone(attacker, move_direction, move.move_source):
-		return true
+		kill_registered = true
 
 	# step 4
-	if _ai_should_die_to_counter_attack(attacker, move_direction, move.target_tile_coord):
-		return false  # will die to a spear befor it can kill
+	var counter_attack_killers = _get_counter_attack_killers(attacker, move_direction, move.target_tile_coord)
+	
+	# Check for rare specific case when archer walks into a single enemy spear killing it during rotation
+	if counter_attack_killers.size() == 1:  # there is only a single spear pointing
+		var front_symbol = attacker.get_front_symbol()
+		var enemy_unit = _get_adjacent_unit(move.target_tile_coord, move_direction)
+		if enemy_unit:
+			var enemy_symbol = enemy_unit.get_symbol(GenericHexGrid.opposite_direction(move_direction))
+
+			if enemy_unit == counter_attack_killers[0] \
+				and Unit.does_it_shoot(front_symbol) \
+				and Unit.does_attack_succeed(front_symbol, enemy_symbol):
+				# unit we would kill with our arrow is that killer
+					return MoveConsequences.KILL
+	
+	if counter_attack_killers.size() > 0: # will die to a spear before it can kill
+		return MoveConsequences.KAMIKAZE if kill_registered else MoveConsequences.DEATH
 
 	# step 5
 	if _ai_will_melee_kill_someone(attacker, move_direction, move.target_tile_coord):
-		return true
+		kill_registered = true
 
-	return false
+	return MoveConsequences.KILL if kill_registered else MoveConsequences.NONE
 
 #endregion AI Helpers
 
@@ -1305,6 +1375,7 @@ class BattleHex:
 	## that it's facing it
 	var special_move : bool = false  
 
+	var mana_controller : ArmyInBattleState
 
 	static var sentinel: BattleHex = BattleHex.create_sentinel()
 
@@ -1388,7 +1459,8 @@ class ArmyInBattleState:
 		set(_no_value):
 			assert(false, "don't change the hero here")
 
-
+	## may be disabled by a replay
+	var clock_enabled := true
 	## when turn started - for local time calculation
 	var turn_start_timestamp
 	##  miliseconds on the clock when turn started - will be synched in multiplayer
@@ -1430,6 +1502,8 @@ class ArmyInBattleState:
 
 	func get_time_left_ms() -> int:
 		var turn_time_local_passed_ms = Time.get_ticks_msec() - turn_start_timestamp
+		if not clock_enabled:
+			return start_turn_clock_time_left_ms # Time shouldn't pass in replays
 		return start_turn_clock_time_left_ms - turn_time_local_passed_ms
 
 
@@ -1439,8 +1513,10 @@ class ArmyInBattleState:
 
 
 	func turn_ended() -> void:
-		start_turn_clock_time_left_ms = get_time_left_ms()
-		start_turn_clock_time_left_ms += turn_increment_ms
+		# clock disabled in replays, otherwise this messes with timer - adds a large time value to timer
+		if clock_enabled:
+			start_turn_clock_time_left_ms = get_time_left_ms()
+			start_turn_clock_time_left_ms += turn_increment_ms
 
 	## Manages unit relation to it's related army object [br]
 	## Used in so that "summary"

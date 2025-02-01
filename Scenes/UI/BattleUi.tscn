@@ -2,8 +2,8 @@
 
 [ext_resource type="Script" path="res://Scripts/UI/battle_ui.gd" id="1_0rgae"]
 [ext_resource type="Shortcut" uid="uid://fuvss5hfg4q2" path="res://Resources/Shortcuts/go_back.tres" id="2_hku4e"]
-[ext_resource type="Texture2D" uid="uid://bcf50aa63e5x7" path="res://Art/units/elf/elf_archer.png" id="3_tidxc"]
-[ext_resource type="Texture2D" uid="uid://i280h28mqf1x" path="res://Art/units/neutral/wood_dryad.png" id="4_k6rxg"]
+[ext_resource type="Texture2D" uid="uid://cukwcwy4fikm1" path="res://Art/elf_hero_noble.png" id="3_arbmx"]
+[ext_resource type="Texture2D" uid="uid://mohmdyii2gpf" path="res://Art/elf_hero_stalker.png" id="4_bhs22"]
 [ext_resource type="PackedScene" uid="uid://c2tjldwjynnry" path="res://Scenes/UI/GameChat.tscn" id="5_10swj"]
 
 [node name="BattleUI" type="CanvasLayer"]
@@ -53,20 +53,20 @@ text = "Player2"
 anchors_preset = 2
 anchor_top = 1.0
 anchor_bottom = 1.0
-offset_left = 14.0
-offset_top = -188.0
-offset_right = 6294.0
-offset_bottom = 371.0
+offset_left = -1.0
+offset_top = 25.0
+offset_right = 6279.0
+offset_bottom = 1620.0
 grow_vertical = 0
-scale = Vector2(0.3, 0.3)
+scale = Vector2(0.15, 0.15)
 
 [node name="TextureButton" type="TextureButton" parent="Units"]
 layout_mode = 2
-texture_normal = ExtResource("3_tidxc")
+texture_normal = ExtResource("3_arbmx")
 
 [node name="TextureButton2" type="TextureButton" parent="Units"]
 layout_mode = 2
-texture_normal = ExtResource("4_k6rxg")
+texture_normal = ExtResource("4_bhs22")
 
 [node name="GameChat" parent="." instance=ExtResource("5_10swj")]
 anchors_preset = 3
@@ -113,6 +113,77 @@ offset_right = 495.0
 offset_bottom = 114.0
 text = "3 : 00 : 000"
 
+[node name="ReplayControls" type="ColorRect" parent="."]
+visible = false
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -740.0
+offset_top = -157.0
+offset_right = -20.0
+offset_bottom = -20.0
+grow_horizontal = 0
+grow_vertical = 0
+color = Color(0, 0, 0, 0.423529)
+
+[node name="MoveCount" type="Label" parent="ReplayControls"]
+layout_mode = 1
+offset_left = 16.0
+offset_top = 17.0
+offset_right = 505.0
+offset_bottom = 67.0
+text = "21/37"
+
+[node name="Status" type="Label" parent="ReplayControls"]
+layout_mode = 1
+offset_left = 16.0
+offset_top = 73.0
+offset_right = 505.0
+offset_bottom = 123.0
+text = "Replay status: Lorem Ipsum"
+
+[node name="ShowSummary" type="Button" parent="ReplayControls"]
+layout_mode = 0
+offset_left = 455.0
+offset_top = 6.0
+offset_right = 712.0
+offset_bottom = 60.0
+text = "Show summary"
+
+[node name="Pause" type="Button" parent="ReplayControls"]
+layout_mode = 0
+offset_left = 151.0
+offset_top = 6.0
+offset_right = 212.0
+offset_bottom = 59.0
+text = "⏸️"
+
+[node name="Step" type="Button" parent="ReplayControls"]
+layout_mode = 0
+offset_left = 219.0
+offset_top = 7.0
+offset_right = 280.0
+offset_bottom = 60.0
+text = "⏯️"
+
+[node name="Play" type="Button" parent="ReplayControls"]
+layout_mode = 0
+offset_left = 288.0
+offset_top = 7.0
+offset_right = 349.0
+offset_bottom = 60.0
+text = "▶️"
+
+[node name="Fast" type="Button" parent="ReplayControls"]
+layout_mode = 0
+offset_left = 358.0
+offset_top = 7.0
+offset_right = 419.0
+offset_bottom = 60.0
+text = "⏩"
+
 [node name="CycloneTimer" type="ColorRect" parent="."]
 offset_left = 1308.0
 offset_top = 34.0
@@ -136,6 +207,100 @@ offset_right = 495.0
 offset_bottom = 114.0
 text = "Player1 5 turns"
 
+[node name="SacrificeAnnouncement" type="ColorRect" parent="."]
+editor_description = "Modulate set to 0 turned up through Tween animation"
+modulate = Color(1, 1, 1, 0)
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -395.0
+offset_top = -162.0
+offset_right = 395.0
+offset_bottom = 162.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 0.423529)
+
+[node name="FluffText" type="Label" parent="SacrificeAnnouncement"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -244.5
+offset_right = 244.5
+offset_bottom = 106.0
+grow_horizontal = 2
+text = "Make a Sacrifice to the Magic Cyclone"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="CycloneTarget" type="Label" parent="SacrificeAnnouncement"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -244.5
+offset_top = -73.0
+offset_right = 244.5
+offset_bottom = 84.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "Player1"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="EndPlacementPhaseAnnouncement" type="ColorRect" parent="."]
+editor_description = "Modulate set to 0 turned up through Tween animation"
+modulate = Color(1, 1, 1, 0)
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -395.0
+offset_top = -162.0
+offset_right = 395.0
+offset_bottom = 162.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 0.423529)
+
+[node name="FluffText" type="Label" parent="EndPlacementPhaseAnnouncement"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -244.5
+offset_right = 244.5
+offset_bottom = 106.0
+grow_horizontal = 2
+text = "End of the Placement Phase"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="FirstPlayerToMoveName" type="Label" parent="EndPlacementPhaseAnnouncement"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -244.5
+offset_top = -73.0
+offset_right = 244.5
+offset_bottom = 84.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "Player1"
+horizontal_alignment = 1
+vertical_alignment = 1
+
 [node name="SpellBook" type="VBoxContainer" parent="."]
 offset_left = 22.0
 offset_top = 282.0
@@ -148,3 +313,7 @@ text = "Spell"
 
 [connection signal="pressed" from="SwitchCamera" to="." method="_on_switch_camera_pressed"]
 [connection signal="pressed" from="Menu" to="." method="_on_menu_pressed"]
+[connection signal="pressed" from="ReplayControls/Pause" to="." method="_on_pause_pressed"]
+[connection signal="pressed" from="ReplayControls/Step" to="." method="_on_step_pressed"]
+[connection signal="pressed" from="ReplayControls/Play" to="." method="_on_play_pressed"]
+[connection signal="pressed" from="ReplayControls/Fast" to="." method="_on_fast_pressed"]

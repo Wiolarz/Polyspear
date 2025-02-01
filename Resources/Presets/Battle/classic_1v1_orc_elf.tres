@@ -1,12 +1,12 @@
 [gd_resource type="Resource" script_class="PresetBattle" load_steps=12 format=3 uid="uid://ric4ls3qb7r1"]
 
 [ext_resource type="Script" path="res://Resources/Presets/preset_army.gd" id="1_7htvr"]
-[ext_resource type="Resource" uid="uid://i6rd1k4pejbh" path="res://Resources/Battle/Units/Classic/elf1.tres" id="2_l0c82"]
-[ext_resource type="Resource" uid="uid://b1t0ae1k1lr1q" path="res://Resources/Battle/Units/Classic/elf2.tres" id="3_tnget"]
-[ext_resource type="Resource" uid="uid://cf2khgif3fecs" path="res://Resources/Battle/Units/Classic/elf3.tres" id="4_c545r"]
-[ext_resource type="Resource" uid="uid://byn1wnmhj0wac" path="res://Resources/Battle/Units/Classic/orc1.tres" id="5_gvce0"]
-[ext_resource type="Resource" uid="uid://wg6n0n7ufoxh" path="res://Resources/Battle/Units/Classic/orc2.tres" id="5_gvce1"]
-[ext_resource type="Resource" uid="uid://cyw7ujcmsbdq2" path="res://Resources/Battle/Units/Classic/orc3.tres" id="5_gvce2"]
+[ext_resource type="Resource" uid="uid://dx5rphj40ljm1" path="res://Resources/Battle/Units/Classic/elf1.tres" id="2_l0c82"]
+[ext_resource type="Resource" uid="uid://cv2ncwgk45l1e" path="res://Resources/Battle/Units/Classic/elf2.tres" id="3_tnget"]
+[ext_resource type="Resource" uid="uid://bh4qurujj27rh" path="res://Resources/Battle/Units/Classic/elf3.tres" id="4_c545r"]
+[ext_resource type="Resource" uid="uid://bwyu6qg7dsisg" path="res://Resources/Battle/Units/Classic/orc1.tres" id="5_gvce0"]
+[ext_resource type="Resource" uid="uid://syrr32f2nn6u" path="res://Resources/Battle/Units/Classic/orc2.tres" id="5_gvce1"]
+[ext_resource type="Resource" uid="uid://bxb7842q7rrib" path="res://Resources/Battle/Units/Classic/orc3.tres" id="5_gvce2"]
 [ext_resource type="Resource" uid="uid://ffwjjq3cwg7t" path="res://Resources/Battle/Battle_Maps/basic5x5.tres" id="8_htb2h"]
 [ext_resource type="Script" path="res://Resources/Presets/preset_battle.gd" id="9_omlcl"]
 

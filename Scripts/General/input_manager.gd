@@ -18,6 +18,16 @@ func init_game_setup():
 	game_setup_info = GameSetupInfo.create_empty()
 
 
+## called:
+## * by UI when button is clicked or game starts (host is true)
+## * by client when server orders, then host is false
+func init_battle_mode(host : bool):
+	game_setup_info.game_mode = GameSetupInfo.GameMode.BATTLE
+
+	if host:
+		var preset : Dictionary = get_default_or_last_battle_preset()
+		game_setup_info.apply_battle_preset(preset["data"], preset["name"])
+
 #region Game setup
 
 func get_world_maps_list() -> Array[String]:
@@ -48,8 +58,9 @@ func _prepare_to_start_game() -> void:
 ## [br]
 ## If both states are null, then game is started as new and no state load is
 ## performed -- only game_setup_info is taken into account.
-func start_game(world_state : SerializableWorldState, \
-		battle_state : SerializableBattleState) -> void:
+func start_game(world_state : SerializableWorldState,
+		battle_state : SerializableBattleState,
+		replay_template : BattleReplay = null) -> void:
 
 	assert(not battle_state or battle_state.valid())
 	assert(not world_state or world_state.valid())
@@ -59,7 +70,7 @@ func start_game(world_state : SerializableWorldState, \
 		# in battle mode we can only have battle state
 		assert(not world_state)
 
-		_start_game_battle(battle_state)
+		_start_game_battle(battle_state, replay_template)
 		UI.set_camera(E.CameraPosition.BATTLE)
 
 	elif game_setup_info.is_in_mode_world():
@@ -87,16 +98,27 @@ func perform_replay(path):
 	game_setup_info.game_mode = GameSetupInfo.GameMode.BATTLE
 	game_setup_info.battle_map = replay.battle_map
 
-	assert(game_setup_info.slots.size() == replay.units_at_start.size(), \
-			"for now only 1v1 implemented")
+	# Temporarily move slots from game setup
+	var old_info = game_setup_info
+	game_setup_info = GameSetupInfo.create_empty()
+	game_setup_info.game_mode = GameSetupInfo.GameMode.BATTLE
+	game_setup_info.set_battle_map(replay.battle_map)
+	game_setup_info.set_slots_number(replay.units_at_start.size())
+
 	for slot_id in range(replay.units_at_start.size()):
 		var slot = game_setup_info.slots[slot_id]
 		var units_array = replay.units_at_start[slot_id]
 		slot.occupier = replay.get_player_name(slot_id)
+		slot.color = replay.get_player_color(slot_id)
+		slot.timer_reserve_sec = replay.player_initial_timers_ms[slot_id] / 1000
+		slot.timer_increment_sec = replay.player_increments_ms[slot_id] / 1000
 		slot.set_units(units_array)
 
-	start_game(null, null)
+	start_game(null, null, replay)
 	BM.perform_replay(replay)
+
+	# Setup done, move back old info
+	game_setup_info = old_info
 
 
 func go_to_map_editor():
@@ -116,7 +138,8 @@ func _start_game_world(world_state : SerializableWorldState):
 
 
 ## new game <=> battle_state == null
-func _start_game_battle(battle_state : SerializableBattleState):
+func _start_game_battle(battle_state : SerializableBattleState,
+		replay_template : BattleReplay = null):
 	var map_data = game_setup_info.battle_map
 	var armies : Array[Army]  = []
 
@@ -125,7 +148,7 @@ func _start_game_battle(battle_state : SerializableBattleState):
 
 	UI.go_to_main_menu()
 	var x_offset = 0.0
-	BM.start_battle(armies, map_data, battle_state, x_offset)
+	BM.start_battle(armies, map_data, battle_state, x_offset, replay_template)
 
 
 ## Creates army based on player slot data
@@ -145,6 +168,29 @@ func create_army_for(player : Player) -> Army:
 	army.timer_increment_sec = player.slot.timer_increment_sec
 
 	return army
+
+
+func get_default_or_last_battle_preset() -> Dictionary:
+	var last_preset_name : String = CFG.LAST_USED_BATTLE_PRESET_NAME
+	var last_preset_path : String = CFG.BATTLE_PRESETS_PATH + "/" + last_preset_name
+	var last_preset_data : PresetBattle
+	if ResourceLoader.exists(last_preset_path):
+		last_preset_data = load(last_preset_path) as PresetBattle
+	if last_preset_data:
+		return { "data": last_preset_data, "name": last_preset_name }
+	var presets = FileSystemHelpers.list_files_in_folder(
+		CFG.BATTLE_PRESETS_PATH,
+		true,
+		true
+	)
+	assert(presets.size() > 0)
+	var preset : PresetBattle = load(presets[0])
+	assert(preset is PresetBattle)
+	return {
+		"data": preset,
+		"name": presets[0].trim_prefix(CFG.BATTLE_PRESETS_PATH)
+	}
+
 
 #endregion Game setup
 

@@ -1,8 +1,7 @@
-[gd_resource type="Resource" script_class="DataUnit" load_steps=7 format=3 uid="uid://bh25ksb83o3cx"]
+[gd_resource type="Resource" script_class="DataUnit" load_steps=6 format=3 uid="uid://bx2ya2olx578k"]
 
 [ext_resource type="Script" path="res://Resources/Battle/data_unit.gd" id="1_4uymu"]
 [ext_resource type="Script" path="res://Scripts/World/Economy/goods.gd" id="1_20te2"]
-[ext_resource type="Resource" uid="uid://bp747guikipcb" path="res://Resources/Battle/Symbols/spear.tres" id="3_6wlcv"]
 [ext_resource type="Resource" uid="uid://o4rlmfc33rsh" path="res://Resources/Battle/Symbols/empty.tres" id="4_h6ov0"]
 [ext_resource type="Resource" uid="uid://cngonnqsgsd6e" path="res://Resources/Battle/Symbols/axe.tres" id="5_fihog"]
 
@@ -15,8 +14,8 @@ ruby = 5
 [resource]
 script = ExtResource("1_4uymu")
 unit_name = "executioner_unit"
-texture_path = "res://Art/world_heroes/orc_executioner.png"
-symbols = Array[Resource("res://Resources/Battle/data_symbol.gd")]([ExtResource("5_fihog"), ExtResource("3_6wlcv"), ExtResource("4_h6ov0"), ExtResource("4_h6ov0"), ExtResource("4_h6ov0"), ExtResource("3_6wlcv")])
+texture_path = "res://Art/orc_hero_rouge.png"
+symbols = Array[Resource("res://Resources/Battle/data_symbol.gd")]([ExtResource("5_fihog"), ExtResource("4_h6ov0"), ExtResource("5_fihog"), ExtResource("4_h6ov0"), ExtResource("5_fihog"), ExtResource("4_h6ov0")])
 cost = SubResource("Resource_bgw4c")
 level = 1
 mana = 0

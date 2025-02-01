@@ -176,6 +176,23 @@ func grid_input_listener(tile_coord : Vector2i, \
 		WM.grid_input(tile_coord)
 
 
+# called from TileForm mouse detection
+func grid_planning_input_listener(tile_coord : Vector2i, \
+		tile_type : GameSetupInfo.GameMode,
+		is_it_pressed : bool):
+	#print("tile ", tile_coord)
+
+	if not tile_type == GameSetupInfo.GameMode.BATTLE:
+		printerr("Support for drawing arrows in different modes isn't supported yet")
+		# There are plans for right click to have a different purpouse in World Map
+		# drawing could be reanabled there with addition of holding alt
+		return
+
+	BM.planning_input(tile_coord, is_it_pressed)
+	
+
+
+
 func ensure_camera_is_spawned() -> void:
 	if not camera:
 		camera = PolyCamera.new()

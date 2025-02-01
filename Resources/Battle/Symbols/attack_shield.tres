@@ -5,4 +5,4 @@
 [resource]
 script = ExtResource("1_jqp4n")
 type = 10
-texture_path = "res://Art/items/shields/two handed blue attack shield.png"
+texture_path = "res://Art/items/attack_shield.png"

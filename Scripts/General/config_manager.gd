@@ -1,6 +1,9 @@
 # Singleton - CFG
 extends Node
 
+
+#region Animations
+
 enum BotSpeed
 {
 	FREEZE = 0,
@@ -19,6 +22,17 @@ enum AnimationSpeed
 ## both rotation and move take this much time,
 ## so unit move takes between X and 2X
 var animation_speed_frames : AnimationSpeed = AnimationSpeed.NORMAL
+
+var anim_default_ease := Tween.EASE_OUT
+var anim_default_trans := Tween.TRANS_CUBIC
+var anim_move_duration := 0.3
+var anim_turn_duration := 0.3
+var anim_death_duration := 0.3
+var anim_symbol_activation_scale := Vector2(2.0, 2.0)
+# temporarily cranked up to 0.8, TODO change to 0.5 when 
+var anim_symbol_activation_duration := 0.8
+
+#endregion
 
 ## battle map is placed this far to the right after world map bounds
 const MAPS_OFFSET_X = 7000
@@ -64,6 +78,9 @@ const SUMMON_BUTTON_TEXTURE:Texture2D = preload("res://Art/battle_map/grass.png"
 
 const DEFAULT_ARMY_FORM = preload("res://Scenes/Form/ArmyForm.tscn")
 
+const MOVE_HIGHLIGHT_SCENE = preload("res://Scenes/UI/Battle/BattleMoveHighlight.tscn")
+const PLAN_POINTER_SCENE = preload("res://Scenes/UI/Battle/BattlePlanPointer.tscn")
+const PLAN_ARROW_END_SCENE = preload("res://Scenes/UI/Battle/BattlePlanArrowEnd.tscn")
 
 # Neutral Units armies
 const HUNT_WOOD_PATH : String = "res://Resources/Presets/Army/hunt_wood/"
@@ -190,8 +207,8 @@ var DEFAULT_MODE_IS_BATTLE : bool :
 var AUTO_START_GAME : bool :
 	get: return player_options.autostart_map
 
-var LAST_USED_BATTLE_PRESET : PresetBattle :
-	get: return player_options.last_used_battle_preset
+var LAST_USED_BATTLE_PRESET_NAME : String :
+	get: return player_options.last_used_battle_preset_name
 var LAST_USED_WORLD_PRESET : PresetWorld : # TODO implement this
 	get: return player_options.last_used_world_preset
 

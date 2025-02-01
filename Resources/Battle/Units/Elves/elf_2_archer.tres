@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="DataUnit" load_steps=7 format=3 uid="uid://6b1488w8vb1t"]
+[gd_resource type="Resource" script_class="DataUnit" load_steps=7 format=3 uid="uid://ydn4n563h71m"]
 
 [ext_resource type="Script" path="res://Scripts/World/Economy/goods.gd" id="1_2o86q"]
 [ext_resource type="Script" path="res://Resources/Battle/data_unit.gd" id="1_i62fj"]
@@ -15,7 +15,7 @@ ruby = 0
 [resource]
 script = ExtResource("1_i62fj")
 unit_name = "Archer"
-texture_path = "res://Art/units/elf/elf_archer.png"
+texture_path = "res://Art/elf_archer.png"
 symbols = Array[Resource("res://Resources/Battle/data_symbol.gd")]([ExtResource("2_pmg1r"), ExtResource("3_4frcx"), ExtResource("3_4frcx"), ExtResource("3_4frcx"), ExtResource("3_4frcx"), ExtResource("3_4frcx")])
 cost = SubResource("Resource_ftcqs")
 required_building = ExtResource("2_sv0f3")

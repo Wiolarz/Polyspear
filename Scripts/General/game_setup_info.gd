@@ -20,6 +20,14 @@ var world_map : DataWorldMap ## used only in full world mode
 var battle_map : DataBattleMap ## used only in battle mode
 var slots : Array[Slot] ## slot for each player color on the map picked
 
+## used in dropdown list in UI of battle setup, due to the problem with loading selected map
+## with a preset not setting selection properly
+var battle_preset_name_hint : String
+
+## used in dropdown list in UI of battle setup, due to the problem with loading selected map
+## with a preset not setting selection properly
+var battle_map_name_hint : String
+
 func is_in_mode_world():
 	return game_mode == GameMode.WORLD
 
@@ -104,7 +112,7 @@ static func from_dictionary(dict : Dictionary, \
 						GameSetupInfo.units_list_receive_from_network(read_slot["units_list"])
 			if "team" in read_slot and read_slot["team"] is int:
 				new_slot.team = read_slot["team"]
-			
+
 			if "timer_reserve" in read_slot and read_slot["timer_reserve"] is int:
 				new_slot.timer_reserve_sec = int(read_slot["timer_reserve"])
 			if "timer_increment" in read_slot and read_slot["timer_increment"] is int:
@@ -155,7 +163,8 @@ static func units_list_receive_from_network(serialized: Array) -> Array[DataUnit
 	return result
 
 
-func set_battle_map(map : DataBattleMap):
+## also gets optional map name (for UI)
+func set_battle_map(map : DataBattleMap, map_name : String = ""):
 	assert(game_mode == GameMode.BATTLE, "setting battle map in game mode: " + str(game_mode))
 	battle_map = map
 
@@ -165,6 +174,8 @@ func set_battle_map(map : DataBattleMap):
 	for slot_idx in slots.size():
 		var number_of_unit_slots = map.player_slots[slot_idx + 1] - 1  # -1 space is reserved for hero unit
 		slots[slot_idx].set_units_length(number_of_unit_slots)
+
+	battle_map_name_hint = map_name
 
 
 func set_world_map(map: DataWorldMap):
@@ -182,7 +193,7 @@ func set_world_map(map: DataWorldMap):
 		taken_colors.append(slot.color)
 
 	while slots.size() < map_slots_size:
-		var slot = GameSetupInfo.Slot.new()
+		var slot = Slot.new()
 		slots.append(slot)
 		var faction_idx = wrap(slots.size()-1, 0, CFG.FACTIONS_LIST.size())
 		slot.faction = CFG.FACTIONS_LIST[faction_idx]
@@ -194,12 +205,43 @@ func set_world_map(map: DataWorldMap):
 		taken_colors.append(slot.color)
 
 
+## used at start with some default preset, also used when preset is chosen
+## in UI
+## Also, this do not refresh UI and broadcast over network itself -- it should
+## be done elsewhere, when this function is called
+## preset_name is optional -- only used for auto select at start
+func apply_battle_preset( \
+	preset : PresetBattle, preset_name : String = "") -> void:
+	var map_name : String = preset.battle_map.resource_path.get_file()
+	var map_path : String = CFG.BATTLE_MAPS_PATH + "/" + map_name
+	assert(ResourceLoader.exists(map_path), "map with name %s does not exist" % map_name)
+	var map : DataBattleMap = load(map_path)
+	assert(map, "map with name %s is corruped" % map_name)
+	set_battle_map(map, map_name)
+
+	# now we need to set armies and teams from preset
+	for i in range(slots.size()):
+		var slot : Slot = slots[i]
+		var army_preset : PresetArmy = preset.armies[i]
+		slot.team = army_preset.team
+		slot.slot_hero = army_preset.hero
+
+		var units := slot.units_list
+		for j in units.size():
+			var unit : DataUnit = null
+			if j < army_preset.units.size():
+				unit = army_preset.units[j]
+			units[j] = unit
+
+	battle_preset_name_hint = preset_name
+
+
 static func create_empty() -> GameSetupInfo:
 	var slot_count = 2
 	var result = GameSetupInfo.new()
 	result.slots.resize(slot_count)
 	for i in range(slot_count):
-		result.slots[i] = GameSetupInfo.Slot.new()
+		result.slots[i] = Slot.new()
 		result.slots[i].faction = CFG.FACTIONS_LIST[i]
 		result.slots[i].color = i
 		result.slots[i].index = i
@@ -220,7 +262,7 @@ func set_slots_number(number : int) -> void:
 	# add new slots
 	while slots.size() < number:
 		var index = slots.size()
-		var slot = GameSetupInfo.Slot.new()
+		var slot = Slot.new()
 		slots.append(slot)
 
 		slot.faction = CFG.FACTIONS_LIST[0]
@@ -231,93 +273,3 @@ func set_slots_number(number : int) -> void:
 			slot.color += 1
 
 		taken_colors.append(slot.color)
-
-
-
-## Info for a single slot
-class Slot extends RefCounted: # check if this is good base
-
-	## occupier identifies who uses this slot [br]
-	## its an `int` or a `String` [br]
-	## `int` -> AI level eg. 1 [br]
-	## `String == ""` -> we (local player) [br]
-	## `String != ""` -> remote player with specified network name [br]
-	var occupier = ""
-	var battle_bot_path := ""
-
-	## used for some simpleness at player in world
-	var index : int = -1
-
-	var team : int = 0
-
-	var timer_reserve_sec : int = CFG.CHESS_CLOCK_BATTLE_TIME_PER_PLAYER_MS / 1000
-	var timer_increment_sec : int = CFG.CHESS_CLOCK_BATTLE_TURN_INCREMENT_MS / 1000
-
-	var faction : DataFaction = null
-
-	## for battle only mode
-	var units_list : Array[DataUnit] = [null,null,null,null,null] #TODO refactor to change variable to private as we have a clean getter for it
-	var slot_hero : DataHero = null
-
-	## index of color see `CFG.TEAM_COLORS`
-	var color : int = 0
-
-	
-
-	func _init():
-		if CFG.player_options.use_default_AI_players:
-			occupier = 0
-
-
-	func is_bot() -> bool:
-		return occupier is int
-
-
-	func is_local() -> bool:
-		# We treat bots as other players, just as remote players
-		return (not (occupier is int)) and occupier.is_empty()
-
-
-	func set_units_length(value : int) -> void:
-		units_list.resize(value)
-
-
-	## for "Custom battles" unit list creation
-	## ignores empty values in units_list
-	func get_units_list() -> Array[DataUnit]:
-		var non_empty : Array[DataUnit] = []
-		for unit in units_list:
-			if not unit:
-				continue
-			non_empty.append(unit)
-		return non_empty
-
-
-	## for replays
-	func set_units(new_units : Array[DataUnit]) -> void:
-		for idx in range(units_list.size()):
-			if idx >= new_units.size():
-				units_list[idx] = null
-				continue
-			units_list[idx] = new_units[idx]
-
-
-	func get_occupier_name(all_slots: Array[Slot]) -> String:
-		if is_bot():
-			return _get_bot_name(all_slots)
-		if occupier == "":
-			return NET.get_current_login()
-		return occupier as String
-
-
-	func _get_bot_name(all_slots: Array[Slot]) -> String:
-		var number_of_ais : int = 0
-		var index_of_this_ai : int = 0
-		for slot in all_slots:
-			if slot.is_bot():
-				if slot == self:
-					index_of_this_ai = number_of_ais
-				number_of_ais += 1
-		if number_of_ais == 1:
-			return "AI"
-		return "AI %s" % index_of_this_ai

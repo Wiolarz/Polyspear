@@ -1,8 +1,8 @@
 [gd_scene load_steps=2 format=3 uid="uid://bc4yv21yc35fw"]
 
-[ext_resource type="Texture2D" uid="uid://hemq1q4l7xbk" path="res://Art/items/blue_axe.png" id="1_1xffe"]
+[ext_resource type="Texture2D" uid="uid://hemq1q4l7xbk" path="res://Art/items/blue_axe.png" id="1_pef6c"]
 
 [node name="Base" type="Node2D"]
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-texture = ExtResource("1_1xffe")
+texture = ExtResource("1_pef6c")

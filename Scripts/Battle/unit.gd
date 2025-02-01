@@ -8,6 +8,15 @@ signal unit_magic_effect()
 
 const MAX_EFFECTS_PER_UNIT = 2
 
+signal unit_is_shooting(side : int)
+signal unit_is_slashing(side : int)
+signal unit_is_pushing(side : int)
+signal unit_is_blocking(side : int)
+signal unit_is_counter_attacking(side : int)
+
+signal unit_captured_mana(target_tile : Vector2i)  # change visuals of the tile to mark it as captured
+
+
 ## TODO remove this
 var controller : Player
 
@@ -26,6 +35,7 @@ var unit_rotation : int
 ## unit died
 var dead : bool
 
+## list of spells unit can cast (all of those are one-time use only)
 var spells : Array[BattleSpell] = []
 
 ## magic effects, size_limit == 2
@@ -52,7 +62,7 @@ static func create(new_controller : Player, \
 	result.spells = new_template.spells.duplicate() # spells reset every battle
 	return result
 
-#region Main
+#region Emit Animation Signals
 
 ## turns unit front to a given side, can be awaited see waits_for_form
 func turn(side : GenericHexGrid.GridDirections):
@@ -81,7 +91,7 @@ func unit_killed():
 	dead = true
 	unit_died.emit()
 
-#endregion Main
+#endregion Emit Animation Signals
 
 
 #region Unit Symbols
@@ -170,9 +180,9 @@ static func can_it_push(symbol : E.Symbols) -> bool:
 ## -1 = infinite
 static func push_power(symbol : E.Symbols) -> int:
 	match symbol:
-		E.Symbols.FIST:
-			return 3
 		E.Symbols.MACE:
+			return 3
+		E.Symbols.FIST:
 			return 2
 		E.Symbols.PUSH, E.Symbols.STRONG_TOWERSHIELD, E.Symbols.TOWERSHIELD:
 			return 1
