@@ -55,6 +55,7 @@ func _ready():
 
 func _process(_delta):
 	_check_clock_timer_tick()
+	force_hover_refresh()
 
 
 #region Battle Setup
@@ -318,6 +319,11 @@ func grid_hover(coord : Vector2i, is_hovered : bool) -> void:
 	if not _battle_is_ongoing:
 		return
 
+	if _hovered_unit:
+		var unit_form : UnitForm = _unit_to_unit_form[_hovered_unit]
+		unit_form.set_hovered(false)
+	_hovered_unit = null
+
 	# TODO move it to function like '_get_unit_form_at(coord)'
 	var unit : Unit = _battle_grid_state.get_unit(coord)
 	if unit:
@@ -325,10 +331,33 @@ func grid_hover(coord : Vector2i, is_hovered : bool) -> void:
 		unit_form.set_hovered(is_hovered)
 		_hovered_unit = unit if is_hovered else null
 
-	# TODO:
-	# * prevent highlighting when animation is playing
-	# * tick this function when anumation is ended -- now unit do now highlight automatically
-	#   when animation ends
+
+func reset_grid_hover() -> void:
+	if not _battle_is_ongoing:
+		return
+	if _hovered_unit:
+		var unit_form : UnitForm = _unit_to_unit_form[_hovered_unit]
+		unit_form.set_hovered(false)
+	_hovered_unit = null
+
+
+func force_hover_refresh() -> void:
+	var space_state := get_world_2d().direct_space_state
+	var mouse := get_global_mouse_position()
+	var query := PhysicsPointQueryParameters2D.new()
+	query.position = mouse
+	query.collide_with_areas = true
+	query.collide_with_bodies = false
+	var result := space_state.intersect_point(query, 1)
+	if result.size() < 1:
+		reset_grid_hover()
+		return
+	var collider = result[0]["collider"]
+	var tile_form = collider as TileForm
+	if not tile_form:
+		reset_grid_hover()
+		return
+	grid_hover(tile_form.coord, true)
 
 
 func _check_for_stalemate() -> bool:
