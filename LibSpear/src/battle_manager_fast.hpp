@@ -30,7 +30,7 @@
 #define BM_ASSERT(cond, ...) BM_ASSERT_V(cond, , __VA_ARGS__)
 
 #define CHECK_UNIT(idx, ret) BM_ASSERT_V(unsigned(idx) < MAX_UNITS_IN_ARMY, ret, "Invalid unit id {}", idx)
-#define CHECK_ARMY(idx, ret) BM_ASSERT_V(unsigned(idx) < MAX_ARMIES, ret, "Invalid unit id {}", idx)
+#define CHECK_ARMY(idx, ret) BM_ASSERT_V(unsigned(idx) < MAX_ARMIES, ret, "Invalid army id {}", idx)
 
 
 using godot::Node;
@@ -180,7 +180,8 @@ public:
 		return _state == BattleState::SUMMONING;
 	}
 
-	inline int get_army_team(int army) const {
+	inline int get_army_team(int army) {
+		CHECK_ARMY(army, -1);
 		return _armies[army].team;
 	}
 

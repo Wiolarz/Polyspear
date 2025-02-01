@@ -26,12 +26,11 @@
 class BattleMCTSManager;
 
 class BattleMCTSNode {
-	BattleMCTSManager* _manager = nullptr;
+	BattleMCTSManager& _manager;
 	BattleMCTSNode* _parent = nullptr;
 	std::unordered_map<Move, std::shared_ptr<BattleMCTSNode>> _children{};
 	BattleManagerFastCpp _bm{};
 	Move _move{};
-	BattleMCTSNode* self{this};
 
 	unsigned _mcts_iterations = 0;
 	double _reward = 0.0f;
@@ -43,7 +42,7 @@ class BattleMCTSNode {
 	friend class BattleMCTSManager;
 
 public:
-	BattleMCTSNode(BattleManagerFastCpp bm, BattleMCTSManager* manager, BattleMCTSNode* parent, Move _move);
+	BattleMCTSNode(BattleManagerFastCpp bm, BattleMCTSManager& manager, BattleMCTSNode* parent, Move _move);
 	~BattleMCTSNode() = default;
 
 	float uct() const;
