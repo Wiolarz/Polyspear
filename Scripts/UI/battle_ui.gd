@@ -33,7 +33,8 @@ var fighting_players_idx = []
 var armies_reference : Array[BattleGridState.ArmyInBattleState]
 
 var selected_unit : DataUnit = null
-var selected_unit_button : TextureButton = null
+var selected_unit_button : BaseButton = null
+var _hovered_unit_button : BaseButton = null
 var current_player : int = 0
 
 var selected_spell : BattleSpell = null
@@ -163,10 +164,10 @@ func update_replay_controls(move_nr: int, total_replay_moves: int, summary: Data
 		replay_status.text = "Battle ended - all enemy units killed"
 	else:
 		replay_status.text = "Battle ended - timeout"
-	
+
 	for i in replay_show_summary.pressed.get_connections():
 		replay_show_summary.pressed.disconnect(i.callable)
-	
+
 	if summary:
 		replay_show_summary.disabled = false
 		replay_show_summary.pressed.connect(
@@ -211,22 +212,35 @@ func on_player_selected(army_index : int, preview : bool = false):
 		var unit_display := UnitForm.create_for_summon_ui(unit, bg_color)
 		unit_display.position = button.texture_normal.get_size()/2
 		button.add_child(unit_display)
+		unit_display.name = "UnitForm"
 
 		units_box.add_child(button)
 		var lambda = func on_click():
 			if (current_player != army_index):
 				return
 			if selected_unit_button:  # Deselects previously selected unit
-				selected_unit_button.modulate = Color.WHITE
-			
+				selected_unit_button.get_node("UnitForm").set_selected(false)
+
 			if selected_unit_button == button: # Selecting the same unit twice deselects it
 				selected_unit = null
 				selected_unit_button = null
 			else:
 				selected_unit = unit
 				selected_unit_button = button
-				selected_unit_button.modulate = Color.RED
+				selected_unit_button.get_node("UnitForm").set_selected(true)
 		button.pressed.connect(lambda)
+
+		var lambda_hover = func(is_hovered : bool):
+			if _hovered_unit_button:
+				_hovered_unit_button.get_node("UnitForm").set_hovered(false)
+
+			if is_hovered:
+				_hovered_unit_button = button
+				_hovered_unit_button.get_node("UnitForm").set_hovered(true)
+			else:
+				_hovered_unit_button = null
+		button.mouse_entered.connect(lambda_hover.bind(true))
+		button.mouse_exited.connect(lambda_hover.bind(false))
 
 	BG.set_player_colors(bg_color)
 
