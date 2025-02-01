@@ -18,6 +18,7 @@ var latest_ai_cancel_token : CancellationToken
 var _current_summary : DataBattleSummary = null
 
 var _selected_unit : Unit
+var _hovered_unit : Unit
 
 var _replay_data : BattleReplay
 var _replay_is_playing : bool = false
@@ -303,6 +304,28 @@ func grid_input(coord : Vector2i) -> void:
 			return # dont perform move, send it to server
 
 		_perform_move_info(move_info)
+
+
+## Called when mouse hovers some tile. It has to be calculated by battle manager for us to have
+## assurance that when we click hovered til then the same tile will get input. Other ways were
+## considered like checking mouse in UnitForm, but this is kind of independent object in relation
+## to mouse. And with THIS we will be able to highlight also not occupied tiles. [br]
+## This function should behave the same as grid_input, but with different result -- for now only
+## visual.
+func grid_hover(coord : Vector2i, is_hovered : bool) -> void:
+	var tile_form : UnitForm = null
+
+	# TODO move it to function like '_get_unit_form_at(coord)'
+	var unit : Unit = _battle_grid_state.get_unit(coord)
+	if unit:
+		var unit_form : UnitForm = _unit_to_unit_form[unit]
+		unit_form.set_hovered(is_hovered)
+		_hovered_unit = unit if is_hovered else null
+
+	# TODO:
+	# * prevent highlighting when animation is playing
+	# * tick this function when anumation is ended -- now unit do now highlight automatically
+	#   when animation ends
 
 
 func _check_for_stalemate() -> bool:

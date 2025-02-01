@@ -181,6 +181,13 @@ func grid_input_listener(tile_coord : Vector2i, \
 
 
 # called from TileForm mouse detection
+func grid_hover_listener(tile_coord : Vector2i, \
+		tile_type : GameSetupInfo.GameMode, is_hovered : bool):
+	if tile_type == GameSetupInfo.GameMode.BATTLE:
+		BM.grid_hover(tile_coord, is_hovered)
+
+
+# called from TileForm mouse detection
 func grid_planning_input_listener(tile_coord : Vector2i, \
 		tile_type : GameSetupInfo.GameMode,
 		is_it_pressed : bool):

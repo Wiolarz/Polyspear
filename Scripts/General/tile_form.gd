@@ -79,6 +79,14 @@ func _on_input_event(_viewport : Node, event : InputEvent, _shape_idx : int):
 		UI.grid_input_listener(coord, grid_type, true)
 
 
+func _on_mouse_entered():
+	UI.grid_hover_listener(coord, grid_type, true)
+
+
+func _on_mouse_exited():
+	UI.grid_hover_listener(coord, grid_type, false)
+
+
 func _process(_delta):
 	$PlaceLabel.text = ""
 	if hex and hex.place: #TEMP

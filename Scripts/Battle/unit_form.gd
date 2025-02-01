@@ -200,4 +200,12 @@ func set_selected(is_selected : bool):
 		remove_child(get_node_or_null("SelectionMark"))
 		z_index = 0
 
+
+func set_hovered(is_hovered : bool):
+	var shader_material := material as ShaderMaterial
+	if is_hovered:
+		shader_material.set_shader_parameter("highlight_intensity", 0.4)
+	else:
+		shader_material.set_shader_parameter("highlight_intensity", 0.0)
+
 #endregion UI
