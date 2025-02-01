@@ -896,14 +896,10 @@ func mana_values_changed() -> void:
 
 	cyclone_target = current_worst
 	var mana_difference = current_best.mana_points - current_worst.mana_points
-	var new_cylone_counter = 50
-	if mana_difference < 3:
-		new_cylone_counter = 30
-	else:
-		new_cylone_counter = 15
-	
-	#new_cylone_counter = 999  # TEST turning off sacrifice mechanic
-	#new_cylone_counter = 1 # TEST killing with sacrifice
+	var new_cylone_counter = CFG.BIG_CYCLONE_COUNTER_VALUE
+	if mana_difference > 3:
+		new_cylone_counter = CFG.SMALL_CYCLONE_COUNTER_VALUE
+
 
 	if current_worst.cyclone_timer == 0:  # Cyclone just killed a unit, so now it resets
 		current_worst.cyclone_timer = new_cylone_counter
