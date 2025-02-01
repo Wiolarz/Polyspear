@@ -53,9 +53,7 @@ struct Position {
 		return Position(x * mult, y * mult);
 	}
 
-	inline bool operator==(const Position other) const {
-		return x == other.x && y == other.y;
-	}
+	std::strong_ordering operator<=>(const Position& other) const = default;
 
 	inline bool is_in_line_with(Position other) const {
 		auto delta = *this - other;
