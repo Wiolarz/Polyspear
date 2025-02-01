@@ -165,7 +165,7 @@ func unit_in_army_changed(selected_index, unit_index) -> void:
 		NET.client.queue_lobby_set_unit(slot_index, unit_index, unit_data)
 
 
-func timer_changed() -> void:
+func timer_changed(_value) -> void:
 	if not should_react_to_changes():
 		return
 
