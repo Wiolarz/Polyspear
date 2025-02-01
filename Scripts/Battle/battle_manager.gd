@@ -319,10 +319,7 @@ func grid_hover(coord : Vector2i, is_hovered : bool) -> void:
 	if not _battle_is_ongoing:
 		return
 
-	if _hovered_unit:
-		var unit_form : UnitForm = _unit_to_unit_form[_hovered_unit]
-		unit_form.set_hovered(false)
-	_hovered_unit = null
+	reset_grid_hover()
 
 	# TODO move it to function like '_get_unit_form_at(coord)'
 	var unit : Unit = _battle_grid_state.get_unit(coord)
@@ -335,7 +332,7 @@ func grid_hover(coord : Vector2i, is_hovered : bool) -> void:
 func reset_grid_hover() -> void:
 	if not _battle_is_ongoing:
 		return
-	if _hovered_unit:
+	if _hovered_unit and _hovered_unit in _unit_to_unit_form:
 		var unit_form : UnitForm = _unit_to_unit_form[_hovered_unit]
 		unit_form.set_hovered(false)
 	_hovered_unit = null
