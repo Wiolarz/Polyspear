@@ -400,7 +400,7 @@ func _on_unit_summoned(unit : Unit) -> void:
 			for tile : TileForm in row:
 				# TODO replace it with better map editor features
 				if tile.type in ["1_player_spawn", "2_player_spawn", "3_player_spawn", "4_player_spawn"]:
-					tile.get_node("Sprite2D").texture = load("res://Art/battle_map/darker_4.png")
+					tile.get_node("Sprite2D").texture = load("res://Art/battle_map/grass_tile.png")
 
 
 
