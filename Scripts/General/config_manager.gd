@@ -149,6 +149,15 @@ const POLYAPI_BASE_URL = "https://polyserver.onrender.com/"
 #endregion Multiplayer
 
 
+#region Battle Map properties
+
+#TEMP variables until better mana equation is implemented
+const BIG_CYCLONE_COUNTER_VALUE = 30
+const SMALL_CYCLONE_COUNTER_VALUE = 15
+
+#endregion
+
+
 #region World Map properties
 
 const HERO_LEVEL_CAP = 7

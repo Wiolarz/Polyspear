@@ -1,10 +1,11 @@
-[gd_scene load_steps=2 format=3 uid="uid://cl3kkli2o11nj"]
+[gd_scene load_steps=2 format=3 uid="uid://ddhv4syx37x4i"]
 
 [sub_resource type="TextMesh" id="TextMesh_dv5gn"]
 text = "⬡"
 pixel_size = 1.0
 
 [node name="BattlePlanPointer" type="Node2D"]
+scale = Vector2(2, 2)
 
 [node name="MeshInstance2D" type="MeshInstance2D" parent="."]
 position = Vector2(0, 31)

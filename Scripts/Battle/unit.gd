@@ -163,9 +163,9 @@ static func attack_power(symbol : E.Symbols) -> int:
 	match symbol:
 		E.Symbols.STRONG_AXE, E.Symbols.STRONG_SPEAR:
 			return 3  # strong attack pierces normal shields
-		E.Symbols.AXE, E.Symbols.SPEAR, E.Symbols.BOW, E.Symbols.ATTACK_SHIELD, E.Symbols.FIST, E.Symbols.DAGGER, E.Symbols.SWORD:
+		E.Symbols.AXE, E.Symbols.SPEAR, E.Symbols.BOW, E.Symbols.ATTACK_SHIELD, E.Symbols.FIST, E.Symbols.DAGGER, E.Symbols.SWORD, E.Symbols.MACE:
 			return 2  # normal attack
-		E.Symbols.STAFF, E.Symbols.MACE:
+		E.Symbols.STAFF:
 			return 1  # weak attack - kills only when enemy defense is 0 (Empty symbol present)
 		_:
 			return 0
@@ -176,8 +176,7 @@ static func can_it_push(symbol : E.Symbols) -> bool:
 	return Unit.push_power(symbol) > 0
 
 
-## return how many tiles does range weapon attack can reach [br]
-## -1 = infinite
+## return how many tiles does weapon pushes enemy away
 static func push_power(symbol : E.Symbols) -> int:
 	match symbol:
 		E.Symbols.MACE:

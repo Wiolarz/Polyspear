@@ -287,6 +287,7 @@ func grid_input(coord : Vector2i) -> void:
 		return
 
 	if _replay_is_playing:
+		_painter_node.erase()  # TODO verify if that's a proper fix to allow drawing in replays
 		print("replay playing, input ignored")
 		return
 
@@ -353,7 +354,8 @@ func _check_for_stalemate() -> bool:
 				return false
 	return true
 
-func  _end_move() -> void:
+
+func _end_move() -> void:
 	if _battle_grid_state.battle_is_ongoing():
 		if _check_for_stalemate():
 			_battle_grid_state.end_stalemate() # could end the battle
@@ -412,7 +414,15 @@ func _on_unit_summoned(unit : Unit) -> void:
 	# apply correct BM position offset in world battles
 	form.global_position = get_tile_global_position(unit.coord)
 
-	_battle_ui.unit_summoned(not _battle_grid_state.is_during_summoning_phase())
+	var is_placement_phase_over : bool = not _battle_grid_state.is_during_summoning_phase()
+	_battle_ui.unit_summoned(is_placement_phase_over)
+	if is_placement_phase_over:
+		for row : Array in _tile_grid.hexes:
+			for tile : TileForm in row:
+				# TODO replace it with better map editor features
+				if tile.type in ["1_player_spawn", "2_player_spawn", "3_player_spawn", "4_player_spawn"]:
+					tile.get_node("Sprite2D").texture = load("res://Art/battle_map/grass_tile.png")
+
 
 
 	unit.unit_died.connect(form.anim_die)
@@ -717,6 +727,7 @@ func _close_battle_and_return() -> void:
 
 
 func _turn_off_battle_ui() -> void:
+	_painter_node.erase()
 	_battle_ui.hide()
 	UI.switch_camera()
 
@@ -731,6 +742,7 @@ func _reset_grid_and_unit_forms() -> void:
 		_border_node.queue_free()
 		_border_node = null
 	_battle_grid_state = null
+
 
 ## Major function which fully generates information panel at the end of the battle
 func _create_summary() -> DataBattleSummary:
@@ -919,6 +931,7 @@ func get_current_time_left_ms() -> int:
 	return 0
 
 #endregion Chess clock
+
 
 #region Painting
 
