@@ -61,8 +61,7 @@ func refresh_short_log():
 		child.queue_free()
 	var index : int = max(0, entries.size() - max_messages)
 	while index < entries.size():
-		var message = Label.new()
-		message.text = entries[index].content
+		var message = _create_short_log_line(entries[index].content)
 		short_log.add_child(message)
 		index = index + 1
 
@@ -115,6 +114,16 @@ func send_chat_message(content : String):
 		NET.send_chat_message(content)
 		scroll_chat_down()
 	just_submitted = true
+
+
+func _create_short_log_line(text : String) -> Label:
+		var line = Label.new()
+		line.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		line.custom_minimum_size = Vector2(0.0, 15.0)
+		line.vertical_alignment = VERTICAL_ALIGNMENT_BOTTOM
+		line.text = text
+		return line
+
 
 
 func _on_message_arrived(content : String):

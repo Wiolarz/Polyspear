@@ -49,7 +49,7 @@ func load_armies(army_list : Array[BattleGridState.ArmyInBattleState]):
 	# Disable "Switch camera" button for non world map gameplay
 	var disable_switch_camera : bool = IM.game_setup_info.game_mode != GameSetupInfo.GameMode.WORLD
 	camera_button.disabled = disable_switch_camera
-	camera_button.visible = disable_switch_camera
+	camera_button.visible = not disable_switch_camera
 
 	# save armies
 	armies_reference = army_list
@@ -265,8 +265,6 @@ func on_player_selected(army_index : int, preview : bool = false):
 func unit_summoned(summon_phase_end : bool):
 	selected_unit = null
 	selected_unit_button = null
-
-	units_box.visible = not summon_phase_end
 
 	if summon_phase_end:
 		announcement_end_of_placement_phase_player_name_label.text = BM.get_current_player_name()

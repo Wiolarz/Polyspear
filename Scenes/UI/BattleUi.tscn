@@ -110,7 +110,7 @@ offset_bottom = -15.0
 grow_horizontal = 2
 grow_vertical = 0
 theme_override_constants/separation = 15
-alignment = 1
+alignment = 2
 
 [node name="GameChat" parent="BottomC" instance=ExtResource("5_10swj")]
 layout_mode = 2
