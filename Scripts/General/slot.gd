@@ -16,7 +16,7 @@ var team : int = 0
 var timer_reserve_sec : int = CFG.CHESS_CLOCK_BATTLE_TIME_PER_PLAYER_MS
 var timer_increment_sec : int = CFG.CHESS_CLOCK_BATTLE_TURN_INCREMENT_MS
 
-var faction : DataFaction = null
+var faction : DataRace = null
 
 ## for battle only mode
 var units_list : Array[DataUnit] = [null,null,null,null,null] #TODO refactor to change variable to private as we have a clean getter for it
@@ -26,18 +26,66 @@ var slot_hero : DataHero = null
 var color : int = 0
 var battle_bot_path : String
 
-
 func _init():
 	if CFG.player_options.use_default_AI_players:
 		occupier = 0
 
+"""
+Human joins server, in terms of game he doesnt exist, he only receives info about game progression as visuals
 
+When Human creates Bot or joins a specific UI Slot -> New Player is created
+# Every slot has automatically assigned during lobby start either player or computer based on settings,
+ so above scenario refers to changing that setting for specific slot
+
+"""
+
+
+
+#region Default setup stuff
+
+"""
+who gets to controll this player
+
+Timer options:
+	Starting time
+	Increment per player turn
+
+player color
+
+player team
+
+
+"""
+
+#endregion Default setup stuff
+
+
+#region Battle setup
+
+"""
+controlled units
+controlled hero + hero options
+
+"""
+
+#endregion Battle setup
+
+
+#region World Setup
+
+"""
+faction
+
+"""
+
+#endregion
+
+
+
+## asks about setting set in lobby
 func is_bot() -> bool:
 	return occupier is int
 
-
-func is_local() -> bool:
-	return occupier.is_empty() if occupier is String else false
 
 
 func set_units_length(value : int) -> void:
@@ -63,34 +111,3 @@ func set_units(new_units : Array[DataUnit]) -> void:
 			continue
 		units_list[idx] = new_units[idx]
 
-
-func get_occupier_name(all_slots: Array[Slot]) -> String:
-	if is_bot():
-		return _get_bot_name(all_slots)
-	if occupier == "":
-		return NET.get_current_login()
-	return occupier as String
-
-
-func _get_bot_name(all_slots: Array[Slot]) -> String:
-	var number_of_ais : int = 0
-	var index_of_this_ai : int = 0
-	for slot in all_slots:
-		if slot.is_bot():
-			if slot == self:
-				index_of_this_ai = number_of_ais
-			number_of_ais += 1
-	if number_of_ais == 1:
-		return "AI"
-	return "AI %s" % index_of_this_ai
-
-
-func get_player_name() -> String:
-	# TODO make these names same as elsewhere
-	if is_bot():
-		return "AI"
-	if is_local():
-		return "LOCAL" # TODO use the same identifier which is "(( you ))" when
-					   # offline
-	# network login
-	return occupier

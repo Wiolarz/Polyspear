@@ -74,11 +74,11 @@ func set_visible_take_leave_button_state(state : TakeLeaveButtonState):
 			button_take_leave.disabled = true
 
 
-func set_visible_faction(faction : DataFaction):
+func set_visible_faction(faction : DataRace):
 	if faction == null:
 		button_faction.text = "nobody"
 		return
-	button_faction.text = faction.faction_name
+	button_faction.text = faction.race_name
 
 
 func _on_button_take_leave_pressed():

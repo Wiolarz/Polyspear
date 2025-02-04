@@ -6,11 +6,11 @@ var buildings : Array[DataBuilding] = []
 
 # ## when this is null, it should be replaced with controller's faction before
 # ## anything is done
-# var faction : DataFaction
+# var faction : DataRace
 
 
-func get_faction(world_state : WorldState) -> DataFaction:
-	var player = world_state.get_player(controller_index)
+func get_faction(world_state : WorldState) -> DataRace:
+	var player = world_state.get_player_by_index(controller_index)
 	if not player:
 		return null
 	return player.faction
@@ -36,7 +36,7 @@ func on_end_of_turn(world_state : WorldState) -> void:
 
 func get_heroes_to_buy(world_state : WorldState) -> Array[DataHero]:
 	var result : Array[DataHero] = []
-	for hero_data : DataHero in world_state.get_player(controller_index).faction.heroes:
+	for hero_data : DataHero in world_state.get_player_by_index(controller_index).faction.heroes:
 		result.append(hero_data)
 	return result
 
@@ -98,7 +98,7 @@ func unit_has_required_building(world_state : WorldState, unit : DataUnit) -> bo
 func build_building(world_state : WorldState, building : DataBuilding) -> bool:
 	if not can_build(world_state, building):
 		return false
-	var player = world_state.get_player(controller_index)
+	var player = world_state.get_player_by_index(controller_index)
 	if world_state.player_purchase(controller_index, building.cost):
 		if not building.is_outpost_building():
 			buildings.append(building)
@@ -109,7 +109,7 @@ func build_building(world_state : WorldState, building : DataBuilding) -> bool:
 
 
 func has_built(world_state : WorldState, building : DataBuilding) -> bool:
-	var player = world_state.get_player(controller_index)
+	var player = world_state.get_player_by_index(controller_index)
 	var built_here : bool = building in buildings
 	if built_here:
 		return true
@@ -142,7 +142,7 @@ func paste_specific_serializable_state(dict : Dictionary) -> void:
 	for b in dict["buildings"]:
 		buildings.append(DataBuilding.from_network_id(b))
 
-	# var player = world_state.get_player(controller_index)
+	# var player = world_state.get_player_by_index(controller_index)
 	# if player:
 	# 	player.cities.append(self)
 
@@ -171,7 +171,7 @@ static func create_place(args : PackedStringArray, coord_ : Vector2i) -> Place:
 	result.movable = true
 
 	# TODO check this fragment
-	# var player : WorldPlayerState = world_state.get_player(player_index)
+	# var player : WorldPlayerState = world_state.get_player_by_index(player_index)
 	# if player:
 	# 	result.controller_index = player_index
 	# 	player.cities.append(result)
