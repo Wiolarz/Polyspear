@@ -47,6 +47,9 @@ class BattleManagerFastCpp : public Node {
 	ArmyList _armies{};
 	std::array<BattleSpell, MAX_SPELLS> _spells{};
 	TileGridFastCpp* _tiles = nullptr;
+	int8_t _big_cyclone_counter_value = -1;
+	int8_t _small_cyclone_counter_value = -1;
+	int8_t _cyclone_mana_threshold = -1;
 
 	BattleResult _result{};
 
@@ -82,6 +85,8 @@ class BattleManagerFastCpp : public Node {
 	void _next_army();
 
 	void _update_mana();
+	void _update_mana_target();
+	std::pair<size_t, size_t> _get_cyclone_worst_and_best_idx() const;
 
 protected:
 	static void _bind_methods();
@@ -108,6 +113,7 @@ public:
 	void set_army_cyclone_timer(int army, int timer);
 	void set_tile_grid(TileGridFastCpp* tilegrid);
 	void set_current_participant(int army);
+	void set_cyclone_constants(int big, int small, int threshold);
 
 	void finish_initialization();
 	void force_battle_ongoing();
@@ -150,6 +156,10 @@ public:
 
 	inline int get_army_cyclone_timer(int army) const {
 		return _armies[army].cyclone_timer;
+	}
+
+	inline int get_cyclone_target() const {
+		return _cyclone_target;
 	}
 
 	inline bool is_unit_alive(int army, int unit) const {

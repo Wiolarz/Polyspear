@@ -184,8 +184,8 @@ struct Army {
 
 
 	Unit* get_unit(Position coord);
-	int find_unit_id_to_summon(int from = 0);
-	bool is_defeated();
+	int find_unit_id_to_summon(int from = 0) const;
+	bool is_defeated() const;
 };
 
 using ArmyList = std::array<Army, MAX_ARMIES>;

@@ -24,7 +24,7 @@ var slot_hero : DataHero = null
 
 ## index of color see `CFG.TEAM_COLORS`
 var color : int = 0
-
+var battle_bot_path : String
 
 
 func _init():
@@ -37,7 +37,7 @@ func is_bot() -> bool:
 
 
 func is_local() -> bool:
-	return occupier.is_empty()
+	return occupier.is_empty() if occupier is String else false
 
 
 func set_units_length(value : int) -> void:

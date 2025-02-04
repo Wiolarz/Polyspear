@@ -27,6 +27,12 @@ static func from(bgstate: BattleGridState, tgrid: TileGridFast = null) -> Battle
 	new.set_tile_grid(tgrid)
 	new.set_current_participant(bgstate.current_army_index)
 	
+	new.set_cyclone_constants(
+		CFG.BIG_CYCLONE_COUNTER_VALUE, 
+		CFG.SMALL_CYCLONE_COUNTER_VALUE, 
+		CFG.CYCLONE_MANA_THRESHOLD
+	)
+	
 	var max_team = 0
 	
 	for army_idx in range(bgstate.armies_in_battle_state.size()):
@@ -216,9 +222,10 @@ func compare_grid_state(bgs: BattleGridState) -> bool:
 		
 		var cyclone_timer_slow = bgs.armies_in_battle_state[army_id].cyclone_timer
 		var cyclone_timer_fast = get_army_cyclone_timer(army_id)
+		
 		if cyclone_timer_fast != cyclone_timer_slow:
-			push_error("BMFast mismatch - cyclone timer - fast: %s, slow: %s" % [
-				cyclone_timer_fast, cyclone_timer_slow
+			push_error("BMFast mismatch - cyclone timer for army %s - fast: %s, slow: %s" % [
+				army_id, cyclone_timer_fast, cyclone_timer_slow
 			])
 			is_ok = false
 		

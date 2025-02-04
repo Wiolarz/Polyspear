@@ -154,6 +154,7 @@ const POLYAPI_BASE_URL = "https://polyserver.onrender.com/"
 #TEMP variables until better mana equation is implemented
 const BIG_CYCLONE_COUNTER_VALUE = 30
 const SMALL_CYCLONE_COUNTER_VALUE = 15
+const CYCLONE_MANA_THRESHOLD = 3
 
 #endregion
 

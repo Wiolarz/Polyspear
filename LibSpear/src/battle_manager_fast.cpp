@@ -9,6 +9,9 @@
 
 void BattleManagerFastCpp::finish_initialization() {
 	BM_ASSERT(_state == BattleState::INITIALIZING, "BMFast already initialized");
+	BM_ASSERT(_big_cyclone_counter_value != -1, "Uninitialized big cyclone counter");
+	BM_ASSERT(_small_cyclone_counter_value != -1, "Uninitialized small cyclone counter");
+	BM_ASSERT(_cyclone_mana_threshold != -1, "Uninitialized cyclone mana threshold");
 
 	_state = BattleState::SUMMONING;
 	for(unsigned i = 0; i < _armies.size(); i++) {
@@ -31,7 +34,7 @@ void BattleManagerFastCpp::finish_initialization() {
 	}
 
 	_unit_cache.update_armies(_armies);
-	_update_mana();
+	_update_mana_target();
 }
 
 int BattleManagerFastCpp::play_move_gd(godot::Array libspear_tuple) {
@@ -385,7 +388,31 @@ void BattleManagerFastCpp::_update_move_end() {
 	}
 }
 
+void BattleManagerFastCpp::_update_mana_target() {
+	auto [worst_idx, _] = _get_cyclone_worst_and_best_idx();
+	_cyclone_target = worst_idx;
+}
+
 void BattleManagerFastCpp::_update_mana() {
+	auto [worst_idx, best_idx] = _get_cyclone_worst_and_best_idx();
+	_cyclone_target = worst_idx;
+
+	// Special case - while initializing don't modify cyclone counter
+	if(_state == BattleState::INITIALIZING) {
+		return;
+	}
+
+	auto mana_difference = _armies[best_idx].mana_points - _armies[worst_idx].mana_points;
+	int16_t new_cyclone_counter = mana_difference > _cyclone_mana_threshold
+		? _small_cyclone_counter_value : _big_cyclone_counter_value;
+	
+	// Cyclone killed a unit or got lower - resetting
+	if(_armies[worst_idx].cyclone_timer == 0 || _armies[worst_idx].cyclone_timer > new_cyclone_counter) {
+		_armies[worst_idx].cyclone_timer = new_cyclone_counter;
+	}
+}
+
+std::pair<size_t, size_t> BattleManagerFastCpp::_get_cyclone_worst_and_best_idx() const {
 	int best_idx = -1, worst_idx = -1;
 
 	for(unsigned i = 0; i < _armies.size(); i++) {
@@ -415,21 +442,7 @@ void BattleManagerFastCpp::_update_mana() {
 			worst_idx = i;
 		}
 	}
-
-	auto mana_difference = _armies[best_idx].mana_points - _armies[worst_idx].mana_points;
-	auto cyclone_mult = (1 > 5-mana_difference) ? 1 : 5-mana_difference;
-	int16_t new_cyclone_counter = (_tiles->get_number_of_mana_wells() * 10) * cyclone_mult;
-
-	if(_tiles->get_number_of_mana_wells() == 0) {
-		new_cyclone_counter = 999;
-	}
-	
-	// Cyclone killed a unit - now resetting
-	if(_armies[worst_idx].cyclone_timer == 0 || _armies[worst_idx].cyclone_timer > new_cyclone_counter) {
-		_armies[worst_idx].cyclone_timer = new_cyclone_counter;
-	}
-
-	_cyclone_target = worst_idx;
+	return std::make_pair(worst_idx, best_idx);
 }
 
 int BattleManagerFastCpp::get_winner_team() {
@@ -1037,6 +1050,12 @@ void BattleManagerFastCpp::insert_spell(int army, int unit, int spell_id, godot:
 	_spells[spell_id] = BattleSpell(str, UnitID(army, unit));
 }
 
+void BattleManagerFastCpp::set_cyclone_constants(int big, int small, int threshold) {
+	_big_cyclone_counter_value = big;
+	_small_cyclone_counter_value = small;
+	_cyclone_mana_threshold = threshold;
+}
+
 void BattleManagerFastCpp::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("insert_unit", "army", "index", "position", "rotation", "is_summoning"), &BattleManagerFastCpp::insert_unit);
 	ClassDB::bind_method(D_METHOD(
@@ -1052,6 +1071,7 @@ void BattleManagerFastCpp::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_army_cyclone_timer", "army", "timer"), &BattleManagerFastCpp::set_army_cyclone_timer);
 	ClassDB::bind_method(D_METHOD("set_tile_grid", "tilegrid"), &BattleManagerFastCpp::set_tile_grid);
 	ClassDB::bind_method(D_METHOD("set_current_participant", "army"), &BattleManagerFastCpp::set_current_participant);
+	ClassDB::bind_method(D_METHOD("set_cyclone_constants", "big", "small", "threshold"), &BattleManagerFastCpp::set_cyclone_constants);
 	ClassDB::bind_method(D_METHOD("insert_spell", "army", "index", "spell"), &BattleManagerFastCpp::insert_spell);
 	ClassDB::bind_method(D_METHOD("force_battle_ongoing"), &BattleManagerFastCpp::force_battle_ongoing);
 	ClassDB::bind_method(D_METHOD("force_battle_sacrifice"), &BattleManagerFastCpp::force_battle_sacrifice);
@@ -1064,6 +1084,7 @@ void BattleManagerFastCpp::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("is_unit_alive", "army", "unit"), &BattleManagerFastCpp::is_unit_alive);
 	ClassDB::bind_method(D_METHOD("is_unit_being_summoned", "army", "unit"), &BattleManagerFastCpp::is_unit_being_summoned);
 	ClassDB::bind_method(D_METHOD("get_army_cyclone_timer", "army"), &BattleManagerFastCpp::get_army_cyclone_timer);
+	ClassDB::bind_method(D_METHOD("get_cyclone_target"), &BattleManagerFastCpp::get_cyclone_target);
 	ClassDB::bind_method(D_METHOD("get_current_participant"), &BattleManagerFastCpp::get_current_participant);
 	ClassDB::bind_method(D_METHOD("get_legal_moves"), &BattleManagerFastCpp::get_legal_moves_gd);
 	ClassDB::bind_method(D_METHOD("get_unit_id_on_position", "position"), &BattleManagerFastCpp::get_unit_id_on_position);

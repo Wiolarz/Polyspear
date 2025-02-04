@@ -915,7 +915,7 @@ func mana_values_changed() -> void:
 	cyclone_target = current_worst
 	var mana_difference = current_best.mana_points - current_worst.mana_points
 	var new_cylone_counter = CFG.BIG_CYCLONE_COUNTER_VALUE
-	if mana_difference > 3:
+	if mana_difference > CFG.CYCLONE_MANA_THRESHOLD:
 		new_cylone_counter = CFG.SMALL_CYCLONE_COUNTER_VALUE
 
 
