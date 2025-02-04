@@ -46,6 +46,7 @@ static func create(new_slot : Slot) -> Player:
 		result.add_child(result.bot_engine)
 		result.bot_engine.set_player(result)
 
+
 	result.name = "Player_" + result.get_player_name()
 	result.index = new_slot.index
 	result.team = new_slot.team
@@ -65,6 +66,11 @@ func is_local() -> bool:
 	return occupier is String and occupier.is_empty()
 
 
+
+func is_local() -> bool:
+	return occupier is String and occupier.is_empty()
+
+
 func get_player_name() -> String:
 	# TODO make these names same as elsewhere
 	if bot_engine:
@@ -78,6 +84,12 @@ func get_player_name() -> String:
 
 func get_player_color() -> DataPlayerColor:
 	return CFG.TEAM_COLORS[color_idx]
+	return CFG.TEAM_COLORS[color_idx]
+
+
+func get_faction() -> WorldPlayerState:
+	# TODO store faction in state
+	return faction
 
 #endregion Getters
 
