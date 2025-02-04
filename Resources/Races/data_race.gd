@@ -1,13 +1,13 @@
-class_name DataFaction
-
+class_name DataRace
 extends Resource
+
 
 """
 Complete Faction data:
 	1 Placement of every tile type
 	2 Info about assignment of every city
 """
-@export var faction_name : String
+@export var race_name : String
 
 ## list of units avalaible in the battle lobby [br]
 ## should be a copy of the units offered by the buildings list
@@ -21,8 +21,8 @@ func get_network_id() -> String:
 	return resource_path
 
 
-static func from_network_id(network_id : String) -> DataFaction:
-	return load(network_id) as DataFaction
+static func from_network_id(network_id : String) -> DataRace:
+	return load(network_id) as DataRace
 
 
 # no factory needed
