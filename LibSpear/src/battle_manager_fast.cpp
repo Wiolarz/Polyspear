@@ -921,9 +921,9 @@ void BattleManagerFastCpp::set_unit_symbol(
 	CHECK_UNIT(unit,);
 	CHECK_ARMY(army,);
 
-	uint8_t flags = (Symbol::FLAG_PARRY & parries) 
-				  | (Symbol::FLAG_PARRY_BREAK & breaks_parry) 
-				  | (Symbol::FLAG_COUNTER_ATTACK & is_counter);
+	uint8_t flags = (parries	  ? Symbol::FLAG_PARRY : 0) 
+				  | (breaks_parry ? Symbol::FLAG_PARRY_BREAK : 0) 
+				  | (is_counter   ? Symbol::FLAG_COUNTER_ATTACK : 0);
 
 	_armies[army].units[unit].sides[side] = Symbol(attack_strength, defense_strength, push_force, ranged_reach, flags);
 }
