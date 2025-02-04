@@ -18,6 +18,6 @@ var setup_ui : BattleSetup = null
 ]
 
 # STUB
-func init_tier_panel(tier : int, _faction : DataFaction) -> void:
+func init_tier_panel(tier : int, _faction : DataRace) -> void:
 	tier_name.text = "TIER - " + str(tier)
 	pass

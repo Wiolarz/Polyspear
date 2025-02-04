@@ -53,7 +53,7 @@ func _refresh_slot(index : int):
 			else null
 	var color : DataPlayerColor = CFG.DEFAULT_TEAM_COLOR
 	var username : String = ""
-	var faction : DataFaction = null
+	var faction : DataRace = null
 	var take_leave_button_state : WorldPlayerSlotPanel.TakeLeaveButtonState =\
 		WorldPlayerSlotPanel.TakeLeaveButtonState.GHOST
 	if logic_slot:

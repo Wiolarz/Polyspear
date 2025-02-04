@@ -4,7 +4,7 @@ extends GridNode2D
 signal world_move_done
 
 
-#region Variables
+
 var world_state : WorldState = null
 var world_ui : WorldUI = null
 
@@ -19,8 +19,8 @@ var _batch_mode : bool = false
 var tile_grid : Node2D = null
 var armies : Node2D = null
 
-#endregion
 
+#region Start World
 
 func _ready() -> void:
 
@@ -35,6 +35,8 @@ func _ready() -> void:
 
 	UI.add_custom_screen(world_ui)
 
+#endregion Start World
+
 
 #region helpers
 
@@ -43,6 +45,7 @@ func world_game_is_active() -> bool:
 	return world_state != null
 
 
+## Camera bounds
 func get_bounds_global_position() -> Rect2:
 	if not world_state:
 		push_warning("asking not initialized grid for camera bounding box")
@@ -56,6 +59,20 @@ func get_bounds_global_position() -> Rect2:
 		top_left_tile_form.global_position
 	return Rect2(top_left_tile_form.global_position, size)
 
+
+func get_current_player_capital() -> City:
+	if not world_state:
+		return null
+	var player_state = world_state.get_player_by_index(world_state.current_player_index)
+	if not player_state:
+		return null
+	return player_state.capital_city
+
+
+#endregion helpers
+
+
+#region Main functions
 
 func set_selected_hero(army : Army):
 	print("selected ", army)
@@ -73,37 +90,14 @@ func set_selected_hero(army : Army):
 	world_ui.city_ui._refresh_army_display()
 
 
-func get_current_player_capital() -> City:
-	if not world_state:
-		return null
-	var player_state = world_state.get_player(world_state.current_player_index)
-	if not player_state:
-		return null
-	return player_state.capital_city
-
-
-#endregion # helpers
-
-
-#region Main functions
-
-#
-func get_index_of_player(player : Player) -> int:
-	return IM.get_index_of_player(player)
-
-
-func get_player_by_index(index : int) -> Player:
-	return IM.get_player_by_index(index)
-
-
 func get_current_player() -> Player:
 	if not world_state:
 		return null
 	var index : int = world_state.current_player_index
-	return get_player_by_index(index)
+	return IM.get_player_by_index(index)
 
 
-func try_end_turn():
+func end_turn():
 	var world_move_info = WorldMoveInfo.make_end_turn()
 	try_do_move(world_move_info)
 
@@ -131,7 +125,6 @@ func get_tile_of_hex(hex : WorldHex) -> Node2D:
 		if tile_form.hex == hex:
 			return tile_form
 	return null
-
 
 #endregion
 
@@ -176,7 +169,6 @@ func input_try_select(coord) -> void:  #TODO "nothing is selected try to select 
 				world_ui.city_ui.show_recruit_units()
 
 
-
 func try_interact(hero : ArmyForm, coord : Vector2i):
 	var start_coords = hero.coord
 	var city = world_state.get_city_at(coord)
@@ -201,8 +193,8 @@ func try_do_move(world_move_info : WorldMoveInfo) -> void:
 		NET.client.queue_request_world_move(world_move_info)
 
 
+## STUB
 func trade_armies(_second_army : ArmyForm):
-	#TODO
 	print("trading armies")
 
 

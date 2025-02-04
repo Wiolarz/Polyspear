@@ -28,9 +28,10 @@ func _init(width_ : int, height_ : int):
 	grid = GenericHexGrid.new(width_, height_, WorldHex.new())
 
 
-static func create(map: DataWorldMap,
+## 
+static func create(map : DataWorldMap,
 		slots : Array[Slot],
-		ser : SerializableWorldState) -> WorldState:
+		saved_state : SerializableWorldState = null) -> WorldState:
 	var result = WorldState.new(map.grid_width, map.grid_height)
 
 
@@ -41,17 +42,19 @@ static func create(map: DataWorldMap,
 		var player = result.player_states[i]
 		var slot = slots[i]
 		player.faction = slot.faction
-		if not ser:
-			player.goods = CFG.get_start_goods()
-		else:
-			player.goods = Goods.from_array(ser.players[i].goods)
-			for dead_hero_ser in ser.players[i].dead_heroes:
-				player.dead_heroes.append(Hero.from_network_serializable(
-					dead_hero_ser, i))
-			for outpost_building_ser in ser.players[i].outpost_buildings:
-				player.outpost_buildings.append(DataBuilding.from_network_id(
-					outpost_building_ser))
-			# living armies are added later
+		if not saved_state:
+			player.set_goods(CFG.get_start_goods())
+			continue
+		
+		# Loading save from State
+		player.goods = Goods.from_array(saved_state.players[i].goods)
+		for dead_hero_ser in saved_state.players[i].dead_heroes:
+			player.dead_heroes.append(Hero.from_network_serializable(
+				dead_hero_ser, i))
+		for outpost_building_ser in saved_state.players[i].outpost_buildings:
+			player.outpost_buildings.append(DataBuilding.from_network_id(
+				outpost_building_ser))
+		# living armies are added later
 
 
 	# init places and armies from map or map and saved game
@@ -62,21 +65,21 @@ static func create(map: DataWorldMap,
 			hex.data_tile = map.grid_data[x][y]
 			var place_ser : Dictionary = {}
 			var type : String = hex.data_tile.type
-			if ser:
-				place_ser = ser.place_hexes.get(coord, {})
+			if saved_state:
+				place_ser = saved_state.place_hexes.get(coord, {})
 				if place_ser.size() > 0:
 					type = place_ser["type"]
 			hex.init_place(type, coord, place_ser)
 			# TODO somehow get this inside of
 			# creation
 			result.grid.set_hex(coord, hex)
-			if not ser and hex.place:
+			if not saved_state and hex.place:
 				var army_preset = hex.place.get_army_at_start()
 				if army_preset:
 					result.spawn_army_from_preset(army_preset, coord, \
 						hex.place.controller_index)
-			if ser and coord in ser.army_hexes:
-				var loaded : Dictionary = ser.army_hexes[coord]
+			if saved_state and coord in saved_state.army_hexes:
+				var loaded : Dictionary = saved_state.army_hexes[coord]
 				var army : Army = null
 				if loaded:
 					army = _deserialize_army_wip(loaded)
@@ -85,19 +88,19 @@ static func create(map: DataWorldMap,
 					army.coord = coord
 
 	# add armies to their players if loading from state
-	if ser:
+	if saved_state:
 		for i in result.player_states.size():
 			var player = result.player_states[i]
-			for army_coord in ser.players[i].armies:
+			for army_coord in saved_state.players[i].armies:
 				var army : Army = result.get_army_at(army_coord)
 				assert(army)
 				player.hero_armies.append(army)
 				army.controller_index = i
-			player.goods = Goods.from_array(ser.players[i].goods)
-			for dead_hero_ser in ser.players[i].dead_heroes:
+			player.goods = Goods.from_array(saved_state.players[i].goods)
+			for dead_hero_ser in saved_state.players[i].dead_heroes:
 				player.dead_heroes.append(Hero.from_network_serializable(
 					dead_hero_ser, i))
-			for outpost_building_ser in ser.players[i].outpost_buildings:
+			for outpost_building_ser in saved_state.players[i].outpost_buildings:
 				player.outpost_buildings.append(DataBuilding.from_network_id(
 					outpost_building_ser))
 			# living armies are added later
@@ -105,10 +108,10 @@ static func create(map: DataWorldMap,
 
 	result.synchronize_players_with_their_places()
 
-	if not ser:
+	if not saved_state:
 		result.current_player_index = 0
 	else:
-		result.current_player_index = ser["current_player"]
+		result.current_player_index = saved_state["current_player"]
 
 	return result
 
@@ -125,11 +128,11 @@ func synchronize_players_with_their_places() -> void:
 			var city = get_city_at(coord)
 			var outpost = get_place_at(coord) as Outpost
 			if city:
-				var player = get_player(city.controller_index)
+				var player = get_player_by_index(city.controller_index)
 				if player:
 					player.cities.append(city)
 			if outpost:
-				var player = get_player(outpost.controller_index)
+				var player = get_player_by_index(outpost.controller_index)
 				if player:
 					player.outposts.append(outpost)
 
@@ -149,10 +152,6 @@ func get_player_index(player : WorldPlayerState) -> int:
 		if player == player_states[i]:
 			return i
 	return -1
-
-
-func get_player(index : int) -> WorldPlayerState:
-	return get_player_by_index(index)
 
 
 func get_player_by_index(index : int) -> WorldPlayerState:
@@ -187,7 +186,7 @@ func check_move_allowed(world_move_info : WorldMoveInfo) -> String:
 		var building : DataBuilding = world_move_info.data
 		return check_build_building(city_coord, building)
 	elif world_move_info.move_type == WorldMoveInfo.TYPE_END_TURN:
-		return check_end_turn()
+		return ""
 	return "unrecognised move"
 
 
@@ -196,31 +195,35 @@ func do_move(world_move_info : WorldMoveInfo) -> bool:
 	if problem != "":
 		push_error(problem)
 		return false
-	if world_move_info.move_type == WorldMoveInfo.TYPE_TRAVEL:
-		var source : Vector2i = world_move_info.move_source
-		var target : Vector2i = world_move_info.target_tile_coord
-		return do_army_travel(source, target)
-	elif world_move_info.move_type == WorldMoveInfo.TYPE_RECRUIT_HERO:
-		var player_index : int = world_move_info.recruit_hero_info.player_index
-		var data_hero : DataHero = world_move_info.recruit_hero_info.data_hero
-		var coord : Vector2i = world_move_info.target_tile_coord
-		return do_recruit_hero(player_index, data_hero, coord)
-	elif world_move_info.move_type == WorldMoveInfo.TYPE_RECRUIT_UNIT:
-		var army_coord : Vector2i = world_move_info.target_tile_coord
-		var city_coord : Vector2i = world_move_info.move_source
-		var unit : DataUnit = world_move_info.data
-		return do_recruit_unit(unit, city_coord, army_coord)
-	elif world_move_info.move_type == WorldMoveInfo.TYPE_START_TRADE:
-		var source : Vector2i = world_move_info.move_source
-		var target : Vector2i = world_move_info.target_coord
-		return do_start_trade(source, target)
-	if world_move_info.move_type == WorldMoveInfo.TYPE_BUILD:
-		var city_coord : Vector2i = world_move_info.target_tile_coord
-		var building : DataBuilding = world_move_info.data
-		return do_build_building(city_coord, building)
-	elif world_move_info.move_type == WorldMoveInfo.TYPE_END_TURN:
-		return do_end_turn()
-	return true
+	match world_move_info.move_type:
+		WorldMoveInfo.TYPE_TRAVEL:
+			var source : Vector2i = world_move_info.move_source
+			var target : Vector2i = world_move_info.target_tile_coord
+			return do_army_travel(source, target)
+		WorldMoveInfo.TYPE_RECRUIT_HERO:
+			var player_index : int = world_move_info.recruit_hero_info.player_index
+			var data_hero : DataHero = world_move_info.recruit_hero_info.data_hero
+			var coord : Vector2i = world_move_info.target_tile_coord
+			return do_recruit_hero(player_index, data_hero, coord)
+		WorldMoveInfo.TYPE_RECRUIT_UNIT:
+			var army_coord : Vector2i = world_move_info.target_tile_coord
+			var city_coord : Vector2i = world_move_info.move_source
+			var unit : DataUnit = world_move_info.data
+			return do_recruit_unit(unit, city_coord, army_coord)
+		WorldMoveInfo.TYPE_START_TRADE:
+			var source : Vector2i = world_move_info.move_source
+			var target : Vector2i = world_move_info.target_coord
+			return do_start_trade(source, target)
+		WorldMoveInfo.TYPE_BUILD:
+			var city_coord : Vector2i = world_move_info.target_tile_coord
+			var building : DataBuilding = world_move_info.data
+			return do_build_building(city_coord, building)
+		WorldMoveInfo.TYPE_END_TURN:
+			do_end_turn()
+			return true
+		_:
+			assert(false, "unsported WorldMoveInfo Type")
+			return false
 
 
 func check_start_trade(source : Vector2i, target : Vector2i) -> String:
@@ -290,18 +293,12 @@ func check_recruit_hero(player_index : int, data_hero : DataHero,
 		return "player does not own the city where tries to recruit"
 	if has_player_a_hero(player_index, data_hero):
 		return "hero is already recruited"
-	var player = get_player(player_index)
+	var player = get_player_by_index(player_index)
 	if not data_hero in player.faction.heroes:
 		return "player's faction does not fit for this hero"
 	var cost = get_hero_cost_for_player(player_index, data_hero)
 	if not has_player_enough(player_index, cost):
 		return "not enough cash, needed %s" % cost
-	return ""
-
-
-func check_end_turn() -> String:
-	if player_states.size() < 1:
-		return "no players"
 	return ""
 
 
@@ -322,11 +319,11 @@ func spawn_army_from_preset(army_preset : PresetArmy, coord : Vector2i, \
 
 func get_hero_cost_for_player(player_index : int, hero_data : DataHero) \
 		-> Goods:
-	var player = get_player(player_index)
+	var player = get_player_by_index(player_index)
 	if not player:
 		return Goods.new(0, 0, 0)
-	if has_player_a_dead_hero(player_index, hero_data):
-		return hero_data.revive_cost
+	if player.has_dead_hero(hero_data):
+		return player.get_hero_cost(hero_data)
 	return hero_data.cost
 
 
@@ -352,7 +349,7 @@ func do_recruit_hero(player_index : int, data_hero : DataHero,
 		push_error(problem)
 		return false
 	var city : City = get_city_at(coord)
-	var player = get_player(player_index)
+	var player = get_player_by_index(player_index)
 
 	var cost = get_hero_cost_for_player(player_index, data_hero)
 	var purchased = player_purchase(player_index, cost)
@@ -412,7 +409,7 @@ func do_build_building(coord : Vector2i, building : DataBuilding) -> bool:
 
 
 func has_player_a_hero(player_index : int, hero : DataHero) -> bool:
-	var player = get_player(player_index)
+	var player = get_player_by_index(player_index)
 	if not player:
 		return false
 	for hero_army in player.hero_armies:
@@ -421,27 +418,16 @@ func has_player_a_hero(player_index : int, hero : DataHero) -> bool:
 	return false
 
 
-func find_dead_hero_of_player(player_index : int, data_hero : DataHero) -> Hero:
-	var player = get_player(player_index)
-	if not player:
-		return null
-	for hero in player.dead_heroes:
-		if hero.template == data_hero:
-			return hero
-	return null
 
-
-func has_player_a_dead_hero(player_index : int, data_hero : DataHero) -> bool:
-	return find_dead_hero_of_player(player_index, data_hero) != null
 
 
 func has_player_enough(player_index : int, goods : Goods) -> bool:
-	var player = get_player(player_index)
+	var player = get_player_by_index(player_index)
 	return player and player.goods.has_enough(goods)
 
 
 func has_player_any_outpost(player_index : int, outpost_type : String) -> bool:
-	var player = get_player(player_index)
+	var player = get_player_by_index(player_index)
 	if not player:
 		return false
 	for outpost in player.outposts:
@@ -455,7 +441,7 @@ func player_purchase(player_index : int, cost : Goods) -> bool:
 
 
 func player_spend(player_index : int, cost : Goods) -> bool:
-	var player = get_player(player_index)
+	var player = get_player_by_index(player_index)
 	if not player:
 		push_error("no player with this index, so cannot buy")
 		return false
@@ -568,7 +554,7 @@ func capture_place(player_index : int, coord : Vector2i) -> bool:
 
 
 func _delete_outpost_buildings_if_needed(player_index : int) -> void:
-	var player = get_player(player_index)
+	var player = get_player_by_index(player_index)
 	if not player:
 		return
 	var new_array : Array[DataBuilding] = []
@@ -610,7 +596,7 @@ func remove_army(army : Army) -> void:
 	var hex : WorldHex = grid.get_hex(army.coord)
 	hex.army = null
 	var player_index = army.controller_index
-	var player = get_player(player_index)
+	var player = get_player_by_index(player_index)
 	if player:
 		var army_array = player.hero_armies
 		assert(army in army_array)
@@ -708,17 +694,12 @@ func get_interactable_at(coord : Vector2i) -> Object:
 	return null
 
 
-func do_end_turn() -> bool:
-	var problem := check_end_turn()
-	if problem != "":
-		push_error(problem)
-		return false
+func do_end_turn() -> void:
 	_end_of_turn_callbacks(current_player_index)
 	if current_player_index == player_states.size():
 		_end_of_round_callbacks()
 	current_player_index = (current_player_index + 1) % player_states.size()
 	turn_changed.emit()
-	return true
 
 
 func to_network_serializable() -> SerializableWorldState:
@@ -742,20 +723,20 @@ func to_network_serializable() -> SerializableWorldState:
 	for player_index in player_states.size():
 		var player = player_states[player_index]
 		result.players[player_index] = SerializableWorldState.PlayerState.new()
-		var ser = result.players[player_index]
-		ser.goods = player.goods.to_array()
-		ser.armies.resize(player.hero_armies.size())
+		var result_player = result.players[player_index]
+		result_player.goods = player.goods.to_array()
+		result_player.armies.resize(player.hero_armies.size())
 		for army_index in player.hero_armies.size():
-			ser.armies[army_index] = \
+			result_player.armies[army_index] = \
 				player.hero_armies[army_index].coord
-		ser.dead_heroes.resize(player.dead_heroes.size())
+		result_player.dead_heroes.resize(player.dead_heroes.size())
 		for dead_hero_index in player.dead_heroes.size():
-			ser.dead_heroes[dead_hero_index] = \
+			result_player.dead_heroes[dead_hero_index] = \
 				player.dead_heroes[dead_hero_index] \
 					.to_network_serializable()
-		ser.outpost_buildings.resize(player.outpost_buildings.size())
+		result_player.outpost_buildings.resize(player.outpost_buildings.size())
 		for outpost_building_index in player.outpost_buildings.size():
-			ser.outpost_buildings[outpost_building_index] = \
+			result_player.outpost_buildings[outpost_building_index] = \
 				DataBuilding.get_network_id(
 					player.outpost_buildings[outpost_building_index])
 	result.current_player = current_player_index

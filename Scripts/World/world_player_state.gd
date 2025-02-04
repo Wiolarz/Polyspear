@@ -1,7 +1,7 @@
 class_name WorldPlayerState
 extends RefCounted
 
-var goods : Goods = Goods.new()
+var _goods : Goods = Goods.new()
 
 var capital_city : City:
 	get:
@@ -19,4 +19,47 @@ var hero_armies : Array[Army] = []
 
 var dead_heroes: Array[Hero] = []
 
-var faction : DataFaction
+var faction : DataRace
+
+
+## Used during starting new game and loading a save
+func set_goods(new_goods_value : Goods) -> void:
+	_goods = new_goods_value
+
+
+## Checks if player has enough goods for purchase
+func has_enough(cost : Goods) -> bool:
+	return _goods.has_enough(cost)
+
+
+## If there are sufficient goods returns true + goods are subtracted
+func try_to_pay(cost : Goods) -> bool:
+	if _goods.has_enough(cost):
+		_goods.subtract(cost)
+		return true
+	print("not enough money")
+	return false
+
+
+#region Heroes
+
+func has_hero(data_hero : DataHero) -> bool:
+	for hero_army in hero_armies:
+		if hero_army.hero.template == data_hero:
+			return true
+	return false
+
+
+func has_dead_hero(data_hero : DataHero) -> bool:
+	for hero in dead_heroes:
+		if hero.template == data_hero:
+			return true
+	return false
+
+func get_hero_cost(data_hero : DataHero) -> Goods:
+	if has_dead_hero(data_hero):
+		return data_hero.revive_cost
+	return data_hero.cost
+
+#endregion Heroes
+

@@ -29,7 +29,7 @@ func refresh_world_state_ugly(world_state : WorldState) -> void:
 func refresh_heroes():
 	Helpers.remove_all_children(heroes_list)
 	var player_index = world_state_ugly.current_player_index
-	var player_state = world_state_ugly.get_player(player_index)
+	var player_state = world_state_ugly.get_player_by_index(player_index)
 	if not player_state:
 		return
 	for army in player_state.hero_armies:
@@ -82,6 +82,6 @@ func _on_menu_pressed():
 
 
 func _on_end_turn_pressed():
-	WM.try_end_turn()
+	WM.end_turn()
 	#refresh_player_buttons()
 	#refresh_heroes(WM.current_player)

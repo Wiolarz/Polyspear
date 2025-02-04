@@ -87,7 +87,7 @@ func interact(world_state : WorldState, army : Army) -> bool:
 
 func on_end_of_turn(world_state : WorldState):
 	var alive_army : Army = world_state.get_army_at(coord)
-	if alive_army and world_state.get_player(alive_army.controller_index):
+	if alive_army and world_state.get_player_by_index(alive_army.controller_index):
 		alive_army = null
 	if alive_army != null: # neutral army is dead
 		return
@@ -117,7 +117,7 @@ func get_map_description() -> String:
 
 
 func collect(world_state : WorldState, player_index : int) -> bool:
-	var player = world_state.get_player(player_index)
+	var player = world_state.get_player_by_index(player_index)
 	if not player:
 		return false
 	player.goods.add(_present_goods)

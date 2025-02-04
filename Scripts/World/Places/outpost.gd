@@ -54,8 +54,8 @@ func capture(world_state : WorldState, player_index : int) -> bool:
 	var old_controller_index = controller_index
 	if player_index == old_controller_index:
 		return false # nothing to do
-	var old_player = world_state.get_player(old_controller_index)
-	var new_player = world_state.get_player(player_index)
+	var old_player = world_state.get_player_by_index(old_controller_index)
+	var new_player = world_state.get_player_by_index(player_index)
 	if old_player: # we need to take the outpost from old player first
 		controller_index = -1
 		old_player.outposts.erase(self)
@@ -67,7 +67,7 @@ func capture(world_state : WorldState, player_index : int) -> bool:
 
 
 func on_end_of_turn(world_state : WorldState):
-	var player : WorldPlayerState = world_state.get_player(controller_index)
+	var player : WorldPlayerState = world_state.get_player_by_index(controller_index)
 	if player:
 		player.goods.add(per_turn)
 

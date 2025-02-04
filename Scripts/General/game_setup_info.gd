@@ -104,7 +104,7 @@ static func from_dictionary(dict : Dictionary, \
 					read_slot["occupier"], local_username)
 			if "faction" in read_slot and read_slot["faction"] is String:
 				new_slot.faction = \
-					DataFaction.from_network_id(read_slot["faction"])
+					DataRace.from_network_id(read_slot["faction"])
 			if "color" in read_slot and read_slot["color"] is int:
 				new_slot.color = read_slot["color"]
 			if "units_list" in read_slot and read_slot["units_list"] is Array:
