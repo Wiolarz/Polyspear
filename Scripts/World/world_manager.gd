@@ -324,7 +324,7 @@ func spawn_world_ui():
 func start_new_world(world_map : DataWorldMap) -> void:
 
 	_clear_state()
-	world_state = WorldState.create(world_map, IM.game_setup_info.slots, null)
+	world_state = WorldState.create(world_map, IM.game_setup_info.slots)
 	_connect_callbacks()
 	world_ui.refresh_world_state_ugly(world_state)
 

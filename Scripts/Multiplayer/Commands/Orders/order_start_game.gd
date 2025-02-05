@@ -13,6 +13,6 @@ static func create_packet():
 
 static func process_command(_client : Client, _params : Dictionary) -> int:
 	IM.go_to_main_menu()
-	IM.start_game(null, null)
+	IM.start_game()
 	return OK
 
