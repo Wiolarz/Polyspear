@@ -58,8 +58,8 @@ func _prepare_to_start_game() -> void:
 ## [br]
 ## If both states are null, then game is started as new and no state load is
 ## performed -- only game_setup_info is taken into account.
-func start_game(world_state : SerializableWorldState,
-		battle_state : SerializableBattleState,
+func start_game(world_state : SerializableWorldState = null,
+		battle_state : SerializableBattleState = null,
 		replay_template : BattleReplay = null) -> void:
 
 	assert(not battle_state or battle_state.valid())
@@ -128,7 +128,7 @@ func go_to_map_editor():
 
 
 ## new game <=> world_state == null
-func _start_game_world(world_state : SerializableWorldState):
+func _start_game_world(world_state : SerializableWorldState = null):
 	UI.go_to_main_menu()
 	var map : DataWorldMap = game_setup_info.world_map
 	if not world_state:

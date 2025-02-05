@@ -20,5 +20,5 @@ static func process_command(server : Server, peer : ENetPacketPeer, \
 	if session == null:
 		return FAILED
 	if server.settings.all_can_start():
-		IM.start_game(null, null)
+		IM.start_game()
 	return OK

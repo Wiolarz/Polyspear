@@ -203,4 +203,4 @@ func _on_button_confirm_pressed():
 	if NET.client:
 		NET.client.queue_request_start()
 	else:
-		IM.start_game(null, null)
+		IM.start_game()
