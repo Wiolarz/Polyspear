@@ -23,6 +23,7 @@ offset_right = 138.0
 offset_bottom = 93.0
 scale = Vector2(2.04, 2.04)
 shortcut = ExtResource("2_nfb7t")
+shortcut_in_tooltip = false
 text = "Menu"
 
 [node name="End Turn" type="Button" parent="."]

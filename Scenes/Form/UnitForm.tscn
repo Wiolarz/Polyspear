@@ -1,6 +1,7 @@
-[gd_scene load_steps=9 format=3 uid="uid://sh62rfw7ulr8"]
+[gd_scene load_steps=11 format=3 uid="uid://sh62rfw7ulr8"]
 
 [ext_resource type="Script" path="res://Scripts/Battle/unit_form.gd" id="1_ep020"]
+[ext_resource type="Shader" path="res://Art/tile_experimental_shader.gdshader" id="1_qtpv3"]
 [ext_resource type="Texture2D" uid="uid://ptkmhxptot0q" path="res://Art/player_colors/blue_color.png" id="2_0q625"]
 [ext_resource type="Texture2D" uid="uid://cukwcwy4fikm1" path="res://Art/elf_hero_noble.png" id="3_3flaq"]
 [ext_resource type="Texture2D" uid="uid://by6lxadhw2amf" path="res://Art/items/hex_border_light.png" id="4_0xhp4"]
@@ -9,10 +10,18 @@
 [ext_resource type="Texture2D" uid="uid://os5cuvhyb3sm" path="res://Art/items/mace.png" id="7_rdbed"]
 [ext_resource type="Texture2D" uid="uid://cb6b5qgltj1bc" path="res://Art/battle_map/swamp.png" id="8_i7m4u"]
 
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_djiqc"]
+resource_local_to_scene = true
+shader = ExtResource("1_qtpv3")
+shader_parameter/highlight_intensity = 0.0
+shader_parameter/highlight_color = Color(1, 1, 1, 1)
+
 [node name="Unit" type="Node2D"]
+material = SubResource("ShaderMaterial_djiqc")
 script = ExtResource("1_ep020")
 
 [node name="sprite_color" type="Sprite2D" parent="."]
+use_parent_material = true
 texture = ExtResource("2_0q625")
 
 [node name="sprite_unit" type="Sprite2D" parent="."]

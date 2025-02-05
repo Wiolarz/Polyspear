@@ -5,7 +5,7 @@
 
 [node name="GameChat" type="MarginContainer"]
 clip_contents = true
-custom_minimum_size = Vector2(750, 400)
+custom_minimum_size = Vector2(900, 450)
 offset_right = 300.0
 auto_translate = false
 localize_numeral_system = false
@@ -29,21 +29,22 @@ size_flags_vertical = 3
 clip_contents = true
 layout_mode = 2
 size_flags_horizontal = 3
+theme_override_constants/separation = -1
+alignment = 2
 
 [node name="FullLog" type="ScrollContainer" parent="VBoxContainer/HBoxContainer"]
-visible = false
 layout_mode = 2
 size_flags_horizontal = 3
 horizontal_scroll_mode = 0
 vertical_scroll_mode = 2
 
 [node name="FullLogContent" type="Label" parent="VBoxContainer/HBoxContainer/FullLog"]
-clip_contents = true
+custom_minimum_size = Vector2(0, 1)
 layout_mode = 2
 size_flags_horizontal = 3
-size_flags_vertical = 8
-clip_text = true
-text_overrun_behavior = 3
+size_flags_vertical = 3
+vertical_alignment = 2
+autowrap_mode = 3
 
 [node name="Button" type="Button" parent="VBoxContainer/HBoxContainer"]
 visible = false

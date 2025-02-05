@@ -1,0 +1,8 @@
+[gd_resource type="StyleBoxTexture" load_steps=2 format=3 uid="uid://cr3cpjlxxfm4r"]
+
+[ext_resource type="Texture2D" uid="uid://cdmdcslalv3ms" path="res://Art/UI/marble.tres" id="1_ls1li"]
+
+[resource]
+texture = ExtResource("1_ls1li")
+axis_stretch_horizontal = 1
+axis_stretch_vertical = 1

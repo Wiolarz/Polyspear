@@ -18,6 +18,7 @@ var latest_ai_cancel_token : CancellationToken
 var _current_summary : DataBattleSummary = null
 
 var _selected_unit : Unit
+var _hovered_unit : Unit
 
 var _replay_data : BattleReplay
 var _replay_is_playing : bool = false
@@ -54,6 +55,7 @@ func _ready():
 
 func _process(_delta):
 	_check_clock_timer_tick()
+	force_hover_refresh()
 
 
 #region Battle Setup
@@ -304,6 +306,56 @@ func grid_input(coord : Vector2i) -> void:
 			return # dont perform move, send it to server
 
 		_perform_move_info(move_info)
+
+
+## Called when mouse hovers some tile. It has to be calculated by battle manager for us to have
+## assurance that when we click hovered til then the same tile will get input. Other ways were
+## considered like checking mouse in UnitForm, but this is kind of independent object in relation
+## to mouse. And with THIS we will be able to highlight also not occupied tiles. [br]
+## This function should behave the same as grid_input, but with different result -- for now only
+## visual.
+func grid_hover(coord : Vector2i, is_hovered : bool) -> void:
+	var tile_form : UnitForm = null
+
+	if not _battle_is_ongoing:
+		return
+
+	reset_grid_hover()
+
+	# TODO move it to function like '_get_unit_form_at(coord)'
+	var unit : Unit = _battle_grid_state.get_unit(coord)
+	if unit:
+		var unit_form : UnitForm = _unit_to_unit_form[unit]
+		unit_form.set_hovered(is_hovered)
+		_hovered_unit = unit if is_hovered else null
+
+
+func reset_grid_hover() -> void:
+	if not _battle_is_ongoing:
+		return
+	if _hovered_unit and _hovered_unit in _unit_to_unit_form:
+		var unit_form : UnitForm = _unit_to_unit_form[_hovered_unit]
+		unit_form.set_hovered(false)
+	_hovered_unit = null
+
+
+func force_hover_refresh() -> void:
+	var space_state := get_world_2d().direct_space_state
+	var mouse := get_global_mouse_position()
+	var query := PhysicsPointQueryParameters2D.new()
+	query.position = mouse
+	query.collide_with_areas = true
+	query.collide_with_bodies = false
+	var result := space_state.intersect_point(query, 1)
+	if result.size() < 1:
+		reset_grid_hover()
+		return
+	var collider = result[0]["collider"]
+	var tile_form = collider as TileForm
+	if not tile_form:
+		reset_grid_hover()
+		return
+	grid_hover(tile_form.coord, true)
 
 
 func _check_for_stalemate() -> bool:

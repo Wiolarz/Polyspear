@@ -32,6 +32,14 @@ var anim_symbol_activation_scale := Vector2(2.0, 2.0)
 # temporarily cranked up to 0.8, TODO change to 0.5 when 
 var anim_symbol_activation_duration := 0.8
 
+enum GuiAnimationMode
+{
+	NONE,
+	NON_DISTRACTION,
+	FULL,
+	MAX_ = FULL + 1,
+}
+
 #endregion
 
 ## battle map is placed this far to the right after world map bounds

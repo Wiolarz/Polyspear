@@ -5,30 +5,30 @@
 
 [node name="ServerInfoAndChat" type="Control"]
 clip_contents = true
-custom_minimum_size = Vector2(960, 0)
+custom_minimum_size = Vector2(640, 640)
 layout_mode = 3
-anchors_preset = 9
+anchors_preset = 15
+anchor_right = 1.0
 anchor_bottom = 1.0
+grow_horizontal = 2
 grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
 script = ExtResource("1_gxumh")
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
 layout_mode = 1
-anchors_preset = 9
+anchors_preset = 15
+anchor_right = 1.0
 anchor_bottom = 1.0
-offset_right = 968.0
+grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/margin_left = 30
-theme_override_constants/margin_top = 30
-theme_override_constants/margin_right = 30
-theme_override_constants/margin_bottom = 30
 
 [node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
 clip_contents = true
 layout_mode = 2
-size_flags_horizontal = 0
 size_flags_vertical = 3
-theme_override_constants/separation = 10
+theme_override_constants/separation = 20
 
 [node name="Buttons" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
@@ -37,6 +37,7 @@ layout_mode = 2
 layout_mode = 2
 size_flags_horizontal = 3
 shortcut = ExtResource("2_x5rgd")
+shortcut_in_tooltip = false
 text = "Stop server"
 
 [node name="ButtonKickAll" type="Button" parent="MarginContainer/VBoxContainer/Buttons"]

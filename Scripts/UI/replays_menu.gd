@@ -1,8 +1,14 @@
 extends Panel
 
-@onready var _description : Label = $VBoxContainer/Columns/VBoxContainer/ReplayDescription
-@onready var _play_button : Button = $VBoxContainer/Columns/VBoxContainer/PlayButton
-@onready var _replay_buttons_container = $VBoxContainer/Columns/ScrollContainer/Replays
+@onready var _column_container = $MarginContainer/VBoxContainer/Columns
+
+@onready var _list : Control = _column_container.get_node("ScrollContainer")
+@onready var _content : Control = _column_container.get_node("VBoxContainer")
+
+@onready var _description : Label = _content.get_node("ReplayDescription")
+@onready var _play_button : Button = _content.get_node("PlayButton")
+@onready var _replay_buttons_container = _list.get_node("Replays")
+
 var _replay : BattleReplay
 
 
@@ -26,6 +32,9 @@ func refresh_replays_list():
 		var button = Button.new()
 		button.text = replay_path
 		button.name = replay_path
+		button.text_overrun_behavior = TextServer.OverrunBehavior.OVERRUN_TRIM_ELLIPSIS
+		button.clip_text = true
+		button.custom_minimum_size = Vector2(0, 64)
 		button.pressed.connect(_on_replay_clicked.bind(replay_path))
 		_replay_buttons_container.add_child(button)
 
