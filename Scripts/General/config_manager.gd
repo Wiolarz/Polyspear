@@ -72,8 +72,8 @@ const PLAYER_COLORS_PATH = "res://Art/player_colors/"
 const REPLAY_DIRECTORY = "user://replays/"
 const PLAYER_OPTIONS_PATH = "user://player_options.tres"
 
-var FACTION_ELVES : DataRace = load("res://Resources/Factions/elf.tres")
-var FACTION_ORCS : DataRace = load("res://Resources/Factions/orc.tres")
+var FACTION_ELVES : DataRace = load("res://Resources/Races/elf.tres")
+var FACTION_ORCS : DataRace = load("res://Resources/Races/orc.tres")
 var FACTIONS_LIST : Array[DataRace] = [
 	FACTION_ELVES,
 	FACTION_ORCS,
