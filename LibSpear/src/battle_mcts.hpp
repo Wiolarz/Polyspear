@@ -51,7 +51,7 @@ public:
 	void iterate(int iterations);
 
 	/// Select the currently best child. May return nullptr as the second return value
-	std::pair<Move, BattleMCTSNode*> select();
+	std::optional<std::pair<Move, BattleMCTSNode&>> select();
 	/// Find a new child node
 	BattleMCTSNode& expand();
 	/// Simulate a number of complete playouts in parallel
@@ -72,11 +72,10 @@ class BattleMCTSManager : public Node {
 	DEFINE_MCTS_PARAMETER(bool, debug_print_move_lists, false);
 	DEFINE_MCTS_PARAMETER(int, debug_max_saved_fail_replays, -1);
 
-	// i wanted it to not be a pointer, but c++ was stronger
-	BattleMCTSNode* root = nullptr;
-	int army_team;
-	int army_id;
-	godot::Array error_playouts;
+	std::optional<BattleMCTSNode> _root{};
+	int _army_team;
+	int _army_id;
+	godot::Array _error_playouts;
 
 
 	friend BattleResult _simulate_thread(BattleManagerFastCpp bmnew, BattleMCTSManager& mcts, const BattleMCTSNode& node);
@@ -87,7 +86,6 @@ protected:
 
 public:
 	BattleMCTSManager() = default;
-	virtual ~BattleMCTSManager() override;
 
 	void set_root(BattleManagerFastCpp* bm);
 
@@ -110,7 +108,7 @@ public:
 	void print_move_list();
 
 	inline bool should_save_replays() {
-		return error_playouts.size() < debug_max_saved_fail_replays;
+		return _error_playouts.size() < debug_max_saved_fail_replays;
 	}
 };
 

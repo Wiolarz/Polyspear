@@ -1,15 +1,6 @@
 
 #include "battle_structs.hpp"
 
-Unit* Army::get_unit(Position coord) {
-	for(auto& unit : units) {
-		if(unit.pos == coord && unit.status == UnitStatus::ALIVE) {
-			return &unit;
-		}
-	}
-	return nullptr;
-}
-
 int Army::find_unit_id_to_summon(int i) const {
 	for(; i < 5; i++) {
 		if(units[i].status == UnitStatus::SUMMONING) {

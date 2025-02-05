@@ -33,9 +33,9 @@ float BattleMCTSNode::uct() const {
 	return (_reward/_visits) + coeff * sqrt(log2(parent_visits) / _visits);
 }
 
-std::pair<Move, BattleMCTSNode*> BattleMCTSNode::select() {
+std::optional<std::pair<Move, BattleMCTSNode&>> BattleMCTSNode::select() {
 	if(!is_explored()) {
-		return std::make_pair(Move(), nullptr);
+		return {};
 	}
 
 	float uct_max = -std::numeric_limits<float>::infinity();
@@ -52,7 +52,11 @@ std::pair<Move, BattleMCTSNode*> BattleMCTSNode::select() {
 		}
 	}
 
-	return std::make_pair(best_move, uct_max_idx);
+	if(uct_max_idx == nullptr) {
+		return {};
+	}
+
+	return std::make_pair(best_move, std::ref(*uct_max_idx));
 }
 
 BattleMCTSNode& BattleMCTSNode::expand() {
@@ -179,9 +183,11 @@ bool BattleMCTSNode::is_explored() {
 }
 
 void BattleMCTSManager::iterate(int iterations) {
-	root->_bm.set_debug_internals(debug_bmfast_internals);
-	root->_mcts_iterations = iterations;
-	root->iterate(iterations);
+	ERR_FAIL_COND_MSG(!_root.has_value(), "Root node not set in BattleMCTSManager");
+
+	_root->_bm.set_debug_internals(debug_bmfast_internals);
+	_root->_mcts_iterations = iterations;
+	_root->iterate(iterations);
 	call_deferred("emit_signal", "complete");
 }
 
@@ -196,18 +202,23 @@ void BattleMCTSNode::iterate(int iterations) {
 	}
 
 	for(int i = 0; i < iterations; i+=visits) {
-		BattleMCTSNode* node = this, *temp_node;
+		BattleMCTSNode* parent_node_ptr = this;
 
-		while((temp_node = node->select().second) != nullptr) {
-			node = temp_node;
+		while(true) {
+			auto node_opt = parent_node_ptr->select(); 
+			if(!node_opt.has_value()) {
+				break;
+			}
+
+			parent_node_ptr = &node_opt.value().second;
 		}
 
-		node = &node->expand();
-		BattleResult result = node->simulate(_manager.max_sim_iterations, visits);
+		auto& node = parent_node_ptr->expand();
+		BattleResult result = node.simulate(_manager.max_sim_iterations, visits);
 
-		node->backpropagate(result, visits);
+		node.backpropagate(result, visits);
 
-		if(result.winner_team == _manager.army_team) {
+		if(result.winner_team == _manager._army_team) {
 			this->_wins++;
 		}
 		else if(result.winner_team == -1) {
@@ -224,6 +235,8 @@ void BattleMCTSNode::iterate(int iterations) {
 }
 
 Move BattleMCTSManager::get_optimal_move(float reward_per_visit_dither) {
+	ERR_FAIL_COND_V_MSG(!_root.has_value(), {}, "Root node not set in BattleMCTSManager");
+
 	static thread_local std::random_device rand_dev;
 	static thread_local std::mt19937 rand_engine{rand_dev()};
 	std::uniform_real_distribution<float> dither_dist{0.0, reward_per_visit_dither};
@@ -235,7 +248,7 @@ Move BattleMCTSManager::get_optimal_move(float reward_per_visit_dither) {
 	double max_ratio = -1.0;
 	Move chosen{};
 
-	for(auto& [move, node] : root->_children) {
+	for(auto& [move, node] : _root->_children) {
 		auto new_ratio = (node->_reward / node->_visits) + dither_dist(rand_engine);
 		if(node->_visits < 1.0) {
 			new_ratio = 0.0;
@@ -254,16 +267,20 @@ godot::Array BattleMCTSManager::get_optimal_move_gd(float reward_per_visit_dithe
 }
 
 godot::Dictionary BattleMCTSManager::get_move_scores() {
+	ERR_FAIL_COND_V_MSG(!_root.has_value(), {}, "Root node not set in BattleMCTSManager");
+	
 	godot::Dictionary ret{};
-	for(auto& [move, node] : root->_children) {
+	for(auto& [move, node] : _root->_children) {
 		ret[move.as_libspear_tuple()] = node->_reward / node->_visits;
 	}
 	return ret;
 }
 
 void BattleMCTSManager::print_move_list() {
-	for(auto& [move, node] : root->_children) {
-		auto& hm = root->_bm.get_heuristically_good_moves();
+	ERR_FAIL_COND_MSG(!_root.has_value(), "Root node not set in BattleMCTSManager");
+
+	for(auto& [move, node] : _root->_children) {
+		auto& hm = _root->_bm.get_heuristically_good_moves();
 		bool heur_move = std::find(hm.begin(), hm.end(), move) != hm.end();
 
 		printf("Child %c %d->%d,%d UCT=%f, R/V=%f (reward: %f, visits: %f)\n", 
@@ -271,7 +288,7 @@ void BattleMCTSManager::print_move_list() {
 				node->uct(), node->_reward / node->_visits, node->_reward, node->_visits
 		);
 	}
-	printf("%i/%i/%i\n", root->_wins, root->_draws, root->_loses);
+	printf("%i/%i/%i\n", _root->_wins, _root->_draws, _root->_loses);
 }
 
 void BattleMCTSManager::add_error_playout(const BattleMCTSNode& node_arg, std::vector<Move> extra_moves) {
@@ -293,23 +310,17 @@ void BattleMCTSManager::add_error_playout(const BattleMCTSNode& node_arg, std::v
 		replay.push_back(i.as_libspear_tuple());
 	}
 
-	error_playouts.push_back(replay);
+	_error_playouts.push_back(replay);
 }
 
 godot::Array BattleMCTSManager::get_error_replays() {
-	return error_playouts;
+	return _error_playouts;
 }
 
 void BattleMCTSManager::set_root(BattleManagerFastCpp* bm) {
-	root = new BattleMCTSNode(*bm, *this, nullptr, Move());
-	army_id = bm->get_current_participant();
-	army_team = bm->get_army_team(army_id);
-}
-
-BattleMCTSManager::~BattleMCTSManager() {
-	if(root) {
-		delete root;
-	}
+	_root.emplace(*bm, *this, nullptr, Move());
+	_army_id = bm->get_current_participant();
+	_army_team = bm->get_army_team(_army_id);
 }
 
 void BattleMCTSManager::_bind_methods() {

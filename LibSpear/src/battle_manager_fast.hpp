@@ -236,19 +236,18 @@ public:
 	}
 
 private:
-	_FORCE_INLINE_ std::pair<Unit*, Army*> _get_unit(UnitID id) {
-		constexpr auto no_unit = std::make_pair(nullptr, nullptr);
+	_FORCE_INLINE_ std::optional<UnitRef> _get_unit(UnitID id) {
 		if(id == NO_UNIT) { // The only valid null value, any other hints at an error
-			return no_unit;
+			return {};
 		}
 
-		BM_ASSERT_V(unsigned(id.army) < _armies.size(), no_unit, "Invalid army id {}", id.army); 
-		BM_ASSERT_V(unsigned(id.unit) < _armies[id.army].units.size(), no_unit, "Invalid unit id {}/{}", id.army, id.unit);
+		BM_ASSERT_V(unsigned(id.army) < _armies.size(), {}, "Invalid army id {}", id.army); 
+		BM_ASSERT_V(unsigned(id.unit) < _armies[id.army].units.size(), {}, "Invalid unit id {}/{}", id.army, id.unit);
 
-		return std::make_pair(&_armies[id.army].units[id.unit], &_armies[id.army]);
+		return UnitRef{_armies[id.army].units[id.unit], _armies[id.army]};
 	}
 
-	_FORCE_INLINE_ std::pair<Unit*, Army*> _get_unit(Position coord) {
+	_FORCE_INLINE_ std::optional<UnitRef> _get_unit(Position coord) {
 		return _get_unit(_unit_cache.get(coord));
 	}
 };

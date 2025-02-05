@@ -45,6 +45,7 @@ struct UnitID {
 static const UnitID NO_UNIT = UnitID(-1,-1);
 static UnitID _err_return_dummy_uid = UnitID(-1,-1);
 
+
 struct Effect {
 	uint8_t mask = 0;
 	int8_t counter = 0;
@@ -171,6 +172,8 @@ public:
 };
 
 struct Army {
+	static const int16_t CYCLONE_UNINITIALIZED = -1000;
+
 	int8_t id = 0;
 	int8_t team = -1;
 
@@ -180,10 +183,6 @@ struct Army {
 	std::array<Unit, MAX_UNITS_IN_ARMY> units{};
 
 
-	static const int16_t CYCLONE_UNINITIALIZED = -1000;
-
-
-	Unit* get_unit(Position coord);
 	int find_unit_id_to_summon(int from = 0) const;
 	bool is_defeated() const;
 };
@@ -235,6 +234,11 @@ struct std::hash<Move> {
 		auto h3 = std::hash<unsigned>{}(move.pos.y);
 		return h1 ^ (h2 << 1) ^ (h3 << 2);
 	}
+};
+
+struct UnitRef {
+	Unit& unit;
+	Army& army;
 };
 
 
