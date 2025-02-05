@@ -29,7 +29,7 @@ class BattleMCTSNode {
 	BattleMCTSManager& _manager;
 	BattleMCTSNode* _parent = nullptr;
 	std::unordered_map<Move, std::shared_ptr<BattleMCTSNode>> _children{};
-	BattleManagerFastCpp _bm{};
+	BattleManagerFast _bm{};
 	Move _move{};
 
 	unsigned _mcts_iterations = 0;
@@ -42,7 +42,7 @@ class BattleMCTSNode {
 	friend class BattleMCTSManager;
 
 public:
-	BattleMCTSNode(BattleManagerFastCpp bm, BattleMCTSManager& manager, BattleMCTSNode* parent, Move _move);
+	BattleMCTSNode(BattleManagerFast bm, BattleMCTSManager& manager, BattleMCTSNode* parent, Move _move);
 	~BattleMCTSNode() = default;
 
 	float uct() const;
@@ -78,7 +78,7 @@ class BattleMCTSManager : public Node {
 	godot::Array _error_playouts;
 
 
-	friend BattleResult _simulate_thread(BattleManagerFastCpp bmnew, BattleMCTSManager& mcts, const BattleMCTSNode& node);
+	friend BattleResult _simulate_thread(BattleManagerFast bmnew, BattleMCTSManager& mcts, const BattleMCTSNode& node);
 	friend class BattleMCTSNode;
 	
 protected:

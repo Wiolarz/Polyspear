@@ -7,7 +7,7 @@
 #include <csignal>
 
 
-void BattleManagerFastCpp::finish_initialization() {
+void BattleManagerFast::finish_initialization() {
 	BM_ASSERT(_state == BattleState::INITIALIZING, "BMFast already initialized");
 	BM_ASSERT(_big_cyclone_counter_value != -1, "Uninitialized big cyclone counter");
 	BM_ASSERT(_small_cyclone_counter_value != -1, "Uninitialized small cyclone counter");
@@ -37,19 +37,19 @@ void BattleManagerFastCpp::finish_initialization() {
 	_update_mana_target();
 }
 
-int BattleManagerFastCpp::play_move_gd(godot::Array libspear_tuple) {
-	play_move(Move(libspear_tuple));
-	return _result.winner_team;
+int BattleManagerFastCpp::play_move(godot::Array libspear_tuple) {
+	bm.play_move(Move(libspear_tuple));
+	return bm._result.winner_team;
 }
 
 int BattleManagerFastCpp::play_moves(godot::Array libspear_tuples) {
 	for(int i = 0; i < libspear_tuples.size(); i++) {
-		play_move_gd(libspear_tuples[i]);
+		play_move(libspear_tuples[i]);
 	}
-	return _result.winner_team;
+	return bm._result.winner_team;
 }
 
-void BattleManagerFastCpp::play_move(Move move) {
+void BattleManagerFast::play_move(Move move) {
 	_moves_dirty = true;
 	_heuristic_moves_dirty = true;
 
@@ -150,7 +150,7 @@ void BattleManagerFastCpp::play_move(Move move) {
 }
 
 
-void BattleManagerFastCpp::_process_unit(UnitID unit_id, MovePhase phase) {
+void BattleManagerFast::_process_unit(UnitID unit_id, MovePhase phase) {
 	auto [unit, army] = _get_unit(unit_id).value();
 
 	// Passive phase
@@ -216,7 +216,7 @@ void BattleManagerFastCpp::_process_unit(UnitID unit_id, MovePhase phase) {
 	_process_bow(unit_id, phase);
 }
 
-void BattleManagerFastCpp::_process_push(UnitID pushed, UnitID pusher, Position direction, uint8_t max_power) {
+void BattleManagerFast::_process_push(UnitID pushed, UnitID pusher, Position direction, uint8_t max_power) {
 	auto pushed_opt = _get_unit(pushed);
 	BM_ASSERT(pushed_opt.has_value(), "Invalid pushed unit id {}", pushed.unit);
 	auto [pushed_unit, pushed_army] = pushed_opt.value();
@@ -247,7 +247,7 @@ void BattleManagerFastCpp::_process_push(UnitID pushed, UnitID pusher, Position 
 	_process_unit(pushed, MovePhase::PASSIVE);
 }
 
-void BattleManagerFastCpp::_process_bow(UnitID unit_id, MovePhase phase) {
+void BattleManagerFast::_process_bow(UnitID unit_id, MovePhase phase) {
 	auto [unit, army] = _get_unit(unit_id).value();
 
 	for(int i = 0; i < 6; i++) {
@@ -287,7 +287,7 @@ void BattleManagerFastCpp::_process_bow(UnitID unit_id, MovePhase phase) {
 	}
 }
 
-void BattleManagerFastCpp::_process_spell(UnitID uid, int8_t spell_id, Position target) {
+void BattleManagerFast::_process_spell(UnitID uid, int8_t spell_id, Position target) {
 	auto& spell = _spells[spell_id];
 	auto uid2 = _unit_cache.get(target);
 	auto caster_team = get_army_team(uid.army);
@@ -364,7 +364,7 @@ void BattleManagerFastCpp::_process_spell(UnitID uid, int8_t spell_id, Position 
 	spell.unit = NO_UNIT;
 }
 
-void BattleManagerFastCpp::_update_turn_end() {
+void BattleManagerFast::_update_turn_end() {
 	if(get_winner_team() >= 0) {
 		return;
 	}
@@ -381,7 +381,7 @@ void BattleManagerFastCpp::_update_turn_end() {
 	}
 }
 
-void BattleManagerFastCpp::_update_move_end() {
+void BattleManagerFast::_update_move_end() {
 	if(get_winner_team() >= 0) {
 		return;
 	}
@@ -403,12 +403,12 @@ void BattleManagerFastCpp::_update_move_end() {
 	}
 }
 
-void BattleManagerFastCpp::_update_mana_target() {
+void BattleManagerFast::_update_mana_target() {
 	auto [worst_idx, _] = _get_cyclone_worst_and_best_idx();
 	_cyclone_target = worst_idx;
 }
 
-void BattleManagerFastCpp::_update_mana() {
+void BattleManagerFast::_update_mana() {
 	auto [worst_idx, best_idx] = _get_cyclone_worst_and_best_idx();
 	_cyclone_target = worst_idx;
 
@@ -427,7 +427,7 @@ void BattleManagerFastCpp::_update_mana() {
 	}
 }
 
-std::pair<size_t, size_t> BattleManagerFastCpp::_get_cyclone_worst_and_best_idx() const {
+std::pair<size_t, size_t> BattleManagerFast::_get_cyclone_worst_and_best_idx() const {
 	int best_idx = -1, worst_idx = -1;
 
 	for(unsigned i = 0; i < _armies.size(); i++) {
@@ -460,7 +460,7 @@ std::pair<size_t, size_t> BattleManagerFastCpp::_get_cyclone_worst_and_best_idx(
 	return std::make_pair(worst_idx, best_idx);
 }
 
-int BattleManagerFastCpp::get_winner_team() {
+int BattleManagerFast::get_winner_team() {
 
 	if(_state == BattleState::SUMMONING) {
 		return -1;
@@ -496,7 +496,7 @@ int BattleManagerFastCpp::get_winner_team() {
 }
 
 
-const std::vector<Move>& BattleManagerFastCpp::get_legal_moves() {
+const std::vector<Move>& BattleManagerFast::get_legal_moves() {
 	if(_moves_dirty) {
 		_refresh_legal_moves();
 		_moves_dirty = false;
@@ -504,7 +504,7 @@ const std::vector<Move>& BattleManagerFastCpp::get_legal_moves() {
 	return _moves;
 }
 
-const std::vector<Move>& BattleManagerFastCpp::get_heuristically_good_moves() {
+const std::vector<Move>& BattleManagerFast::get_heuristically_good_moves() {
 	if(_heuristic_moves_dirty) {
 		_refresh_heuristically_good_moves();
 		_heuristic_moves_dirty = false;
@@ -515,14 +515,14 @@ const std::vector<Move>& BattleManagerFastCpp::get_heuristically_good_moves() {
 	return _heuristic_moves;
 }
 
-void BattleManagerFastCpp::_next_army() {
+void BattleManagerFast::_next_army() {
 	int limit = _current_army;
 	do {
 		_current_army = (_current_army+1) % _armies.size();
 	} while(_armies[_current_army].is_defeated() && _current_army != limit);
 }
 
-void BattleManagerFastCpp::_refresh_legal_moves() {
+void BattleManagerFast::_refresh_legal_moves() {
 	_moves.clear();
 	_moves.reserve(64);
 
@@ -611,7 +611,7 @@ void BattleManagerFastCpp::_refresh_legal_moves() {
 	// else battle finished, no moves possible
 }
 
-void BattleManagerFastCpp::_spells_append_moves() {
+void BattleManagerFast::_spells_append_moves() {
 	for(unsigned i = 0; i < _spells.size(); i++) {
 		auto& spell = _spells[i];
 		if(spell.unit.army != _current_army || !_get_unit(spell.unit).has_value()) {
@@ -646,7 +646,7 @@ void BattleManagerFastCpp::_spells_append_moves() {
 	}
 }
 
-void BattleManagerFastCpp::_refresh_heuristically_good_moves() {
+void BattleManagerFast::_refresh_heuristically_good_moves() {
 	_heuristic_moves.clear();
 	_heuristic_moves.reserve(64);
 
@@ -690,7 +690,7 @@ void BattleManagerFastCpp::_refresh_heuristically_good_moves() {
 	}
 }
 
-void BattleManagerFastCpp::_refresh_heuristically_good_summon_moves() {
+void BattleManagerFast::_refresh_heuristically_good_summon_moves() {
 	auto& army = _armies[_current_army];
 
 	bool enemy_has_unsummoned_bowman = false;
@@ -750,7 +750,7 @@ void BattleManagerFastCpp::_refresh_heuristically_good_summon_moves() {
 }
 
 
-std::pair<Move, bool> BattleManagerFastCpp::get_random_move(float heuristic_probability) {
+std::pair<Move, bool> BattleManagerFast::get_random_move(float heuristic_probability) {
 	static thread_local std::random_device rand_dev;
 	static thread_local std::minstd_rand rand_engine{rand_dev()};
 	static thread_local std::uniform_real_distribution heur_dist(0.0f, 1.0f);
@@ -766,12 +766,12 @@ std::pair<Move, bool> BattleManagerFastCpp::get_random_move(float heuristic_prob
 	return std::make_pair(moves_arr[move], heur_chosen);
 }
 
-unsigned BattleManagerFastCpp::get_move_count() {
+unsigned BattleManagerFast::get_move_count() {
 	return get_legal_moves().size();
 }
 
 godot::Array BattleManagerFastCpp::get_legal_moves_gd() {
-	auto& moves_arr = get_legal_moves();
+	auto& moves_arr = bm.get_legal_moves();
 	godot::Array arr{};
 	
 	for(auto& i: moves_arr) {
@@ -781,7 +781,7 @@ godot::Array BattleManagerFastCpp::get_legal_moves_gd() {
 	return arr;
 }
 
-void BattleManagerFastCpp::_append_moves_unit(UnitID uid, int8_t spell_id, TeamRelation relation, bool include_self) {
+void BattleManagerFast::_append_moves_unit(UnitID uid, int8_t spell_id, TeamRelation relation, bool include_self) {
 	auto [_, army] = _get_unit(uid).value();
 	for(auto& other_army : _armies) {
 		if(skip_army(army, other_army, relation)) {
@@ -799,7 +799,7 @@ void BattleManagerFastCpp::_append_moves_unit(UnitID uid, int8_t spell_id, TeamR
 	}
 }
 
-void BattleManagerFastCpp::_append_moves_all_tiles(UnitID uid, int8_t spell_id, bool include_impassable) {
+void BattleManagerFast::_append_moves_all_tiles(UnitID uid, int8_t spell_id, bool include_impassable) {
 	auto dims = _tiles->get_dims();
 	for(int y = 0; y < dims.y; y++) {
 		for(int x = 0; x < dims.x; x++) {
@@ -811,7 +811,7 @@ void BattleManagerFastCpp::_append_moves_all_tiles(UnitID uid, int8_t spell_id, 
 	}
 }
 
-void BattleManagerFastCpp::_append_moves_lines(UnitID uid, int8_t spell_id, Position center, int range_min, int range_max) {
+void BattleManagerFast::_append_moves_lines(UnitID uid, int8_t spell_id, Position center, int range_min, int range_max) {
 	int range_min_real = (range_min >= 1) ? range_min : 1;
 	if(range_min == 0 && _tiles->get_tile(center).is_passable()) {
 		_moves.emplace_back(uid.unit, center, spell_id);
@@ -822,7 +822,7 @@ void BattleManagerFastCpp::_append_moves_lines(UnitID uid, int8_t spell_id, Posi
 	}
 }
 
-void BattleManagerFastCpp::_append_moves_line(UnitID uid, int8_t spell_id, Position center, uint8_t dir, int range_min, int range_max) {
+void BattleManagerFast::_append_moves_line(UnitID uid, int8_t spell_id, Position center, uint8_t dir, int range_min, int range_max) {
 	for(int r = range_min; r <= range_max; r++) {
 		Position pos = center + DIRECTIONS[dir] * r;
 		
@@ -832,7 +832,7 @@ void BattleManagerFastCpp::_append_moves_line(UnitID uid, int8_t spell_id, Posit
 	}
 }
 
-bool BattleManagerFastCpp::is_occupied(Position pos, const Army& army, TeamRelation relation) const {
+bool BattleManagerFast::is_occupied(Position pos, const Army& army, TeamRelation relation) const {
 	for(auto& other_army : _armies) {
 		if(skip_army(army, other_army, relation)) {
 			continue;
@@ -847,7 +847,7 @@ bool BattleManagerFastCpp::is_occupied(Position pos, const Army& army, TeamRelat
 	return false;
 }
 
-void BattleManagerFastCpp::_move_unit(UnitID id, Position pos) {
+void BattleManagerFast::_move_unit(UnitID id, Position pos) {
 	auto unit_opt = _get_unit(id);
 	BM_ASSERT(unit_opt.has_value(), "Trying to move a dead unit");
 	auto [unit, army] = unit_opt.value();
@@ -868,7 +868,7 @@ void BattleManagerFastCpp::_move_unit(UnitID id, Position pos) {
 	}
 }
 
-void BattleManagerFastCpp::_kill_unit(UnitID id, UnitID killer_id) {
+void BattleManagerFast::_kill_unit(UnitID id, UnitID killer_id) {
 	auto unit_opt = _get_unit(id);
 	BM_ASSERT(unit_opt.has_value(), "Trying to move a dead unit");
 	auto [unit, army] = unit_opt.value();
@@ -924,11 +924,11 @@ void BattleManagerFastCpp::_kill_unit(UnitID id, UnitID killer_id) {
 void BattleManagerFastCpp::insert_unit(int army, int idx, Vector2i pos, int rotation, bool is_summoning) {
 	CHECK_UNIT(idx,);
 	CHECK_ARMY(army,);
-	_armies[army].units[idx].pos = pos;
-	_armies[army].units[idx].rotation = rotation;
-	_armies[army].units[idx].status = is_summoning ? UnitStatus::SUMMONING : UnitStatus::ALIVE;
-	if(_tiles->get_tile(pos).is_swamp()) {
-		_armies[army].units[idx].flags |= Unit::FLAG_ON_SWAMP;
+	bm._armies[army].units[idx].pos = pos;
+	bm._armies[army].units[idx].rotation = rotation;
+	bm._armies[army].units[idx].status = is_summoning ? UnitStatus::SUMMONING : UnitStatus::ALIVE;
+	if(bm._tiles->get_tile(pos).is_swamp()) {
+		bm._armies[army].units[idx].flags |= Unit::FLAG_ON_SWAMP;
 	}
 }
 
@@ -944,31 +944,31 @@ void BattleManagerFastCpp::set_unit_symbol(
 				  | (breaks_parry ? Symbol::FLAG_PARRY_BREAK : 0) 
 				  | (is_counter   ? Symbol::FLAG_COUNTER_ATTACK : 0);
 
-	_armies[army].units[unit].sides[side] = Symbol(attack_strength, defense_strength, push_force, ranged_reach, flags);
+	bm._armies[army].units[unit].sides[side] = Symbol(attack_strength, defense_strength, push_force, ranged_reach, flags);
 }
 
 void BattleManagerFastCpp::set_army_team(int army, int team) {
 	CHECK_ARMY(army,);
-	_armies[army].team = team;
+	bm._armies[army].team = team;
 }
 
 void BattleManagerFastCpp::set_army_cyclone_timer(int army, int timer) {
 	CHECK_ARMY(army,);
-	_armies[army].cyclone_timer = timer;
+	bm._armies[army].cyclone_timer = timer;
 }
 
 void BattleManagerFastCpp::set_unit_score(int army, int unit, int score) {
 	CHECK_UNIT(unit,);
 	CHECK_ARMY(army,);
 
-	_armies[army].units[unit].score = score;
+	bm._armies[army].units[unit].score = score;
 }
 
 void BattleManagerFastCpp::set_unit_mana(int army, int unit, int mana) {
 	CHECK_UNIT(unit,);
 	CHECK_ARMY(army,);
 
-	_armies[army].units[unit].mana = mana;
+	bm._armies[army].units[unit].mana = mana;
 }
 
 void BattleManagerFastCpp::set_unit_effect(int army, int idx, godot::String effect, int duration) {
@@ -977,41 +977,41 @@ void BattleManagerFastCpp::set_unit_effect(int army, int idx, godot::String effe
 
 	BM_ASSERT(effect != godot::String("Martyr"), "Martyr should be set with set_unit_martyr");
 	
-	_armies[army].units[idx].set_effect_gd(effect, duration);
+	bm._armies[army].units[idx].set_effect_gd(effect, duration);
 }
 
 void BattleManagerFastCpp::set_unit_martyr(int army, int idx, int martyr_idx, int duration) {
 	CHECK_UNIT(idx,);
 	CHECK_ARMY(army,);
 	
-	_armies[army].units[idx].try_apply_martyr(UnitID(army, martyr_idx), duration);
-	_armies[army].units[martyr_idx].try_apply_martyr(UnitID(army, idx), duration);
+	bm._armies[army].units[idx].try_apply_martyr(UnitID(army, martyr_idx), duration);
+	bm._armies[army].units[martyr_idx].try_apply_martyr(UnitID(army, idx), duration);
 }
 
 void BattleManagerFastCpp::set_current_participant(int army) {
 	CHECK_ARMY(army,);
-	_current_army = army;
+	bm._current_army = army;
 }
 
 void BattleManagerFastCpp::set_tile_grid(TileGridFastCpp* tg) {
-	_tiles = tg;
-	_unit_cache = CacheGrid(*tg);
+	bm._tiles = tg;
+	bm._unit_cache = CacheGrid(*tg);
 }
 
 void BattleManagerFastCpp::force_battle_ongoing() {
-	BM_ASSERT(_state != BattleState::INITIALIZING, "Must finish_initialization() before calling force_battle_ongoing()");
-	_state = BattleState::ONGOING;
+	BM_ASSERT(bm._state != BattleState::INITIALIZING, "Must finish_initialization() before calling force_battle_ongoing()");
+	bm._state = BattleState::ONGOING;
 }
 
 void BattleManagerFastCpp::force_battle_sacrifice() {
-	BM_ASSERT(_state != BattleState::INITIALIZING, "Must finish_initialization() before calling force_battle_sacrifice()");
-	_state = BattleState::SACRIFICE;
+	BM_ASSERT(bm._state != BattleState::INITIALIZING, "Must finish_initialization() before calling force_battle_sacrifice()");
+	bm._state = BattleState::SACRIFICE;
 }
 
 
 godot::Array BattleManagerFastCpp::get_unit_id_on_position(Vector2i pos) const {
 	godot::Array ret{};
-	auto [army_id, unit_id] = _unit_cache.get(pos);
+	auto [army_id, unit_id] = bm._unit_cache.get(pos);
 	ret.push_back(army_id);
 	ret.push_back(unit_id);
 	return ret;
@@ -1022,7 +1022,7 @@ int BattleManagerFastCpp::count_spell(int army, int idx, godot::String name) {
 	CHECK_UNIT(idx, 0);
 
 	int i = 0;
-	for(auto& spell : _spells) {
+	for(auto& spell : bm._spells) {
 		if(spell.state == BattleSpell(name, NO_UNIT).state && spell.unit == UnitID(army, idx)) {
 			i++;
 		}
@@ -1035,7 +1035,7 @@ int BattleManagerFastCpp::get_unit_spell_count(int army, int idx) {
 	CHECK_UNIT(idx, 0);
 
 	int i = 0;
-	for(auto& spell : _spells) {
+	for(auto& spell : bm._spells) {
 		if(spell.state != BattleSpell::State::NONE 
 		   && spell.state != BattleSpell::State::SENTINEL
 		   && spell.unit == UnitID(army, idx)
@@ -1051,7 +1051,7 @@ inline int BattleManagerFastCpp::get_unit_effect_count(int army, int idx) {
 	CHECK_UNIT(idx, 0);
 
 	int i = 0;
-	auto& unit = _armies[army].units[idx];
+	auto& unit = bm._armies[army].units[idx];
 	for(auto& eff : unit.effects) {
 		if(eff.mask != 0) {
 			i++;
@@ -1066,13 +1066,13 @@ void BattleManagerFastCpp::insert_spell(int army, int unit, int spell_id, godot:
 	CHECK_ARMY(army,);
 	BM_ASSERT(unsigned(spell_id) < MAX_SPELLS, "Invalid spell id when inserting spell");
 
-	_spells[spell_id] = BattleSpell(str, UnitID(army, unit));
+	bm._spells[spell_id] = BattleSpell(str, UnitID(army, unit));
 }
 
 void BattleManagerFastCpp::set_cyclone_constants(int big, int small, int threshold) {
-	_big_cyclone_counter_value = big;
-	_small_cyclone_counter_value = small;
-	_cyclone_mana_threshold = threshold;
+	bm._big_cyclone_counter_value = big;
+	bm._small_cyclone_counter_value = small;
+	bm._cyclone_mana_threshold = threshold;
 }
 
 void BattleManagerFastCpp::_bind_methods() {
@@ -1095,7 +1095,7 @@ void BattleManagerFastCpp::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("force_battle_ongoing"), &BattleManagerFastCpp::force_battle_ongoing);
 	ClassDB::bind_method(D_METHOD("force_battle_sacrifice"), &BattleManagerFastCpp::force_battle_sacrifice);
 	ClassDB::bind_method(D_METHOD("finish_initialization"), &BattleManagerFastCpp::finish_initialization);
-	ClassDB::bind_method(D_METHOD("play_move", "libspear_tuple"), &BattleManagerFastCpp::play_move_gd);
+	ClassDB::bind_method(D_METHOD("play_move", "libspear_tuple"), &BattleManagerFastCpp::play_move);
 	ClassDB::bind_method(D_METHOD("play_moves", "libspear_tuples"), &BattleManagerFastCpp::play_moves);
 
 	ClassDB::bind_method(D_METHOD("get_unit_position", "army", "unit"), &BattleManagerFastCpp::get_unit_position);

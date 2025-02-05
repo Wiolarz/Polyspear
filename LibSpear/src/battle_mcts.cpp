@@ -13,7 +13,7 @@
 
 BS::thread_pool mcts_workers;
 
-BattleMCTSNode::BattleMCTSNode(BattleManagerFastCpp bm, BattleMCTSManager& manager, BattleMCTSNode* parent, Move move) 
+BattleMCTSNode::BattleMCTSNode(BattleManagerFast bm, BattleMCTSManager& manager, BattleMCTSNode* parent, Move move) 
 	: _manager(manager),
 	  _parent(parent),
 	  _bm(bm),
@@ -82,7 +82,7 @@ BattleMCTSNode& BattleMCTSNode::expand() {
 	return *this;
 }
 
-BattleResult _simulate_thread(BattleManagerFastCpp bmnew, BattleMCTSManager& mcts, const BattleMCTSNode& node) {
+BattleResult _simulate_thread(BattleManagerFast bmnew, BattleMCTSManager& mcts, const BattleMCTSNode& node) {
 	BattleResult* result;
 	Move move;
 	int i = 0;
@@ -317,10 +317,13 @@ godot::Array BattleMCTSManager::get_error_replays() {
 	return _error_playouts;
 }
 
-void BattleMCTSManager::set_root(BattleManagerFastCpp* bm) {
-	_root.emplace(*bm, *this, nullptr, Move());
-	_army_id = bm->get_current_participant();
-	_army_team = bm->get_army_team(_army_id);
+void BattleMCTSManager::set_root(BattleManagerFastCpp* bmwrapper) {
+	ERR_FAIL_COND_MSG(bmwrapper == nullptr, "Provided BattleManagerFastCpp is null");
+	auto bm = bmwrapper->get_bm_copy();
+
+	_root.emplace(bm, *this, nullptr, Move());
+	_army_id = bm.get_current_participant();
+	_army_team = bm.get_army_team(_army_id);
 }
 
 void BattleMCTSManager::_bind_methods() {

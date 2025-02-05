@@ -16,7 +16,7 @@ const unsigned MAX_UNITS_IN_ARMY = 12;
 const unsigned MAX_EFFECTS_PER_UNIT = 2;
 const unsigned DEFAULT_EFFECT_DURATION = 6;
 
-class BattleManagerFastCpp;
+class BattleManagerFast;
 class BattleMCTSManager;
 
 using Score = int16_t;
