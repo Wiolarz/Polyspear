@@ -129,6 +129,7 @@ void BattleManagerFastCpp::play_move(Move move) {
 	else if(_state == BattleState::SACRIFICE) {
 		BM_ASSERT(unit.status == UnitStatus::ALIVE, "Invalid sacrifice id {}", move.unit);
 		_kill_unit(uid, NO_UNIT);
+		_update_mana(); // also called in _kill_unit, but here to prevent an edge case when killed unit has 0 mana
 		_current_army = MAX_ARMIES-1;
 		_next_army();
 		_state = get_winner_team() < 0 ? BattleState::ONGOING : BattleState::FINISHED;
