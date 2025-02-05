@@ -13,7 +13,7 @@ func _ready():
 
 func _process(_delta):
 	if WM.world_state:
-		good_label.text = WM.world_state.get_current_player().goods.to_string()
+		good_label.text = WM.world_state.get_current_player()._goods.to_string() # TEMP
 
 
 func game_started():

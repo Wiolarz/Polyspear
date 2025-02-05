@@ -22,6 +22,8 @@ var dead_heroes: Array[Hero] = []
 var faction : DataRace
 
 
+#region Goods + City Economy
+
 ## Used during starting new game and loading a save
 func set_goods(new_goods_value : Goods) -> void:
 	_goods = new_goods_value
@@ -40,6 +42,14 @@ func try_to_pay(cost : Goods) -> bool:
 	print("not enough money")
 	return false
 
+
+func has_this_outpost_type(outpost_type : String) -> bool:
+	for outpost in outposts:
+		if outpost.outpost_type == outpost_type:
+			return true
+	return false
+
+#endregion Goods + City Economy
 
 #region Heroes
 

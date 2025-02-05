@@ -39,22 +39,24 @@ func get_heroes_to_buy(world_state : WorldState) -> Array[DataHero]:
 
 
 func get_cost_description(world_state : WorldState, hero: DataHero) -> String:
-	if world_state.has_player_a_hero(controller_index, hero):
+	var controller_state : WorldPlayerState = world_state.player_states[controller_index]
+	if controller_state.has_hero(hero):
 		return "✔"
-	var cost = world_state.get_hero_cost_for_player(controller_index, hero)
-	var resurrect : bool = world_state.has_player_a_dead_hero(controller_index, hero)
+	var cost = controller_state.get_hero_cost(hero)
+	var resurrect : bool = controller_state.has_dead_hero(hero)
 	if resurrect:
 		return "Resurrect\n%s" % cost
 	return "%s" % cost
 
 
-func can_buy_hero(hero: DataHero, world_state : WorldState) -> bool:
-	if world_state.has_player_a_hero(controller_index, hero):
+func can_buy_hero(hero : DataHero, world_state : WorldState) -> bool:
+	var controller_state : WorldPlayerState = world_state.player_states[controller_index]
+	if controller_state.has_hero(hero):
 		return false
 	if world_state.get_army_at(coord):
 		return false
-	var cost = world_state.get_hero_cost_for_player(controller_index, hero)
-	return world_state.has_player_enough(controller_index, cost)
+	var cost : Goods = controller_state.get_hero_cost(hero)
+	return controller_state.has_enough(cost)
 
 #endregion
 
@@ -114,14 +116,15 @@ func has_built(world_state : WorldState, building : DataBuilding) -> bool:
 
 
 func can_build(world_state : WorldState, building : DataBuilding)-> bool:
+	var player_state = world_state.player_states[controller_index]
+
 	if has_built(world_state, building):
 		return false
-	if not world_state.has_player_enough(controller_index, building.cost):
+	if not player_state.has_enough(building.cost):
 		return false
 
 	if building.is_outpost_building() and \
-			not world_state.has_player_any_outpost( \
-				controller_index, building.outpost_requirement):
+			not player_state.has_this_outpost_type(building.outpost_requirement):
 		return false
 
 	return building.requirements \

@@ -28,12 +28,11 @@ func _init(width_ : int, height_ : int):
 	grid = GenericHexGrid.new(width_, height_, WorldHex.new())
 
 
-## 
+## Factory capable of us
 static func create(map : DataWorldMap,
 		slots : Array[Slot],
 		saved_state : SerializableWorldState = null) -> WorldState:
 	var result = WorldState.new(map.grid_width, map.grid_height)
-
 
 	# load players and their not related-to-grid state
 	result.player_states.resize(slots.size())
@@ -47,7 +46,7 @@ static func create(map : DataWorldMap,
 			continue
 		
 		# Loading save from State
-		player.goods = Goods.from_array(saved_state.players[i].goods)
+		player.set_goods(Goods.from_array(saved_state.players[i].goods))
 		for dead_hero_ser in saved_state.players[i].dead_heroes:
 			player.dead_heroes.append(Hero.from_network_serializable(
 				dead_hero_ser, i))
@@ -108,10 +107,8 @@ static func create(map : DataWorldMap,
 
 	result.synchronize_players_with_their_places()
 
-	if not saved_state:
-		result.current_player_index = 0
-	else:
-		result.current_player_index = saved_state["current_player"]
+	if saved_state:
+		result.current_player_index = saved_state.current_player
 
 	return result
 
@@ -136,10 +133,10 @@ func synchronize_players_with_their_places() -> void:
 				if player:
 					player.outposts.append(outpost)
 
+#endregion init
 
 
-#endregion
-
+#region Public Helpers
 
 func get_current_player() -> WorldPlayerState:
 	if current_player_index in range(player_states.size()):
@@ -190,40 +187,17 @@ func check_move_allowed(world_move_info : WorldMoveInfo) -> String:
 	return "unrecognised move"
 
 
-func do_move(world_move_info : WorldMoveInfo) -> bool:
-	var problem := check_move_allowed(world_move_info)
-	if problem != "":
-		push_error(problem)
-		return false
-	match world_move_info.move_type:
-		WorldMoveInfo.TYPE_TRAVEL:
-			var source : Vector2i = world_move_info.move_source
-			var target : Vector2i = world_move_info.target_tile_coord
-			return do_army_travel(source, target)
-		WorldMoveInfo.TYPE_RECRUIT_HERO:
-			var player_index : int = world_move_info.recruit_hero_info.player_index
-			var data_hero : DataHero = world_move_info.recruit_hero_info.data_hero
-			var coord : Vector2i = world_move_info.target_tile_coord
-			return do_recruit_hero(player_index, data_hero, coord)
-		WorldMoveInfo.TYPE_RECRUIT_UNIT:
-			var army_coord : Vector2i = world_move_info.target_tile_coord
-			var city_coord : Vector2i = world_move_info.move_source
-			var unit : DataUnit = world_move_info.data
-			return do_recruit_unit(unit, city_coord, army_coord)
-		WorldMoveInfo.TYPE_START_TRADE:
-			var source : Vector2i = world_move_info.move_source
-			var target : Vector2i = world_move_info.target_coord
-			return do_start_trade(source, target)
-		WorldMoveInfo.TYPE_BUILD:
-			var city_coord : Vector2i = world_move_info.target_tile_coord
-			var building : DataBuilding = world_move_info.data
-			return do_build_building(city_coord, building)
-		WorldMoveInfo.TYPE_END_TURN:
-			do_end_turn()
-			return true
-		_:
-			assert(false, "unsported WorldMoveInfo Type")
-			return false
+func check_build_building(city_coord : Vector2i, building : DataBuilding) \
+		-> String:
+	var city : City = get_city_at(city_coord)
+	if not city:
+		return "cannot build buildings without city"
+	if city.controller_index != current_player_index:
+		return "cannot build in other's player city"
+	if not city.can_build(self, building):
+		# TODO move this check here probably and divide this error message
+		return "this city is not able to build this"
+	return ""
 
 
 func check_start_trade(source : Vector2i, target : Vector2i) -> String:
@@ -240,22 +214,11 @@ func check_start_trade(source : Vector2i, target : Vector2i) -> String:
 	return ""
 
 
-func check_build_building(city_coord : Vector2i, building : DataBuilding) \
-		-> String:
-	var city : City = get_city_at(city_coord)
-	if not city:
-		return "cannot build buildings without city"
-	if city.controller_index != current_player_index:
-		return "cannot build in other's player city"
-	if not city.can_build(self, building):
-		# TODO move this check here probably and divide this error message
-		return "this city is not able to build this"
-	return ""
-
-
 func check_recruit_unit(data_unit : DataUnit, city_coord : Vector2i,
 		army_coord : Vector2i) -> String:
 	var army : Army = get_army_at(army_coord)
+	var army_controller_state = player_states[army.controller_index]
+
 	if not army:
 		return "no army at coord"
 	if army.controller_index != current_player_index:
@@ -275,7 +238,7 @@ func check_recruit_unit(data_unit : DataUnit, city_coord : Vector2i,
 		return "cannot recruit such unit in this city"
 	if not city.unit_has_required_building(self, data_unit):
 		return "not all required buildings are build in this city"
-	if not has_player_enough(army.controller_index, data_unit.cost):
+	if not army_controller_state.has_enough(data_unit.cost):
 		return "not enough resources for this unit, need %s" % data_unit.cost
 	return ""
 
@@ -284,6 +247,7 @@ func check_recruit_hero(player_index : int, data_hero : DataHero,
 		coord : Vector2i) -> String:
 	if get_army_at(coord):
 		return "cannot recruit hero where some army already is"
+	var player_state : WorldPlayerState = player_states[player_index]
 	var city : City = get_city_at(coord)
 	if not city:
 		return "must recruit hero in a city"
@@ -291,103 +255,15 @@ func check_recruit_hero(player_index : int, data_hero : DataHero,
 		return "this player has not turn now"
 	if player_index != city.controller_index:
 		return "player does not own the city where tries to recruit"
-	if has_player_a_hero(player_index, data_hero):
+	if player_state.has_hero(data_hero):
 		return "hero is already recruited"
 	var player = get_player_by_index(player_index)
 	if not data_hero in player.faction.heroes:
 		return "player's faction does not fit for this hero"
-	var cost = get_hero_cost_for_player(player_index, data_hero)
-	if not has_player_enough(player_index, cost):
+	var cost = player_state.get_hero_cost(data_hero)
+	if not player_state.has_enough(cost):
 		return "not enough cash, needed %s" % cost
 	return ""
-
-
-## this function spawns an army from preset on given coord
-func spawn_army_from_preset(army_preset : PresetArmy, coord : Vector2i, \
-		player_index : int) -> void:
-	if get_army_at(coord):
-		push_error("tried to spawn army at occupied tile")
-		# TODO make option for neutral army to spawn and attack player
-	print("spawn army at %s" % coord)
-	var army = Army.create_from_preset(army_preset)
-	army.coord = coord
-	army.controller_index = player_index
-	# TODO add this army to player armies array
-	grid.get_hex(coord).army = army
-	army_created.emit(army)
-
-
-func get_hero_cost_for_player(player_index : int, hero_data : DataHero) \
-		-> Goods:
-	var player = get_player_by_index(player_index)
-	if not player:
-		return Goods.new(0, 0, 0)
-	if player.has_dead_hero(hero_data):
-		return player.get_hero_cost(hero_data)
-	return hero_data.cost
-
-
-## returns true only of move was legal and recruitment took place
-func do_recruit_unit(data_unit : DataUnit, city_coord : Vector2i,
-		army_coord : Vector2i) -> bool:
-	var problem := check_recruit_unit(data_unit, city_coord, army_coord)
-	if problem != "":
-		push_error(problem)
-		return false
-	var army : Army = get_army_at(army_coord)
-	var purchased : bool = player_spend(army.controller_index, data_unit.cost)
-	assert(purchased)
-	army.units_data.append(data_unit)
-	return true
-
-
-## returns army reference if success/legal, null otherwise
-func do_recruit_hero(player_index : int, data_hero : DataHero,
-		coord : Vector2i) -> bool:
-	var problem := check_recruit_hero(player_index, data_hero, coord)
-	if problem != "":
-		push_error(problem)
-		return false
-	var city : City = get_city_at(coord)
-	var player = get_player_by_index(player_index)
-
-	var cost = get_hero_cost_for_player(player_index, data_hero)
-	var purchased = player_purchase(player_index, cost)
-	assert(purchased)
-
-	var army : Army = Army.new() # TODO maybe make some function
-
-	# TODO check this hero can be recruited here by game rules
-
-	var hero : Hero # = Hero.create_hero(hero_data, city.controller)
-	# now we need to check if this hero was already recruited, but died
-	for dead_hero in player.dead_heroes:
-		if dead_hero.template == data_hero:
-			dead_hero.revive()
-			dead_hero.controller_index = player_index
-			hero = dead_hero
-	if not hero: # means no hero is revived
-		hero = Hero.construct_hero(data_hero, player_index)
-
-	army.hero = hero
-	army.controller_index = city.controller_index
-	army.coord = coord
-
-	grid.get_hex(coord).army = army
-	player.hero_armies.append(army)
-
-	army_created.emit(army)
-
-	return true
-
-
-func do_start_trade(source : Vector2i, target : Vector2i) -> bool:
-	var problem := check_start_trade(source, target)
-	if problem != "":
-		push_error(problem)
-		return false
-	return true
-
 
 
 func get_hero_to_buy_in_city(city : City, hero_index : int) -> DataHero:
@@ -397,59 +273,6 @@ func get_hero_to_buy_in_city(city : City, hero_index : int) -> DataHero:
 	if hero_index in range(array.size()):
 		return array[hero_index]
 	return null
-
-
-func do_build_building(coord : Vector2i, building : DataBuilding) -> bool:
-	var problem := check_build_building(coord, building)
-	if problem != "":
-		push_error(problem)
-		return false
-	var city := get_city_at(coord)
-	return city.build_building(self, building)
-
-
-func has_player_a_hero(player_index : int, hero : DataHero) -> bool:
-	var player = get_player_by_index(player_index)
-	if not player:
-		return false
-	for hero_army in player.hero_armies:
-		if hero_army.hero.template == hero:
-			return true
-	return false
-
-
-
-
-
-func has_player_enough(player_index : int, goods : Goods) -> bool:
-	var player = get_player_by_index(player_index)
-	return player and player.goods.has_enough(goods)
-
-
-func has_player_any_outpost(player_index : int, outpost_type : String) -> bool:
-	var player = get_player_by_index(player_index)
-	if not player:
-		return false
-	for outpost in player.outposts:
-		if outpost.outpost_type == outpost_type:
-			return true
-	return false
-
-
-func player_purchase(player_index : int, cost : Goods) -> bool:
-	return player_spend(player_index, cost)
-
-
-func player_spend(player_index : int, cost : Goods) -> bool:
-	var player = get_player_by_index(player_index)
-	if not player:
-		push_error("no player with this index, so cannot buy")
-		return false
-	if player.goods.has_enough(cost):
-		player.goods.subtract(cost)
-		return true
-	print("not enough money")
-	return false
 
 
 func check_army_travel(source : Vector2i, target : Vector2i) -> String:
@@ -474,6 +297,203 @@ func check_army_travel(source : Vector2i, target : Vector2i) -> String:
 	return ""
 
 
+func get_interactable_type_at(coord : Vector2i) -> String:
+
+	if get_army_at(coord):
+		return "army"
+
+	if get_city_at(coord):
+		return "city"
+
+	return "EMPTY"
+
+
+func get_army_at(coord : Vector2i) -> Army:
+	var hex : WorldHex = grid.get_hex(coord)
+	if hex:
+		return hex.army
+	return null
+
+
+func get_place_at(coord : Vector2i) -> Place:
+	var hex : WorldHex = grid.get_hex(coord)
+	if hex:
+		return hex.place
+	return null
+
+
+func get_city_at(coord : Vector2i) -> City:
+	return get_place_at(coord) as City
+
+
+func is_enemy_at(coord : Vector2i, player_index : int) -> bool:
+	var army : Army = get_army_at(coord)
+	return army and army.controller_index != player_index
+
+
+func is_hex_movable(coord : Vector2i) -> bool:
+	var hex : WorldHex = grid.get_hex(coord)
+	return hex and hex.place and hex.place.movable
+
+
+func get_battle_map_at(_coord : Vector2i, army_size : int) -> DataBattleMap:
+	if army_size > 5:
+		return CFG.BIGGER_BATTLE_MAP
+
+	return CFG.DEFAULT_BATTLE_MAP
+
+
+func get_all_places() -> Array[Place]:
+	var result : Array[Place] = []
+	for x in range(grid.grid_width):
+		for y in range(grid.grid_height):
+			var coord := Vector2i(x, y)
+			var place : Place = grid.get_hex(coord).place
+			if place:
+				result.append(place)
+	return result
+
+
+func get_top_left_hex() -> WorldHex:
+	return grid.get_hex(Vector2i(0, 0))
+
+
+func get_bottom_right_hex() -> WorldHex:
+	var coord := Vector2i(grid.width - 1, grid.height - 1)
+	return grid.get_hex(coord)
+
+
+## returns true when points can be spent, false when not
+func army_can_spend_movement_points(army : Army, points : int) -> bool:
+	if army.get_movement_points() < points:
+		return false
+	return true
+
+
+func get_interactable_at(coord : Vector2i) -> Object:
+	var army = get_army_at(coord)
+	if army:
+		return army
+	var city = get_city_at(coord)
+	if city:
+		return city
+	return null
+
+#endregion Public Helpers
+
+
+#region Player Turn
+
+func do_move(world_move_info : WorldMoveInfo) -> bool:
+	var problem := check_move_allowed(world_move_info)
+	if problem != "":
+		push_error(problem)
+		return false
+	match world_move_info.move_type:
+		WorldMoveInfo.TYPE_TRAVEL:
+			var source : Vector2i = world_move_info.move_source
+			var target : Vector2i = world_move_info.target_tile_coord
+			return do_army_travel(source, target)
+		WorldMoveInfo.TYPE_RECRUIT_HERO:
+			var player_index : int = world_move_info.recruit_hero_info.player_index
+			var data_hero : DataHero = world_move_info.recruit_hero_info.data_hero
+			var coord : Vector2i = world_move_info.target_tile_coord
+			return do_recruit_hero(data_hero, coord)
+		WorldMoveInfo.TYPE_RECRUIT_UNIT:
+			var army_coord : Vector2i = world_move_info.target_tile_coord
+			var city_coord : Vector2i = world_move_info.move_source
+			var unit : DataUnit = world_move_info.data
+			return do_recruit_unit(unit, city_coord, army_coord)
+		WorldMoveInfo.TYPE_START_TRADE:
+			var source : Vector2i = world_move_info.move_source
+			var target : Vector2i = world_move_info.target_coord
+			return do_start_trade(source, target)
+		WorldMoveInfo.TYPE_BUILD:
+			var city_coord : Vector2i = world_move_info.target_tile_coord
+			var building : DataBuilding = world_move_info.data
+			return do_build_building(city_coord, building)
+		WorldMoveInfo.TYPE_END_TURN:
+			do_end_turn()
+			return true
+		_:
+			assert(false, "unsported WorldMoveInfo Type")
+			return false
+
+
+## returns true only of move was legal and recruitment took place
+func do_recruit_unit(data_unit : DataUnit, city_coord : Vector2i,
+		army_coord : Vector2i) -> bool:
+	var problem := check_recruit_unit(data_unit, city_coord, army_coord)
+	if problem != "":
+		push_error(problem)
+		return false
+	var army : Army = get_army_at(army_coord)
+	var purchased : bool = player_spend(army.controller_index, data_unit.cost)
+	assert(purchased)
+	army.units_data.append(data_unit)
+	return true
+
+
+## returns army reference if success/legal, null otherwise
+func do_recruit_hero(data_hero : DataHero,
+		coord : Vector2i) -> bool:
+	
+	
+	var problem := check_recruit_hero(current_player_index, data_hero, coord)
+	if problem != "":
+		push_error(problem)
+		return false
+	var city : City = get_city_at(coord)
+	var player_state = get_player_by_index(current_player_index)
+
+	var cost = player_state.get_hero_cost(data_hero)
+	var is_purchased : bool = player_state.try_to_pay(cost)
+	assert(is_purchased)
+
+	var army : Army = Army.new() # TODO maybe make some function
+
+	# TODO check this hero can be recruited here by game rules
+
+	var hero : Hero # = Hero.create_hero(hero_data, city.controller)
+	# now we need to check if this hero was already recruited, but died
+	for dead_hero in player_state.dead_heroes:
+		if dead_hero.template == data_hero:
+			dead_hero.revive()
+			dead_hero.controller_index = current_player_index
+			hero = dead_hero
+	if not hero: # means no hero is revived
+		hero = Hero.construct_hero(data_hero, current_player_index)
+
+	army.hero = hero
+	army.controller_index = city.controller_index
+	army.coord = coord
+
+	grid.get_hex(coord).army = army
+	player_state.hero_armies.append(army)
+
+	army_created.emit(army)
+
+	return true
+
+
+func do_start_trade(source : Vector2i, target : Vector2i) -> bool:
+	var problem := check_start_trade(source, target)
+	if problem != "":
+		push_error(problem)
+		return false
+	return true
+
+
+
+func do_build_building(coord : Vector2i, building : DataBuilding) -> bool:
+	var problem := check_build_building(coord, building)
+	if problem != "":
+		push_error(problem)
+		return false
+	var city := get_city_at(coord)
+	return city.build_building(self, building)
+
+
 ## this is the basicest move
 func do_army_travel(source : Vector2i, target : Vector2i) -> bool:
 	var problem = check_army_travel(source, target)
@@ -495,6 +515,22 @@ func do_army_travel(source : Vector2i, target : Vector2i) -> bool:
 	change_army_position(army, target)
 	interact_place(army, target)
 	return true
+
+
+func player_purchase(player_index : int, cost : Goods) -> bool:
+	return player_spend(player_index, cost)
+
+
+func player_spend(player_index : int, cost : Goods) -> bool:
+	var player = get_player_by_index(player_index)
+	if not player:
+		push_error("no player with this index, so cannot buy")
+		return false
+	if player.goods.has_enough(cost):
+		player.goods.subtract(cost)
+		return true
+	print("not enough money")
+	return false
 
 
 func start_combat_by_attack(armies : Array[Army], source : Vector2i, \
@@ -566,31 +602,6 @@ func _delete_outpost_buildings_if_needed(player_index : int) -> void:
 	player.outpost_buildings = new_array
 
 
-func get_interactable_type_at(coord : Vector2i) -> String:
-
-	if get_army_at(coord):
-		return "army"
-
-	if get_city_at(coord):
-		return "city"
-
-	return "EMPTY"
-
-
-func get_army_at(coord : Vector2i) -> Army:
-	var hex : WorldHex = grid.get_hex(coord)
-	if hex:
-		return hex.army
-	return null
-
-
-func place_army_at(coord : Vector2i, army : Army) -> void:
-	var hex : WorldHex = grid.get_hex(coord)
-	assert(not hex.army, "cannot place army on occupied hex %s" % coord)
-	hex.army = army
-	army.coord = coord
-
-
 func remove_army(army : Army) -> void:
 	assert(army == get_army_at(army.coord))
 	var hex : WorldHex = grid.get_hex(army.coord)
@@ -606,68 +617,12 @@ func remove_army(army : Army) -> void:
 	army_destroyed.emit(army)
 
 
-func get_place_at(coord : Vector2i) -> Place:
-	var hex : WorldHex = grid.get_hex(coord)
-	if hex:
-		return hex.place
-	return null
-
-
-func get_city_at(coord : Vector2i) -> City:
-	return get_place_at(coord) as City
-
-
-func is_enemy_at(coord : Vector2i, player_index : int) -> bool:
-	var army : Army = get_army_at(coord)
-	return army and army.controller_index != player_index
-
-
-func is_hex_movable(coord : Vector2i) -> bool:
-	var hex : WorldHex = grid.get_hex(coord)
-	return hex and hex.place and hex.place.movable
-
-
-func get_battle_map_at(_coord : Vector2i, army_size : int) -> DataBattleMap:
-	if army_size > 5:
-		return CFG.BIGGER_BATTLE_MAP
-
-	return CFG.DEFAULT_BATTLE_MAP
-
-
-func get_all_places() -> Array[Place]:
-	var result : Array[Place] = []
-	for x in range(grid.grid_width):
-		for y in range(grid.grid_height):
-			var coord := Vector2i(x, y)
-			var place : Place = grid.get_hex(coord).place
-			if place:
-				result.append(place)
-	return result
-
-
-func get_top_left_hex() -> WorldHex:
-	return grid.get_hex(Vector2i(0, 0))
-
-
-func get_bottom_right_hex() -> WorldHex:
-	var coord := Vector2i(grid.width - 1, grid.height - 1)
-	return grid.get_hex(coord)
-
-
-## returns true when points can be spent, false when not
-func army_can_spend_movement_points(army : Army, points : int) -> bool:
-	if army.get_movement_points() < points:
-		return false
-	return true
-
-
 ## returns true when points points are spent, false when could not
 func army_spend_movement_points(army : Army, points : int) -> bool:
 	if not army_can_spend_movement_points(army, points):
 		return false
 	army.hero.movement_points -= points
 	return true
-
 
 
 func change_army_position(army : Army, target_coord : Vector2i) -> void:
@@ -683,16 +638,10 @@ func change_army_position(army : Army, target_coord : Vector2i) -> void:
 	army.coord = target_coord
 	army_updated.emit(army)
 
+#endregion Player Turn
 
-func get_interactable_at(coord : Vector2i) -> Object:
-	var army = get_army_at(coord)
-	if army:
-		return army
-	var city = get_city_at(coord)
-	if city:
-		return city
-	return null
 
+#region End Turn + Start of The Game - Special Events
 
 func do_end_turn() -> void:
 	_end_of_turn_callbacks(current_player_index)
@@ -701,6 +650,45 @@ func do_end_turn() -> void:
 	current_player_index = (current_player_index + 1) % player_states.size()
 	turn_changed.emit()
 
+
+## this function spawns an army from preset on given coord [br]
+## Used for places at end of turn and start of the game
+func spawn_army_from_preset(army_preset : PresetArmy, coord : Vector2i, \
+		player_index : int) -> void:
+	if get_army_at(coord):
+		push_error("tried to spawn army at occupied tile")
+		# TODO make option for neutral army to spawn and attack player
+	print("spawn army at %s" % coord)
+	var army = Army.create_from_preset(army_preset)
+	army.coord = coord
+	army.controller_index = player_index
+	# TODO add this army to player armies array
+	grid.get_hex(coord).army = army
+	army_created.emit(army)
+
+
+func _end_of_turn_callbacks(player_index : int) -> void:
+	#TODO make it nicer
+	for x in range(grid.width):
+		for y in range(grid.height):
+			var coord = Vector2i(x,y)
+			var army : Army = grid.get_hex(coord).army
+			if army:
+				army.on_end_of_turn(player_index)
+			var place : Place = get_place_at(coord)
+			if place:
+				place.on_end_of_turn(self)
+
+
+func _end_of_round_callbacks() -> void:
+	for place in get_all_places():
+		place.on_end_of_round()
+
+
+#endregion End Turn + Start of The Game - Special Events
+
+
+#region Networking
 
 func to_network_serializable() -> SerializableWorldState:
 	var result := SerializableWorldState.new()
@@ -768,21 +756,4 @@ static func _deserialize_army_wip(dict : Dictionary) -> Army:
 		army.units_data.append(DataUnit.from_network_id(unit_ser))
 	return army
 
-
-
-func _end_of_turn_callbacks(player_index : int) -> void:
-	#TODO make it nicer
-	for x in range(grid.width):
-		for y in range(grid.height):
-			var coord = Vector2i(x,y)
-			var army : Army = grid.get_hex(coord).army
-			if army:
-				army.on_end_of_turn(player_index)
-			var place : Place = get_place_at(coord)
-			if place:
-				place.on_end_of_turn(self)
-
-
-func _end_of_round_callbacks() -> void:
-	for place in get_all_places():
-		place.on_end_of_round()
+#endregion Networking
