@@ -5,4 +5,3 @@
 [node name="MctsInsane" type="Node"]
 script = ExtResource("1_5rmnx")
 iterations = 1000000
-heuristic_probability = 0.5
