@@ -183,10 +183,15 @@ void BattleManagerFast::_process_unit(UnitID unit_id, MovePhase phase) {
 		auto unit_symbol = unit.symbol_when_rotated(side);
 		auto neighbor_symbol = neighbor.symbol_when_rotated(flip(side));
 
-		// counter/spear
+		// enemy's counter/spear
 		if(unit_symbol.dies_to(neighbor_symbol, MovePhase::PASSIVE)) {
 			_kill_unit(unit_id, neighbor_id);
 			return;
+		}
+
+		// unit's passive spear
+		if(neighbor_symbol.dies_to(unit_symbol, MovePhase::PASSIVE)) {
+			_kill_unit(neighbor_id, unit_id);
 		}
 	}
 	
