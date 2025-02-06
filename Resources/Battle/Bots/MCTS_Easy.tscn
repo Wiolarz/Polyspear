@@ -4,7 +4,7 @@
 
 [node name="MctsEasy" type="Node"]
 script = ExtResource("1_nohmd")
-iterations = 100
+iterations = 1000
 max_sim_turns = 20
 heuristic_probability = 0.95
 max_playouts_per_visit = 1
