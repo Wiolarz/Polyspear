@@ -12,6 +12,7 @@ void BattleManagerFast::finish_initialization() {
 	BM_ASSERT(_big_cyclone_counter_value != -1, "Uninitialized big cyclone counter");
 	BM_ASSERT(_small_cyclone_counter_value != -1, "Uninitialized small cyclone counter");
 	BM_ASSERT(_cyclone_mana_threshold != -1, "Uninitialized cyclone mana threshold");
+	BM_ASSERT(_mana_well_power != -1, "Uninitialized mana well power");
 
 	_state = BattleState::SUMMONING;
 	for(unsigned i = 0; i < _armies.size(); i++) {
@@ -22,13 +23,23 @@ void BattleManagerFast::finish_initialization() {
 		BM_ASSERT(_armies[i].team != -1, "Uninitialized team id in army {}", i);
 
 		_armies[i].id = i;
-		_armies[i].mana_points = 1;
 
 		for(auto& unit: _armies[i].units) {
 			if(unit.status != UnitStatus::DEAD) {
 				_result.total_scores[i] += unit.score;
 				_result.max_scores[i]	+= unit.score;
 				_armies[i].mana_points += unit.mana;
+			}
+		}
+	}
+
+	for(int y = 0; y < _tiles.get_dims().y; y++) {
+		for(int x = 0; x < _tiles.get_dims().x; x++) {
+			auto pos = Position(x,y);
+			auto army_id = _tiles.get_tile(pos).get_controlling_army();
+
+			if(army_id != -1) {
+				_armies[army_id].mana_points += _mana_well_power;
 			}
 		}
 	}
@@ -68,12 +79,12 @@ void BattleManagerFast::play_move(Move move) {
 
 	if(_state == BattleState::SUMMONING) {
 		BM_ASSERT(unit.status == UnitStatus::SUMMONING, "Unit id {} is not in summoning state", move.unit);
-		BM_ASSERT(_tiles->get_tile(move.pos).get_spawning_army() == _current_army,
+		BM_ASSERT(_tiles.get_tile(move.pos).get_spawning_army() == _current_army,
 				"Target spawn {},{} does not belong to current army", move.pos.x, move.pos.y
 		);
 
 		_move_unit(uid, move.pos);
-		unit.rotation = _tiles->get_tile(move.pos).get_spawn_rotation();
+		unit.rotation = _tiles.get_tile(move.pos).get_spawn_rotation();
 		unit.status = UnitStatus::ALIVE;
 
 		bool end_summon = true;
@@ -95,7 +106,7 @@ void BattleManagerFast::play_move(Move move) {
 			auto rot_new = get_rotation(unit.pos, move.pos);
 			auto old_pos = unit.pos;
 
-			if(_tiles->get_tile(move.pos).is_pit()) {
+			if(_tiles.get_tile(move.pos).is_pit()) {
 				move.pos = move.pos + Vector2i(DIRECTIONS[rot_new].x, DIRECTIONS[rot_new].y);
 			}
 
@@ -226,12 +237,12 @@ void BattleManagerFast::_process_push(UnitID pushed, UnitID pusher, Position dir
 	for(int power = 1; power <= max_power; power++) {
 		pos = pos + direction;
 
-		if(_get_unit(pos).has_value() || _tiles->get_tile(pos).is_pit()) {
+		if(_get_unit(pos).has_value() || _tiles.get_tile(pos).is_pit()) {
 			_kill_unit(pushed, pusher);
 			return;
 		}
 		
-		if(!(_tiles->get_tile(pos).is_passable())) {
+		if(!(_tiles.get_tile(pos).is_passable())) {
 			if(power == 1 || power < max_power) {
 				_kill_unit(pushed, pusher);
 				return;
@@ -278,7 +289,7 @@ void BattleManagerFast::_process_bow(UnitID unit_id, MovePhase phase) {
 				break;
 			}
 
-			if(_tiles->get_tile(pos).is_wall()) {
+			if(_tiles.get_tile(pos).is_wall()) {
 				break; // Can't shoot past walls, but can shoot enemies on hills
 			}
 			
@@ -527,7 +538,7 @@ void BattleManagerFast::_refresh_legal_moves() {
 	_moves.reserve(64);
 
 	auto& army = _armies[_current_army];
-	auto& spawns = _tiles->get_spawns(_current_army);
+	auto& spawns = _tiles.get_spawns(_current_army);
 
 	Move move;
 
@@ -560,7 +571,7 @@ void BattleManagerFast::_refresh_legal_moves() {
 				move.unit = unit_id;
 				move.pos = unit.pos + DIRECTIONS[side];
 
-				bool going_across_pit = _tiles->get_tile(move.pos).is_pit();
+				bool going_across_pit = _tiles.get_tile(move.pos).is_pit();
 				if(going_across_pit) {
 					if(side == unit.rotation) {
 						move.pos = move.pos + DIRECTIONS[side];
@@ -570,7 +581,7 @@ void BattleManagerFast::_refresh_legal_moves() {
 					}
 				}
 
-				auto tile = _tiles->get_tile(move.pos);
+				auto tile = _tiles.get_tile(move.pos);
 				if(!(tile.is_passable()) && !(tile.is_hill() && side == unit.rotation && !going_across_pit)) {
 					continue;
 				}
@@ -800,11 +811,11 @@ void BattleManagerFast::_append_moves_unit(UnitID uid, int8_t spell_id, TeamRela
 }
 
 void BattleManagerFast::_append_moves_all_tiles(UnitID uid, int8_t spell_id, bool include_impassable) {
-	auto dims = _tiles->get_dims();
+	auto dims = _tiles.get_dims();
 	for(int y = 0; y < dims.y; y++) {
 		for(int x = 0; x < dims.x; x++) {
 			auto pos = Position(x,y);
-			if(include_impassable || (_tiles->get_tile(pos).is_passable() && _unit_cache.get(pos) == NO_UNIT)) {
+			if(include_impassable || (_tiles.get_tile(pos).is_passable() && _unit_cache.get(pos) == NO_UNIT)) {
 				_moves.emplace_back(uid.unit, pos, spell_id);
 			}
 		}
@@ -813,7 +824,7 @@ void BattleManagerFast::_append_moves_all_tiles(UnitID uid, int8_t spell_id, boo
 
 void BattleManagerFast::_append_moves_lines(UnitID uid, int8_t spell_id, Position center, int range_min, int range_max) {
 	int range_min_real = (range_min >= 1) ? range_min : 1;
-	if(range_min == 0 && _tiles->get_tile(center).is_passable()) {
+	if(range_min == 0 && _tiles.get_tile(center).is_passable()) {
 		_moves.emplace_back(uid.unit, center, spell_id);
 	}
 
@@ -826,7 +837,7 @@ void BattleManagerFast::_append_moves_line(UnitID uid, int8_t spell_id, Position
 	for(int r = range_min; r <= range_max; r++) {
 		Position pos = center + DIRECTIONS[dir] * r;
 		
-		if(_tiles->get_tile(pos).is_passable() && _unit_cache.get(pos) == NO_UNIT) {
+		if(_tiles.get_tile(pos).is_passable() && _unit_cache.get(pos) == NO_UNIT) {
 			_moves.emplace_back(uid.unit, pos, spell_id);
 		}
 	}
@@ -860,11 +871,28 @@ void BattleManagerFast::_move_unit(UnitID id, Position pos) {
 
 	unit.pos = pos;
 	_unit_cache[pos] = id;
-	if(_tiles->get_tile(pos).is_swamp()) {
+	auto tile = _tiles.get_tile(pos);
+
+	if(tile.is_swamp()) {
 		unit.flags |= Unit::FLAG_ON_SWAMP;
 	}
 	else {
 		unit.flags &= ~Unit::FLAG_ON_SWAMP;
+	}
+
+	if(tile.is_mana_well()) {
+		auto old_army = tile.get_controlling_army();
+		if(old_army == army.id) {
+			return;
+		}
+
+		if(size_t(old_army) < _armies.size()) {
+			_armies[old_army].mana_points -= _mana_well_power;
+		}
+
+		tile.set_controlling_army(id.army);
+		army.mana_points += _mana_well_power;
+		_update_mana();
 	}
 }
 
@@ -927,7 +955,7 @@ void BattleManagerFastCpp::insert_unit(int army, int idx, Vector2i pos, int rota
 	bm._armies[army].units[idx].pos = pos;
 	bm._armies[army].units[idx].rotation = rotation;
 	bm._armies[army].units[idx].status = is_summoning ? UnitStatus::SUMMONING : UnitStatus::ALIVE;
-	if(bm._tiles->get_tile(pos).is_swamp()) {
+	if(bm._tiles.get_tile(pos).is_swamp()) {
 		bm._armies[army].units[idx].flags |= Unit::FLAG_ON_SWAMP;
 	}
 }
@@ -994,7 +1022,8 @@ void BattleManagerFastCpp::set_current_participant(int army) {
 }
 
 void BattleManagerFastCpp::set_tile_grid(TileGridFastCpp* tg) {
-	bm._tiles = tg;
+	BM_ASSERT(tg != nullptr, "TileGridFastCpp cannot be null");
+	bm._tiles = tg->get_grid_copy();
 	bm._unit_cache = CacheGrid(*tg);
 }
 
@@ -1069,10 +1098,11 @@ void BattleManagerFastCpp::insert_spell(int army, int unit, int spell_id, godot:
 	bm._spells[spell_id] = BattleSpell(str, UnitID(army, unit));
 }
 
-void BattleManagerFastCpp::set_cyclone_constants(int big, int small, int threshold) {
+void BattleManagerFastCpp::set_cyclone_constants(int big, int small, int threshold, int mana_well_power) {
 	bm._big_cyclone_counter_value = big;
 	bm._small_cyclone_counter_value = small;
 	bm._cyclone_mana_threshold = threshold;
+	bm._mana_well_power = mana_well_power;
 }
 
 void BattleManagerFastCpp::_bind_methods() {
@@ -1090,7 +1120,7 @@ void BattleManagerFastCpp::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_army_cyclone_timer", "army", "timer"), &BattleManagerFastCpp::set_army_cyclone_timer);
 	ClassDB::bind_method(D_METHOD("set_tile_grid", "tilegrid"), &BattleManagerFastCpp::set_tile_grid);
 	ClassDB::bind_method(D_METHOD("set_current_participant", "army"), &BattleManagerFastCpp::set_current_participant);
-	ClassDB::bind_method(D_METHOD("set_cyclone_constants", "big", "small", "threshold"), &BattleManagerFastCpp::set_cyclone_constants);
+	ClassDB::bind_method(D_METHOD("set_cyclone_constants", "big", "small", "threshold", "mana_well_power"), &BattleManagerFastCpp::set_cyclone_constants);
 	ClassDB::bind_method(D_METHOD("insert_spell", "army", "index", "spell"), &BattleManagerFastCpp::insert_spell);
 	ClassDB::bind_method(D_METHOD("force_battle_ongoing"), &BattleManagerFastCpp::force_battle_ongoing);
 	ClassDB::bind_method(D_METHOD("force_battle_sacrifice"), &BattleManagerFastCpp::force_battle_sacrifice);
@@ -1103,6 +1133,7 @@ void BattleManagerFastCpp::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("is_unit_alive", "army", "unit"), &BattleManagerFastCpp::is_unit_alive);
 	ClassDB::bind_method(D_METHOD("is_unit_being_summoned", "army", "unit"), &BattleManagerFastCpp::is_unit_being_summoned);
 	ClassDB::bind_method(D_METHOD("get_army_cyclone_timer", "army"), &BattleManagerFastCpp::get_army_cyclone_timer);
+	ClassDB::bind_method(D_METHOD("get_army_mana_points", "army"), &BattleManagerFastCpp::get_army_mana_points);
 	ClassDB::bind_method(D_METHOD("get_cyclone_target"), &BattleManagerFastCpp::get_cyclone_target);
 	ClassDB::bind_method(D_METHOD("get_current_participant"), &BattleManagerFastCpp::get_current_participant);
 	ClassDB::bind_method(D_METHOD("get_legal_moves"), &BattleManagerFastCpp::get_legal_moves_gd);

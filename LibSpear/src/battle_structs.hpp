@@ -14,6 +14,7 @@
 const unsigned MAX_ARMIES = 4;
 const unsigned MAX_UNITS_IN_ARMY = 12;
 const unsigned MAX_EFFECTS_PER_UNIT = 2;
+const unsigned MAX_TILES_IN_GRID = 256;
 const unsigned DEFAULT_EFFECT_DURATION = 6;
 
 class BattleManagerFast;
@@ -177,7 +178,7 @@ struct Army {
 	int8_t id = 0;
 	int8_t team = -1;
 
-	int16_t mana_points = -1;
+	int16_t mana_points = 0;
 	int16_t cyclone_timer = CYCLONE_UNINITIALIZED;
 
 	std::array<Unit, MAX_UNITS_IN_ARMY> units{};

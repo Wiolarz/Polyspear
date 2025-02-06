@@ -150,13 +150,14 @@ class Tile {
 	static const uint8_t MANA_WELL = 0x10;
 	static const uint8_t PIT = 0x20;
 	static const uint8_t HILL = 0x40;
+	static const uint8_t SPAWN = 0x80;
 
-	uint8_t _flags{};
-	int8_t _spawning_army{};
+	uint8_t _flags = FORBIDDEN | WALL;
+	int8_t _army = -1; // Spawning army for spawning tiles, controlling army for mana wells
 	uint8_t _spawning_direction{};
 
 public:
-	Tile() : _flags(FORBIDDEN | WALL), _spawning_army(-1) {}
+	Tile() = default;
 	Tile(bool passable, bool wall, bool swamp, bool mana_well, bool pit, bool hill, int army, unsigned direction) :
 		_flags(
 			(passable ? PASSABLE : 0)
@@ -165,8 +166,9 @@ public:
 		  | (mana_well ? MANA_WELL : 0)
 		  | (pit ? PIT : 0)
 		  | (hill ? HILL : 0)
+		  | ((!mana_well && army >= 0) ? SPAWN : 0)
 		),
-		_spawning_army(army),
+		_army(army),
 		_spawning_direction(direction)
 	{}
 	
@@ -194,11 +196,24 @@ public:
 		return (_flags & PIT) != 0;
 	}
 
-	inline int get_spawning_army() {
-		return _spawning_army;
+	inline bool is_spawn() {
+		return (_flags & SPAWN) != 0;
 	}
 
-	inline int get_spawn_rotation() {
+	inline int get_spawning_army() {
+		return is_spawn() ? _army : -1;
+	}
+
+	inline int get_controlling_army() {
+		return is_mana_well() ? _army : -1;
+	}
+
+	inline void set_controlling_army(int army_id) {
+		ERR_FAIL_COND_MSG(!is_mana_well(), "Only mana well tiles can be controlled as an army");
+		_army = army_id;
+	}
+
+	inline unsigned get_spawn_rotation() {
 		return _spawning_direction;
 	}
 };

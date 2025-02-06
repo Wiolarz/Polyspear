@@ -30,7 +30,8 @@ static func from(bgstate: BattleGridState, tgrid: TileGridFast = null) -> Battle
 	new.set_cyclone_constants(
 		CFG.BIG_CYCLONE_COUNTER_VALUE, 
 		CFG.SMALL_CYCLONE_COUNTER_VALUE, 
-		CFG.CYCLONE_MANA_THRESHOLD
+		CFG.CYCLONE_MANA_THRESHOLD,
+		BattleGridState.MANA_WELL_POWER
 	)
 	
 	var max_team = 0
@@ -211,6 +212,11 @@ func compare_grid_state(bgs: BattleGridState) -> bool:
 		push_error("BMFast mismatch - state mismatch - fast: fighting, slow: " + bgs.state)
 		is_ok = false
 	
+	var slow_cyclone_target = bgs.armies_in_battle_state.find(bgs.cyclone_target)
+	if get_cyclone_target() != slow_cyclone_target:
+		push_error("BMFast mismatch - cyclone target - fast: %s, slow: %s" % [get_cyclone_target(), slow_cyclone_target])
+		is_ok = false
+	
 	for army_id in range(bgs.armies_in_battle_state.size()):
 		var units_nr = get_max_units_in_army()
 		var army = bgs.armies_in_battle_state[army_id]
@@ -220,12 +226,18 @@ func compare_grid_state(bgs: BattleGridState) -> bool:
 			"No support for more than %s units in fast BM" % [get_max_units_in_army()]
 		)
 		
-		var cyclone_timer_slow = bgs.armies_in_battle_state[army_id].cyclone_timer
+		var cyclone_timer_slow = army.cyclone_timer
 		var cyclone_timer_fast = get_army_cyclone_timer(army_id)
 		
 		if cyclone_timer_fast != cyclone_timer_slow:
 			push_error("BMFast mismatch - cyclone timer for army %s - fast: %s, slow: %s" % [
 				army_id, cyclone_timer_fast, cyclone_timer_slow
+			])
+			is_ok = false
+		
+		if army.mana_points != get_army_mana_points(army_id):
+			push_error("BMFast mismatch - mana points for army %s - fast: %s, slow: %s" % [
+				army_id, get_army_mana_points(army_id), army.mana_points
 			])
 			is_ok = false
 		

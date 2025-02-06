@@ -17,7 +17,7 @@
 #include "tile_grid_fast.hpp"
 #include "battle_spell.hpp"
 
-// Assertions used (only in) BattleManagerFastCpp
+// Assertions used (only in) BattleManagerFast
 
 #define BM_ASSERT_V(cond, v, ...)													\
 	do {																			\
@@ -44,10 +44,11 @@ class BattleManagerFast {
 	BattleState _state = BattleState::INITIALIZING;
 	ArmyList _armies{};
 	std::array<BattleSpell, MAX_SPELLS> _spells{};
-	TileGridFastCpp* _tiles = nullptr;
+	TileGridFast _tiles{};
 	int8_t _big_cyclone_counter_value = -1;
 	int8_t _small_cyclone_counter_value = -1;
 	int8_t _cyclone_mana_threshold = -1;
+	int8_t _mana_well_power = -1;
 
 	BattleResult _result{};
 
@@ -200,7 +201,7 @@ public:
 	void set_army_cyclone_timer(int army, int timer);
 	void set_tile_grid(TileGridFastCpp* tilegrid);
 	void set_current_participant(int army);
-	void set_cyclone_constants(int big, int small, int threshold);
+	void set_cyclone_constants(int big, int small, int threshold, int mana_well_power);
 
 	inline void finish_initialization() {
 		bm.finish_initialization();
@@ -237,6 +238,10 @@ public:
 
 	inline int get_army_cyclone_timer(int army) const {
 		return bm._armies[army].cyclone_timer;
+	}
+
+	inline int get_army_mana_points(int army) const {
+		return bm._armies[army].mana_points;
 	}
 
 	inline int get_cyclone_target() const {
