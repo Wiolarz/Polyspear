@@ -1,0 +1,43 @@
+#!/usr/bin/env python
+import os
+import sys
+
+env = SConscript("godot-cpp/SConstruct")
+
+env.Append(CPPPATH=["src/", "deps/thread-pool/include"])
+source_files = Glob("src/*.cpp")
+sources = env.SharedObject(
+        source=source_files,
+        CXXFLAGS=[
+                "-std=c++20", "-Wall", "-Wextra", "-Werror",
+                "-Wpointer-arith", "-Wreturn-type", 
+                "-Wuninitialized", "-Wmaybe-uninitialized", 
+                "-Wnonnull", "-Wnull-dereference", "-Wdangling-pointer",
+                "-Wtype-limits", "-Wcast-align",
+                "-Wno-template-id-cdtor", # ignore warnings about feature deprecated in C++20 from godot headers
+                "-Wno-unused-parameter", "-Wno-unused-but-set-parameter", # godot-cpp warnings
+                "-Wno-deprecated-copy", # GDCLASS macro declares a custom copy operator in a class, TODO might be worth looking into
+        ],
+        SHOBJPREFIX="#build/"
+)
+
+# Create compile_commands.json for clangd
+env.Tool("compilation_db")
+cdb = env.CompilationDatabase()
+env.Alias('cdb', cdb)
+
+path = "bin"
+name = "libspear"
+platform = env["platform"]
+target = env["target"]
+triple = f"{name}.{platform}.{target}"
+suffix = env["suffix"]
+shlibsuffix = env["SHLIBSUFFIX"]
+
+if platform == "macos":
+    library = env.SharedLibrary(f"{path}/{triple}.framework/{triple}", source=sources)
+else:
+    library = env.SharedLibrary(f"{path}/{name}{suffix}{shlibsuffix}", source=sources)
+
+Default(library)
+

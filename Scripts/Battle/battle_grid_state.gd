@@ -113,6 +113,10 @@ func move_info_summon_unit(move_info : MoveInfo) -> Unit:
 func move_info_execute(move_info : MoveInfo) -> void:
 	currently_processed_move_info = move_info
 
+	# BMFast integrity check - live testing purposes only
+	var bmfast = BattleManagerFast.from(self)
+	bmfast.check_integrity_before_move(self, move_info)
+	
 	var source_tile_coord := move_info.move_source
 
 	var unit = get_unit(source_tile_coord)
@@ -161,11 +165,16 @@ func move_info_execute(move_info : MoveInfo) -> void:
 		_switch_participant_turn()
 
 	currently_processed_move_info = null
+	
+	# BMFast integrity check contd. - live testing purposes only
+	bmfast.check_integrity_after_move(self)
+
 
 #endregion move_info support
 
 
 #region Undo
+
 
 ## used only by BM.undo()
 ## returns array of revived units
@@ -474,6 +483,15 @@ func _get_shot_target(coord : Vector2i, direction : int, reach : int = -1) -> Un
 		reach -= 1
 
 	return hex.unit
+
+
+func is_move_possible(move: MoveInfo) -> bool:
+	for i in get_possible_moves():
+		# Regular comparison isn't guaranteed to actually do what we want
+		# Move descriptions for effectively the same moves are always the same
+		if str(i) == str(move):
+			return true
+	return false
 
 
 ## Checks if given tile relative to start tile is in specific direction within specific range [br]
@@ -897,7 +915,7 @@ func mana_values_changed() -> void:
 	cyclone_target = current_worst
 	var mana_difference = current_best.mana_points - current_worst.mana_points
 	var new_cylone_counter = CFG.BIG_CYCLONE_COUNTER_VALUE
-	if mana_difference > 3:
+	if mana_difference > CFG.CYCLONE_MANA_THRESHOLD:
 		new_cylone_counter = CFG.SMALL_CYCLONE_COUNTER_VALUE
 
 
@@ -944,7 +962,7 @@ func is_spell_target_valid(unit : Unit, coord : Vector2i, spell : BattleSpell) -
 		"Fireball": # any hex target is valid
 			return true
 		"Teleport": # tile in range that is in front of the caster
-			if get_unit(coord):  # tile has to be empty
+			if get_unit(coord) or not _get_battle_hex(coord).can_be_moved_to:  # tile has to be empty
 				return false
 			
 			if _is_faced_tile_in_range(unit.coord, coord, unit.unit_rotation, 3):
@@ -1148,8 +1166,18 @@ func _get_all_unit_moves() -> Array[MoveInfo]:
 			var move_dir = _get_move_direction_if_valid(unit, new_coord)
 			if move_dir != BattleGridState.MOVE_IS_INVALID:
 				legal_moves.append(MoveInfo.make_move(unit.coord, new_coord))
+		for spell in unit.spells:
+			legal_moves.append_array(_get_magic_moves(unit, spell))
 	return legal_moves
 
+func _get_magic_moves(unit: Unit, spell: BattleSpell) -> Array[MoveInfo]:
+	# TODO lazy but very inefficient method, perhaps needs a rewrite?
+	var result : Array[MoveInfo] = []
+	for x in width:
+		for y in height:
+			if is_spell_target_valid(unit, Vector2i(x,y), spell):
+				result.push_back(MoveInfo.make_magic(unit.coord, Vector2i(x,y), spell))
+	return result
 
 func _get_all_sacrifice_moves() -> Array[MoveInfo]:
 	var legal_moves : Array[MoveInfo] = []
@@ -1412,6 +1440,7 @@ func get_move_consequences(move : MoveInfo) -> MoveConsequences:
 #endregion AI Helpers
 
 
+
 #region Subclasses
 
 class BattleHex:
@@ -1480,7 +1509,7 @@ class BattleHex:
 			"mana_well":
 				result.mana = true
 			_:
-				pass #TODO push error that tile type is not supported
+				assert(false, "'%s' tile type is not supported" % [data.type])
 
 		return result
 

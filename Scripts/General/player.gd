@@ -18,8 +18,13 @@ static func create(new_slot : Slot) -> Player:
 	result.slot = new_slot
 
 	if new_slot.is_bot():
-		result.bot_engine = ExampleBot.new(result)
+		assert(FileAccess.file_exists(new_slot.battle_bot_path), 
+			   "File for bot '%s' does not exist" % [new_slot.battle_bot_path])
+		result.bot_engine = load(new_slot.battle_bot_path).instantiate()
+		assert(result.bot_engine != null, "Bot '%s' does not exist" % new_slot.battle_bot_path)
 		result.add_child(result.bot_engine)
+		result.bot_engine.set_player(result)
+
 	result.name = "Player_" + result.get_player_name()
 
 	return result

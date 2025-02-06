@@ -15,13 +15,11 @@ enum TAG \
 
 var tags_set: Dictionary = {} # [TAG -> null] used as Hash set
 
-var current_state : AiBotState
+@export var current_state : AiBotState
 
 
 func _ready():
-	name = "ExampleBot"
 	add_child(AiBotStateRandom.new([], me))
-	add_child(AiBotState.new([TAG.DEFEND], me)) # default state should crash the game
 	current_state = get_children()[0]
 
 

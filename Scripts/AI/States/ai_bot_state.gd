@@ -1,4 +1,5 @@
-class_name AiBotState extends Node
+class_name AiBotState
+extends Node
 
 """
 Parent class of AI States
