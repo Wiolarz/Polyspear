@@ -19,6 +19,7 @@ var _current_summary : DataBattleSummary = null
 
 var _selected_unit : Unit
 var _hovered_unit : Unit
+var _hovered_tile : TileForm
 
 var _replay_data : BattleReplay
 var _replay_is_playing : bool = false
@@ -314,28 +315,32 @@ func grid_input(coord : Vector2i) -> void:
 ## This function should behave the same as grid_input, but with different result -- for now only
 ## visual.
 func grid_hover(coord : Vector2i, is_hovered : bool) -> void:
-	var tile_form : UnitForm = null
-
-	if not _battle_is_ongoing:
-		return
-
 	reset_grid_hover()
 
-	# TODO move it to function like '_get_unit_form_at(coord)'
-	var unit : Unit = _battle_grid_state.get_unit(coord)
-	if unit:
-		var unit_form : UnitForm = _unit_to_unit_form[unit]
-		unit_form.set_hovered(is_hovered)
-		_hovered_unit = unit if is_hovered else null
+	if _battle_is_ongoing:
+		# TODO maybe create a function like '_get_unit_form_at(coord)'
+		var unit : Unit = _battle_grid_state.get_unit(coord)
+		if unit:
+			var unit_form : UnitForm = _unit_to_unit_form[unit]
+			unit_form.set_hovered(is_hovered)
+			_hovered_unit = unit if is_hovered else null
+
+		var tile : TileForm = _tile_grid.get_hex(coord)
+		if tile and tile.type != "SENTINEL" and tile.type != "":
+			tile.set_hovered(true)
+			_hovered_tile = tile
+
 
 
 func reset_grid_hover() -> void:
-	if not _battle_is_ongoing:
-		return
-	if _hovered_unit and _hovered_unit in _unit_to_unit_form:
-		var unit_form : UnitForm = _unit_to_unit_form[_hovered_unit]
-		unit_form.set_hovered(false)
+	if _battle_is_ongoing:
+		if _hovered_unit and _hovered_unit in _unit_to_unit_form:
+			var unit_form : UnitForm = _unit_to_unit_form[_hovered_unit]
+			unit_form.set_hovered(false)
+	if _hovered_tile and is_instance_valid(_hovered_tile):
+		_hovered_tile.set_hovered(false)
 	_hovered_unit = null
+	_hovered_tile = null
 
 
 func force_hover_refresh() -> void:

@@ -7,6 +7,8 @@ signal anim_end()
 const SIDE_NAMES = ["FrontSymbol", "FrontRightSymbol", "BackRightSymbol", "BackSymbol", "BackLeftSymbol", "FrontLeftSymbol"]
 const selection_mark_scene = preload("res://Scenes/Form/SelectionMark.tscn")
 
+@onready var sprite_color := $sprite_color
+
 var entity : Unit
 var _symbols_flipped : bool = true  # flag used for unit rotation
 
@@ -203,9 +205,7 @@ func set_selected(is_selected : bool):
 
 func set_hovered(is_hovered : bool):
 	var shader_material := material as ShaderMaterial
-	if is_hovered:
-		shader_material.set_shader_parameter("highlight_intensity", 0.4)
-	else:
-		shader_material.set_shader_parameter("highlight_intensity", 0.0)
+	var intensity = 0.3 if is_hovered else 0.0
+	shader_material.set_shader_parameter("highlight_intensity", intensity)
 
 #endregion UI
