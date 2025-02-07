@@ -13,6 +13,9 @@ var hero_level_up
 var camera : PolyCamera
 var current_camera_position = E.CameraPosition.WORLD
 
+signal update_settings()
+
+
 func _ready():
 	process_mode = Node.PROCESS_MODE_ALWAYS
 
@@ -218,8 +221,8 @@ func set_camera(pos : E.CameraPosition) -> void:
 
 
 ## NOTE: fullscreen uses old style exclusive fullscreen because of Godot bug
-func toggle_fullscreen():
-	if DisplayServer.window_get_mode() == DisplayServer.WINDOW_MODE_WINDOWED:
+func set_fullscreen(fullscreen: bool):
+	if fullscreen:
 		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_EXCLUSIVE_FULLSCREEN)
 		# DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
 		# TODO: change to borderless when Godot bug is fixed
@@ -228,6 +231,12 @@ func toggle_fullscreen():
 	else:
 		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
 
+
+func toggle_fullscreen():
+	# automatically launches set_fullscreen
+	CFG.player_options.fullscreen = not CFG.player_options.fullscreen
+	CFG.save_player_options()
+	update_settings.emit()
 
 
 ## Toggle of default godot Debug tool - visible collision shapes

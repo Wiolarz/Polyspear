@@ -1,39 +1,37 @@
 extends Control
 
 
-func refresh():
-	$VBoxContainer/ToggleAutoStart.button_pressed = CFG.AUTO_START_GAME
-	$VBoxContainer/ToggleBattleDefault.button_pressed = CFG.DEFAULT_MODE_IS_BATTLE
-	$VBoxContainer/ToggleDefaultAIPlayers.button_pressed = CFG.player_options.use_default_AI_players
-	$VBoxContainer/ToggleStreamerMode.button_pressed = CFG.player_options.streamer_mode
+func _ready():
+	# You should put all PlayerOptions-widget connections here
+	_declare_toggle("autostart_map", $VBoxContainer/ToggleAutoStart)
+	_declare_toggle("use_default_battle", $VBoxContainer/ToggleBattleDefault)
+	_declare_toggle("use_default_AI_players", $VBoxContainer/ToggleDefaultAIPlayers)
+	_declare_toggle("streamer_mode", $VBoxContainer/ToggleStreamerMode)
+	_declare_toggle("fullscreen", $VBoxContainer/ToggleFullscreen)
+	_declare_toggle("bmfast_integrity_checks", $VBoxContainer/ToggleBMFastIntegrityChecks)
 
 
-func _on_toggle_auto_start_pressed():
-	# TODO refactor code copying
-	CFG.player_options.autostart_map = not CFG.player_options.autostart_map
+#region Widgets
+#region - Toggle
+
+## Connect a given option with a widget
+func _declare_toggle(option : StringName, node : CheckButton):
+	# Immediately update option
+	node.button_pressed = CFG.player_options.get(option)
+	# Refresh when a setting is changed
+	UI.update_settings.connect(func(): 
+		# Lambda instead of bind because one callable can be only bound to signal once
+		node.button_pressed = CFG.player_options.get(option)
+	)
+	# Bind a toggle press
+	node.pressed.connect(_toggle_option.bind(option, node))
+
+
+func _toggle_option(option: StringName, node : CheckButton):
+	var old_option = CFG.player_options.get(option)
+	CFG.player_options.set(option, not old_option)
 	CFG.save_player_options()
-	$VBoxContainer/ToggleAutoStart.button_pressed = CFG.AUTO_START_GAME
+	UI.update_settings.emit()
 
-
-func _on_toggle_battle_default_pressed():
-	CFG.player_options.use_default_battle = not CFG.player_options.use_default_battle
-	CFG.save_player_options()
-	$VBoxContainer/ToggleBattleDefault.button_pressed = CFG.DEFAULT_MODE_IS_BATTLE
-
-
-func _on_toggle_auto_start_visibility_changed():
-	if visible:
-		refresh()
-
-
-func _on_toggle_default_ai_players_pressed():
-	#TODO quick refactor
-	CFG.player_options.use_default_AI_players = not CFG.player_options.use_default_AI_players
-	CFG.save_player_options()
-	$VBoxContainer/ToggleDefaultAIPlayers.button_pressed = CFG.player_options.use_default_AI_players
-
-
-func _on_toggle_streamer_mode_pressed():
-	CFG.player_options.streamer_mode = not CFG.player_options.streamer_mode
-	CFG.save_player_options()
-	$VBoxContainer/ToggleStreamerMode.button_pressed = CFG.player_options.streamer_mode
+#endregion - Toggle
+#endregion Widgets

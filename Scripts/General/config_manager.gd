@@ -193,9 +193,11 @@ const CHESS_CLOCK_BATTLE_TURN_INCREMENT_MS = 2 * 1000
 
 # Also documented in Documentation/libspear.md
 ## Checks each time a move is done whether results of a move replicated in BattleManagerFast match results in a regular BM
-var debug_check_bmfast_integrity := true
+var debug_check_bmfast_integrity : bool :
+	get: return player_options.bmfast_integrity_checks
 ## Enables additional BattleManagerFast internal integrity checks, which may slightly reduce performance
-var debug_check_bmfast_internals := true
+var debug_check_bmfast_internals : bool :
+	get: return player_options.bmfast_integrity_checks
 ## When greater than zero, saves replays from playouts where errors were detected
 var debug_mcts_max_saved_fail_replays := 16
 ## When true, immediately save replays from BattleManagerFast mismatches with an appropriate name with a suffix "BMFast Mismatch"
