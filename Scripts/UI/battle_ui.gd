@@ -1,22 +1,22 @@
 class_name BattleUI
 extends CanvasLayer
 
-@onready var players_box : BoxContainer = $Players
+@onready var players_box : BoxContainer = $TopR/PlayersContainer/Players
 
-@onready var units_box : BoxContainer = $Units
+@onready var units_box : BoxContainer = $BottomC/Units
 
-@onready var camera_button : Button = $SwitchCamera
+@onready var camera_button : Button = $TopL/SwitchCamera
 
 @onready var summary_container : Container = $SummaryContainer
 
-@onready var clock = $TurnsBG/ClockLeft
-@onready var turns = $TurnsBG/TurnCount
+@onready var clock = $TopC/TurnsBG/VBox/ClockLeft
+@onready var turns = $TopC/TurnsBG/VBox/TurnCount
 
-@onready var cyclone = $CycloneTimer/CycloneTarget
+@onready var cyclone = $TopC/CycloneTimer/VBox/CycloneTarget
 
 @onready var book = $SpellBook
 
-@onready var chat = $GameChat
+@onready var chat = $BottomC/GameChat
 
 @onready var replay_controls = $ReplayControls
 @onready var replay_move_count = $ReplayControls/MoveCount
@@ -33,7 +33,8 @@ var fighting_players_idx = []
 var armies_reference : Array[BattleGridState.ArmyInBattleState]
 
 var selected_unit : DataUnit = null
-var selected_unit_button : TextureButton = null
+var selected_unit_button : BaseButton = null
+var _hovered_unit_button : BaseButton = null
 var current_player : int = 0
 
 var selected_spell : BattleSpell = null
@@ -46,7 +47,9 @@ var _shown_sacrifice_announcement : bool = false
 
 func load_armies(army_list : Array[BattleGridState.ArmyInBattleState]):
 	# Disable "Switch camera" button for non world map gameplay
-	camera_button.disabled = IM.game_setup_info.game_mode != GameSetupInfo.GameMode.WORLD
+	var disable_switch_camera : bool = IM.game_setup_info.game_mode != GameSetupInfo.GameMode.WORLD
+	camera_button.disabled = disable_switch_camera
+	camera_button.visible = not disable_switch_camera
 
 	# save armies
 	armies_reference = army_list
@@ -64,14 +67,14 @@ func load_armies(army_list : Array[BattleGridState.ArmyInBattleState]):
 		var controller = IM.get_player_by_index(army.army_reference.controller_index)
 		fighting_players_idx.append(army.army_reference.controller_index)
 		# create player buttons
-		var n = Button.new()
-		n.text = get_text_for(controller, idx == 0)
+		var button = Button.new()
+		button.text = get_text_for(controller, idx == 0)
 		if controller:
-			n.modulate = controller.get_player_color().color
+			button.modulate = controller.get_player_color().color
 		else:
-			n.modulate = Color.GRAY
-		n.pressed.connect(func select(): on_player_selected(idx, true))
-		players_box.add_child(n)
+			button.modulate = Color.GRAY
+		button.pressed.connect(func select(): on_player_selected(idx, true))
+		players_box.add_child(button)
 		idx += 1
 
 #endregion INIT
@@ -163,10 +166,10 @@ func update_replay_controls(move_nr: int, total_replay_moves: int, summary: Data
 		replay_status.text = "Battle ended - all enemy units killed"
 	else:
 		replay_status.text = "Battle ended - timeout"
-	
+
 	for i in replay_show_summary.pressed.get_connections():
 		replay_show_summary.pressed.disconnect(i.callable)
-	
+
 	if summary:
 		replay_show_summary.disabled = false
 		replay_show_summary.pressed.connect(
@@ -205,35 +208,63 @@ func on_player_selected(army_index : int, preview : bool = false):
 	if units_controller:
 		bg_color = units_controller.get_player_color()
 	for unit in armies_reference[army_index].units_to_summon:
+		# here is the place where unit buttons for placement are
+
+		const button_size = 200.0
 		var button := TextureButton.new()
 		button.texture_normal = CFG.SUMMON_BUTTON_TEXTURE
+		button.custom_minimum_size = Vector2.ONE * button_size
+		button.stretch_mode = TextureButton.STRETCH_KEEP_ASPECT_CENTERED
+		button.ignore_texture_size = true
 
 		var unit_display := UnitForm.create_for_summon_ui(unit, bg_color)
 		unit_display.position = button.texture_normal.get_size()/2
-		button.add_child(unit_display)
+		var center_container = CenterContainer.new()
+		button.add_child(center_container)
+		center_container.add_child(unit_display)
+		center_container.set_anchors_preset(Control.LayoutPreset.PRESET_CENTER)
+		center_container.name = "Center"
+		unit_display.name = "UnitForm"
+		unit_display.position = Vector2.ZERO
+
+		# TEMP need to find out good way to calculate scale
+		var calculated_scale = 0.00058 * button_size
+		unit_display.scale = Vector2.ONE * calculated_scale
 
 		units_box.add_child(button)
 		var lambda = func on_click():
 			if (current_player != army_index):
 				return
 			if selected_unit_button:  # Deselects previously selected unit
-				selected_unit_button.modulate = Color.WHITE
-			
+				selected_unit_button.get_node("Center/UnitForm").set_selected(false)
+
 			if selected_unit_button == button: # Selecting the same unit twice deselects it
 				selected_unit = null
 				selected_unit_button = null
 			else:
 				selected_unit = unit
 				selected_unit_button = button
-				selected_unit_button.modulate = Color.RED
+				selected_unit_button.get_node("Center/UnitForm").set_selected(true)
 		button.pressed.connect(lambda)
+
+		var lambda_hover = func(is_hovered : bool):
+			if _hovered_unit_button:
+				_hovered_unit_button.get_node("Center/UnitForm").set_hovered(false)
+
+			if is_hovered:
+				_hovered_unit_button = button
+				_hovered_unit_button.get_node("Center/UnitForm").set_hovered(true)
+			else:
+				_hovered_unit_button = null
+		button.mouse_entered.connect(lambda_hover.bind(true))
+		button.mouse_exited.connect(lambda_hover.bind(false))
+
+	BG.set_player_colors(bg_color)
 
 
 func unit_summoned(summon_phase_end : bool):
 	selected_unit = null
 	selected_unit_button = null
-
-	units_box.visible = not summon_phase_end
 
 	if summon_phase_end:
 		announcement_end_of_placement_phase_player_name_label.text = BM.get_current_player_name()

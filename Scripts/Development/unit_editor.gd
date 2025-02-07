@@ -17,22 +17,24 @@ var browser_tree_id_to_unit_path : Dictionary = {}
 var open_button_texture : Texture2D
 
 ## label showing path to currently edited data unit
-@onready var currently_edited_label : RichTextLabel = $UnitName
+@onready var currently_edited_label : Label = \
+	$HBoxContainer/Edition/VBoxContainer/Top/PanelContainer/UnitName
 
 ## unit form for preview and storing unsaved changes temporarily
-@onready var unit_preview_form : UnitForm = $UnitPreview
+@onready var unit_preview_form : UnitForm = \
+	$HBoxContainer/Edition/VBoxContainer/Preview/Center/UnitPreview
 
 ## try display for selecting unit to edit
-@onready var unit_browser_tree : Tree = $UnitBrowserTree
+@onready var unit_browser_tree : Tree = $HBoxContainer/UnitBrowserTree
 
 ## OptionButtons for picking symbols, ordered matching direction codes
 @onready var symbol_pickers : Array[OptionButton] = [
-	$ChangeW,
-	$ChangeNW,
-	$ChangeNE,
-	$ChangeE,
-	$ChangeSE,
-	$ChangeSW,
+	$HBoxContainer/Edition/VBoxContainer/Preview/Center/ChangeW,
+	$HBoxContainer/Edition/VBoxContainer/Preview/Center/ChangeNW,
+	$HBoxContainer/Edition/VBoxContainer/Preview/Center/ChangeNE,
+	$HBoxContainer/Edition/VBoxContainer/Preview/Center/ChangeE,
+	$HBoxContainer/Edition/VBoxContainer/Preview/Center/ChangeSE,
+	$HBoxContainer/Edition/VBoxContainer/Preview/Center/ChangeSW,
 ]
 
 

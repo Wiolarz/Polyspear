@@ -1,0 +1,16 @@
+[gd_scene load_steps=3 format=3 uid="uid://bft6ygdaxkog3"]
+
+[ext_resource type="Shader" path="res://Art/tile_select_shader.gdshader" id="1_8hxsk"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_l3ksu"]
+shader = ExtResource("1_8hxsk")
+
+[node name="SelectionMark" type="Line2D"]
+z_index = -1
+material = SubResource("ShaderMaterial_l3ksu")
+scale = Vector2(65, 65)
+points = PackedVector2Array(0, 20, 17.321, 10, 17.321, -10, 0, -20, -17.321, -10, -17.321, 10)
+closed = true
+width = 1.5
+default_color = Color(0.877616, 0.877616, 0.877616, 0.643137)
+antialiased = true

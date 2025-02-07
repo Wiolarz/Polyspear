@@ -5,6 +5,9 @@ extends Node2D
 signal anim_end()
 
 const SIDE_NAMES = ["FrontSymbol", "FrontRightSymbol", "BackRightSymbol", "BackSymbol", "BackLeftSymbol", "FrontLeftSymbol"]
+const selection_mark_scene = preload("res://Scenes/Form/SelectionMark.tscn")
+
+@onready var sprite_color := $sprite_color
 
 var entity : Unit
 var _symbols_flipped : bool = true  # flag used for unit rotation
@@ -49,11 +52,11 @@ func apply_graphics(template : DataUnit, color : DataPlayerColor):
 	_apply_unit_texture(unit_texture)
 	_apply_color_texture(color)
 	_apply_level_number(template.level)
-  
+
 	for side in range(0,6):
 		var symbol_texture = template.symbols[side].texture_path
 		_apply_symbol_sprite(side, symbol_texture)
-	
+
 	_flip_unit_sprite()
 	$RigidUI/SpellEffect1.texture = null
 	$RigidUI/SpellEffect2.texture = null
@@ -189,7 +192,20 @@ func set_effects() -> void:
 
 
 func set_selected(is_selected : bool):
-	var c = Color.RED if is_selected else Color.WHITE
-	$sprite_unit.modulate = c
+	if is_selected and not get_node_or_null("SelectionMark"):
+		var mark = selection_mark_scene.instantiate()
+		add_child(mark)
+		mark.name = "SelectionMark"
+		mark.position = Vector2(0.0, 0.0)
+		z_index = 2
+	else:
+		remove_child(get_node_or_null("SelectionMark"))
+		z_index = 0
+
+
+func set_hovered(is_hovered : bool):
+	var shader_material := material as ShaderMaterial
+	var intensity = 0.3 if is_hovered else 0.0
+	shader_material.set_shader_parameter("highlight_intensity", intensity)
 
 #endregion UI

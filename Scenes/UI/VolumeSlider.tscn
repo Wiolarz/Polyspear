@@ -1,0 +1,42 @@
+[gd_scene load_steps=3 format=3 uid="uid://b7jfsxfq2gkxs"]
+
+[ext_resource type="Script" path="res://Scripts/UI/volume_slider.gd" id="1_3svej"]
+[ext_resource type="Texture2D" uid="uid://0lpxbb0xhfsn" path="res://Art/old/spear.png" id="2_rwqxd"]
+
+[node name="VolumeSlider" type="VBoxContainer"]
+custom_minimum_size = Vector2(60, 240)
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("1_3svej")
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "Title"
+horizontal_alignment = 1
+vertical_alignment = 1
+text_overrun_behavior = 3
+
+[node name="Slider" type="VSlider" parent="."]
+layout_mode = 2
+size_flags_horizontal = 1
+size_flags_vertical = 3
+value = 100.0
+
+[node name="ButtonMute" type="Button" parent="."]
+custom_minimum_size = Vector2(48, 48)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+
+[node name="TextureRect" type="TextureRect" parent="ButtonMute"]
+modulate = Color(1, 1, 1, 0.392157)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_rwqxd")
+expand_mode = 1
+stretch_mode = 5

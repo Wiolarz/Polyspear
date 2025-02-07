@@ -1,21 +1,31 @@
-[gd_scene load_steps=4 format=3 uid="uid://ceurpxmgmn5c1"]
+[gd_scene load_steps=6 format=3 uid="uid://ceurpxmgmn5c1"]
 
+[ext_resource type="Shader" path="res://Art/tile_overall_shader.gdshader" id="1_egcue"]
 [ext_resource type="Script" path="res://Scripts/General/tile_form.gd" id="1_uelmv"]
 [ext_resource type="Texture2D" uid="uid://dffoe1yqgsgjm" path="res://Art/world_map/sentinel.png" id="2_utlft"]
 [ext_resource type="Texture2D" uid="uid://clhjrsljrp7f7" path="res://Art/player_colors/red_color.png" id="3_d5jcp"]
 
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_wh5ai"]
+resource_local_to_scene = true
+shader = ExtResource("1_egcue")
+shader_parameter/highlight_intensity = 0.0
+
 [node name="TileForm" type="Area2D"]
+material = SubResource("ShaderMaterial_wh5ai")
 script = ExtResource("1_uelmv")
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="."]
+use_parent_material = true
 polygon = PackedVector2Array(-822, -476, 0, -967, 860, -471, 863, 486, 0, 959, -823, 492)
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
+use_parent_material = true
 position = Vector2(20, 0)
 texture = ExtResource("2_utlft")
 
 [node name="CoordLabel" type="Label" parent="."]
 z_index = 1
+use_parent_material = true
 offset_left = -120.0
 offset_top = 672.0
 offset_right = 49.0
@@ -25,6 +35,7 @@ text = "(-,-)"
 
 [node name="PlaceLabel" type="Label" parent="."]
 z_index = 10
+use_parent_material = true
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
@@ -44,6 +55,7 @@ vertical_alignment = 1
 
 [node name="ControlerSprite" type="Sprite2D" parent="."]
 visible = false
+use_parent_material = true
 position = Vector2(0, -239)
 scale = Vector2(0.2, 0.2)
 texture = ExtResource("3_d5jcp")
