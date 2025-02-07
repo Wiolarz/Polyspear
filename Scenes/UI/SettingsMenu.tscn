@@ -59,11 +59,18 @@ text = "Background color changes with player's turns"
 layout_mode = 2
 text = "Check LibSpear integrity"
 
-[node name="CycleGuiAnimationMode" type="Button" parent="Margin/VBox"]
+[node name="OptionGuiAnimationMode" type="HBoxContainer" parent="Margin/VBox"]
 layout_mode = 2
-text = "GUI anim mode: something"
-alignment = 0
+
+[node name="Label" type="Label" parent="Margin/VBox/OptionGuiAnimationMode"]
+layout_mode = 2
+text = "GUI Animations:      "
+
+[node name="Option" type="OptionButton" parent="Margin/VBox/OptionGuiAnimationMode"]
+custom_minimum_size = Vector2(400, 0)
+layout_mode = 2
 text_overrun_behavior = 3
+fit_to_longest_item = false
 
 [node name="VolumeContainer" type="VBoxContainer" parent="Margin/VBox"]
 layout_mode = 2
@@ -90,5 +97,3 @@ title = "Game FX"
 [node name="GUI" parent="Margin/VBox/VolumeContainer/Sliders" instance=ExtResource("2_brx2j")]
 layout_mode = 2
 title = "GUI"
-
-[connection signal="pressed" from="Margin/VBox/CycleGuiAnimationMode" to="." method="_on_cycle_gui_anim_mode_pressed"]
