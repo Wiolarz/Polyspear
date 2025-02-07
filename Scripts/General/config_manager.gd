@@ -1,6 +1,9 @@
 # Singleton - CFG
 extends Node
 
+
+#region Animations
+
 enum BotSpeed
 {
 	FREEZE = 0,
@@ -20,9 +23,22 @@ enum AnimationSpeed
 ## so unit move takes between X and 2X
 var animation_speed_frames : AnimationSpeed = AnimationSpeed.NORMAL
 
+var anim_default_ease := Tween.EASE_OUT
+var anim_default_trans := Tween.TRANS_CUBIC
+var anim_move_duration := 0.3
+var anim_turn_duration := 0.3
+var anim_death_duration := 0.3
+var anim_symbol_activation_scale := Vector2(2.0, 2.0)
+# temporarily cranked up to 0.8, TODO change to 0.5 when 
+var anim_symbol_activation_duration := 0.8
+
+#endregion
+
 ## battle map is placed this far to the right after world map bounds
 const MAPS_OFFSET_X = 7000
 
+const BATTLE_BORDER_WIDTH = 15
+const BATTLE_BORDER_HEIGHT = 8
 
 #region Paths
 
@@ -37,6 +53,12 @@ const BATTLE_MAP_TILES_PATH = "res://Resources/Battle/Battle_tiles/"
 const WORLD_MAP_TILES_PATH = "res://Resources/World/World_tiles/"
 const SYMBOLS_PATH = "res://Resources/Battle/Symbols/"
 const BATTLE_BOTS_PATH = "res://Resources/Battle/Bots"
+
+const ROCK_ICON_PATH = "res://Art/battle_map/rock.png"
+const SWAMP_ICON_PATH = "res://Art/battle_map/swamp.png"
+const MANA_ICON_PATH = "res://Art/battle_map/mana_well.png"
+
+const PLAYER_COLORS_PATH = "res://Art/player_colors/"
 
 const REPLAY_DIRECTORY = "user://replays/"
 const PLAYER_OPTIONS_PATH = "user://player_options.tres"
@@ -56,6 +78,9 @@ const SUMMON_BUTTON_TEXTURE:Texture2D = preload("res://Art/battle_map/grass.png"
 
 const DEFAULT_ARMY_FORM = preload("res://Scenes/Form/ArmyForm.tscn")
 
+const MOVE_HIGHLIGHT_SCENE = preload("res://Scenes/UI/Battle/BattleMoveHighlight.tscn")
+const PLAN_POINTER_SCENE = preload("res://Scenes/UI/Battle/BattlePlanPointer.tscn")
+const PLAN_ARROW_END_SCENE = preload("res://Scenes/UI/Battle/BattlePlanArrowEnd.tscn")
 
 # Neutral Units armies
 const HUNT_WOOD_PATH : String = "res://Resources/Presets/Army/hunt_wood/"
@@ -75,12 +100,12 @@ const OUTPOST_RUBY_PATH : String = "res://Resources/Presets/Army/outpost_defende
 #region Colors
 
 var TEAM_COLORS : Array[DataPlayerColor] = [
+	DataPlayerColor.create("blue", Color(0.0, 0.4, 1.0)),
+	DataPlayerColor.create("orange", Color(0.9, 0.5, 0.0)),
+	DataPlayerColor.create("red", Color(1.0, 0.0, 0.0)),
 	DataPlayerColor.create("purple", Color(0.9, 0.2, 0.85)),
 	DataPlayerColor.create("green", Color(0.0, 0.9, 0.0)),
 	DataPlayerColor.create("yellow", Color(0.9, 0.8, 0.0)),
-	DataPlayerColor.create("red", Color(1.0, 0.0, 0.0)),
-	DataPlayerColor.create("blue", Color(0.0, 0.4, 1.0)),
-	DataPlayerColor.create("orange", Color(0.9, 0.5, 0.0)),
 ]
 
 var NEUTRAL_COLOR := \
@@ -124,6 +149,16 @@ const POLYAPI_BASE_URL = "https://polyserver.onrender.com/"
 #endregion Multiplayer
 
 
+#region Battle Map properties
+
+#TEMP variables until better mana equation is implemented
+const BIG_CYCLONE_COUNTER_VALUE = 30
+const SMALL_CYCLONE_COUNTER_VALUE = 15
+const CYCLONE_MANA_THRESHOLD = 3
+
+#endregion
+
+
 #region World Map properties
 
 const HERO_LEVEL_CAP = 7
@@ -132,7 +167,7 @@ func get_start_goods() -> Goods:
 	return Goods.new(10,5,3)
 
 const WORLD_MOVABLE_TILES = [
-	"empty",
+	"EMPTY",
 	"iron_mine",
 	"sawmill",
 	"ruby_cave",
@@ -148,7 +183,7 @@ const WORLD_MOVABLE_TILES = [
 
 #region Chess clock
 
-const CHESS_CLOCK_BATTLE_TIME_PER_PLAYER_MS = 3 * 60 * 1000 * 69
+const CHESS_CLOCK_BATTLE_TIME_PER_PLAYER_MS = 3 * 60 * 1000
 const CHESS_CLOCK_BATTLE_TURN_INCREMENT_MS = 2 * 1000
 
 #endregion chess clock
@@ -156,11 +191,16 @@ const CHESS_CLOCK_BATTLE_TURN_INCREMENT_MS = 2 * 1000
 
 #region Debugging & tests
 
+# Also documented in Documentation/libspear.md
+## Checks each time a move is done whether results of a move replicated in BattleManagerFast match results in a regular BM
 var debug_check_bmfast_integrity : bool :
 	get: return player_options.bmfast_integrity_checks
+## Enables additional BattleManagerFast internal integrity checks, which may slightly reduce performance
 var debug_check_bmfast_internals : bool :
 	get: return player_options.bmfast_integrity_checks
+## When greater than zero, saves replays from playouts where errors were detected
 var debug_mcts_max_saved_fail_replays := 16
+## When true, immediately save replays from BattleManagerFast mismatches with an appropriate name with a suffix "BMFast Mismatch"
 var debug_save_failed_bmfast_integrity := true
 
 #endregion
@@ -172,15 +212,18 @@ var player_options : PlayerOptions
 
 const DEFAULT_USER_NAME : String = "(( you ))"
 
+const ENABLE_AUTO_BRAIN := false
+
 var DEFAULT_MODE_IS_BATTLE : bool :
 	get: return player_options.use_default_battle
 var AUTO_START_GAME : bool :
 	get: return player_options.autostart_map
 
-var LAST_USED_BATTLE_PRESET : PresetBattle :
-	get: return player_options.last_used_battle_preset
+var LAST_USED_BATTLE_PRESET_NAME : String :
+	get: return player_options.last_used_battle_preset_name
 var LAST_USED_WORLD_PRESET : PresetWorld : # TODO implement this
 	get: return player_options.last_used_world_preset
+
 
 func save_last_used_for_host_setup(\
 		address : String, port : int, username : String) -> void:

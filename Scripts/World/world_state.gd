@@ -29,7 +29,7 @@ func _init(width_ : int, height_ : int):
 
 
 static func create(map: DataWorldMap,
-		slots : Array[GameSetupInfo.Slot],
+		slots : Array[Slot],
 		ser : SerializableWorldState) -> WorldState:
 	var result = WorldState.new(map.grid_width, map.grid_height)
 
@@ -375,7 +375,6 @@ func do_recruit_hero(player_index : int, data_hero : DataHero,
 	army.hero = hero
 	army.controller_index = city.controller_index
 	army.coord = coord
-	army.units_data.append(data_hero.data_unit)
 
 	grid.get_hex(coord).army = army
 	player.hero_armies.append(army)
@@ -589,7 +588,7 @@ func get_interactable_type_at(coord : Vector2i) -> String:
 	if get_city_at(coord):
 		return "city"
 
-	return "empty"
+	return "EMPTY"
 
 
 func get_army_at(coord : Vector2i) -> Army:

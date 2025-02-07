@@ -1,15 +1,16 @@
 extends GutTest
 
 const ALLOWED_BATTLE_TILE_TYPES = {
-	"sentinel" : true,
+	"SENTINEL" : true,
 	"1_player_spawn": true,
 	"2_player_spawn": true,
 	"3_player_spawn": true,
 	"4_player_spawn": true,
-	"empty": true,
+	"EMPTY": true,
 	"wall": true,
 	"swamp": true,
 	"hole": true,
+	"mana_well": true,
 }
 
 func test_battle_tiles_set():

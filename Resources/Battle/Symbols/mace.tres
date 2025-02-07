@@ -6,4 +6,4 @@
 resource_name = "res://Art/old/bow.png"
 script = ExtResource("1_neq3m")
 type = 14
-texture_path = "res://Art/items/blue_mace.png"
+texture_path = "res://Art/items/mace.png"

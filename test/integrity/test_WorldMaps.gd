@@ -1,17 +1,19 @@
 extends GutTest
 
 const ALLOWED_WORLD_TILE_TYPES = {
-	"sentinel" : true,
-	"elf_city": true,
-	"empty": true,
-	"orc_city": true,
-	"wall": true,
-	"iron_mine": true,
-	"ruby_cave": true,
-	"sawmill": true,
-	"iron_hunt": true,
-	"ruby_hunt": true,
-	"wood_hunt": true,
+	"SENTINEL" : true,
+	"EMPTY": true,
+
+	"city 0": true,
+	"city 1": true,
+
+	"WALL": true,
+	"outpost wood": true,
+	"outpost iron": true,
+	"outpost ruby": true,
+	"hunt_spot wood": true,
+	"hunt_spot iron": true,
+	"hunt_spot ruby": true,
 }
 
 func test_world_tiles_set():
@@ -37,9 +39,10 @@ func test_world_maps():
 	gut.p("Testing world maps %s" % CFG.WORLD_MAPS_PATH)
 	var map_paths = FileSystemHelpers.list_files_in_folder(CFG.WORLD_MAPS_PATH, true)
 	for path in map_paths:
-		gut.p("Checking "+path)
+		gut.p("Checking " + path)
 		var map_data : DataWorldMap = load(path)
-		assert_between(map_data.max_player_number, 2, 2, "max_player_number")
+		assert_between(map_data.max_player_number, 2, 4, "max_player_number")
+
 		var tile_types_seen = {}
 		for x in range(map_data.grid_width):
 			for y in range(map_data.grid_height):
@@ -51,7 +54,7 @@ func test_world_maps():
 				if not tile_types_seen.has(tile.type):
 					tile_types_seen[tile.type] = 0
 				tile_types_seen[tile.type] += 1
-		assert_between(tile_types_seen["elf_city"], 1,1,"elf_city")
-		assert_between(tile_types_seen["orc_city"], 1,1,"orc_city")
-		gut.p([tile_types_seen["elf_city"], tile_types_seen["orc_city"]])
+		
+		assert_true("city 0" in tile_types_seen.keys(), "No first player cities")
+		assert_true("city 1" in tile_types_seen.keys(), "No second player cities")
 

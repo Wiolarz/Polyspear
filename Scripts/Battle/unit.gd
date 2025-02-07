@@ -4,8 +4,18 @@ extends RefCounted # default
 signal unit_died()
 signal unit_turned()
 signal unit_moved()
+signal unit_magic_effect()
 
 const MAX_EFFECTS_PER_UNIT = 2
+
+signal unit_is_shooting(side : int)
+signal unit_is_slashing(side : int)
+signal unit_is_pushing(side : int)
+signal unit_is_blocking(side : int)
+signal unit_is_counter_attacking(side : int)
+
+signal unit_captured_mana(target_tile : Vector2i)  # change visuals of the tile to mark it as captured
+
 
 ## TODO remove this
 var controller : Player
@@ -25,6 +35,7 @@ var unit_rotation : int
 ## unit died
 var dead : bool
 
+## list of spells unit can cast (all of those are one-time use only)
 var spells : Array[BattleSpell] = []
 
 ## magic effects, size_limit == 2
@@ -32,6 +43,10 @@ var effects : Array[BattleMagicEffect] = []
 
 var is_on_swamp : bool = false
 
+# TEMP implementation, should be merged with is_on_swamp and other terrain based effects
+## this information is only for visual representation
+var is_on_rock : bool = false
+var is_on_mana : bool = false
 
 static func create(new_controller : Player, \
 		new_template : DataUnit, \
@@ -47,7 +62,7 @@ static func create(new_controller : Player, \
 	result.spells = new_template.spells.duplicate() # spells reset every battle
 	return result
 
-#region Main
+#region Emit Animation Signals
 
 ## turns unit front to a given side, can be awaited see waits_for_form
 func turn(side : GenericHexGrid.GridDirections):
@@ -59,8 +74,11 @@ func turn(side : GenericHexGrid.GridDirections):
 
 
 ## puts unit to a given coordinate, can be awaited see waits_for_form
-func move(new_coord : Vector2i, is_swamp : bool):
-	is_on_swamp = is_swamp
+func move(new_coord : Vector2i, battle_tile : BattleGridState.BattleHex):
+	is_on_swamp = battle_tile.swamp
+	is_on_rock = battle_tile.hill
+	is_on_mana = battle_tile.mana
+	unit_magic_effect.emit()
 
 	var old = coord
 	coord = new_coord
@@ -73,7 +91,7 @@ func unit_killed():
 	dead = true
 	unit_died.emit()
 
-#endregion Main
+#endregion Emit Animation Signals
 
 
 #region Unit Symbols
@@ -110,23 +128,22 @@ func try_adding_magic_effect(effect : BattleMagicEffect) -> bool:
 	if effects.size() >= MAX_EFFECTS_PER_UNIT:
 		return false
 	effects.append(effect)
+	unit_magic_effect.emit()
 	return true
 
+
+## currently used only to update UI
+func effect_state_changed() -> void:
+	unit_magic_effect.emit()
 
 #endregion Magic
 
 
-#region UI
-
-func get_player_color() -> DataPlayerColor:
-	if not controller:
-		return CFG.NEUTRAL_COLOR
-	return controller.get_player_color()
-
-#endregion UI
-
-
 #region Static Symbols
+
+static func does_attack_succeed(attack_symbol : E.Symbols, defense_symbol : E.Symbols):
+	return Unit.attack_power(attack_symbol) > Unit.defense_power(defense_symbol)
+
 
 ## 0 no shield, 1 weak shield (any symbol), 2 normal shield, 3 strong shield
 static func defense_power(symbol : E.Symbols) -> int:
@@ -146,9 +163,9 @@ static func attack_power(symbol : E.Symbols) -> int:
 	match symbol:
 		E.Symbols.STRONG_AXE, E.Symbols.STRONG_SPEAR:
 			return 3  # strong attack pierces normal shields
-		E.Symbols.AXE, E.Symbols.SPEAR, E.Symbols.BOW, E.Symbols.ATTACK_SHIELD, E.Symbols.FIST, E.Symbols.DAGGER, E.Symbols.SWORD:
+		E.Symbols.AXE, E.Symbols.SPEAR, E.Symbols.BOW, E.Symbols.ATTACK_SHIELD, E.Symbols.FIST, E.Symbols.DAGGER, E.Symbols.SWORD, E.Symbols.MACE:
 			return 2  # normal attack
-		E.Symbols.STAFF, E.Symbols.MACE:
+		E.Symbols.STAFF:
 			return 1  # weak attack - kills only when enemy defense is 0 (Empty symbol present)
 		_:
 			return 0
@@ -159,13 +176,12 @@ static func can_it_push(symbol : E.Symbols) -> bool:
 	return Unit.push_power(symbol) > 0
 
 
-## return how many tiles does range weapon attack can reach [br]
-## -1 = infinite
+## return how many tiles does weapon pushes enemy away
 static func push_power(symbol : E.Symbols) -> int:
 	match symbol:
-		E.Symbols.FIST:
-			return 3
 		E.Symbols.MACE:
+			return 3
+		E.Symbols.FIST:
 			return 2
 		E.Symbols.PUSH, E.Symbols.STRONG_TOWERSHIELD, E.Symbols.TOWERSHIELD:
 			return 1
@@ -202,11 +218,8 @@ static func does_it_counter_attack(symbol : E.Symbols) -> bool:
 
 
 static func does_it_shoot(symbol : E.Symbols) -> bool:
-	match symbol:
-		E.Symbols.BOW, E.Symbols.DAGGER:
-			return true
-		_:
-			return false
+	return Unit.ranged_weapon_reach(symbol) > 0
+
 
 
 ## return how many tiles does range weapon attack can reach [br]

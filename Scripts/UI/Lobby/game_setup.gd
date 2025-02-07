@@ -26,14 +26,16 @@ var current_player_to_set : String = "" # if empty we select for us
 
 func _ready():
 	IM.game_setup_info_changed.connect(refresh_after_connection_change)
+	NET.server_settings_changed.connect(refresh_after_connection_change)
 	## button/world toggle buttons, default world
 	button_battle.button_group = button_world.button_group
 	if CFG.DEFAULT_MODE_IS_BATTLE:
-		_on_button_battle_pressed()
+		select_battle()
 	else:
-		_on_button_world_pressed()
+		select_world()
 
 	if client_side:
+
 		button_battle.disabled = true
 		button_world.disabled = true
 		button_confirm.disabled = true
@@ -42,11 +44,14 @@ func _ready():
 func refresh_after_connection_change():
 	if IM.game_setup_info.is_in_mode_world() and not button_world.button_pressed:
 		print("to world")
-		_on_button_world_pressed()
+		select_world()
 
 	if IM.game_setup_info.is_in_mode_battle() and not button_battle.button_pressed:
 		print("to battle")
-		_on_button_battle_pressed()
+		select_battle()
+
+	if NET.client and NET.client.server_settings_cache: # HACK
+		button_confirm.disabled = not NET.client.server_settings_cache.all_can_start()
 
 	# this refresh is to change our username when we start or stop server ;)
 	if container.get_child_count() == 1:
@@ -168,6 +173,7 @@ func _select_setup_page(page):
 
 
 func select_world():
+	button_world.button_pressed = true
 	IM.game_setup_info.game_mode = GameSetupInfo.GameMode.WORLD
 	_select_setup_page(multi_world_setup_scene)
 	if NET.server:
@@ -175,23 +181,26 @@ func select_world():
 
 
 func select_battle():
-	IM.game_setup_info.game_mode = GameSetupInfo.GameMode.BATTLE
+	button_battle.button_pressed = true
+	if not IM.game_setup_info.is_in_mode_battle():
+		IM.init_battle_mode(not NET.client)
 	_select_setup_page(multi_battle_setup_scene)
 	if NET.server:
 		NET.server.broadcast_full_game_setup(IM.game_setup_info)
 
 
 func _on_button_world_pressed():
-	button_world.button_pressed = true
 	select_world()
 
 
 func _on_button_battle_pressed():
-	button_battle.button_pressed = true
 	select_battle()
 
 #endregion Change Game Mode
 
 
 func _on_button_confirm_pressed():
-	IM.start_game(null, null)
+	if NET.client:
+		NET.client.queue_request_start()
+	else:
+		IM.start_game(null, null)

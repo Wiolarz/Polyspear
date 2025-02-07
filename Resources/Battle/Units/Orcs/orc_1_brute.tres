@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="DataUnit" load_steps=8 format=3 uid="uid://lijo3rfcpr7n"]
+[gd_resource type="Resource" script_class="DataUnit" load_steps=8 format=3 uid="uid://bjcrbdv3aq2jk"]
 
 [ext_resource type="Script" path="res://Resources/Battle/data_unit.gd" id="1_4uymu"]
 [ext_resource type="Script" path="res://Scripts/World/Economy/goods.gd" id="1_v4mob"]
@@ -16,7 +16,7 @@ ruby = 0
 [resource]
 script = ExtResource("1_4uymu")
 unit_name = "Brute"
-texture_path = "res://Art/units/orc/orc_brute.png"
+texture_path = "res://Art/units/orc/orc_axe_fighter.png"
 symbols = Array[Resource("res://Resources/Battle/data_symbol.gd")]([ExtResource("5_fihog"), ExtResource("5_c4fvw"), ExtResource("3_uf26o"), ExtResource("3_uf26o"), ExtResource("3_uf26o"), ExtResource("5_c4fvw")])
 cost = SubResource("Resource_vofdp")
 required_building = ExtResource("2_yhbdv")

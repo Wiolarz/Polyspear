@@ -1,7 +1,7 @@
 class_name Player
 extends Node
 
-var slot : GameSetupInfo.Slot
+var slot : Slot
 
 var bot_engine : AIInterface
 
@@ -13,15 +13,17 @@ var team : int:
 	get: return slot.team
 	set(_value): assert(false, "no set here")
 
-static func create(new_slot : GameSetupInfo.Slot) -> Player:
+static func create(new_slot : Slot) -> Player:
 	var result := Player.new()
 	result.slot = new_slot
 
 	if new_slot.is_bot():
+		assert(FileAccess.file_exists(new_slot.battle_bot_path), 
+			   "File for bot '%s' does not exist" % [new_slot.battle_bot_path])
 		result.bot_engine = load(new_slot.battle_bot_path).instantiate()
+		assert(result.bot_engine != null, "Bot '%s' does not exist" % new_slot.battle_bot_path)
 		result.add_child(result.bot_engine)
 		result.bot_engine.set_player(result)
-		assert(result.bot_engine != null, "Bot '%s' does not exist" % new_slot.battle_bot_path)
 
 	result.name = "Player_" + result.get_player_name()
 
@@ -35,14 +37,7 @@ func _init(): #?
 #region Getters
 
 func get_player_name() -> String:
-	# TODO make these names same as elsewhere
-	if slot.is_bot():
-		return "AI"
-	if slot.is_local():
-		return "LOCAL" # TODO use the same identifier which is "(( you ))" when
-					   # offline
-	# network login
-	return slot.occupier
+	return slot.get_player_name()
 
 
 func get_player_color() -> DataPlayerColor:

@@ -39,6 +39,18 @@ var hero_paths : Array[String]
 @onready var timer_increment_seconds : SpinBox = $GeneralVContainer/TopBarHContainerTimer/IncrementTimeEdit
 
 
+## used to know if changes in gui are made by user and should be passed to
+## backend (change setup info and send over network) OR made by refreshing
+## gui to state in backend
+func should_react_to_changes() -> bool:
+	var node := get_parent()
+	while node:
+		if node.has_method("should_react_to_changes"):
+			return node.should_react_to_changes()
+		node = node.get_parent()
+	return false
+
+
 func try_to_take():
 	if not setup_ui:
 		return
@@ -69,6 +81,18 @@ func set_visible_name(player_name : String):
 	label_name.text = player_name
 
 
+func set_visible_team(team : int):
+	team_list.selected = team
+
+
+func set_visible_timers(reserve : int, increment : int):
+	var reserve_minutes := int(reserve / 60)
+	var reserve_seconds := reserve % 60
+	timer_reserve_minutes.value = reserve_minutes
+	timer_reserve_seconds.value = reserve_seconds
+	timer_increment_seconds.value = increment
+
+
 func set_visible_take_leave_button_state(state : TakeLeaveButtonState):
 	# maybe better get this from battle setup, but this is simpler
 	button_take_leave_state = state
@@ -84,9 +108,13 @@ func set_visible_take_leave_button_state(state : TakeLeaveButtonState):
 			button_take_leave.text = "Leave"
 			button_take_leave.disabled = false
 		TakeLeaveButtonState.TAKEN_BY_OTHER:
-			# ">> TAKEN <<" -- simple "Taken" would be too similar to "Take"
-			button_take_leave.text = ">> TAKEN <<"
-			button_take_leave.disabled = true
+			if IM.is_slot_steal_allowed():
+				button_take_leave.text = "Steal"
+				button_take_leave.disabled = false
+			else:
+				# ">> TAKEN <<" -- simple "Taken" would be too similar to "Take"
+				button_take_leave.text = ">> TAKEN <<"
+				button_take_leave.disabled = true
 		TakeLeaveButtonState.GHOST:
 			button_take_leave.text = "ghost"
 			button_take_leave.disabled = true
@@ -95,7 +123,7 @@ func set_visible_take_leave_button_state(state : TakeLeaveButtonState):
 func _ready():
 	hero_paths = FileSystemHelpers.list_files_in_folder(CFG.HEROES_PATH, true, true)
 	init_hero_list(hero_list)
-	
+
 	unit_paths = FileSystemHelpers.list_files_in_folder(CFG.UNITS_PATH, true, true)
 	for index in buttons_units.size():
 		var button : OptionButton = buttons_units[index]
@@ -124,7 +152,7 @@ func init_hero_list(button : OptionButton) -> void:
 	for hero_path in hero_paths:
 		button.add_item(hero_path.trim_prefix(CFG.HEROES_PATH))
 	button.item_selected.connect(hero_in_army_changed.bind())
-	
+
 
 func hero_in_army_changed(hero_index) -> void:
 	var hero_path = hero_list.get_item_text(hero_index)
@@ -132,13 +160,13 @@ func hero_in_army_changed(hero_index) -> void:
 	if hero_path != EMPTY_UNIT_TEXT:
 		hero_data = load(CFG.HEROES_PATH+"/"+hero_path)
 	var slot_index = setup_ui.slot_to_index(self)
-	
+
 	IM.game_setup_info.set_hero(slot_index, hero_data)
 	if NET.server:
 		NET.server.broadcast_full_game_setup(IM.game_setup_info) #TODO add multi support
 	if NET.client:
 		pass#NET.client.queue_lobby_set_unit(slot_index, unit_index, unit_data) #TODO STUB
-	
+
 
 func unit_in_army_changed(selected_index, unit_index) -> void:
 	var unit_path = buttons_units[unit_index].get_item_text(selected_index)
@@ -164,38 +192,19 @@ func set_bot(new_bot_path: String):
 	bot_changed(idx)
 
 func timer_changed() -> void:
+	if not should_react_to_changes():
+		return
+
 	var slot_index = setup_ui.slot_to_index(self)
 
 	var seconds_reserve = timer_reserve_minutes.value * 60 + timer_reserve_seconds.value
 	
-	IM.game_setup_info.set_timer(slot_index, seconds_reserve, timer_increment_seconds.value)
+	
+	IM.game_setup_info.set_timer(slot_index, seconds_reserve, int(timer_increment_seconds.value))
 	if NET.server:
 		NET.server.broadcast_full_game_setup(IM.game_setup_info) #TODO add multi support
 	if NET.client:
-		NET.client.queue_lobby_set_timer(slot_index, seconds_reserve, timer_increment_seconds.value)
-
-
-func apply_army_preset(army : PresetArmy):
-	var slot_index = setup_ui.slot_to_index(self)
-
-	IM.game_setup_info.set_team(slot_index, army.team)
-	
-	if army.hero:
-		IM.game_setup_info.set_hero(slot_index, army.hero)
-
-	var idx = 0
-	for u in army.units:
-		if not u:
-			continue
-		set_unit(buttons_units[idx], u)
-		IM.game_setup_info.set_unit(slot_index, idx, u)
-		idx += 1
-	while idx < buttons_units.size():
-		buttons_units[idx].select(0)
-		IM.game_setup_info.set_unit(slot_index, idx, null)
-		idx += 1
-	if NET.server:
-		NET.server.broadcast_full_game_setup(IM.game_setup_info)
+		NET.client.queue_lobby_set_timer(slot_index, seconds_reserve, int(timer_increment_seconds.value))
 
 
 func set_army(units_list : Array[DataUnit]):
@@ -233,19 +242,28 @@ func fill_team_list(max_player_number : int) -> void:
 
 
 func _on_button_take_leave_pressed():
+	if not should_react_to_changes():
+		return
 	match button_take_leave_state:
 		TakeLeaveButtonState.FREE:
 			try_to_take()
 		TakeLeaveButtonState.TAKEN_BY_YOU:
 			try_to_leave()
+		TakeLeaveButtonState.TAKEN_BY_OTHER:
+			if IM.is_slot_steal_allowed():
+				try_to_take()
 
 
 
 func _on_button_color_pressed():
+	if not should_react_to_changes():
+		return
 	cycle_color()
 
 
 func _on_option_button_team_item_selected(index : int):
+	if not should_react_to_changes():
+		return
 	var slot_index = setup_ui.slot_to_index(self) # determine on which slot player is
 
 	IM.game_setup_info.set_team(slot_index, index)
@@ -256,4 +274,6 @@ func _on_option_button_team_item_selected(index : int):
 
 
 func _on_button_level_up_pressed():
+	if not should_react_to_changes():
+		return
 	UI.show_hero_level_up()

@@ -1,10 +1,10 @@
-[gd_resource type="Resource" script_class="DataUnit" load_steps=7 format=3 uid="uid://dfejc514is726"]
+[gd_resource type="Resource" script_class="DataUnit" load_steps=7 format=3 uid="uid://cx8ch2m3osvk0"]
 
 [ext_resource type="Script" path="res://Resources/Battle/data_unit.gd" id="1_4uymu"]
 [ext_resource type="Script" path="res://Scripts/World/Economy/goods.gd" id="1_8deib"]
 [ext_resource type="Resource" uid="uid://bdcjijsj36d16" path="res://Resources/Factions/Buildings/Barracks_2.tres" id="2_70td2"]
-[ext_resource type="Resource" uid="uid://bp747guikipcb" path="res://Resources/Battle/Symbols/spear.tres" id="3_6wlcv"]
 [ext_resource type="Resource" uid="uid://o4rlmfc33rsh" path="res://Resources/Battle/Symbols/empty.tres" id="4_icg07"]
+[ext_resource type="Resource" uid="uid://c61kr7bqpyhr0" path="res://Resources/Battle/Symbols/bow.tres" id="4_n5o08"]
 
 [sub_resource type="Resource" id="Resource_bdqvu"]
 script = ExtResource("1_8deib")
@@ -15,8 +15,8 @@ ruby = 0
 [resource]
 script = ExtResource("1_4uymu")
 unit_name = "Brigand"
-texture_path = "res://Art/units/orc/orc_brigand.png"
-symbols = Array[Resource("res://Resources/Battle/data_symbol.gd")]([ExtResource("3_6wlcv"), ExtResource("4_icg07"), ExtResource("4_icg07"), ExtResource("4_icg07"), ExtResource("4_icg07"), ExtResource("4_icg07")])
+texture_path = "res://Art/orc_spear_thrower.png"
+symbols = Array[Resource("res://Resources/Battle/data_symbol.gd")]([ExtResource("4_n5o08"), ExtResource("4_icg07"), ExtResource("4_icg07"), ExtResource("4_icg07"), ExtResource("4_icg07"), ExtResource("4_icg07")])
 cost = SubResource("Resource_bdqvu")
 required_building = ExtResource("2_70td2")
 level = 2

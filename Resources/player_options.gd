@@ -13,8 +13,15 @@ extends Resource
 
 @export var bmfast_integrity_checks : bool = true
 
+## if true, peer ip addresses are hidden
+@export var streamer_mode : bool
+
 ## Default first option after opening the game should be last selected one
-@export var last_used_battle_preset : PresetBattle
+## [br]
+## Changed to String for easier list update in GUI
+@export var last_used_battle_preset_name : String
+
+## Default first option after opening the game should be last selected one
 @export var last_used_world_preset : PresetWorld
 
 @export var fullscreen : bool:

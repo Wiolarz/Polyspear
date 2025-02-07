@@ -4,7 +4,7 @@ extends Area2D
 
 var coord : Vector2i
 
-var type : String = "sentinel"
+var type : String = "SENTINEL"
 
 var hex = null # WorldHex in world
 
@@ -67,6 +67,12 @@ func _on_input_event(_viewport : Node, event : InputEvent, _shape_idx : int):
 	# normal gameplay - on click
 	if event.is_action_pressed("KEY_SELECT"):
 		UI.grid_input_listener(coord, grid_type, false)
+	
+	# normal gameplay - on right click (purely visual "planning tool" for players to draw chess arrows)
+	if Input.is_action_pressed("KEY_PLAN"):
+		UI.grid_planning_input_listener(coord, grid_type, true)
+	elif Input.is_action_just_released("KEY_PLAN"):
+		UI.grid_planning_input_listener(coord, grid_type, false)
 
 	# for map editor - on mouse move while button pressed
 	if Input.is_action_pressed("KEY_SELECT"):
@@ -82,8 +88,7 @@ func _process(_delta):
 func controller_changed():
 	$ControlerSprite.visible = true
 	var color_name : String = hex.place.controller.get_player_color().name
-
-	var path = "res://Art/player_colors/%s_color.png" % color_name
+	var path =  "%s%s_color.png" % [CFG.PLAYER_COLORS_PATH, color_name]
 	var texture = load(path) as Texture2D
 	assert(texture, "failed to load background " + path)
 	$ControlerSprite.texture = texture

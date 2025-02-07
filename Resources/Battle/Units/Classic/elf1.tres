@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="DataUnit" load_steps=6 format=3 uid="uid://i6rd1k4pejbh"]
+[gd_resource type="Resource" script_class="DataUnit" load_steps=6 format=3 uid="uid://dx5rphj40ljm1"]
 
 [ext_resource type="Script" path="res://Scripts/World/Economy/goods.gd" id="1_33fl6"]
 [ext_resource type="Script" path="res://Resources/Battle/data_unit.gd" id="2_fe6q4"]
@@ -14,9 +14,9 @@ ruby = 0
 [resource]
 script = ExtResource("2_fe6q4")
 unit_name = "elf_1"
-texture_path = "res://Art/units/elf/elf_spearmen.png"
+texture_path = "res://Art/elf_spearmen.png"
 symbols = Array[Resource("res://Resources/Battle/data_symbol.gd")]([ExtResource("3_0fmkg"), ExtResource("4_4yv01"), ExtResource("4_4yv01"), ExtResource("4_4yv01"), ExtResource("4_4yv01"), ExtResource("4_4yv01")])
 cost = SubResource("Resource_k8g4u")
-level = 1
-mana = 0
+level = 2
+mana = 2
 spells = Array[Resource("res://Scripts/Battle/battle_spell.gd")]([])

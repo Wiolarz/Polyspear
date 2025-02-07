@@ -15,6 +15,7 @@ func refresh():
 	_refresh_toggle($VBoxContainer/ToggleBMFastIntegrityChecks, "bmfast_integrity_checks")
 
 
+
 func _refresh_toggle(node : CheckButton, option: StringName):
 	node.button_pressed = CFG.player_options.get(option)
 	if node not in connected_nodes:
@@ -33,3 +34,8 @@ func _on_toggle_auto_start_visibility_changed():
 	if visible:
 		refresh()
 
+
+func _on_toggle_streamer_mode_pressed():
+	CFG.player_options.streamer_mode = not CFG.player_options.streamer_mode
+	CFG.save_player_options()
+	$VBoxContainer/ToggleStreamerMode.button_pressed = CFG.player_options.streamer_mode

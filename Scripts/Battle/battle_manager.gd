@@ -1,5 +1,5 @@
 # Singleton - BM
-class_name BattleManager extends GridNode2D
+extends GridNode2D
 
 var _battle_is_ongoing : bool = false
 
@@ -9,9 +9,10 @@ var _tile_grid : GenericHexGrid # Grid<TileForm> - VISUALs in a grid
 var _unit_to_unit_form : Dictionary # gameplay unit to VISUAL mapping
 var _grid_tiles_node : Node2D # parent for tiles VISUAL
 var _unit_forms_node : Node2D # parent for units VISUAL
+var _border_node : Node2D # parent for border tiles VISUAL
+var _move_highlights_node : Node2D
 
 var _battle_ui : BattleUI
-var _anim_queue : Array[AnimInQueue] = []
 var latest_ai_cancel_token : CancellationToken
 
 var _current_summary : DataBattleSummary = null
@@ -20,11 +21,18 @@ var _selected_unit : Unit
 
 var _replay_data : BattleReplay
 var _replay_is_playing : bool = false
+var _replay_move_counter : int = 0
+var _replay_number_of_moves : int = 0
 
 var _batch_mode : bool = false # flagged true when recreating game state
 var _ai_move_preview : AIMovePreview = null
+var _painter_node : BattlePainter
+
+signal move_animation_done()
+
 
 func _ready():
+	## Order of nodes determines their visibility, lower ones are on top of the previous ones.
 	_battle_ui = load("res://Scenes/UI/BattleUi.tscn").instantiate()
 
 	_grid_tiles_node = Node2D.new()
@@ -34,25 +42,40 @@ func _ready():
 	_unit_forms_node = Node2D.new()
 	_unit_forms_node.name = "UNITS"
 	add_child(_unit_forms_node)
+	
+	_painter_node = load("res://Scenes/UI/Battle/BattlePlanPainter.tscn").instantiate()
+	add_child(_painter_node)
+
+	_move_highlights_node = Node2D.new()
+	_move_highlights_node.name = "MOVE_HIGHLIGHTS"
+	add_child(_move_highlights_node)
 
 	UI.add_custom_screen(_battle_ui)
 
 
 func _process(_delta):
-	_process_anim_queue()
 	_check_clock_timer_tick()
 
 
 #region Battle Setup
 
 ## x_offset is used to place battle to the right of world map
+## replay_template - used in replays to avoid juggling player data
 func start_battle(new_armies : Array[Army], battle_map : DataBattleMap, \
-		battle_state : SerializableBattleState, x_offset : float, is_spectator : bool) -> void:
+		battle_state : SerializableBattleState, x_offset : float,
+		replay_template : BattleReplay = null) -> void:
 
 	assert(_is_clear(), "cannot start battle map, map already loaded")
 
-	_replay_data = BattleReplay.create(new_armies, battle_map)
-	_replay_data.save()
+	if replay_template:
+		_replay_data = BattleReplay.from_template(replay_template)
+	else:
+		_replay_data = BattleReplay.create(new_armies, battle_map)
+	
+	_replay_move_counter = 0
+	
+	if not _replay_is_playing and not replay_template:
+		_replay_data.save()
 
 	UI.ensure_camera_is_spawned()
 	UI.go_to_custom_ui(_battle_ui)
@@ -62,6 +85,7 @@ func start_battle(new_armies : Array[Army], battle_map : DataBattleMap, \
 	_current_summary = null
 	deselect_unit()
 
+	# CORE GAMEPLAY logic initialization
 	_battle_grid_state = BattleGridState.create(battle_map, new_armies)
 
 	# GRAPHICS GRID:
@@ -76,8 +100,13 @@ func start_battle(new_armies : Array[Army], battle_map : DataBattleMap, \
 			_perform_replay_move(m)
 		_batch_mode = false
 
-	if is_spectator: 
-		enable_ai_preview()
+	var is_spectator = true
+	for player in IM.players:
+		if player.slot.is_local():
+			is_spectator = false
+	
+	if is_spectator and CFG.ENABLE_AUTO_BRAIN:
+		_enable_ai_preview()
 	
 	# first turn does not get a signal emit
 	_on_turn_started(_battle_grid_state.get_current_player())
@@ -96,6 +125,10 @@ func _load_map(map : DataBattleMap) -> void:
 			tile_form.position = to_position(coord)
 			_grid_tiles_node.add_child(tile_form)
 
+	if not IM.in_map_editor:
+		_border_node = MapBorder.from_map(map)
+		add_child(_border_node)
+
 
 ## space needed for battle tiles in global position
 func get_bounds_global_position() -> Rect2:
@@ -107,7 +140,6 @@ func get_bounds_global_position() -> Rect2:
 			get_tile_global_position(Vector2i(_tile_grid.width-1, _tile_grid.height-1))
 	var size : Vector2 = bottom_right_tile_position - top_left_tile_position
 	return Rect2(top_left_tile_position, size)
-
 
 #endregion
 
@@ -129,6 +161,16 @@ func get_current_slot_color() -> DataPlayerColor:
 	if not player:
 		return CFG.NEUTRAL_COLOR
 	return player.get_player_color()
+
+
+func get_current_player_name() -> String:
+	if not _battle_is_ongoing:
+		assert(false, "Request current fighting player, while battle is not ongoing")
+		return ""
+	var player = _battle_grid_state.get_current_player()
+	if not player:
+		return "Neutral Player"
+	return player.get_player_name()
 
 
 func get_current_turn() -> int:
@@ -172,6 +214,8 @@ func _on_turn_started(player : Player) -> void:
 		return
 
 	_battle_ui.start_player_turn(_battle_grid_state.current_army_index)
+	if _replay_is_playing:
+		_battle_ui.update_replay_controls(_replay_move_counter, _replay_number_of_moves)
 
 	if not player:
 		print("uncontrolled army's turn")
@@ -199,7 +243,7 @@ func _on_turn_started(player : Player) -> void:
 		
 		if not my_cancel_token.is_canceled():
 			assert(_battle_grid_state.is_move_possible(move), "AI tried to perform an invalid move")
-			_perform_ai_move(move)
+			_perform_move_info(move)
 			latest_ai_cancel_token = null
 
 
@@ -243,16 +287,24 @@ func grid_input(coord : Vector2i) -> void:
 		return
 
 	if _replay_is_playing:
+		_painter_node.erase()  # TODO verify if that's a proper fix to allow drawing in replays
 		print("replay playing, input ignored")
 		return
 
-	if _anim_queue.size() > 0:
+	if ANIM.is_playing():
 		print("anim playing, input ignored")
 		return
+
+	# any normal input removes all drawn arrows
+	_painter_node.erase()
 
 	var current_player : Player =  _battle_grid_state.get_current_player()
 	if current_player != null and current_player.bot_engine:
 		print("ai playing, input ignored")
+		return
+
+	if not current_player.slot.is_local():
+		print("Attempt to play a move of an another player")
 		return
 
 	var move_info : MoveInfo
@@ -277,9 +329,6 @@ func grid_input(coord : Vector2i) -> void:
 
 
 func _check_for_stalemate() -> bool:
-	assert(BattleGridState.STALEMATE_TURN_REPEATS == 2,
-	" _check_for_stalemate has wrong STALEMATE_TURN_REPEATS value
-	later parts of this function version wasn't made in mind with more repeats allowed")
 	var limit = BattleGridState.STALEMATE_TURN_REPEATS
 
 	# if number of the armies were to change during last few moves, then it wouldn't be a stalemate
@@ -305,7 +354,8 @@ func _check_for_stalemate() -> bool:
 				return false
 	return true
 
-func  _end_move() -> void:
+
+func _end_move() -> void:
 	if _battle_grid_state.battle_is_ongoing():
 		if _check_for_stalemate():
 			_battle_grid_state.end_stalemate() # could end the battle
@@ -314,6 +364,7 @@ func  _end_move() -> void:
 		if _ai_move_preview:
 			_ai_move_preview.update(_battle_grid_state)
 		
+		_battle_ui.update_mana() # TEMP placement here
 		_on_turn_started(_battle_grid_state.get_current_player())
 	else:
 		_on_battle_ended()
@@ -337,16 +388,16 @@ func _ai_thinking_delay(thinking_begin_s) -> void:
 		await get_tree().create_timer(0.1).timeout
 
 
-func _perform_ai_move(move_info : MoveInfo) -> void:
-	_perform_move_info(move_info)
-
-
 func ai_move() -> void:
 	if latest_ai_cancel_token:
 		push_warning("ai is already moving, dont stack two simultaneous ai moves race")
 		return
+	
+	if _replay_is_playing:
+		return
+	
 	var move := AiBotStateRandom.choose_move_static(_battle_grid_state)
-	_perform_ai_move(move)
+	_perform_move_info(move)
 
 #endregion AI Support
 
@@ -363,11 +414,29 @@ func _on_unit_summoned(unit : Unit) -> void:
 	# apply correct BM position offset in world battles
 	form.global_position = get_tile_global_position(unit.coord)
 
-	_battle_ui.unit_summoned(not _battle_grid_state.is_during_summoning_phase())
+	var is_placement_phase_over : bool = not _battle_grid_state.is_during_summoning_phase()
+	_battle_ui.unit_summoned(is_placement_phase_over)
+	if is_placement_phase_over:
+		for row : Array in _tile_grid.hexes:
+			for tile : TileForm in row:
+				# TODO replace it with better map editor features
+				if tile.type in ["1_player_spawn", "2_player_spawn", "3_player_spawn", "4_player_spawn"]:
+					tile.get_node("Sprite2D").texture = load("res://Art/battle_map/grass_tile.png")
 
-	unit.unit_died.connect(_on_unit_killed.bind(unit))
-	unit.unit_turned.connect(_on_unit_turned.bind(unit))
-	unit.unit_moved.connect(_on_unit_moved.bind(unit))
+
+
+	unit.unit_died.connect(form.anim_die)
+	unit.unit_turned.connect(form.anim_turn)
+	unit.unit_moved.connect(form.anim_move)
+	unit.unit_magic_effect.connect(form.anim_magic)
+	
+	unit.unit_is_pushing.connect(form.anim_symbol)
+	unit.unit_is_shooting.connect(form.anim_symbol)
+	unit.unit_is_slashing.connect(form.anim_symbol)
+	unit.unit_is_blocking.connect(form.anim_symbol)
+	unit.unit_is_counter_attacking.connect(form.anim_symbol)
+
+	unit.unit_captured_mana.connect(capture_mana_well.bind(unit))
 
 
 ## handles player input while during the summoning phase
@@ -396,6 +465,26 @@ func get_cyclone_target() -> Player:
 
 func get_cyclone_timer() -> int:
 	return _battle_grid_state.cyclone_get_current_target_turns_left()
+
+
+func get_player_mana(player : Player) -> int:
+	var player_army = _battle_grid_state._get_player_army(player) # TEMP? or should it be public
+	return player_army.mana_points
+
+
+## visually captures the well
+## unit get's their coord updated during animation
+func capture_mana_well(coord : Vector2i, unit : Unit) -> void:
+	
+	var controller_sprite = _tile_grid.get_hex(coord).get_node("ControlerSprite")
+	controller_sprite.visible = true
+	var data_color : DataPlayerColor = unit.controller.get_player_color()
+
+	var color_texture_name : String = data_color.hexagon_texture
+	var path = "%s%s.png" % [CFG.PLAYER_COLORS_PATH, color_texture_name]
+	var texture = load(path) as Texture2D
+	assert(texture, "failed to load background " + path)
+	controller_sprite.texture = texture
 
 #endregion Mana Cyclone Timer
 
@@ -472,12 +561,17 @@ func _try_select_unit(coord : Vector2i) -> bool:
 	if new_unit.controller != _battle_grid_state.get_current_player():
 		return false
 
+	if new_unit == _selected_unit:  # Selecting the same unit twice deselects it
+		deselect_unit()
+		return false
+
 	# deselect visually old unit if new one selected
 	if _selected_unit:
 		deselect_unit()
 
 	_selected_unit = new_unit
 	_unit_to_unit_form[_selected_unit].set_selected(true)
+	_update_move_highlights(_selected_unit)
 
 	# attempt to display spells available to selected unit
 	_show_spells(_selected_unit)
@@ -487,12 +581,45 @@ func _try_select_unit(coord : Vector2i) -> bool:
 
 ## Main way to deselect unit -> use every time, its safe
 func deselect_unit() -> void:
-	if _selected_unit:
+	if _selected_unit and _selected_unit in _unit_to_unit_form:
 		_unit_to_unit_form[_selected_unit].set_selected(false)
 	_selected_unit = null
 	_battle_ui.selected_spell = null
 	_battle_ui.reset_spells()
+	_update_move_highlights(null)
 
+
+func _update_move_highlights(selected_unit: Unit):
+	Helpers.remove_all_children(_move_highlights_node)
+	if not selected_unit:
+		return
+
+	for move in _battle_grid_state.get_possible_moves():
+		if move.move_source != selected_unit.coord:
+			continue
+		if move.move_type != MoveInfo.TYPE_MOVE: # TODO highlighting other move types
+			continue
+
+		var color: Color
+
+		match _battle_grid_state.get_move_consequences(move):
+			BattleGridState.MoveConsequences.NONE:
+				color = Color.WHITE_SMOKE
+			BattleGridState.MoveConsequences.KILL:
+				color = Color.LIGHT_GREEN
+			BattleGridState.MoveConsequences.DEATH:
+				color = Color.INDIAN_RED
+			BattleGridState.MoveConsequences.KAMIKAZE:
+				color = Color.YELLOW
+			var x:
+				assert(false, "Unimplemented move consequence type %s" % [x])
+
+		var offset = move.move_source - move.target_tile_coord
+		var highlight = CFG.MOVE_HIGHLIGHT_SCENE.instantiate()
+		highlight.modulate = color
+		highlight.position = BM.to_position(move.target_tile_coord)
+		highlight.rotation = GenericHexGrid.DIRECTION_TO_OFFSET.find(offset) * PI/3
+		_move_highlights_node.add_child(highlight)
 
 
 func _show_spells(unit : Unit) -> void:
@@ -509,10 +636,15 @@ func _perform_move_info(move_info : MoveInfo) -> void:
 	if not _battle_is_ongoing:
 		return
 	print(NET.get_role_name(), " performing move ", move_info)
+	
+	ANIM.fast_forward()
 
+	_replay_move_counter += 1
 
-	_replay_data.record_move(move_info, get_current_time_left_ms())
-	_replay_data.save()
+	if not _replay_is_playing:
+		_replay_data.record_move(move_info, get_current_time_left_ms())
+		_replay_data.save()
+	
 	if NET.server:
 		NET.server.broadcast_move(move_info)
 
@@ -526,31 +658,15 @@ func _perform_move_info(move_info : MoveInfo) -> void:
 
 		_ :
 			assert(false, "Move move_type not supported in perform, " + str(move_info.move_type))
+	
+	# Make sure there's anything to tween to avoid errors
+	ANIM.main_tween().parallel().tween_interval(0.01)
+	# When the animation's done, emit a signal
+	ANIM.main_tween().tween_callback(func(): move_animation_done.emit())
+	# Play the recorded animation
+	ANIM.main_tween().play()
 
 	_end_move()
-
-
-func _on_unit_killed(unit: Unit) -> void:
-	if _batch_mode:
-		_unit_to_unit_form[unit].update_death_immediately()
-	else:
-		_anim_queue.push_back(AnimInQueue.create_die(_unit_to_unit_form[unit]))
-	_unit_to_unit_form.erase(unit)
-
-
-func _on_unit_turned(unit: Unit) -> void:
-	if _batch_mode:
-		_unit_to_unit_form[unit].update_turn_immediately()
-	else:
-		_anim_queue.push_back(AnimInQueue.create_turn(_unit_to_unit_form[unit]))
-
-
-func _on_unit_moved(unit: Unit) -> void:
-	if _batch_mode:
-		_unit_to_unit_form[unit].update_death_immediately()
-	else:
-		_anim_queue.push_back(AnimInQueue.create_move(_unit_to_unit_form[unit]))
-
 
 #endregion Fighting Phase
 
@@ -559,8 +675,12 @@ func _on_unit_moved(unit: Unit) -> void:
 
 func close_when_quiting_game() -> void:
 	deselect_unit()
-	_clear_anim_queue()
+	_battle_ui.hide_replay_controls()
+	_turn_off_battle_ui()
 	_reset_grid_and_unit_forms()
+	_disable_ai_preview()
+	
+	_replay_is_playing = false # revert to default value for the next battle
 
 
 ## called when battle simulation decided battle was won
@@ -570,33 +690,36 @@ func _on_battle_ended() -> void:
 		assert(false, "battle ended when it was not ongoing...")
 		return
 	_battle_is_ongoing = false
+
 	deselect_unit()
-	
-	disable_ai_preview()
+
+	_disable_ai_preview()
+	_battle_ui.update_mana()
 
 	await get_tree().create_timer(1).timeout # TEMP, don't exit immediately
-	while _replay_is_playing:
-		await get_tree().create_timer(0.1).timeout
 
 	_current_summary = _create_summary()
+	if not _replay_is_playing:
+		_replay_data.summary = _current_summary
+		_replay_data.save()
+	
 	if WM.world_game_is_active():
-		_close_battle()
+		_close_battle_and_return()
 		# show battle summary over world map
 		UI.ui_overlay.show_summary(_current_summary, null)
+	elif _replay_is_playing:
+		_battle_ui.update_replay_controls(_replay_number_of_moves, _replay_number_of_moves, _current_summary)
+		# do not exit immediately
 	else:
-		UI.ui_overlay.show_summary(_current_summary, _close_battle)
+		UI.ui_overlay.show_summary(_current_summary, _close_battle_and_return)
 
 
-func _close_battle() -> void:
+func _close_battle_and_return() -> void:
 	var state_for_world = _battle_grid_state.armies_in_battle_state
-	_clear_anim_queue()
-	_turn_off_battle_ui()
-	_reset_grid_and_unit_forms()
-	deselect_unit()
-	disable_ai_preview()
-
+	
+	close_when_quiting_game()
+	
 	if not WM.world_game_is_active():
-		print("end of test battle")
 		IM.go_to_main_menu()
 		return
 
@@ -604,6 +727,7 @@ func _close_battle() -> void:
 
 
 func _turn_off_battle_ui() -> void:
+	_painter_node.erase()
 	_battle_ui.hide()
 	UI.switch_camera()
 
@@ -614,7 +738,11 @@ func _reset_grid_and_unit_forms() -> void:
 	_unit_to_unit_form.clear()
 	Helpers.remove_all_children(_grid_tiles_node)
 	Helpers.remove_all_children(_unit_forms_node)
+	if _border_node:
+		_border_node.queue_free()
+		_border_node = null
 	_battle_grid_state = null
+
 
 ## Major function which fully generates information panel at the end of the battle
 func _create_summary() -> DataBattleSummary:
@@ -634,6 +762,7 @@ func _create_summary() -> DataBattleSummary:
 	for army_in_battle in armies_in_battle_state:
 		var player_stats := DataBattleSummaryPlayer.new()
 
+		var temp_points : int = 0
 		# Generate casulties info
 		if army_in_battle.dead_units.size() == 0:
 			player_stats.losses = "< none >"
@@ -641,12 +770,13 @@ func _create_summary() -> DataBattleSummary:
 			for dead in army_in_battle.dead_units:
 				var unit_description = "%s\n" % dead.unit_name
 				player_stats.losses += unit_description
+				temp_points += dead.level
 
 		var army_controller_index : int = army_in_battle.army_reference.controller_index
 		var army_controller = IM.get_player_by_index(army_controller_index)
 
 		# generates player names for their info column
-		player_stats.player_description = IM.get_full_player_description(army_controller)
+		player_stats.player_description = IM.get_full_player_description(army_controller) + " " + str(temp_points)
 
 		if army_in_battle.team == winning_team:
 			player_stats.state = "winner"
@@ -681,19 +811,30 @@ func _create_summary() -> DataBattleSummary:
 
 #region Replays
 
+## Plays a replay and returns to the normal state afterwards
 func perform_replay(replay : BattleReplay) -> void:
-	_replay_is_playing = true
+	_replay_is_playing = true # _replay_is_playing is reset in close_when_quitting_game
+	_battle_ui.show_replay_controls()
+	_battle_grid_state.set_clock_enabled(false)
+	_replay_number_of_moves = replay.moves.size()
 
 	for m in replay.moves:
 		if not _battle_is_ongoing:
 			return # terminating battle while watching
 		_perform_replay_move(m)
 		await _replay_move_delay()
-	_replay_is_playing = false
 
 
 func _replay_move_delay() -> void:
-	await get_tree().create_timer(CFG.bot_speed_frames/60).timeout
+	var begin = Time.get_ticks_msec()
+	await move_animation_done
+	
+	var elapsed_ms = Time.get_ticks_msec() - begin
+	# Minimal allowed animation duration - 1 second in normal speed
+	var min_duration = CFG.bot_speed_frames / CFG.BotSpeed.NORMAL
+	var delay = max(min_duration - elapsed_ms/1000.0, min_duration/10.0)
+	await get_tree().create_timer(delay).timeout
+	
 	while IM.is_game_paused() or CFG.bot_speed_frames == CFG.BotSpeed.FREEZE:
 		await get_tree().create_timer(0.1).timeout
 		if not _battle_is_ongoing:
@@ -722,7 +863,7 @@ func force_surrender():
 	_end_move()
 
 
-func enable_ai_preview():
+func _enable_ai_preview():
 	if not _battle_grid_state:
 		push_error("Failed to enahle AI preview - _battle_grid_state == null")
 		return
@@ -736,7 +877,7 @@ func enable_ai_preview():
 	_ai_move_preview.update(_battle_grid_state)
 
 
-func disable_ai_preview():
+func _disable_ai_preview():
 	if _ai_move_preview:
 		_ai_move_preview.queue_free()
 		_ai_move_preview = null
@@ -744,9 +885,9 @@ func disable_ai_preview():
 
 func toggle_ai_preview():
 	if _ai_move_preview:
-		disable_ai_preview()
+		_disable_ai_preview()
 	else:
-		enable_ai_preview()
+		_enable_ai_preview()
 
 #endregion cheats
 
@@ -792,74 +933,12 @@ func get_current_time_left_ms() -> int:
 #endregion Chess clock
 
 
-#region anim queue
+#region Painting
 
-## called every frame by _process
-func _process_anim_queue() -> void:
-	if _anim_queue.size() == 0:
-		return
-	if not _anim_queue[0].started:
-		_anim_queue[0].start()
-	if _anim_queue[0].ended:
-		_anim_queue.pop_front()
-		return
-	if not _anim_queue[0]._unit_form:
-		var broken = _anim_queue.pop_front()
-		push_warning("poping broken animation from the queue " + str(broken))
+func planning_input(tile_coord : Vector2i, is_it_pressed : bool) -> void:
+	_painter_node.planning_input(tile_coord, is_it_pressed)
 
+#endregion Painting
 
-func _clear_anim_queue():
-	for anim in _anim_queue:
-		anim.on_anim_end()
-	_anim_queue.clear()
-
-
-class AnimInQueue:
-	var started : bool
-	var ended : bool
-	var debug_name : String
-	var _unit_form : UnitForm
-	var _animate : Callable
-
-
-	static func create_turn(unit_form_ : UnitForm) -> AnimInQueue:
-		var result = AnimInQueue.new()
-		result.debug_name = "turn_"+unit_form_.entity.template.unit_name
-		result._unit_form = unit_form_
-		unit_form_.anim_end.connect(result.on_anim_end)
-		result._animate = func () : if (unit_form_): unit_form_.start_turn_anim()
-		return result
-
-
-	static func create_move(unit_form_ : UnitForm) -> AnimInQueue:
-		var result = AnimInQueue.new()
-		result.debug_name = "move_"+unit_form_.entity.template.unit_name
-		result._unit_form = unit_form_
-		unit_form_.anim_end.connect(result.on_anim_end)
-		result._animate = func () : if (unit_form_): unit_form_.start_move_anim()
-		return result
-
-
-	static func create_die(unit_form_ : UnitForm) -> AnimInQueue:
-		var result = AnimInQueue.new()
-		result.debug_name = "die_"+unit_form_.entity.template.unit_name
-		result._unit_form = unit_form_
-		unit_form_.anim_end.connect(result.on_anim_end)
-		result._animate = func () : if (unit_form_): unit_form_.start_death_anim()
-		return result
-
-
-	func start() -> void:
-		started = true
-		_animate.call()
-
-
-	func on_anim_end() -> void:
-		ended = true
-		_unit_form.anim_end.disconnect(on_anim_end)
-
-
-	func _to_string():
-		return debug_name
-
-#endregion anim queue
+func _on_unit_magic_effect(unit : Unit) -> void:
+	_unit_to_unit_form[unit].set_effects()

@@ -73,12 +73,15 @@ func _update_markers():
 	for pos in pos_markers:
 		var marker_id = 0.0
 		var no_markers = float(pos_markers[pos].size())
+		
+		# Create a circle of markers on a tile
 		for marker_data : PositionMarker in pos_markers[pos]:
 			var marker = Sprite2D.new()
 			var offset = Vector2(0, -128).rotated(2*PI*marker_id/no_markers)
 			
 			marker.position = BM.to_position(pos) + offset
 			marker.texture = load(marker_data.icon_path)
+			# Make sure sprites are scaled properly regardless of their resolution
 			marker.scale *= 196.0 / float(marker.texture.get_width())
 			marker.modulate = get_modulate_for_score(marker_data.score)
 			
@@ -126,11 +129,11 @@ func _update_marker(cppmove):
 
 
 func get_modulate_for_score(score: float) -> Color:
-	var ret = Color.WHITE
-	ret.r = remap(score, min_score, max_score, 0.0, 1.0)
-	ret.g = remap(score, min_score, max_score, 0.0, 1.0)
-	ret.a = remap(score, min_score, max_score, 0.1, 1.0)
-	return ret
+	var result = Color.WHITE
+	result.r = remap(score, min_score, max_score, 0.0, 1.0)
+	result.g = remap(score, min_score, max_score, 0.0, 1.0)
+	result.a = remap(score, min_score, max_score, 0.1, 1.0)
+	return result
 
 
 func _thread_process():

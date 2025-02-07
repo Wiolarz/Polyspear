@@ -1,4 +1,5 @@
-class_name AIBattleBotMCTS extends AIInterface
+class_name AIBattleBotMCTS
+extends AIInterface
 
 ## Number of total playouts to be performed
 @export var iterations := 100000
@@ -21,7 +22,6 @@ class_name AIBattleBotMCTS extends AIInterface
 var iterate_complete_mutex := Mutex.new()
 var is_iterate_complete: bool = false
 var thread: Thread
-var mcts: BattleMCTSManager
 
 signal complete
 
@@ -100,3 +100,9 @@ func _process(_delta):
 		is_iterate_complete = false
 		complete.emit()
 	iterate_complete_mutex.unlock()
+
+func _exit_tree():
+	# Force graceful exit, good enough for now, but 
+	# TODO consider making it not hang the game for the duration of AI finishing its thinking
+	if thread:
+		thread.wait_to_finish()

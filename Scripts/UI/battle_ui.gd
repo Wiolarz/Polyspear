@@ -16,8 +16,20 @@ extends CanvasLayer
 
 @onready var book = $SpellBook
 
+@onready var chat = $GameChat
 
+@onready var replay_controls = $ReplayControls
+@onready var replay_move_count = $ReplayControls/MoveCount
+@onready var replay_status = $ReplayControls/Status
+@onready var replay_show_summary = $ReplayControls/ShowSummary
 
+# announcement nodes
+@onready var announcement_sacrifice = $SacrificeAnnouncement
+@onready var announcement_sacrifice_player_name_label = $SacrificeAnnouncement/CycloneTarget
+@onready var announcement_end_of_placement_phase = $EndPlacementPhaseAnnouncement
+@onready var announcement_end_of_placement_phase_player_name_label = $EndPlacementPhaseAnnouncement/FirstPlayerToMoveName
+
+var fighting_players_idx = []
 var armies_reference : Array[BattleGridState.ArmyInBattleState]
 
 var selected_unit : DataUnit = null
@@ -26,6 +38,9 @@ var current_player : int = 0
 
 var selected_spell : BattleSpell = null
 var selected_spell_button : TextureButton = null
+
+# TEMP until update_cyclone() refactor
+var _shown_sacrifice_announcement : bool = false
 
 #region INIT
 
@@ -43,10 +58,11 @@ func load_armies(army_list : Array[BattleGridState.ArmyInBattleState]):
 		players_box.remove_child(c)
 
 	units_box.show()
-
+	fighting_players_idx = []
 	var idx = 0
 	for army in army_list:
 		var controller = IM.get_player_by_index(army.army_reference.controller_index)
+		fighting_players_idx.append(army.army_reference.controller_index)
 		# create player buttons
 		var n = Button.new()
 		n.text = get_text_for(controller, idx == 0)
@@ -64,7 +80,19 @@ func load_armies(army_list : Array[BattleGridState.ArmyInBattleState]):
 func _process(_delta):
 	if BM.battle_is_active():
 		update_clock()
-		update_cyclone()
+		update_cyclone()  # TODO move it to signal that a turn has ended
+
+
+func update_mana() -> void:
+	var i = -1
+	var temp_skip_label = true
+	for player_button in players_box.get_children():
+		if temp_skip_label:
+			temp_skip_label = false
+			continue
+		i += 1
+		var player_idx = fighting_players_idx[i]
+		player_button.text = get_text_for(IM.get_player_by_index(player_idx), false)  # TEMP func doesn't know if a player was selected
 
 
 func update_cyclone():
@@ -78,8 +106,20 @@ func update_cyclone():
 
 	if timer == 0:
 		cyclone.text = "%s Sacrifice" % [target_color.name]
+		if not _shown_sacrifice_announcement:
+			_shown_sacrifice_announcement = true
+			# show sacrifice announcement
+			announcement_sacrifice_player_name_label.text = BM.get_current_player_name()
+			announcement_sacrifice.modulate = BM.get_current_slot_color().color
+			#IM.get_player_by_index(army.army_reference.controller_index)
+
+			announcement_sacrifice.modulate.a = 1
+			var tween = ANIM.subtween()  # if player makes a quicker move, subtween doesn't cause issues
+			tween.tween_interval(2)
+			tween.tween_property(announcement_sacrifice, "modulate:a", 0, 1)
 	else:
 		cyclone.text = "%s %d turns" % [target_color.name, timer]
+		_shown_sacrifice_announcement = false
 
 
 func update_clock() -> void:
@@ -100,7 +140,42 @@ func get_text_for(controller : Player, selected : bool):
 	var player_name = "Neutral"
 	if controller:
 		player_name = controller.get_player_name()
-	return prefix + "Player " + player_name
+	return prefix + "Player " + player_name + "_" + str(BM.get_player_mana(controller))
+
+
+#region Replay controls
+
+func show_replay_controls():
+	replay_controls.visible = true
+	chat.visible = false
+
+
+func hide_replay_controls():
+	replay_controls.visible = false
+	chat.visible = true
+
+
+func update_replay_controls(move_nr: int, total_replay_moves: int, summary: DataBattleSummary = null):
+	replay_move_count.text = "%d/%d" % [move_nr, total_replay_moves]
+	if move_nr != total_replay_moves:
+		replay_status.text = ""
+	elif summary:
+		replay_status.text = "Battle ended - all enemy units killed"
+	else:
+		replay_status.text = "Battle ended - timeout"
+	
+	for i in replay_show_summary.pressed.get_connections():
+		replay_show_summary.pressed.disconnect(i.callable)
+	
+	if summary:
+		replay_show_summary.disabled = false
+		replay_show_summary.pressed.connect(
+			UI.ui_overlay.show_summary.bind(summary, null)
+		)
+	else:
+		replay_show_summary.disabled = true
+
+#endregion Replay Controls
 
 
 #region Summon Phase
@@ -130,23 +205,28 @@ func on_player_selected(army_index : int, preview : bool = false):
 	if units_controller:
 		bg_color = units_controller.get_player_color()
 	for unit in armies_reference[army_index].units_to_summon:
-		var b := TextureButton.new()
-		b.texture_normal = CFG.SUMMON_BUTTON_TEXTURE
+		var button := TextureButton.new()
+		button.texture_normal = CFG.SUMMON_BUTTON_TEXTURE
 
 		var unit_display := UnitForm.create_for_summon_ui(unit, bg_color)
-		unit_display.position = b.texture_normal.get_size()/2
-		b.add_child(unit_display)
+		unit_display.position = button.texture_normal.get_size()/2
+		button.add_child(unit_display)
 
-		units_box.add_child(b)
+		units_box.add_child(button)
 		var lambda = func on_click():
 			if (current_player != army_index):
 				return
-			if selected_unit_button:
+			if selected_unit_button:  # Deselects previously selected unit
 				selected_unit_button.modulate = Color.WHITE
-			selected_unit = unit
-			selected_unit_button = b
-			selected_unit_button.modulate = Color.RED
-		b.pressed.connect(lambda)
+			
+			if selected_unit_button == button: # Selecting the same unit twice deselects it
+				selected_unit = null
+				selected_unit_button = null
+			else:
+				selected_unit = unit
+				selected_unit_button = button
+				selected_unit_button.modulate = Color.RED
+		button.pressed.connect(lambda)
 
 
 func unit_summoned(summon_phase_end : bool):
@@ -155,6 +235,15 @@ func unit_summoned(summon_phase_end : bool):
 
 	units_box.visible = not summon_phase_end
 
+	if summon_phase_end:
+		announcement_end_of_placement_phase_player_name_label.text = BM.get_current_player_name()
+		announcement_end_of_placement_phase.modulate = BM.get_current_slot_color().color
+		#IM.get_player_by_index(army.army_reference.controller_index)
+
+		announcement_end_of_placement_phase.modulate.a = 1
+		var tween = ANIM.subtween()  # if player makes a quicker move, subtween doesn't cause issues
+		tween.tween_interval(1.5)
+		tween.tween_property(announcement_end_of_placement_phase, "modulate:a", 0, 0.5)
 
 #endregion Summon Phase
 
@@ -178,33 +267,28 @@ func load_spells(army_index : int, spells : Array[BattleSpell], preview : bool =
 
 
 	for spell in spells:
-		var b := TextureButton.new()
+		var button := TextureButton.new()
 
-		b.texture_normal = CFG.SUMMON_BUTTON_TEXTURE # TEMP replace for proper default spell background
+		#TODO create a proper icon creation (after higher resolution update)
 
-		#TEMP
-		b.texture_normal = load(spell.icon_path)
-		#var spell_icon : Texture2D = load(spell.icon_path) #:= UnitForm.create_for_summon_ui(unit, bg_color)
+		button.texture_normal = CFG.SUMMON_BUTTON_TEXTURE
+		button.texture_normal = load(spell.icon_path)
 
-		#spell_icon.position = b.texture_normal.get_size() / 2
-		#b.add_child(spell_icon)
-
-		book.add_child(b)
+		book.add_child(button)
 		var lambda = func on_click():
 			if (current_player != army_index):
 				return
-			if selected_spell_button:
+			if selected_spell_button:  # Deselects previously selected spell
 				selected_spell_button.modulate = Color.WHITE
 
-			if selected_spell_button == b: # Deselct a spell
-				selected_spell_button.modulate = Color.WHITE
+			if selected_spell_button == button: # Selecting the same spell twice deselects it
 				selected_spell = null
 				selected_spell_button = null
 			else:
 				selected_spell = spell
-				selected_spell_button = b
+				selected_spell_button = button
 				selected_spell_button.modulate = Color.RED
-		b.pressed.connect(lambda)
+		button.pressed.connect(lambda)
 
 
 ## removes avalaible spells from the list upon desecting a unit
@@ -235,3 +319,26 @@ func _on_switch_camera_pressed():
 
 func _on_menu_pressed():
 	IM.toggle_in_game_menu()
+
+
+func _on_pause_pressed():
+	CFG.animation_speed_frames = CFG.AnimationSpeed.NORMAL
+	CFG.bot_speed_frames = CFG.BotSpeed.FREEZE
+
+
+func _on_step_pressed():
+	# TODO improve/un-DRUTify playback (especially step) controls
+	CFG.animation_speed_frames = CFG.AnimationSpeed.NORMAL
+	CFG.bot_speed_frames = CFG.BotSpeed.NORMAL
+	await get_tree().create_timer(0.1).timeout
+	CFG.bot_speed_frames = CFG.BotSpeed.FREEZE
+
+
+func _on_play_pressed():
+	CFG.animation_speed_frames = CFG.AnimationSpeed.NORMAL
+	CFG.bot_speed_frames = CFG.BotSpeed.NORMAL
+
+
+func _on_fast_pressed():
+	CFG.animation_speed_frames = CFG.AnimationSpeed.INSTANT
+	CFG.bot_speed_frames = CFG.BotSpeed.FAST
