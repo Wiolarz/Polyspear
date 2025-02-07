@@ -1,6 +1,12 @@
 class_name PlayerOptions
 extends Resource
 
+
+## How to add settings:
+## 1. add an export variable here
+## 2. add a "_declare_*" call in settings_menu.gd's _ready function
+
+
 ## once the game is launched it instantly start the game with default lobby values [br]
 ## depending on "use_default_battle" value starts either World/Battle
 @export var autostart_map : bool
@@ -10,6 +16,10 @@ extends Resource
 ## if true all player slots are placed in control of AI controller [br]
 ## if false all slots are by default controlled by host (human player)
 @export var use_default_AI_players : bool
+
+## if true, compares BattleGridState and LibSpear's BattleManagerFast
+## for mismatches before and after each battle move, activating an assert on mismatch
+@export var bmfast_integrity_checks : bool = true
 
 ## if true, peer ip addresses are hidden
 @export var streamer_mode : bool
@@ -29,6 +39,12 @@ extends Resource
 
 ## Default first option after opening the game should be last selected one
 @export var last_used_world_preset : PresetWorld
+
+@export var fullscreen : bool:
+	set(new):
+		if new != fullscreen:
+			(func(): UI.set_fullscreen(new)).call_deferred()
+		fullscreen = new
 
 @export var login : String
 ## if true adds a random number suffix at the end of a login string

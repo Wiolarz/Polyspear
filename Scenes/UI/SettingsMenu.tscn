@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://b6eoph2qpu0d"]
 
 [ext_resource type="Script" path="res://Scripts/UI/settings_menu.gd" id="1_88deh"]
-[ext_resource type="PackedScene" uid="uid://b7jfsxfq2gkxs" path="res://Scenes/UI/VolumeSlider.tscn" id="2_brx2j"]
+[ext_resource type="PackedScene" path="res://Scenes/UI/VolumeSlider.tscn" id="2_brx2j"]
 
 [node name="SettingsMenu" type="Panel"]
 anchors_preset = 15
@@ -47,9 +47,17 @@ text = "Players start as AI"
 layout_mode = 2
 text = "Streamer mode"
 
+[node name="ToggleFullscreen" type="CheckBox" parent="Margin/VBox"]
+layout_mode = 2
+text = "Fullscreen"
+
 [node name="ToggleBackgroundColorFollowsPlayers" type="CheckBox" parent="Margin/VBox"]
 layout_mode = 2
 text = "Background color changes with player's turns"
+
+[node name="ToggleBMFastIntegrityChecks" type="CheckBox" parent="Margin/VBox"]
+layout_mode = 2
+text = "Check LibSpear integrity"
 
 [node name="CycleGuiAnimationMode" type="Button" parent="Margin/VBox"]
 layout_mode = 2
@@ -83,13 +91,4 @@ title = "Game FX"
 layout_mode = 2
 title = "GUI"
 
-[connection signal="pressed" from="Margin/VBox/ToggleBattleDefault" to="." method="_on_toggle_battle_default_pressed"]
-[connection signal="pressed" from="Margin/VBox/ToggleAutoStart" to="." method="_on_toggle_auto_start_pressed"]
-[connection signal="visibility_changed" from="Margin/VBox/ToggleAutoStart" to="." method="_on_toggle_auto_start_visibility_changed"]
-[connection signal="pressed" from="Margin/VBox/ToggleDefaultAIPlayers" to="." method="_on_toggle_default_ai_players_pressed"]
-[connection signal="visibility_changed" from="Margin/VBox/ToggleDefaultAIPlayers" to="." method="_on_toggle_auto_start_visibility_changed"]
-[connection signal="pressed" from="Margin/VBox/ToggleStreamerMode" to="." method="_on_toggle_streamer_mode_pressed"]
-[connection signal="visibility_changed" from="Margin/VBox/ToggleStreamerMode" to="." method="_on_toggle_auto_start_visibility_changed"]
-[connection signal="pressed" from="Margin/VBox/ToggleBackgroundColorFollowsPlayers" to="." method="_on_toggle_background_color_follows_players"]
-[connection signal="visibility_changed" from="Margin/VBox/ToggleBackgroundColorFollowsPlayers" to="." method="_on_toggle_auto_start_visibility_changed"]
 [connection signal="pressed" from="Margin/VBox/CycleGuiAnimationMode" to="." method="_on_cycle_gui_anim_mode_pressed"]

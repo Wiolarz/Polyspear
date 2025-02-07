@@ -2,15 +2,13 @@
 
 [ext_resource type="Script" path="res://Scripts/UI/in_game_menu.gd" id="1_4iw1x"]
 [ext_resource type="Shortcut" uid="uid://fuvss5hfg4q2" path="res://Resources/Shortcuts/go_back.tres" id="2_48g4r"]
+[ext_resource type="PackedScene" uid="uid://b6eoph2qpu0d" path="res://Scenes/UI/SettingsMenu.tscn" id="3_mep8v"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fdxbp"]
 bg_color = Color(0.172549, 0.290196, 0.180392, 1)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_p527t"]
 bg_color = Color(0.419608, 0.113725, 0.129412, 1)
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ju7ji"]
-bg_color = Color(0.0401178, 0.126136, 0.355491, 1)
 
 [node name="InGameMenu" type="CanvasLayer"]
 process_mode = 3
@@ -60,34 +58,15 @@ shortcut_in_tooltip = false
 text = "Surrender
 "
 
-[node name="ToggleBattleDefault" type="CheckButton" parent="MenuContainer"]
-layout_mode = 2
-theme_override_styles/normal = SubResource("StyleBoxFlat_ju7ji")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_ju7ji")
-theme_override_styles/hover = SubResource("StyleBoxFlat_ju7ji")
-theme_override_styles/hover_pressed = SubResource("StyleBoxFlat_ju7ji")
-theme_override_styles/focus = SubResource("StyleBoxFlat_ju7ji")
-text = "Use battle as default"
-alignment = 1
-
-[node name="ToggleAutoStart" type="CheckButton" parent="MenuContainer"]
-layout_mode = 2
-theme_override_styles/normal = SubResource("StyleBoxFlat_ju7ji")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_ju7ji")
-theme_override_styles/hover = SubResource("StyleBoxFlat_ju7ji")
-theme_override_styles/hover_pressed = SubResource("StyleBoxFlat_ju7ji")
-theme_override_styles/focus = SubResource("StyleBoxFlat_ju7ji")
-text = "Auto start"
-alignment = 1
-
 [node name="Restart" type="Button" parent="MenuContainer"]
 visible = false
 layout_mode = 2
 text = "Restart"
 
-[node name="FullScreen" type="Button" parent="MenuContainer"]
+[node name="Settings" type="Button" parent="MenuContainer"]
 layout_mode = 2
-text = "Turn on/off full screen"
+text = "Settings
+"
 
 [node name="Quit" type="Button" parent="MenuContainer"]
 layout_mode = 2
@@ -97,12 +76,56 @@ text = "Quit"
 layout_mode = 2
 text = "Return To Main Menu"
 
+[node name="SettingsModal" type="Panel" parent="."]
+visible = false
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -506.0
+offset_top = -474.0
+offset_right = 506.0
+offset_bottom = 474.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="PanelContainer" type="PanelContainer" parent="SettingsModal"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -506.0
+offset_top = -474.0
+offset_right = 506.0
+offset_bottom = 474.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="SettingsMenu" parent="SettingsModal/PanelContainer" instance=ExtResource("3_mep8v")]
+layout_mode = 2
+
+[node name="CloseSettings" type="Button" parent="SettingsModal"]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -95.0
+offset_top = 25.0
+offset_right = -27.0
+offset_bottom = 91.0
+grow_horizontal = 0
+size_flags_horizontal = 4
+size_flags_vertical = 4
+text = "X"
+
 [connection signal="visibility_changed" from="." to="." method="_on_visibility_changed"]
 [connection signal="pressed" from="MenuContainer/BackToGame" to="." method="_on_back_to_game_pressed"]
 [connection signal="pressed" from="MenuContainer/WinBattle" to="." method="_on_win_battle_pressed"]
 [connection signal="pressed" from="MenuContainer/Surrender" to="." method="_on_surrender_pressed"]
-[connection signal="pressed" from="MenuContainer/ToggleBattleDefault" to="." method="_on_toggle_battle_default_pressed"]
-[connection signal="pressed" from="MenuContainer/ToggleAutoStart" to="." method="_on_toggle_auto_start_pressed"]
-[connection signal="pressed" from="MenuContainer/FullScreen" to="." method="_on_full_screen_pressed"]
+[connection signal="pressed" from="MenuContainer/Settings" to="." method="_on_settings_pressed"]
 [connection signal="pressed" from="MenuContainer/Quit" to="." method="_on_quit_pressed"]
 [connection signal="pressed" from="MenuContainer/ReturnToMainMenu" to="." method="_on_return_to_main_menu_pressed"]
+[connection signal="pressed" from="SettingsModal/CloseSettings" to="." method="_on_settings_exit_pressed"]
