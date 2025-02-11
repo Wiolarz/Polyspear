@@ -22,11 +22,11 @@ func interact(world_state : WorldState, army : Army) -> void:
 
 
 func on_end_of_turn(world_state : WorldState) -> void:
-	var goods = world_state.get_player_by_index(controller_index).goods
-	goods.add(Goods.new(0, 1, 0))
+	var faction : WorldPlayerState = world_state.get_player_by_index(controller_index)
+	faction.add_goods(Goods.new(0, 1, 0))
 	for bulding in buildings:
 		if bulding.name == "sawmill":
-			goods.add(Goods.new(3, 0, 0))
+			faction.add_goods(Goods.new(3, 0, 0))
 
 
 #region Heroes

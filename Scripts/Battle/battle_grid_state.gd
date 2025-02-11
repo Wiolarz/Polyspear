@@ -46,30 +46,14 @@ func _init(width_ : int, height_ : int):
 static func create(map : DataBattleMap, new_armies : Array[Army]) -> BattleGridState:
 	var result := BattleGridState.new(map.grid_width, map.grid_height)
 
-	# assigning players without a team
-	var occupied_team_slots = []
-	for army in new_armies: # assigning NO team players
+	for army in new_armies:
 		var new_army_in_battle = ArmyInBattleState.create_from(army, result)
 		var player = IM.get_player_by_index(army.controller_index)
-		if player:
-			new_army_in_battle.team = player.team
+		new_army_in_battle.team = player.team  # shortcut, to make
 		result.armies_in_battle_state.append(new_army_in_battle)
 
-		if new_army_in_battle.team == 0:
-			continue
-		if new_army_in_battle.team not in occupied_team_slots:
-			occupied_team_slots.append(new_army_in_battle.team)
-	var new_team_idx = 1
-	for army_in_battle in result.armies_in_battle_state:
-		var team = army_in_battle.team
-		if team == 0:
-			while new_team_idx in occupied_team_slots:
-				new_team_idx += 1
-			army_in_battle.team = new_team_idx
-			new_team_idx += 1
 
-	result.current_army_index = 0
-	result.turn_counter = 0
+
 
 	for x in range(map.grid_width):
 		for y in range(map.grid_height):
@@ -1523,9 +1507,15 @@ class BattleHex:
 
 
 class ArmyInBattleState:
+	## used only for undo and cheats
 	var battle_grid_state : WeakRef # BattleGridState
+
 	var army_reference : Army
-	var team : int = 0
+	
+	## basic idx reference to who can move its units
+	var controller_idx : int
+	## basic idx reference to which units are allies
+	var team : int
 
 	var units_to_summon : Array[DataUnit] = []
 	var units : Array[Unit] = []

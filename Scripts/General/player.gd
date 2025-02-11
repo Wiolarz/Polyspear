@@ -1,6 +1,16 @@
 class_name Player
 extends Node
 
+"""
+Simple class that gameplay wise is used only to verify who gets to controll this specific index units
+It seperate from battle and world gameplay to make it's usage universal
+Additionally it contains unique for that player informations like:
+- Team
+- Color
+- Timer values
+"""
+
+
 
 var bot_engine : AIInterface
 
@@ -17,22 +27,12 @@ var index : int = -1
 
 var team : int = 0
 
+#TODO create a more universal timer for players that will perform well both in battle and in world
 var timer_reserve_sec : int = CFG.CHESS_CLOCK_BATTLE_TIME_PER_PLAYER_MS
 var timer_increment_sec : int = CFG.CHESS_CLOCK_BATTLE_TURN_INCREMENT_MS
 
-
-## World Gameplay
-var race : DataRace = null
-var faction : WorldPlayerState = null  # TEMP verify if its needed?
-
-## for battle only mode
-var units_list : Array[DataUnit] = [null,null,null,null,null] #TODO refactor to change variable to private as we have a clean getter for it
-var slot_hero : DataHero = null
-
 ## index of color see `CFG.TEAM_COLORS`
 var color_idx : int = 0
-
-
 
 
 static func create(new_slot : Slot) -> Player:
@@ -46,21 +46,23 @@ static func create(new_slot : Slot) -> Player:
 		result.add_child(result.bot_engine)
 		result.bot_engine.set_player(result)
 
-
 	result.name = "Player_" + result.get_player_name()
+	result.index = new_slot.index
+	result.team = new_slot.team
+	result.color_idx = new_slot.color_idx
+
+	result.occupier = new_slot.occupier
+
+	result.timer_reserve_sec = new_slot.timer_reserve_sec
+	result.timer_increment_sec = new_slot.timer_increment_sec
 
 	return result
-
-
-func _init(): #?
-	name = "Player"
 
 
 #region Getters
 
 func is_local() -> bool:
 	return occupier is String and occupier.is_empty()
-
 
 
 func get_player_name() -> String:
@@ -77,11 +79,6 @@ func get_player_name() -> String:
 func get_player_color() -> DataPlayerColor:
 	return CFG.TEAM_COLORS[color_idx]
 
-
-func get_faction() -> WorldPlayerState:
-	# TODO store faction in state
-	return faction
-
 #endregion Getters
 
 
@@ -95,14 +92,6 @@ func your_turn(battle_state : BattleGridState) -> void:
 		bot_engine.play_move(battle_state)
 
 
-func get_occupier_name(all_slots : Array[Slot]) -> String:
-	if bot_engine:
-		return _get_bot_name(all_slots)
-	if occupier == "":
-		return NET.get_current_login()
-	return occupier as String
-
-
 func _get_bot_name(all_slots : Array[Slot]) -> String:
 	var number_of_ais : int = 0
 	var index_of_this_ai : int = 0
@@ -114,6 +103,3 @@ func _get_bot_name(all_slots : Array[Slot]) -> String:
 	if number_of_ais == 1:
 		return "AI"
 	return "AI %s" % index_of_this_ai
-
-
-
