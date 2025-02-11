@@ -29,6 +29,9 @@ func set_goods(new_goods_value : Goods) -> void:
 	_goods = new_goods_value
 
 
+func add_goods(new_goods : Goods) -> void:
+	_goods.add(new_goods)
+
 ## Checks if player has enough goods for purchase
 func has_enough(cost : Goods) -> bool:
 	return _goods.has_enough(cost)

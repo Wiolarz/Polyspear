@@ -102,7 +102,7 @@ func start_battle(new_armies : Array[Army], battle_map : DataBattleMap, \
 
 	var is_spectator = true
 	for player in IM.players:
-		if player.slot.is_local():
+		if player.is_local():
 			is_spectator = false
 	
 	if is_spectator and CFG.ENABLE_AUTO_BRAIN:
@@ -310,7 +310,7 @@ func grid_input(coord : Vector2i) -> void:
 		print("ai playing, input ignored")
 		return
 
-	if not current_player.slot.is_local():
+	if not current_player.is_local():
 		print("Attempt to play a move of an another player")
 		return
 
