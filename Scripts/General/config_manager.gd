@@ -230,8 +230,8 @@ var AUTO_START_GAME : bool :
 
 var LAST_USED_BATTLE_PRESET_NAME : String :
 	get: return player_options.last_used_battle_preset_name
-var LAST_USED_WORLD_PRESET : PresetWorld : # TODO implement this
-	get: return player_options.last_used_world_preset
+var LAST_USED_WORLD_MAP : DataWorldMap : # TODO implement this
+	get: return player_options.last_used_world_map
 
 
 func save_last_used_for_host_setup(\
