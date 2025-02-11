@@ -20,5 +20,5 @@ static func process_command(server : Server, peer : ENetPacketPeer, \
 	if session == null:
 		return FAILED
 	if server.settings.all_can_start():
-		IM.start_game()
+		IM.start_game() # Button press in multiplayer lobby
 	return OK

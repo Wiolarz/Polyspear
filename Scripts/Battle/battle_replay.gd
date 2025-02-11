@@ -21,10 +21,10 @@ static func create(armies : Array[Army], c_battle_map: DataBattleMap) -> BattleR
 	for army in armies:
 		var player = IM.get_player_by_index(army.controller_index)
 
-		var player_name = IM.get_player_name(player)
+		var player_name = player.get_player_name()
 
 		result.player_names.append(player_name)
-		result.player_colors.append(player.slot.color)
+		result.player_colors.append(player.color_idx)
 		result.player_initial_timers_ms.append(army.timer_reserve_sec * 1000)
 		result.player_increments_ms.append(army.timer_increment_sec * 1000)
 

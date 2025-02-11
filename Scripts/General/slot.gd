@@ -23,7 +23,7 @@ var units_list : Array[DataUnit] = [null,null,null,null,null] #TODO refactor to 
 var slot_hero : DataHero = null
 
 ## index of color see `CFG.TEAM_COLORS`
-var color : int = 0
+var color_idx : int = 0
 var battle_bot_path : String
 
 func _init():
