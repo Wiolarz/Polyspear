@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://sh62rfw7ulr8"]
+[gd_scene load_steps=12 format=3 uid="uid://sh62rfw7ulr8"]
 
 [ext_resource type="Shader" path="res://Art/tile_overall_shader.gdshader" id="1_5p8y7"]
 [ext_resource type="Script" path="res://Scripts/Battle/unit_form.gd" id="1_ep020"]
@@ -14,6 +14,17 @@
 resource_local_to_scene = true
 shader = ExtResource("1_5p8y7")
 shader_parameter/highlight_intensity = 0.0
+shader_parameter/contrast_boost = 0.0
+shader_parameter/modulate_intensity = 0.0
+shader_parameter/modulate_color = Color(1, 1, 1, 1)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_sftpy"]
+resource_local_to_scene = true
+shader = ExtResource("1_5p8y7")
+shader_parameter/highlight_intensity = 0.0
+shader_parameter/contrast_boost = 0.0
+shader_parameter/modulate_intensity = 0.0
+shader_parameter/modulate_color = Color(1, 1, 1, 1)
 
 [node name="Unit" type="Node2D"]
 material = SubResource("ShaderMaterial_djiqc")
@@ -28,7 +39,7 @@ use_parent_material = true
 texture = ExtResource("3_3flaq")
 
 [node name="sprite_border" type="Sprite2D" parent="."]
-use_parent_material = true
+material = SubResource("ShaderMaterial_sftpy")
 texture = ExtResource("4_0xhp4")
 
 [node name="Symbols" type="Node2D" parent="."]

@@ -7,10 +7,15 @@ signal anim_end()
 const SIDE_NAMES = ["FrontSymbol", "FrontRightSymbol", "BackRightSymbol", "BackSymbol", "BackLeftSymbol", "FrontLeftSymbol"]
 const selection_mark_scene = preload("res://Scenes/Form/SelectionMark.tscn")
 
-@onready var sprite_color := $sprite_color
+@onready var sprite_border := $sprite_border
 
 var entity : Unit
 var _symbols_flipped : bool = true  # flag used for unit rotation
+
+## these variables are needed for visual effects -- hex border needs
+## them both to refresh its hightlight level
+var _selected : bool = false
+var _hovered : bool = false
 
 
 func _process(_delta):
@@ -111,6 +116,9 @@ func _apply_color_texture(color : DataPlayerColor) -> void:
 	assert(texture, "failed to load background " + path)
 	$sprite_color.texture = texture
 
+	$sprite_border.material.set_shader_parameter("modulate_color", \
+		color.color)
+
 
 func _apply_level_number(level : int) -> void:
 	const roman_numbers = ["0", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"]
@@ -192,20 +200,45 @@ func set_effects() -> void:
 
 
 func set_selected(is_selected : bool):
-	if is_selected and not get_node_or_null("SelectionMark"):
-		var mark = selection_mark_scene.instantiate()
-		add_child(mark)
-		mark.name = "SelectionMark"
-		mark.position = Vector2(0.0, 0.0)
-		z_index = 2
-	else:
-		remove_child(get_node_or_null("SelectionMark"))
-		z_index = 0
+	_selected = is_selected
+	_refresh_highlight()
 
 
 func set_hovered(is_hovered : bool):
-	var shader_material := material as ShaderMaterial
-	var intensity = 0.3 if is_hovered else 0.0
-	shader_material.set_shader_parameter("highlight_intensity", intensity)
+	_hovered = is_hovered
+	_refresh_highlight()
+
+
+## used after every set_hovered and set_selected to refresh level of highlight
+func _refresh_highlight() -> void:
+	var overall_shader_material := material as ShaderMaterial
+	var border_shader_material := sprite_border.material as ShaderMaterial
+	var overall_intensity = 0.25 if _hovered else 0.0
+	var border_intensity = 0.0
+	border_intensity = lerpf(border_intensity, 1.0, 0.25 if _hovered else 0.0)
+	border_intensity = lerpf(border_intensity, 1.0, 0.45 if _selected else 0.0)
+	var border_modulate = 0.8 if _selected else 0.0
+	var border_contrast_boost = 1.25 if _selected else 0.0
+	overall_shader_material.set_shader_parameter("highlight_intensity", \
+		overall_intensity)
+	border_shader_material.set_shader_parameter("highlight_intensity", \
+		border_intensity)
+	border_shader_material.set_shader_parameter("modulate_intensity", \
+		border_modulate)
+	border_shader_material.set_shader_parameter("contrast_boost", \
+		border_contrast_boost)
+
+	if _selected:
+		if not get_node_or_null("SelectionMark"):
+			var mark = selection_mark_scene.instantiate()
+			add_child(mark)
+			move_child(mark, $sprite_color.get_index() + 1)
+			mark.name = "SelectionMark"
+			mark.position = Vector2(0.0, 0.0)
+			z_index = 2
+	elif get_node_or_null("SelectionMark"):
+		remove_child(get_node_or_null("SelectionMark"))
+		z_index = 0
+
 
 #endregion UI

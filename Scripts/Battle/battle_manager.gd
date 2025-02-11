@@ -308,11 +308,10 @@ func grid_input(coord : Vector2i) -> void:
 		_perform_move_info(move_info)
 
 
-## Called when mouse hovers some tile. It has to be calculated by battle manager for us to have
-## assurance that when we click hovered til then the same tile will get input. Other ways were
-## considered like checking mouse in UnitForm, but this is kind of independent object in relation
-## to mouse. And with THIS we will be able to highlight also not occupied tiles. [br]
-## This function should behave the same as grid_input, but with different result -- for now only
+## Called when the mouse cursor hovers a tile. Temporarily added to BM, but TODO move it to battle
+## UI. It was added to BM for a guarantee that when we click hovered tile, the same tile will get
+## input. [br]
+## This function should behave the same as grid_input, but with different result -- it's only
 ## visual.
 func grid_hover(coord : Vector2i, is_hovered : bool) -> void:
 	reset_grid_hover()

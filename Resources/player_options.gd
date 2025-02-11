@@ -19,6 +19,7 @@ extends Resource
 
 ## choose type of gui animation, non-distraction means that some in-game animation
 ## which look nice but can distract a player are disabled
+## STUB
 @export var gui_animation_mode : CFG.GuiAnimationMode
 
 ## Default first option after opening the game should be last selected one

@@ -1,5 +1,8 @@
 extends Control
 
+# STUB
+# Volume sliders do not work yet
+
 @export var callback : Callable
 @export var title : String
 

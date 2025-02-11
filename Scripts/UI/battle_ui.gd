@@ -1,6 +1,8 @@
 class_name BattleUI
 extends CanvasLayer
 
+@export var placement_unit_button_size = 200.0
+
 @onready var players_box : BoxContainer = $TopR/PlayersContainer/Players
 
 @onready var units_box : BoxContainer = $BottomC/Units
@@ -34,8 +36,10 @@ var armies_reference : Array[BattleGridState.ArmyInBattleState]
 
 var selected_unit : DataUnit = null
 var selected_unit_button : BaseButton = null
-var _hovered_unit_button : BaseButton = null
 var current_player : int = 0
+
+## used only for placement unit tiles
+var _hovered_unit_button : BaseButton = null
 
 var selected_spell : BattleSpell = null
 var selected_spell_button : TextureButton = null
@@ -210,10 +214,9 @@ func on_player_selected(army_index : int, preview : bool = false):
 	for unit in armies_reference[army_index].units_to_summon:
 		# here is the place where unit buttons for placement are
 
-		const button_size = 200.0
 		var button := TextureButton.new()
 		button.texture_normal = CFG.SUMMON_BUTTON_TEXTURE
-		button.custom_minimum_size = Vector2.ONE * button_size
+		button.custom_minimum_size = Vector2.ONE * placement_unit_button_size
 		button.stretch_mode = TextureButton.STRETCH_KEEP_ASPECT_CENTERED
 		button.ignore_texture_size = true
 
@@ -227,8 +230,9 @@ func on_player_selected(army_index : int, preview : bool = false):
 		unit_display.name = "UnitForm"
 		unit_display.position = Vector2.ZERO
 
-		# TEMP need to find out good way to calculate scale
-		var calculated_scale = 0.00058 * button_size
+		# TEMP need to find out good way to calculate scale, the constant number
+		# here was find empirically
+		var calculated_scale = 0.00058 * placement_unit_button_size
 		unit_display.scale = Vector2.ONE * calculated_scale
 
 		units_box.add_child(button)

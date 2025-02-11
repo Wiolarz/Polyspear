@@ -1,13 +1,13 @@
 extends Panel
 
-@onready var _column_container = $MarginContainer/VBoxContainer/Columns
+@onready var _column_container : BoxContainer = $MarginContainer/VBoxContainer/Columns
 
 @onready var _list : Control = _column_container.get_node("ScrollContainer")
 @onready var _content : Control = _column_container.get_node("VBoxContainer")
 
 @onready var _description : Label = _content.get_node("ReplayDescription")
 @onready var _play_button : Button = _content.get_node("PlayButton")
-@onready var _replay_buttons_container = _list.get_node("Replays")
+@onready var _replay_buttons_container : BoxContainer = _list.get_node("Replays")
 
 var _replay : BattleReplay
 
