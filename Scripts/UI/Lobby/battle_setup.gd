@@ -142,7 +142,7 @@ func _refresh_slot(index : int) -> void:
 			take_leave_button_state = \
 				BattlePlayerSlotPanel.TakeLeaveButtonState.FREE
 		faction = logic_slot.faction
-		color = CFG.get_team_color_at(logic_slot.color)
+		color = CFG.get_team_color_at(logic_slot.color_idx)
 		team = logic_slot.team
 		reserve_seconds = logic_slot.timer_reserve_sec
 		increment_seconds = logic_slot.timer_increment_sec

@@ -107,19 +107,19 @@ func try_to_cycle_color_slot(index : int, backwards : bool) -> bool:
 	if NET.client:
 		NET.client.queue_cycle_color(index, backwards)
 		return false # we will change this after server responds
-	var new_color_index = slots[index].color
+	var new_color_index = slots[index].color_idx
 	var diff : int = 1 if not backwards else -1
 	while true:
 		new_color_index = (new_color_index + diff) % CFG.TEAM_COLORS.size()
-		if new_color_index == slots[index].color: # all colors are taken
+		if new_color_index == slots[index].color_idx: # all colors are taken
 			return false
 		var is_color_unique = func() -> bool:
 			for slot in slots:
-				if slot.color == new_color_index:
+				if slot.color_idx == new_color_index:
 					return false
 			return true
 		if is_color_unique.call():
-			slots[index].color = new_color_index
+			slots[index].color_idx = new_color_index
 			break
 	if NET.server:
 		NET.server.broadcast_full_game_setup(IM.game_setup_info)
@@ -203,4 +203,4 @@ func _on_button_confirm_pressed():
 	if NET.client:
 		NET.client.queue_request_start()
 	else:
-		IM.start_game()
+		IM.start_game()  # Button press in single player lobby
