@@ -11,6 +11,16 @@ Additionally it contains unique for that player informations like:
 """
 
 
+"""
+Simple class that gameplay wise is used only to verify who gets to controll this specific index units
+It seperate from battle and world gameplay to make it's usage universal
+Additionally it contains unique for that player informations like:
+- Team
+- Color
+- Timer values
+"""
+
+
 
 var bot_engine : AIInterface
 
@@ -27,6 +37,7 @@ var index : int = -1
 
 var team : int = 0
 
+#TODO create a more universal timer for players that will perform well both in battle and in world
 #TODO create a more universal timer for players that will perform well both in battle and in world
 var timer_reserve_sec : int = CFG.CHESS_CLOCK_BATTLE_TIME_PER_PLAYER_MS
 var timer_increment_sec : int = CFG.CHESS_CLOCK_BATTLE_TURN_INCREMENT_MS
@@ -46,8 +57,15 @@ static func create(new_slot : Slot) -> Player:
 		result.add_child(result.bot_engine)
 		result.bot_engine.set_player(result)
 
-
 	result.name = "Player_" + result.get_player_name()
+	result.index = new_slot.index
+	result.team = new_slot.team
+	result.color_idx = new_slot.color_idx
+
+	result.occupier = new_slot.occupier
+
+	result.timer_reserve_sec = new_slot.timer_reserve_sec
+	result.timer_increment_sec = new_slot.timer_increment_sec
 	result.index = new_slot.index
 	result.team = new_slot.team
 	result.color_idx = new_slot.color_idx
@@ -66,11 +84,6 @@ func is_local() -> bool:
 	return occupier is String and occupier.is_empty()
 
 
-
-func is_local() -> bool:
-	return occupier is String and occupier.is_empty()
-
-
 func get_player_name() -> String:
 	# TODO make these names same as elsewhere
 	if bot_engine:
@@ -84,12 +97,6 @@ func get_player_name() -> String:
 
 func get_player_color() -> DataPlayerColor:
 	return CFG.TEAM_COLORS[color_idx]
-	return CFG.TEAM_COLORS[color_idx]
-
-
-func get_faction() -> WorldPlayerState:
-	# TODO store faction in state
-	return faction
 
 #endregion Getters
 
