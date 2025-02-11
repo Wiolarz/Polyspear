@@ -20,7 +20,7 @@ extends Resource
 @export var last_used_battle_preset_name : String
 
 ## Default first option after opening the game should be last selected one
-@export var last_used_world_preset : PresetWorld
+@export var last_used_world_map : DataWorldMap
 
 @export var login : String
 ## if true adds a random number suffix at the end of a login string

@@ -1,6 +1,0 @@
-[gd_resource type="Resource" script_class="PresetWorld" load_steps=2 format=3 uid="uid://devjg7h5wulr8"]
-
-[ext_resource type="Script" path="res://Resources/Presets/preset_world.gd" id="1_h6opq"]
-
-[resource]
-script = ExtResource("1_h6opq")
