@@ -48,24 +48,22 @@ func add_custom_screen(custom_ui : CanvasLayer):
 func go_to_custom_ui(custom_ui : CanvasLayer):
 	_hide_all()
 	custom_ui.show()
-	BG.set_default_colors()
 
 
 func _hide_all():
 	for c in get_children(true):
 		c.hide()
+	BG.set_default_colors()
 
 
 func go_to_main_menu():
 	_hide_all()
 	main_menu.show()
-	BG.set_default_colors()
 
 
 func go_to_unit_editor():
 	_hide_all()
 	unit_editor.show()
-	BG.set_default_colors()
 
 
 ## TEMP

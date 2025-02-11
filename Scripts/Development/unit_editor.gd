@@ -27,14 +27,16 @@ var open_button_texture : Texture2D
 ## try display for selecting unit to edit
 @onready var unit_browser_tree : Tree = $HBoxContainer/UnitBrowserTree
 
+@onready var symbol_container : Control = $HBoxContainer/Edition/VBoxContainer/Preview/Center
+
 ## OptionButtons for picking symbols, ordered matching direction codes
 @onready var symbol_pickers : Array[OptionButton] = [
-	$HBoxContainer/Edition/VBoxContainer/Preview/Center/ChangeW,
-	$HBoxContainer/Edition/VBoxContainer/Preview/Center/ChangeNW,
-	$HBoxContainer/Edition/VBoxContainer/Preview/Center/ChangeNE,
-	$HBoxContainer/Edition/VBoxContainer/Preview/Center/ChangeE,
-	$HBoxContainer/Edition/VBoxContainer/Preview/Center/ChangeSE,
-	$HBoxContainer/Edition/VBoxContainer/Preview/Center/ChangeSW,
+	symbol_container.get_node("ChangeW"),
+	symbol_container.get_node("ChangeNW"),
+	symbol_container.get_node("ChangeNE"),
+	symbol_container.get_node("ChangeE"),
+	symbol_container.get_node("ChangeSE"),
+	symbol_container.get_node("ChangeSW"),
 ]
 
 

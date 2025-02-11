@@ -1,4 +1,4 @@
-class_name Background
+# Singleton - BG
 extends CanvasLayer
 
 var _style_box = preload("res://Art/UI/marble_box.tres")
