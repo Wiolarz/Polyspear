@@ -9,27 +9,27 @@ extends Resource
 
 ## once the game is launched it instantly start the game with default lobby values [br]
 ## depending on "use_default_battle" value starts either World/Battle
-@export var autostart_map : bool
+@export var autostart_map : bool = false
 
 ## Default starting screen when launching a game (autostart_map uses this variable)
-@export var use_default_battle : bool
+@export var use_default_battle : bool = true
 ## if true all player slots are placed in control of AI controller [br]
 ## if false all slots are by default controlled by host (human player)
-@export var use_default_AI_players : bool
+@export var use_default_AI_players : bool = false
 
 ## if true, compares BattleGridState and LibSpear's BattleManagerFast
 ## for mismatches before and after each battle move, activating an assert on mismatch
 @export var bmfast_integrity_checks : bool = true
 
 ## if true, peer ip addresses are hidden
-@export var streamer_mode : bool
+@export var streamer_mode : bool = false
 
 ## enable fancy, but distracting background color change following player turns
-@export var background_color_follows_players : bool
+@export var background_color_follows_players : bool = true
 
 ## choose type of gui animation, non-distraction means that some in-game animation
 ## which look nice but can distract a player are disabled
-@export var gui_animation_mode : CFG.GuiAnimationMode
+@export var gui_animation_mode := CFG.GuiAnimationMode.FULL
 
 ## Default first option after opening the game should be last selected one
 ## [br]
