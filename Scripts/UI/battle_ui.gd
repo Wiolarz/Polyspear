@@ -114,9 +114,10 @@ func update_cyclone():
 			#IM.get_player_by_index(army.army_reference.controller_index)
 
 			announcement_sacrifice.modulate.a = 1
-			var tween = ANIM.subtween()  # if player makes a quicker move, subtween doesn't cause issues
+			var tween = ANIM.ui_tween()
 			tween.tween_interval(2)
 			tween.tween_property(announcement_sacrifice, "modulate:a", 0, 1)
+			ANIM.play_tween(tween, ANIM.TweenPlaybackSettings.speed_independent())
 	else:
 		cyclone.text = "%s %d turns" % [target_color.name, timer]
 		_shown_sacrifice_announcement = false
@@ -241,9 +242,10 @@ func unit_summoned(summon_phase_end : bool):
 		#IM.get_player_by_index(army.army_reference.controller_index)
 
 		announcement_end_of_placement_phase.modulate.a = 1
-		var tween = ANIM.subtween()  # if player makes a quicker move, subtween doesn't cause issues
+		var tween = ANIM.ui_tween()
 		tween.tween_interval(1.5)
 		tween.tween_property(announcement_end_of_placement_phase, "modulate:a", 0, 0.5)
+		ANIM.play_tween(tween, ANIM.TweenPlaybackSettings.speed_independent())
 
 #endregion Summon Phase
 

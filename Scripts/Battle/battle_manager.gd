@@ -291,10 +291,6 @@ func grid_input(coord : Vector2i) -> void:
 		print("replay playing, input ignored")
 		return
 
-	if ANIM.is_playing():
-		print("anim playing, input ignored")
-		return
-
 	# any normal input removes all drawn arrows
 	_painter_node.erase()
 
