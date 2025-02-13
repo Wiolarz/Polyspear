@@ -7,11 +7,11 @@ var game_setup : GameSetup
 
 var client_side_map_label : Label
 
-@onready var preset_select = $VBox/PresetSelect
-@onready var map_select = $VBox/MapSelect
-@onready var slots = $VBox/Slots
+@onready var preset_select : Container = $VBox/PresetSelect
+@onready var map_select : Container = $VBox/MapSelect
+@onready var slots : Container = $VBox/Slots
 
-@onready var player_list = slots.get_node("ColorRect/PlayerList")
+@onready var player_list : Container = slots.get_node("ColorRect/PlayerList")
 @onready var maps_list : OptionButton = map_select.get_node("ColorRect/MapList")
 @onready var presets_list : OptionButton = \
 	preset_select.get_node("ColorRect/PresetList")

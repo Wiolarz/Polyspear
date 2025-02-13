@@ -29,9 +29,10 @@ var anim_move_duration := 0.3
 var anim_turn_duration := 0.3
 var anim_death_duration := 0.3
 var anim_symbol_activation_scale := Vector2(2.0, 2.0)
-# temporarily cranked up to 0.8, TODO change to 0.5 when 
+# temporarily cranked up to 0.8, TODO change to 0.5 when
 var anim_symbol_activation_duration := 0.8
 
+# STUB, TBH not used yet really
 enum GuiAnimationMode
 {
 	NONE,

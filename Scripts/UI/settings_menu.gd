@@ -70,9 +70,9 @@ func _on_toggle_streamer_mode_pressed():
 
 
 func _on_cycle_gui_anim_mode_pressed():
-	var mode = CFG.player_options.gui_animation_mode + 1
+	var mode : int = CFG.player_options.gui_animation_mode + 1
 	if mode >= CFG.GuiAnimationMode.MAX_:
 		mode = CFG.GuiAnimationMode.NONE
-	CFG.player_options.gui_animation_mode = mode
+	CFG.player_options.gui_animation_mode = mode as CFG.GuiAnimationMode
 	refresh()
 

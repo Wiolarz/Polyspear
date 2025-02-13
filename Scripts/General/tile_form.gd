@@ -101,9 +101,9 @@ func paint(brush : DataTile) -> void:
 
 
 func set_hovered(is_hovered : bool):
-	var shader_material := material as ShaderMaterial
+	assert(material is ShaderMaterial)
 	var intensity = 0.1 if is_hovered else 0.0
-	shader_material.set_shader_parameter("highlight_intensity", intensity)
+	material.set_shader_parameter("highlight_intensity", intensity)
 
 
 func _set_coord(new_coord: Vector2i):

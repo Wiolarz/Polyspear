@@ -18,8 +18,6 @@ var latest_ai_cancel_token : CancellationToken
 var _current_summary : DataBattleSummary = null
 
 var _selected_unit : Unit
-var _hovered_unit : Unit
-var _hovered_tile : TileForm
 
 var _replay_data : BattleReplay
 var _replay_is_playing : bool = false
@@ -56,7 +54,6 @@ func _ready():
 
 func _process(_delta):
 	_check_clock_timer_tick()
-	force_hover_refresh()
 
 
 #region Battle Setup
@@ -169,6 +166,17 @@ func get_current_player_name() -> String:
 
 func get_current_turn() -> int:
 	return _battle_grid_state.turn_counter
+
+
+func get_unit_form(coord : Vector2i) -> UnitForm:
+	var unit : Unit = _battle_grid_state.get_unit(coord)
+	if unit and unit in _unit_to_unit_form:
+		return _unit_to_unit_form[unit]
+	return null
+
+
+func get_tile_form(coord : Vector2i) -> TileForm:
+	return _tile_grid.get_hex(coord)
 
 
 ## tells if there is battle state that is important and should be serialized
@@ -308,59 +316,6 @@ func grid_input(coord : Vector2i) -> void:
 		_perform_move_info(move_info)
 
 
-## Called when the mouse cursor hovers a tile. Temporarily added to BM, but TODO move it to battle
-## UI. It was added to BM for a guarantee that when we click hovered tile, the same tile will get
-## input. [br]
-## This function should behave the same as grid_input, but with different result -- it's only
-## visual.
-func grid_hover(coord : Vector2i, is_hovered : bool) -> void:
-	reset_grid_hover()
-
-	if _battle_is_ongoing:
-		# TODO maybe create a function like '_get_unit_form_at(coord)'
-		var unit : Unit = _battle_grid_state.get_unit(coord)
-		if unit:
-			var unit_form : UnitForm = _unit_to_unit_form[unit]
-			unit_form.set_hovered(is_hovered)
-			_hovered_unit = unit if is_hovered else null
-
-		var tile : TileForm = _tile_grid.get_hex(coord)
-		if tile and tile.type != "SENTINEL" and tile.type != "":
-			tile.set_hovered(true)
-			_hovered_tile = tile
-
-
-
-func reset_grid_hover() -> void:
-	if _battle_is_ongoing:
-		if _hovered_unit and _hovered_unit in _unit_to_unit_form:
-			var unit_form : UnitForm = _unit_to_unit_form[_hovered_unit]
-			unit_form.set_hovered(false)
-	if _hovered_tile and is_instance_valid(_hovered_tile):
-		_hovered_tile.set_hovered(false)
-	_hovered_unit = null
-	_hovered_tile = null
-
-
-func force_hover_refresh() -> void:
-	var space_state := get_world_2d().direct_space_state
-	var mouse := get_global_mouse_position()
-	var query := PhysicsPointQueryParameters2D.new()
-	query.position = mouse
-	query.collide_with_areas = true
-	query.collide_with_bodies = false
-	var result := space_state.intersect_point(query, 1)
-	if result.size() < 1:
-		reset_grid_hover()
-		return
-	var collider = result[0]["collider"]
-	var tile_form = collider as TileForm
-	if not tile_form:
-		reset_grid_hover()
-		return
-	grid_hover(tile_form.coord, true)
-
-
 func _check_for_stalemate() -> bool:
 	var limit = BattleGridState.STALEMATE_TURN_REPEATS
 
@@ -469,14 +424,14 @@ func _grid_input_summon(coord : Vector2i) -> MoveInfo:
 	assert(_battle_grid_state.state == _battle_grid_state.STATE_SUMMONNING, \
 			"_grid_input_summon called in an incorrect state")
 
-	if _battle_ui.selected_unit == null:
+	if _battle_ui._selected_unit_pointer == null:
 		return null # no unit selected to summon on ui
 
 	if not _battle_grid_state.current_player_can_summon_on(coord):
 		return null
 
 	print(NET.get_role_name(), " input - summoning unit")
-	return MoveInfo.make_summon(_battle_ui.selected_unit, coord)
+	return MoveInfo.make_summon(_battle_ui._selected_unit_pointer, coord)
 
 
 #endregion Summon Phase

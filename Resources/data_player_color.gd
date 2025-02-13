@@ -29,6 +29,8 @@ static func create_with_texture(name_ : String, color_ : Color, \
 	return data_player_color
 
 
+# probably TEMP
 static func _create_default_secondary(primary : Color) -> Color:
-	return lerp(primary, default_secondary_mix, 0.81)
+	const secondary_color_shift_power := 0.81
+	return lerp(primary, default_secondary_mix, secondary_color_shift_power)
 

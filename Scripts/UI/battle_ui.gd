@@ -34,12 +34,21 @@ extends CanvasLayer
 var fighting_players_idx = []
 var armies_reference : Array[BattleGridState.ArmyInBattleState]
 
-var selected_unit : DataUnit = null
-var selected_unit_button : BaseButton = null
 var current_player : int = 0
 
-## used only for placement unit tiles
-var _hovered_unit_button : BaseButton = null
+
+## used only for placement unit tiles, points to currently selected unit/unit-button in placement
+## bar
+var _selected_unit_pointer : DataUnit = null
+var _selected_unit_button_pointer : BaseButton = null
+
+## used only for placement unit tiles, points to currently hovered unit button in placement bar
+## (same set of buttons as _`selected_unit_button_pointer` points to
+var _hovered_unit_button_pointer : BaseButton = null
+
+## used for grid hovered units and map tiles
+var _hovered_unit_form_pointer : UnitForm = null
+var _hovered_tile_form_pointer : TileForm = null
 
 var selected_spell : BattleSpell = null
 var selected_spell_button : TextureButton = null
@@ -88,6 +97,7 @@ func _process(_delta):
 	if BM.battle_is_active():
 		update_clock()
 		update_cyclone()  # TODO move it to signal that a turn has ended
+	force_hover_refresh()
 
 
 func update_mana() -> void:
@@ -188,8 +198,8 @@ func update_replay_controls(move_nr: int, total_replay_moves: int, summary: Data
 #region Summon Phase
 
 func on_player_selected(army_index : int, preview : bool = false):
-	selected_unit = null
-	selected_unit_button = null
+	_selected_unit_pointer = null
+	_selected_unit_button_pointer = null
 
 	if not preview:
 		current_player = army_index
@@ -237,29 +247,31 @@ func on_player_selected(army_index : int, preview : bool = false):
 
 		units_box.add_child(button)
 		var lambda = func on_click():
+			# TODO for later: move these lambdas outside to increase readability
 			if (current_player != army_index):
 				return
-			if selected_unit_button:  # Deselects previously selected unit
-				selected_unit_button.get_node("Center/UnitForm").set_selected(false)
+			if _selected_unit_button_pointer:  # Deselects previously selected unit
+				_selected_unit_button_pointer.get_node("Center/UnitForm").set_selected(false)
 
-			if selected_unit_button == button: # Selecting the same unit twice deselects it
-				selected_unit = null
-				selected_unit_button = null
+			if _selected_unit_button_pointer == button: # Selecting the same unit twice deselects it
+				_selected_unit_pointer = null
+				_selected_unit_button_pointer = null
 			else:
-				selected_unit = unit
-				selected_unit_button = button
-				selected_unit_button.get_node("Center/UnitForm").set_selected(true)
+				_selected_unit_pointer = unit
+				_selected_unit_button_pointer = button
+				_selected_unit_button_pointer.get_node("Center/UnitForm").set_selected(true)
 		button.pressed.connect(lambda)
 
 		var lambda_hover = func(is_hovered : bool):
-			if _hovered_unit_button:
-				_hovered_unit_button.get_node("Center/UnitForm").set_hovered(false)
+			# TODO for later: move these lambdas outside to increase readability
+			if _hovered_unit_button_pointer:
+				_hovered_unit_button_pointer.get_node("Center/UnitForm").set_hovered(false)
 
 			if is_hovered:
-				_hovered_unit_button = button
-				_hovered_unit_button.get_node("Center/UnitForm").set_hovered(true)
+				_hovered_unit_button_pointer = button
+				_hovered_unit_button_pointer.get_node("Center/UnitForm").set_hovered(true)
 			else:
-				_hovered_unit_button = null
+				_hovered_unit_button_pointer = null
 		button.mouse_entered.connect(lambda_hover.bind(true))
 		button.mouse_exited.connect(lambda_hover.bind(false))
 
@@ -267,8 +279,8 @@ func on_player_selected(army_index : int, preview : bool = false):
 
 
 func unit_summoned(summon_phase_end : bool):
-	selected_unit = null
-	selected_unit_button = null
+	_selected_unit_pointer = null
+	_selected_unit_button_pointer = null
 
 	if summon_phase_end:
 		announcement_end_of_placement_phase_player_name_label.text = BM.get_current_player_name()
@@ -281,6 +293,69 @@ func unit_summoned(summon_phase_end : bool):
 		tween.tween_property(announcement_end_of_placement_phase, "modulate:a", 0, 0.5)
 
 #endregion Summon Phase
+
+
+#region Grid
+
+
+## Clears any hovering of grid tiles and units.
+func reset_grid_hover() -> void:
+	if BM.battle_is_active():
+		if _hovered_unit_form_pointer:
+			_hovered_unit_form_pointer.set_hovered(false)
+	if _hovered_tile_form_pointer and is_instance_valid(_hovered_tile_form_pointer):
+		_hovered_tile_form_pointer.set_hovered(false)
+	_hovered_unit_form_pointer = null
+	_hovered_tile_form_pointer = null
+
+
+## Called when the mouse cursor hovers a tile. It's called similarly to BM's grid_input.
+func grid_hover(coord : Vector2i, is_hovered : bool) -> void:
+	## This function uses BattleManager's functions to use its grid colliders. The reason for this
+	## is to get same result with hover and select when the cursor is at each place.
+	reset_grid_hover()
+
+	if BM.battle_is_active():
+		var unit_form : UnitForm = BM.get_unit_form(coord)
+		if unit_form:
+			unit_form.set_hovered(is_hovered)
+			_hovered_unit_form_pointer = unit_form if is_hovered else null
+
+		var tile_form : TileForm = BM.get_tile_form(coord)
+		if tile_form and tile_form.type != "SENTINEL" and tile_form.type != "":
+			tile_form.set_hovered(true)
+			_hovered_tile_form_pointer = tile_form
+
+
+func force_hover_refresh() -> void:
+	if not UI.camera:
+		return
+
+	# TODO pack to some pretty funcitons
+	var space_state := BM.get_world_2d().direct_space_state
+	var mouse := BM.get_global_mouse_position()
+
+	# HACK -- get_global_mouse_position() returns different result than when
+	# called from BM's _process -- line below is a workaround
+	mouse += UI.camera.position - UI.camera.get_screen_center_position()
+
+	var query := PhysicsPointQueryParameters2D.new()
+	query.position = mouse
+	query.collide_with_areas = true
+	query.collide_with_bodies = false
+	var result := space_state.intersect_point(query, 1)
+	if result.size() < 1:
+		reset_grid_hover()
+		return
+	var collider = result[0]["collider"]
+	var tile_form = collider as TileForm
+	if not tile_form:
+		reset_grid_hover()
+		return
+	grid_hover(tile_form.coord, true)
+
+
+#endregion Grid
 
 
 #region Magic

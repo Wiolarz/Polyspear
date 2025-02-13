@@ -24,7 +24,8 @@ position = Vector2(20, 0)
 texture = ExtResource("2_utlft")
 
 [node name="CoordLabel" type="Label" parent="."]
-z_index = 1
+z_index = 5
+z_as_relative = false
 use_parent_material = true
 offset_left = -120.0
 offset_top = 672.0
