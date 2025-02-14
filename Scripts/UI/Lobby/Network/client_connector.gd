@@ -68,7 +68,7 @@ func connect_to_server():
 	NET.client_connect_and_login(get_address(), get_port(), username)
 
 
-func _on_button_listen_pressed():
+func _on_button_listen_pressed(): # TODO change name to connect
 	connect_to_server()
 
 
