@@ -52,6 +52,7 @@ const SENTINEL_TILE_PATH = "res://Resources/World/World_tiles/sentinel.tres"
 const BATTLE_MAP_TILES_PATH = "res://Resources/Battle/Battle_tiles/"
 const WORLD_MAP_TILES_PATH = "res://Resources/World/World_tiles/"
 const SYMBOLS_PATH = "res://Resources/Battle/Symbols/"
+const BATTLE_BOTS_PATH = "res://Resources/Battle/Bots"
 
 const ROCK_ICON_PATH = "res://Art/battle_map/rock.png"
 const SWAMP_ICON_PATH = "res://Art/battle_map/swamp.png"
@@ -148,6 +149,16 @@ const POLYAPI_BASE_URL = "https://polyserver.onrender.com/"
 #endregion Multiplayer
 
 
+#region Battle Map properties
+
+#TEMP variables until better mana equation is implemented
+const BIG_CYCLONE_COUNTER_VALUE = 30
+const SMALL_CYCLONE_COUNTER_VALUE = 15
+const CYCLONE_MANA_THRESHOLD = 3
+
+#endregion
+
+
 #region World Map properties
 
 const HERO_LEVEL_CAP = 7
@@ -178,10 +189,28 @@ const CHESS_CLOCK_BATTLE_TURN_INCREMENT_MS = 2 * 1000
 #endregion chess clock
 
 
+#region Debugging & tests
+
+# Also documented in Documentation/libspear.md
+## Checks each time a move is done whether results of a move replicated in BattleManagerFast match results in a regular BM
+var debug_check_bmfast_integrity := true
+## Enables additional BattleManagerFast internal integrity checks, which may slightly reduce performance
+var debug_check_bmfast_internals := true
+## When greater than zero, saves replays from playouts where errors were detected
+var debug_mcts_max_saved_fail_replays := 16
+## When true, immediately save replays from BattleManagerFast mismatches with an appropriate name with a suffix "BMFast Mismatch"
+var debug_save_failed_bmfast_integrity := true
+
+#endregion
+
+
 #region Player Options
+
 var player_options : PlayerOptions
 
 const DEFAULT_USER_NAME : String = "(( you ))"
+
+const ENABLE_AUTO_BRAIN := false
 
 var DEFAULT_MODE_IS_BATTLE : bool :
 	get: return player_options.use_default_battle
@@ -192,6 +221,7 @@ var LAST_USED_BATTLE_PRESET_NAME : String :
 	get: return player_options.last_used_battle_preset_name
 var LAST_USED_WORLD_PRESET : PresetWorld : # TODO implement this
 	get: return player_options.last_used_world_preset
+
 
 func save_last_used_for_host_setup(\
 		address : String, port : int, username : String) -> void:

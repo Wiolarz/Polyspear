@@ -26,13 +26,13 @@ static func get_color_from_index(color_idx : int) -> Color:
 	var color : Color = Color.WHITE_SMOKE  # default 0 value
 	match color_idx:
 		1:
-			color = Color.LIGHT_GREEN
-		2:
-			color = Color.INDIAN_RED
-		3:
 			color = Color.BLUE
-		4:
+		2:
 			color = Color.ORANGE
+		3:
+			color = Color.LIGHT_GREEN
+		4:
+			color = Color.INDIAN_RED
 		5:
 			color = Color.BLACK
 		6:

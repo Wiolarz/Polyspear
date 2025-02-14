@@ -25,6 +25,7 @@ var _replay_move_counter : int = 0
 var _replay_number_of_moves : int = 0
 
 var _batch_mode : bool = false # flagged true when recreating game state
+var _ai_move_preview : AIMovePreview = null
 var _painter_node : BattlePainter
 
 signal move_animation_done()
@@ -84,7 +85,7 @@ func start_battle(new_armies : Array[Army], battle_map : DataBattleMap, \
 	_current_summary = null
 	deselect_unit()
 
-	# GAMEPLAY GRID and Armies state:
+	# CORE GAMEPLAY logic initialization
 	_battle_grid_state = BattleGridState.create(battle_map, new_armies)
 
 	# GRAPHICS GRID:
@@ -99,6 +100,14 @@ func start_battle(new_armies : Array[Army], battle_map : DataBattleMap, \
 			_perform_replay_move(m)
 		_batch_mode = false
 
+	var is_spectator = true
+	for player in IM.players:
+		if player.slot.is_local():
+			is_spectator = false
+	
+	if is_spectator and CFG.ENABLE_AUTO_BRAIN:
+		_enable_ai_preview()
+	
 	# first turn does not get a signal emit
 	_on_turn_started(_battle_grid_state.get_current_player())
 
@@ -217,14 +226,27 @@ func _on_turn_started(player : Player) -> void:
 
 	if player.bot_engine and not NET.client: # AI is simulated on server only
 		print("AI starts thinking")
+		
 		var my_cancel_token = CancellationToken.new()
-		assert(latest_ai_cancel_token == null)
+		#assert(latest_ai_cancel_token == null)
 		latest_ai_cancel_token = my_cancel_token
-		var move = player.bot_engine.choose_move(_battle_grid_state)
-		await _ai_thinking_delay() # moving too fast feels weird
+		
+		var bot = player.bot_engine
+		
+		var thinking_begin_s = Time.get_ticks_msec() / 1000.0
+		var move = await bot.choose_move(_battle_grid_state)
+		await _ai_thinking_delay(thinking_begin_s) # moving too fast feels weird
+		
+		bot.cleanup_after_move()
+		if _battle_grid_state == null: # Player quit to main menu before finishing
+			return
+		
 		if not my_cancel_token.is_canceled():
+			assert(_battle_grid_state.is_move_possible(move), "AI tried to perform an invalid move")
+			_perform_move_info(move)
 			latest_ai_cancel_token = null
-			_perform_ai_move(move)
+
+
 
 
 func perform_network_move(move_info : MoveInfo) -> void:
@@ -265,11 +287,8 @@ func grid_input(coord : Vector2i) -> void:
 		return
 
 	if _replay_is_playing:
+		_painter_node.erase()  # TODO verify if that's a proper fix to allow drawing in replays
 		print("replay playing, input ignored")
-		return
-
-	if ANIM.is_playing():
-		print("anim playing, input ignored")
 		return
 
 	# any normal input removes all drawn arrows
@@ -331,15 +350,19 @@ func _check_for_stalemate() -> bool:
 				return false
 	return true
 
-func  _end_move() -> void:
+
+func _end_move() -> void:
 	if _battle_grid_state.battle_is_ongoing():
 		if _check_for_stalemate():
 			_battle_grid_state.end_stalemate() # could end the battle
 
 	if _battle_grid_state.battle_is_ongoing():
+		if _ai_move_preview:
+			_ai_move_preview.update(_battle_grid_state)
+		
 		_battle_ui.update_mana() # TEMP placement here
 		_on_turn_started(_battle_grid_state.get_current_player())
-	else :
+	else:
 		_on_battle_ended()
 
 #endregion Ongoing battle
@@ -353,16 +376,12 @@ func cancel_pending_ai_move() ->  void:
 		latest_ai_cancel_token = null
 
 
-func _ai_thinking_delay() -> void:
-	var seconds = CFG.bot_speed_frames / 60.0
-	print("ai wait %f s" % [seconds])
+func _ai_thinking_delay(thinking_begin_s) -> void:
+	var max_seconds = CFG.bot_speed_frames / 60.0
+	var seconds = max(0.01, max_seconds - (Time.get_ticks_msec()/1000.0 - thinking_begin_s))
 	await get_tree().create_timer(seconds).timeout
 	while IM.is_game_paused() or CFG.bot_speed_frames == CFG.BotSpeed.FREEZE:
 		await get_tree().create_timer(0.1).timeout
-
-
-func _perform_ai_move(move_info : MoveInfo) -> void:
-	_perform_move_info(move_info)
 
 
 func ai_move() -> void:
@@ -374,7 +393,7 @@ func ai_move() -> void:
 		return
 	
 	var move := AiBotStateRandom.choose_move_static(_battle_grid_state)
-	_perform_ai_move(move)
+	_perform_move_info(move)
 
 #endregion AI Support
 
@@ -391,7 +410,15 @@ func _on_unit_summoned(unit : Unit) -> void:
 	# apply correct BM position offset in world battles
 	form.global_position = get_tile_global_position(unit.coord)
 
-	_battle_ui.unit_summoned(not _battle_grid_state.is_during_summoning_phase())
+	var is_placement_phase_over : bool = not _battle_grid_state.is_during_summoning_phase()
+	_battle_ui.unit_summoned(is_placement_phase_over)
+	if is_placement_phase_over:
+		for row : Array in _tile_grid.hexes:
+			for tile : TileForm in row:
+				# TODO replace it with better map editor features
+				if tile.type in ["1_player_spawn", "2_player_spawn", "3_player_spawn", "4_player_spawn"]:
+					tile.get_node("Sprite2D").texture = load("res://Art/battle_map/grass_tile.png")
+
 
 
 	unit.unit_died.connect(form.anim_die)
@@ -647,6 +674,7 @@ func close_when_quiting_game() -> void:
 	_battle_ui.hide_replay_controls()
 	_turn_off_battle_ui()
 	_reset_grid_and_unit_forms()
+	_disable_ai_preview()
 	
 	_replay_is_playing = false # revert to default value for the next battle
 
@@ -660,6 +688,8 @@ func _on_battle_ended() -> void:
 	_battle_is_ongoing = false
 
 	deselect_unit()
+
+	_disable_ai_preview()
 	_battle_ui.update_mana()
 
 	await get_tree().create_timer(1).timeout # TEMP, don't exit immediately
@@ -693,6 +723,7 @@ func _close_battle_and_return() -> void:
 
 
 func _turn_off_battle_ui() -> void:
+	_painter_node.erase()
 	_battle_ui.hide()
 	UI.switch_camera()
 
@@ -707,6 +738,7 @@ func _reset_grid_and_unit_forms() -> void:
 		_border_node.queue_free()
 		_border_node = null
 	_battle_grid_state = null
+
 
 ## Major function which fully generates information panel at the end of the battle
 func _create_summary() -> DataBattleSummary:
@@ -827,6 +859,32 @@ func force_surrender():
 	_end_move()
 
 
+func _enable_ai_preview():
+	if not _battle_grid_state:
+		push_error("Failed to enahle AI preview - _battle_grid_state == null")
+		return
+	
+	if _ai_move_preview:
+		return
+	
+	_ai_move_preview = AIMovePreview.new()
+	add_child(_ai_move_preview)
+	_ai_move_preview.name = "AIMovePreview"
+	_ai_move_preview.update(_battle_grid_state)
+
+
+func _disable_ai_preview():
+	if _ai_move_preview:
+		_ai_move_preview.queue_free()
+		_ai_move_preview = null
+
+
+func toggle_ai_preview():
+	if _ai_move_preview:
+		_disable_ai_preview()
+	else:
+		_enable_ai_preview()
+
 #endregion cheats
 
 
@@ -869,6 +927,7 @@ func get_current_time_left_ms() -> int:
 	return 0
 
 #endregion Chess clock
+
 
 #region Painting
 
