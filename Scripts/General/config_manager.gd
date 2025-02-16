@@ -72,9 +72,9 @@ const PLAYER_COLORS_PATH = "res://Art/player_colors/"
 const REPLAY_DIRECTORY = "user://replays/"
 const PLAYER_OPTIONS_PATH = "user://player_options.tres"
 
-var FACTION_ELVES : DataFaction = load("res://Resources/Factions/elf.tres")
-var FACTION_ORCS : DataFaction = load("res://Resources/Factions/orc.tres")
-var FACTIONS_LIST : Array[DataFaction] = [
+var FACTION_ELVES : DataRace = load("res://Resources/Races/elf.tres")
+var FACTION_ORCS : DataRace = load("res://Resources/Races/orc.tres")
+var FACTIONS_LIST : Array[DataRace] = [
 	FACTION_ELVES,
 	FACTION_ORCS,
 ]
@@ -230,8 +230,8 @@ var AUTO_START_GAME : bool :
 
 var LAST_USED_BATTLE_PRESET_NAME : String :
 	get: return player_options.last_used_battle_preset_name
-var LAST_USED_WORLD_PRESET : PresetWorld : # TODO implement this
-	get: return player_options.last_used_world_preset
+var LAST_USED_WORLD_MAP : DataWorldMap : # TODO implement this
+	get: return player_options.last_used_world_map
 
 
 func save_last_used_for_host_setup(\

@@ -14,9 +14,15 @@ export_presets.cfg
 data_*/
 mono_crash.*.json
 /.vscode
+
 #GDExtension
 LibSpear/.sconsign.dblite
 LibSpear/compile_commands.json
 LibSpear/src/**.os
 LibSpear/build
+#windows cpp :)
+LibSpear/bin/~*.dll
+LibSpear/bin/~*.TMP
+
+# Documentation settings
 Documentation/.obsidian/*
