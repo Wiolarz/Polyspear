@@ -53,6 +53,7 @@ func go_to_custom_ui(custom_ui : CanvasLayer):
 func _hide_all():
 	for c in get_children(true):
 		c.hide()
+	BG.set_default_colors()
 
 
 func go_to_main_menu():
@@ -69,6 +70,7 @@ func go_to_unit_editor():
 func go_to_map_editor():
 	_hide_all()
 	map_editor.open_draw_menu()
+	BG.set_player_colors(CFG.NEUTRAL_COLOR)
 
 
 ## TEMP
@@ -189,7 +191,7 @@ func grid_planning_input_listener(tile_coord : Vector2i, \
 		return
 
 	BM.planning_input(tile_coord, is_it_pressed)
-	
+
 
 
 

@@ -44,16 +44,19 @@ size_flags_vertical = 4
 [node name="BackToGame" type="Button" parent="MenuContainer"]
 layout_mode = 2
 shortcut = ExtResource("2_48g4r")
+shortcut_in_tooltip = false
 text = "Back to game"
 
 [node name="WinBattle" type="Button" parent="MenuContainer"]
 layout_mode = 2
 theme_override_styles/normal = SubResource("StyleBoxFlat_fdxbp")
+shortcut_in_tooltip = false
 text = "Win battle"
 
 [node name="Surrender" type="Button" parent="MenuContainer"]
 layout_mode = 2
 theme_override_styles/normal = SubResource("StyleBoxFlat_p527t")
+shortcut_in_tooltip = false
 text = "Surrender
 "
 

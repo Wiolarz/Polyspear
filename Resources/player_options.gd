@@ -14,6 +14,14 @@ extends Resource
 ## if true, peer ip addresses are hidden
 @export var streamer_mode : bool
 
+## enable fancy, but distracting background color change following player turns
+@export var background_color_follows_players : bool
+
+## choose type of gui animation, non-distraction means that some in-game animation
+## which look nice but can distract a player are disabled
+## STUB
+@export var gui_animation_mode : CFG.GuiAnimationMode
+
 ## Default first option after opening the game should be last selected one
 ## [br]
 ## Changed to String for easier list update in GUI

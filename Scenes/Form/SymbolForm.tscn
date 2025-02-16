@@ -5,4 +5,5 @@
 [node name="Base" type="Node2D"]
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
+use_parent_material = true
 texture = ExtResource("1_pef6c")

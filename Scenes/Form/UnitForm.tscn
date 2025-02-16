@@ -1,5 +1,6 @@
-[gd_scene load_steps=9 format=3 uid="uid://sh62rfw7ulr8"]
+[gd_scene load_steps=12 format=3 uid="uid://sh62rfw7ulr8"]
 
+[ext_resource type="Shader" path="res://Art/tile_overall_shader.gdshader" id="1_5p8y7"]
 [ext_resource type="Script" path="res://Scripts/Battle/unit_form.gd" id="1_ep020"]
 [ext_resource type="Texture2D" uid="uid://ptkmhxptot0q" path="res://Art/player_colors/blue_color.png" id="2_0q625"]
 [ext_resource type="Texture2D" uid="uid://cukwcwy4fikm1" path="res://Art/elf_hero_noble.png" id="3_3flaq"]
@@ -9,80 +10,120 @@
 [ext_resource type="Texture2D" uid="uid://os5cuvhyb3sm" path="res://Art/items/mace.png" id="7_rdbed"]
 [ext_resource type="Texture2D" uid="uid://cb6b5qgltj1bc" path="res://Art/battle_map/swamp.png" id="8_i7m4u"]
 
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_djiqc"]
+resource_local_to_scene = true
+shader = ExtResource("1_5p8y7")
+shader_parameter/highlight_intensity = 0.0
+shader_parameter/contrast_boost = 0.0
+shader_parameter/modulate_intensity = 0.0
+shader_parameter/modulate_color = Color(1, 1, 1, 1)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_sftpy"]
+resource_local_to_scene = true
+shader = ExtResource("1_5p8y7")
+shader_parameter/highlight_intensity = 0.0
+shader_parameter/contrast_boost = 0.0
+shader_parameter/modulate_intensity = 0.0
+shader_parameter/modulate_color = Color(1, 1, 1, 1)
+
 [node name="Unit" type="Node2D"]
+material = SubResource("ShaderMaterial_djiqc")
 script = ExtResource("1_ep020")
 
 [node name="sprite_color" type="Sprite2D" parent="."]
+use_parent_material = true
 texture = ExtResource("2_0q625")
 
 [node name="sprite_unit" type="Sprite2D" parent="."]
+use_parent_material = true
 texture = ExtResource("3_3flaq")
 
 [node name="sprite_border" type="Sprite2D" parent="."]
+material = SubResource("ShaderMaterial_sftpy")
 texture = ExtResource("4_0xhp4")
 
 [node name="Symbols" type="Node2D" parent="."]
+use_parent_material = true
 
 [node name="FrontSymbol" type="Marker2D" parent="Symbols"]
+use_parent_material = true
 position = Vector2(-775, 1)
 
 [node name="SymbolForm" parent="Symbols/FrontSymbol" instance=ExtResource("5_2gor3")]
+use_parent_material = true
 
 [node name="FrontRightSymbol" type="Marker2D" parent="Symbols"]
+use_parent_material = true
 position = Vector2(-386, -673)
 rotation = 1.0472
 
 [node name="SymbolForm" parent="Symbols/FrontRightSymbol" instance=ExtResource("5_2gor3")]
+use_parent_material = true
 
 [node name="BackRightSymbol" type="Marker2D" parent="Symbols"]
+use_parent_material = true
 position = Vector2(363, -682)
 rotation = 2.0944
 
 [node name="SymbolForm" parent="Symbols/BackRightSymbol" instance=ExtResource("5_2gor3")]
+use_parent_material = true
 
 [node name="BackSymbol" type="Marker2D" parent="Symbols"]
+use_parent_material = true
 position = Vector2(775, 9)
 rotation = 3.14159
 
 [node name="SymbolForm" parent="Symbols/BackSymbol" instance=ExtResource("5_2gor3")]
+use_parent_material = true
 
 [node name="BackLeftSymbol" type="Marker2D" parent="Symbols"]
+use_parent_material = true
 position = Vector2(405, 661)
 rotation = 4.18879
 
 [node name="SymbolForm" parent="Symbols/BackLeftSymbol" instance=ExtResource("5_2gor3")]
+use_parent_material = true
 
 [node name="FrontLeftSymbol" type="Marker2D" parent="Symbols"]
+use_parent_material = true
 position = Vector2(-362, 684)
 rotation = 5.23599
 
 [node name="SymbolForm" parent="Symbols/FrontLeftSymbol" instance=ExtResource("5_2gor3")]
+use_parent_material = true
 
 [node name="RigidUI" type="Node2D" parent="."]
+use_parent_material = true
 
 [node name="UnitLevel" type="Label" parent="RigidUI"]
+use_parent_material = true
 offset_left = -567.0
 offset_top = -433.0
 offset_right = -423.0
 offset_bottom = -256.0
 theme_override_font_sizes/font_size = 150
 text = "IV"
+metadata/_edit_use_anchors_ = true
 
 [node name="SpellEffect1" type="Sprite2D" parent="RigidUI"]
+use_parent_material = true
 position = Vector2(598, -304)
 texture = ExtResource("6_kue6p")
 
 [node name="SpellEffect2" type="Sprite2D" parent="RigidUI"]
+use_parent_material = true
 position = Vector2(587, 330)
 scale = Vector2(0.5, 0.5)
 texture = ExtResource("7_rdbed")
 
 [node name="TerrainEffect" type="Sprite2D" parent="RigidUI"]
+use_parent_material = true
 position = Vector2(-331, 328)
 scale = Vector2(0.2, 0.2)
 texture = ExtResource("8_i7m4u")
 
 [node name="SpellEffectCounter1" type="Label" parent="RigidUI"]
+use_parent_material = true
 offset_left = 488.0
 offset_top = -390.0
 offset_right = 528.0
@@ -90,8 +131,10 @@ offset_bottom = -314.0
 scale = Vector2(3, 3)
 theme_override_font_sizes/font_size = 64
 text = "6"
+metadata/_edit_use_anchors_ = true
 
 [node name="SpellEffectCounter2" type="Label" parent="RigidUI"]
+use_parent_material = true
 offset_left = 483.0
 offset_top = 215.0
 offset_right = 523.0
@@ -99,3 +142,4 @@ offset_bottom = 291.0
 scale = Vector2(3, 3)
 theme_override_font_sizes/font_size = 64
 text = "6"
+metadata/_edit_use_anchors_ = true

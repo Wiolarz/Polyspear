@@ -1,32 +1,65 @@
-[gd_resource type="Theme" load_steps=8 format=3 uid="uid://dmv43h86d07fy"]
+[gd_resource type="Theme" load_steps=11 format=3 uid="uid://dmv43h86d07fy"]
 
 [ext_resource type="FontFile" uid="uid://da2ubx3hyhcma" path="res://Art/UI/fonts/kurland/Kurland.ttf" id="1_8bjnq"]
+[ext_resource type="StyleBox" uid="uid://bsh0ggg3l5fvh" path="res://Art/UI/focus.tres" id="1_2dd0h"]
 [ext_resource type="FontVariation" uid="uid://cwve433e1tc2u" path="res://Art/UI/default_font.tres" id="1_rnx0e"]
+[ext_resource type="Texture2D" uid="uid://cqqthjwghrygb" path="res://Art/UI/checkbox_checked.png" id="1_wwvms"]
+[ext_resource type="Texture2D" uid="uid://domt8tx0d2lu3" path="res://Art/UI/checkbox_unchecked.png" id="2_whbsa"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_2rjd0"]
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_87rpk"]
-bg_color = Color(0.243137, 0.0313726, 0.0313726, 1)
+content_margin_left = 3.0
+content_margin_top = 3.0
+content_margin_right = 3.0
+content_margin_bottom = 3.0
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_rlg6u"]
+content_margin_left = 3.0
+content_margin_top = 3.0
+content_margin_right = 3.0
+content_margin_bottom = 3.0
 bg_color = Color(0.470588, 0.145098, 0.0745098, 1)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jnh7b"]
+content_margin_left = 3.0
+content_margin_top = 3.0
+content_margin_right = 3.0
+content_margin_bottom = 3.0
 bg_color = Color(0, 0, 0, 0.698039)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tfj6u"]
+content_margin_left = 3.0
+content_margin_top = 3.0
+content_margin_right = 3.0
+content_margin_bottom = 3.0
 bg_color = Color(0.156863, 0.156863, 0.156863, 1)
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_niwlu"]
+content_margin_left = 4.0
+content_margin_top = 4.0
+content_margin_right = 4.0
+content_margin_bottom = 4.0
 
 [resource]
 default_font = ExtResource("1_rnx0e")
 Button/font_sizes/font_size = 40
 Button/styles/disabled = SubResource("StyleBoxFlat_2rjd0")
-Button/styles/focus = SubResource("StyleBoxFlat_87rpk")
+Button/styles/focus = ExtResource("1_2dd0h")
 Button/styles/hover = SubResource("StyleBoxFlat_rlg6u")
 Button/styles/normal = SubResource("StyleBoxFlat_jnh7b")
 Button/styles/pressed = SubResource("StyleBoxFlat_tfj6u")
-CheckBox/font_sizes/font_size = 40
+CheckBox/icons/checked = ExtResource("1_wwvms")
+CheckBox/icons/checked_disabled = ExtResource("1_wwvms")
+CheckBox/icons/unchecked = ExtResource("2_whbsa")
+CheckBox/icons/unchecked_disabled = ExtResource("2_whbsa")
+CheckBox/styles/disabled = SubResource("StyleBoxEmpty_niwlu")
+CheckBox/styles/focus = ExtResource("1_2dd0h")
+CheckBox/styles/hover = SubResource("StyleBoxEmpty_niwlu")
+CheckBox/styles/hover_pressed = SubResource("StyleBoxEmpty_niwlu")
+CheckBox/styles/normal = SubResource("StyleBoxEmpty_niwlu")
+CheckBox/styles/pressed = SubResource("StyleBoxEmpty_niwlu")
+CheckButton/constants/check_v_offset = 10
 CheckButton/font_sizes/font_size = 40
+CheckButton/styles/focus = ExtResource("1_2dd0h")
 CodeEdit/font_sizes/font_size = 40
 ColorPickerButton/font_sizes/font_size = 40
 Fonts/fonts/large = ExtResource("1_rnx0e")
@@ -39,9 +72,22 @@ ItemList/font_sizes/font_size = 40
 Label/font_sizes/font_size = 40
 LineEdit/font_sizes/font_size = 40
 LinkButton/font_sizes/font_size = 40
+MarginContainer/constants/margin_bottom = 20
+MarginContainer/constants/margin_left = 20
+MarginContainer/constants/margin_right = 20
+MarginContainer/constants/margin_top = 20
 MenuBar/font_sizes/font_size = 40
 MenuButton/font_sizes/font_size = 40
 OptionButton/font_sizes/font_size = 40
+OptionButton/styles/disabled = null
+OptionButton/styles/disabled_mirrored = null
+OptionButton/styles/focus = ExtResource("1_2dd0h")
+OptionButton/styles/hover = null
+OptionButton/styles/hover_mirrored = null
+OptionButton/styles/normal = null
+OptionButton/styles/normal_mirrored = null
+OptionButton/styles/pressed = null
+OptionButton/styles/pressed_mirrored = null
 PopupMenu/font_sizes/font_separator_size = 40
 PopupMenu/font_sizes/font_size = 40
 PopupMenu/fonts/font_separator = ExtResource("1_rnx0e")
@@ -54,6 +100,7 @@ RichTextLabel/font_sizes/normal_font_size = 40
 RichTextLabel/fonts/mono_font = ExtResource("1_8bjnq")
 RichTextLabel/fonts/normal_font = ExtResource("1_8bjnq")
 TabBar/font_sizes/font_size = 40
+TabBar/styles/tab_focus = ExtResource("1_2dd0h")
 TabContainer/font_sizes/font_size = 40
 TextEdit/font_sizes/font_size = 40
 TooltipLabel/font_sizes/font_size = 40

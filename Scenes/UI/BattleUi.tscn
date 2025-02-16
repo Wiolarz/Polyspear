@@ -1,84 +1,133 @@
-[gd_scene load_steps=6 format=3 uid="uid://bawliiem6bw0u"]
+[gd_scene load_steps=5 format=3 uid="uid://bawliiem6bw0u"]
 
 [ext_resource type="Script" path="res://Scripts/UI/battle_ui.gd" id="1_0rgae"]
 [ext_resource type="Shortcut" uid="uid://fuvss5hfg4q2" path="res://Resources/Shortcuts/go_back.tres" id="2_hku4e"]
 [ext_resource type="Texture2D" uid="uid://cukwcwy4fikm1" path="res://Art/elf_hero_noble.png" id="3_arbmx"]
-[ext_resource type="Texture2D" uid="uid://mohmdyii2gpf" path="res://Art/elf_hero_stalker.png" id="4_bhs22"]
 [ext_resource type="PackedScene" uid="uid://c2tjldwjynnry" path="res://Scenes/UI/GameChat.tscn" id="5_10swj"]
 
 [node name="BattleUI" type="CanvasLayer"]
 script = ExtResource("1_0rgae")
 
-[node name="SwitchCamera" type="Button" parent="."]
-offset_left = 289.0
-offset_top = 25.0
-offset_right = 526.0
-offset_bottom = 88.0
-scale = Vector2(2.04, 2.04)
-text = "Show World"
+[node name="TopL" type="VBoxContainer" parent="."]
+offset_left = 15.0
+offset_top = 15.0
+theme_override_constants/separation = 15
 
-[node name="Menu" type="Button" parent="."]
-offset_left = 20.0
-offset_top = 30.0
-offset_right = 138.0
-offset_bottom = 93.0
-scale = Vector2(2.04, 2.04)
+[node name="Menu" type="Button" parent="TopL"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 40
 shortcut = ExtResource("2_hku4e")
+shortcut_in_tooltip = false
 text = "Menu"
 
-[node name="Players" type="VBoxContainer" parent="."]
+[node name="SwitchCamera" type="Button" parent="TopL"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 40
+text = "Show World"
+
+[node name="TopC" type="HBoxContainer" parent="."]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_top = 15.0
+offset_bottom = 100.0
+grow_horizontal = 2
+theme_override_constants/separation = 15
+
+[node name="TurnsBG" type="PanelContainer" parent="TopC"]
+layout_mode = 2
+
+[node name="VBox" type="VBoxContainer" parent="TopC/TurnsBG"]
+layout_mode = 2
+
+[node name="TurnCount" type="Label" parent="TopC/TurnsBG/VBox"]
+layout_mode = 2
+text = "Turn 1 (last turn is 30)"
+
+[node name="ClockLeft" type="Label" parent="TopC/TurnsBG/VBox"]
+layout_mode = 2
+text = "3 : 00 : 000"
+
+[node name="CycloneTimer" type="PanelContainer" parent="TopC"]
+layout_mode = 2
+
+[node name="VBox" type="VBoxContainer" parent="TopC/CycloneTimer"]
+layout_mode = 2
+
+[node name="FluffText" type="Label" parent="TopC/CycloneTimer/VBox"]
+layout_mode = 2
+text = "Cyclone Target"
+
+[node name="CycloneTarget" type="Label" parent="TopC/CycloneTimer/VBox"]
+layout_mode = 2
+text = "Player1 5 turns"
+
+[node name="TopR" type="HBoxContainer" parent="."]
+custom_minimum_size = Vector2(0, 160)
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -274.0
-offset_top = 18.0
-offset_right = -16.0
-offset_bottom = 498.0
+offset_top = 15.0
+offset_right = -15.0
 grow_horizontal = 0
+theme_override_constants/separation = 15
 
-[node name="Label" type="Label" parent="Players"]
+[node name="PlayersContainer" type="Control" parent="TopR"]
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+
+[node name="Players" type="VBoxContainer" parent="TopR/PlayersContainer"]
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 222.0
+grow_horizontal = 2
+theme_override_constants/separation = 5
+
+[node name="Label" type="Label" parent="TopR/PlayersContainer/Players"]
 layout_mode = 2
 text = "Players:"
-horizontal_alignment = 2
 
-[node name="Button" type="Button" parent="Players"]
+[node name="Button" type="Button" parent="TopR/PlayersContainer/Players"]
 layout_mode = 2
 text = "Player1"
 
-[node name="Button2" type="Button" parent="Players"]
+[node name="Button2" type="Button" parent="TopR/PlayersContainer/Players"]
 layout_mode = 2
 text = "Player2"
 
-[node name="Units" type="HBoxContainer" parent="."]
-anchors_preset = 2
-anchor_top = 1.0
-anchor_bottom = 1.0
-offset_left = -1.0
-offset_top = 25.0
-offset_right = 6279.0
-offset_bottom = 1620.0
-grow_vertical = 0
-scale = Vector2(0.15, 0.15)
-
-[node name="TextureButton" type="TextureButton" parent="Units"]
+[node name="Button3" type="Button" parent="TopR/PlayersContainer/Players"]
 layout_mode = 2
-texture_normal = ExtResource("3_arbmx")
+text = "Player3"
 
-[node name="TextureButton2" type="TextureButton" parent="Units"]
-layout_mode = 2
-texture_normal = ExtResource("4_bhs22")
-
-[node name="GameChat" parent="." instance=ExtResource("5_10swj")]
-anchors_preset = 3
-anchor_left = 1.0
+[node name="BottomC" type="VBoxContainer" parent="."]
+anchors_preset = 12
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -750.0
-offset_top = -400.0
-offset_right = 0.0
-grow_horizontal = 0
+offset_bottom = -15.0
+grow_horizontal = 2
 grow_vertical = 0
+theme_override_constants/separation = 15
+alignment = 2
+
+[node name="GameChat" parent="BottomC" instance=ExtResource("5_10swj")]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 8
+
+[node name="Units" type="HBoxContainer" parent="BottomC"]
+custom_minimum_size = Vector2(0, 175)
+layout_mode = 2
+alignment = 1
+
+[node name="TextureButton" type="TextureButton" parent="BottomC/Units"]
+custom_minimum_size = Vector2(175, 175)
+layout_mode = 2
+texture_normal = ExtResource("3_arbmx")
+ignore_texture_size = true
+stretch_mode = 5
 
 [node name="SummaryContainer" type="MarginContainer" parent="."]
 visible = false
@@ -90,40 +139,15 @@ grow_vertical = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="TurnsBG" type="ColorRect" parent="."]
-offset_left = 803.0
-offset_top = 34.0
-offset_right = 1283.0
-offset_bottom = 150.0
-color = Color(0, 0, 0, 0.423529)
-
-[node name="TurnCount" type="Label" parent="TurnsBG"]
-layout_mode = 0
-offset_left = 4.0
-offset_top = 5.0
-offset_right = 493.0
-offset_bottom = 55.0
-text = "Turn 1 (last turn is 30)"
-
-[node name="ClockLeft" type="Label" parent="TurnsBG"]
-layout_mode = 0
-offset_left = 6.0
-offset_top = 64.0
-offset_right = 495.0
-offset_bottom = 114.0
-text = "3 : 00 : 000"
-
 [node name="ReplayControls" type="ColorRect" parent="."]
-visible = false
+custom_minimum_size = Vector2(750, 125)
 anchors_preset = 3
 anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -740.0
-offset_top = -157.0
-offset_right = -20.0
-offset_bottom = -20.0
+offset_right = -15.0
+offset_bottom = -15.0
 grow_horizontal = 0
 grow_vertical = 0
 color = Color(0, 0, 0, 0.423529)
@@ -183,29 +207,6 @@ offset_top = 7.0
 offset_right = 419.0
 offset_bottom = 60.0
 text = "⏩"
-
-[node name="CycloneTimer" type="ColorRect" parent="."]
-offset_left = 1308.0
-offset_top = 34.0
-offset_right = 1593.0
-offset_bottom = 150.0
-color = Color(0, 0, 0, 0.423529)
-
-[node name="FluffText" type="Label" parent="CycloneTimer"]
-layout_mode = 0
-offset_left = 4.0
-offset_top = 5.0
-offset_right = 493.0
-offset_bottom = 55.0
-text = "Cyclone Target"
-
-[node name="CycloneTarget" type="Label" parent="CycloneTimer"]
-layout_mode = 0
-offset_left = 6.0
-offset_top = 64.0
-offset_right = 495.0
-offset_bottom = 114.0
-text = "Player1 5 turns"
 
 [node name="SacrificeAnnouncement" type="ColorRect" parent="."]
 editor_description = "Modulate set to 0 turned up through Tween animation"
@@ -302,17 +303,19 @@ horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="SpellBook" type="VBoxContainer" parent="."]
-offset_left = 22.0
-offset_top = 282.0
-offset_right = 178.0
-offset_bottom = 800.0
+custom_minimum_size = Vector2(200, 500)
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 15.0
+grow_vertical = 2
 
 [node name="Spell" type="Button" parent="SpellBook"]
 layout_mode = 2
 text = "Spell"
 
-[connection signal="pressed" from="SwitchCamera" to="." method="_on_switch_camera_pressed"]
-[connection signal="pressed" from="Menu" to="." method="_on_menu_pressed"]
+[connection signal="pressed" from="TopL/Menu" to="." method="_on_menu_pressed"]
+[connection signal="pressed" from="TopL/SwitchCamera" to="." method="_on_switch_camera_pressed"]
 [connection signal="pressed" from="ReplayControls/Pause" to="." method="_on_pause_pressed"]
 [connection signal="pressed" from="ReplayControls/Step" to="." method="_on_step_pressed"]
 [connection signal="pressed" from="ReplayControls/Play" to="." method="_on_play_pressed"]

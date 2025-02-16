@@ -1,43 +1,28 @@
 [gd_scene load_steps=7 format=3 uid="uid://blx0kj8gah080"]
 
 [ext_resource type="Script" path="res://Scripts/UI/Lobby/battle_setup.gd" id="1_dfdeh"]
+[ext_resource type="StyleBox" uid="uid://c2e7veyqebiaa" path="res://Art/UI/background_frames/pale_green.tres" id="2_1dtuq"]
+[ext_resource type="StyleBox" uid="uid://c4pw3ug8ebg0e" path="res://Art/UI/background_frames/dark.tres" id="2_c6lvt"]
 [ext_resource type="PackedScene" uid="uid://j6n24hs0xavf" path="res://Scenes/UI/Lobby/BattlePlayerSlotPanel.tscn" id="2_vpapl"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ybc2s"]
-bg_color = Color(0, 0.588235, 0.356863, 1)
-border_width_top = 2
-border_width_bottom = 2
-expand_margin_left = 30.0
-expand_margin_top = 5.0
-expand_margin_right = 30.0
-expand_margin_bottom = 5.0
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_oid6t"]
-bg_color = Color(0.227451, 0.227451, 0.227451, 1)
-border_width_top = 2
-border_width_bottom = 2
-expand_margin_left = 30.0
-expand_margin_top = 5.0
-expand_margin_right = 30.0
-expand_margin_bottom = 5.0
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_86ke8"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jgcdk"]
 resource_local_to_scene = true
 content_margin_left = 10.0
-content_margin_top = 0.0
+content_margin_top = 10.0
 content_margin_right = 10.0
-content_margin_bottom = 0.0
+content_margin_bottom = 10.0
 bg_color = Color(1, 1, 1, 1)
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_4gp8n"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_e6gkv"]
 resource_local_to_scene = true
 content_margin_left = 10.0
-content_margin_top = 0.0
+content_margin_top = 10.0
 content_margin_right = 10.0
-content_margin_bottom = 0.0
+content_margin_bottom = 10.0
 bg_color = Color(1, 1, 1, 1)
 
-[node name="BattleSetup" type="VBoxContainer"]
+[node name="BattleSetup" type="MarginContainer"]
+clip_contents = true
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -45,64 +30,70 @@ grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
+theme_override_constants/margin_top = 0
+theme_override_constants/margin_bottom = 0
 script = ExtResource("1_dfdeh")
 
-[node name="PresetSelect" type="VBoxContainer" parent="."]
+[node name="VBox" type="VBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="PresetSelect" type="VBoxContainer" parent="VBox"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="PresetSelect"]
+[node name="Label" type="Label" parent="VBox/PresetSelect"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 30
 text = "Select a preset"
 
-[node name="ColorRect" type="PanelContainer" parent="PresetSelect"]
+[node name="ColorRect" type="PanelContainer" parent="VBox/PresetSelect"]
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_styles/panel = SubResource("StyleBoxFlat_ybc2s")
+theme_override_styles/panel = ExtResource("2_1dtuq")
 
-[node name="PresetList" type="OptionButton" parent="PresetSelect/ColorRect"]
+[node name="PresetList" type="OptionButton" parent="VBox/PresetSelect/ColorRect"]
 layout_mode = 2
 
-[node name="MapSelect" type="VBoxContainer" parent="."]
+[node name="MapSelect" type="VBoxContainer" parent="VBox"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="MapSelect"]
+[node name="Label" type="Label" parent="VBox/MapSelect"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 30
 text = "Select a map"
 
-[node name="ColorRect" type="PanelContainer" parent="MapSelect"]
+[node name="ColorRect" type="PanelContainer" parent="VBox/MapSelect"]
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_styles/panel = SubResource("StyleBoxFlat_ybc2s")
+theme_override_styles/panel = ExtResource("2_1dtuq")
 
-[node name="MapList" type="OptionButton" parent="MapSelect/ColorRect"]
+[node name="MapList" type="OptionButton" parent="VBox/MapSelect/ColorRect"]
 layout_mode = 2
 
-[node name="Slots" type="VBoxContainer" parent="."]
+[node name="Slots" type="VBoxContainer" parent="VBox"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="Slots"]
+[node name="Label" type="Label" parent="VBox/Slots"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 30
 text = "Players"
 
-[node name="ColorRect" type="PanelContainer" parent="Slots"]
+[node name="ColorRect" type="PanelContainer" parent="VBox/Slots"]
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_styles/panel = SubResource("StyleBoxFlat_oid6t")
+theme_override_styles/panel = ExtResource("2_c6lvt")
 
-[node name="PlayerList" type="VBoxContainer" parent="Slots/ColorRect"]
+[node name="PlayerList" type="VBoxContainer" parent="VBox/Slots/ColorRect"]
 layout_mode = 2
-theme_override_constants/separation = 50
+theme_override_constants/separation = 15
 
-[node name="BattlePlayerSlotPanel" parent="Slots/ColorRect/PlayerList" instance=ExtResource("2_vpapl")]
+[node name="BattlePlayerSlotPanel" parent="VBox/Slots/ColorRect/PlayerList" instance=ExtResource("2_vpapl")]
 layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_86ke8")
+theme_override_styles/panel = SubResource("StyleBoxFlat_jgcdk")
 
-[node name="BattlePlayerSlotPanel2" parent="Slots/ColorRect/PlayerList" instance=ExtResource("2_vpapl")]
+[node name="BattlePlayerSlotPanel2" parent="VBox/Slots/ColorRect/PlayerList" instance=ExtResource("2_vpapl")]
 layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_4gp8n")
+theme_override_styles/panel = SubResource("StyleBoxFlat_e6gkv")
 
-[connection signal="item_selected" from="PresetSelect/ColorRect/PresetList" to="." method="_on_preset_list_item_selected"]
-[connection signal="item_selected" from="MapSelect/ColorRect/MapList" to="." method="_on_map_list_item_selected"]
+[connection signal="item_selected" from="VBox/PresetSelect/ColorRect/PresetList" to="." method="_on_preset_list_item_selected"]
+[connection signal="item_selected" from="VBox/MapSelect/ColorRect/MapList" to="." method="_on_map_list_item_selected"]

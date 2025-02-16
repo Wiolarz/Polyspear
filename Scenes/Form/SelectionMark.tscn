@@ -1,0 +1,9 @@
+[gd_scene format=3 uid="uid://bft6ygdaxkog3"]
+
+[node name="SelectionMark" type="Line2D"]
+scale = Vector2(45, 45)
+points = PackedVector2Array(0, 20, 17.321, 10, 17.321, -10, 0, -20, -17.321, -10, -17.321, 10)
+closed = true
+width = 4.9
+default_color = Color(1, 1, 1, 0.784314)
+antialiased = true
