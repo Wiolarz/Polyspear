@@ -4,7 +4,10 @@ extends Resource
 
 ## How to add settings:
 ## 1. add an export variable here
-## 2. add a "_declare_*" call in settings_menu.gd's _ready function
+## 2. add an appropriate (as in _declare_* functions in settings_menu.gd) 
+##    control to SettingsMenu.tscn
+## 3. add a "_declare_*" call in settings_menu.gd's _ready function,
+##    referencing the added control
 
 
 ## once the game is launched it instantly start the game with default lobby values [br]
