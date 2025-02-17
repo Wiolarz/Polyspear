@@ -60,9 +60,9 @@ func apply_graphics(template : DataUnit, color : DataPlayerColor):
 
 	for side in range(0,6):
 		var symbol_texture = template.symbols[side].texture_path
-		var symbol_activation_anim_path = template.symbols[side].activation_anim_path
+
 		_apply_symbol_sprite(side, symbol_texture)
-		_apply_symbol_activation_anim(side, symbol_activation_anim_path)
+		_apply_symbol_activation_anim(side, template.symbols[side])
 	
 	_flip_unit_sprite()
 	$RigidUI/SpellEffect1.texture = null
@@ -86,16 +86,19 @@ func _apply_symbol_sprite(side : int, texture_path : String) -> void:
 
 	symbol_sprite.show()
 
-# Half-brained knock-off of _apply_symbol_sprite() to add the animation to the animated sprite of SymbolForm 
-func _apply_symbol_activation_anim(side: int, animation_frames_path: String) -> void:
-	var animated_sprite_path = "Symbols/%s/SymbolForm/ActivationAnim" % [SIDE_NAMES[side]]
+## Half-brained knock-off of _apply_symbol_sprite() to add the animation to the animated sprite of SymbolForm 
+func _apply_symbol_activation_anim(side : int, symbol : DataSymbol) -> void:
+	var animation_frames_path : String = symbol.activation_anim_path
+	var animated_sprite_path : String = "Symbols/%s/SymbolForm/ActivationAnim" % [SIDE_NAMES[side]]
 	var symbol_anim_sprite = get_node(animated_sprite_path)
-	if animation_frames_path == null or animation_frames_path.is_empty():
-		symbol_anim_sprite.sprite_frames = null
-		symbol_anim_sprite.hide()
-		return
+	if not animation_frames_path or animation_frames_path.is_empty():
+		return #Animation does not exists for given symbol
+		
 	symbol_anim_sprite.sprite_frames = load(animation_frames_path)
-	
+	match symbol.type:
+		E.Symbols.AXE:
+			symbol_anim_sprite.position.x = -300
+			symbol_anim_sprite.scale = Vector2(3,3)
 	symbol_anim_sprite.show()
 
 
@@ -169,9 +172,10 @@ func anim_symbol(side: int):
 	var symbol_sprite = symbol.get_node("Sprite2D")
 	var symbol_activation_anim = symbol.get_node("ActivationAnim")
 	var tween = ANIM.subtween()
+	tween.tween_callback(symbol_activation_anim.play)
 	tween.tween_property(symbol_sprite, "scale", CFG.anim_symbol_activation_scale, 0.0)
 	tween.tween_property(symbol_sprite, "scale", Vector2(1.0, 1.0), CFG.anim_symbol_activation_duration)
-	tween.tween_callback(symbol_activation_anim.play)
+
 
 func anim_magic():
 	# TODO
