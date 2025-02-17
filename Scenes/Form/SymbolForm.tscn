@@ -1,9 +1,15 @@
-[gd_scene load_steps=2 format=3 uid="uid://bc4yv21yc35fw"]
+[gd_scene load_steps=3 format=3 uid="uid://bc4yv21yc35fw"]
 
 [ext_resource type="Texture2D" uid="uid://hemq1q4l7xbk" path="res://Art/items/blue_axe.png" id="1_pef6c"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_1svh2"]
+resource_local_to_scene = true
 
 [node name="Base" type="Node2D"]
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 use_parent_material = true
 texture = ExtResource("1_pef6c")
+
+[node name="ActivationAnim" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_1svh2")
