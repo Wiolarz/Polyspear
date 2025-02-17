@@ -60,8 +60,10 @@ func apply_graphics(template : DataUnit, color : DataPlayerColor):
 
 	for side in range(0,6):
 		var symbol_texture = template.symbols[side].texture_path
+		var symbol_activation_anim_path = template.symbols[side].activation_anim_path
 		_apply_symbol_sprite(side, symbol_texture)
-
+		_apply_symbol_activation_anim(side, symbol_activation_anim_path)
+	
 	_flip_unit_sprite()
 	$RigidUI/SpellEffect1.texture = null
 	$RigidUI/SpellEffect2.texture = null
@@ -83,6 +85,18 @@ func _apply_symbol_sprite(side : int, texture_path : String) -> void:
 	_flip_symbol_sprite(symbol_sprite, side)
 
 	symbol_sprite.show()
+
+# Half-brained knock-off of _apply_symbol_sprite() to add the animation to the animated sprite of SymbolForm 
+func _apply_symbol_activation_anim(side: int, animation_frames_path: String) -> void:
+	var animated_sprite_path = "Symbols/%s/SymbolForm/ActivationAnim" % [SIDE_NAMES[side]]
+	var symbol_anim_sprite = get_node(animated_sprite_path)
+	if animation_frames_path == null or animation_frames_path.is_empty():
+		symbol_anim_sprite.sprite_frames = null
+		symbol_anim_sprite.hide()
+		return
+	symbol_anim_sprite.sprite_frames = load(animation_frames_path)
+	
+	symbol_anim_sprite.show()
 
 
 ## Flips ths sprite so that weapons always point to the top of the screen
@@ -152,9 +166,12 @@ func anim_symbol(side: int):
 	var side_local : int = GenericHexGrid.rotate_clockwise( \
 			side as GenericHexGrid.GridDirections, -entity.unit_rotation)
 	var symbol = get_node("Symbols/%s/SymbolForm" % SIDE_NAMES[side_local])
+	var symbol_sprite = symbol.get_node("Sprite2D")
+	var symbol_activation_anim = symbol.get_node("ActivationAnim")
 	var tween = ANIM.subtween()
-	tween.tween_property(symbol, "scale", CFG.anim_symbol_activation_scale, 0.0)
-	tween.tween_property(symbol, "scale", Vector2(1.0, 1.0), CFG.anim_symbol_activation_duration)
+	tween.tween_property(symbol_sprite, "scale", CFG.anim_symbol_activation_scale, 0.0)
+	tween.tween_property(symbol_sprite, "scale", Vector2(1.0, 1.0), CFG.anim_symbol_activation_duration)
+	tween.tween_callback(symbol_activation_anim.play)
 
 func anim_magic():
 	# TODO
