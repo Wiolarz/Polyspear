@@ -29,4 +29,5 @@ use_parent_material = true
 texture = ExtResource("1_pef6c")
 
 [node name="ActivationAnim" type="AnimatedSprite2D" parent="."]
+z_index = 100
 sprite_frames = SubResource("SpriteFrames_1svh2")

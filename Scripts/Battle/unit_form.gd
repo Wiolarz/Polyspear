@@ -88,18 +88,15 @@ func _apply_symbol_sprite(side : int, texture_path : String) -> void:
 
 ## Half-brained knock-off of _apply_symbol_sprite() to add the animation to the animated sprite of SymbolForm 
 func _apply_symbol_activation_anim(side : int, symbol : DataSymbol) -> void:
-	var animation_frames_path : String = symbol.activation_anim_path
+	var symbol_animation : SymbolAnimation = symbol.symbol_animation
 	var animated_sprite_path : String = "Symbols/%s/SymbolForm/ActivationAnim" % [SIDE_NAMES[side]]
 	var symbol_anim_sprite = get_node(animated_sprite_path)
-	if not animation_frames_path or animation_frames_path.is_empty():
+	if not symbol_animation:
 		return #Animation does not exists for given symbol
 		
-	symbol_anim_sprite.sprite_frames = load(animation_frames_path)
-	match symbol.type:
-		E.Symbols.AXE:
-			symbol_anim_sprite.position.x = -300
-			symbol_anim_sprite.scale = Vector2(3,3)
-	symbol_anim_sprite.show()
+	symbol_anim_sprite.sprite_frames = symbol.symbol_animation
+	symbol_anim_sprite.scale = symbol_animation.scale
+	symbol_anim_sprite.position = symbol_animation.offset
 
 
 ## Flips ths sprite so that weapons always point to the top of the screen
