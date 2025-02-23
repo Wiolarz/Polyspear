@@ -16,7 +16,7 @@ var team : int = 0
 var timer_reserve_sec : int = CFG.CHESS_CLOCK_BATTLE_TIME_PER_PLAYER_MS
 var timer_increment_sec : int = CFG.CHESS_CLOCK_BATTLE_TURN_INCREMENT_MS
 
-var faction : DataRace = null
+var race : DataRace = null
 
 ## for battle only mode
 var units_list : Array[DataUnit] = [null,null,null,null,null] #TODO refactor to change variable to private as we have a clean getter for it
@@ -74,7 +74,7 @@ controlled hero + hero options
 #region World Setup
 
 """
-faction
+ra
 
 """
 

@@ -2,11 +2,6 @@ class_name DataRace
 extends Resource
 
 
-"""
-Complete Faction data:
-	1 Placement of every tile type
-	2 Info about assignment of every city
-"""
 @export var race_name : String
 
 ## list of units avalaible in the battle lobby [br]

@@ -6,8 +6,20 @@ signal controller_changed()
 # TODO make this not duplicated
 const PATH_TODO_MOVE_TO_CONFIG = "res://Scripts/World/Places/"
 
-# TODO make controller private and set proper getter and setter
-var controller_index : int = -1
+
+#TODO decide on whatever to use player reference or simply a reference to the controller faction
+
+var controller_index : int = -1  # network simplification
+var controller : Player:
+	set(new_owner):
+		controller = new_owner
+		controller_index = new_owner.index
+
+
+## Controller Faction
+var faction : Faction
+
+
 var defender_army : Army
 var coord : Vector2i
 var movable : bool = false
@@ -27,7 +39,7 @@ static func create_basic(coord_ : Vector2i, movable_ : bool, basic_type_ : Strin
 
 #region Overridable functions
 
-static func create_place(_args : PackedStringArray, coord_ : Vector2i) -> Place:
+static func create_place(coord_ : Vector2i, _args : PackedStringArray) -> Place:
 	# TODO add grid to args -- it would ge great also to add hex *atomically*
 	# in this funciton
 	var place := Place.new()
@@ -39,12 +51,12 @@ func get_army_at_start() -> PresetArmy:
 	return null
 
 
-func interact(_world_state : WorldState, army : Army) -> void:
+func interact(army : Army) -> void:
 	print(army)
 
 
 ## this is overridden by other places and does nothing in empty places
-func on_end_of_turn(_world_state : WorldState) -> void:
+func on_end_of_round(world_state : WorldState = null) -> void: #TEMP world_state variable
 	pass
 
 
@@ -54,9 +66,9 @@ func get_map_description() -> String:
 
 
 ## Overidable function [br]
-## player index is used to mark which player captures that tile [br]
+## Faction is used to mark which player captures that tile [br]
 ## used in places like outpost (which acts like a mine)
-func capture(_world_state : WorldState, _player_index : int) -> void:
+func capture(faction : Faction) -> void:
 	return
 
 
@@ -75,7 +87,7 @@ static func from_network_serializable(dict : Dictionary, coord_ : Vector2i) -> P
 	var script_path = "%s/%s.gd" % [ PATH_TODO_MOVE_TO_CONFIG, type ]
 	var script = load(script_path) as Script
 	assert(script)
-	var place : Place = script.create_place(PackedStringArray(), coord_)
+	var place : Place = script.create_place(coord_, PackedStringArray())
 	var player_index = dict["player"]
 	place.controller_index = player_index
 	place.paste_specific_serializable_state(dict)

@@ -1,4 +1,4 @@
-class_name WorldState
+#Singleton WS - World State
 extends RefCounted
 
 const MOVE_IS_INVALID = -1
@@ -6,7 +6,7 @@ const MOVE_IS_INVALID = -1
 var grid : GenericHexGrid = null
 var turn_counter : int = 0
 var current_player_index : int = 0
-var player_states : Array[WorldPlayerState] = []
+var player_states : Array[Faction] = []
 var move_hold_on_combat : Array[Vector2i] # TODO some better form
 
 ## consider not to use signals
@@ -37,10 +37,9 @@ static func create(map : DataWorldMap,
 	# load players and their not related-to-grid state
 	result.player_states.resize(slots.size())
 	for i in result.player_states.size():
-		result.player_states[i] = WorldPlayerState.new()
+		result.player_states[i] = Faction.new()
 		var player = result.player_states[i]
 		var slot = slots[i]
-		player.faction = slot.faction
 		if not saved_state:
 			player.set_goods(CFG.get_start_goods())
 			continue
@@ -77,6 +76,9 @@ static func create(map : DataWorldMap,
 				if army_preset:
 					result.spawn_army_from_preset(army_preset, coord, \
 						hex.place.controller_index)
+					if hex.place is HuntSpot:
+						hex.place.spawned_army = result.get_army_at(coord)
+
 			if saved_state and coord in saved_state.army_hexes:
 				var loaded : Dictionary = saved_state.army_hexes[coord]
 				var army : Army = null
@@ -138,20 +140,20 @@ func synchronize_players_with_their_places() -> void:
 
 #region Public Helpers
 
-func get_current_player() -> WorldPlayerState:
+func get_current_player() -> Faction:
 	if current_player_index in range(player_states.size()):
 		return player_states[current_player_index]
 	return null
 
 
-func get_player_index(player : WorldPlayerState) -> int:
+func get_player_index(player : Faction) -> int:
 	for i in range(player_states.size()):
 		if player == player_states[i]:
 			return i
 	return -1
 
 
-func get_player_by_index(index : int) -> WorldPlayerState:
+func get_player_by_index(index : int) -> Faction:
 	if index < 0:
 		return null
 	if index >= player_states.size():
@@ -194,7 +196,7 @@ func check_build_building(city_coord : Vector2i, building : DataBuilding) \
 		return "cannot build buildings without city"
 	if city.controller_index != current_player_index:
 		return "cannot build in other's player city"
-	if not city.can_build(self, building):
+	if not city.can_build(building):
 		# TODO move this check here probably and divide this error message
 		return "this city is not able to build this"
 	return ""
@@ -234,9 +236,9 @@ func check_recruit_unit(data_unit : DataUnit, city_coord : Vector2i,
 	if city.controller_index != army.controller_index:
 		return "cannot recruit not in own city"
 	# TODO optimize this...
-	if not data_unit in city.get_units_to_buy(self):
+	if not data_unit in city.get_units_to_buy():
 		return "cannot recruit such unit in this city"
-	if not city.unit_has_required_building(self, data_unit):
+	if not city.unit_has_required_building(data_unit):
 		return "not all required buildings are build in this city"
 	if not army_controller_state.has_enough(data_unit.cost):
 		return "not enough resources for this unit, need %s" % data_unit.cost
@@ -246,22 +248,25 @@ func check_recruit_unit(data_unit : DataUnit, city_coord : Vector2i,
 func check_recruit_hero(player_index : int, data_hero : DataHero,
 		coord : Vector2i) -> String:
 	if get_army_at(coord):
+		#TODO based on that information change the UI to show what causes the problem to the player
 		return "cannot recruit hero where some army already is"
-	var player_state : WorldPlayerState = player_states[player_index]
+	var player_faction : Faction = player_states[player_index]
 	var city : City = get_city_at(coord)
 	if not city:
-		return "must recruit hero in a city"
+		return "GAME ERROR: must recruit hero in a city"
 	if player_index != current_player_index:
-		return "this player has not turn now"
+		return "IM ERROR: this player has not turn now"
 	if player_index != city.controller_index:
-		return "player does not own the city where tries to recruit"
-	if player_state.has_hero(data_hero):
+		# TODO while viewing other player cities,
+		# we should look if that player is capable of purchasing this hero in UI
+		# Verifying that we cannot press this button is an InputManager job
+		return "IM ERROR: player does not own the city where tries to recruit"
+	if player_faction.has_hero(data_hero):
 		return "hero is already recruited"
-	var player = get_player_by_index(player_index)
-	if not data_hero in player.faction.heroes:
-		return "player's faction does not fit for this hero"
-	var cost = player_state.get_hero_cost(data_hero)
-	if not player_state.has_enough(cost):
+	if not data_hero in player_faction.race.heroes:
+		return "GAME ERROR: player's race does not contain that hero"
+	var cost = player_faction.get_hero_cost(data_hero)
+	if not player_faction.has_enough(cost):
 		return "not enough cash, needed %s" % cost
 	return ""
 
@@ -269,7 +274,8 @@ func check_recruit_hero(player_index : int, data_hero : DataHero,
 func get_hero_to_buy_in_city(city : City, hero_index : int) -> DataHero:
 	if not city:
 		return null
-	var array = city.get_faction(self).heroes
+	#WTF
+	var array = city.faction.race.heroes
 	if hero_index in range(array.size()):
 		return array[hero_index]
 	return null
@@ -491,7 +497,7 @@ func do_build_building(coord : Vector2i, building : DataBuilding) -> bool:
 		push_error(problem)
 		return false
 	var city := get_city_at(coord)
-	return city.build_building(self, building)
+	return city.build_building(building)
 
 
 ## this is the basicest move
@@ -573,7 +579,7 @@ func interact_place(army : Army, coord : Vector2i) -> bool:
 	var place = get_place_at(coord)
 	if not place:
 		return false
-	place.interact(self, army)
+	place.interact(army)
 	print("unsupported place type to interact")
 	return false
 
@@ -584,7 +590,8 @@ func capture_place(player_index : int, coord : Vector2i) -> bool:
 	var place = get_place_at(coord)
 	if not place:
 		return false
-	place.capture(self, player_index)
+
+	place.capture(player_states[player_index])
 	print("unsupported place type to capture")
 	return false
 
@@ -674,10 +681,10 @@ func _end_of_turn_callbacks(player_index : int) -> void:
 			var coord = Vector2i(x,y)
 			var army : Army = grid.get_hex(coord).army
 			if army:
-				army.on_end_of_turn(player_index)
+				army.on_end_of_round(player_index)
 			var place : Place = get_place_at(coord)
 			if place:
-				place.on_end_of_turn(self)
+				place.on_end_of_round(self)
 
 
 func _end_of_round_callbacks() -> void:

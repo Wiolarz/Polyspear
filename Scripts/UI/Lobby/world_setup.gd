@@ -53,7 +53,7 @@ func _refresh_slot(index : int):
 			else null
 	var color : DataPlayerColor = CFG.DEFAULT_TEAM_COLOR
 	var username : String = ""
-	var faction : DataRace = null
+	var race : DataRace = null
 	var take_leave_button_state : WorldPlayerSlotPanel.TakeLeaveButtonState =\
 		WorldPlayerSlotPanel.TakeLeaveButtonState.GHOST
 	if logic_slot:
@@ -70,11 +70,11 @@ func _refresh_slot(index : int):
 			username = "Computer\nlevel %d" % logic_slot.occupier
 			take_leave_button_state = \
 				WorldPlayerSlotPanel.TakeLeaveButtonState.FREE
-		faction = logic_slot.faction
+		race = logic_slot.race
 		color = CFG.get_team_color_at(logic_slot.color_idx)
 	ui_slot.set_visible_color(color.color)
 	ui_slot.set_visible_name(username)
-	ui_slot.set_visible_faction(faction)
+	ui_slot.set_visible_race(race)
 	ui_slot.set_visible_take_leave_button_state(take_leave_button_state)
 	ui_slot.setup_ui = self
 
@@ -113,11 +113,11 @@ func cycle_color_slot(slot : WorldPlayerSlotPanel, backwards : bool) -> bool:
 	return changed
 
 
-func cycle_faction_slot(slot : WorldPlayerSlotPanel, backwards : bool) -> bool:
+func cycle_race_slot(slot : WorldPlayerSlotPanel, backwards : bool) -> bool:
 	if not game_setup:
 		return false
 	var index : int = slot_to_index(slot)
-	var changed = game_setup.try_to_cycle_faction_slot(index, backwards)
+	var changed = game_setup.try_to_cycle_race_slot(index, backwards)
 	if changed:
 		_refresh_slot(index)
 	return changed

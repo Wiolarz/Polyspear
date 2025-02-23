@@ -1,10 +1,10 @@
-class_name RequestFactionCycle
+class_name RequestRaceCycle
 
-const COMMAND_NAME = "faction_cycle"
+const COMMAND_NAME = "race_cycle"
 
 static func register(commands : Dictionary):
 	commands[COMMAND_NAME] = \
-			Command.create_on_server(RequestFactionCycle.process_command)
+			Command.create_on_server(RequestRaceCycle.process_command)
 
 static func create_packet(slot_index : int, backwards : bool = false):
 	return {
@@ -28,10 +28,10 @@ static func process_command(server : Server, peer : ENetPacketPeer, \
 	if index < 0 or index >= slots.size():
 		return FAILED
 	var slot = slots[index]
-	var faction_index = CFG.FACTIONS_LIST.find(slot.faction)
-	var new_faction_index = \
-		(faction_index + diff) % CFG.FACTIONS_LIST.size()
-	slot.faction = CFG.FACTIONS_LIST[new_faction_index]
+	var race_index = CFG.RACES_LIST.find(slot.race)
+	var new_race_index = \
+		(race_index + diff) % CFG.RACES_LIST.size()
+	slot.race = CFG.RACES_LIST[new_race_index]
 	server.broadcast_full_game_setup(IM.game_setup_info)
 	IM.game_setup_info_changed.emit()
 	return OK

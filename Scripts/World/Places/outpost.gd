@@ -7,7 +7,7 @@ var outpost_type : String
 var neutral_army_preset : PresetArmy
 
 
-static func create_place(args : PackedStringArray, coord_ : Vector2i) -> Place:
+static func create_place(coord_ : Vector2i, args : PackedStringArray) -> Place:
 	# if args.size() != 1:
 	# 	push_error("outpost needs exactly one argument to create")
 	var result := Outpost.new()
@@ -46,29 +46,21 @@ func get_army_at_start() -> PresetArmy:
 	return neutral_army_preset
 
 
-func interact(world_state : WorldState, army : Army) -> void:
-	capture(world_state, army.controller_index)
+func interact(army : Army) -> void:
+	capture(army.faction)
 
 
-func capture(world_state : WorldState, player_index : int) -> void:
-	var old_controller_index = controller_index
+func capture(new_faction : Faction) -> void:
+	if faction: # if outpost had been occupied we need to remove previous player ownership first
+		faction.raised_outpost(self)
 
-	var old_player = world_state.get_player_by_index(old_controller_index)
-	var new_player = world_state.get_player_by_index(player_index)
-
-	if old_player: # we need to take the outpost from old player first
-		controller_index = -1
-		old_player.outposts.erase(self)
-		world_state._delete_outpost_buildings_if_needed(old_controller_index)
-	if new_player:
-		controller_index = player_index
-		new_player.outposts.append(self)
+	faction = new_faction
+	new_faction.outposts.append(self)
 
 
-func on_end_of_turn(world_state : WorldState):
-	var player : WorldPlayerState = world_state.get_player_by_index(controller_index)
-	if player:
-		player.goods.add(per_turn)
+func on_end_of_round(_world_state : WorldState = null):
+	if faction:
+		faction.add_goods(per_turn)
 
 
 func get_map_description() -> String:

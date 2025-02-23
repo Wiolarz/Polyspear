@@ -5,7 +5,7 @@ signal world_move_done
 
 
 
-var world_state : WorldState = null
+
 var world_ui : WorldUI = null
 
 ## Only army that has a hero can move (army can only have a single hero)
@@ -42,16 +42,16 @@ func _ready() -> void:
 
 
 func world_game_is_active() -> bool:
-	return world_state != null
+	return WS != null
 
 
 ## Camera bounds
 func get_bounds_global_position() -> Rect2:
-	if not world_state:
+	if not WS:
 		push_warning("asking not initialized grid for camera bounding box")
 		return Rect2(0, 0, 0, 0)
-	var top_left_hex = world_state.get_top_left_hex()
-	var bottom_right_hex = world_state.get_bottom_right_hex()
+	var top_left_hex = WS.get_top_left_hex()
+	var bottom_right_hex = WS.get_bottom_right_hex()
 	var top_left_tile_form : TileForm = get_tile_of_hex(top_left_hex)
 	var bottom_right_tile_form : TileForm = get_tile_of_hex(bottom_right_hex)
 	var size : Vector2 = \
@@ -61,9 +61,9 @@ func get_bounds_global_position() -> Rect2:
 
 
 func get_current_player_capital() -> City:
-	if not world_state:
+	if not WS:
 		return null
-	var player_state = world_state.get_player_by_index(world_state.current_player_index)
+	var player_state = WS.get_player_by_index(WS.current_player_index)
 	if not player_state:
 		return null
 	return player_state.capital_city
@@ -91,9 +91,9 @@ func set_selected_hero(army : Army):
 
 
 func get_current_player() -> Player:
-	if not world_state:
+	if not WS:
 		return null
-	var index : int = world_state.current_player_index
+	var index : int = WS.current_player_index
 	return IM.get_player_by_index(index)
 
 
@@ -119,7 +119,7 @@ func get_army_form(army : Army) -> ArmyForm:
 
 ## this function may be temporary, the sure thing is it needs to be made better
 func get_tile_of_hex(hex : WorldHex) -> Node2D:
-	if not world_state:
+	if not WS:
 		return null
 	for tile_form in tile_grid.get_children():
 		if tile_form.hex == hex:
@@ -154,15 +154,15 @@ func grid_input(coord : Vector2i):
 
 ## Tries to Select owned Hero
 func input_try_select(coord) -> void:  #TODO "nothing is selected try to select stuff"
-	var selection = world_state.get_interactable_at(coord)
-	var city = world_state.get_city_at(coord)
-	var army = world_state.get_army_at(coord)
+	var selection = WS.get_interactable_at(coord)
+	var city = WS.get_city_at(coord)
+	var army = WS.get_army_at(coord)
 	if army:
-		if world_state.current_player_index == selection.controller_index:
+		if WS.current_player_index == selection.controller_index:
 			set_selected_hero(army)
 
 	if city:
-		if city.controller_index == world_state.current_player_index:
+		if city.controller_index == WS.current_player_index:
 			if not army:
 				world_ui.city_ui.show_recruit_heroes()
 			else:
@@ -171,7 +171,7 @@ func input_try_select(coord) -> void:  #TODO "nothing is selected try to select 
 
 func try_interact(hero : ArmyForm, coord : Vector2i):
 	var start_coords = hero.coord
-	var city = world_state.get_city_at(coord)
+	var city = WS.get_city_at(coord)
 	if city: # we start trade instead of travel
 		# there is separate button to move to city
 		trade_city(city)
@@ -183,7 +183,7 @@ func try_interact(hero : ArmyForm, coord : Vector2i):
 
 ## called on input from player
 func try_do_move(world_move_info : WorldMoveInfo) -> void:
-	var problem = world_state.check_move_allowed(world_move_info)
+	var problem = WS.check_move_allowed(world_move_info)
 	if problem != "":
 		print(problem)
 		return
@@ -205,7 +205,7 @@ func perform_world_move_info(world_move_info : WorldMoveInfo) -> void:
 	# TODO replay.save
 	if NET.server:
 		NET.server.broadcast_world_move(world_move_info)
-	var success = world_state.do_move(world_move_info)
+	var success = WS.do_move(world_move_info)
 	if not success:
 		NET.desync()
 		return
@@ -257,7 +257,7 @@ func request_build(city : City, building_data : DataBuilding) -> void:
 
 
 func do_local_travel(source : Vector2i, target : Vector2i) -> void:
-	var success : bool = world_state.army_travel(source, target)
+	var success : bool = WS.army_travel(source, target)
 
 	if not success:
 		NET.desync()
@@ -282,7 +282,7 @@ func start_combat( \
 		if biggest_army_size < army_size:
 			biggest_army_size = army_size
 	combat_tile = combat_coord
-	var battle_map : DataBattleMap = world_state.get_battle_map_at(combat_tile, biggest_army_size)
+	var battle_map : DataBattleMap = WS.get_battle_map_at(combat_tile, biggest_army_size)
 	var x_offset = get_bounds_global_position().end.x + CFG.MAPS_OFFSET_X
 	BM.start_battle(armies_, battle_map, battle_state, x_offset)
 	UI.switch_camera()
@@ -290,7 +290,7 @@ func start_combat( \
 
 func end_of_battle(battle_results : Array[BattleGridState.ArmyInBattleState]):
 
-	world_state.end_combat(battle_results)
+	WS.end_combat(battle_results)
 
 	UI.go_to_custom_ui(world_ui)
 
@@ -324,9 +324,8 @@ func spawn_world_ui():
 func start_new_world(world_map : DataWorldMap) -> void:
 
 	_clear_state()
-	world_state = WorldState.create(world_map, IM.game_setup_info.slots)
+	WS = WorldState.create(world_map, IM.game_setup_info.slots)
 	_connect_callbacks()
-	world_ui.refresh_world_state_ugly(world_state)
 
 	recreate_tile_forms()
 	recreate_army_forms()
@@ -340,19 +339,18 @@ func start_new_world(world_map : DataWorldMap) -> void:
 
 # this function probably should be divided into parts
 func start_world_in_state(world_map : DataWorldMap, \
-		serializable_world_state : SerializableWorldState) -> void:
+		serializable_WS : SerializableWorldState) -> void:
 
-	# TODO probably check serializable_world_state not null
+	# TODO probably check serializable_WS not null
 
 	_batch_mode = true
 
 	_batch_mode = true
 
 	_clear_state()
-	world_state = WorldState.create(
-		world_map, IM.game_setup_info.slots, serializable_world_state)
+	WS = WorldState.create(
+		world_map, IM.game_setup_info.slots, serializable_WS)
 	_connect_callbacks()
-	world_ui.refresh_world_state_ugly(world_state)
 
 	recreate_tile_forms()
 	recreate_army_forms()
@@ -367,42 +365,42 @@ func start_world_in_state(world_map : DataWorldMap, \
 
 
 func _connect_callbacks() -> void:
-	world_state.player_created.connect(callback_player_created)
-	world_state.army_created.connect(callback_army_created)
-	world_state.army_updated.connect(callback_army_updated)
-	world_state.army_moved.connect(callback_army_moved)
-	world_state.army_destroyed.connect(callback_army_destroyed)
-	world_state.place_changed.connect(callback_place_changed)
-	world_state.combat_started.connect(callback_combat_started)
-	world_state.turn_changed.connect(callback_turn_changed)
+	WS.player_created.connect(callback_player_created)
+	WS.army_created.connect(callback_army_created)
+	WS.army_updated.connect(callback_army_updated)
+	WS.army_moved.connect(callback_army_moved)
+	WS.army_destroyed.connect(callback_army_destroyed)
+	WS.place_changed.connect(callback_place_changed)
+	WS.combat_started.connect(callback_combat_started)
+	WS.turn_changed.connect(callback_turn_changed)
 
 
 func _clear_state() -> void:
-	if not world_state:
+	if not WS:
 		return
-	world_state.player_created.disconnect(callback_player_created)
-	world_state.army_created.disconnect(callback_army_created)
-	world_state.army_updated.disconnect(callback_army_updated)
-	world_state.army_moved.disconnect(callback_army_moved)
-	world_state.army_destroyed.disconnect(callback_army_destroyed)
-	world_state.place_changed.disconnect(callback_place_changed)
-	world_state.combat_started.disconnect(callback_combat_started)
-	world_state.turn_changed.disconnect(callback_turn_changed)
-	world_state = null
+	WS.player_created.disconnect(callback_player_created)
+	WS.army_created.disconnect(callback_army_created)
+	WS.army_updated.disconnect(callback_army_updated)
+	WS.army_moved.disconnect(callback_army_moved)
+	WS.army_destroyed.disconnect(callback_army_destroyed)
+	WS.place_changed.disconnect(callback_place_changed)
+	WS.combat_started.disconnect(callback_combat_started)
+	WS.turn_changed.disconnect(callback_turn_changed)
+	WS = null
 
 
 func spawn_player(coord : Vector2i, player : Player):
-	var capital_city = world_state.get_city_at(coord)
+	var capital_city = WS.get_city_at(coord)
 	player.set_capital(capital_city)
 
 #endregion
 
 func recreate_tile_forms() -> void:
 	Helpers.remove_all_children(tile_grid)
-	for x in range(world_state.grid.width):
-		for y in range(world_state.grid.height):
+	for x in range(WS.grid.width):
+		for y in range(WS.grid.height):
 			var coord := Vector2i(x, y)
-			var hex : WorldHex = world_state.grid.get_hex(coord)
+			var hex : WorldHex = WS.grid.get_hex(coord)
 			var tile : TileForm = TileForm.create_world_tile_new(hex, coord, \
 				to_position(coord))
 			tile_grid.add_child(tile)
@@ -410,10 +408,10 @@ func recreate_tile_forms() -> void:
 
 func recreate_army_forms() -> void:
 	Helpers.remove_all_children(armies)
-	for x in range(world_state.grid.width):
-		for y in range(world_state.grid.height):
+	for x in range(WS.grid.width):
+		for y in range(WS.grid.height):
 			var coord := Vector2i(x, y)
-			var hex : WorldHex = world_state.grid.get_hex(coord)
+			var hex : WorldHex = WS.grid.get_hex(coord)
 			if not hex.army:
 				continue
 			var new_position = to_position(coord)
@@ -428,8 +426,8 @@ func _refresh_army_form_position(army_form : ArmyForm) -> void:
 
 func get_serializable_state() -> SerializableWorldState:
 	var state := SerializableWorldState.new()
-	if world_state:
-		state = world_state.to_network_serializable()
+	if WS:
+		state = WS.to_network_serializable()
 	return state
 
 
@@ -441,7 +439,7 @@ func callback_player_created(_player : Player) -> void:
 
 func callback_army_created(army : Army) -> void:
 	var coord = army.coord
-	var hex = world_state.grid.get_hex(coord)
+	var hex = WS.grid.get_hex(coord)
 	var new_position = to_position(coord)
 	var army_form : ArmyForm = ArmyForm.create_form_of_army(hex, \
 		new_position)
@@ -467,7 +465,7 @@ func callback_army_destroyed(army : Army) -> void:
 
 
 func callback_place_changed(coord : Vector2i) -> void:
-	var _hex = world_state.grid.get_hex_at(coord)
+	var _hex = WS.grid.get_hex_at(coord)
 	return
 
 
@@ -483,7 +481,7 @@ func callback_combat_started(armies_ : Array, coord_ : Vector2i) -> void:
 
 func cheat_money(new_wood : int = 100, new_iron : int = 100, new_ruby : int = 100) -> void:
 	# Add goods to the player
-	world_state.get_current_player().goods.add(
+	WS.get_current_player().goods.add(
 		Goods.new(new_wood, new_iron, new_ruby)
 	)
 
@@ -508,10 +506,10 @@ func hero_level_up(levels : int = 1) -> void:
 
 
 func city_upgrade_cheat() -> void:
-	var current_player : WorldPlayerState = world_state.get_current_player()
+	var current_player : Faction = WS.get_current_player()
 
-	# Iterate over every faction building
-	for building in current_player.faction.buildings:
+	# Iterate over every race building
+	for building in current_player.faction.race.buildings:
 		# Copied from build_building function
 		if not building.is_outpost_building():
 			world_ui.city_ui.city.buildings.append(building)

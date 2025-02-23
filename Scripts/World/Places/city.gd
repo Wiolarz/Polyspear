@@ -6,66 +6,57 @@ var buildings : Array[DataBuilding] = []
 
 # ## when this is null, it should be replaced with controller's faction before
 # ## anything is done
-# var faction : DataRace
 
 
-func get_faction(world_state : WorldState) -> DataRace:
-	var player = world_state.get_player_by_index(controller_index)
-	if not player:
-		return null
-	return player.faction
 
-
-func interact(world_state : WorldState, army : Army) -> void:
+func interact(army : Army) -> void:
 	if controller_index != army.controller_index:
-		world_state.win_game(army.controller_index)  # TEMP
+		print("End of the game")
+		pass#world_state.win_game(army.controller_index)  # TEMP TODO FIX
 
 
-func on_end_of_turn(world_state : WorldState) -> void:
-	var faction : WorldPlayerState = world_state.get_player_by_index(controller_index)
+func on_end_of_round(_world_state : WorldState = null) -> void:
 	faction.add_goods(Goods.new(0, 1, 0))
-	for bulding in buildings:
-		if bulding.name == "sawmill":
+	for building in buildings:
+		if building.name == "sawmill":
 			faction.add_goods(Goods.new(3, 0, 0))
 
 
 #region Heroes
 
-func get_heroes_to_buy(world_state : WorldState) -> Array[DataHero]:
+func get_heroes_to_buy() -> Array[DataHero]:
 	var result : Array[DataHero] = []
-	for hero_data : DataHero in world_state.get_player_by_index(controller_index).faction.heroes:
+	for hero_data : DataHero in faction.race.heroes:
 		result.append(hero_data)
 	return result
 
 
-func get_cost_description(world_state : WorldState, hero: DataHero) -> String:
-	var controller_state : WorldPlayerState = world_state.player_states[controller_index]
-	if controller_state.has_hero(hero):
+func get_cost_description(hero: DataHero) -> String:
+	if faction.has_hero(hero):
 		return "✔"
-	var cost = controller_state.get_hero_cost(hero)
-	var resurrect : bool = controller_state.has_dead_hero(hero)
+	var cost = faction.get_hero_cost(hero)
+	var resurrect : bool = faction.has_dead_hero(hero)
 	if resurrect:
 		return "Resurrect\n%s" % cost
 	return "%s" % cost
 
 
-func can_buy_hero(hero : DataHero, world_state : WorldState) -> bool:
-	var controller_state : WorldPlayerState = world_state.player_states[controller_index]
-	if controller_state.has_hero(hero):
+func can_buy_hero(hero : DataHero) -> bool:
+	if faction.has_hero(hero):
 		return false
-	if world_state.get_army_at(coord):
+	if defender_army.hero:  # hero is present in city hex
 		return false
-	var cost : Goods = controller_state.get_hero_cost(hero)
-	return controller_state.has_enough(cost)
+	var cost : Goods = faction.get_hero_cost(hero)
+	return faction.has_enough(cost)
 
 #endregion
 
 
 #region Units
 
-func get_units_to_buy(world_state) -> Array[DataUnit]:
+func get_units_to_buy() -> Array[DataUnit]:
 	var units : Array[DataUnit] = []
-	for unit_data : DataUnit in get_faction(world_state).units_data:
+	for unit_data : DataUnit in faction.race.units_data:
 		units.append(unit_data)
 	return units
 
@@ -83,10 +74,10 @@ func get_units_to_buy(world_state) -> Array[DataUnit]:
 # 	return world_state.has_player_enough(army.controller_index, unit.cost)
 
 
-func unit_has_required_building(world_state : WorldState, unit : DataUnit) -> bool:
+func unit_has_required_building(unit : DataUnit) -> bool:
 	if not unit.required_building:
 		return true
-	return has_built(world_state, unit.required_building)
+	return has_built(unit.required_building)
 
 #endregion
 
@@ -94,41 +85,38 @@ func unit_has_required_building(world_state : WorldState, unit : DataUnit) -> bo
 #region Buildings
 
 # TODO consider moving it to world_state
-func build_building(world_state : WorldState, building : DataBuilding) -> bool:
-	if not can_build(world_state, building):
+func build_building(building : DataBuilding) -> bool:
+	if not can_build(building):
 		return false
-	var player = world_state.get_player_by_index(controller_index)
-	if world_state.player_purchase(controller_index, building.cost):
+	if faction.player_purchase(building.cost):
 		if not building.is_outpost_building():
 			buildings.append(building)
 		else:
-			player.outpost_buildings.append(building)
+			faction.outpost_buildings.append(building)
 		return true
 	return false
 
 
-func has_built(world_state : WorldState, building : DataBuilding) -> bool:
-	var player = world_state.get_player_by_index(controller_index)
+func has_built(building : DataBuilding) -> bool:
 	var built_here : bool = building in buildings
 	if built_here:
 		return true
-	return player and building in player.outpost_buildings
+	return building in faction.outpost_buildings
 
 
-func can_build(world_state : WorldState, building : DataBuilding)-> bool:
-	var player_state = world_state.player_states[controller_index]
-
-	if has_built(world_state, building):
+func can_build(building : DataBuilding) -> bool:
+	if has_built(building):
 		return false
-	if not player_state.has_enough(building.cost):
+	if not faction.has_enough(building.cost):
 		return false
 
 	if building.is_outpost_building() and \
-			not player_state.has_this_outpost_type(building.outpost_requirement):
+			not faction.has_this_outpost_type(building.outpost_requirement):
 		return false
 
 	return building.requirements \
-		.all(func b_present(b:DataBuilding): return has_built(world_state, b))
+		.all(func building_present(building : DataBuilding):
+			return has_built(building))
 
 
 func to_specific_serializable(dict : Dictionary) -> void:
@@ -150,7 +138,7 @@ func paste_specific_serializable_state(dict : Dictionary) -> void:
 	# 	players[dict["player"]].cities.append(self)
 
 
-static func create_place(args : PackedStringArray, coord_ : Vector2i) -> Place:
+static func create_place(coord_ : Vector2i, args : PackedStringArray) -> Place:
 	var player_index : int = -1
 	for i in range(args.size()):
 		if args[i].is_valid_int():
@@ -165,13 +153,12 @@ static func create_place(args : PackedStringArray, coord_ : Vector2i) -> Place:
 	
 	var result = City.new()
 	result.controller_index = player_index
-	
 	# TODO move this somewhere else -- this should not be here
 	result.coord = coord_
 	result.movable = true
 
 	# TODO check this fragment
-	# var player : WorldPlayerState = world_state.get_player_by_index(player_index)
+	# var player : Faction = world_state.get_player_by_index(player_index)
 	# if player:
 	# 	result.controller_index = player_index
 	# 	player.cities.append(result)

@@ -5,7 +5,7 @@ extends CanvasLayer
 @onready var city_ui : CityUi = $CityUi
 @onready var heroes_list : BoxContainer = $HeroesList
 
-var world_state_ugly : WorldState
+
 
 func _ready():
 	city_ui.purchased_hero.connect(refresh_heroes)
@@ -21,9 +21,6 @@ func game_started():
 	$YouWinPanel.hide()
 
 
-func refresh_world_state_ugly(world_state : WorldState) -> void:
-	world_state_ugly = world_state
-	city_ui.world_state_ugly = world_state
 
 
 func refresh_heroes():

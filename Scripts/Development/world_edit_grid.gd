@@ -143,7 +143,7 @@ func _find_max_player_number() -> int:
 			if args.size() < 1 or args[0] != "city":
 				continue
 			var city : City = \
-				City.create_place(args.slice(1), coord)
+				City.create_place(coord, args.slice(1))
 			assert(city)
 			var index = city.controller_index
 			if index < 0:

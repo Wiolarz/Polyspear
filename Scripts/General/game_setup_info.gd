@@ -2,7 +2,7 @@ class_name GameSetupInfo
 extends RefCounted
 
 ## Game Setup in the lobby [br]
-## Map chosen, info on game slots setup (factions, colors, etc) [br]
+## Map chosen, info on game slots setup (races, colors, etc) [br]
 ## WARNING not a resource because we refer to players, sessions
 ## and other temporary objects that should not be saved
 
@@ -72,7 +72,7 @@ func to_dictionary(local_username : String = "") -> Dictionary:
 		result["slots"].append({
 			"occupier": GameSetupInfo.occupier_prepare_for_network( \
 					slot.occupier, local_username),
-			"faction": slot.faction.get_network_id(),
+			"race": slot.race.get_network_id(),
 			"color": slot.color_idx,
 			"units_list": GameSetupInfo.units_list_prepare_for_network( \
 					slot.units_list),
@@ -100,9 +100,9 @@ static func from_dictionary(dict : Dictionary, \
 			if "occupier" in read_slot:
 				new_slot.occupier = occupier_receive_from_network( \
 					read_slot["occupier"], local_username)
-			if "faction" in read_slot and read_slot["faction"] is String:
-				new_slot.faction = \
-					DataRace.from_network_id(read_slot["faction"])
+			if "race" in read_slot and read_slot["race"] is String:
+				new_slot.race = \
+					DataRace.from_network_id(read_slot["race"])
 			if "color" in read_slot and read_slot["color"] is int:
 				new_slot.color_idx = read_slot["color"]
 			if "units_list" in read_slot and read_slot["units_list"] is Array:
@@ -193,8 +193,8 @@ func set_world_map(map: DataWorldMap):
 	while slots.size() < map_slots_size:
 		var slot = Slot.new()
 		slots.append(slot)
-		var faction_idx = wrap(slots.size()-1, 0, CFG.FACTIONS_LIST.size())
-		slot.faction = CFG.FACTIONS_LIST[faction_idx]
+		var race_idx = wrap(slots.size()-1, 0, CFG.RACES_LIST.size())
+		slot.race = CFG.RACES_LIST[race_idx]
 		slot.color_idx = 0
 
 		while slot.color_idx in taken_colors:
@@ -240,7 +240,7 @@ static func create_empty() -> GameSetupInfo:
 	result.slots.resize(slot_count)
 	for i in range(slot_count):
 		result.slots[i] = Slot.new()
-		result.slots[i].faction = CFG.FACTIONS_LIST[i]
+		result.slots[i].race = CFG.RACES_LIST[i]
 		result.slots[i].color_idx = i
 		result.slots[i].index = i
 	return result
@@ -263,7 +263,7 @@ func set_slots_number(number : int) -> void:
 		var slot = Slot.new()
 		slots.append(slot)
 
-		slot.faction = CFG.FACTIONS_LIST[0]
+		slot.race = CFG.RACES_LIST[0]
 		slot.color_idx = 0
 		slot.index = index
 

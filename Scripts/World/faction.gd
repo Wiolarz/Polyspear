@@ -1,5 +1,13 @@
-class_name WorldPlayerState
+class_name Faction
 extends RefCounted
+
+
+
+var controller_index : int
+var controller : Player:
+	get:
+		return IM.get_player_by_index(controller_index)
+
 
 var _goods : Goods = Goods.new()
 
@@ -19,7 +27,16 @@ var hero_armies : Array[Army] = []
 
 var dead_heroes: Array[Hero] = []
 
-var faction : DataRace
+var race : DataRace
+
+
+static func create_world_player_state(slot : Slot) -> Faction:
+	var new_faction := Faction.new()
+
+	new_faction.controller_index = slot.index
+
+	return new_faction
+
 
 
 #region Goods + City Economy
@@ -51,6 +68,16 @@ func has_this_outpost_type(outpost_type : String) -> bool:
 		if outpost.outpost_type == outpost_type:
 			return true
 	return false
+
+
+## Removes outpost from occupied outpost list,
+## it may additionaly remove buildings which required outpost type to be present
+func raised_outpost(outpost : Outpost) -> void:
+	outposts.erase(outpost)
+	if not has_this_outpost_type(outpost.outpost_type):
+		for building in outpost_buildings:
+			if building.outpost_requirement == outpost.outpost_type:
+				outpost_buildings.erase(building)
 
 #endregion Goods + City Economy
 

@@ -35,5 +35,5 @@ static func process_command(_client : Client, params : Dictionary) -> int:
 	if not battle_state.valid():
 		battle_state = null
 	IM.game_setup_info = setup
-	IM.start_game(world_state, battle_state)
+	IM.start_game(world_state, battle_state)  # launched when joining an already started game
 	return OK

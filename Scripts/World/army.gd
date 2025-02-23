@@ -7,6 +7,14 @@ var hero : Hero
 
 var controller_index : int
 
+
+var faction : Faction
+
+var controller : Player:
+	get:
+		return faction.controller
+
+
 var coord : Vector2i
 
 
@@ -45,7 +53,7 @@ func add_xp(gained_xp : int) -> void:
 		hero.add_xp(gained_xp)
 
 
-func on_end_of_turn(player_index : int):
+func on_end_of_round(player_index : int):
 	if player_index == controller_index and hero:
 		hero.movement_points = hero.max_movement_points
 
