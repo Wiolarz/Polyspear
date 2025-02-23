@@ -17,6 +17,14 @@ var controller : Player:
 		return null
 
 
+
+var faction : Faction
+
+var controller : Player:
+	get:
+		return faction.controller
+
+
 var coord : Vector2i
 
 
