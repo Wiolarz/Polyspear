@@ -17,7 +17,9 @@ var controller : Player:
 
 
 ## Controller Faction
-var faction : Faction
+var faction : Faction:
+	get:
+		return WS.player_states[controller_index]
 
 
 var defender_army : Army
@@ -56,7 +58,7 @@ func interact(army : Army) -> void:
 
 
 ## this is overridden by other places and does nothing in empty places
-func on_end_of_round(world_state : WorldState = null) -> void: #TEMP world_state variable
+func on_end_of_round() -> void:
 	pass
 
 

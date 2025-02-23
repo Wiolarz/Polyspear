@@ -12,8 +12,8 @@ func _ready():
 
 
 func _process(_delta):
-	if WM.world_state:
-		good_label.text = WM.world_state.get_current_player()._goods.to_string() # TEMP
+	if WM.world_game_is_active():
+		good_label.text = WS.get_current_player()._goods.to_string() # TEMP
 
 
 func game_started():
@@ -25,8 +25,8 @@ func game_started():
 
 func refresh_heroes():
 	Helpers.remove_all_children(heroes_list)
-	var player_index = world_state_ugly.current_player_index
-	var player_state = world_state_ugly.get_player_by_index(player_index)
+	var player_index = WS.current_player_index
+	var player_state = WS.get_player_by_index(player_index)
 	if not player_state:
 		return
 	for army in player_state.hero_armies:

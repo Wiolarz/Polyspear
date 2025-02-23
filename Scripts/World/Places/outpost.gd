@@ -58,7 +58,7 @@ func capture(new_faction : Faction) -> void:
 	new_faction.outposts.append(self)
 
 
-func on_end_of_round(_world_state : WorldState = null):
+func on_end_of_round():
 	if faction:
 		faction.add_goods(per_turn)
 

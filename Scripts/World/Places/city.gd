@@ -15,7 +15,7 @@ func interact(army : Army) -> void:
 		pass#world_state.win_game(army.controller_index)  # TEMP TODO FIX
 
 
-func on_end_of_round(_world_state : WorldState = null) -> void:
+func on_end_of_round() -> void:
 	faction.add_goods(Goods.new(0, 1, 0))
 	for building in buildings:
 		if building.name == "sawmill":
@@ -44,7 +44,8 @@ func get_cost_description(hero: DataHero) -> String:
 func can_buy_hero(hero : DataHero) -> bool:
 	if faction.has_hero(hero):
 		return false
-	if defender_army.hero:  # hero is present in city hex
+	#TEMP remove check for if defender_Army, as some army should always exist in city, even empty
+	if defender_army and defender_army.hero:  # hero is present in city hex
 		return false
 	var cost : Goods = faction.get_hero_cost(hero)
 	return faction.has_enough(cost)
@@ -61,7 +62,7 @@ func get_units_to_buy() -> Array[DataUnit]:
 	return units
 
 
-# func can_buy_unit(unit : DataUnit, world_state : WorldState) -> bool:
+# func can_buy_unit(unit : DataUnit) -> bool:
 # 	var army : Army = world_state.get_army_at(coord)
 # 	if not army:
 # 		return false
@@ -115,8 +116,8 @@ func can_build(building : DataBuilding) -> bool:
 		return false
 
 	return building.requirements \
-		.all(func building_present(building : DataBuilding):
-			return has_built(building))
+		.all(func building_present(building_ : DataBuilding):
+			return has_built(building_))
 
 
 func to_specific_serializable(dict : Dictionary) -> void:

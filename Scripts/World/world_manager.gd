@@ -19,6 +19,7 @@ var _batch_mode : bool = false
 var tile_grid : Node2D = null
 var armies : Node2D = null
 
+var _is_world_game_active : bool = false
 
 #region Start World
 
@@ -41,15 +42,12 @@ func _ready() -> void:
 #region helpers
 
 
-func world_game_is_active() -> bool:
-	return WS != null
-
 
 ## Camera bounds
 func get_bounds_global_position() -> Rect2:
-	if not WS:
-		push_warning("asking not initialized grid for camera bounding box")
-		return Rect2(0, 0, 0, 0)
+	#if not WS: #TEMP
+	#	push_warning("asking not initialized grid for camera bounding box")
+	#	return Rect2(0, 0, 0, 0)
 	var top_left_hex = WS.get_top_left_hex()
 	var bottom_right_hex = WS.get_bottom_right_hex()
 	var top_left_tile_form : TileForm = get_tile_of_hex(top_left_hex)
@@ -61,13 +59,14 @@ func get_bounds_global_position() -> Rect2:
 
 
 func get_current_player_capital() -> City:
-	if not WS:
-		return null
 	var player_state = WS.get_player_by_index(WS.current_player_index)
 	if not player_state:
 		return null
 	return player_state.capital_city
 
+
+func world_game_is_active() -> bool:
+	return _is_world_game_active
 
 #endregion helpers
 
@@ -91,8 +90,6 @@ func set_selected_hero(army : Army):
 
 
 func get_current_player() -> Player:
-	if not WS:
-		return null
 	var index : int = WS.current_player_index
 	return IM.get_player_by_index(index)
 
@@ -119,8 +116,6 @@ func get_army_form(army : Army) -> ArmyForm:
 
 ## this function may be temporary, the sure thing is it needs to be made better
 func get_tile_of_hex(hex : WorldHex) -> Node2D:
-	if not WS:
-		return null
 	for tile_form in tile_grid.get_children():
 		if tile_form.hex == hex:
 			return tile_form
@@ -301,6 +296,7 @@ func end_of_battle(battle_results : Array[BattleGridState.ArmyInBattleState]):
 #region World End
 
 func close_world():
+	_is_world_game_active = false
 	combat_tile = Vector2i.MAX
 	selected_hero = null
 
@@ -309,7 +305,6 @@ func close_world():
 	for tile in tile_grid.get_children():
 		tile.queue_free()
 
-	_clear_state()
 
 #endregion
 
@@ -323,9 +318,9 @@ func spawn_world_ui():
 
 func start_new_world(world_map : DataWorldMap) -> void:
 
-	_clear_state()
-	WS = WorldState.create(world_map, IM.game_setup_info.slots)
-	_connect_callbacks()
+	_is_world_game_active = true
+
+	WS.create(world_map, IM.game_setup_info.slots)
 
 	recreate_tile_forms()
 	recreate_army_forms()
@@ -341,16 +336,16 @@ func start_new_world(world_map : DataWorldMap) -> void:
 func start_world_in_state(world_map : DataWorldMap, \
 		serializable_WS : SerializableWorldState) -> void:
 
+	_is_world_game_active = true
+
 	# TODO probably check serializable_WS not null
 
 	_batch_mode = true
 
 	_batch_mode = true
 
-	_clear_state()
-	WS = WorldState.create(
+	WS.create(
 		world_map, IM.game_setup_info.slots, serializable_WS)
-	_connect_callbacks()
 
 	recreate_tile_forms()
 	recreate_army_forms()
@@ -364,29 +359,7 @@ func start_world_in_state(world_map : DataWorldMap, \
 	_batch_mode = false
 
 
-func _connect_callbacks() -> void:
-	WS.player_created.connect(callback_player_created)
-	WS.army_created.connect(callback_army_created)
-	WS.army_updated.connect(callback_army_updated)
-	WS.army_moved.connect(callback_army_moved)
-	WS.army_destroyed.connect(callback_army_destroyed)
-	WS.place_changed.connect(callback_place_changed)
-	WS.combat_started.connect(callback_combat_started)
-	WS.turn_changed.connect(callback_turn_changed)
 
-
-func _clear_state() -> void:
-	if not WS:
-		return
-	WS.player_created.disconnect(callback_player_created)
-	WS.army_created.disconnect(callback_army_created)
-	WS.army_updated.disconnect(callback_army_updated)
-	WS.army_moved.disconnect(callback_army_moved)
-	WS.army_destroyed.disconnect(callback_army_destroyed)
-	WS.place_changed.disconnect(callback_place_changed)
-	WS.combat_started.disconnect(callback_combat_started)
-	WS.turn_changed.disconnect(callback_turn_changed)
-	WS = null
 
 
 func spawn_player(coord : Vector2i, player : Player):

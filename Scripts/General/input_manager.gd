@@ -104,7 +104,7 @@ func start_game(world_state : SerializableWorldState = null,
 		if battle_state:
 			var armies : Array[Army] = []
 			for army_coord in battle_state.world_armies:
-				armies.append(WM.world_state.get_army_at(army_coord))
+				armies.append(WS.get_army_at(army_coord))
 			WM.start_combat(armies, battle_state.combat_coord, battle_state)
 
 	if NET.server:

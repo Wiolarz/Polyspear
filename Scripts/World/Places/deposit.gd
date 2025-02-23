@@ -24,7 +24,7 @@ func interact(army : Army) -> void:
 	collect(army.faction)
 
 
-func on_end_of_round(_world_state : WorldState) -> void:
+func on_end_of_round() -> void:
 	accumulated_goods.add(per_turn)
 
 

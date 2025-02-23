@@ -34,6 +34,7 @@ static func create_world_player_state(slot : Slot) -> Faction:
 	var new_faction := Faction.new()
 
 	new_faction.controller_index = slot.index
+	new_faction.race = slot.race
 
 	return new_faction
 

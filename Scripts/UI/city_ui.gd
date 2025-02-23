@@ -109,7 +109,7 @@ func _on_buy_hero_button_pressed(hero_index : int):
 	print("trying to buy a hero ")
 
 	var hero_to_buy : DataHero = \
-		world_state_ugly.get_hero_to_buy_in_city(city, hero_index)
+		WS.get_hero_to_buy_in_city(city, hero_index)
 
 	if not hero_to_buy:
 		return

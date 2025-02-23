@@ -1,5 +1,5 @@
 #Singleton WS - World State
-extends RefCounted
+extends Node
 
 const MOVE_IS_INVALID = -1
 
@@ -10,13 +10,7 @@ var player_states : Array[Faction] = []
 var move_hold_on_combat : Array[Vector2i] # TODO some better form
 
 ## consider not to use signals
-signal player_created(player : Player)
-signal army_created(army : Army)
-signal army_updated(army : Army)
-signal army_moved(army : Army)
-signal army_destroyed(army : Army)
-signal place_changed(coord : Vector2i)
-signal turn_changed()
+
 
 ## this is signal used by other managers
 signal combat_started(armies : Array, coord : Vector2i)
@@ -24,21 +18,19 @@ signal combat_started(armies : Array, coord : Vector2i)
 
 #region init
 
-func _init(width_ : int, height_ : int):
-	grid = GenericHexGrid.new(width_, height_, WorldHex.new())
-
 
 ## Factory capable of us
-static func create(map : DataWorldMap,
+func create(map : DataWorldMap,
 		slots : Array[Slot],
-		saved_state : SerializableWorldState = null) -> WorldState:
-	var result = WorldState.new(map.grid_width, map.grid_height)
+		saved_state : SerializableWorldState = null):
+
+	grid = GenericHexGrid.new(map.grid_width, map.grid_height, WorldHex.new())
 
 	# load players and their not related-to-grid state
-	result.player_states.resize(slots.size())
-	for i in result.player_states.size():
-		result.player_states[i] = Faction.new()
-		var player = result.player_states[i]
+	player_states.resize(slots.size())
+	for i in player_states.size():
+		player_states[i] = Faction.create_world_player_state(slots[i])
+		var player = player_states[i]
 		var slot = slots[i]
 		if not saved_state:
 			player.set_goods(CFG.get_start_goods())
@@ -70,14 +62,14 @@ static func create(map : DataWorldMap,
 			hex.init_place(type, coord, place_ser)
 			# TODO somehow get this inside of
 			# creation
-			result.grid.set_hex(coord, hex)
+			grid.set_hex(coord, hex)
 			if not saved_state and hex.place:
 				var army_preset = hex.place.get_army_at_start()
 				if army_preset:
-					result.spawn_army_from_preset(army_preset, coord, \
+					spawn_army_from_preset(army_preset, coord, \
 						hex.place.controller_index)
 					if hex.place is HuntSpot:
-						hex.place.spawned_army = result.get_army_at(coord)
+						hex.place.spawned_army = get_army_at(coord)
 
 			if saved_state and coord in saved_state.army_hexes:
 				var loaded : Dictionary = saved_state.army_hexes[coord]
@@ -90,10 +82,10 @@ static func create(map : DataWorldMap,
 
 	# add armies to their players if loading from state
 	if saved_state:
-		for i in result.player_states.size():
-			var player = result.player_states[i]
+		for i in player_states.size():
+			var player = player_states[i]
 			for army_coord in saved_state.players[i].armies:
-				var army : Army = result.get_army_at(army_coord)
+				var army : Army = get_army_at(army_coord)
 				assert(army)
 				player.hero_armies.append(army)
 				army.controller_index = i
@@ -107,12 +99,11 @@ static func create(map : DataWorldMap,
 			# living armies are added later
 
 
-	result.synchronize_players_with_their_places()
+	synchronize_players_with_their_places()
 
 	if saved_state:
-		result.current_player_index = saved_state.current_player
+		current_player_index = saved_state.current_player
 
-	return result
 
 
 ## fills up players' fields like `cities` and `outposts` after place grid is
@@ -477,7 +468,7 @@ func do_recruit_hero(data_hero : DataHero,
 	grid.get_hex(coord).army = army
 	player_state.hero_armies.append(army)
 
-	army_created.emit(army)
+	WM.callback_army_created(army)
 
 	return true
 
@@ -621,7 +612,7 @@ func remove_army(army : Army) -> void:
 		army_array.erase(army)
 		player.dead_heroes.append(army.hero)
 	# think about when is this ref counted object destroyed
-	army_destroyed.emit(army)
+	WM.callback_army_destroyed(army)
 
 
 ## returns true when points points are spent, false when could not
@@ -643,7 +634,7 @@ func change_army_position(army : Army, target_coord : Vector2i) -> void:
 	source_hex.army = null
 	target_hex.army = army
 	army.coord = target_coord
-	army_updated.emit(army)
+	WM.callback_army_updated(army)
 
 #endregion Player Turn
 
@@ -655,7 +646,7 @@ func do_end_turn() -> void:
 	if current_player_index == player_states.size():
 		_end_of_round_callbacks()
 	current_player_index = (current_player_index + 1) % player_states.size()
-	turn_changed.emit()
+	WM.callback_turn_changed()
 
 
 ## this function spawns an army from preset on given coord [br]
@@ -671,7 +662,7 @@ func spawn_army_from_preset(army_preset : PresetArmy, coord : Vector2i, \
 	army.controller_index = player_index
 	# TODO add this army to player armies array
 	grid.get_hex(coord).army = army
-	army_created.emit(army)
+	WM.callback_army_created(army)
 
 
 func _end_of_turn_callbacks(player_index : int) -> void:
@@ -684,7 +675,7 @@ func _end_of_turn_callbacks(player_index : int) -> void:
 				army.on_end_of_round(player_index)
 			var place : Place = get_place_at(coord)
 			if place:
-				place.on_end_of_round(self)
+				place.on_end_of_round()
 
 
 func _end_of_round_callbacks() -> void:

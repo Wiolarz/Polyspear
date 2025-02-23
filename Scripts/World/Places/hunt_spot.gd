@@ -88,7 +88,7 @@ func interact(army : Army) -> void:
 	collect(army.faction)
 
 
-func on_end_of_round(world_state : WorldState = null):
+func on_end_of_round():
 	if spawned_army: # neutral army is alive
 		return
 	if _time_left_for_respawn == 0:
@@ -96,18 +96,18 @@ func on_end_of_round(world_state : WorldState = null):
 		_time_left_for_respawn = army_respawn_time
 		return
 	if _time_left_for_respawn == 1: # respawn timer finished
-		try_respawn(world_state)
+		try_respawn()
 		return
 	_time_left_for_respawn -= 1
 
 
-func try_respawn(world_state : WorldState):
-	if world_state.get_army_at(coord):
+func try_respawn():
+	if WS.get_army_at(coord):
 		print("respawn failed @ ", coord)
 		return
 	if current_level < neutral_armies.size()-1:
 		current_level += 1
-	world_state.spawn_army_from_preset(neutral_armies[current_level], coord, \
+	WS.spawn_army_from_preset(neutral_armies[current_level], coord, \
 		-1)
 	_present_goods = material_rewards[current_level].duplicate()
 
@@ -116,10 +116,10 @@ func get_map_description() -> String:
 	return _present_goods.to_string_short("empty")
 
 
-func collect(faction : Faction) -> void:
+func collect(raiding_faction : Faction) -> void:
 	# TODO change it so the resources are gathered from number of killed units,
 	# so even if the player looses he still can get some resource
-	faction.add_goods(_present_goods)
+	raiding_faction.add_goods(_present_goods)
 	_present_goods.clear()
 
 
