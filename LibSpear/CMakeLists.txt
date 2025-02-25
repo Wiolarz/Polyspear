@@ -57,8 +57,6 @@ add_subdirectory(godot-cpp        godot-cpp    EXCLUDE_FROM_ALL)
 
 include_directories("${GODOT_GDEXTENSION_DIR}")
 include_directories("src")
-include_directories("deps/thread-pool/include")
-
 
 add_library(libspear SHARED
   src/battle_manager_fast.cpp
@@ -67,6 +65,13 @@ add_library(libspear SHARED
   src/register_types.cpp
   src/tile_grid_fast.cpp
 )
+
+find_package(OpenMP)
+if (OpenMP_CXX_FOUND)
+  target_link_libraries(libspear OpenMP::OpenMP_CXX)
+else ()
+  message(FATAL_ERROR "OpenMP not found")
+endif ()
 
 target_link_libraries(libspear
   godot::cpp

@@ -1,6 +1,3 @@
 [submodule "LibSpear/godot-cpp"]
 	path = LibSpear/godot-cpp
 	url = https://github.com/godotengine/godot-cpp
-[submodule "LibSpear/deps/thread-pool"]
-	path = LibSpear/deps/thread-pool
-	url = https://github.com/bshoshany/thread-pool.git
