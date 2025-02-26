@@ -1,9 +1,28 @@
 # Singleton - BG
 extends CanvasLayer
 
+const COLOR_DEFAULT = Color(0.32941176470588, 0.0, 1.0, 1.0)
+const COLOR_SECONDARY_DEFAULT = Color(0.073, 0.0, 0.47, 1.0)
+
 var _style_box = preload("res://Art/UI/marble_box.tres")
 var _material : ShaderMaterial
 var _actual_background : Panel
+
+var _color1 : Color:
+	set(new):
+		if new is Color:
+			_color1 = new
+		else:
+			_color1 = CFG.NEUTRAL_COLOR.color
+		_material.set_shader_parameter("color1", _color1)
+
+var _color2 : Color:
+	set(new):
+		if new is Color:
+			_color2 = new
+		else:
+			_color2 = CFG.NEUTRAL_COLOR.color_secondary
+		_material.set_shader_parameter("color2", _color2)
 
 
 func _ready() -> void:
@@ -20,18 +39,23 @@ func _ready() -> void:
 	add_child(_actual_background)
 
 
-func set_player_colors(data : DataPlayerColor) -> void:
+func set_player_colors(data : DataPlayerColor, tween: Tween = null) -> void:
+	var primary := CFG.NEUTRAL_COLOR.color
+	var secondary := CFG.NEUTRAL_COLOR.color_secondary
+	
 	if CFG.player_options.background_color_follows_players:
-		set_colors(lerp(data.color, Color.BLACK, 0.1), data.color_secondary)
+		primary = lerp(data.color, Color.BLACK, 0.1)
+		secondary = data.color_secondary
+		
+	if tween:
+		tween.tween_property(self, "_color1", primary, 0.5).set_trans(Tween.TRANS_LINEAR)
+		tween.parallel().tween_property(self, "_color2", secondary, 0.5).set_trans(Tween.TRANS_LINEAR)
 	else:
-		set_colors(CFG.NEUTRAL_COLOR.color, CFG.NEUTRAL_COLOR.color_secondary)
-
-
-func set_colors(color1 : Color, color2 : Color) -> void:
-	_material.set_shader_parameter("color1", color1)
-	_material.set_shader_parameter("color2", color2)
+		_color1 = primary
+		_color2 = secondary
 
 
 func set_default_colors() -> void:
-	_material.set_shader_parameter("color1", null)
-	_material.set_shader_parameter("color2", null)
+	# cannot set _colorX to null directly
+	_color1 = COLOR_DEFAULT
+	_color2 = COLOR_SECONDARY_DEFAULT
