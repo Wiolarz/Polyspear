@@ -276,8 +276,6 @@ func on_player_selected(army_index : int, preview : bool = false):
 		button.mouse_entered.connect(lambda_hover.bind(true))
 		button.mouse_exited.connect(lambda_hover.bind(false))
 
-	BG.set_player_colors(bg_color)
-
 
 func unit_summoned(summon_phase_end : bool):
 	_selected_unit_pointer = null

@@ -20,10 +20,12 @@ func _process(_delta: float):
 
 
 func create_my_tween(settings := TweenPlaybackSettings.new()) -> Tween:
-	var tween = get_tree().create_tween()
+	var tween := get_tree().create_tween()
 	tween.set_ease(CFG.anim_default_ease).set_trans(CFG.anim_default_trans)
 	if settings.influenced_by_game_speed:
 		tween.set_speed_scale(_speed_scale)
+	
+	tween.set_process_mode(settings.process_mode)
 	tween.stop()
 	return tween
 
@@ -38,7 +40,7 @@ func main_tween() -> Tween:
 ## Create a subtween, ran when the specified tween 
 ## (by default main tween) finishes all previous animations
 func subtween(parent : Tween = main_tween(), settings := TweenPlaybackSettings.new()) -> Tween:
-	var tween = create_my_tween(settings)
+	var tween := create_my_tween(settings)
 	tween.finished.connect(_tween_finished.bind(tween))
 	parent.tween_callback(play_tween.bind(tween, settings))
 
@@ -69,7 +71,11 @@ func fast_forward() -> void:
 	
 	# Run all other tweens, in order they were created
 	for tween in _running_tweens:
-		tween.custom_step(INF)
+		if _running_tweens[tween].interrupt_on_fast_forward:
+			tween.pause()
+			tween.kill()
+		else:
+			tween.custom_step(INF)
 	
 	# From now on use a new main tween, since the old tween is invalid
 	_main_tween = null
@@ -85,13 +91,19 @@ func is_playing() -> bool:
 func play_tween(tween : Tween, settings := TweenPlaybackSettings.new()) -> void:
 	match _playback_mode:
 		PlaybackMode.NORMAL:
-			tween.set_speed_scale(_speed_scale)
 			_running_tweens[tween] = settings
+			
+			if settings.influenced_by_game_speed:
+				tween.set_speed_scale(_speed_scale)
 			
 			# Shouldn't ever happen
 			assert(not tween.is_running(), "Subtween is already running")
 			tween.play()
-		PlaybackMode.FAST_FORWARD:
+		PlaybackMode.FAST_FORWARD when settings.interrupt_on_fast_forward:
+			tween.pause()
+			tween.kill()
+			tween.free()
+		PlaybackMode.FAST_FORWARD when not settings.interrupt_on_fast_forward:
 			tween.play()
 			tween.custom_step(INF)
 
@@ -102,8 +114,17 @@ func _tween_finished(tween: Tween) -> void:
 
 class TweenPlaybackSettings:
 	var influenced_by_game_speed := true
+	var interrupt_on_fast_forward := false
+	var process_mode := Tween.TWEEN_PROCESS_IDLE
 
 	static func speed_independent() -> TweenPlaybackSettings:
-		var settings = TweenPlaybackSettings.new()
+		var settings := TweenPlaybackSettings.new()
 		settings.influenced_by_game_speed = false
+		return settings
+	
+	static func non_epileptic() -> TweenPlaybackSettings:
+		var settings := TweenPlaybackSettings.new()
+		settings.influenced_by_game_speed = false
+		settings.interrupt_on_fast_forward = true
+		settings.process_mode = Tween.TWEEN_PROCESS_PHYSICS
 		return settings

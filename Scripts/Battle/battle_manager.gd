@@ -108,6 +108,9 @@ func start_battle(new_armies : Array[Army], battle_map : DataBattleMap, \
 	if is_spectator and CFG.ENABLE_AUTO_BRAIN:
 		_enable_ai_preview()
 	
+	# Set first player's color
+	BG.set_player_colors(get_current_slot_color())
+	
 	# first turn does not get a signal emit
 	_on_turn_started(_battle_grid_state.get_current_player())
 
@@ -645,7 +648,11 @@ func _perform_move_info(move_info : MoveInfo) -> void:
 	print(NET.get_role_name(), " performing move ", move_info)
 	
 	ANIM.fast_forward()
-
+	var bg_transition_tween = ANIM.subtween(
+		ANIM.main_tween(), 
+		ANIM.TweenPlaybackSettings.non_epileptic()
+	)
+	
 	_replay_move_counter += 1
 
 	if not _replay_is_playing:
@@ -672,6 +679,9 @@ func _perform_move_info(move_info : MoveInfo) -> void:
 	ANIM.main_tween().tween_callback(func(): move_animation_done.emit())
 	# Play the recorded animation
 	ANIM.main_tween().play()
+
+	BG.set_player_colors(get_current_slot_color(), bg_transition_tween)
+	
 
 	_end_move()
 
