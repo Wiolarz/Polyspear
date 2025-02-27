@@ -44,7 +44,7 @@ enum GuiAnimationMode
 #endregion
 
 ## battle map is placed this far to the right after world map bounds
-const MAPS_OFFSET_X = 7000
+const MAPS_OFFSET_X = 7000 + 30000 # TEMP increase to include fake snetinel border
 
 const BATTLE_BORDER_WIDTH = 15
 const BATTLE_BORDER_HEIGHT = 8

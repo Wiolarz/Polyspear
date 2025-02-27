@@ -44,9 +44,7 @@ static func create_place(coord_ : Vector2i, args : PackedStringArray) -> Place:
 
 	# TODO move this somewhere else -- this should not be here
 	result.coord = coord_
-	result.current_level = 0
 	result.movable = true
-	result._time_left_for_respawn = 0
 
 	return result
 

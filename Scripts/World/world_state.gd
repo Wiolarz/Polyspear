@@ -417,6 +417,9 @@ func do_move(world_move_info : WorldMoveInfo) -> bool:
 			return false
 
 
+
+#region City Economy
+
 ## returns true only of move was legal and recruitment took place
 func do_recruit_unit(data_unit : DataUnit, city_coord : Vector2i,
 		army_coord : Vector2i) -> bool:
@@ -429,7 +432,6 @@ func do_recruit_unit(data_unit : DataUnit, city_coord : Vector2i,
 	assert(purchased)
 	army.units_data.append(data_unit)
 	return true
-
 
 ## returns army reference if success/legal, null otherwise
 func do_recruit_hero(data_hero : DataHero,
@@ -464,6 +466,7 @@ func do_recruit_hero(data_hero : DataHero,
 	army.hero = hero
 	army.controller_index = city.controller_index
 	army.coord = coord
+	army.faction = WS.player_states[city.controller_index]
 
 	grid.get_hex(coord).army = army
 	player_state.hero_armies.append(army)
@@ -473,15 +476,6 @@ func do_recruit_hero(data_hero : DataHero,
 	return true
 
 
-func do_start_trade(source : Vector2i, target : Vector2i) -> bool:
-	var problem := check_start_trade(source, target)
-	if problem != "":
-		push_error(problem)
-		return false
-	return true
-
-
-
 func do_build_building(coord : Vector2i, building : DataBuilding) -> bool:
 	var problem := check_build_building(coord, building)
 	if problem != "":
@@ -489,29 +483,6 @@ func do_build_building(coord : Vector2i, building : DataBuilding) -> bool:
 		return false
 	var city := get_city_at(coord)
 	return city.build_building(building)
-
-
-## this is the basicest move
-func do_army_travel(source : Vector2i, target : Vector2i) -> bool:
-	var problem = check_army_travel(source, target)
-	if problem != "":
-		push_error(problem)
-		return false
-	var army : Army = get_army_at(source)
-
-	if is_enemy_at(target, army.controller_index):
-		var fighting_armies : Array[Army] = [army, get_army_at(target)]
-		var has_combat_started : bool = start_combat_by_attack(fighting_armies, \
-			source, target)
-		return has_combat_started
-
-	var spent = army_spend_movement_points(army, 1)
-	assert(spent)
-
-	print("moving ", army," to ",target)
-	change_army_position(army, target)
-	interact_place(army, target)
-	return true
 
 
 func player_purchase(player_index : int, cost : Goods) -> bool:
@@ -529,11 +500,15 @@ func player_spend(player_index : int, cost : Goods) -> bool:
 	print("not enough money")
 	return false
 
+#endregion City Economy
+
+
+#region Combat
 
 func start_combat_by_attack(armies : Array[Army], source : Vector2i, \
 		target : Vector2i) -> bool:
 	move_hold_on_combat = [source, target]
-	combat_started.emit(armies, target)
+	WM.start_combat(armies, target)
 	return true
 
 
@@ -541,6 +516,10 @@ func start_combat_by_attack(armies : Array[Army], source : Vector2i, \
 func end_combat(battle_results : Array[BattleGridState.ArmyInBattleState]) -> void:
 	for army_state in battle_results:
 		var army = army_state.army_reference
+		if army.is_neutral:
+			army.faction = null
+			army.controller_index = -1
+		
 		if army.hero:
 			army_state.killed_units.sort()  # from lowest to highest
 			# we aim to award hero as much as possible
@@ -553,6 +532,8 @@ func end_combat(battle_results : Array[BattleGridState.ArmyInBattleState]) -> vo
 			remove_army(army)
 		else:
 			army.apply_losses(army_state.dead_units)
+			if army.is_neutral:
+				army.controller_index = -1
 
 	# TODO document this variable, and how it works better
 	if move_hold_on_combat.size() < 1:
@@ -563,6 +544,27 @@ func end_combat(battle_results : Array[BattleGridState.ArmyInBattleState]) -> vo
 	if check_army_travel(source, target) == "":
 		do_army_travel(source, target)
 
+
+## Kills army called once it was defeated
+func remove_army(army : Army) -> void:
+	assert(army == get_army_at(army.coord))
+	var hex : WorldHex = grid.get_hex(army.coord)
+	hex.army = null
+	var player_index = army.controller_index
+	var player = get_player_by_index(player_index)
+	if player:
+		var army_array = player.hero_armies
+		assert(army in army_array)
+		army_array.erase(army)
+		player.dead_heroes.append(army.hero)
+	# think about when is this ref counted object destroyed
+	WM.callback_army_destroyed(army)
+
+
+#endregion Combat
+
+
+#region Place Interactions
 
 ## returns if place is interacted
 ## TODO consider what we should return here
@@ -599,20 +601,39 @@ func _delete_outpost_buildings_if_needed(player_index : int) -> void:
 				break
 	player.outpost_buildings = new_array
 
+#endregion Place Interactions
 
-func remove_army(army : Army) -> void:
-	assert(army == get_army_at(army.coord))
-	var hex : WorldHex = grid.get_hex(army.coord)
-	hex.army = null
-	var player_index = army.controller_index
-	var player = get_player_by_index(player_index)
-	if player:
-		var army_array = player.hero_armies
-		assert(army in army_array)
-		army_array.erase(army)
-		player.dead_heroes.append(army.hero)
-	# think about when is this ref counted object destroyed
-	WM.callback_army_destroyed(army)
+#region Army Movement
+
+func do_start_trade(source : Vector2i, target : Vector2i) -> bool:
+	var problem := check_start_trade(source, target)
+	if problem != "":
+		push_error(problem)
+		return false
+	return true
+
+
+## this is the basicest move
+func do_army_travel(source : Vector2i, target : Vector2i) -> bool:
+	var problem = check_army_travel(source, target)
+	if problem != "":
+		push_error(problem)
+		return false
+	var army : Army = get_army_at(source)
+
+	if is_enemy_at(target, army.controller_index):
+		var fighting_armies : Array[Army] = [army, get_army_at(target)]
+		var has_combat_started : bool = start_combat_by_attack(fighting_armies, \
+			source, target)
+		return has_combat_started
+
+	var spent = army_spend_movement_points(army, 1)
+	assert(spent)
+
+	print("moving ", army," to ",target)
+	change_army_position(army, target)
+	interact_place(army, target)
+	return true
 
 
 ## returns true when points points are spent, false when could not
@@ -635,6 +656,9 @@ func change_army_position(army : Army, target_coord : Vector2i) -> void:
 	target_hex.army = army
 	army.coord = target_coord
 	WM.callback_army_updated(army)
+
+#endregion Army Movement
+
 
 #endregion Player Turn
 
@@ -660,6 +684,9 @@ func spawn_army_from_preset(army_preset : PresetArmy, coord : Vector2i, \
 	var army = Army.create_from_preset(army_preset)
 	army.coord = coord
 	army.controller_index = player_index
+	if player_index == -1:
+		army.is_neutral = true
+
 	# TODO add this army to player armies array
 	grid.get_hex(coord).army = army
 	WM.callback_army_created(army)

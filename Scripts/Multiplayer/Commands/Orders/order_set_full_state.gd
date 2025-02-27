@@ -1,4 +1,5 @@
 class_name OrderSetFullState
+#STUB CLASS
 
 const COMMAND_NAME = "set_full_state"
 

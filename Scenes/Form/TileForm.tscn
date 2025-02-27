@@ -27,10 +27,11 @@ texture = ExtResource("2_utlft")
 z_index = 5
 z_as_relative = false
 use_parent_material = true
-offset_left = -120.0
-offset_top = 672.0
-offset_right = 49.0
-offset_bottom = 849.0
+offset_left = -23.0
+offset_top = -32.0
+offset_right = 146.0
+offset_bottom = 145.0
+scale = Vector2(0.3, 0.3)
 theme_override_font_sizes/font_size = 150
 text = "(-,-)"
 

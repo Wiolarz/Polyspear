@@ -266,20 +266,52 @@ func do_local_travel(source : Vector2i, target : Vector2i) -> void:
 func start_combat( \
 		armies_ : Array[Army], \
 		combat_coord : Vector2i, \
-		battle_state : SerializableBattleState):
+		battle_state : SerializableBattleState = null):
 	"""
 	Starts a battle using Battle Manager (BM)
 	"""
 	print("start_combat")
+	#TODO verify with design if biggest army size code is needed
 	var biggest_army_size : int = 0
 	for army in armies_:
 		var army_size : int = army.units_data.size()
 		if biggest_army_size < army_size:
 			biggest_army_size = army_size
+	
+	# Swap neutral armies with different play controllers
+	# We assume that battles involving neutrals cannot contain number of unique team armies equal to number of teams in the game
+	#counting unique teams
+	var teams_present_in_battle : Array[int] = []
+	for army in armies_:
+		# neutral armies don't have army controller and they are neutral
+		# if more than two neutral armies are present in battle they oppose eachother
+		if army.controller and army.controller.team not in teams_present_in_battle:
+			teams_present_in_battle.append(army.controller.team)
+		
+	
+	#assigning players to control neutrals
+	var player_idx_to_control_neutral : int = WS.current_player_index
+	for army in armies_:
+		if army.controller: # we search only for neutral armies
+			continue
+		while not army.controller:
+			player_idx_to_control_neutral -= 1  # we look for previous player to play as neutrals
+			if player_idx_to_control_neutral == -1:  # Search from the end
+				player_idx_to_control_neutral = WS.player_states.size() - 1
+			# no need to verify if player has been assigned, as each neutral has to be controlled by unique team anyway.
+			var player : Player = WS.player_states[player_idx_to_control_neutral].controller
+			if player.team not in teams_present_in_battle:
+				#TODO refactor armies so that we have clear seperation from checking who can attack who, and who gets to control those units. Current getter for controller from faction may not be correct
+				army.faction = WS.player_states[player_idx_to_control_neutral] # Setting up the player to control the army
+				army.controller_index = player_idx_to_control_neutral # TEMP
+				teams_present_in_battle.append(player.team)
+
+
+	
 	combat_tile = combat_coord
 	var battle_map : DataBattleMap = WS.get_battle_map_at(combat_tile, biggest_army_size)
 	var x_offset = get_bounds_global_position().end.x + CFG.MAPS_OFFSET_X
-	BM.start_battle(armies_, battle_map, battle_state, x_offset)
+	BM.start_battle(armies_, battle_map, x_offset, battle_state)
 	UI.switch_camera()
 
 
@@ -332,6 +364,7 @@ func start_new_world(world_map : DataWorldMap) -> void:
 	world_ui.refresh_heroes()
 
 
+#STUB
 # this function probably should be divided into parts
 func start_world_in_state(world_map : DataWorldMap, \
 		serializable_WS : SerializableWorldState) -> void:
@@ -443,7 +476,7 @@ func callback_place_changed(coord : Vector2i) -> void:
 
 
 func callback_combat_started(armies_ : Array, coord_ : Vector2i) -> void:
-	start_combat(armies_, coord_, null)
+	start_combat(armies_, coord_)
 
 
 #endregion

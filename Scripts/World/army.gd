@@ -6,13 +6,15 @@ var units_data : Array[DataUnit]
 var hero : Hero
 
 var controller_index : int
-
+var is_neutral : bool = false
 
 var faction : Faction
 
 var controller : Player:
 	get:
-		return faction.controller
+		if faction:  # neutral armies don't have player assigned 
+			return faction.controller
+		return null
 
 
 var coord : Vector2i

@@ -169,7 +169,7 @@ func _start_game_battle(battle_state : SerializableBattleState,
 
 	UI.go_to_main_menu()
 	var x_offset = 0.0  # no world map to offset from
-	BM.start_battle(armies, map_data, battle_state, x_offset, replay_template)
+	BM.start_battle(armies, map_data, x_offset, battle_state, replay_template)
 
 
 ## Creates army based on player slot data
