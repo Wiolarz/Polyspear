@@ -489,13 +489,13 @@ func player_purchase(player_index : int, cost : Goods) -> bool:
 	return player_spend(player_index, cost)
 
 
-func player_spend(player_index : int, cost : Goods) -> bool:
-	var player = get_player_by_index(player_index)
+func player_spend(player_index : int, cost : Goods) -> bool: #TEMP remove this function from here
+	var player = WS.player_states[player_index]
 	if not player:
 		push_error("no player with this index, so cannot buy")
 		return false
-	if player.goods.has_enough(cost):
-		player.goods.subtract(cost)
+	if player._goods.has_enough(cost):
+		player._goods.subtract(cost)
 		return true
 	print("not enough money")
 	return false

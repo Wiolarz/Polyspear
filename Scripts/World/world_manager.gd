@@ -487,7 +487,7 @@ func callback_combat_started(armies_ : Array, coord_ : Vector2i) -> void:
 
 func cheat_money(new_wood : int = 100, new_iron : int = 100, new_ruby : int = 100) -> void:
 	# Add goods to the player
-	WS.get_current_player().goods.add(
+	WS.player_states[WS.current_player_index]._goods.add(
 		Goods.new(new_wood, new_iron, new_ruby)
 	)
 
@@ -515,7 +515,7 @@ func city_upgrade_cheat() -> void:
 	var current_player : Faction = WS.get_current_player()
 
 	# Iterate over every race building
-	for building in current_player.faction.race.buildings:
+	for building in current_player.race.buildings:
 		# Copied from build_building function
 		if not building.is_outpost_building():
 			world_ui.city_ui.city.buildings.append(building)

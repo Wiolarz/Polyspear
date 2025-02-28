@@ -721,7 +721,10 @@ func _on_battle_ended() -> void:
 		UI.ui_overlay.show_summary(_current_summary, _close_battle_and_return)
 
 
+## Ends battle in World game mode
 func _close_battle_and_return() -> void:
+	UI.switch_camera()  # switches camera back to world
+
 	var state_for_world = _battle_grid_state.armies_in_battle_state
 	
 	close_when_quiting_game()
@@ -736,7 +739,6 @@ func _close_battle_and_return() -> void:
 func _turn_off_battle_ui() -> void:
 	_painter_node.erase()
 	_battle_ui.hide()
-	UI.switch_camera()
 
 
 func _reset_grid_and_unit_forms() -> void:
