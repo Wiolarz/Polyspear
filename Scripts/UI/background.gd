@@ -12,6 +12,7 @@ func _ready() -> void:
 	_material.shader = load("res://Art/UI/background.gdshader")
 
 	_actual_background = Panel.new()
+	_actual_background.texture_repeat = CanvasItem.TEXTURE_REPEAT_MIRROR
 	_actual_background.add_theme_stylebox_override("panel", _style_box)
 	_actual_background.set_anchors_and_offsets_preset( \
 		Control.LayoutPreset.PRESET_FULL_RECT)
