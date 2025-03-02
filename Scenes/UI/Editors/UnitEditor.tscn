@@ -40,7 +40,7 @@ grow_vertical = 2
 
 [node name="Edition" type="PanelContainer" parent="HBoxContainer"]
 texture_filter = 2
-texture_repeat = 3
+texture_repeat = 2
 material = SubResource("ShaderMaterial_ea3xn")
 layout_mode = 2
 size_flags_horizontal = 3

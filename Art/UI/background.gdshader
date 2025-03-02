@@ -13,6 +13,6 @@ uniform vec2 scrollAmount = vec2(0.04, 0.04);
 uniform float multiplierAmount : hint_range(0.0, 0.1) = 0.05;
 
 void fragment() {
-	vec2 distortionUV = SCREEN_UV + texture(TEXTURE, UV + scrollAmount * TIME).r * multiplierAmount;
+	vec2 distortionUV = UV + texture(TEXTURE, UV + scrollAmount * TIME).r * multiplierAmount;
 	COLOR = mix(color1, color2, texture(TEXTURE, distortionUV).x);
 }
