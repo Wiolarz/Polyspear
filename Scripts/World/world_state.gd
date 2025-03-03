@@ -485,10 +485,6 @@ func do_build_building(coord : Vector2i, building : DataBuilding) -> bool:
 	return city.build_building(building)
 
 
-func player_purchase(player_index : int, cost : Goods) -> bool:
-	return player_spend(player_index, cost)
-
-
 func player_spend(player_index : int, cost : Goods) -> bool: #TEMP remove this function from here
 	var player = WS.player_states[player_index]
 	if not player:
@@ -566,29 +562,6 @@ func remove_army(army : Army) -> void:
 
 #region Place Interactions
 
-## returns if place is interacted
-## TODO consider what we should return here
-func interact_place(army : Army, coord : Vector2i) -> bool:
-	var place = get_place_at(coord)
-	if not place:
-		return false
-	place.interact(army)
-	print("unsupported place type to interact")
-	return false
-
-
-## returns if place is captured
-## TODO consider what we should return here
-func capture_place(player_index : int, coord : Vector2i) -> bool:
-	var place = get_place_at(coord)
-	if not place:
-		return false
-
-	place.capture(player_states[player_index])
-	print("unsupported place type to capture")
-	return false
-
-
 func _delete_outpost_buildings_if_needed(player_index : int) -> void:
 	var player = get_player_by_index(player_index)
 	if not player:
@@ -632,7 +605,7 @@ func do_army_travel(source : Vector2i, target : Vector2i) -> bool:
 
 	print("moving ", army," to ",target)
 	change_army_position(army, target)
-	interact_place(army, target)
+	get_place_at(target).interact(army)
 	return true
 
 

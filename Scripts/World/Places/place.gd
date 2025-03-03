@@ -9,18 +9,21 @@ const PATH_TODO_MOVE_TO_CONFIG = "res://Scripts/World/Places/"
 
 #TODO decide on whatever to use player reference or simply a reference to the controller faction
 
-var controller_index : int = -1  # network simplification
-var controller : Player:
-	set(new_owner):
-		controller = new_owner
-		controller_index = new_owner.index
+
 
 
 ## Controller Faction
-var faction : Faction:
+var faction : Faction
+var controller_index : int:  # network simplification
 	get:
-		return WS.player_states[controller_index]
-
+		if faction:
+			return faction.controller_index
+		return -1
+var controller : Player:
+	get:
+		if faction:
+			return faction.controller
+		return null
 
 var defender_army : Army
 var coord : Vector2i
@@ -53,8 +56,8 @@ func get_army_at_start() -> PresetArmy:
 	return null
 
 
-func interact(army : Army) -> void:
-	print(army)
+func interact(_army : Army) -> void:
+	pass
 
 
 ## this is overridden by other places and does nothing in empty places
@@ -70,7 +73,7 @@ func get_map_description() -> String:
 ## Overidable function [br]
 ## Faction is used to mark which player captures that tile [br]
 ## used in places like outpost (which acts like a mine)
-func capture(faction : Faction) -> void:
+func capture(_faction : Faction) -> void:
 	return
 
 

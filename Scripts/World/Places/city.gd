@@ -11,6 +11,7 @@ var buildings : Array[DataBuilding] = []
 
 func interact(army : Army) -> void:
 	if controller_index != army.controller_index:
+		#TODO add capturing of cities, (game end condition will be more complicated)
 		print("End of the game")
 		pass#world_state.win_game(army.controller_index)  # TEMP TODO FIX
 
@@ -89,7 +90,7 @@ func unit_has_required_building(unit : DataUnit) -> bool:
 func build_building(building : DataBuilding) -> bool:
 	if not can_build(building):
 		return false
-	if faction.player_purchase(building.cost):
+	if faction.try_to_pay(building.cost):
 		if not building.is_outpost_building():
 			buildings.append(building)
 		else:
@@ -140,21 +141,17 @@ func paste_specific_serializable_state(dict : Dictionary) -> void:
 
 
 static func create_place(coord_ : Vector2i, args : PackedStringArray) -> Place:
-	var player_index : int = -1
-	for i in range(args.size()):
-		if args[i].is_valid_int():
-			if player_index >= 0:
-				push_error("tried to set player index more than one time")
-				return
-			var value : int = args[i].to_int()
-			if value >= 0:
-				player_index = value
-		else:
-			push_error("unrecognised parameter: %s" % args[i])
-	
 	var result = City.new()
-	result.controller_index = player_index
-	# TODO move this somewhere else -- this should not be here
+
+
+	var player_index : int = -1
+	assert(args[0].is_valid_int(), "unrecognised parameter: %s" % args[0])
+	if args[0].to_int() >= 0:
+		player_index = args[0].to_int()
+		var faction : Faction = WS.player_states[player_index]
+		result.faction = faction
+		faction.cities.append(result)
+
 	result.coord = coord_
 	result.movable = true
 

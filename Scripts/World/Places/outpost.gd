@@ -53,9 +53,10 @@ func interact(army : Army) -> void:
 func capture(new_faction : Faction) -> void:
 	if faction: # if outpost had been occupied we need to remove previous player ownership first
 		faction.raised_outpost(self)
-
+	
 	faction = new_faction
 	new_faction.outposts.append(self)
+	controller_changed.emit()  # VISUAL set the flag color to match the new controller
 
 
 func on_end_of_round():
