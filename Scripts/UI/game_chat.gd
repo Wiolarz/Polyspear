@@ -38,7 +38,11 @@ func _exit_tree():
 
 func _process(delta : float):
 	# TODO move these inputs to some invisible button probably
-	if not just_submitted and Input.is_action_just_pressed("KEY_ACTIVATE_CHAT"):
+	var should_activate : bool = not just_submitted and \
+		is_visible_in_tree() and \
+		Input.is_action_just_pressed("KEY_ACTIVATE_CHAT")
+
+	if should_activate:
 		activate()
 	just_submitted = false
 	roll_entries(delta)
