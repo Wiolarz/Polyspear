@@ -31,7 +31,6 @@ func create(map : DataWorldMap,
 	for i in player_states.size():
 		player_states[i] = Faction.create_world_player_state(slots[i])
 		var player = player_states[i]
-		var slot = slots[i]
 		if not saved_state:
 			player.set_goods(CFG.get_start_goods())
 			continue
@@ -75,7 +74,7 @@ func create(map : DataWorldMap,
 				var loaded : Dictionary = saved_state.army_hexes[coord]
 				var army : Army = null
 				if loaded:
-					army = _deserialize_army_wip(loaded)
+					army = WS.deserialize_army_wip(loaded)
 				if army:
 					hex.army = army
 					army.coord = coord
@@ -392,7 +391,6 @@ func do_move(world_move_info : WorldMoveInfo) -> bool:
 			var target : Vector2i = world_move_info.target_tile_coord
 			return do_army_travel(source, target)
 		WorldMoveInfo.TYPE_RECRUIT_HERO:
-			var player_index : int = world_move_info.recruit_hero_info.player_index
 			var data_hero : DataHero = world_move_info.recruit_hero_info.data_hero
 			var coord : Vector2i = world_move_info.target_tile_coord
 			return do_recruit_hero(data_hero, coord)
@@ -428,15 +426,15 @@ func do_recruit_unit(data_unit : DataUnit, city_coord : Vector2i,
 		push_error(problem)
 		return false
 	var army : Army = get_army_at(army_coord)
-	var purchased : bool = player_spend(army.controller_index, data_unit.cost)
+	var purchased : bool = army.faction.try_to_pay(data_unit.cost)
 	assert(purchased)
 	army.units_data.append(data_unit)
 	return true
 
+
 ## returns army reference if success/legal, null otherwise
 func do_recruit_hero(data_hero : DataHero,
 		coord : Vector2i) -> bool:
-	
 	
 	var problem := check_recruit_hero(current_player_index, data_hero, coord)
 	if problem != "":
@@ -484,17 +482,6 @@ func do_build_building(coord : Vector2i, building : DataBuilding) -> bool:
 	var city := get_city_at(coord)
 	return city.build_building(building)
 
-
-func player_spend(player_index : int, cost : Goods) -> bool: #TEMP remove this function from here
-	var player = WS.player_states[player_index]
-	if not player:
-		push_error("no player with this index, so cannot buy")
-		return false
-	if player._goods.has_enough(cost):
-		player._goods.subtract(cost)
-		return true
-	print("not enough money")
-	return false
 
 #endregion City Economy
 
@@ -556,25 +543,8 @@ func remove_army(army : Army) -> void:
 	# think about when is this ref counted object destroyed
 	WM.callback_army_destroyed(army)
 
-
 #endregion Combat
 
-
-#region Place Interactions
-
-func _delete_outpost_buildings_if_needed(player_index : int) -> void:
-	var player = get_player_by_index(player_index)
-	if not player:
-		return
-	var new_array : Array[DataBuilding] = []
-	for upgrade in player.outpost_buildings:
-		for outpost in player.outposts:
-			if outpost.outpost_type == upgrade.outpost_requirement:
-				new_array.append(upgrade)
-				break
-	player.outpost_buildings = new_array
-
-#endregion Place Interactions
 
 #region Army Movement
 
@@ -631,7 +601,6 @@ func change_army_position(army : Army, target_coord : Vector2i) -> void:
 	WM.callback_army_updated(army)
 
 #endregion Army Movement
-
 
 #endregion Player Turn
 
@@ -745,7 +714,7 @@ func _get_serialized_army(army) -> Dictionary:
 	return army_dict
 
 
-static func _deserialize_army_wip(dict : Dictionary) -> Army:
+static func deserialize_army_wip(dict : Dictionary) -> Army:
 	var army : Army = Army.new()
 	army.controller_index = dict["player"]
 	if "hero" in dict:

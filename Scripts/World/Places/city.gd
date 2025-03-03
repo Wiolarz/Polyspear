@@ -4,16 +4,14 @@ extends Place
 
 var buildings : Array[DataBuilding] = []
 
-# ## when this is null, it should be replaced with controller's faction before
-# ## anything is done
-
-
 
 func interact(army : Army) -> void:
-	if controller_index != army.controller_index:
+	if faction.controller.team != army.controller.team:  # Enemy players enters the undefended city
 		#TODO add capturing of cities, (game end condition will be more complicated)
 		print("End of the game")
 		pass#world_state.win_game(army.controller_index)  # TEMP TODO FIX
+	if controller_index == army.controller_index:  # player enters his own city
+		army.heal_in_city()
 
 
 func on_end_of_round() -> void:
@@ -51,7 +49,7 @@ func can_buy_hero(hero : DataHero) -> bool:
 	var cost : Goods = faction.get_hero_cost(hero)
 	return faction.has_enough(cost)
 
-#endregion
+#endregion Heroes
 
 
 #region Units
@@ -86,7 +84,6 @@ func unit_has_required_building(unit : DataUnit) -> bool:
 
 #region Buildings
 
-# TODO consider moving it to world_state
 func build_building(building : DataBuilding) -> bool:
 	if not can_build(building):
 		return false
@@ -143,14 +140,13 @@ func paste_specific_serializable_state(dict : Dictionary) -> void:
 static func create_place(coord_ : Vector2i, args : PackedStringArray) -> Place:
 	var result = City.new()
 
-
 	var player_index : int = -1
 	assert(args[0].is_valid_int(), "unrecognised parameter: %s" % args[0])
 	if args[0].to_int() >= 0:
 		player_index = args[0].to_int()
-		var faction : Faction = WS.player_states[player_index]
-		result.faction = faction
-		faction.cities.append(result)
+		var owner_faction : Faction = WS.player_states[player_index]
+		result.faction = owner_faction
+		owner_faction.cities.append(result)
 
 	result.coord = coord_
 	result.movable = true
