@@ -1,15 +1,26 @@
-[gd_scene load_steps=9 format=3 uid="uid://dy1m42bfkq2wv"]
+[gd_scene load_steps=11 format=3 uid="uid://dy1m42bfkq2wv"]
 
 [ext_resource type="Script" path="res://Scripts/Development/unit_editor.gd" id="1_77kxj"]
 [ext_resource type="StyleBox" uid="uid://cr3cpjlxxfm4r" path="res://Art/UI/marble_box.tres" id="2_bfpmc"]
 [ext_resource type="Shader" path="res://Art/UI/background.gdshader" id="2_cswse"]
 [ext_resource type="PackedScene" uid="uid://sh62rfw7ulr8" path="res://Scenes/Form/UnitForm.tscn" id="3_yftbb"]
 [ext_resource type="Shortcut" uid="uid://fuvss5hfg4q2" path="res://Resources/Shortcuts/go_back.tres" id="4_bwq2j"]
+[ext_resource type="Shader" path="res://Art/tile_overall_shader.gdshader" id="5_0c0x6"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ea3xn"]
 shader = ExtResource("2_cswse")
 shader_parameter/color1 = Color(1, 1, 1, 1)
 shader_parameter/color2 = Color(0, 0.54902, 0.709804, 1)
+shader_parameter/scrollAmount = Vector2(0.04, 0.04)
+shader_parameter/multiplierAmount = 0.05
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ttf1t"]
+resource_local_to_scene = true
+shader = ExtResource("5_0c0x6")
+shader_parameter/highlight_intensity = 0.0
+shader_parameter/contrast_boost = 0.0
+shader_parameter/modulate_intensity = 0.0
+shader_parameter/modulate_color = Color(1, 1, 1, 1)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_nf1n4"]
 bg_color = Color(0.0235294, 0.227451, 0.372549, 1)
@@ -28,6 +39,8 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="Edition" type="PanelContainer" parent="HBoxContainer"]
+texture_filter = 2
+texture_repeat = 2
 material = SubResource("ShaderMaterial_ea3xn")
 layout_mode = 2
 size_flags_horizontal = 3
@@ -59,6 +72,7 @@ size_flags_vertical = 3
 layout_mode = 2
 
 [node name="UnitPreview" parent="HBoxContainer/Edition/VBoxContainer/Preview/Center" instance=ExtResource("3_yftbb")]
+material = SubResource("ShaderMaterial_ttf1t")
 scale = Vector2(0.4, 0.4)
 
 [node name="ChangeNW" type="OptionButton" parent="HBoxContainer/Edition/VBoxContainer/Preview/Center"]
