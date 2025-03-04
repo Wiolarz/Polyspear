@@ -9,6 +9,9 @@ const wood_materials = [[3,0,0], [6,0,0], [9,0,0]]
 const iron_materials = [[0,3,0], [0,6,0], [0,9,0]]
 const ruby_materials = [[0,0,3], [0,0,6], [0,0,9]]
 
+const RESPAWN_TIMER_READY_FOR_SPAWN = 0
+const RESPAWN_TIMER_INACTIVE = -1
+
 ## Setup Variables
 var neutral_armies : Array[PresetArmy]
 var material_rewards : Array[Goods] = []
@@ -21,7 +24,7 @@ var spawned_army : Army
 ## local variables
 var current_level : int = 0
 var _present_goods : Goods
-var _time_left_for_respawn : int = 0
+var _time_left_for_respawn : int = RESPAWN_TIMER_INACTIVE  # at start of the game army should be spawned automatically
 
 
 # func _init(units_sets_folder : String, new_material_rewards : Array[Goods]):
@@ -83,17 +86,18 @@ func get_army_at_start() -> PresetArmy:
 
 
 func interact(army : Army) -> void:
+	spawned_army = null  # clear defeated army
 	collect(army.faction)
 
 
 func on_end_of_round():
 	if spawned_army: # neutral army is alive
 		return
-	if _time_left_for_respawn == 0:
+	if _time_left_for_respawn == RESPAWN_TIMER_INACTIVE:
 		#  army was killed this turn -> start of respawn timer
 		_time_left_for_respawn = army_respawn_time
 		return
-	if _time_left_for_respawn == 1: # respawn timer finished
+	if _time_left_for_respawn == RESPAWN_TIMER_READY_FOR_SPAWN: # respawn timer finished
 		try_respawn()
 		return
 	_time_left_for_respawn -= 1
@@ -103,7 +107,7 @@ func try_respawn():
 	if WS.get_army_at(coord):
 		print("respawn failed @ ", coord)
 		return
-	if current_level < neutral_armies.size()-1:
+	if current_level < neutral_armies.size() - 1:
 		current_level += 1
 	WS.spawn_army_from_preset(neutral_armies[current_level], coord, \
 		-1)
