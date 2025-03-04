@@ -16,17 +16,6 @@ var controller : Player:
 			return faction.controller
 		return null
 
-
-
-var faction : Faction
-
-var controller : Player:
-	get:
-		if faction:  # neutral armies don't have player assigned 
-			return faction.controller
-		return null
-
-
 var coord : Vector2i
 
 
