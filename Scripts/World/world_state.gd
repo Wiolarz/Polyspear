@@ -74,7 +74,7 @@ func create(map : DataWorldMap,
 				var loaded : Dictionary = saved_state.army_hexes[coord]
 				var army : Army = null
 				if loaded:
-					army = WS.deserialize_army_wip(loaded)
+					army = deserialize_army_wip(loaded)
 				if army:
 					hex.army = army
 					army.coord = coord
@@ -287,9 +287,6 @@ func check_army_travel(source : Vector2i, target : Vector2i) -> String:
 		return "not enough movement points"
 	if not is_enemy_at(target, army.controller_index) and get_army_at(target):
 		return "cannot move into non-enemy army"
-	var city = get_city_at(target)
-	if city and city.controller_index != current_player_index:
-		return "sieges are not present yet"
 	return ""
 
 

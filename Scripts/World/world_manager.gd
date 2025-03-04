@@ -167,7 +167,7 @@ func input_try_select(coord) -> void:  #TODO "nothing is selected try to select 
 func try_interact(hero : ArmyForm, coord : Vector2i):
 	var start_coords = hero.coord
 	var city = WS.get_city_at(coord)
-	if city: # we start trade instead of travel
+	if city and city.controller_index == hero.entity.controller_index: # we start trade instead of travel
 		# there is separate button to move to city
 		trade_city(city)
 		return
@@ -207,7 +207,7 @@ func perform_world_move_info(world_move_info : WorldMoveInfo) -> void:
 	world_move_done.emit()
 
 
-func win_game(player: Player):
+func win_game(player : Player):
 	world_ui.show_you_win(player)
 
 

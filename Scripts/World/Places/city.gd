@@ -9,7 +9,7 @@ func interact(army : Army) -> void:
 	if faction.controller.team != army.controller.team:  # Enemy players enters the undefended city
 		#TODO add capturing of cities, (game end condition will be more complicated)
 		print("End of the game")
-		pass#world_state.win_game(army.controller_index)  # TEMP TODO FIX
+		WM.win_game(army.controller)  # TEMP
 	if controller_index == army.controller_index:  # player enters his own city
 		army.heal_in_city()
 
