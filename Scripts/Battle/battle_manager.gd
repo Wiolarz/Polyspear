@@ -62,7 +62,7 @@ func _process(_delta):
 ## x_offset is used to place battle to the right of world map
 ## replay_template - used in replays to avoid juggling player data
 func start_battle(new_armies : Array[Army], battle_map : DataBattleMap, \
-		battle_state : SerializableBattleState, x_offset : float,
+		x_offset : float, battle_state : SerializableBattleState, 
 		replay_template : BattleReplay = null) -> void:
 
 	assert(_is_clear(), "cannot start battle map, map already loaded")
@@ -102,7 +102,7 @@ func start_battle(new_armies : Array[Army], battle_map : DataBattleMap, \
 
 	var is_spectator = true
 	for player in IM.players:
-		if player.slot.is_local():
+		if player.is_local():
 			is_spectator = false
 	
 	if is_spectator and CFG.ENABLE_AUTO_BRAIN:
@@ -310,7 +310,7 @@ func grid_input(coord : Vector2i) -> void:
 		print("ai playing, input ignored")
 		return
 
-	if not current_player.slot.is_local():
+	if not current_player.is_local():
 		print("Attempt to play a move of an another player")
 		return
 
@@ -721,7 +721,10 @@ func _on_battle_ended() -> void:
 		UI.ui_overlay.show_summary(_current_summary, _close_battle_and_return)
 
 
+## Ends battle in World game mode
 func _close_battle_and_return() -> void:
+	UI.switch_camera()  # switches camera back to world
+
 	var state_for_world = _battle_grid_state.armies_in_battle_state
 	
 	close_when_quiting_game()
@@ -736,7 +739,6 @@ func _close_battle_and_return() -> void:
 func _turn_off_battle_ui() -> void:
 	_painter_node.erase()
 	_battle_ui.hide()
-	UI.switch_camera()
 
 
 func _reset_grid_and_unit_forms() -> void:

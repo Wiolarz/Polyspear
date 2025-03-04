@@ -6,6 +6,15 @@ var units_data : Array[DataUnit]
 var hero : Hero
 
 var controller_index : int
+var is_neutral : bool = false
+
+var faction : Faction
+
+var controller : Player:
+	get:
+		if faction:  # neutral armies don't have player assigned 
+			return faction.controller
+		return null
 
 var coord : Vector2i
 
@@ -45,7 +54,7 @@ func add_xp(gained_xp : int) -> void:
 		hero.add_xp(gained_xp)
 
 
-func on_end_of_turn(player_index : int):
+func on_end_of_round(player_index : int):
 	if player_index == controller_index and hero:
 		hero.movement_points = hero.max_movement_points
 

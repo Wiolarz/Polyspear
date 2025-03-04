@@ -9,16 +9,22 @@ const wood_materials = [[3,0,0], [6,0,0], [9,0,0]]
 const iron_materials = [[0,3,0], [0,6,0], [0,9,0]]
 const ruby_materials = [[0,0,3], [0,0,6], [0,0,9]]
 
+const RESPAWN_TIMER_READY_FOR_SPAWN = 0
+const RESPAWN_TIMER_INACTIVE = -1
+
 ## Setup Variables
 var neutral_armies : Array[PresetArmy]
 var material_rewards : Array[Goods] = []
 var army_respawn_time : int = 1 # in turns
 var hunt_spot_type : String
 
+## used to check if new army should respawn
+var spawned_army : Army
+
 ## local variables
 var current_level : int = 0
 var _present_goods : Goods
-var _time_left_for_respawn : int = 0
+var _time_left_for_respawn : int = RESPAWN_TIMER_INACTIVE  # at start of the game army should be spawned automatically
 
 
 # func _init(units_sets_folder : String, new_material_rewards : Array[Goods]):
@@ -30,7 +36,7 @@ var _time_left_for_respawn : int = 0
 # 	_present_goods = material_rewards[0].duplicate()
 
 
-static func create_place(args : PackedStringArray, coord_ : Vector2i) -> Place:
+static func create_place(coord_ : Vector2i, args : PackedStringArray) -> Place:
 	# if args.size() != 1:
 	# 	push_error("hunt spot needs exactly one argument to create")
 	var result := HuntSpot.new()
@@ -41,9 +47,7 @@ static func create_place(args : PackedStringArray, coord_ : Vector2i) -> Place:
 
 	# TODO move this somewhere else -- this should not be here
 	result.coord = coord_
-	result.current_level = 0
 	result.movable = true
-	result._time_left_for_respawn = 0
 
 	return result
 
@@ -76,38 +80,36 @@ func _set_type(type : String) -> bool:
 
 
 func get_army_at_start() -> PresetArmy:
-	if neutral_armies.size() > 0:
-		return neutral_armies[0]
-	return null
+	assert(neutral_armies.size() > 0, "Hunt Spot Resource Setup incorrectly")
+	return neutral_armies[0]
+	
 
 
-func interact(world_state : WorldState, army : Army) -> bool:
-	return collect(world_state, army.controller_index)
+func interact(army : Army) -> void:
+	spawned_army = null  # clear defeated army
+	collect(army.faction)
 
 
-func on_end_of_turn(world_state : WorldState):
-	var alive_army : Army = world_state.get_army_at(coord)
-	if alive_army and world_state.get_player(alive_army.controller_index):
-		alive_army = null
-	if alive_army != null: # neutral army is dead
+func on_end_of_round():
+	if spawned_army: # neutral army is alive
 		return
-	if _time_left_for_respawn == 0:
+	if _time_left_for_respawn == RESPAWN_TIMER_INACTIVE:
 		#  army was killed this turn -> start of respawn timer
 		_time_left_for_respawn = army_respawn_time
 		return
-	if _time_left_for_respawn == 1: # respawn timer finished
-		try_respawn(world_state)
+	if _time_left_for_respawn == RESPAWN_TIMER_READY_FOR_SPAWN: # respawn timer finished
+		try_respawn()
 		return
 	_time_left_for_respawn -= 1
 
 
-func try_respawn(world_state : WorldState):
-	if world_state.get_army_at(coord):
+func try_respawn():
+	if WS.get_army_at(coord):
 		print("respawn failed @ ", coord)
 		return
-	if current_level < neutral_armies.size()-1:
+	if current_level < neutral_armies.size() - 1:
 		current_level += 1
-	world_state.spawn_army_from_preset(neutral_armies[current_level], coord, \
+	WS.spawn_army_from_preset(neutral_armies[current_level], coord, \
 		-1)
 	_present_goods = material_rewards[current_level].duplicate()
 
@@ -116,13 +118,11 @@ func get_map_description() -> String:
 	return _present_goods.to_string_short("empty")
 
 
-func collect(world_state : WorldState, player_index : int) -> bool:
-	var player = world_state.get_player(player_index)
-	if not player:
-		return false
-	player.goods.add(_present_goods)
+func collect(raiding_faction : Faction) -> void:
+	# TODO change it so the resources are gathered from number of killed units,
+	# so even if the player looses he still can get some resource
+	raiding_faction.add_goods(_present_goods)
 	_present_goods.clear()
-	return true
 
 
 static func get_hunt_army_presets(folder_path : String) -> Array[PresetArmy]:

@@ -20,6 +20,7 @@ config/icon="res://Art/world_map/ruby_cave.png"
 
 CFG="*res://Scripts/General/config_manager.gd"
 BG="*res://Scripts/UI/background.gd"
+WS="*res://Scripts/World/world_state.gd"
 WM="*res://Scripts/World/world_manager.gd"
 BM="*res://Scripts/Battle/battle_manager.gd"
 IM="*res://Scripts/General/input_manager.gd"

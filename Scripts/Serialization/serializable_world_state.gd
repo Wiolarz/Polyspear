@@ -6,7 +6,7 @@ class PlayerState extends Resource:
 	@export var dead_heroes : Array[Dictionary]
 	@export var outpost_buildings : Array[String]
 	@export var armies : Array[Vector2i]
-	# TODO consider saving faction here
+	# TODO consider saving race here
 
 @export var army_hexes : Dictionary
 @export var place_hexes : Dictionary
