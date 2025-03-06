@@ -5,4 +5,5 @@
 [resource]
 script = ExtResource("1_6lcj8")
 name = "Death Mark"
-icon_path = "res://Art/items/blue_knife.png"
+icon_path = "res://Art/items/blue_axe.png"
+spell_effects = Array[ExtResource("1_6lcj8")]([])

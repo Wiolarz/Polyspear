@@ -5,4 +5,5 @@
 [resource]
 script = ExtResource("1_8g38n")
 name = "Fireball"
-icon_path = "res://Art/items/red_axe.png"
+icon_path = "res://Art/items/big_sword.png"
+spell_effects = Array[Resource("res://Scripts/Battle/battle_magic_effect.gd")]([])

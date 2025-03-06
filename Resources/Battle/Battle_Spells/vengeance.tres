@@ -6,5 +6,5 @@
 [resource]
 script = ExtResource("1_oxtud")
 name = "Vengeance"
-icon_path = "res://Art/items/blue_knife.png"
+icon_path = "res://Art/items/blue_axe.png"
 spell_effects = Array[Resource("res://Scripts/Battle/battle_magic_effect.gd")]([ExtResource("2_gmkfr")])

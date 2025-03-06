@@ -947,31 +947,45 @@ func capture_mana_well(hex : BattleHex, army : ArmyInBattleState):
 
 #region Magic
 
-## verify if spell can be casted
-func is_spell_target_valid(unit : Unit, coord : Vector2i, spell : BattleSpell) -> bool:
+## verifies if spell can be casted
+func is_spell_target_valid(caster : Unit, coord : Vector2i, spell : BattleSpell) -> bool:
 
 	match spell.name:
-		"Vengeance", "Shield": # any ally unit
+		"Vengeance": # any current player controlled unit
 			var target = get_unit(coord)
-			if target and target.controller == unit.controller:
+			if target and target.controller == caster.controller:
 				return true
-		"Martyr": # ally unit, but not the caster
+		"Martyr": # any current player controlled unit, but not the caster
 			var target = get_unit(coord)
-			if target and target.controller == unit.controller and target != unit:
+			if target and target.controller == caster.controller and target != caster:
 				return true
 		"Fireball": # any hex target is valid
 			return true
-		"Teleport": # tile in range that is in front of the caster
+		"Teleport", "Dash": # tile in range that is in front of the caster
 			if get_unit(coord) or not _get_battle_hex(coord).can_be_moved_to:  # tile has to be empty
 				return false
-			
-			if _is_faced_tile_in_range(unit.coord, coord, unit.unit_rotation, 3):
+			var spell_range : int = 1
+			match spell.name:
+				"Teleport":
+					spell_range = 3
+				"Dash": #STUB spell not yet implemented
+					spell_range = 1
+				_:
+					printerr("Unsupported spell range value")
+
+			if _is_faced_tile_in_range(caster.coord, coord, caster.unit_rotation, spell_range):
+				return true
+		
+		"Blood ritual":  # any enemy units #STUB
+			var target = get_unit(coord)
+			if target and target.controller.team != caster.controller.team:
 				return true
 		_:
 			printerr("Spell targeting not supported: ", spell.name)
 			return false
 
 	return false #TEMP
+
 
 ## spell takes an effect
 func _perform_magic(unit : Unit, target_tile_coord : Vector2i, spell : BattleSpell) -> void:
@@ -1031,6 +1045,9 @@ func _end_of_move_magic() -> void:
 		for unit : Unit in army.units:
 			for magic_effect in unit.effects:
 				match magic_effect.name:
+					"Blood ritual":
+						if army.units.size() == 1:
+							_kill_unit(unit)	
 					"Death Mark":
 						_kill_unit(unit)
 						break
@@ -1528,6 +1545,7 @@ class ArmyInBattleState:
 	var team : int = 0
 
 	var units_to_summon : Array[DataUnit] = []
+	## alive already summoned units
 	var units : Array[Unit] = []
 	## owned units that died during combat
 	var dead_units : Array[DataUnit] = []

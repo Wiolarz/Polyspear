@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="BattleSpell" load_steps=2 format=3 uid="uid://ctuxbjxwfy4h3"]
+
+[ext_resource type="Script" path="res://Scripts/Battle/battle_spell.gd" id="1_eiqgu"]
+
+[resource]
+script = ExtResource("1_eiqgu")
+name = "Blood ritual"
+icon_path = "res://Art/items/claws.png"
+spell_effects = Array[Resource("res://Scripts/Battle/battle_magic_effect.gd")]([])
