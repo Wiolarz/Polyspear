@@ -5,5 +5,5 @@
 [resource]
 script = ExtResource("1_kxq8m")
 name = "Martyr"
-icon_path = "res://Art/items/blue_axe.png"
+icon_path = "res://Art/items/pavise.png"
 spell_effects = Array[ExtResource("1_kxq8m")]([])

@@ -430,12 +430,13 @@ func _on_unit_summoned(unit : Unit) -> void:
 				if tile.type in ["1_player_spawn", "2_player_spawn", "3_player_spawn", "4_player_spawn"]:
 					tile.get_node("Sprite2D").texture = load("res://Art/battle_map/grass_tile.png")
 
+	unit.unit_magic_effect.connect(_on_unit_magic_effect.bind(unit))  # spell icons UI
 
-
+	# Animations
 	unit.unit_died.connect(form.anim_die)
 	unit.unit_turned.connect(form.anim_turn)
 	unit.unit_moved.connect(form.anim_move)
-	unit.unit_magic_effect.connect(form.anim_magic)
+	unit.unit_magic_effect.connect(form.anim_magic) # STUB
 	
 	unit.unit_is_pushing.connect(form.anim_symbol)
 	unit.unit_is_shooting.connect(form.anim_symbol)
