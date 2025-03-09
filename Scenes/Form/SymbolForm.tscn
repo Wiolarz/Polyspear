@@ -1,11 +1,11 @@
-[gd_scene load_steps=5 format=3 uid="uid://bc4yv21yc35fw"]
+[gd_scene load_steps=6 format=3 uid="uid://bc4yv21yc35fw"]
 
 [ext_resource type="Texture2D" uid="uid://hemq1q4l7xbk" path="res://Art/items/blue_axe.png" id="1_pef6c"]
 [ext_resource type="Texture2D" uid="uid://doskv82n8btte" path="res://Art/animations/empty_texture.tres" id="2_i4jbc"]
 [ext_resource type="Texture2D" uid="uid://dcfoqyj258cwm" path="res://Art/icon.svg" id="3_7i7x6"]
+[ext_resource type="Script" path="res://Resources/Battle/symbol_animation.gd" id="4_3babq"]
 
-[sub_resource type="SpriteFrames" id="SpriteFrames_1svh2"]
-resource_local_to_scene = true
+[sub_resource type="SpriteFrames" id="SpriteFrames_ueobs"]
 animations = [{
 "frames": [{
 "duration": 1.0,
@@ -21,6 +21,12 @@ animations = [{
 "name": &"default",
 "speed": 5.0
 }]
+script = ExtResource("4_3babq")
+offset = Vector2(0, 0)
+scale = Vector2(1, 1)
+hit_on_frame = 0
+teleport_at = 0
+teleport_offset = Vector2(0, 0)
 
 [node name="Base" type="Node2D"]
 
@@ -30,4 +36,4 @@ texture = ExtResource("1_pef6c")
 
 [node name="ActivationAnim" type="AnimatedSprite2D" parent="."]
 z_index = 100
-sprite_frames = SubResource("SpriteFrames_1svh2")
+sprite_frames = SubResource("SpriteFrames_ueobs")

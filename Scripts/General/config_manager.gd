@@ -41,6 +41,14 @@ enum GuiAnimationMode
 	MAX_ = FULL + 1,
 }
 
+## To pass as argument for symbol animations to use special behavior
+enum SymbolAnimationType
+{
+	MELEE_ATTACK,
+	BLOCK,
+	TELEPORTING_PROJECTILE,
+	COUNTER_ATTACK
+}
 #endregion
 
 ## battle map is placed this far to the right after world map bounds

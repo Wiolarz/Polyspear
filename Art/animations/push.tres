@@ -118,3 +118,4 @@ animations = [{
 script = ExtResource("1_yj8wf")
 offset = Vector2(0, 0)
 scale = Vector2(4, 4)
+hit_on_frame = 6
