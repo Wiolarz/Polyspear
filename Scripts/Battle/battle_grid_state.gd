@@ -301,9 +301,13 @@ func _process_offensive_symbols(unit : Unit) -> void:
 		var opposite_side := GenericHexGrid.opposite_direction(side)
 		var enemy_weapon = enemy.get_symbol(opposite_side)
 		if Unit.will_parry_occur(unit_weapon, enemy_weapon):
-			enemy.unit_is_blocking.emit(opposite_side)  # animation
+			# We check if parry even parries any attempt
+			if Unit.attack_power(unit_weapon) > 0:  # was there an attack attempt 
+				enemy.unit_is_blocking.emit(opposite_side)  # animation
+			elif Unit.can_it_push(unit_weapon):  # was there a push attempt
+				enemy.unit_is_blocking.emit(opposite_side)  # animation
+
 			continue  # parry disables all melee symbols
-			
 
 		# we check if attacking symbol power is able to kill
 		if Unit.does_attack_succeed(unit_weapon, enemy_weapon):
