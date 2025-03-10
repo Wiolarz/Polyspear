@@ -316,7 +316,7 @@ func _process_offensive_symbols(unit : Unit) -> void:
 			unit.unit_is_slashing.emit(side)  # animation
 			_kill_unit(enemy, armies_in_battle_state[current_army_index])
 			continue  # enemy unit died
-		else:
+		elif Unit.attack_power(unit_weapon) > 0:  # was there an attack attempt 
 			enemy.unit_is_blocking.emit(opposite_side)  # animation
 
 		# in case enemy defended against attack we check if attacker pushes away enemy
