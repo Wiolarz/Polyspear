@@ -263,17 +263,19 @@ func _should_die_to_counter_attack(unit : Unit) -> bool:
 		var opposite_side := GenericHexGrid.opposite_direction(side)
 		var enemy_symbol : E.Symbols = enemy.get_symbol(opposite_side)
 
+		if not Unit.does_it_counter_attack(enemy_symbol):  # DOES Counter Attack even occur?
+			continue
+
 		if Unit.will_parry_occur(enemy_symbol, unit_symbol):
 			unit.unit_is_blocking.emit(side)  # animation
 			continue  # parry prevents counter attacks
-		
-		if Unit.does_it_counter_attack(enemy_symbol):
-			if Unit.does_attack_succeed(enemy_symbol, unit_symbol):
-				# found killer
-				enemy.unit_is_counter_attacking.emit(opposite_side)  # animation
-				spear_holding_killer_teams.append(enemy.army_in_battle.team)
-			else:
-				unit.unit_is_blocking.emit(side)  # animation
+
+		if Unit.does_attack_succeed(enemy_symbol, unit_symbol):
+			# found killer
+			enemy.unit_is_counter_attacking.emit(opposite_side)  # animation
+			spear_holding_killer_teams.append(enemy.army_in_battle.team)
+		else:
+			unit.unit_is_blocking.emit(side)  # animation
 
 	if spear_holding_killer_teams.size() > 0:
 		return true
@@ -299,9 +301,9 @@ func _process_offensive_symbols(unit : Unit) -> void:
 		var opposite_side := GenericHexGrid.opposite_direction(side)
 		var enemy_weapon = enemy.get_symbol(opposite_side)
 		if Unit.will_parry_occur(unit_weapon, enemy_weapon):
-			continue  # parry disables all melee symbols
-		else:
 			enemy.unit_is_blocking.emit(opposite_side)  # animation
+			continue  # parry disables all melee symbols
+			
 
 		# we check if attacking symbol power is able to kill
 		if Unit.does_attack_succeed(unit_weapon, enemy_weapon):
