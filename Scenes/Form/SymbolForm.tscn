@@ -1,8 +1,9 @@
-[gd_scene load_steps=6 format=3 uid="uid://bc4yv21yc35fw"]
+[gd_scene load_steps=7 format=3 uid="uid://bc4yv21yc35fw"]
 
 [ext_resource type="Texture2D" uid="uid://hemq1q4l7xbk" path="res://Art/items/blue_axe.png" id="1_pef6c"]
 [ext_resource type="Texture2D" uid="uid://doskv82n8btte" path="res://Art/animations/empty_texture.tres" id="2_i4jbc"]
 [ext_resource type="Texture2D" uid="uid://dcfoqyj258cwm" path="res://Art/icon.svg" id="3_7i7x6"]
+[ext_resource type="Texture2D" uid="uid://cr7323ik8ktci" path="res://Art/evil_icon.png" id="3_akavx"]
 [ext_resource type="Script" path="res://Resources/Battle/symbol_animation.gd" id="4_3babq"]
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_ueobs"]
@@ -11,13 +12,27 @@ animations = [{
 "duration": 1.0,
 "texture": ExtResource("2_i4jbc")
 }, {
-"duration": 5.0,
-"texture": ExtResource("3_7i7x6")
+"duration": 20.0,
+"texture": ExtResource("3_akavx")
 }, {
 "duration": 1.0,
 "texture": ExtResource("2_i4jbc")
 }],
 "loop": false,
+"name": &"block",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_i4jbc")
+}, {
+"duration": 20.0,
+"texture": ExtResource("3_7i7x6")
+}, {
+"duration": 1.0,
+"texture": ExtResource("2_i4jbc")
+}],
+"loop": true,
 "name": &"default",
 "speed": 5.0
 }]
@@ -38,3 +53,4 @@ texture = ExtResource("1_pef6c")
 [node name="ActivationAnim" type="AnimatedSprite2D" parent="."]
 z_index = 100
 sprite_frames = SubResource("SpriteFrames_ueobs")
+animation = &"block"

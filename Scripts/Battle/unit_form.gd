@@ -240,12 +240,10 @@ func anim_symbol(side : int, animation_type : int, target_coord: Vector2i = Vect
 			# Play the blocking animation
 			subtween.tween_callback(symbol_activation_anim.play.bind("block"))
 			# Wait for it to finish
-			# TODO this delay is too short for some reason
-			subtween.tween_interval(
+			ANIM.main_tween().tween_interval(
+			#subtween.tween_interval(
 				get_absolute_frame_duration.call("block") *
 				 animation_frames.get_frame_count("block"))
-			# temporary solution
-			#subtween.tween_interval(1)
 			# Return to default position
 			var return_to_default_state = func return_to_default_state():
 				if symbol_activation_anim != null:
@@ -253,7 +251,8 @@ func anim_symbol(side : int, animation_type : int, target_coord: Vector2i = Vect
 					symbol_activation_anim.scale = animation_frames.scale
 				else:
 					printerr("ERROR, called block animation on freed unit: ", self)
-			subtween.tween_callback(return_to_default_state)
+			ANIM.main_tween().tween_callback(return_to_default_state)
+			#subtween.tween_callback(return_to_default_state)
 
 func anim_magic():
 	# TODO
