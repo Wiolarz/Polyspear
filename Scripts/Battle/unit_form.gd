@@ -149,6 +149,7 @@ func anim_move():
 	var target = BM.get_tile_global_position(entity.coord)
 	ANIM.main_tween().tween_property(self, "position", target, CFG.anim_move_duration)
 
+
 func anim_turn():
 	var time = CFG.anim_turn_duration
 	var angle_rel = angle_difference(rotation, deg_to_rad(entity.unit_rotation * 60))
@@ -158,14 +159,16 @@ func anim_turn():
 	_rotation_symbol_flip()
 	_flip_unit_sprite()
 
+
 func anim_die():
 	ANIM.main_tween().tween_property(self, "scale", Vector2.ZERO, CFG.anim_death_duration)
 	ANIM.main_tween().tween_callback(queue_free)
 
+
 func anim_symbol(side : int, animation_type : int, target_coord: Vector2i = Vector2i(0,0)):
 	var side_local : int = GenericHexGrid.rotate_clockwise( \
 			side as GenericHexGrid.GridDirections, -entity.unit_rotation)
-	var symbol = get_node("Symbols/%s/SymbolForm" % SIDE_NAMES[side_local])
+	var symbol : Node2D = get_node("Symbols/%s/SymbolForm" % SIDE_NAMES[side_local])
 	var symbol_sprite = symbol.get_node("Sprite2D")
 	var symbol_activation_anim = symbol.get_node("ActivationAnim")
 	var animation_frames: SymbolAnimation = symbol_activation_anim.sprite_frames
@@ -192,6 +195,7 @@ func anim_symbol(side : int, animation_type : int, target_coord: Vector2i = Vect
 			subtween.tween_callback(symbol_activation_anim.play.bind("default"))
 			hex_border_animation.call()
 			delay_death_animation.call(time_to_hit)
+
 		CFG.SymbolAnimationType.TELEPORTING_PROJECTILE:
 			subtween.tween_callback(symbol_activation_anim.play.bind("default"))
 			hex_border_animation.call()
@@ -207,8 +211,11 @@ func anim_symbol(side : int, animation_type : int, target_coord: Vector2i = Vect
 			projectile_animated_sprite.sprite_frames = projectile_animation_frames
 			projectile_animated_sprite.scale = projectile_animation_frames.scale
 			projectile_animated_sprite.reparent(target_tile)
-			projectile_animated_sprite.position = projectile_animation_frames.offset
-			projectile_animated_sprite.global_rotation = symbol.global_rotation
+			projectile_animated_sprite.global_rotation = deg_to_rad(side * 60)
+
+			var opposite_side : int = GenericHexGrid.opposite_direction(side)
+			projectile_animated_sprite.position = projectile_animation_frames.offset.rotated(deg_to_rad(opposite_side * 60))
+			
 			# Animate the thing
 			# First, wait for the moment the projectile should appear
 			# TODO this isn't perfect, ideally the order of evens should be as follows:
@@ -226,13 +233,14 @@ func anim_symbol(side : int, animation_type : int, target_coord: Vector2i = Vect
 			ANIM.main_tween().tween_callback(projectile_animated_sprite.play.bind("default"))
 			# Wait for the projectile to land
 			delay_death_animation.call(projectile_time_to_hit)
-			# Give the child cancer
+			# Start the projectile kill countdown
 			#This delay is too long
 			subtween.tween_interval(
 				projectile_animation_frames.get_frame_count("default") * 
 				projectile_absolute_frame_duration + time_to_teleport - projectile_time_to_hit
 			)
 			subtween.tween_callback(projectile_animated_sprite.queue_free)
+
 		CFG.SymbolAnimationType.BLOCK:
 			# Set the animated sprite to blocking
 			symbol_activation_anim.position = animation_frames.blocking_offset
@@ -253,6 +261,7 @@ func anim_symbol(side : int, animation_type : int, target_coord: Vector2i = Vect
 					printerr("ERROR, called block animation on freed unit: ", self)
 			ANIM.main_tween().tween_callback(return_to_default_state)
 			#subtween.tween_callback(return_to_default_state)
+
 
 func anim_magic():
 	# TODO
