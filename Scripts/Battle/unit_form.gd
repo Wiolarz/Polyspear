@@ -162,59 +162,64 @@ func anim_die():
 	ANIM.main_tween().tween_property(self, "scale", Vector2.ZERO, CFG.anim_death_duration)
 	ANIM.main_tween().tween_callback(queue_free)
 
-func anim_symbol(side : int, animation_type : int):
+func anim_symbol(side : int, animation_type : int, target_coord: Vector2i = Vector2i(0,0)):
 	var side_local : int = GenericHexGrid.rotate_clockwise( \
 			side as GenericHexGrid.GridDirections, -entity.unit_rotation)
 	var symbol = get_node("Symbols/%s/SymbolForm" % SIDE_NAMES[side_local])
 	var symbol_sprite = symbol.get_node("Sprite2D")
 	var symbol_activation_anim = symbol.get_node("ActivationAnim")
 	var animation_frames: SymbolAnimation = symbol_activation_anim.sprite_frames
-	var animation_name: String = symbol_activation_anim.animation
-	
-	#I honestly don't know what "playing_speed" means in this context
-	var absolute_frame_duration = animation_frames.get_frame_duration(
-		animation_name, animation_frames.hit_on_frame) / \
-		(animation_frames.get_animation_speed(animation_name) #* abs(playing_speed)
-	)
+	# I honestly don't know what "playing_speed" means in this context
+	var get_absolute_frame_duration = func(animated_sprite : AnimatedSprite2D) -> float:
+		var frames : SymbolAnimation = animated_sprite.sprite_frames
+		var anim_name : StringName = animated_sprite.animation
+		return frames.get_frame_duration(anim_name, 0) / frames.get_animation_speed(anim_name) #* abs(playing_speed)
+	var absolute_frame_duration = get_absolute_frame_duration.call(symbol_activation_anim)
 	var time_to_hit: float = animation_frames.hit_on_frame * absolute_frame_duration
-	#makes the death animation wait for the moment of impact (but makes multihits look way less cool)
+	# makes the death animation wait for the moment of impact (but makes multihits look way less cool)
+	# could be fixed by somehow detaching death animation from main tween
 	var delay_death_animation: Callable = ANIM.main_tween().tween_interval
 	
+	# Animation shared for all sybols
 	var subtween = ANIM.subtween()
 	subtween.tween_callback(symbol_activation_anim.play)
 	subtween.tween_property(symbol_sprite, "scale", CFG.anim_symbol_activation_scale, 0.0)
 	subtween.tween_property(symbol_sprite, "scale", Vector2(1.0, 1.0), CFG.anim_symbol_activation_duration)
+	# Type-specific animation
 	match animation_type:
 		CFG.SymbolAnimationType.MELEE_ATTACK:
 			delay_death_animation.call(time_to_hit)
 		CFG.SymbolAnimationType.COUNTER_ATTACK:
 			delay_death_animation.call(time_to_hit)
 		CFG.SymbolAnimationType.TELEPORTING_PROJECTILE:
-			# Shit just doesn't work
-			#var time_to_teleport: float = animation_frames.teleport_at * absolute_frame_duration
-			##TODO A way to actuall get this from here
-			#var target_pos: Vector2 = Vector2(0,0)
-			##Delay before teleporting
-			##subtween.tween_interval(time_to_teleport)
-			#delay_death_animation.call(time_to_teleport)
-			##Teleport
-			##subtween.tween_property(
-			#ANIM.main_tween().tween_property(
-				#symbol_activation_anim, "position",
-				#target_pos + animation_frames.teleport_offset, 0
-			#)
-			##Delay death until hit
-			#delay_death_animation.call(time_to_hit - time_to_teleport)
-			##Delay before returning to original pos
-			##delay_death_animation.call(animation_frames.get_frame_count(animation_name) * absolute_frame_duration - time_to_hit - time_to_teleport)
-			#subtween.tween_interval(animation_frames.get_frame_count(animation_name) * absolute_frame_duration - time_to_hit - time_to_teleport)
-			##Retun to original pos
-			##subtween.tween_property(
-			#ANIM.main_tween().tween_property(
-				#symbol_activation_anim, "position",
-				#animation_frames.offset, 0
-			#)
-			delay_death_animation.call(time_to_hit)
+			var target_tile : TileForm = BM.get_tile_form(target_coord)
+			print(target_coord)
+			var projectile_animation_frames : SymbolAnimation = animation_frames.projectile_animation_frames
+			# Create a temporary animated sprite for projectile
+			#TODO the rotations are fucked
+			var projectile_animated_sprite : AnimatedSprite2D = AnimatedSprite2D.new()
+			add_child(projectile_animated_sprite)
+			projectile_animated_sprite.sprite_frames = projectile_animation_frames
+			projectile_animated_sprite.scale = projectile_animation_frames.scale
+			projectile_animated_sprite.reparent(target_tile)
+			projectile_animated_sprite.position = projectile_animation_frames.offset
+			# Animate the thing
+			# First, wait for the moment the projectile should appear
+			var projectile_absolute_frame_duration : float = get_absolute_frame_duration.call(projectile_animated_sprite)
+			var projectile_time_to_hit : float = projectile_animation_frames.hit_on_frame * projectile_absolute_frame_duration
+			var time_to_teleport : float = animation_frames.teleport_at * projectile_absolute_frame_duration
+			subtween.tween_interval(time_to_teleport)
+			# Play it's animation
+			subtween.tween_callback(projectile_animated_sprite.play)
+			# Give the child cancer
+			var projectile_animation_name : StringName = projectile_animated_sprite.animation
+			subtween.tween_interval(
+				projectile_animation_frames.get_frame_count(projectile_animation_name) * 
+				projectile_absolute_frame_duration
+			)
+			subtween.tween_callback(projectile_animated_sprite.queue_free)
+			# Wait for the projectile to land
+			delay_death_animation.call(time_to_teleport + projectile_time_to_hit)
 
 
 func anim_magic():

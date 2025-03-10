@@ -371,7 +371,7 @@ func _process_bow(unit : Unit, side : int, weapon : E.Symbols) -> void:
 		target.unit_is_blocking.emit(opposite_side)  # animation
 		return  # blocked by shield
 
-	unit.unit_is_shooting.emit(side)  # animation
+	unit.unit_is_shooting.emit(side, CFG.SymbolAnimationType.TELEPORTING_PROJECTILE, target.coord)  # animation
 	_kill_unit(target, armies_in_battle_state[current_army_index])
 
 ## pushes enemy in non-relative direction, "power" tiles away [br]

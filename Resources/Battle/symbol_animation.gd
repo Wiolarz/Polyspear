@@ -7,7 +7,7 @@ extends SpriteFrames
 ##The frame of animation on witch the "hit" visually connects
 @export var hit_on_frame : int = 0
 @export_category("Teleporitng Projectile")
-##For teleporting projectiles. The frame at witch the animation should teleport
+##Projectile animation
+@export var projectile_animation_frames : SymbolAnimation
+##For teleporting projectiles. The frame at witch the projectile animation should play
 @export var teleport_at : int
-##Offset after teleporting
-@export var teleport_offset : Vector2

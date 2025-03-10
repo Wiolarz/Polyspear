@@ -26,7 +26,6 @@ offset = Vector2(0, 0)
 scale = Vector2(1, 1)
 hit_on_frame = 0
 teleport_at = 0
-teleport_offset = Vector2(0, 0)
 
 [node name="Base" type="Node2D"]
 

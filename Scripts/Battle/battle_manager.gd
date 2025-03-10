@@ -438,8 +438,11 @@ func _on_unit_summoned(unit : Unit) -> void:
 	unit.unit_magic_effect.connect(form.anim_magic)
 	
 	unit.unit_is_pushing.connect(form.anim_symbol.bind(CFG.SymbolAnimationType.MELEE_ATTACK))
-	#probably not the smartest solution to bind if other projectile animation types are going to be introduced
-	unit.unit_is_shooting.connect(form.anim_symbol.bind(CFG.SymbolAnimationType.TELEPORTING_PROJECTILE))
+	# probably not the smartest solution to bind if other projectile animation types are going to be introduced
+	# why does it have no bind like the rest? anim_symbol needed a new argument and
+	# I don't know how to bind a specific argument or if it's even how you should use bind,
+	# anyways right now animation type is passed directly when emiting the signal
+	unit.unit_is_shooting.connect(form.anim_symbol)
 	unit.unit_is_slashing.connect(form.anim_symbol.bind(CFG.SymbolAnimationType.MELEE_ATTACK))
 	unit.unit_is_blocking.connect(form.anim_symbol.bind(CFG.SymbolAnimationType.BLOCK))
 	unit.unit_is_counter_attacking.connect(form.anim_symbol.bind(CFG.SymbolAnimationType.MELEE_ATTACK))
