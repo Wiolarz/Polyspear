@@ -170,28 +170,31 @@ func anim_symbol(side : int, animation_type : int, target_coord: Vector2i = Vect
 	var symbol_activation_anim = symbol.get_node("ActivationAnim")
 	var animation_frames: SymbolAnimation = symbol_activation_anim.sprite_frames
 	# I honestly don't know what "playing_speed" means in this context
-	var get_absolute_frame_duration = func(animated_sprite : AnimatedSprite2D) -> float:
-		var frames : SymbolAnimation = animated_sprite.sprite_frames
-		var anim_name : StringName = animated_sprite.animation
-		return frames.get_frame_duration(anim_name, 0) / frames.get_animation_speed(anim_name) #* abs(playing_speed)
-	var absolute_frame_duration = get_absolute_frame_duration.call(symbol_activation_anim)
+	var get_absolute_frame_duration = func get_absolute_frame_duration(animation : StringName, frames : SymbolAnimation = animation_frames) -> float:
+		return frames.get_frame_duration(animation, 0) / frames.get_animation_speed(animation) #* abs(playing_speed)
+	var absolute_frame_duration = get_absolute_frame_duration.call("default")
 	var time_to_hit: float = animation_frames.hit_on_frame * absolute_frame_duration
 	# makes the death animation wait for the moment of impact (but makes multihits look way less cool)
 	# could be fixed by somehow detaching death animation from main tween
 	var delay_death_animation: Callable = ANIM.main_tween().tween_interval
 	
-	# Animation shared for all sybols
 	var subtween = ANIM.subtween()
-	subtween.tween_callback(symbol_activation_anim.play)
-	subtween.tween_property(symbol_sprite, "scale", CFG.anim_symbol_activation_scale, 0.0)
-	subtween.tween_property(symbol_sprite, "scale", Vector2(1.0, 1.0), CFG.anim_symbol_activation_duration)
+	var hex_border_animation = func hex_border_animation():
+		subtween.tween_property(symbol_sprite, "scale", CFG.anim_symbol_activation_scale, 0.0)
+		subtween.tween_property(symbol_sprite, "scale", Vector2(1.0, 1.0), CFG.anim_symbol_activation_duration)
 	# Type-specific animation
 	match animation_type:
 		CFG.SymbolAnimationType.MELEE_ATTACK:
+			subtween.tween_callback(symbol_activation_anim.play.bind("default"))
+			hex_border_animation.call()
 			delay_death_animation.call(time_to_hit)
 		CFG.SymbolAnimationType.COUNTER_ATTACK:
+			subtween.tween_callback(symbol_activation_anim.play.bind("default"))
+			hex_border_animation.call()
 			delay_death_animation.call(time_to_hit)
 		CFG.SymbolAnimationType.TELEPORTING_PROJECTILE:
+			subtween.tween_callback(symbol_activation_anim.play.bind("default"))
+			hex_border_animation.call()
 			var target_tile : TileForm = BM.get_tile_form(target_coord)
 			print(target_coord)
 			var projectile_animation_frames : SymbolAnimation = animation_frames.projectile_animation_frames
@@ -199,28 +202,58 @@ func anim_symbol(side : int, animation_type : int, target_coord: Vector2i = Vect
 			#TODO the rotations are fucked
 			var projectile_animated_sprite : AnimatedSprite2D = AnimatedSprite2D.new()
 			add_child(projectile_animated_sprite)
+			#idk if that's how to properly make it render on top of units
+			projectile_animated_sprite.z_index = 1
 			projectile_animated_sprite.sprite_frames = projectile_animation_frames
 			projectile_animated_sprite.scale = projectile_animation_frames.scale
 			projectile_animated_sprite.reparent(target_tile)
 			projectile_animated_sprite.position = projectile_animation_frames.offset
+			projectile_animated_sprite.global_rotation = symbol.global_rotation
 			# Animate the thing
 			# First, wait for the moment the projectile should appear
-			var projectile_absolute_frame_duration : float = get_absolute_frame_duration.call(projectile_animated_sprite)
+			# TODO this isn't perfect, ideally the order of evens should be as follows:
+			# The symbol animation plays, at time_to_teleport the projectile plays,
+			# at projectile_time_to_hit the target dies, then the shooter continues movement
+			# while an independent timer waits to kill the proj after it's entire animation plays
+			# Currently, shooter waits for the entire animation of the projectile to finish
+			# before moving, and the delay to kill the projectile is too long for some reason
+			var projectile_absolute_frame_duration : float = get_absolute_frame_duration.call("default", projectile_animation_frames)
 			var projectile_time_to_hit : float = projectile_animation_frames.hit_on_frame * projectile_absolute_frame_duration
-			var time_to_teleport : float = animation_frames.teleport_at * projectile_absolute_frame_duration
-			subtween.tween_interval(time_to_teleport)
+			var time_to_teleport : float = animation_frames.teleport_at * absolute_frame_duration
+			#subtween.tween_interval(time_to_teleport)
+			delay_death_animation.call(time_to_teleport)
 			# Play it's animation
-			subtween.tween_callback(projectile_animated_sprite.play)
+			ANIM.main_tween().tween_callback(projectile_animated_sprite.play.bind("default"))
+			# Wait for the projectile to land
+			delay_death_animation.call(projectile_time_to_hit)
 			# Give the child cancer
-			var projectile_animation_name : StringName = projectile_animated_sprite.animation
+			#This delay is too long
 			subtween.tween_interval(
-				projectile_animation_frames.get_frame_count(projectile_animation_name) * 
-				projectile_absolute_frame_duration
+				projectile_animation_frames.get_frame_count("default") * 
+				projectile_absolute_frame_duration + time_to_teleport - projectile_time_to_hit
 			)
 			subtween.tween_callback(projectile_animated_sprite.queue_free)
-			# Wait for the projectile to land
-			delay_death_animation.call(time_to_teleport + projectile_time_to_hit)
-
+		CFG.SymbolAnimationType.BLOCK:
+			# Set the animated sprite to blocking
+			symbol_activation_anim.position = animation_frames.blocking_offset
+			symbol_activation_anim.scale = animation_frames.blocking_scale
+			# Play the blocking animation
+			subtween.tween_callback(symbol_activation_anim.play.bind("block"))
+			# Wait for it to finish
+			# TODO this delay is too short for some reason
+			subtween.tween_interval(
+				get_absolute_frame_duration.call("block") *
+				 animation_frames.get_frame_count("block"))
+			# temporary solution
+			#subtween.tween_interval(1)
+			# Return to default position
+			var return_to_default_state = func return_to_default_state():
+				if symbol_activation_anim != null:
+					symbol_activation_anim.position = animation_frames.offset
+					symbol_activation_anim.scale = animation_frames.scale
+				else:
+					printerr("ERROR, called block animation on freed unit: ", self)
+			subtween.tween_callback(return_to_default_state)
 
 func anim_magic():
 	# TODO

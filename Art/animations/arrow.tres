@@ -97,7 +97,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_k7flb")
 }],
-"loop": true,
+"loop": false,
 "name": &"default",
 "speed": 24.0
 }]
@@ -106,3 +106,5 @@ offset = Vector2(-900, 0)
 scale = Vector2(3.25, 3.25)
 hit_on_frame = 6
 teleport_at = 0
+blocking_offset = Vector2(0, 0)
+blocking_scale = Vector2(1, 1)

@@ -155,4 +155,5 @@ offset = Vector2(-500, -200)
 scale = Vector2(4, 4)
 hit_on_frame = 6
 teleport_at = 0
-teleport_offset = Vector2(0, 0)
+blocking_offset = Vector2(0, 0)
+blocking_scale = Vector2(1, 1)

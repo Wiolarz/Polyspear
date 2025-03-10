@@ -44,7 +44,6 @@ enum GuiAnimationMode
 ## To pass as argument for symbol animations to use special behavior
 enum SymbolAnimationType
 {
-	# Use when this is bound
 	DEFAULT,
 	MELEE_ATTACK,
 	BLOCK,
