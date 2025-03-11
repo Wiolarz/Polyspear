@@ -179,7 +179,7 @@ func anim_symbol(side : int, animation_type : int, target_coord: Vector2i = Vect
 	var time_to_hit: float = animation_frames.hit_on_frame * absolute_frame_duration
 	# makes the death animation wait for the moment of impact (but makes multihits look way less cool)
 	# could be fixed by somehow detaching death animation from main tween
-	var delay_death_animation: Callable = ANIM.main_tween().tween_interval
+	var delay_main_tween: Callable = ANIM.main_tween().tween_interval
 	
 	var subtween = ANIM.subtween()
 	var hex_border_animation = func hex_border_animation():
@@ -190,20 +190,20 @@ func anim_symbol(side : int, animation_type : int, target_coord: Vector2i = Vect
 		CFG.SymbolAnimationType.MELEE_ATTACK:
 			subtween.tween_callback(symbol_activation_anim.play.bind("default"))
 			hex_border_animation.call()
-			delay_death_animation.call(time_to_hit)
+			delay_main_tween.call(time_to_hit)
+			
 		CFG.SymbolAnimationType.COUNTER_ATTACK:
 			subtween.tween_callback(symbol_activation_anim.play.bind("default"))
 			hex_border_animation.call()
-			delay_death_animation.call(time_to_hit)
+			delay_main_tween.call(time_to_hit)
 
 		CFG.SymbolAnimationType.TELEPORTING_PROJECTILE:
-			subtween.tween_callback(symbol_activation_anim.play.bind("default"))
 			hex_border_animation.call()
+			
 			var target_tile : TileForm = BM.get_tile_form(target_coord)
-			print(target_coord)
 			var projectile_animation_frames : SymbolAnimation = animation_frames.projectile_animation_frames
+			
 			# Create a temporary animated sprite for projectile
-			#TODO the rotations are fucked
 			var projectile_animated_sprite : AnimatedSprite2D = AnimatedSprite2D.new()
 			add_child(projectile_animated_sprite)
 			#idk if that's how to properly make it render on top of units
@@ -212,34 +212,27 @@ func anim_symbol(side : int, animation_type : int, target_coord: Vector2i = Vect
 			projectile_animated_sprite.scale = projectile_animation_frames.scale
 			projectile_animated_sprite.reparent(target_tile)
 			projectile_animated_sprite.global_rotation = deg_to_rad(side * 60)
-
 			var opposite_side : int = GenericHexGrid.opposite_direction(side)
 			projectile_animated_sprite.position = projectile_animation_frames.offset.rotated(deg_to_rad(opposite_side * 60))
 			
-			# Animate the thing
-			# First, wait for the moment the projectile should appear
-			# TODO this isn't perfect, ideally the order of evens should be as follows:
-			# The symbol animation plays, at time_to_teleport the projectile plays,
-			# at projectile_time_to_hit the target dies, then the shooter continues movement
-			# while an independent timer waits to kill the proj after it's entire animation plays
-			# Currently, shooter waits for the entire animation of the projectile to finish
-			# before moving, and the delay to kill the projectile is too long for some reason
 			var projectile_absolute_frame_duration : float = get_absolute_frame_duration.call("default", projectile_animation_frames)
 			var projectile_time_to_hit : float = projectile_animation_frames.hit_on_frame * projectile_absolute_frame_duration
 			var time_to_teleport : float = animation_frames.teleport_at * absolute_frame_duration
-			#subtween.tween_interval(time_to_teleport)
-			delay_death_animation.call(time_to_teleport)
-			# Play it's animation
-			ANIM.main_tween().tween_callback(projectile_animated_sprite.play.bind("default"))
-			# Wait for the projectile to land
-			delay_death_animation.call(projectile_time_to_hit)
-			# Start the projectile kill countdown
-			#This delay is too long
-			subtween.tween_interval(
-				projectile_animation_frames.get_frame_count("default") * 
-				projectile_absolute_frame_duration + time_to_teleport - projectile_time_to_hit
-			)
-			subtween.tween_callback(projectile_animated_sprite.queue_free)
+			
+			# Animate the thing
+			# V2
+			# Have a dedicated subtween
+			var proj_tween = ANIM.subtween()
+			# Start the shooting anim
+			proj_tween.tween_callback(symbol_activation_anim.play.bind("default"))
+			# Set the timer to play the projectile anim
+			proj_tween.tween_callback(projectile_animated_sprite.play.bind("default")).set_delay(time_to_teleport)
+			# Set the timer to kill the projectile
+			var proj_lifetime : float = projectile_animation_frames.get_frame_count("default") * \
+				projectile_absolute_frame_duration
+			proj_tween.tween_callback(projectile_animated_sprite.queue_free).set_delay(proj_lifetime)
+			# Delay gameplay (moving and killing, TODO NOT OTHER SYMBOLS)
+			delay_main_tween.call(time_to_teleport + projectile_time_to_hit)
 
 		CFG.SymbolAnimationType.BLOCK:
 			# Set the animated sprite to blocking
