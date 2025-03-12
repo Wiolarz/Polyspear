@@ -169,47 +169,67 @@ func anim_symbol(side : int, animation_type : int, target_coord: Vector2i = Vect
 	var side_local : int = GenericHexGrid.rotate_clockwise( \
 			side as GenericHexGrid.GridDirections, -entity.unit_rotation)
 	var symbol : Node2D = get_node("Symbols/%s/SymbolForm" % SIDE_NAMES[side_local])
-	var symbol_sprite = symbol.get_node("Sprite2D")
+	var symbol_sprite : Sprite2D = symbol.get_node("Sprite2D")
 	var symbol_activation_anim = symbol.get_node("ActivationAnim")
 	var animation_frames: SymbolAnimation = symbol_activation_anim.sprite_frames
 	
+	# Wasteful to declare if those aren't going to be used sometimes but eh
 	var absolute_frame_duration : float
 	var time_to_hit : float
+	var default_animation_duration : float
+	
 	# I honestly don't know what "playing_speed" means in this context
 	# TODO make animations respect fast-forward and anim speed
-
 	var get_absolute_frame_duration = func get_absolute_frame_duration(animation : StringName, frames : SymbolAnimation = animation_frames) -> float:
 		return frames.get_frame_duration(animation, 0) / frames.get_animation_speed(animation) #* abs(playing_speed)
-
+	
+	var get_animation_duration = func get_animation_duration(animation : StringName, frames : SymbolAnimation = animation_frames) -> float:
+		return frames.get_frame_count(animation) * get_absolute_frame_duration.call(animation, frames)
+	
 	# The if is a kind of duct tape solution to a potential non-critical error
 	if animation_frames.has_animation("default"):
 		absolute_frame_duration = get_absolute_frame_duration.call("default")
 		time_to_hit = animation_frames.hit_on_frame * absolute_frame_duration
+		default_animation_duration =  get_animation_duration.call("default")
 	
 	# makes the death animation wait for the moment of impact (but makes multihits look way less cool)
 	# could be fixed by somehow detaching death animation from main tween
 	var delay_main_tween: Callable = ANIM.main_tween().tween_interval
-
+	# The tween for everything that should happen parallel to gameplay
 	var anim_tween = ANIM.subtween()
-	# For now, let this exist as a separate thing for legacy animations
-	var subtween = ANIM.subtween()
-	var hex_border_animation = func hex_border_animation():
-		subtween.tween_property(symbol_sprite, "scale", CFG.anim_symbol_activation_scale, 0.0)
-		subtween.tween_property(symbol_sprite, "scale", Vector2(1.0, 1.0), CFG.anim_symbol_activation_duration)
+	anim_tween.set_trans(Tween.TRANS_LINEAR)
+	
+	# Had to turn off use_parent_material in SymbolForm for this to work
+	var fade_symbol_out = anim_tween.tween_property.bind(symbol_sprite,"modulate:a", 0, CFG.anim_symbol_fade_in_out_time)
+	var fade_symbol_in = anim_tween.tween_property.bind(symbol_sprite,"modulate:a", 1, CFG.anim_symbol_fade_in_out_time)
+			
 	# Type-specific animation
 	match animation_type:
 		CFG.SymbolAnimationType.MELEE_ATTACK:
-			subtween.tween_callback(symbol_activation_anim.play.bind("default"))
-			hex_border_animation.call()
-			delay_main_tween.call(time_to_hit)
+			# Fade out
+			fade_symbol_out.call()
+			# Play
+			anim_tween.tween_callback(symbol_activation_anim.play.bind("default"))
+			# Wait for anim end
+			anim_tween.tween_interval(default_animation_duration)
+			# Fade in
+			fade_symbol_in.call()
+			# Delay gameplay
+			delay_main_tween.call(time_to_hit + CFG.anim_symbol_fade_in_out_time)
 
 		CFG.SymbolAnimationType.COUNTER_ATTACK:
-			subtween.tween_callback(symbol_activation_anim.play.bind("counter"))
-			hex_border_animation.call()
-			delay_main_tween.call(time_to_hit)
+			# Fade out
+			fade_symbol_out.call()
+			# Play
+			anim_tween.tween_callback(symbol_activation_anim.play.bind("counter"))
+			# Wait for anim end
+			anim_tween.tween_interval(default_animation_duration)
+			# Fade it
+			fade_symbol_in.call()
+			# Delay gameplay
+			delay_main_tween.call(time_to_hit + CFG.anim_symbol_fade_in_out_time)
 
 		CFG.SymbolAnimationType.TELEPORTING_PROJECTILE:
-			hex_border_animation.call()
 			
 			var target_tile : TileForm = BM.get_tile_form(target_coord)
 			var projectile_animation_frames : SymbolAnimation = animation_frames.projectile_animation_frames
@@ -231,34 +251,39 @@ func anim_symbol(side : int, animation_type : int, target_coord: Vector2i = Vect
 			var time_to_teleport : float = animation_frames.teleport_at * absolute_frame_duration
 			
 			# Animate the thing
-			# V2
+			# Fade out
+			fade_symbol_out.call()
 			# Start the shooting anim
 			anim_tween.tween_callback(symbol_activation_anim.play.bind("default"))
 			# Set the timer to play the projectile anim
-			anim_tween.tween_callback(projectile_animated_sprite.play.bind("default")).set_delay(time_to_teleport)
+			anim_tween.tween_callback(projectile_animated_sprite.play.bind("default")).set_delay(time_to_teleport - CFG.anim_symbol_fade_in_out_time)
 			# Set the timer to kill the projectile
-			var proj_lifetime : float = projectile_animation_frames.get_frame_count("default") * \
-				projectile_absolute_frame_duration
+			var proj_lifetime : float = get_animation_duration.call("default", projectile_animation_frames)
 			anim_tween.tween_callback(projectile_animated_sprite.queue_free).set_delay(proj_lifetime)
-			# Delay gameplay (moving and killing, TODO NOT OTHER SYMBOLS)
-			delay_main_tween.call(time_to_teleport + projectile_time_to_hit)
+			# This should ideally happen just after the symbol animation plays entirely, but I can't be bothered rn TODO
+			# Fade in
+			fade_symbol_in.call()
+			# Delay gameplay
+			delay_main_tween.call(time_to_teleport + projectile_time_to_hit + CFG.anim_symbol_fade_in_out_time)
 
 		CFG.SymbolAnimationType.BLOCK:
 			# Set the animated sprite to blocking
 			anim_tween.tween_property(symbol_activation_anim, "position", animation_frames.blocking_offset, 0)
 			anim_tween.tween_property(symbol_activation_anim, "scale", animation_frames.blocking_scale, 0)
+			# Fade out
+			fade_symbol_out.call()
 			# Play the blocking animation
 			anim_tween.tween_callback(symbol_activation_anim.play.bind("block"))
 			# Wait for it to finish
-			var block_anim_duration : float = \
-				get_absolute_frame_duration.call("block") * \
-				animation_frames.get_frame_count("block")
+			var block_anim_duration : float = get_animation_duration.call("block")
 			anim_tween.tween_interval(block_anim_duration)
+			# Fade in
+			fade_symbol_in.call()
 			# Return to default position
 			anim_tween.tween_property(symbol_activation_anim, "position", animation_frames.offset, 0)
 			anim_tween.tween_property(symbol_activation_anim, "scale", animation_frames.scale, 0)
 			# Delay gameplay
-			delay_main_tween.call(block_anim_duration)
+			delay_main_tween.call(block_anim_duration + CFG.anim_symbol_fade_in_out_time)
 
 
 func anim_magic():
