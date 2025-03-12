@@ -268,6 +268,6 @@ offset = Vector2(300, 0)
 scale = Vector2(5, 5)
 hit_on_frame = 0
 projectile_animation_frames = ExtResource("2_xpgss")
-teleport_at = 35
+teleport_at = 30
 blocking_offset = Vector2(0, 0)
 blocking_scale = Vector2(1, 1)
