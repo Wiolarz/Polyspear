@@ -731,7 +731,8 @@ func _perform_move(unit : Unit, direction : int, target_tile_coord : Vector2i) -
 ## Spell effect:
 ## unit - that is going to move |
 ## target_title_coord - hex tile it's going to move toward (doesn't have to be adjacent)
-##  direction -
+##  direction - optional as martyr spell does not change uppon teleportation
+## martyr - optional parameter that determines if teleport was used to resolve martyr spell effect
 func _perform_teleport(unit : Unit, target_tile_coord : Vector2i, direction : int = -1, martyr : bool = false) -> void:
 	# TURN
 	if direction != -1:
@@ -739,12 +740,41 @@ func _perform_teleport(unit : Unit, target_tile_coord : Vector2i, direction : in
 		# No need to chceck for counter damage here as rotation happens
 		# "during" teleport so we care only about counter damage once we arrive
 		currently_processed_move_info.register_turning_complete()
+
 	# MOVE
 	_change_unit_coord(unit, target_tile_coord)
 	unit.move(target_tile_coord, _get_battle_hex(target_tile_coord))
 	currently_processed_move_info.register_locomote_complete()
 	if not martyr:
 		_process_symbols(unit)
+
+
+## Spell effect: [br]
+## unit - that is going to move |[br]
+## target_title_coord - hex tile it's going to move toward (has to be adjacent)[br]
+## power - parameter used for determining how many tiles unit moves
+func _perform_dash(unit : Unit, target_tile_coord : Vector2i, power : int = 3) -> void:
+	# TURN
+	var direction : int = GenericHexGrid.direction_to_adjacent(unit.coord, target_tile_coord)
+	assert(direction != GenericHexGrid.TILES_NOT_ADJACENT, "_perform_dash: Target tile was not adjascent")
+	unit.turn(direction)
+	# No need to chceck for counter damage here as rotation happens
+	# "during" teleport so we care only about counter damage once we arrive
+	currently_processed_move_info.register_turning_complete()
+
+	# MOVE
+	for dashed_distance in range(power):
+		if not _is_movable(target_tile_coord) or get_unit(target_tile_coord):
+			_kill_unit(unit)
+			return
+		_change_unit_coord(unit, target_tile_coord)
+		unit.move(target_tile_coord, _get_battle_hex(target_tile_coord))
+		target_tile_coord = GenericHexGrid.adjacent_coord(target_tile_coord, direction)
+		#currently_processed_move_info.register_locomote_complete() #TODO verify if needed
+		_process_offensive_symbols(unit)
+
+	if _should_die_to_counter_attack(unit):
+		_kill_unit(unit)
 
 
 ## changes coordinates of the unit ONLY (doesn't activate attack or anything like that)
@@ -960,14 +990,14 @@ func is_spell_target_valid(caster : Unit, coord : Vector2i, spell : BattleSpell)
 				return true
 		"Fireball": # any hex target is valid
 			return true
-		"Teleport", "Dash": # tile in range that is in front of the caster
+		"Teleport", "Wind Dash": # tile in range that is in front of the caster
 			if get_unit(coord) or not _get_battle_hex(coord).can_be_moved_to:  # tile has to be empty
 				return false
 			var spell_range : int = 1
 			match spell.name:
 				"Teleport":
 					spell_range = 3
-				"Dash": #STUB spell not yet implemented
+				"Wind Dash":
 					spell_range = 1
 				_:
 					printerr("Unsupported spell range value")
@@ -1031,6 +1061,9 @@ func _perform_magic(unit : Unit, target_tile_coord : Vector2i, spell : BattleSpe
 		"Teleport":
 			_perform_teleport(unit, target_tile_coord)
 
+		"Wind Dash":
+			_perform_dash(unit, target_tile_coord)
+
 		_:
 			printerr("Spell perform not supported: ", spell.name)
 			return
@@ -1042,6 +1075,8 @@ func _perform_magic(unit : Unit, target_tile_coord : Vector2i, spell : BattleSpe
 ## runs for all units
 func _end_of_move_magic() -> void:
 	for army in armies_in_battle_state:
+		if not battle_is_ongoing(): #TODO verify if thats a proper fix for spell combination, which results in a draw
+			return
 		for unit : Unit in army.units:
 			for magic_effect in unit.effects:
 				match magic_effect.name:
