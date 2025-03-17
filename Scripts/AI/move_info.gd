@@ -164,7 +164,6 @@ class KilledUnit:
 		result.coord = coord
 		result.template = template
 		result.unit_rotation = unit_rotation
-		result.army_idx = army_idx
 		return result
 
 

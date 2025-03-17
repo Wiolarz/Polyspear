@@ -6,15 +6,6 @@ var per_turn : Goods
 
 
 
-class Jednostka:
-	var owner : army
-
-class army:
-	var units : Array[Jednostka]
-
-
-
-
 func _init(start : Goods, gain_per_turn : Goods):
 	accumulated_goods = start.duplicate()
 	per_turn = gain_per_turn.duplicate()

@@ -277,8 +277,8 @@ func undo() -> void:
 
 	cancel_pending_ai_move()
 
-	var last_move := _replay_data.moves.pop_back() as MoveInfo
-	var new_units = _battle_grid_state.undo(last_move)
+	var last_move : MoveInfo = _replay_data.moves.pop_back()
+	var new_units : Array[Unit] = _battle_grid_state.undo(last_move)
 	for n in new_units:
 		_on_unit_summoned(n)
 	_battle_ui.refresh_after_undo(_battle_grid_state.is_during_summoning_phase())

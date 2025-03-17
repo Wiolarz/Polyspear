@@ -14,7 +14,7 @@ config/name="Polyspear"
 config/version="0.2.0"
 run/main_scene="res://Scenes/MainScene.tscn"
 config/features=PackedStringArray("4.2", "GL Compatibility")
-config/icon="res://Art/world_map/ruby_cave.png"
+config/icon="res://Art/elf_hero_noble.png"
 
 [autoload]
 

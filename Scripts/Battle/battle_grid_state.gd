@@ -163,7 +163,7 @@ func move_info_execute(move_info : MoveInfo) -> void:
 ## used only by BM.undo()
 ## returns array of revived units
 func undo(move_info : MoveInfo) -> Array[Unit]:
-	var result : Array[Unit] = []
+	var killed_units : Array[Unit] = []
 	if move_info.move_type == MoveInfo.TYPE_SUMMON:
 		current_army_index = move_info.army_idx
 		armies_in_battle_state[current_army_index].unsummon(move_info.target_tile_coord)
@@ -177,22 +177,22 @@ func undo(move_info : MoveInfo) -> Array[Unit]:
 		var actions_to_undo = move_info.actions_list.duplicate()
 		# last action should be reversed first, else bugs will be created
 		actions_to_undo.reverse()
-		for a in actions_to_undo:
-			if a is MoveInfo.KilledUnit:
-				var u = _undo_kill(move_info, a)
-				result.append(u)
-			elif a is MoveInfo.PushedUnit:
-				_undo_push(move_info, a)
-			elif a is MoveInfo.LocomotionCompleted:
+		for action in actions_to_undo:
+			if action is MoveInfo.KilledUnit:
+				var killed_unit = _undo_kill(move_info, action)
+				killed_units.append(killed_unit)
+			elif action is MoveInfo.PushedUnit:
+				_undo_push(move_info, action)
+			elif action is MoveInfo.LocomotionCompleted:
 				_undo_main_locomotion(move_info)
 			else :
-				push_error("unknown action type %s - %s"%[a.get_class(), str(a)])
+				push_error("unknown action type %s - %s"%[action.get_class(), str(action)])
 
 		# revert turn
 		var unit := get_unit(move_info.move_source)
 		unit.turn(move_info.original_rotation)
 
-	return result
+	return killed_units
 
 
 func _undo_main_locomotion(move_info : MoveInfo) -> void:
@@ -202,10 +202,10 @@ func _undo_main_locomotion(move_info : MoveInfo) -> void:
 	m_unit.move(move_info.move_source, m_hex)
 
 
-func _undo_kill(_move: MoveInfo , killed : MoveInfo.KilledUnit) -> Unit:
-	var u := armies_in_battle_state[killed.army_idx].revive(killed)
-	_put_unit_on_grid(u, u.coord)
-	return u
+func _undo_kill(_move : MoveInfo , killed : MoveInfo.KilledUnit) -> Unit:
+	var unit : Unit = armies_in_battle_state[killed.army_idx].revive(killed)
+	_put_unit_on_grid(unit, unit.coord)
+	return unit
 
 
 func _undo_push(_move : MoveInfo , pushed : MoveInfo.PushedUnit) -> void:
@@ -1609,7 +1609,9 @@ class ArmyInBattleState:
 
 	func revive(kill_info : MoveInfo.KilledUnit) -> Unit:
 		var unit = kill_info.respawn()
-		unit.controller = army_reference.controller
+		unit.controller = IM.get_player_by_index(controller_idx)
+		unit.army_in_battle = self
+		#army_reference.controller
 		dead_units.erase(unit.template)
 		units.append(unit)
 		return unit
