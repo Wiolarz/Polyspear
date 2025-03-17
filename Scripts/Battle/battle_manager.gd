@@ -258,8 +258,6 @@ func _on_turn_started(player : Player) -> void:
 			latest_ai_cancel_token = null
 
 
-
-
 func perform_network_move(move_info : MoveInfo) -> void:
 	_perform_move_info(move_info)
 
@@ -278,9 +276,11 @@ func undo() -> void:
 	cancel_pending_ai_move()
 
 	var last_move : MoveInfo = _replay_data.moves.pop_back()
-	var new_units : Array[Unit] = _battle_grid_state.undo(last_move)
-	for n in new_units:
-		_on_unit_summoned(n)
+	var revived_units : Array[Unit] = _battle_grid_state.undo(last_move)
+
+	# VISUALS
+	for unit in revived_units:
+		_on_unit_summoned(unit)  # revive
 	_battle_ui.refresh_after_undo(_battle_grid_state.is_during_summoning_phase())
 	_end_move()
 

@@ -46,9 +46,9 @@ func _init(width_ : int, height_ : int):
 static func create(map : DataBattleMap, new_armies : Array[Army]) -> BattleGridState:
 	var result := BattleGridState.new(map.grid_width, map.grid_height)
 
-	for army in new_armies:
-		var new_army_in_battle = ArmyInBattleState.create_from(army, result)
-		var player = IM.get_player_by_index(army.controller_index)
+	for army : Army in new_armies:
+		var new_army_in_battle := ArmyInBattleState.create_from(army, result)
+		var player := IM.get_player_by_index(army.controller_index)
 		new_army_in_battle.team = player.team  # shortcut, to make
 		result.armies_in_battle_state.append(new_army_in_battle)
 
@@ -1512,8 +1512,6 @@ class ArmyInBattleState:
 
 	var army_reference : Army
 	
-	## basic idx reference to who can move its units
-	var controller_idx : int
 	## basic idx reference to which units are allies
 	var team : int
 
@@ -1609,7 +1607,7 @@ class ArmyInBattleState:
 
 	func revive(kill_info : MoveInfo.KilledUnit) -> Unit:
 		var unit = kill_info.respawn()
-		unit.controller = IM.get_player_by_index(controller_idx)
+		unit.controller = IM.get_player_by_index(army_reference.controller_index)
 		unit.army_in_battle = self
 		#army_reference.controller
 		dead_units.erase(unit.template)

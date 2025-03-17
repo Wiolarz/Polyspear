@@ -11,9 +11,8 @@ const VISUAL_EMPTY_BORDER = 20.0 # Hex Sprite draw gaps
 
 const TILE_OFFSET_HORIZONTAL_PER_X : float = (1730) + VISUAL_EMPTY_BORDER # current sprite size 529
 const TILE_OFFSET_HORIZONTAL_PER_Y : float = TILE_OFFSET_HORIZONTAL_PER_X / 2
-const TILE_OFFSET_VERTICAL_PER_Y : float = (1993 + VISUAL_EMPTY_BORDER) * 0.75 # 608
-#1730
-#1993
+const TILE_OFFSET_VERTICAL_PER_Y : float = (1993 + VISUAL_EMPTY_BORDER) * 0.75
+
 func to_position(coord : Vector2i) -> Vector2:
 	var horizontal = coord.x * TILE_OFFSET_HORIZONTAL_PER_X
 	horizontal += coord.y * TILE_OFFSET_HORIZONTAL_PER_Y
