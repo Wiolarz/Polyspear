@@ -188,13 +188,17 @@ func anim_symbol(side : int, animation_type : int, target_coord: Vector2i = Vect
 	
 	var symbol : Node2D = get_node("Symbols/%s/SymbolForm" % SIDE_NAMES[side_local])
 	var symbol_sprite : Sprite2D = symbol.get_node("Sprite2D")
-	var symbol_activation_anim = symbol.get_node("ActivationAnim")
+	var symbol_activation_anim : AnimatedSprite2D = symbol.get_node("ActivationAnim")
 	
-	var opposite_side_local = GenericHexGrid.opposite_direction(side_local)
 	var other_unit : UnitForm = BM.get_unit_form(target_coord)
+	var opposite_side_local : int = GenericHexGrid.rotate_clockwise(
+		GenericHexGrid.opposite_direction(side) as GenericHexGrid.GridDirections,
+		-other_unit.entity.unit_rotation
+	)
+	
 	var other_symbol : Node2D = other_unit.get_node("Symbols/%s/SymbolForm" % SIDE_NAMES[opposite_side_local])
 	var other_symbol_sprite : Sprite2D = other_symbol.get_node("Sprite2D")
-	var other_symbol_anim = other_symbol.get_node("ActivationAnim")
+	var other_symbol_anim : AnimatedSprite2D  = other_symbol.get_node("ActivationAnim")
 	
 	# TODO animation delay makes the death animation wait for 
 	# the moment of impact (but makes multihits look way less cool)
@@ -203,11 +207,30 @@ func anim_symbol(side : int, animation_type : int, target_coord: Vector2i = Vect
 	match animation_type:
 		CFG.SymbolAnimationType.MELEE_ATTACK, CFG.SymbolAnimationType.COUNTER_ATTACK:
 			_anim_symbol_melee(symbol_sprite, symbol_activation_anim, animation_type)
+		
 		CFG.SymbolAnimationType.TELEPORTING_PROJECTILE:
-			_anim_symbol_teleporting_projectile(symbol_sprite, symbol_activation_anim,target_coord, side)
+			_anim_symbol_teleporting_projectile(
+				symbol_sprite, 
+				symbol_activation_anim,
+				target_coord, 
+				side
+			)
+			
 		CFG.SymbolAnimationType.BLOCK:
+			var block_anim_duration : float = get_animation_duration(
+				symbol_activation_anim.sprite_frames, "block"
+			)
+			
+			_anim_symbol_melee(
+				other_symbol_sprite, 
+				other_symbol_anim, 
+				CFG.SymbolAnimationType.MELEE_ATTACK,
+				block_anim_duration
+			)
+			
 			_anim_symbol_block(symbol_sprite, symbol_activation_anim)
-		CFG.SymbolAnimationType.DEFAULT:
+			
+		_:
 			assert(false, "Unimplemented animation type")
 
 
@@ -221,7 +244,7 @@ static func _fade_symbol_out(anim_tween : Tween, sprite : Sprite2D):
 
 static func _anim_symbol_melee(
 		my_symbol_sprite : Sprite2D, my_symbol_animation : AnimatedSprite2D, 
-		type : CFG.SymbolAnimationType
+		type : CFG.SymbolAnimationType, time_to_block : float = 0.0
 		):
 	
 	var anim_tween = ANIM.subtween()
@@ -236,21 +259,37 @@ static func _anim_symbol_melee(
 		CFG.SymbolAnimationType.COUNTER_ATTACK:
 			animation_name = "counter"
 	
+	var time_to_hit = get_time_to_hit(frames, animation_name) + CFG.anim_symbol_fade_in_out_time
+	
 	assert(frames.has_animation(animation_name), 
 		"Missing %s animation from %s" % [animation_name, frames.resource_path] )
 	
-	# Fade out
 	_fade_symbol_out(anim_tween, my_symbol_sprite)
-	# Play
-	anim_tween.tween_callback(my_symbol_animation.play.bind(animation_name))
-	# Wait for anim end
-	anim_tween.tween_interval(get_animation_duration(frames, animation_name))
-	# Fade in
+	if time_to_block < 0.01: # killing attack
+		# Play
+		anim_tween.tween_callback(my_symbol_animation.play.bind(animation_name))
+		# Wait for anim end
+		anim_tween.tween_interval(get_animation_duration(frames, animation_name))
+	else: # blocked attack - stop animation after block time
+		# TODO - what about when time to block is less than time to hit?
+		# maybe implement a similar thing in _anim_symbol_block
+		
+		# wait so that weapon hit and block are synchronized
+		anim_tween.tween_interval(max(0, time_to_block - time_to_hit))
+		anim_tween.tween_callback(my_symbol_animation.play.bind(animation_name))
+		anim_tween.tween_interval(max(0, time_to_hit))
+		anim_tween.tween_callback(my_symbol_animation.pause)
+		anim_tween.tween_property(my_symbol_animation, "modulate:a", 0, CFG.anim_symbol_fade_in_out_time)
+		# Reset to known state
+		anim_tween.tween_callback(my_symbol_animation.stop)
+		anim_tween.tween_property(my_symbol_animation, "modulate:a", 1, 0)
+	
 	_fade_symbol_in(anim_tween, my_symbol_sprite)
 	
-	# Delay gameplay
-	var time_to_hit = get_time_to_hit(frames, animation_name) + CFG.anim_symbol_fade_in_out_time
-	ANIM.main_tween().tween_interval(time_to_hit)
+	# Delay gameplay - only for killing attacks
+	# blocked attacks are delayed by _anim_symbol_block
+	if time_to_block < 0.01:
+		ANIM.main_tween().tween_interval(time_to_hit)
 
 
 func _anim_symbol_teleporting_projectile(
