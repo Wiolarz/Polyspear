@@ -165,20 +165,6 @@ func anim_die():
 	ANIM.main_tween().tween_callback(queue_free)
 
 
-# TODO make animations respect fast-forward and anim speed
-static func get_absolute_frame_duration(frames : SymbolAnimation, animation : StringName) -> float:
-	return frames.get_frame_duration(animation, 0) / frames.get_animation_speed(animation)
-
-static func get_animation_duration(frames : SymbolAnimation, animation : StringName) -> float:
-	return frames.get_frame_count(animation) * get_absolute_frame_duration(frames, animation)
-
-static func get_time_to_hit(frames : SymbolAnimation, animation : StringName) -> float:
-	return frames.hit_on_frame * get_absolute_frame_duration(frames, animation)
-
-static func get_time_to_teleport(frames : SymbolAnimation, animation : StringName) -> float:
-	return frames.teleport_at * get_absolute_frame_duration(frames, animation)
-
-
 func anim_symbol(side : int, animation_type : int, target_coord: Vector2i = Vector2i.ZERO):
 	var side_local : int = GenericHexGrid.rotate_clockwise(
 		side as GenericHexGrid.GridDirections, -entity.unit_rotation
@@ -217,9 +203,8 @@ func anim_symbol(side : int, animation_type : int, target_coord: Vector2i = Vect
 			)
 			
 		CFG.SymbolAnimationType.BLOCK:
-			var block_anim_duration : float = get_animation_duration(
-				symbol_activation_anim.sprite_frames, "block"
-			)
+			var block_anim_duration : float \
+				= symbol_activation_anim.sprite_frames.get_animation_duration("block")
 			
 			_anim_symbol_melee(
 				other_symbol_sprite, 
@@ -259,7 +244,7 @@ static func _anim_symbol_melee(
 		CFG.SymbolAnimationType.COUNTER_ATTACK:
 			animation_name = "counter"
 	
-	var time_to_hit = get_time_to_hit(frames, animation_name) + CFG.anim_symbol_fade_in_out_time
+	var time_to_hit = frames.get_time_to_hit(animation_name) + CFG.anim_symbol_fade_in_out_time
 	
 	assert(frames.has_animation(animation_name), 
 		"Missing %s animation from %s" % [animation_name, frames.resource_path] )
@@ -269,7 +254,7 @@ static func _anim_symbol_melee(
 		# Play
 		anim_tween.tween_callback(my_symbol_animation.play.bind(animation_name))
 		# Wait for anim end
-		anim_tween.tween_interval(get_animation_duration(frames, animation_name))
+		anim_tween.tween_interval(frames.get_animation_duration(animation_name))
 	else: # blocked attack - stop animation after block time
 		# TODO - what about when time to block is less than time to hit?
 		# maybe implement a similar thing in _anim_symbol_block
@@ -317,7 +302,7 @@ func _anim_symbol_teleporting_projectile(
 	var opposite_side : int = GenericHexGrid.opposite_direction(side)
 	projectile_animated_sprite.position = projectile_animation_frames.offset.rotated(deg_to_rad(opposite_side * 60))
 	
-	var projectile_absolute_frame_duration : float = get_absolute_frame_duration(projectile_animation_frames, "default")
+	var projectile_absolute_frame_duration : float = projectile_animation_frames.get_absolute_frame_duration("default")
 	var projectile_time_to_hit : float = projectile_animation_frames.hit_on_frame * projectile_absolute_frame_duration
 	
 	# Animate the thing
@@ -326,12 +311,12 @@ func _anim_symbol_teleporting_projectile(
 	# Start the shooting anim
 	anim_tween.tween_callback(my_symbol_animation.play.bind("default"))
 	# Set the timer to play the projectile anim
-	var time_to_teleport = get_time_to_teleport(frames, "default")
+	var time_to_teleport = frames.get_time_to_teleport("default")
 	anim_tween.tween_callback(projectile_animated_sprite.play.bind("default")) \
 		.set_delay(time_to_teleport - CFG.anim_symbol_fade_in_out_time)
 	
 	# Set the timer to kill the projectile
-	var proj_lifetime : float = get_animation_duration(projectile_animation_frames, "default")
+	var proj_lifetime : float = projectile_animation_frames.get_animation_duration("default")
 	anim_tween.tween_callback(projectile_animated_sprite.queue_free).set_delay(proj_lifetime)
 	# This should ideally happen just after the symbol animation plays entirely, but I can't be bothered rn TODO
 	# Fade in
@@ -357,7 +342,7 @@ static func _anim_symbol_block(
 	# Play the blocking animation
 	anim_tween.tween_callback(my_symbol_animation.play.bind("block"))
 	# Wait for it to finish
-	var block_anim_duration : float = get_animation_duration(frames, "block")
+	var block_anim_duration : float = frames.get_animation_duration("block")
 	anim_tween.tween_interval(block_anim_duration)
 	# Fade in
 	_fade_symbol_in(anim_tween, my_symbol_sprite)
