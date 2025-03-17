@@ -3,14 +3,7 @@ extends Node2D
 
 const cross_marker_path = "res://Art/old/spear.png" # TODO change
 
-var root : BattleManagerFast
-var mcts : BattleMCTSManager = null
-var thread := Thread.new()
-var mutex := Mutex.new()
-
-# Synchronization
-var update_markers := false
-var run_mcts := false
+var thread : AIThread
 
 ## MoveInfo => float
 var move_scores_raw : Dictionary
@@ -25,27 +18,11 @@ var markers : Array[Node2D]
 @onready var arrow_marker = load("res://Scenes/UI/Battle/MoveMarkerArrow.tscn")
 
 
-func _process(_delta):
-	mutex.lock()
-	if update_markers:
-		update_markers = false
-		_update_markers()
-		
-	mutex.unlock()
-
-
+## Update battle grid state which is used in best move calculation
 func update(bgs: BattleGridState):
-	mutex.lock()
-	run_mcts = false
-	
-	root = BattleManagerFast.from(bgs)
-	if mcts:
-		mcts.queue_free()
-	mcts = BattleMCTSManager.new()
-	add_child(mcts)
+	var mcts = BattleMCTSManager.new()
 	var ref : AIBattleBotMCTS = reference_bot.instantiate()
 	
-	mcts.set_root(root)
 	mcts.max_sim_iterations = ref.max_sim_turns
 	mcts.heuristic_probability = ref.heuristic_probability
 	mcts.heuristic_prior_reward_per_iteration = ref.heuristic_prior_reward_per_iteration
@@ -53,22 +30,30 @@ func update(bgs: BattleGridState):
 	mcts.debug_bmfast_internals = CFG.debug_check_bmfast_internals
 	mcts.debug_max_saved_fail_replays = 4
 	
-	mutex.unlock()
-	
-	if thread.is_started():
-		thread.wait_to_finish()
-	run_mcts = true
-	thread = Thread.new()
-	thread.start(_thread_process)
+	if thread:
+		thread.destroy()
+	thread = AIThread.from(bgs, mcts)
+	thread.iteration_quant_finished.connect(_update_markers)
+	thread.start()
 
 
 func _update_markers():
+	thread.lock()
+	
+	move_scores_raw = thread.move_scores#.mcts.get_move_scores()
+	max_score = -10000.0
+	min_score = 10000.0
+	for i in move_scores_raw.values():
+		max_score = max(max_score, i)
+		min_score = min(min_score, i)
+	
 	for marker in markers:
 		marker.queue_free()
 	markers.clear()
 	
 	for cppmove in move_scores_raw.keys():
-		_update_marker(cppmove)
+		var move = thread.bm.libspear_tuple_to_move_info(cppmove)
+		_update_marker(cppmove, move)
 	
 	for pos in pos_markers:
 		var marker_id = 0.0
@@ -89,11 +74,12 @@ func _update_markers():
 			markers.push_back(marker)
 			marker_id += 1.0
 	
+	thread.unlock()
+	thread.quant_processed_sem.post()
 	pos_markers.clear()
 
 
-func _update_marker(cppmove):
-	var move = root.libspear_tuple_to_move_info(cppmove)
+func _update_marker(cppmove : Array, move : MoveInfo):
 	var pos_marker = PositionMarker.new()
 	pos_marker.score = move_scores_raw[cppmove]
 	
@@ -134,32 +120,6 @@ func get_modulate_for_score(score: float) -> Color:
 	result.g = remap(score, min_score, max_score, 0.0, 1.0)
 	result.a = remap(score, min_score, max_score, 0.1, 1.0)
 	return result
-
-
-func _thread_process():
-	while run_mcts: 
-		if mcts:
-			mcts.iterate(1000)
-			
-			mutex.lock()
-			
-			move_scores_raw = mcts.get_move_scores()
-			max_score = -10000.0
-			min_score = 10000.0
-			for i in move_scores_raw.values():
-				max_score = max(max_score, i)
-				min_score = min(min_score, i)
-			
-			update_markers = true
-			
-			mutex.unlock()
-
-
-func _exit_tree():
-	mutex.lock()
-	run_mcts = false
-	mutex.unlock()
-	thread.wait_to_finish()
 
 
 class PositionMarker:
