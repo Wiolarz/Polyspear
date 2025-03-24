@@ -11,17 +11,6 @@ Additionally it contains unique for that player informations like:
 """
 
 
-"""
-Simple class that gameplay wise is used only to verify who gets to controll this specific index units
-It seperate from battle and world gameplay to make it's usage universal
-Additionally it contains unique for that player informations like:
-- Team
-- Color
-- Timer values
-"""
-
-
-
 var bot_engine : AIInterface
 
 ## occupier identifies who uses this slot [br]
@@ -35,7 +24,7 @@ var occupier = ""
 ## used for some simpleness at player in world
 var index : int = -1
 
-var team : int = 0
+var team : int = -1  # gets assigned at IM._prepare_to_start_game
 
 #TODO create a more universal timer for players that will perform well both in battle and in world
 #TODO create a more universal timer for players that will perform well both in battle and in world
@@ -97,6 +86,11 @@ func get_player_name() -> String:
 
 func get_player_color() -> DataPlayerColor:
 	return CFG.TEAM_COLORS[color_idx]
+
+
+## 2 line string - Player color | controller name
+func get_full_player_description() -> String:
+	return "%s\n%s" % [get_player_color().name, get_player_name()]
 
 #endregion Getters
 

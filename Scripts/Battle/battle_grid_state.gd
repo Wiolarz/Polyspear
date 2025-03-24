@@ -1513,7 +1513,7 @@ class ArmyInBattleState:
 	var army_reference : Army
 	
 	## basic idx reference to which units are allies
-	var team : int
+	var team : int = -1
 
 	var units_to_summon : Array[DataUnit] = []
 	var units : Array[Unit] = []
@@ -1609,7 +1609,6 @@ class ArmyInBattleState:
 		var unit = kill_info.respawn()
 		unit.controller = IM.get_player_by_index(army_reference.controller_index)
 		unit.army_in_battle = self
-		#army_reference.controller
 		dead_units.erase(unit.template)
 		units.append(unit)
 		return unit

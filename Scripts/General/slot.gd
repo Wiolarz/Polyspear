@@ -16,19 +16,18 @@ var team : int = 0
 var timer_reserve_sec : int = CFG.CHESS_CLOCK_BATTLE_TIME_PER_PLAYER_MS
 var timer_increment_sec : int = CFG.CHESS_CLOCK_BATTLE_TURN_INCREMENT_MS
 
-var race : DataRace = null
+## index of color see `CFG.TEAM_COLORS`
+var color_idx : int = 0
+var battle_bot_path : String
+
 
 ## for battle only mode
 var units_list : Array[DataUnit] = [null,null,null,null,null] #TODO refactor to change variable to private as we have a clean getter for it
 var slot_hero : DataHero = null
 
-## index of color see `CFG.TEAM_COLORS`
-var color_idx : int = 0
-var battle_bot_path : String
+# for World mode only
+var race : DataRace = null
 
-func _init():
-	if CFG.player_options.use_default_AI_players:
-		occupier = 0
 
 """
 Human joins server, in terms of game he doesnt exist, he only receives info about game progression as visuals
@@ -38,7 +37,6 @@ When Human creates Bot or joins a specific UI Slot -> New Player is created
  so above scenario refers to changing that setting for specific slot
 
 """
-
 
 
 #region Default setup stuff
@@ -57,6 +55,15 @@ player team
 
 """
 
+func _init():
+	if CFG.player_options.use_default_AI_players:
+		occupier = 0
+
+## asks about setting set in lobby
+func is_bot() -> bool:
+	return occupier is int
+
+
 #endregion Default setup stuff
 
 
@@ -67,30 +74,6 @@ controlled units
 controlled hero + hero options
 
 """
-
-#endregion Battle setup
-
-
-#region World Setup
-
-"""
-ra
-
-"""
-
-#endregion
-
-
-
-## asks about setting set in lobby
-func is_bot() -> bool:
-	return occupier is int
-
-
-
-func set_units_length(value : int) -> void:
-	units_list.resize(value)
-
 
 ## for "Custom battles" unit list creation
 ## ignores empty values in units_list
@@ -111,3 +94,17 @@ func set_units(new_units : Array[DataUnit]) -> void:
 			continue
 		units_list[idx] = new_units[idx]
 
+
+func set_units_length(value : int) -> void:
+	units_list.resize(value)
+
+#endregion Battle setup
+
+
+#region World Setup
+
+"""
+TODO
+"""
+
+#endregion World Setup

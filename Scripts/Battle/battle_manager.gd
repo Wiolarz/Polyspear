@@ -62,7 +62,7 @@ func _process(_delta):
 ## x_offset is used to place battle to the right of world map
 ## replay_template - used in replays to avoid juggling player data
 func start_battle(new_armies : Array[Army], battle_map : DataBattleMap, \
-		x_offset : float, battle_state : SerializableBattleState, 
+		x_offset : float, battle_state : SerializableBattleState = null, 
 		replay_template : BattleReplay = null) -> void:
 
 	assert(_is_clear(), "cannot start battle map, map already loaded")
@@ -145,14 +145,6 @@ func get_bounds_global_position() -> Rect2:
 
 
 #region helpers
-
-func get_player_color(player : Player) -> DataPlayerColor:
-	if not _battle_is_ongoing:
-		return CFG.NEUTRAL_COLOR
-	if not player:
-		return CFG.NEUTRAL_COLOR
-	return player.get_player_color()
-
 
 func get_current_slot_color() -> DataPlayerColor:
 	if not _battle_is_ongoing:
@@ -785,7 +777,7 @@ func _create_summary() -> DataBattleSummary:
 		var army_controller = IM.get_player_by_index(army_controller_index)
 
 		# generates player names for their info column
-		player_stats.player_description = IM.get_full_player_description(army_controller) + " " + str(temp_points)
+		player_stats.player_description = army_controller.get_full_player_description() + " " + str(temp_points)
 
 		if army_in_battle.team == winning_team:
 			player_stats.state = "winner"

@@ -159,7 +159,7 @@ func _start_game_world(world_state : SerializableWorldState = null):
 
 ## Single Battle - game mode
 ## new game <=> battle_state == null
-func _start_game_battle(battle_state : SerializableBattleState,
+func _start_game_battle(battle_state : SerializableBattleState = null,
 		replay_template : BattleReplay = null):
 	var map_data = game_setup_info.battle_map
 	var armies : Array[Army]  = []
@@ -264,17 +264,6 @@ func get_index_of_player(player : Player) -> int:
 
 
 #region Information
-
-
-func get_player_color(player : Player) -> DataPlayerColor:
-	if not player:
-		return CFG.DEFAULT_TEAM_COLOR
-	return player.get_player_color()
-
-## 2 line string - Player color | controller name
-func get_full_player_description(player : Player) -> String:
-	return "%s\n%s" % [player.get_player_color().name, player.get_player_name()]
-
 
 func get_serializable_world_state() -> SerializableWorldState:
 	var state := SerializableWorldState.new()

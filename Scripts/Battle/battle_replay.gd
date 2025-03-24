@@ -72,8 +72,7 @@ func get_player_name(army_idx : int) -> String:
 
 
 func get_player_color(army_idx : int) -> int:
-	if player_colors.size() <= army_idx:
-		return -1
+	assert(player_colors.size() > army_idx, "player colors doesn't hold colors for all armies")
 	return player_colors[army_idx]
 
 
