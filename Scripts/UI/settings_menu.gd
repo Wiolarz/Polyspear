@@ -16,6 +16,10 @@ func _ready():
 		CFG.GuiAnimationMode.NON_DISTRACTION: "Only non-distracting",
 		CFG.GuiAnimationMode.FULL: "All"
 	})
+	_declare_volume_slider("volume_master", $VolumeContainer/Sliders/Master)
+	_declare_volume_slider("volume_music", $VolumeContainer/Sliders/Music)
+	_declare_volume_slider("volume_game", $"VolumeContainer/Sliders/Game FX")
+	_declare_volume_slider("volume_ui", $VolumeContainer/Sliders/GUI)
 
 #region Widgets
 #region - Toggle
@@ -74,6 +78,35 @@ func _declare_enum_list(enum_var : StringName, node : OptionButton, value_mappin
 		UI.update_settings.emit()
 	)
 
+
+## Connect volume to a slider and button
+func _declare_volume_slider(option : StringName, node : VolumeSlider):
+	var update = func():
+		var value = CFG.player_options.get(option)
+		node.actual_slider.value = max(0, value)
+		node.mute_button.button_pressed = value < 0
+	
+	# Refresh now
+	update.call()
+	# Refresh visuals when a setting is changed
+	UI.update_settings.connect(update)
+	
+	# Bind a slider value change
+	node.actual_slider.value_changed.connect(func(value):
+		CFG.player_options.set(option, value)
+		CFG.save_player_options()
+		UI.update_settings.emit()
+	)
+	
+	# Bind a mute button press
+	node.mute_button.pressed.connect(func():
+		var value = CFG.player_options.get(option)
+		CFG.player_options.set(option, -value)
+		CFG.save_player_options()
+		UI.update_settings.emit()
+	)
+
+#endregion - Toggle
 
 #endregion - Enum List
 #endregion Widgets

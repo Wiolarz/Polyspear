@@ -16,9 +16,14 @@ run/main_scene="res://Scenes/MainScene.tscn"
 config/features=PackedStringArray("4.2", "GL Compatibility")
 config/icon="res://Art/world_map/ruby_cave.png"
 
+[audio]
+
+buses/default_bus_layout="res://Audio/default_bus_layout.tres"
+
 [autoload]
 
 CFG="*res://Scripts/General/config_manager.gd"
+AUDIO="*res://Scenes/AudioManager.tscn"
 BG="*res://Scripts/UI/background.gd"
 WM="*res://Scripts/World/world_manager.gd"
 BM="*res://Scripts/Battle/battle_manager.gd"
