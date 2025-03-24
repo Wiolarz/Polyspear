@@ -26,10 +26,7 @@ func enchanted_unit_dies() -> void:
 
 func cast_effect(target : Unit, event_type : String) -> void:
 	match name:
-		"Vengeance":
-			if event_type == "casting":
-				target.try_adding_magic_effect(spell_effects[0].duplicate())
-		"Martyr":
+		"Vengeance", "Blood Ritual", "Martyr":
 			if event_type == "casting":
 				target.try_adding_magic_effect(spell_effects[0].duplicate())
 

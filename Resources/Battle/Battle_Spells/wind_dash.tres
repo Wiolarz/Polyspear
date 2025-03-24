@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="BattleSpell" load_steps=2 format=3 uid="uid://bhtwkhydnmjg6"]
+
+[ext_resource type="Script" path="res://Scripts/Battle/battle_spell.gd" id="1_2dgil"]
+
+[resource]
+script = ExtResource("1_2dgil")
+name = "Wind Dash"
+icon_path = "res://Art/items/big_sword.png"
+spell_effects = Array[Resource("res://Scripts/Battle/battle_magic_effect.gd")]([])

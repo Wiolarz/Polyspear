@@ -5,4 +5,5 @@
 [resource]
 script = ExtResource("1_0306o")
 name = "Teleport"
-icon_path = "res://Art/items/druid_staff.png"
+icon_path = "res://Art/items/mace.png"
+spell_effects = Array[Resource("res://Scripts/Battle/battle_magic_effect.gd")]([])
