@@ -650,7 +650,7 @@ func _perform_move_info(move_info : MoveInfo) -> void:
 	ANIM.fast_forward()
 	var bg_transition_tween = ANIM.subtween(
 		ANIM.main_tween(), 
-		ANIM.TweenPlaybackSettings.non_epileptic()
+		ANIM.TweenPlaybackSettings.always_smooth()
 	)
 	
 	_replay_move_counter += 1

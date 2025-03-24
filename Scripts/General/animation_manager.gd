@@ -122,7 +122,7 @@ class TweenPlaybackSettings:
 		settings.influenced_by_game_speed = false
 		return settings
 	
-	static func non_epileptic() -> TweenPlaybackSettings:
+	static func always_smooth() -> TweenPlaybackSettings:
 		var settings := TweenPlaybackSettings.new()
 		settings.influenced_by_game_speed = false
 		settings.interrupt_on_fast_forward = true
