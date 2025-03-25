@@ -5,8 +5,6 @@ const cross_marker_path = "res://Art/old/spear.png" # TODO change
 
 var thread : AIThread
 
-## MoveInfo => float
-var move_scores_raw : Dictionary
 var min_score := 0.0
 var max_score := 1.0
 
@@ -37,13 +35,11 @@ func update(bgs: BattleGridState):
 	thread.start()
 
 
-func _update_markers():
-	thread.lock()
-	
-	move_scores_raw = thread.move_scores#.mcts.get_move_scores()
+func _update_markers(move_scores : Dictionary):
+
 	max_score = -10000.0
 	min_score = 10000.0
-	for i in move_scores_raw.values():
+	for i in move_scores.values():
 		max_score = max(max_score, i)
 		min_score = min(min_score, i)
 	
@@ -51,9 +47,8 @@ func _update_markers():
 		marker.queue_free()
 	markers.clear()
 	
-	for cppmove in move_scores_raw.keys():
-		var move = thread.bm.libspear_tuple_to_move_info(cppmove)
-		_update_marker(cppmove, move)
+	for move in move_scores.keys():
+		_update_marker(move, move_scores[move])
 	
 	for pos in pos_markers:
 		var marker_id = 0.0
@@ -74,14 +69,12 @@ func _update_markers():
 			markers.push_back(marker)
 			marker_id += 1.0
 	
-	thread.unlock()
-	thread.quant_processed_sem.post()
 	pos_markers.clear()
 
 
-func _update_marker(cppmove : Array, move : MoveInfo):
+func _update_marker(move : MoveInfo, move_score : float):
 	var pos_marker = PositionMarker.new()
-	pos_marker.score = move_scores_raw[cppmove]
+	pos_marker.score = move_score
 	
 	match move.move_type:
 		MoveInfo.TYPE_MOVE:

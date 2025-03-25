@@ -34,14 +34,12 @@ func choose_move(state: BattleGridState) -> MoveInfo:
 	mcts.debug_bmfast_internals = CFG.debug_check_bmfast_internals
 	mcts.debug_max_saved_fail_replays = CFG.debug_mcts_max_saved_fail_replays
 	
-	_thread = AIThread.from(state, mcts, iterations, false)
+	_thread = AIThread.from(state, mcts, iterations)
 	_thread.reward_per_visit_dither = reward_per_visit_dither
 	add_child(_thread)
 	_thread.start()
 	
 	await _thread.complete
-	
-	_thread.lock()
 	
 	# Replaying failed playouts for debugging purposes
 	# To debug, set a breakpoint in GDB on BattleManagerFast::play_moves
@@ -61,7 +59,7 @@ func choose_move(state: BattleGridState) -> MoveInfo:
 		i += 1
 	
 	mcts.debug_print_move_lists = true
-	var tuple = _thread.optimal_move
+	var tuple = _thread.mcts.get_optimal_move(reward_per_visit_dither)
 	var move = _thread.bm.libspear_tuple_to_move_info(tuple)
 	
 	# Just in case of bugs
@@ -73,10 +71,8 @@ func choose_move(state: BattleGridState) -> MoveInfo:
 		else:
 			push_error("MCTS AI tried to perform an invalid move, falling back to random...")
 		
-		_thread.unlock()
 		_thread.destroy()
 		return AiBotStateRandom.choose_move_static(state)
 	
-	_thread.unlock()
 	_thread.destroy()
 	return move
