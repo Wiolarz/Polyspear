@@ -802,7 +802,7 @@ func _create_summary() -> DataBattleSummary:
 	for player in winning_team_players:
 		if not player: # neutral
 			continue
-		summary.title += sep + IM.get_player_color(player).name
+		summary.title += sep + player.get_player_color().name
 		sep = ", "
 
 	return summary
