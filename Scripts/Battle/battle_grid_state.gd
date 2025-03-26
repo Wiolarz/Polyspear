@@ -46,30 +46,14 @@ func _init(width_ : int, height_ : int):
 static func create(map : DataBattleMap, new_armies : Array[Army]) -> BattleGridState:
 	var result := BattleGridState.new(map.grid_width, map.grid_height)
 
-	# assigning players without a team
-	var occupied_team_slots = []
-	for army in new_armies: # assigning NO team players
-		var new_army_in_battle = ArmyInBattleState.create_from(army, result)
-		var player = IM.get_player_by_index(army.controller_index)
-		if player:
-			new_army_in_battle.team = player.team
+	for army : Army in new_armies:
+		var new_army_in_battle := ArmyInBattleState.create_from(army, result)
+		var player := IM.get_player_by_index(army.controller_index)
+		new_army_in_battle.team = player.team  # shortcut, to make
 		result.armies_in_battle_state.append(new_army_in_battle)
 
-		if new_army_in_battle.team == 0:
-			continue
-		if new_army_in_battle.team not in occupied_team_slots:
-			occupied_team_slots.append(new_army_in_battle.team)
-	var new_team_idx = 1
-	for army_in_battle in result.armies_in_battle_state:
-		var team = army_in_battle.team
-		if team == 0:
-			while new_team_idx in occupied_team_slots:
-				new_team_idx += 1
-			army_in_battle.team = new_team_idx
-			new_team_idx += 1
 
-	result.current_army_index = 0
-	result.turn_counter = 0
+
 
 	for x in range(map.grid_width):
 		for y in range(map.grid_height):
@@ -179,7 +163,7 @@ func move_info_execute(move_info : MoveInfo) -> void:
 ## used only by BM.undo()
 ## returns array of revived units
 func undo(move_info : MoveInfo) -> Array[Unit]:
-	var result : Array[Unit] = []
+	var killed_units : Array[Unit] = []
 	if move_info.move_type == MoveInfo.TYPE_SUMMON:
 		current_army_index = move_info.army_idx
 		armies_in_battle_state[current_army_index].unsummon(move_info.target_tile_coord)
@@ -193,22 +177,22 @@ func undo(move_info : MoveInfo) -> Array[Unit]:
 		var actions_to_undo = move_info.actions_list.duplicate()
 		# last action should be reversed first, else bugs will be created
 		actions_to_undo.reverse()
-		for a in actions_to_undo:
-			if a is MoveInfo.KilledUnit:
-				var u = _undo_kill(move_info, a)
-				result.append(u)
-			elif a is MoveInfo.PushedUnit:
-				_undo_push(move_info, a)
-			elif a is MoveInfo.LocomotionCompleted:
+		for action in actions_to_undo:
+			if action is MoveInfo.KilledUnit:
+				var killed_unit = _undo_kill(move_info, action)
+				killed_units.append(killed_unit)
+			elif action is MoveInfo.PushedUnit:
+				_undo_push(move_info, action)
+			elif action is MoveInfo.LocomotionCompleted:
 				_undo_main_locomotion(move_info)
 			else :
-				push_error("unknown action type %s - %s"%[a.get_class(), str(a)])
+				push_error("unknown action type %s - %s"%[action.get_class(), str(action)])
 
 		# revert turn
 		var unit := get_unit(move_info.move_source)
 		unit.turn(move_info.original_rotation)
 
-	return result
+	return killed_units
 
 
 func _undo_main_locomotion(move_info : MoveInfo) -> void:
@@ -218,10 +202,10 @@ func _undo_main_locomotion(move_info : MoveInfo) -> void:
 	m_unit.move(move_info.move_source, m_hex)
 
 
-func _undo_kill(_move: MoveInfo , killed : MoveInfo.KilledUnit) -> Unit:
-	var u := armies_in_battle_state[killed.army_idx].revive(killed)
-	_put_unit_on_grid(u, u.coord)
-	return u
+func _undo_kill(_move : MoveInfo , killed : MoveInfo.KilledUnit) -> Unit:
+	var unit : Unit = armies_in_battle_state[killed.army_idx].revive(killed)
+	_put_unit_on_grid(unit, unit.coord)
+	return unit
 
 
 func _undo_push(_move : MoveInfo , pushed : MoveInfo.PushedUnit) -> void:
@@ -1523,9 +1507,13 @@ class BattleHex:
 
 
 class ArmyInBattleState:
+	## used only for undo and cheats
 	var battle_grid_state : WeakRef # BattleGridState
+
 	var army_reference : Army
-	var team : int = 0
+	
+	## basic idx reference to which units are allies
+	var team : int = -1
 
 	var units_to_summon : Array[DataUnit] = []
 	var units : Array[Unit] = []
@@ -1619,7 +1607,8 @@ class ArmyInBattleState:
 
 	func revive(kill_info : MoveInfo.KilledUnit) -> Unit:
 		var unit = kill_info.respawn()
-		unit.controller = army_reference.controller
+		unit.controller = IM.get_player_by_index(army_reference.controller_index)
+		unit.army_in_battle = self
 		dead_units.erase(unit.template)
 		units.append(unit)
 		return unit

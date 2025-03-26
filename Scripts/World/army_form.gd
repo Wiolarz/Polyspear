@@ -36,7 +36,6 @@ static func create_form_of_army(hex : WorldHex, position_ : Vector2) \
 	else:
 		result.name = "Neutral army TODO some name"
 		image = load(army.units_data[0].texture_path)
-		result.get_node("sprite_unit").scale = Vector2(0.9, 0.9)
 		result.get_node("MoveLabel").text = ""
 		result.get_node("DescriptionLabel").text = ""
 	result.get_node("sprite_unit").texture = image

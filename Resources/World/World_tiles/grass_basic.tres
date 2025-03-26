@@ -5,5 +5,5 @@
 [resource]
 script = ExtResource("1_t66vt")
 type = "EMPTY"
-texture_path = "res://Art/world_map/grass_basic.png"
+texture_path = "res://Art/world_map/world_grass_hill.png"
 flip_horizontal = false

@@ -1,7 +1,9 @@
-[gd_scene load_steps=3 format=3 uid="uid://c2tjldwjynnry"]
+[gd_scene load_steps=4 format=3 uid="uid://c2tjldwjynnry"]
 
 [ext_resource type="Script" path="res://Scripts/UI/game_chat.gd" id="1_3ps2f"]
 [ext_resource type="Theme" uid="uid://cxft16v20dg2s" path="res://Art/UI/chat_theme.tres" id="1_r6xwp"]
+
+[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_jpijh"]
 
 [node name="GameChat" type="MarginContainer"]
 clip_contents = true
@@ -57,6 +59,11 @@ editable = false
 context_menu_enabled = false
 middle_mouse_paste_enabled = false
 caret_blink = true
+
+[node name="TextureRect" type="TextureRect" parent="."]
+visible = false
+layout_mode = 2
+texture = SubResource("PlaceholderTexture2D_jpijh")
 
 [connection signal="pressed" from="VBoxContainer/HBoxContainer/Button" to="." method="activate"]
 [connection signal="focus_entered" from="VBoxContainer/ChatLineEdit" to="." method="_on_chat_line_edit_focus_entered"]

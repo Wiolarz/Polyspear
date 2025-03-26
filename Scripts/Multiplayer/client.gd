@@ -68,9 +68,9 @@ func queue_cycle_color(slot_index : int, backwards : bool = false):
 	queue_message_to_server(packet)
 
 
-func queue_cycle_faction(slot_index : int, backwards : bool = false):
+func queue_cycle_race(slot_index : int, backwards : bool = false):
 	var packet : Dictionary = \
-		RequestFactionCycle.create_packet(slot_index, backwards)
+		RequestRaceCycle.create_packet(slot_index, backwards)
 	queue_message_to_server(packet)
 
 
