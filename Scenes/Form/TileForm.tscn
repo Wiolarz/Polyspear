@@ -9,6 +9,9 @@
 resource_local_to_scene = true
 shader = ExtResource("1_egcue")
 shader_parameter/highlight_intensity = 0.0
+shader_parameter/contrast_boost = 0.0
+shader_parameter/modulate_intensity = 0.0
+shader_parameter/modulate_color = Color(1, 1, 1, 1)
 
 [node name="TileForm" type="Area2D"]
 material = SubResource("ShaderMaterial_wh5ai")

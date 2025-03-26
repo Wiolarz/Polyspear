@@ -59,3 +59,9 @@ extends Resource
 @export var last_remote_host_address : String  = "127.0.0.1"
 @export var last_remote_host_port : int = 12_000
 
+## Slider value, ranging from -100 to 100
+## value < 0 means that the mute button is pressed
+@export var volume_master : float = 100.0
+@export var volume_music : float = 100.0
+@export var volume_game : float = 100.0
+@export var volume_ui : float = 100.0
