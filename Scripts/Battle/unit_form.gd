@@ -206,16 +206,26 @@ func anim_symbol(side : int, animation_type : int, target_coord: Vector2i = Vect
 			var block_anim_duration : float \
 				= symbol_activation_anim.sprite_frames.get_animation_duration("block")
 			
-			_anim_symbol_melee(
-				other_symbol_sprite, 
-				other_symbol_anim, 
-				CFG.SymbolAnimationType.MELEE_ATTACK,
-				block_anim_duration
-			)
-			_anim_symbol_block(symbol_sprite, symbol_activation_anim)
-			
 			var data_symbol : E.Symbols = \
 				other_unit.entity.template.symbols[opposite_side_local].type
+			
+			if Unit.does_it_shoot(data_symbol):
+				_anim_symbol_teleporting_projectile(
+					other_symbol_sprite, 
+					other_symbol_anim,
+					target_coord, 
+					side
+				)
+			else:
+				_anim_symbol_melee(
+					other_symbol_sprite, 
+					other_symbol_anim, 
+					CFG.SymbolAnimationType.MELEE_ATTACK,
+					block_anim_duration
+				)
+			
+			_anim_symbol_block(symbol_sprite, symbol_activation_anim)
+			
 			
 		_:
 			assert(false, "Unimplemented animation type")
