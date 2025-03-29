@@ -444,7 +444,9 @@ func _on_unit_summoned(unit : Unit) -> void:
 	# anyways right now animation type is passed directly when emiting the signal
 	unit.unit_is_shooting.connect(form.anim_symbol)
 	unit.unit_is_slashing.connect(form.anim_symbol.bind(CFG.SymbolAnimationType.MELEE_ATTACK))
-	unit.unit_is_blocking.connect(form.anim_symbol.bind(CFG.SymbolAnimationType.BLOCK))
+	unit.unit_is_blocking.connect(func(side, attacker_coord): 
+		form.anim_symbol(side, CFG.SymbolAnimationType.BLOCK, attacker_coord)
+	)
 	unit.unit_is_counter_attacking.connect(form.anim_symbol.bind(CFG.SymbolAnimationType.MELEE_ATTACK))
 
 	unit.unit_captured_mana.connect(capture_mana_well.bind(unit))

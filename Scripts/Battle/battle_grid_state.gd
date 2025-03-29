@@ -267,7 +267,7 @@ func _should_die_to_counter_attack(unit : Unit) -> bool:
 			continue
 
 		if Unit.will_parry_occur(enemy_symbol, unit_symbol):
-			unit.unit_is_blocking.emit(side)  # animation
+			unit.unit_is_blocking.emit(side, enemy.coord)  # animation
 			continue  # parry prevents counter attacks
 
 		if Unit.does_attack_succeed(enemy_symbol, unit_symbol):
@@ -275,7 +275,7 @@ func _should_die_to_counter_attack(unit : Unit) -> bool:
 			enemy.unit_is_counter_attacking.emit(opposite_side)  # animation
 			spear_holding_killer_teams.append(enemy.army_in_battle.team)
 		else:
-			unit.unit_is_blocking.emit(side)  # animation
+			unit.unit_is_blocking.emit(side, enemy.coord)  # animation
 
 	if spear_holding_killer_teams.size() > 0:
 		return true
@@ -303,9 +303,9 @@ func _process_offensive_symbols(unit : Unit) -> void:
 		if Unit.will_parry_occur(unit_weapon, enemy_weapon):
 			# We check if parry even parries any attempt
 			if Unit.attack_power(unit_weapon) > 0:  # was there an attack attempt 
-				enemy.unit_is_blocking.emit(opposite_side)  # animation
+				enemy.unit_is_blocking.emit(opposite_side, enemy.coord)  # animation
 			elif Unit.can_it_push(unit_weapon):  # was there a push attempt
-				enemy.unit_is_blocking.emit(opposite_side)  # animation
+				enemy.unit_is_blocking.emit(opposite_side, enemy.coord)  # animation
 
 			continue  # parry disables all melee symbols
 
@@ -317,7 +317,7 @@ func _process_offensive_symbols(unit : Unit) -> void:
 			_kill_unit(enemy, armies_in_battle_state[current_army_index])
 			continue  # enemy unit died
 		elif Unit.attack_power(unit_weapon) > 0:  # was there an attack attempt 
-			enemy.unit_is_blocking.emit(opposite_side)  # animation
+			enemy.unit_is_blocking.emit(opposite_side, enemy.coord)  # animation
 
 		# in case enemy defended against attack we check if attacker pushes away enemy
 		if Unit.can_it_push(unit_weapon):
@@ -374,7 +374,7 @@ func _process_bow(unit : Unit, side : int, weapon : E.Symbols) -> void:
 	var opposite_side := GenericHexGrid.opposite_direction(side)
 	var enemy_weapon : E.Symbols = target.get_symbol(opposite_side)
 	if not Unit.does_attack_succeed(weapon, enemy_weapon):
-		target.unit_is_blocking.emit(opposite_side)  # animation
+		target.unit_is_blocking.emit(opposite_side, target.coord)  # animation
 		return  # blocked by shield
 
 	unit.unit_is_shooting.emit(side, CFG.SymbolAnimationType.TELEPORTING_PROJECTILE, target.coord)  # animation
