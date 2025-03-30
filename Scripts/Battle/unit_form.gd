@@ -60,8 +60,10 @@ func apply_graphics(template : DataUnit, color : DataPlayerColor):
 
 	for side in range(0,6):
 		var symbol_texture = template.symbols[side].texture_path
-		_apply_symbol_sprite(side, symbol_texture)
 
+		_apply_symbol_sprite(side, symbol_texture)
+		_apply_symbol_activation_anim(side, template.symbols[side])
+	
 	_flip_unit_sprite()
 	$RigidUI/SpellEffect1.texture = null
 	$RigidUI/SpellEffect2.texture = null
@@ -83,6 +85,18 @@ func _apply_symbol_sprite(side : int, texture_path : String) -> void:
 	_flip_symbol_sprite(symbol_sprite, side)
 
 	symbol_sprite.show()
+
+## Half-brained knock-off of _apply_symbol_sprite() to add the animation to the animated sprite of SymbolForm 
+func _apply_symbol_activation_anim(side : int, symbol : DataSymbol) -> void:
+	var symbol_animation : SymbolAnimation = symbol.symbol_animation
+	var animated_sprite_path : String = "Symbols/%s/SymbolForm/ActivationAnim" % [SIDE_NAMES[side]]
+	var symbol_anim_sprite = get_node(animated_sprite_path)
+	if not symbol_animation:
+		return #Animation does not exists for given symbol
+		
+	symbol_anim_sprite.sprite_frames = symbol.symbol_animation
+	symbol_anim_sprite.scale = symbol_animation.scale
+	symbol_anim_sprite.position = symbol_animation.offset
 
 
 ## Flips ths sprite so that weapons always point to the top of the screen
@@ -135,6 +149,7 @@ func anim_move():
 	var target = BM.get_tile_global_position(entity.coord)
 	ANIM.main_tween().tween_property(self, "position", target, CFG.anim_move_duration)
 
+
 func anim_turn():
 	var time = CFG.anim_turn_duration
 	var angle_rel = angle_difference(rotation, deg_to_rad(entity.unit_rotation * 60))
@@ -144,17 +159,61 @@ func anim_turn():
 	_rotation_symbol_flip()
 	_flip_unit_sprite()
 
+
 func anim_die():
 	ANIM.main_tween().tween_property(self, "scale", Vector2.ZERO, CFG.anim_death_duration)
 	ANIM.main_tween().tween_callback(queue_free)
 
-func anim_symbol(side: int):
-	var side_local : int = GenericHexGrid.rotate_clockwise( \
-			side as GenericHexGrid.GridDirections, -entity.unit_rotation)
-	var symbol = get_node("Symbols/%s/SymbolForm" % SIDE_NAMES[side_local])
-	var tween = ANIM.subtween()
-	tween.tween_property(symbol, "scale", CFG.anim_symbol_activation_scale, 0.0)
-	tween.tween_property(symbol, "scale", Vector2(1.0, 1.0), CFG.anim_symbol_activation_duration)
+
+func anim_symbol(side : int, animation_type : int, target_coord: Vector2i = Vector2i.ZERO):
+	var side_local : int = GenericHexGrid.rotate_clockwise(
+		side as GenericHexGrid.GridDirections, -entity.unit_rotation
+	)
+	if target_coord == Vector2i.ZERO:
+		target_coord = entity.coord + GenericHexGrid.DIRECTION_TO_OFFSET[side]
+	
+	var symbol : SymbolForm = get_node("Symbols/%s/SymbolForm" % SIDE_NAMES[side_local])
+
+	var other_unit : UnitForm = BM.get_unit_form(target_coord)
+	var opposite_side_local : int = GenericHexGrid.rotate_clockwise(
+		GenericHexGrid.opposite_direction(side) as GenericHexGrid.GridDirections,
+		-other_unit.entity.unit_rotation
+	)
+	
+	var other_symbol : SymbolForm = other_unit.get_node("Symbols/%s/SymbolForm" % SIDE_NAMES[opposite_side_local])
+
+	# TODO animation delay makes the death animation wait for 
+	# the moment of impact (but makes multihits look way less cool)
+	# could be fixed by somehow detaching death animation from main tween
+	
+	match animation_type:
+		CFG.SymbolAnimationType.MELEE_ATTACK, CFG.SymbolAnimationType.COUNTER_ATTACK:
+			symbol.anim_symbol_melee(animation_type)
+		
+		CFG.SymbolAnimationType.TELEPORTING_PROJECTILE:
+			symbol.anim_symbol_teleporting_projectile(target_coord, side)
+		
+		CFG.SymbolAnimationType.BLOCK:
+			var block_anim_duration : float \
+				= symbol.get_block_duration()
+			
+			var data_symbol : E.Symbols = \
+				other_unit.entity.template.symbols[opposite_side_local].type
+			
+			if Unit.does_it_shoot(data_symbol):
+				other_symbol.anim_symbol_teleporting_projectile(target_coord, side)
+			else:
+				other_symbol.anim_symbol_melee(
+					CFG.SymbolAnimationType.MELEE_ATTACK, 
+					block_anim_duration
+				)
+			
+			symbol.anim_symbol_block()
+		
+		_:
+			assert(false, "Unimplemented animation type")
+
+
 
 func anim_magic():
 	# TODO
