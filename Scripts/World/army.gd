@@ -12,7 +12,7 @@ var faction : Faction
 
 var controller : Player:
 	get:
-		if faction:  # neutral armies don't have player assigned 
+		if faction:  # neutral armies don't have player assigned
 			return faction.controller
 		return null
 
@@ -54,8 +54,8 @@ func add_xp(gained_xp : int) -> void:
 		hero.add_xp(gained_xp)
 
 
-func on_end_of_round(player_index : int):
-	if player_index == controller_index and hero:
+func on_end_of_round():
+	if hero:
 		hero.movement_points = hero.max_movement_points
 
 

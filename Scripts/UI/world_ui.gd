@@ -13,7 +13,7 @@ func _ready():
 
 func _process(_delta):
 	if WM.world_game_is_active():
-		good_label.text = WS.get_current_player()._goods.to_string() # TEMP
+		good_label.text = WS.get_current_player()._goods.to_string() # TEMP as goods are private, and goods should be displayed for currently selected player
 
 
 func game_started():
@@ -80,5 +80,3 @@ func _on_menu_pressed():
 
 func _on_end_turn_pressed():
 	WM.end_turn()
-	#refresh_player_buttons()
-	#refresh_heroes(WM.current_player)

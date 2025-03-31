@@ -15,11 +15,9 @@ const RESPAWN_TIMER_INACTIVE = -1
 ## Setup Variables
 var neutral_armies : Array[PresetArmy]
 var material_rewards : Array[Goods] = []
-var army_respawn_time : int = 1 # in turns
+var army_respawn_time : int = 2 # in turns #TODO define proper respawn timer
 var hunt_spot_type : String
 
-## used to check if new army should respawn
-var spawned_army : Army
 
 ## local variables
 var current_level : int = 0
@@ -82,27 +80,24 @@ func _set_type(type : String) -> bool:
 func get_army_at_start() -> PresetArmy:
 	assert(neutral_armies.size() > 0, "Hunt Spot Resource Setup incorrectly")
 	return neutral_armies[0]
-	
+
 
 
 func interact(army : Army) -> void:
-	spawned_army = null  # clear defeated army
 	collect(army.faction)
 
 
 func on_end_of_round():
-	if spawned_army: # neutral army is alive
+	if _time_left_for_respawn == RESPAWN_TIMER_INACTIVE: # army is alive
 		return
-	if _time_left_for_respawn == RESPAWN_TIMER_INACTIVE:
-		#  army was killed this turn -> start of respawn timer
-		_time_left_for_respawn = army_respawn_time
-		return
+
 	if _time_left_for_respawn == RESPAWN_TIMER_READY_FOR_SPAWN: # respawn timer finished
 		try_respawn()
 		return
 	_time_left_for_respawn -= 1
 
 
+#TODO change to just "respawn" and spawn army even if hero is present on tile to start battle
 func try_respawn():
 	if WS.get_army_at(coord):
 		print("respawn failed @ ", coord)
@@ -113,6 +108,8 @@ func try_respawn():
 		-1)
 	_present_goods = material_rewards[current_level].duplicate()
 
+	_time_left_for_respawn = RESPAWN_TIMER_INACTIVE
+
 
 func get_map_description() -> String:
 	return _present_goods.to_string_short("empty")
@@ -121,8 +118,12 @@ func get_map_description() -> String:
 func collect(raiding_faction : Faction) -> void:
 	# TODO change it so the resources are gathered from number of killed units,
 	# so even if the player looses he still can get some resource
-	raiding_faction.add_goods(_present_goods)
-	_present_goods.clear()
+
+	# neutral army was just defeated
+	if _time_left_for_respawn == RESPAWN_TIMER_INACTIVE:
+		_time_left_for_respawn = army_respawn_time - 1 #-1 is TEMP until try_respawn change
+		raiding_faction.add_goods(_present_goods)
+		_present_goods.clear()
 
 
 static func get_hunt_army_presets(folder_path : String) -> Array[PresetArmy]:

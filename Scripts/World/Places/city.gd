@@ -5,6 +5,25 @@ extends Place
 var buildings : Array[DataBuilding] = []
 
 
+# overwrite
+static func create_place(coord_ : Vector2i, args : PackedStringArray) -> Place:
+	var result = City.new()
+
+	var player_index : int = -1
+	assert(args[0].is_valid_int(), "unrecognised parameter: %s" % args[0])
+	if args[0].to_int() >= 0:
+		player_index = args[0].to_int()
+		var owner_faction : Faction = WS.player_states[player_index]
+		result.faction = owner_faction
+		owner_faction.cities.append(result)
+
+	result.coord = coord_
+	result.movable = true
+
+	return result
+
+
+# overwrite
 func interact(army : Army) -> void:
 	if faction.controller.team != army.controller.team:  # Enemy players enters the undefended city
 		#TODO add capturing of cities, (game end condition will be more complicated)
@@ -14,6 +33,7 @@ func interact(army : Army) -> void:
 		army.heal_in_city()
 
 
+# overwrite
 func on_end_of_round() -> void:
 	faction.add_goods(Goods.new(0, 1, 0))
 	for building in buildings:
@@ -55,12 +75,10 @@ func can_buy_hero(hero : DataHero) -> bool:
 #region Units
 
 func get_units_to_buy() -> Array[DataUnit]:
-	var units : Array[DataUnit] = []
-	for unit_data : DataUnit in faction.race.units_data:
-		units.append(unit_data)
-	return units
+	return faction.race.units_data.duplicate()
 
 
+# TODO Awaits server authoritative refactor
 # func can_buy_unit(unit : DataUnit) -> bool:
 # 	var army : Army = world_state.get_army_at(coord)
 # 	if not army:
@@ -79,7 +97,7 @@ func unit_has_required_building(unit : DataUnit) -> bool:
 		return true
 	return has_built(unit.required_building)
 
-#endregion
+#endregion Units
 
 
 #region Buildings
@@ -113,10 +131,12 @@ func can_build(building : DataBuilding) -> bool:
 			not faction.has_this_outpost_type(building.outpost_requirement):
 		return false
 
-	return building.requirements \
-		.all(func building_present(building_ : DataBuilding):
-			return has_built(building_))
+	return building.requirements.all(has_built)
 
+#endregion Buildings
+
+
+#region Networking
 
 func to_specific_serializable(dict : Dictionary) -> void:
 	dict["buildings"] = []
@@ -136,25 +156,4 @@ func paste_specific_serializable_state(dict : Dictionary) -> void:
 	# if "player" in dict and dict["player"] in range(players.size()):
 	# 	players[dict["player"]].cities.append(self)
 
-
-static func create_place(coord_ : Vector2i, args : PackedStringArray) -> Place:
-	var result = City.new()
-
-	var player_index : int = -1
-	assert(args[0].is_valid_int(), "unrecognised parameter: %s" % args[0])
-	if args[0].to_int() >= 0:
-		player_index = args[0].to_int()
-		var owner_faction : Faction = WS.player_states[player_index]
-		result.faction = owner_faction
-		owner_faction.cities.append(result)
-
-	result.coord = coord_
-	result.movable = true
-
-	# TODO check this fragment
-	# var player : Faction = world_state.get_player_by_index(player_index)
-	# if player:
-	# 	result.controller_index = player_index
-	# 	player.cities.append(result)
-
-	return result
+#endregion Networking

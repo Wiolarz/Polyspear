@@ -34,7 +34,7 @@ func create(map : DataWorldMap,
 		if not saved_state:
 			player.set_goods(CFG.get_start_goods())
 			continue
-		
+
 		# Loading save from State
 		player.set_goods(Goods.from_array(saved_state.players[i].goods))
 		for dead_hero_ser in saved_state.players[i].dead_heroes:
@@ -67,8 +67,6 @@ func create(map : DataWorldMap,
 				if army_preset:
 					spawn_army_from_preset(army_preset, coord, \
 						hex.place.controller_index)
-					if hex.place is HuntSpot:
-						hex.place.spawned_army = get_army_at(coord)
 
 			if saved_state and coord in saved_state.army_hexes:
 				var loaded : Dictionary = saved_state.army_hexes[coord]
@@ -336,17 +334,6 @@ func get_battle_map_at(_coord : Vector2i, army_size : int) -> DataBattleMap:
 	return CFG.DEFAULT_BATTLE_MAP
 
 
-func get_all_places() -> Array[Place]:
-	var result : Array[Place] = []
-	for x in range(grid.grid_width):
-		for y in range(grid.grid_height):
-			var coord := Vector2i(x, y)
-			var place : Place = grid.get_hex(coord).place
-			if place:
-				result.append(place)
-	return result
-
-
 func get_top_left_hex() -> WorldHex:
 	return grid.get_hex(Vector2i(0, 0))
 
@@ -432,7 +419,7 @@ func do_recruit_unit(data_unit : DataUnit, city_coord : Vector2i,
 ## returns army reference if success/legal, null otherwise
 func do_recruit_hero(data_hero : DataHero,
 		coord : Vector2i) -> bool:
-	
+
 	var problem := check_recruit_hero(current_player_index, data_hero, coord)
 	if problem != "":
 		push_error(problem)
@@ -499,7 +486,7 @@ func end_combat(battle_results : Array[BattleGridState.ArmyInBattleState]) -> vo
 		if army.is_neutral:
 			army.faction = null
 			army.controller_index = -1
-		
+
 		if army.hero:
 			army_state.killed_units.sort()  # from lowest to highest
 			# we aim to award hero as much as possible
@@ -606,7 +593,7 @@ func change_army_position(army : Army, target_coord : Vector2i) -> void:
 
 func do_end_turn() -> void:
 	_end_of_turn_callbacks(current_player_index)
-	if current_player_index == player_states.size():
+	if current_player_index == player_states.size() - 1:
 		_end_of_round_callbacks()
 	current_player_index = (current_player_index + 1) % player_states.size()
 	WM.callback_turn_changed()
@@ -631,22 +618,22 @@ func spawn_army_from_preset(army_preset : PresetArmy, coord : Vector2i, \
 	WM.callback_army_created(army)
 
 
+#STUB
 func _end_of_turn_callbacks(player_index : int) -> void:
-	#TODO make it nicer
+	pass
+
+
+func _end_of_round_callbacks() -> void:
 	for x in range(grid.width):
 		for y in range(grid.height):
 			var coord = Vector2i(x,y)
 			var army : Army = grid.get_hex(coord).army
 			if army:
-				army.on_end_of_round(player_index)
-			var place : Place = get_place_at(coord)
+				army.on_end_of_round()
+			var place : Place = grid.get_hex(coord).place
 			if place:
 				place.on_end_of_round()
 
-
-func _end_of_round_callbacks() -> void:
-	for place in get_all_places():
-		place.on_end_of_round()
 
 
 #endregion End Turn + Start of The Game - Special Events
