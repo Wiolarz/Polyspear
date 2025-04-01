@@ -35,7 +35,7 @@ static func create(new_unit : Unit) -> UnitForm:
 	else:
 		color = new_unit.controller.get_player_color()
 
-	result.apply_graphics(new_unit.template, color)
+	result.ready.connect(result.apply_graphics.bind(new_unit.template, color))
 
 	result.global_position = BM.get_tile_global_position(new_unit.coord)
 	result.rotation_degrees = new_unit.unit_rotation * 60
@@ -48,7 +48,8 @@ static func create(new_unit : Unit) -> UnitForm:
 ## no underlying Unit exists
 static func create_for_summon_ui(template: DataUnit, color : DataPlayerColor) -> UnitForm:
 	var result = CFG.UNIT_FORM_SCENE.instantiate()
-	result.apply_graphics(template, color)
+	# defer apply_graphics to after the symbol forms are ready (they must be in order for this to work)
+	result.ready.connect(result.apply_graphics.bind(template, color))
 	return result
 
 
@@ -72,10 +73,10 @@ func apply_graphics(template : DataUnit, color : DataPlayerColor):
 	$RigidUI/TerrainEffect.texture = null
 
 
+# TODO move all symbol related functions to symbol_form.gd
 ## WARNING: called directly in UNIT EDITOR
 func _apply_symbol_sprite(side : int, texture_path : String) -> void:
-	var sprite_path = "Symbols/%s/SymbolForm/Sprite2D" % [SIDE_NAMES[side]]
-	var symbol_sprite = get_node(sprite_path)
+	var symbol_sprite := get_symbol(side).sprite
 	if texture_path == null or texture_path.is_empty():
 		symbol_sprite.texture = null
 		symbol_sprite.hide()
@@ -89,8 +90,7 @@ func _apply_symbol_sprite(side : int, texture_path : String) -> void:
 ## Half-brained knock-off of _apply_symbol_sprite() to add the animation to the animated sprite of SymbolForm 
 func _apply_symbol_activation_anim(side : int, symbol : DataSymbol) -> void:
 	var symbol_animation : SymbolAnimation = symbol.symbol_animation
-	var animated_sprite_path : String = "Symbols/%s/SymbolForm/ActivationAnim" % [SIDE_NAMES[side]]
-	var symbol_anim_sprite = get_node(animated_sprite_path)
+	var symbol_anim_sprite := get_symbol(side).anim
 	if not symbol_animation:
 		return #Animation does not exists for given symbol
 		
@@ -166,21 +166,23 @@ func anim_die():
 
 
 func anim_symbol(side : int, animation_type : int, target_coord: Vector2i = Vector2i.ZERO):
-	var side_local : int = GenericHexGrid.rotate_clockwise(
-		side as GenericHexGrid.GridDirections, -entity.unit_rotation
-	)
 	if target_coord == Vector2i.ZERO:
 		target_coord = entity.coord + GenericHexGrid.DIRECTION_TO_OFFSET[side]
 	
-	var symbol : SymbolForm = get_node("Symbols/%s/SymbolForm" % SIDE_NAMES[side_local])
+	var side_local : int = GenericHexGrid.rotate_clockwise(
+		side, 
+		-entity.unit_rotation
+	)
+	
+	var symbol : SymbolForm = get_symbol(side_local)
 
 	var other_unit : UnitForm = BM.get_unit_form(target_coord)
 	var opposite_side_local : int = GenericHexGrid.rotate_clockwise(
-		GenericHexGrid.opposite_direction(side) as GenericHexGrid.GridDirections,
+		GenericHexGrid.opposite_direction(side),
 		-other_unit.entity.unit_rotation
 	)
 	
-	var other_symbol : SymbolForm = other_unit.get_node("Symbols/%s/SymbolForm" % SIDE_NAMES[opposite_side_local])
+	var other_symbol : SymbolForm = other_unit.get_symbol(opposite_side_local)
 
 	# TODO animation delay makes the death animation wait for 
 	# the moment of impact (but makes multihits look way less cool)
@@ -194,8 +196,9 @@ func anim_symbol(side : int, animation_type : int, target_coord: Vector2i = Vect
 			symbol.anim_symbol_teleporting_projectile(target_coord, side)
 		
 		CFG.SymbolAnimationType.BLOCK:
-			var block_anim_duration : float \
-				= symbol.get_block_duration()
+			symbol.anim_symbol_block()
+			
+			var block_anim_duration : float = symbol.get_block_duration()
 			
 			var data_symbol : E.Symbols = \
 				other_unit.entity.template.symbols[opposite_side_local].type
@@ -207,8 +210,6 @@ func anim_symbol(side : int, animation_type : int, target_coord: Vector2i = Vect
 					CFG.SymbolAnimationType.MELEE_ATTACK, 
 					block_anim_duration
 				)
-			
-			symbol.anim_symbol_block()
 		
 		_:
 			assert(false, "Unimplemented animation type")
@@ -220,6 +221,10 @@ func anim_magic():
 	pass
 
 #endregion Animations
+
+func get_symbol(side_local : int) -> SymbolForm:
+	return get_node("Symbols/%s/SymbolForm" % SIDE_NAMES[side_local])
+
 
 func _rotation_symbol_flip():
 	_symbols_flipped = true
