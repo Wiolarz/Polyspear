@@ -33,11 +33,11 @@ transferred over network:
 ### Server setup
 
 Everything begins with function
-`server_listen(address : String, port : int, username : String)` in network
-manager (`Scripts/Multiplayer/NEW_manager.gd`), which under the hoods calls
+`server_listen(:String, :int, :String)` in network manager
+(`Scripts/Multiplayer/NET_manager.gd`), which under the hoods calls
 `make_server()` -- the function switching network manager to server mode, and
-then `listen(address : String, port : int, username : String)`
-in `Scripts/Multiplayer/server.gd:34`, which uses *Enet* stuff.
+then `listen(:String, :int, :String)` in `Scripts/Multiplayer/server.gd`, which
+uses *Enet* stuff.
 
 The `server_listen` function needs information about listen address and port
 (classic network L3/L4 stuff). It also takes username for player (*peer*) who
@@ -46,65 +46,226 @@ is the host (and therefore an admin).
 ### Connection to server
 
 This is a bit more complicated procedure. We start it with function
-`client_connect_and_login(address : String, port : int, login : String)`
-w network managerze.
+`client_connect_and_login(:String, :int, :String)` in network manager.
 
-#### Nawiązanie połączenia na warstwie OSI 4 i 5/6/7
+#### Making a connection
 
-Najpierw klient musi w ogóle nawiązać połączenie z serwerem na poziomie 4
-(i 5/6/7, bo gdzieś tam bym wrzucił rzeczy związane z ENetem). Wywołuje do tego
-`connect_to_server(address : String, port : int) -> void`
-w `Scripts/Multiplayer/client.gd:30`.
+First, client uses *Enet* library to connect to the server
+(`connect_to_server(:String, :int)` in `Scripts/Multiplayer/client.gd`). This
+sets up *Enet* stuff, for example a *peer* which represents a client
+in connection and UDP connection under the hood.
 
-#### Zalogowanie
+#### Logging in
 
-Po tej czynności mamy jednak tylko połączenie w ENecie (chyba 5 warstwa).
-Trzeba jeszcze się zalogować. To robi funkcja
-`queue_login(desired_username : String) -> void`, która kolejkuje wysłanie
-prośby o zalogowanie (później wytłumaczę, czego kolejkujemy komendy wysyłane do
-serwera).
+After making a connection in section above, we have only ENet connection, which
+is not enough. We also need to log as some user/player. This is where function
+`queue_login(:String)` is used. It queues a login request with some basic info
+about the user (currently it's only a name).
 
-Serwer po dostaniu takiej prośby robi kilka rzeczy:
+Next chapters explain why it is queued, but here the important thing is that
+this request is later sent.
 
-* Sprawdza, czy prośba jest w porządku.
-* Tworzy u siebie sesję gracza (obecnie skojarzenie peera (można powiedzieć, że
-  to tutaj taki obiekt pojedynczego połączenia do serwera) z nazwą użytkownika,
-  którą sobie wybrał klient).
-  * Jeśli nazwa użytkownika jest zajęta przez innego klienta, poprzedni jej
-    użytkownik zostaje skickowany.
-  * Jeśli nazwa użytkownika jest zajęta przez serwer, serwer odmawia zalogowania
-    i kickuje klienta.
-* Jeśli wszystko poszło git, serwer wysyła do klienta informacje o nowej sesji
-  (`Scripts/Multiplayer/ClientCommands/set_session_command.gd`) i dodatkowe
-  informacje (np. obecny stan gry, jeśli taki istnieje) przy użyciu funkcji
-  `send_additional_callbacks_to_logging_client(peer : ENetPacketPeer)`.
+Server after receiving such request does following things:
 
-Jak serwer odeśle klientowi sesję, ten ustawia sobie otrzymaną nazwę oraz
-"uznaje, że jest zalogowany".
+* Checks whether request is valid.
+* Creates a player session (currently, association of peer and user name).
+  * If user name is used by other client, that client is kicked.
+  * If user name is used by the server, server refuses to log the client in
+    and kicks this client.
+* When everything is good, server sends to client information about the new
+  session (`Scripts/Multiplayer/ClientCommands/set_session_command.gd`)
+  and additional things (eg. current game state if it exists) with function
+  `send_additional_callbacks_to_logging_client(:ENetPacketPeer)`.
 
-### Rozgłoszenie czegoś przez serwer STUB
+When client receives a session from server, it sets its name and assumes being
+logged in.
 
-Serwer może wysyłać komendy do klientów (Client komendy). Każda taka komenda
-powinna być zserializowanym przez Godota słownikiem godotowym, gdzie pole "name"
-jest zarezerwowane dla nazwy komendy. Nazwa komendy musi być taka sama jak nazwa
-pliku bez katalogu i rozszerzenia. Np. komenda '
+### Broadcasting something by the server
 
-### Prośba klienta do serwera o coś STUB
+Server can send commands (orders) to clients. Every command is serialized as
+Godot dictionary with field "name" being reserved for command name. The name
+of command is also used by its file name (prefixed by `order_` and without
+extension). For example, command "chat", which broadcasts a chat message, has
+name `chat` and its file
+is `Scripts/Multiplayer/Commands/Orders/order_chat.gd`. This file contains
+a class implementing certain interface (described later).
 
-### Może dodatkowo wylogowanie?? Mało ważne na razie wsm STUB
+TODO fix name convention (where `order_` should be added`).
 
-## Jak dodać nową akcję (Action) w grze (wcześniej ruch (Move)) STUB
+Typically, sending of an order is initiated by a "broadcast_something" function
+in `Scripts/Multiplayer/server.gd`, which creates a "packet" via command's
+class method named `create_packet`. The packed created this way is then
+broadcast with method `broadcast` of `Server`.
 
-## Jak dodać zupełnie nową komendę STUB
+Client, when receives an order, decodes it (as Godot dictionary) and check the
+order name. If order with this name is found, then its method named
+`process_command` is called with decoded payload as a parameter (indirectly,
+see function `roll()` in `Scripts/Multiplayer/client.gd`). `process_command`
+method is responsible for doing everything that order requires.
 
-## Słownik
+`process_command` is called indirectly, because commands during load, all
+commands are collapsed to object of `Command`, which has functions
+`client_callback` and `server_callback`. This will be reworked.
 
-* desync -- sytuacja, w której stan gry u klienta i u serwera różnią się
-  na tyle, że nie jest możliwa dalsza współpraca. Gdy klient sczai się, że ma
-  desync, prosi serwer o ponowne wysłanie stanu świata
-  (`Scripts/Multiplayer/ServerCommands/requested_state_sync.gd`). TODO Jeśli
-  serwer dostanie prośbę o nieprawidłowy ruch, trzeba zrobić, że wysyła
-  do klienta info o tym, że ruch jest zły.
-  Patrz:
-  * `Scripts/Multiplayer/client.gd:121` -- `desync() -> void`
-  * `Scripts/Multiplayer/NET_manager.gd:46` -- `desync() -> void`
+One of next sections explains how to add a new order to the game.
+
+### Sending something from client to server STUB
+
+Client can send commands (requests) to server. Requests are very similar to
+orders. Differences:
+
+* Their files' names are prefixed by `request_`.
+* They are started in `Client` by methods named "queue_something".
+  * It creates a packet exactly the same way as it is done for orders.
+  * Calls `queue_message_to_server` with created packet.
+    * This function adds the packet to queue.
+    * This queue is sent to server every time `roll` is called, i.e. every
+      frame.
+
+One of next sections explains how to add a new request to the game.
+
+TODO fix name convention (where `request_` should be added`).
+
+### Logging out from server
+
+There is a "logout" request, which tells the server, that client wants
+to log out. It does not disconnects the client from server, just deletes
+the session. To send this request, client calls function `logout_if_needed`,
+which sends it skipping the request queue. Sadly, currently it's never called
+without disconnection (See `Client`'s method `client_logout_and_disconnect`).
+
+### Request queue
+
+Solution with adding some request to queue instead of immediately sending
+them was done because of problems with flushing `ENet` buffer. First, all
+requests were meant to be sent immediately, but sometimes commands weren't
+sent at all, especially when client disconnected "after" sending. Solution
+was to flush the buffer after every request, but this would cause game to
+hang on every request when connection is slow.
+
+## Adding a new request
+
+## Adding a new order
+
+## Adding a new battle action
+
+Battle action uses a command pair `request_battle_move`
+and `order_make_battle_move`. They are both encoded the same way, despite
+of being of other types.
+
+Every command should have values at keys:
+
+* `move_type` -- it's a name of the action type. It's a string. All used types
+  are defined in file `Scripts/AI/move_info.gd`. To add a new type, first
+  define its name in this file.
+  TODO change name to `action_type`.
+* `move_source` -- source coord of a move. It's obvious for a normal "move",
+  but it has to be a `Vector2` and is mandatory for every action (even when it
+  is not needed).
+  TODO change name to `source_coord` and make it optional.
+* `target_tile_coord` -- target coord of a move. Also `Vector2` and mandatory,
+  like source.
+  TODO change name to `target_coord` and make it optional.
+* `summon_unit` -- name of unit which is to be summoned. String. Mandatory.
+  For actions which does not summon anything, it should be just an empty
+  string.
+
+If an action needs other parameters, they can be defined freely at any unused
+key.
+
+Let's say that new action type has name "example". Next subsections describe,
+how to implement a new action in all needed places. If action type is already
+implemented in single player mode, some parts may be already done.
+
+### MoveInfo
+
+First, action type needs to be implemented in `Scripts/AI/move_info.gd`.
+
+* Add a const string identifying the type
+
+```gdscript
+const TYPE_EXAMPLE = "example"
+```
+
+* Add all new parameters as new member variables where other parameters are
+  defined.
+* Add a static function named `make_example` returning `MoveInfo`
+  and parameters of your choice. It should return `MoveInfo` object with
+  `move_type` set to newly chosen name.
+* Add a case with your new type to `to_network_serializable` function.
+  TODO rework this function to use `match` on the type.
+* Add a case with your new type to `from_network_serializable` function. It
+  should use previously created `make_example` function.
+* Add something in region "notification for undo". For some reasons, it is
+  unknown, dark and dangerous place in the code, so you need to explore it
+  yourself.
+* Add a friendly description of your new action to function `_to_string`.
+
+### BM
+
+In file `Scripts/Battle/battle_manager.gd`, find function `_perform_move_info`,
+which is used by `perform_network_move` and add a case with your new type to
+a match statement on `move_info.move_type`.
+
+## Adding a new world action
+
+It's similar to battle action, but uses a pair `request_world_move`
+and `order_make_world_move`. They are both encoded the same way, despite
+of being other types.
+
+The only mandatory key is `move_type`. It's a string. Types are defined
+in file `Scripts/AI/world_move_info.gd`. Of course, if an action needs some
+parameters, they can be defined freely at any unused key.
+
+Let's say that new action type has name "example". Next subsections describe,
+how to implement a new action in all needed places. Same as in case of battle
+actions, if action type is already implemented in single player mode, some
+parts may be already done.
+
+### WorldMoveInfo
+
+First, add action type to `Scripts/AI/world_move_info.gd`.
+
+* Add a const string identifying the type
+
+```gdscript
+const TYPE_EXAMPLE = "example"
+```
+
+* Add all new parameters as new member variables where other parameters are
+  defined.
+* Add a static function named `make_example`. It should return `WorldMoveInfo`
+  object with `move_type` set to newly chosen name.
+* Add a case of new type (same as for other types) there:
+  * File `Scripts/Multiplayer/Commands/Requests/request_world_move.gd`,
+    function `create_from` (deserialization).
+  * File `Scripts/Multiplayer/Commands/Orders/order_make_world_move.gd`,
+    function `create_from` (deserialization).
+  * File `Scripts/Multiplayer/Commands/Requests/request_world_move.gd`,
+    function `process_command` (dictionary check before deserialization).
+  * File `Scripts/Multiplayer/Commands/Orders/order_make_world_move.gd`,
+    function `process_command` (dictionary check before desrialization).
+  * File `Scripts/Multiplayer/Commands/Requests/request_world_move.gd`,
+    function `create_packet` (serialization).
+  * File `Scripts/Multiplayer/Commands/Orders/order_make_world_move.gd`,
+    function `create_packet` (serialization).
+  Of course this part needs a refactor -- it's a mess.
+
+### WM and world state
+
+* Add `do_example` function to `Scripts/World/world_state.gd`.
+* Add `check_example` function to `Scripts/World/world_state.gd`
+* In file `Scripts/World/world_state.gd` add new "case" to if statements in
+  function `do_move`.
+
+## Dictionary
+
+* desync -- desynchronization -- means that states on the server side
+  and client side differ. Further function is not possible. When client notices
+  that it is desynchronized, it requests a full state from server
+  (`Scripts/Multiplayer/ServerCommands/requested_state_sync.gd`).
+  TODO make server send "bad action" message when client requests an illegal
+  action.
+  See:
+  * `Scripts/Multiplayer/client.gd` -- `desync() -> void`
+  * `Scripts/Multiplayer/NET_manager.gd` -- `desync() -> void`

@@ -24,5 +24,6 @@ static func process_command(_client : Client, params : Dictionary) -> int:
 	BM.perform_network_move(move_info)
 	return OK
 
+# TODO what? It shoouldn't be here I guess
 static func create_from(params : Dictionary) -> MoveInfo:
 	return MoveInfo.from_network_serializable(params)
