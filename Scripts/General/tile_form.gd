@@ -28,7 +28,7 @@ static func create_world_editor_tile(data_tile : DataTile, coord_ : Vector2i,
 ## ugly, FIXME
 static func create_world_tile_new(hex_ : WorldHex, coord_ : Vector2i, \
 		new_position : Vector2) -> TileForm:
-	var result = CFG.HEX_TILE_FORM_SCENE.instantiate()
+	var result : TileForm = CFG.HEX_TILE_FORM_SCENE.instantiate()
 	var image = hex_.get_image()
 	result.type = "SENTINEL"
 	if hex_.place:
@@ -39,6 +39,8 @@ static func create_world_tile_new(hex_ : WorldHex, coord_ : Vector2i, \
 	result.name = "Tile_%s_%s" % [ coord_, result.type ]
 	result.position = new_position
 	result.hex = hex_
+	var place : Place = result.hex.place
+	place.controller_changed.connect(result.controller_changed)
 	return result
 
 
@@ -81,13 +83,14 @@ func _on_input_event(_viewport : Node, event : InputEvent, _shape_idx : int):
 
 func _process(_delta):
 	$PlaceLabel.text = ""
-	if hex and hex.place: #TEMP
+	if hex and hex.place:
 		$PlaceLabel.text = hex.place.get_map_description()
 
 
 func controller_changed():
 	$ControlerSprite.visible = true
-	var color_name : String = hex.place.controller.get_player_color().name
+	var controller : Player = IM.get_player_by_index(hex.place.controller_index)
+	var color_name : String = controller.get_player_color().name
 	var path =  "%s%s_color.png" % [CFG.PLAYER_COLORS_PATH, color_name]
 	var texture = load(path) as Texture2D
 	assert(texture, "failed to load background " + path)

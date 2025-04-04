@@ -62,7 +62,7 @@ func _process(_delta):
 ## x_offset is used to place battle to the right of world map
 ## replay_template - used in replays to avoid juggling player data
 func start_battle(new_armies : Array[Army], battle_map : DataBattleMap, \
-		battle_state : SerializableBattleState, x_offset : float,
+		x_offset : float, battle_state : SerializableBattleState = null, 
 		replay_template : BattleReplay = null) -> void:
 
 	assert(_is_clear(), "cannot start battle map, map already loaded")
@@ -102,7 +102,7 @@ func start_battle(new_armies : Array[Army], battle_map : DataBattleMap, \
 
 	var is_spectator = true
 	for player in IM.players:
-		if player.slot.is_local():
+		if player.is_local():
 			is_spectator = false
 	
 	if is_spectator and CFG.ENABLE_AUTO_BRAIN:
@@ -148,14 +148,6 @@ func get_bounds_global_position() -> Rect2:
 
 
 #region helpers
-
-func get_player_color(player : Player) -> DataPlayerColor:
-	if not _battle_is_ongoing:
-		return CFG.NEUTRAL_COLOR
-	if not player:
-		return CFG.NEUTRAL_COLOR
-	return player.get_player_color()
-
 
 func get_current_slot_color() -> DataPlayerColor:
 	if not _battle_is_ongoing:
@@ -261,8 +253,6 @@ func _on_turn_started(player : Player) -> void:
 			latest_ai_cancel_token = null
 
 
-
-
 func perform_network_move(move_info : MoveInfo) -> void:
 	_perform_move_info(move_info)
 
@@ -280,10 +270,12 @@ func undo() -> void:
 
 	cancel_pending_ai_move()
 
-	var last_move := _replay_data.moves.pop_back() as MoveInfo
-	var new_units = _battle_grid_state.undo(last_move)
-	for n in new_units:
-		_on_unit_summoned(n)
+	var last_move : MoveInfo = _replay_data.moves.pop_back()
+	var revived_units : Array[Unit] = _battle_grid_state.undo(last_move)
+
+	# VISUALS
+	for unit in revived_units:
+		_on_unit_summoned(unit)  # revive
 	_battle_ui.refresh_after_undo(_battle_grid_state.is_during_summoning_phase())
 	_end_move()
 
@@ -313,7 +305,7 @@ func grid_input(coord : Vector2i) -> void:
 		print("ai playing, input ignored")
 		return
 
-	if not current_player.slot.is_local():
+	if not current_player.is_local():
 		print("Attempt to play a move of an another player")
 		return
 
@@ -731,7 +723,10 @@ func _on_battle_ended() -> void:
 		UI.ui_overlay.show_summary(_current_summary, _close_battle_and_return)
 
 
+## Ends battle in World game mode
 func _close_battle_and_return() -> void:
+	UI.switch_camera()  # switches camera back to world
+
 	var state_for_world = _battle_grid_state.armies_in_battle_state
 	
 	close_when_quiting_game()
@@ -746,7 +741,6 @@ func _close_battle_and_return() -> void:
 func _turn_off_battle_ui() -> void:
 	_painter_node.erase()
 	_battle_ui.hide()
-	UI.switch_camera()
 
 
 func _reset_grid_and_unit_forms() -> void:
@@ -793,7 +787,7 @@ func _create_summary() -> DataBattleSummary:
 		var army_controller = IM.get_player_by_index(army_controller_index)
 
 		# generates player names for their info column
-		player_stats.player_description = IM.get_full_player_description(army_controller) + " " + str(temp_points)
+		player_stats.player_description = army_controller.get_full_player_description() + " " + str(temp_points)
 
 		if army_in_battle.team == winning_team:
 			player_stats.state = "winner"
@@ -818,7 +812,7 @@ func _create_summary() -> DataBattleSummary:
 	for player in winning_team_players:
 		if not player: # neutral
 			continue
-		summary.title += sep + IM.get_player_color(player).name
+		summary.title += sep + player.get_player_color().name
 		sep = ", "
 
 	return summary

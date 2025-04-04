@@ -117,7 +117,7 @@ func update_cyclone():
 	var target : Player = BM.get_cyclone_target()
 
 	#TEMP
-	var target_color = BM.get_player_color(target)
+	var target_color = target.get_player_color()
 	cyclone.modulate = target_color.color
 
 

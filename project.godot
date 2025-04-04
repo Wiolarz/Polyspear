@@ -14,12 +14,13 @@ config/name="Polyspear"
 config/version="0.2.0"
 run/main_scene="res://Scenes/MainScene.tscn"
 config/features=PackedStringArray("4.2", "GL Compatibility")
-config/icon="res://Art/world_map/ruby_cave.png"
+config/icon="res://Art/world_map/outpost_wood.png"
 
 [autoload]
 
 CFG="*res://Scripts/General/config_manager.gd"
 BG="*res://Scripts/UI/background.gd"
+WS="*res://Scripts/World/world_state.gd"
 WM="*res://Scripts/World/world_manager.gd"
 BM="*res://Scripts/Battle/battle_manager.gd"
 IM="*res://Scripts/General/input_manager.gd"
