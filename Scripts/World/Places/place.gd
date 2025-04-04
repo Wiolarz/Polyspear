@@ -8,22 +8,15 @@ const PATH_TODO_MOVE_TO_CONFIG = "res://Scripts/World/Places/"
 
 
 #TODO decide on whatever to use player reference or simply a reference to the controller faction
-
-
-
-
 ## Controller Faction
 var faction : Faction
 var controller_index : int:  # network simplification
 	get:
+		# TODO make it so that neutral army creation and other places use unique functions and check if faction, instead of using -1 controller index
+		#assert(faction, "Attempt to get controlled index of a place without a controller")
 		if faction:
 			return faction.controller_index
 		return -1
-var controller : Player:
-	get:
-		if faction:
-			return faction.controller
-		return null
 
 var defender_army : Army
 var coord : Vector2i
@@ -43,6 +36,7 @@ static func create_basic(coord_ : Vector2i, movable_ : bool, basic_type_ : Strin
 
 
 #region Overridable functions
+## overriding is optional as those function should do nothing in empty places
 
 static func create_place(coord_ : Vector2i, _args : PackedStringArray) -> Place:
 	# TODO add grid to args -- it would ge great also to add hex *atomically*
@@ -52,15 +46,17 @@ static func create_place(coord_ : Vector2i, _args : PackedStringArray) -> Place:
 	return place
 
 
+## Get starting Neutral Army defenders
 func get_army_at_start() -> PresetArmy:
 	return null
 
 
+## Hero enters tile with an army
 func interact(_army : Army) -> void:
 	pass
 
 
-## this is overridden by other places and does nothing in empty places
+## Occurs after every player ended their move
 func on_end_of_round() -> void:
 	pass
 
@@ -70,7 +66,6 @@ func get_map_description() -> String:
 	return ""
 
 
-## Overidable function [br]
 ## Faction is used to mark which player captures that tile [br]
 ## used in places like outpost (which acts like a mine)
 func capture(_faction : Faction) -> void:
@@ -107,13 +102,6 @@ func is_basic() -> bool:
 	return get_script() == Place
 
 
-func get_type() -> String:
-	if not is_basic():
-		return get_script().resource_path.get_file().get_basename()
-	else:
-		return basic_type
-
-
 ## should be overridden by each place
 ## This function has to copy such information of state that it would be
 ## possible to add it to the state after "create_place" call
@@ -129,3 +117,10 @@ func paste_specific_serializable_state(_dict : Dictionary) -> void:
 	pass # does nothing for empty places
 
 #endregion Overridable functions
+
+
+func get_type() -> String:
+	if not is_basic():
+		return get_script().resource_path.get_file().get_basename()
+	else:
+		return basic_type

@@ -435,7 +435,7 @@ func do_recruit_hero(data_hero : DataHero,
 
 	# TODO check this hero can be recruited here by game rules
 
-	var hero : Hero # = Hero.create_hero(hero_data, city.controller)
+	var hero : Hero
 	# now we need to check if this hero was already recruited, but died
 	for dead_hero in player_state.dead_heroes:
 		if dead_hero.template == data_hero:

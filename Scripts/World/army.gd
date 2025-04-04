@@ -6,6 +6,9 @@ var units_data : Array[DataUnit]
 var hero : Hero
 
 var controller_index : int
+
+## after battle starts, control over this army is assigned to a player, [br]
+## once battle is over that controll has to be removed
 var is_neutral : bool = false
 
 var faction : Faction
