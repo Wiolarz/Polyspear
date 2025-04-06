@@ -62,6 +62,7 @@ layout_mode = 2
 layout_mode = 2
 size_flags_vertical = 3
 shortcut = SubResource("Shortcut_dprme")
+shortcut_in_tooltip = false
 text = "Continue"
 
 [connection signal="pressed" from="VBoxContainer/ButtonContinue" to="." method="_on_button_continue_pressed"]

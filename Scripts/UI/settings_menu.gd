@@ -1,39 +1,80 @@
 extends Control
 
+## Refer to player_controls.gd for information on adding new settings
 
-func refresh():
-	$VBoxContainer/ToggleAutoStart.button_pressed = CFG.AUTO_START_GAME
-	$VBoxContainer/ToggleBattleDefault.button_pressed = CFG.DEFAULT_MODE_IS_BATTLE
-	$VBoxContainer/ToggleDefaultAIPlayers.button_pressed = CFG.player_options.use_default_AI_players
-	$VBoxContainer/ToggleStreamerMode.button_pressed = CFG.player_options.streamer_mode
+func _ready():
+	# You should put all PlayerOptions-widget connections here
+	_declare_toggle("autostart_map", $ToggleAutoStart)
+	_declare_toggle("use_default_battle", $ToggleBattleDefault)
+	_declare_toggle("use_default_AI_players", $ToggleDefaultAIPlayers)
+	_declare_toggle("streamer_mode", $ToggleStreamerMode)
+	_declare_toggle("fullscreen", $ToggleFullscreen)
+	_declare_toggle("bmfast_integrity_checks", $ToggleBMFastIntegrityChecks)
+	_declare_toggle("background_color_follows_players", $ToggleBackgroundColorFollowsPlayers)
+	_declare_enum_list("gui_animation_mode", $OptionGuiAnimationMode/Option, {
+		CFG.GuiAnimationMode.NONE: "None",
+		CFG.GuiAnimationMode.NON_DISTRACTION: "Only non-distracting",
+		CFG.GuiAnimationMode.FULL: "All"
+	})
+
+#region Widgets
+#region - Toggle
+
+## Connect a given option with a widget
+## Use as a template for other widgets
+func _declare_toggle(option : StringName, node : CheckBox):
+	# Immediately update option
+	node.button_pressed = CFG.player_options.get(option)
+	
+	# Refresh button visuals when a setting is changed
+	UI.update_settings.connect(func(): 
+		# Lambda instead of bind because one callable can be only bound to signal once
+		node.button_pressed = CFG.player_options.get(option)
+	)
+	
+	# Bind a toggle press
+	node.pressed.connect(func():
+		# This one could be a dedicated func, but for consistency let's keep it that way
+		var old_option = CFG.player_options.get(option)
+		CFG.player_options.set(option, not old_option)
+		CFG.save_player_options()
+		UI.update_settings.emit()
+	)
+
+#endregion - Toggle
 
 
-func _on_toggle_auto_start_pressed():
-	# TODO refactor code copying
-	CFG.player_options.autostart_map = not CFG.player_options.autostart_map
-	CFG.save_player_options()
-	$VBoxContainer/ToggleAutoStart.button_pressed = CFG.AUTO_START_GAME
+#region - Enum List
+
+## Connect enum variable to an option button
+func _declare_enum_list(enum_var : StringName, node : OptionButton, value_mappings : Dictionary):
+	var id_enum_mappings := {}
+	var enum_id_mappings := {}
+	
+	var c := -1
+	for enum_item in value_mappings:
+		c += 1
+		node.add_item(value_mappings[enum_item])
+		id_enum_mappings[c] = enum_item
+		enum_id_mappings[enum_item] = c
+	
+	node.selected = enum_id_mappings[CFG.player_options.get(enum_var)]
+	
+	# Refresh visuals when a setting is changed
+	UI.update_settings.connect(func(): 
+		# Lambda instead of bind because one callable can be only bound to signal once
+		var enum_value = CFG.player_options.get(enum_var)
+		node.selected = enum_id_mappings[enum_value]
+	)
+	
+	# Bind an item select
+	node.item_selected.connect(func(index : int):
+		CFG.player_options.set(enum_var, id_enum_mappings[index])
+		CFG.save_player_options()
+		UI.update_settings.emit()
+	)
 
 
-func _on_toggle_battle_default_pressed():
-	CFG.player_options.use_default_battle = not CFG.player_options.use_default_battle
-	CFG.save_player_options()
-	$VBoxContainer/ToggleBattleDefault.button_pressed = CFG.DEFAULT_MODE_IS_BATTLE
+#endregion - Enum List
+#endregion Widgets
 
-
-func _on_toggle_auto_start_visibility_changed():
-	if visible:
-		refresh()
-
-
-func _on_toggle_default_ai_players_pressed():
-	#TODO quick refactor
-	CFG.player_options.use_default_AI_players = not CFG.player_options.use_default_AI_players
-	CFG.save_player_options()
-	$VBoxContainer/ToggleDefaultAIPlayers.button_pressed = CFG.player_options.use_default_AI_players
-
-
-func _on_toggle_streamer_mode_pressed():
-	CFG.player_options.streamer_mode = not CFG.player_options.streamer_mode
-	CFG.save_player_options()
-	$VBoxContainer/ToggleStreamerMode.button_pressed = CFG.player_options.streamer_mode

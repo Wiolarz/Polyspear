@@ -108,6 +108,9 @@ func start_battle(new_armies : Array[Army], battle_map : DataBattleMap, \
 	if is_spectator and CFG.ENABLE_AUTO_BRAIN:
 		_enable_ai_preview()
 	
+	# Set first player's color
+	BG.set_player_colors(get_current_slot_color())
+	
 	# first turn does not get a signal emit
 	_on_turn_started(_battle_grid_state.get_current_player())
 
@@ -175,6 +178,17 @@ func get_current_player_name() -> String:
 
 func get_current_turn() -> int:
 	return _battle_grid_state.turn_counter
+
+
+func get_unit_form(coord : Vector2i) -> UnitForm:
+	var unit : Unit = _battle_grid_state.get_unit(coord)
+	if unit and unit in _unit_to_unit_form:
+		return _unit_to_unit_form[unit]
+	return null
+
+
+func get_tile_form(coord : Vector2i) -> TileForm:
+	return _tile_grid.get_hex(coord)
 
 
 ## tells if there is battle state that is important and should be serialized
@@ -440,14 +454,14 @@ func _grid_input_summon(coord : Vector2i) -> MoveInfo:
 	assert(_battle_grid_state.state == _battle_grid_state.STATE_SUMMONNING, \
 			"_grid_input_summon called in an incorrect state")
 
-	if _battle_ui.selected_unit == null:
+	if _battle_ui._selected_unit_pointer == null:
 		return null # no unit selected to summon on ui
 
 	if not _battle_grid_state.current_player_can_summon_on(coord):
 		return null
 
 	print(NET.get_role_name(), " input - summoning unit")
-	return MoveInfo.make_summon(_battle_ui.selected_unit, coord)
+	return MoveInfo.make_summon(_battle_ui._selected_unit_pointer, coord)
 
 
 #endregion Summon Phase
@@ -634,7 +648,11 @@ func _perform_move_info(move_info : MoveInfo) -> void:
 	print(NET.get_role_name(), " performing move ", move_info)
 	
 	ANIM.fast_forward()
-
+	var bg_transition_tween = ANIM.subtween(
+		ANIM.main_tween(), 
+		ANIM.TweenPlaybackSettings.always_smooth()
+	)
+	
 	_replay_move_counter += 1
 
 	if not _replay_is_playing:
@@ -661,6 +679,9 @@ func _perform_move_info(move_info : MoveInfo) -> void:
 	ANIM.main_tween().tween_callback(func(): move_animation_done.emit())
 	# Play the recorded animation
 	ANIM.main_tween().play()
+
+	BG.set_player_colors(get_current_slot_color(), bg_transition_tween)
+	
 
 	_end_move()
 

@@ -1,163 +1,128 @@
 [gd_scene load_steps=4 format=3 uid="uid://dunktaeebf6f1"]
 
 [ext_resource type="Script" path="res://Scripts/UI/Lobby/Network/client_connector.gd" id="1_axf84"]
+[ext_resource type="StyleBox" uid="uid://c2e7veyqe1234" path="res://Art/UI/background_frames/sky.tres" id="2_cnvfh"]
+[ext_resource type="StyleBox" uid="uid://c2e7veyqebinm" path="res://Art/UI/background_frames/green.tres" id="2_rgjdf"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_mtx8d"]
-bg_color = Color(0, 0.67451, 0.776471, 1)
-border_width_top = 2
-border_width_bottom = 2
-expand_margin_left = 30.0
-expand_margin_top = 5.0
-expand_margin_right = 30.0
-expand_margin_bottom = 5.0
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_avfjo"]
-bg_color = Color(0, 0.6, 0, 1)
-border_width_top = 2
-border_width_bottom = 2
-expand_margin_left = 30.0
-expand_margin_top = 5.0
-expand_margin_right = 30.0
-expand_margin_bottom = 5.0
-
-[node name="ClientConnector" type="Control"]
-clip_contents = true
-layout_mode = 3
+[node name="ClientConnector" type="ScrollContainer"]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_bottom = -87.0
 grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("1_axf84")
 
-[node name="MarginContainer" type="ScrollContainer" parent="."]
-layout_mode = 1
-offset_right = 990.0
-offset_bottom = 998.0
-
-[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
-custom_minimum_size = Vector2(990, 0)
+[node name="MainContainer" type="MarginContainer" parent="."]
+custom_minimum_size = Vector2(640, 480)
 layout_mode = 2
-theme_override_constants/separation = 10
+size_flags_horizontal = 3
+size_flags_vertical = 3
 
-[node name="UserName" type="VBoxContainer" parent="MarginContainer/VBoxContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="MainContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 20
+
+[node name="UserName" type="VBoxContainer" parent="MainContainer/VBoxContainer"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/UserName"]
+[node name="Label" type="Label" parent="MainContainer/VBoxContainer/UserName"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 30
 text = "Player name"
 
-[node name="LineEdit" type="LineEdit" parent="MarginContainer/VBoxContainer/UserName"]
+[node name="LineEdit" type="LineEdit" parent="MainContainer/VBoxContainer/UserName"]
 custom_minimum_size = Vector2(0, 70)
 layout_mode = 2
 size_flags_vertical = 0
 text = "Mag"
 placeholder_text = "Type your desired name here"
 
-[node name="RandomiseCheckBox" type="CheckBox" parent="MarginContainer/VBoxContainer/UserName"]
+[node name="RandomiseCheckBox" type="CheckBox" parent="MainContainer/VBoxContainer/UserName"]
 layout_mode = 2
+size_flags_horizontal = 0
 text = "Add random number suffix \"_1234\""
+flat = true
 
-[node name="ManualConnection" type="VBoxContainer" parent="MarginContainer/VBoxContainer"]
+[node name="ManualConnection" type="VBoxContainer" parent="MainContainer/VBoxContainer"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/ManualConnection"]
+[node name="Label" type="Label" parent="MainContainer/VBoxContainer/ManualConnection"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 30
 text = "Connect manually"
 
-[node name="ConnectionParameters" type="PanelContainer" parent="MarginContainer/VBoxContainer/ManualConnection"]
+[node name="ConnectionParameters" type="PanelContainer" parent="MainContainer/VBoxContainer/ManualConnection"]
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_styles/panel = SubResource("StyleBoxFlat_mtx8d")
+theme_override_styles/panel = ExtResource("2_cnvfh")
 
-[node name="H" type="HBoxContainer" parent="MarginContainer/VBoxContainer/ManualConnection/ConnectionParameters"]
+[node name="H" type="HBoxContainer" parent="MainContainer/VBoxContainer/ManualConnection/ConnectionParameters"]
 layout_mode = 2
 theme_override_constants/separation = 25
 
-[node name="IPAddress" type="VBoxContainer" parent="MarginContainer/VBoxContainer/ManualConnection/ConnectionParameters/H"]
+[node name="IPAddress" type="VBoxContainer" parent="MainContainer/VBoxContainer/ManualConnection/ConnectionParameters/H"]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/ManualConnection/ConnectionParameters/H/IPAddress"]
+[node name="Label" type="Label" parent="MainContainer/VBoxContainer/ManualConnection/ConnectionParameters/H/IPAddress"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 30
 text = "Address of server to connect"
 
-[node name="LineEdit" type="LineEdit" parent="MarginContainer/VBoxContainer/ManualConnection/ConnectionParameters/H/IPAddress"]
+[node name="LineEdit" type="LineEdit" parent="MainContainer/VBoxContainer/ManualConnection/ConnectionParameters/H/IPAddress"]
 custom_minimum_size = Vector2(0, 70)
 layout_mode = 2
 size_flags_vertical = 0
 text = "127.0.0.1"
 placeholder_text = "type server address here"
 
-[node name="Port" type="VBoxContainer" parent="MarginContainer/VBoxContainer/ManualConnection/ConnectionParameters/H"]
+[node name="Port" type="VBoxContainer" parent="MainContainer/VBoxContainer/ManualConnection/ConnectionParameters/H"]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/ManualConnection/ConnectionParameters/H/Port"]
+[node name="Label" type="Label" parent="MainContainer/VBoxContainer/ManualConnection/ConnectionParameters/H/Port"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 30
 text = "Port"
 
-[node name="LineEdit" type="LineEdit" parent="MarginContainer/VBoxContainer/ManualConnection/ConnectionParameters/H/Port"]
+[node name="LineEdit" type="LineEdit" parent="MainContainer/VBoxContainer/ManualConnection/ConnectionParameters/H/Port"]
 custom_minimum_size = Vector2(0, 70)
 layout_mode = 2
 size_flags_vertical = 0
 text = "12000"
 
-[node name="Separator" type="Control" parent="MarginContainer/VBoxContainer"]
-layout_mode = 2
-
-[node name="ButtonConnect" type="Button" parent="MarginContainer/VBoxContainer"]
+[node name="ButtonConnect" type="Button" parent="MainContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 60
 text = "CONNECT"
 
-[node name="ServerList" type="VBoxContainer" parent="MarginContainer/VBoxContainer"]
+[node name="ServerList" type="VBoxContainer" parent="MainContainer/VBoxContainer"]
 layout_mode = 2
-theme_override_constants/separation = 20
 
-[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/ServerList"]
+[node name="Label" type="Label" parent="MainContainer/VBoxContainer/ServerList"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 30
 text = "Available servers"
 
-[node name="RefreshServersButton" type="Button" parent="MarginContainer/VBoxContainer/ServerList"]
-layout_mode = 2
-text = "refresh"
-
-[node name="ColorRect" type="PanelContainer" parent="MarginContainer/VBoxContainer/ServerList"]
+[node name="ColorRect" type="PanelContainer" parent="MainContainer/VBoxContainer/ServerList"]
 custom_minimum_size = Vector2(0, 120)
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_styles/panel = SubResource("StyleBoxFlat_avfjo")
+theme_override_styles/panel = ExtResource("2_rgjdf")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer/ServerList/ColorRect"]
+[node name="VBoxContainer" type="VBoxContainer" parent="MainContainer/VBoxContainer/ServerList/ColorRect"]
 layout_mode = 2
 
-[node name="ServersInfo" type="Label" parent="MarginContainer/VBoxContainer/ServerList/ColorRect/VBoxContainer"]
+[node name="ServersInfo" type="Label" parent="MainContainer/VBoxContainer/ServerList/ColorRect/VBoxContainer"]
 custom_minimum_size = Vector2(0, 20)
 layout_mode = 2
-text = "refresh to see public servers list"
+size_flags_vertical = 3
+text = "Some good time in the future a list of servers will appear here."
+horizontal_alignment = 1
 vertical_alignment = 1
 autowrap_mode = 2
 
-[node name="RichTextLabel" type="RichTextLabel" parent="MarginContainer/VBoxContainer"]
-custom_minimum_size = Vector2(0, 400)
-layout_mode = 2
-theme_override_font_sizes/normal_font_size = 30
-bbcode_enabled = true
-text = "INSTRUCTION
-If you are not on the same local network (LAN) make sure to ask host for [color=red]EXTERNAL ip and port[/color].
-So you can connect to hosts router.
-Due to NAT (network address translation) and PORT FORWARDING adress and port might be different.
-Some internet providers dont even assign EXTERNAL ips to routers, so you cant connect to them.
-If you cant find a good host consider services like HAMACHI to create a virtual network that simulates LAN over internet."
-
-[connection signal="pressed" from="MarginContainer/VBoxContainer/ButtonConnect" to="." method="_on_button_listen_pressed"]
-[connection signal="pressed" from="MarginContainer/VBoxContainer/ServerList/RefreshServersButton" to="." method="_on_refresh_servers_button_pressed"]
+[connection signal="pressed" from="MainContainer/VBoxContainer/ButtonConnect" to="." method="_on_button_connect_pressed"]

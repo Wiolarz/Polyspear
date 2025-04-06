@@ -100,6 +100,12 @@ func paint(brush : DataTile) -> void:
 	$Sprite2D.texture = load(brush.texture_path)
 
 
+func set_hovered(is_hovered : bool):
+	assert(material is ShaderMaterial)
+	var intensity = 0.1 if is_hovered else 0.0
+	material.set_shader_parameter("highlight_intensity", intensity)
+
+
 func _set_coord(new_coord: Vector2i):
 	coord = new_coord
 	$CoordLabel.text = str(new_coord)

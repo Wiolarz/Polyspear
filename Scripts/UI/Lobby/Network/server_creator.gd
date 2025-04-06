@@ -10,11 +10,11 @@ var host_menu : HostMenu = null
 
 
 @onready var server_name_line = \
-	$MarginContainer/VBoxContainer/ServerName/LineEdit
+	$MainContainer/VBoxContainer/ServerName/LineEdit
 @onready var server_address_line = \
-	$MarginContainer/VBoxContainer/BindingOptions/IPAddress/LineEdit
+	$MainContainer/VBoxContainer/BindingOptions/IPAddress/LineEdit
 @onready var server_port_line = \
-	$MarginContainer/VBoxContainer/BindingOptions/Port/LineEdit
+	$MainContainer/VBoxContainer/BindingOptions/Port/LineEdit
 
 
 
