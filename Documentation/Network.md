@@ -3,7 +3,7 @@
 ## Introduction
 
 First thing is that we do not use default Godot's network mode with RPC etc.
-We use *Enet* library, which is available in Godot (it's also backend for default
+We use *ENet* library, which is available in Godot (it's also backend for default
 mode).
 
 Some parts of this document are detailed technical information, but don't
@@ -37,7 +37,7 @@ Everything begins with function
 (`Scripts/Multiplayer/NET_manager.gd`), which under the hoods calls
 `make_server()` -- the function switching network manager to server mode, and
 then `listen(:String, :int, :String)` in `Scripts/Multiplayer/server.gd`, which
-uses *Enet* stuff.
+uses *ENet* stuff.
 
 The `server_listen` function needs information about listen address and port
 (classic network L3/L4 stuff). It also takes username for player (*peer*) who
@@ -90,7 +90,7 @@ name `chat` and its file
 is `Scripts/Multiplayer/Commands/Orders/order_chat.gd`. This file contains
 a class implementing certain interface (described later).
 
-TODO fix name convention (where `order_` should be added`).
+TODO fix name convention (where `order_` should be added).
 
 Typically, sending of an order is initiated by a "broadcast_something" function
 in `Scripts/Multiplayer/server.gd`, which creates a "packet" via command's
@@ -124,7 +124,7 @@ orders. Differences:
 
 One of next sections explains how to add a new request to the game.
 
-TODO fix name convention (where `request_` should be added`).
+TODO fix name convention (where `request_` should be added).
 
 ### Logging out from server
 
@@ -145,7 +145,59 @@ hang on every request when connection is slow.
 
 ## Adding a new request
 
+Let's say that new request has name "example".
+
+* Create file `Scripts/Multiplayer/Commands/Requests/request_example.gd`
+  and add these elements (look at other request files for reference):
+  * `class_name RequestExample`
+  * `static func register(:Dictionary)`
+    This function adds command to global command map.
+  * `static func create_packet( ? )`
+    Function which converts information about request (probably custom class or
+    a few variables) to dictionary sent over network. It may take arbitrary
+    parameters.
+  * `static func process_command(:Server, :ENetPacketPeer, :Dictionary) -> int`
+    Handling of the request on the server side.
+* In file `Scripts/Multiplayer/client.gd`:
+  * add function `queue_example( ? )`:
+
+    ```
+    func queue_example(args):
+      queue_message_to_server(RequestExample.create_packet(args))
+    ```
+
+* Use just added `queue_example` everywhere you want the client to send them.
+
 ## Adding a new order
+
+Let's say again that new request has name "example".
+
+* Create file `Scripts/Multiplayer/Commands/Orders/order_example.gd`
+  and add these elements (look at other request files for reference):
+  * `class_name OrderExample`
+  * `static func register(:Dictionary)`
+    This function adds command to global command map.
+  * `static func create_packet( ? )`
+    Function which converts information about order (probably custom class or
+    a few variables) to dictionary sent over network. It may take arbitrary
+    parameters.
+  * `static func process_command(:Client, :Dictionary) -> int`
+    Handling of the order on the client side.
+* In file `Scripts/Multiplayer/server.gd` this is a bit more complicated than it
+  is for requests. You may need one of 2 types of sending order:
+  * Broadcast -- this is the case where server sends something too all clients.
+    This is simple, just create function `broadcast_example( ? )`:
+
+    ```
+    func broadcast_example(args):
+      broadcast(OrderExample.create_packet(args))
+    ```
+
+  * Send to one client -- you need to create a function `send...something` which
+    will take a `peer` to which it needs to be sent as param. This function
+    will have to call functions like `OrderExample.create_packet(args)` and
+    `send_to_peer(peer, packet)`.
+* Same as for requests -- use added functions where you want to use them.
 
 ## Adding a new battle action
 
