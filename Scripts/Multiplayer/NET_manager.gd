@@ -1,6 +1,7 @@
 # Singleton - NET
 extends Node
 
+## At most one of these (server and client) should be set at a time.
 var server : Server
 var client : Client
 
