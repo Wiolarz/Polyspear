@@ -35,10 +35,10 @@ func interact(army : Army) -> void:
 
 # overwrite
 func on_end_of_round() -> void:
-	faction.add_goods(Goods.new(0, 1, 0))
+	faction.goods.add(Goods.new(0, 1, 0))
 	for building in buildings:
 		if building.name == "sawmill":
-			faction.add_goods(Goods.new(3, 0, 0))
+			faction.goods.add(Goods.new(3, 0, 0))
 
 
 #region Heroes
@@ -67,7 +67,7 @@ func can_buy_hero(hero : DataHero) -> bool:
 	if defender_army and defender_army.hero:  # hero is present in city hex
 		return false
 	var cost : Goods = faction.get_hero_cost(hero)
-	return faction.has_enough(cost)
+	return faction.goods.has_enough(cost)
 
 #endregion Heroes
 
@@ -124,7 +124,7 @@ func has_built(building : DataBuilding) -> bool:
 func can_build(building : DataBuilding) -> bool:
 	if has_built(building):
 		return false
-	if not faction.has_enough(building.cost):
+	if not faction.goods.has_enough(building.cost):
 		return false
 
 	if building.is_outpost_building() and \

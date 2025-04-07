@@ -24,5 +24,5 @@ func get_map_description() -> String:
 
 
 func collect(faction : Faction):
-	faction.add_goods(accumulated_goods)
+	faction.goods.add(accumulated_goods)
 	accumulated_goods.clear()

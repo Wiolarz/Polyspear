@@ -45,9 +45,9 @@ func _ready() -> void:
 
 ## Camera bounds
 func get_bounds_global_position() -> Rect2:
-	#if not WS: #TEMP
-	#	push_warning("asking not initialized grid for camera bounding box")
-	#	return Rect2(0, 0, 0, 0)
+	if not world_game_is_active():
+		push_warning("asking not initialized grid for camera bounding box")
+		return Rect2(0, 0, 0, 0)
 	var top_left_hex = WS.get_top_left_hex()
 	var bottom_right_hex = WS.get_bottom_right_hex()
 	var top_left_tile_form : TileForm = get_tile_of_hex(top_left_hex)
@@ -59,7 +59,7 @@ func get_bounds_global_position() -> Rect2:
 
 
 func get_current_player_capital() -> City:
-	var player_state = WS.get_player_by_index(WS.current_player_index)
+	var player_state = WS.get_faction_by_index(WS.current_player_index)
 	if not player_state:
 		return null
 	return player_state.capital_city
@@ -277,7 +277,7 @@ func start_combat( \
 		var army_size : int = army.units_data.size()
 		if biggest_army_size < army_size:
 			biggest_army_size = army_size
-	
+
 	# Swap neutral armies with different play controllers
 	# We assume that battles involving neutrals cannot contain number of unique team armies equal to number of teams in the game
 	#counting unique teams
@@ -287,8 +287,8 @@ func start_combat( \
 		# if more than two neutral armies are present in battle they oppose eachother
 		if army.controller and army.controller.team not in teams_present_in_battle:
 			teams_present_in_battle.append(army.controller.team)
-		
-	
+
+
 	#assigning players to control neutrals
 	var player_idx_to_control_neutral : int = WS.current_player_index
 	for army in armies_:
@@ -307,7 +307,7 @@ func start_combat( \
 				teams_present_in_battle.append(player.team)
 
 
-	
+
 	combat_tile = combat_coord
 	var battle_map : DataBattleMap = WS.get_battle_map_at(combat_tile, biggest_army_size)
 	var x_offset = get_bounds_global_position().end.x + CFG.MAPS_OFFSET_X
@@ -352,7 +352,7 @@ func start_new_world(world_map : DataWorldMap) -> void:
 
 	_is_world_game_active = true
 
-	WS.create(world_map, IM.game_setup_info.slots)
+	WS.start_world(world_map, IM.game_setup_info.slots)
 
 	recreate_tile_forms()
 	recreate_army_forms()
@@ -377,7 +377,7 @@ func start_world_in_state(world_map : DataWorldMap, \
 
 	_batch_mode = true
 
-	WS.create(
+	WS.start_world(
 		world_map, IM.game_setup_info.slots, serializable_WS)
 
 	recreate_tile_forms()
@@ -487,7 +487,7 @@ func callback_combat_started(armies_ : Array, coord_ : Vector2i) -> void:
 
 func cheat_money(new_wood : int = 100, new_iron : int = 100, new_ruby : int = 100) -> void:
 	# Add goods to the player
-	WS.player_states[WS.current_player_index]._goods.add(
+	WS.player_states[WS.current_player_index].goods.add(
 		Goods.new(new_wood, new_iron, new_ruby)
 	)
 

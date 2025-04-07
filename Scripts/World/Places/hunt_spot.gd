@@ -122,7 +122,7 @@ func collect(raiding_faction : Faction) -> void:
 	# neutral army was just defeated
 	if _time_left_for_respawn == RESPAWN_TIMER_INACTIVE:
 		_time_left_for_respawn = army_respawn_time - 1 #-1 is TEMP until try_respawn change
-		raiding_faction.add_goods(_present_goods)
+		raiding_faction.goods.add(_present_goods)
 		_present_goods.clear()
 
 

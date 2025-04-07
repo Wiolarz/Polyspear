@@ -13,7 +13,7 @@ func _ready():
 
 func _process(_delta):
 	if WM.world_game_is_active():
-		good_label.text = WS.get_current_player()._goods.to_string() # TEMP as goods are private, and goods should be displayed for currently selected player
+		good_label.text = WS.get_current_player().goods.to_string()
 
 
 func game_started():
@@ -26,7 +26,7 @@ func game_started():
 func refresh_heroes():
 	Helpers.remove_all_children(heroes_list)
 	var player_index = WS.current_player_index
-	var player_state = WS.get_player_by_index(player_index)
+	var player_state = WS.get_faction_by_index(player_index)
 	if not player_state:
 		return
 	for army in player_state.hero_armies:

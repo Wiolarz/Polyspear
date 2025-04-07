@@ -4,14 +4,12 @@ extends Node
 const MOVE_IS_INVALID = -1
 
 var grid : GenericHexGrid = null
-var turn_counter : int = 0
-var current_player_index : int = 0
+var turn_counter : int
+var current_player_index : int
 var player_states : Array[Faction] = []
 var move_hold_on_combat : Array[Vector2i] # TODO some better form
 
-## consider not to use signals
-
-
+## TODO consider not using signals here
 ## this is signal used by other managers
 signal combat_started(armies : Array, coord : Vector2i)
 
@@ -19,24 +17,28 @@ signal combat_started(armies : Array, coord : Vector2i)
 #region init
 
 
-## Factory capable of us
-func create(map : DataWorldMap,
+## main init function
+func start_world(map : DataWorldMap,
 		slots : Array[Slot],
-		saved_state : SerializableWorldState = null):
+		saved_state : SerializableWorldState = null) -> void:
+	# Core Variables Reset
+	turn_counter = 0
+	current_player_index = 0
+	move_hold_on_combat = []
 
 	grid = GenericHexGrid.new(map.grid_width, map.grid_height, WorldHex.new())
 
 	# load players and their not related-to-grid state
-	player_states.resize(slots.size())
-	for i in player_states.size():
-		player_states[i] = Faction.create_world_player_state(slots[i])
+	player_states = []
+	for i in range(slots.size()):
+		player_states.append(Faction.create_faction(slots[i]))
 		var player = player_states[i]
 		if not saved_state:
-			player.set_goods(CFG.get_start_goods())
+			player.goods = CFG.get_start_goods()
 			continue
 
 		# Loading save from State
-		player.set_goods(Goods.from_array(saved_state.players[i].goods))
+		player.goods = Goods.from_array(saved_state.players[i].goods)
 		for dead_hero_ser in saved_state.players[i].dead_heroes:
 			player.dead_heroes.append(Hero.from_network_serializable(
 				dead_hero_ser, i))
@@ -72,7 +74,7 @@ func create(map : DataWorldMap,
 				var loaded : Dictionary = saved_state.army_hexes[coord]
 				var army : Army = null
 				if loaded:
-					army = deserialize_army_wip(loaded)
+					army = deserialize_army(loaded)
 				if army:
 					hex.army = army
 					army.coord = coord
@@ -115,11 +117,11 @@ func synchronize_players_with_their_places() -> void:
 			var city = get_city_at(coord)
 			var outpost = get_place_at(coord) as Outpost
 			if city:
-				var player = get_player_by_index(city.controller_index)
+				var player = get_faction_by_index(city.controller_index)
 				if player:
 					player.cities.append(city)
 			if outpost:
-				var player = get_player_by_index(outpost.controller_index)
+				var player = get_faction_by_index(outpost.controller_index)
 				if player:
 					player.outposts.append(outpost)
 
@@ -141,7 +143,7 @@ func get_player_index(player : Faction) -> int:
 	return -1
 
 
-func get_player_by_index(index : int) -> Faction:
+func get_faction_by_index(index : int) -> Faction:
 	if index < 0:
 		return null
 	if index >= player_states.size():
@@ -228,7 +230,7 @@ func check_recruit_unit(data_unit : DataUnit, city_coord : Vector2i,
 		return "cannot recruit such unit in this city"
 	if not city.unit_has_required_building(data_unit):
 		return "not all required buildings are build in this city"
-	if not army_controller_state.has_enough(data_unit.cost):
+	if not army_controller_state.goods.has_enough(data_unit.cost):
 		return "not enough resources for this unit, need %s" % data_unit.cost
 	return ""
 
@@ -243,7 +245,7 @@ func check_recruit_hero(player_index : int, data_hero : DataHero,
 	if not city:
 		return "GAME ERROR: must recruit hero in a city"
 	if player_index != current_player_index:
-		return "IM ERROR: this player has not turn now"
+		return "IM WARNING: it's not this player turn"
 	if player_index != city.controller_index:
 		# TODO while viewing other player cities,
 		# we should look if that player is capable of purchasing this hero in UI
@@ -254,19 +256,16 @@ func check_recruit_hero(player_index : int, data_hero : DataHero,
 	if not data_hero in player_faction.race.heroes:
 		return "GAME ERROR: player's race does not contain that hero"
 	var cost = player_faction.get_hero_cost(data_hero)
-	if not player_faction.has_enough(cost):
+	if not player_faction.goods.has_enough(cost):
 		return "not enough cash, needed %s" % cost
 	return ""
 
 
 func get_hero_to_buy_in_city(city : City, hero_index : int) -> DataHero:
-	if not city:
-		return null
-	#WTF
-	var array = city.faction.race.heroes
-	if hero_index in range(array.size()):
-		return array[hero_index]
-	return null
+	assert(city)
+	var hero_array = city.faction.race.heroes
+	assert(hero_index >= 0 and hero_index < hero_array.size())
+	return hero_array[hero_index]
 
 
 func check_army_travel(source : Vector2i, target : Vector2i) -> String:
@@ -313,6 +312,7 @@ func get_place_at(coord : Vector2i) -> Place:
 	return null
 
 
+## Returns null if there is no city at given coord
 func get_city_at(coord : Vector2i) -> City:
 	return get_place_at(coord) as City
 
@@ -395,7 +395,7 @@ func do_move(world_move_info : WorldMoveInfo) -> bool:
 			do_end_turn()
 			return true
 		_:
-			assert(false, "unsported WorldMoveInfo Type")
+			assert(false, "unsupported WorldMoveInfo Type")
 			return false
 
 
@@ -425,7 +425,7 @@ func do_recruit_hero(data_hero : DataHero,
 		push_error(problem)
 		return false
 	var city : City = get_city_at(coord)
-	var player_state = get_player_by_index(current_player_index)
+	var player_state = get_faction_by_index(current_player_index)
 
 	var cost = player_state.get_hero_cost(data_hero)
 	var is_purchased : bool = player_state.try_to_pay(cost)
@@ -499,8 +499,6 @@ func end_combat(battle_results : Array[BattleGridState.ArmyInBattleState]) -> vo
 			remove_army(army)
 		else:
 			army.apply_losses(army_state.dead_units)
-			if army.is_neutral:
-				army.controller_index = -1
 
 	# TODO document this variable, and how it works better
 	if move_hold_on_combat.size() < 1:
@@ -518,7 +516,7 @@ func remove_army(army : Army) -> void:
 	var hex : WorldHex = grid.get_hex(army.coord)
 	hex.army = null
 	var player_index = army.controller_index
-	var player = get_player_by_index(player_index)
+	var player = get_faction_by_index(player_index)
 	if player:
 		var army_array = player.hero_armies
 		assert(army in army_array)
@@ -540,7 +538,7 @@ func do_start_trade(source : Vector2i, target : Vector2i) -> bool:
 	return true
 
 
-## this is the basicest move
+## basic hero move
 func do_army_travel(source : Vector2i, target : Vector2i) -> bool:
 	var problem = check_army_travel(source, target)
 	if problem != "":
@@ -634,8 +632,6 @@ func _end_of_round_callbacks() -> void:
 			if place:
 				place.on_end_of_round()
 
-
-
 #endregion End Turn + Start of The Game - Special Events
 
 
@@ -698,7 +694,7 @@ func _get_serialized_army(army) -> Dictionary:
 	return army_dict
 
 
-static func deserialize_army_wip(dict : Dictionary) -> Army:
+static func deserialize_army(dict : Dictionary) -> Army:
 	var army : Army = Army.new()
 	army.controller_index = dict["player"]
 	if "hero" in dict:

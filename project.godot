@@ -30,6 +30,7 @@ ANIM="*res://Scripts/General/animation_manager.gd"
 
 [debug]
 
+gdscript/warnings/static_called_on_instance=0
 gdscript/warnings/integer_division=0
 
 [display]
