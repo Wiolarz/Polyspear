@@ -4,7 +4,11 @@ extends Node2D
 
 @onready var sprite : Sprite2D = $Sprite2D
 @onready var anim : AnimatedSprite2D = $ActivationAnim
-@onready var frames : SymbolAnimation = anim.sprite_frames
+@onready var frames : SymbolAnimation:
+	get:
+		return anim.sprite_frames
+	set(_new):
+		assert("'frames' must be modified via anim.sprite_frames")
 
 
 func _fade_symbol_in(anim_tween : Tween):
