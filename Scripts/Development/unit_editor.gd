@@ -4,7 +4,6 @@ extends CanvasLayer
 ## WARNING: do not change this until save is clicked
 ## not saved changes are kept on `dirty_changes`
 var edited_unit : DataUnit
-
 var dirty_changes : DataUnit = DataUnit.new()
 
 ## order of symbols here is the same order as in symbol pickers
