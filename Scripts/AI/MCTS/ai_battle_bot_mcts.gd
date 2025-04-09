@@ -19,19 +19,14 @@ extends AIInterface
 ## This is useful if the AI is too deterministic
 @export_range(0.0, 1.0) var reward_per_visit_dither := 0.0
 
-var iterate_complete_mutex := Mutex.new()
-var is_iterate_complete: bool = false
-var thread: Thread
+var _thread : AIThread
 
 signal complete
 
 
 func choose_move(state: BattleGridState) -> MoveInfo:
-	var bm = BattleManagerFast.from(state)
+	
 	var mcts = BattleMCTSManager.new()
-	add_child(mcts)
-
-	mcts.set_root(bm)
 	mcts.max_sim_iterations = max_sim_turns
 	mcts.heuristic_probability = heuristic_probability
 	mcts.heuristic_prior_reward_per_iteration = heuristic_prior_reward_per_iteration
@@ -39,23 +34,15 @@ func choose_move(state: BattleGridState) -> MoveInfo:
 	mcts.debug_bmfast_internals = CFG.debug_check_bmfast_internals
 	mcts.debug_max_saved_fail_replays = CFG.debug_mcts_max_saved_fail_replays
 	
-	# Roundabout way to ensure the signal is handled by the main thread
-	mcts.complete.connect(func():
-		iterate_complete_mutex.lock() 
-		set_deferred("is_iterate_complete", true)
-		iterate_complete_mutex.unlock()
-	)
+	_thread = AIThread.from(state, mcts, iterations)
+	_thread.reward_per_visit_dither = reward_per_visit_dither
+	add_child(_thread)
+	_thread.start()
 	
-	thread = Thread.new()
-	
-	thread.start(
-		mcts.iterate.bind(iterations), 
-		Thread.PRIORITY_HIGH
-	)
-	await complete
+	await _thread.complete
 	
 	# Replaying failed playouts for debugging purposes
-	# To debug, set a breakpoint in GDB on BattleManagerFastCpp::play_moves
+	# To debug, set a breakpoint in GDB on BattleManagerFast::play_moves
 	var i = 0
 	for moves in mcts.get_error_replays():
 		push_error("Detected a failed MCTS playout no %s (move sequence: %s)" % [i, moves])
@@ -70,9 +57,10 @@ func choose_move(state: BattleGridState) -> MoveInfo:
 			bm_replay_helper.play_move(move)
 		replay.save_as("MCTS Fail %s" % [i])
 		i += 1
+	
 	mcts.debug_print_move_lists = true
-	var tuple = mcts.get_optimal_move(reward_per_visit_dither)
-	var move = bm.libspear_tuple_to_move_info(tuple)
+	var tuple = _thread.mcts.get_optimal_move(reward_per_visit_dither)
+	var move = _thread.bm.libspear_tuple_to_move_info(tuple)
 	
 	# Just in case of bugs
 	if move.target_tile_coord.x < 0 or move.target_tile_coord.y < 0:
@@ -83,26 +71,8 @@ func choose_move(state: BattleGridState) -> MoveInfo:
 		else:
 			push_error("MCTS AI tried to perform an invalid move, falling back to random...")
 		
+		_thread.destroy()
 		return AiBotStateRandom.choose_move_static(state)
 	
-	mcts.queue_free()
+	_thread.destroy()
 	return move
-
-func cleanup_after_move():
-	if thread:
-		thread.wait_to_finish()
-	thread = null
-
-func _process(_delta):
-	# Suddenly awaiting on timer from a worker thread became an issue for some reason
-	iterate_complete_mutex.lock()
-	if is_iterate_complete:
-		is_iterate_complete = false
-		complete.emit()
-	iterate_complete_mutex.unlock()
-
-func _exit_tree():
-	# Force graceful exit, good enough for now, but 
-	# TODO consider making it not hang the game for the duration of AI finishing its thinking
-	if thread:
-		thread.wait_to_finish()
