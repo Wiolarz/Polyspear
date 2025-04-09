@@ -41,8 +41,6 @@ func _ready() -> void:
 
 #region helpers
 
-
-
 ## Camera bounds
 func get_bounds_global_position() -> Rect2:
 	if not world_game_is_active():
@@ -60,8 +58,7 @@ func get_bounds_global_position() -> Rect2:
 
 func get_current_player_capital() -> City:
 	var player_state = WS.get_faction_by_index(WS.current_player_index)
-	if not player_state:
-		return null
+	assert(player_state)
 	return player_state.capital_city
 
 
@@ -278,9 +275,14 @@ func start_combat( \
 		if biggest_army_size < army_size:
 			biggest_army_size = army_size
 
-	# Swap neutral armies with different play controllers
-	# We assume that battles involving neutrals cannot contain number of unique team armies equal to number of teams in the game
-	#counting unique teams
+
+	# Give control over the neutral armies to players not present in battle
+	# which don't have any allies partaking in it.
+	# We assume that battles involving neutrals cannot contain number of unique
+	# teams + neutral armies equal to number of teams in the game
+	# TODO create tests for maps to verify number of unique teams for special neutral armies encounters to take into account this system
+
+	# counting unique teams
 	var teams_present_in_battle : Array[int] = []
 	for army in armies_:
 		# neutral armies don't have army controller and they are neutral
@@ -288,8 +290,7 @@ func start_combat( \
 		if army.controller and army.controller.team not in teams_present_in_battle:
 			teams_present_in_battle.append(army.controller.team)
 
-
-	#assigning players to control neutrals
+	# assigning players to control neutrals
 	var player_idx_to_control_neutral : int = WS.current_player_index
 	for army in armies_:
 		if army.controller: # we search only for neutral armies
@@ -301,12 +302,11 @@ func start_combat( \
 			# no need to verify if player has been assigned, as each neutral has to be controlled by unique team anyway.
 			var player : Player = WS.player_states[player_idx_to_control_neutral].controller
 			if player.team not in teams_present_in_battle:
-				#TODO refactor armies so that we have clear seperation from checking who can attack who, and who gets to control those units. Current getter for controller from faction may not be correct
+				#TODO refactor armies so that we have clear seperation from checking who can attack who, and who gets to control those units.
+				#As the current getter for controller from faction may not be correct
 				army.faction = WS.player_states[player_idx_to_control_neutral] # Setting up the player to control the army
 				army.controller_index = player_idx_to_control_neutral # TEMP
 				teams_present_in_battle.append(player.team)
-
-
 
 	combat_tile = combat_coord
 	var battle_map : DataBattleMap = WS.get_battle_map_at(combat_tile, biggest_army_size)
@@ -432,7 +432,7 @@ func _refresh_army_form_position(army_form : ArmyForm) -> void:
 
 func get_serializable_state() -> SerializableWorldState:
 	var state := SerializableWorldState.new()
-	if WS:
+	if world_game_is_active():
 		state = WS.to_network_serializable()
 	return state
 
@@ -479,32 +479,32 @@ func callback_combat_started(armies_ : Array, coord_ : Vector2i) -> void:
 	start_combat(armies_, coord_)
 
 
-#endregion
+#endregion callbacks
 
 
 #region cheats
 
-
+## Add goods to the player
 func cheat_money(new_wood : int = 100, new_iron : int = 100, new_ruby : int = 100) -> void:
-	# Add goods to the player
-	WS.player_states[WS.current_player_index].goods.add(
+	WS.get_current_player().goods.add(
 		Goods.new(new_wood, new_iron, new_ruby)
 	)
 
 
+## Add movement points to a hero
 func hero_speed_cheat(speed : int = 100) -> void:
 	if not selected_hero:
 		print("no selected hero")
 		return
-	# Add movement points to a hero
 	WM.selected_hero.entity.hero.movement_points += speed
 
 
+## Level up hero n times
 func hero_level_up(levels : int = 1) -> void:
 	if not selected_hero:
 		print("no selected hero")
 		return
-	# Level up hero n times
+
 	for i in range(levels):
 		selected_hero.entity.hero._level_up()
 	# After leveling up xp is a negative value
