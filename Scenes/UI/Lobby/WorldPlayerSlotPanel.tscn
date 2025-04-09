@@ -65,11 +65,11 @@ custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
 text = "Color"
 
-[node name="ButtonFaction" type="Button" parent="HBoxContainer"]
+[node name="ButtonRace" type="Button" parent="HBoxContainer"]
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
 text = "Elves"
 
 [connection signal="pressed" from="HBoxContainer/ButtonTakeLeave" to="." method="_on_button_take_leave_pressed"]
 [connection signal="pressed" from="HBoxContainer/ButtonColor" to="." method="_on_button_color_pressed"]
-[connection signal="pressed" from="HBoxContainer/ButtonFaction" to="." method="_on_button_faction_pressed"]
+[connection signal="pressed" from="HBoxContainer/ButtonRace" to="." method="_on_button_race_pressed"]

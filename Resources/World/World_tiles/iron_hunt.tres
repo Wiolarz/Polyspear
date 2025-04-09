@@ -5,5 +5,5 @@
 [resource]
 script = ExtResource("1_6jcc6")
 type = "hunt_spot iron"
-texture_path = "res://Art/world_map/iron_hunt.png"
+texture_path = "res://Art/world_map/hunt_iron.png"
 flip_horizontal = false

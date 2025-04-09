@@ -13,7 +13,7 @@ var button_take_leave_state : TakeLeaveButtonState = TakeLeaveButtonState.FREE
 
 @onready var button_take_leave = $HBoxContainer/ButtonTakeLeave
 @onready var label_name = $HBoxContainer/PlayerInfoPanel/Label
-@onready var button_faction = $HBoxContainer/ButtonFaction
+@onready var button_race = $HBoxContainer/ButtonRace
 
 func try_to_take():
 	if not setup_ui:
@@ -33,10 +33,10 @@ func cycle_color(backwards : bool = false):
 	setup_ui.cycle_color_slot(self, backwards)
 
 
-func cycle_faction(backwards : bool = false):
+func cycle_race(backwards : bool = false):
 	if not setup_ui:
 		return
-	setup_ui.cycle_faction_slot(self, backwards)
+	setup_ui.cycle_race_slot(self, backwards)
 
 
 func set_visible_color(c : Color):
@@ -74,11 +74,11 @@ func set_visible_take_leave_button_state(state : TakeLeaveButtonState):
 			button_take_leave.disabled = true
 
 
-func set_visible_faction(faction : DataFaction):
-	if faction == null:
-		button_faction.text = "nobody"
+func set_visible_race(race : DataRace):
+	if race == null:
+		button_race.text = "nobody"
 		return
-	button_faction.text = faction.faction_name
+	button_race.text = race.race_name
 
 
 func _on_button_take_leave_pressed():
@@ -96,5 +96,5 @@ func _on_button_color_pressed():
 	cycle_color()
 
 
-func _on_button_faction_pressed():
-	cycle_faction()
+func _on_button_race_pressed():
+	cycle_race()

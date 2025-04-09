@@ -5,15 +5,15 @@ extends CanvasLayer
 @onready var city_ui : CityUi = $CityUi
 @onready var heroes_list : BoxContainer = $HeroesList
 
-var world_state_ugly : WorldState
+
 
 func _ready():
 	city_ui.purchased_hero.connect(refresh_heroes)
 
 
 func _process(_delta):
-	if WM.world_state:
-		good_label.text = WM.world_state.get_current_player().goods.to_string()
+	if WM.world_game_is_active():
+		good_label.text = WS.get_current_player().goods.to_string()
 
 
 func game_started():
@@ -21,15 +21,12 @@ func game_started():
 	$YouWinPanel.hide()
 
 
-func refresh_world_state_ugly(world_state : WorldState) -> void:
-	world_state_ugly = world_state
-	city_ui.world_state_ugly = world_state
 
 
 func refresh_heroes():
 	Helpers.remove_all_children(heroes_list)
-	var player_index = world_state_ugly.current_player_index
-	var player_state = world_state_ugly.get_player(player_index)
+	var player_index = WS.current_player_index
+	var player_state = WS.get_faction_by_index(player_index)
 	if not player_state:
 		return
 	for army in player_state.hero_armies:
@@ -82,6 +79,4 @@ func _on_menu_pressed():
 
 
 func _on_end_turn_pressed():
-	WM.try_end_turn()
-	#refresh_player_buttons()
-	#refresh_heroes(WM.current_player)
+	WM.end_turn()

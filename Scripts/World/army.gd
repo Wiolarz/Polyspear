@@ -7,6 +7,18 @@ var hero : Hero
 
 var controller_index : int
 
+## after battle starts, control over this army is assigned to a player, [br]
+## once battle is over that controll has to be removed
+var is_neutral : bool = false
+
+var faction : Faction
+
+var controller : Player:
+	get:
+		if faction:  # neutral armies don't have player assigned
+			return faction.controller
+		return null
+
 var coord : Vector2i
 
 
@@ -45,8 +57,8 @@ func add_xp(gained_xp : int) -> void:
 		hero.add_xp(gained_xp)
 
 
-func on_end_of_turn(player_index : int):
-	if player_index == controller_index and hero:
+func on_end_of_round():
+	if hero:
 		hero.movement_points = hero.max_movement_points
 
 
