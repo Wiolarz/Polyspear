@@ -11,6 +11,44 @@ extends Node2D
 		assert("'frames' must be modified via anim.sprite_frames")
 
 
+#region Initialization
+
+## Apply the sprite , with regard to "local" side
+## WARNING: called directly in UNIT EDITOR
+func apply_sprite(side_local : int, texture_path : String) -> void:
+	if texture_path == null or texture_path.is_empty():
+		sprite.texture = null
+		sprite.hide()
+		return
+	sprite.texture = load(texture_path)
+	
+	flip_sprite(side_local)
+
+	sprite.show()
+
+
+## Add the animation to the animated sprite of SymbolForm 
+func apply_activation_anim(symbol : DataSymbol) -> void:
+	var symbol_animation : SymbolAnimation = symbol.symbol_animation
+	if not symbol_animation:
+		return #Animation does not exists for given symbol
+		
+	anim.sprite_frames = symbol.symbol_animation
+	anim.scale = symbol_animation.scale
+	anim.position = symbol_animation.offset
+
+
+## Flips ths sprite so that weapons always point to the top of the screen
+func flip_sprite(rotation_local: int):
+	if rotation_local in [0, 1, 5]:  # LEFT
+		sprite.flip_v = false
+	else:
+		sprite.flip_v = true
+
+#endregion
+
+#region Animations
+
 func _fade_symbol_in(anim_tween : Tween):
 	# Had to turn off use_parent_material in SymbolForm for this to work
 	anim_tween.tween_property(sprite, "modulate:a", 1, CFG.anim_symbol_fade_in_out_time)
@@ -131,3 +169,5 @@ func anim_symbol_block():
 
 func get_block_duration():
 	return anim.sprite_frames.get_animation_duration("block")
+
+#endregion

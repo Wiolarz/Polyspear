@@ -10,7 +10,6 @@ const selection_mark_scene = preload("res://Scenes/Form/SelectionMark.tscn")
 @onready var sprite_border := $sprite_border
 
 var entity : Unit
-var _symbols_flipped : bool = true  # flag used for unit rotation
 
 ## these variables are needed for visual effects -- hex border needs
 ## them both to refresh its hightlight level
@@ -60,10 +59,13 @@ func apply_graphics(template : DataUnit, color : DataPlayerColor):
 	_apply_level_number(template.level)
 
 	for side in range(0,6):
-		var symbol_texture = template.symbols[side].texture_path
-
-		_apply_symbol_sprite(side, symbol_texture)
-		_apply_symbol_activation_anim(side, template.symbols[side])
+		var data_symbol = template.symbols[side]
+		var symbol = get_symbol(side)
+		var unit_rotation = entity.unit_rotation if entity else 0
+		var side_local = (unit_rotation + side) % 6
+		
+		symbol.apply_sprite(side_local, data_symbol.texture_path)
+		symbol.apply_activation_anim(data_symbol)
 	
 	_flip_unit_sprite()
 	$RigidUI/SpellEffect1.texture = null
@@ -72,42 +74,6 @@ func apply_graphics(template : DataUnit, color : DataPlayerColor):
 	$RigidUI/SpellEffectCounter2.text = ""
 	$RigidUI/TerrainEffect.texture = null
 
-
-# TODO move all symbol related functions to symbol_form.gd
-## WARNING: called directly in UNIT EDITOR
-func _apply_symbol_sprite(side : int, texture_path : String) -> void:
-	var symbol_sprite := get_symbol(side).sprite
-	if texture_path == null or texture_path.is_empty():
-		symbol_sprite.texture = null
-		symbol_sprite.hide()
-		return
-	symbol_sprite.texture = load(texture_path)
-
-	_flip_symbol_sprite(symbol_sprite, side)
-
-	symbol_sprite.show()
-
-## Half-brained knock-off of _apply_symbol_sprite() to add the animation to the animated sprite of SymbolForm 
-func _apply_symbol_activation_anim(side : int, symbol : DataSymbol) -> void:
-	var symbol_animation : SymbolAnimation = symbol.symbol_animation
-	var symbol_anim_sprite := get_symbol(side).anim
-	if not symbol_animation:
-		return #Animation does not exists for given symbol
-		
-	symbol_anim_sprite.sprite_frames = symbol.symbol_animation
-	symbol_anim_sprite.scale = symbol_animation.scale
-	symbol_anim_sprite.position = symbol_animation.offset
-
-
-## Flips ths sprite so that weapons always point to the top of the screen
-func _flip_symbol_sprite(symbol_sprite : Sprite2D, dir : int):
-	var abstract_rotation : int = 0
-	if entity != null:
-		abstract_rotation = (entity.unit_rotation + dir) % 6
-	if abstract_rotation in [0, 1, 5]:  # LEFT
-		symbol_sprite.flip_v = false
-	else:
-		symbol_sprite.flip_v = true
 
 func _flip_unit_sprite():
 	var abstract_rotation : int = 0
@@ -227,13 +193,10 @@ func get_symbol(side_local : int) -> SymbolForm:
 
 
 func _rotation_symbol_flip():
-	_symbols_flipped = true
-
 	for dir in range(6):
-		var symbol_sprite = $"Symbols".get_children()[dir].get_child(0).get_child(0)
-		if symbol_sprite.texture == null:
-			continue
-		_flip_symbol_sprite(symbol_sprite, dir)
+		var abstract_rotation = (entity.unit_rotation + dir) % 6
+		get_symbol(dir).flip_sprite(abstract_rotation)
+	
 
 #region UI
 
