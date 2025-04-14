@@ -1,6 +1,51 @@
 class_name DataSymbol
 extends Resource
 
-
-@export var type : E.Symbols
+@export var symbol_name : String
 @export var texture_path : String
+
+## power has to bigger than defense power to kill a unit
+@export var attack_power : int = 0
+
+## 0 no shield, 1 weak shield (any symbol), 2 normal shield, 3 strong shield
+@export var defense_power : int = 0
+
+
+@export var push_power : int = 0
+
+@export var counter_attack : bool = false
+
+@export var parry : bool = false
+@export var parry_break : bool = false
+
+## return how many tiles does range weapon attack can reach [br]
+## -1 = infinite
+@export var reach : int = 0
+
+#region Effects
+
+## returns true if symbol can push
+func can_it_push() -> bool:
+	return push_power > 0
+
+
+func does_attack_succeed(defense_symbol : DataSymbol) -> bool:
+	return attack_power > defense_symbol.defense_power
+
+
+## will_parry_occur
+func will_melee_effect_occur(defense_symbol : DataSymbol) -> bool:
+	if parry_break:
+		return true
+	return not defense_symbol.parry
+
+
+func does_it_shoot() -> bool:
+	return reach > 0
+
+
+func is_offensive() -> bool:
+	return attack_power > 0 or push_power > 0
+
+
+#endregion Effects

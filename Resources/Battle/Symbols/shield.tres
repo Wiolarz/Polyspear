@@ -4,5 +4,12 @@
 
 [resource]
 script = ExtResource("1_5wrht")
-type = 3
+symbol_name = "shield"
 texture_path = "res://Art/items/pavise.png"
+attack_power = 0
+defense_power = 2
+push_power = 0
+counter_attack = false
+parry = false
+parry_break = false
+reach = 0

@@ -4,5 +4,12 @@
 
 [resource]
 script = ExtResource("1_fpy2d")
-type = 5
+symbol_name = "push"
 texture_path = "res://Art/items/fist.png"
+attack_power = 0
+defense_power = 0
+push_power = 1
+counter_attack = false
+parry = false
+parry_break = false
+reach = 0

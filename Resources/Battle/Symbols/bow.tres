@@ -5,5 +5,12 @@
 [resource]
 resource_name = "res://Art/old/bow.png"
 script = ExtResource("1_xgyuy")
-type = 4
+symbol_name = "bow"
 texture_path = "res://Art/items/bow.png"
+attack_power = 2
+defense_power = 0
+push_power = 0
+counter_attack = false
+parry = false
+parry_break = false
+reach = 4

@@ -63,6 +63,9 @@ const WORLD_MAP_TILES_PATH = "res://Resources/World/World_tiles/"
 const SYMBOLS_PATH = "res://Resources/Battle/Symbols/"
 const BATTLE_BOTS_PATH = "res://Resources/Battle/Bots"
 
+const EMPTY_SYMBOL_PATH = "res://Resources/Battle/Symbols/empty.tres"
+@onready var EMPTY_SYMBOL : DataSymbol = load(EMPTY_SYMBOL_PATH)
+
 const ROCK_ICON_PATH = "res://Art/battle_map/rock.png"
 const SWAMP_ICON_PATH = "res://Art/battle_map/swamp.png"
 const MANA_ICON_PATH = "res://Art/battle_map/mana_well.png"

@@ -5,5 +5,12 @@
 [resource]
 resource_name = "res://Art/old/bow.png"
 script = ExtResource("1_neq3m")
-type = 14
+symbol_name = "mace"
 texture_path = "res://Art/items/mace.png"
+attack_power = 2
+defense_power = 0
+push_power = 3
+counter_attack = false
+parry = false
+parry_break = false
+reach = 0
