@@ -162,20 +162,23 @@ func anim_symbol(side : int, animation_type : int, target_coord: Vector2i = Vect
 			symbol.anim_symbol_teleporting_projectile(target_coord, side)
 		
 		CFG.SymbolAnimationType.BLOCK:
-			symbol.anim_symbol_block()
-			
 			var block_anim_duration : float = symbol.get_block_duration()
 			
 			var data_symbol : E.Symbols = \
 				other_unit.entity.template.symbols[opposite_side_local].type
 			
 			if Unit.does_it_shoot(data_symbol):
-				other_symbol.anim_symbol_teleporting_projectile(target_coord, side)
+				other_symbol.anim_symbol_teleporting_projectile(
+					entity.coord, 
+					GenericHexGrid.opposite_direction(side)
+				)
 			else:
 				other_symbol.anim_symbol_melee(
 					CFG.SymbolAnimationType.MELEE_ATTACK, 
 					block_anim_duration
 				)
+				
+			symbol.anim_symbol_block()
 		
 		_:
 			assert(false, "Unimplemented animation type")
