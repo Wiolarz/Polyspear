@@ -1,7 +1,7 @@
 #include "battle_mcts.hpp"
 
-#include <math.h>
-#include <assert.h>
+#include <cmath>
+#include <cassert>
 #include <limits>
 #include <utility>
 #include <algorithm>

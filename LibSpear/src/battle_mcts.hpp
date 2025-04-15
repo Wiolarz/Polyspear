@@ -1,10 +1,6 @@
 #ifndef BATTLE_MCTS_HPP
 #define BATTLE_MCTS_HPP
 
-#ifdef WIN32
-#include "windows.h"
-#endif
-
 #include "battle_manager_fast.hpp"
 #include <unordered_map>
 #include <memory>
@@ -107,7 +103,7 @@ public:
 
 	void print_move_list();
 
-	inline bool should_save_replays() {
+	bool should_save_replays() {
 		return _error_playouts.size() < debug_max_saved_fail_replays;
 	}
 };

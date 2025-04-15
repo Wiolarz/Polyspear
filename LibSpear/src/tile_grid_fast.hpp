@@ -1,10 +1,6 @@
 #ifndef TILE_GRID_FAST_H
 #define TILE_GRID_FAST_H
 
-#ifdef WIN32
-#include "windows.h"
-#endif
-
 #include "godot_cpp/classes/node.hpp"
 #include "godot_cpp/variant/vector2i.hpp"
 #include "godot_cpp/variant/string.hpp"
@@ -38,15 +34,15 @@ public:
 	}
 
 	void set_tile(Position pos, Tile tile);
-	constexpr const std::span<const Position> get_spawns(int army) const {
+	constexpr std::span<const Position> get_spawns(int army) const {
 		return std::span(_spawns[army]).subspan(0, _numbers_of_spawns[army]);
 	}
 
-	inline unsigned get_number_of_mana_wells() const {
+	unsigned get_number_of_mana_wells() const {
 		return _number_of_mana_wells;
 	}
 
-	const inline Vector2i get_dims() const {
+	Vector2i get_dims() const {
 		return _dims;
 	}
 };
@@ -60,19 +56,19 @@ protected:
 	static void _bind_methods();
 
 public:
-	inline TileGridFast get_grid_copy() {
+	TileGridFast get_grid_copy() {
 		return grid;
 	}
 
 	void set_map_size(Vector2i dimensions);
-	inline void set_tile(
+	void set_tile(
 			Vector2i pos, bool passable, bool wall, bool swamp, 
 			bool mana_well, bool pit, bool hill, int army, unsigned direction
 	) {
 		grid.set_tile(Position(pos.x, pos.y), Tile(passable, wall, swamp, mana_well, pit, hill, army, direction));
 	}
 
-	const inline Vector2i get_dims() const {
+	Vector2i get_dims() const {
 		return grid.get_dims();
 	}
 };

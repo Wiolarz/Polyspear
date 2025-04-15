@@ -2,7 +2,7 @@
 #include "godot_cpp/core/class_db.hpp"
 #include "godot_cpp/core/error_macros.hpp"
  
-#include <stdlib.h>
+#include <cstdlib>
 #include <random>
 #include <csignal>
 
@@ -543,7 +543,7 @@ void BattleManagerFast::_refresh_legal_moves() {
 	_moves.reserve(64);
 
 	auto& army = _armies[_current_army];
-	auto& spawns = _tiles.get_spawns(_current_army);
+	auto spawns = _tiles.get_spawns(_current_army);
 
 	Move move;
 

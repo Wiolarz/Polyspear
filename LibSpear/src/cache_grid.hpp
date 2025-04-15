@@ -11,19 +11,17 @@ using godot::Vector2i;
 
 
 class CacheGrid {
-	using T = UnitID;
-
-	std::vector<T> _grid{};
+	std::vector<UnitID> _grid{};
 	Vector2i _dims{};
 public:
 	CacheGrid() = default;
-	CacheGrid(TileGridFastCpp& tg) 
+	CacheGrid(TileGridFastCpp& tg)
 		: _dims(tg.get_dims())
 	{
 		_grid.resize(_dims.x * _dims.y);
 	}
 
-	_FORCE_INLINE_ T& operator[](Position pos) {
+	_FORCE_INLINE_ UnitID& operator[](Position pos) {
 		unsigned idx = pos.x + pos.y * _dims.x;
 		if(pos.x < 0 || pos.x >= _dims.x || pos.y < 0 || pos.y >= _dims.y) {
 			ERR_FAIL_V_MSG(_err_return_dummy_uid , std::format("Position {},{} not present in CacheGrid", pos.x, pos.y).c_str());
@@ -31,7 +29,7 @@ public:
 		return _grid[idx];
 	}
 
-	_FORCE_INLINE_ const T get(Position pos) const {
+	_FORCE_INLINE_ const UnitID get(Position pos) const {
 		unsigned idx = pos.x + pos.y * _dims.x;
 		if(pos.x < 0 || pos.x >= _dims.x || pos.y < 0 || pos.y >= _dims.y) {
 			return NO_UNIT;
@@ -39,7 +37,7 @@ public:
 		return _grid[idx];
 	}
 
-	inline void update_armies(ArmyList& armies) {
+	void update_armies(ArmyList& armies) {
 		for(auto& i: _grid) {
 			i = NO_UNIT;
 		}
@@ -57,12 +55,12 @@ public:
 		}
 	}
 
-	inline void move(Position old, Position newpos) {
-		(*this)[newpos] =  (*this)[old];
+	void move(Position old, Position newpos) {
+		(*this)[newpos] = (*this)[old];
 		(*this)[old] = NO_UNIT;
 	}
 
-	inline bool self_test(ArmyList& armies) {
+	bool self_test(ArmyList& armies) {
 		CacheGrid new_cache = *this;
 		new_cache.update_armies(armies);
 		for(unsigned i = 0; i < _grid.size(); i++) {
