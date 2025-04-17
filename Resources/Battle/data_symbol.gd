@@ -22,6 +22,16 @@ extends Resource
 ## -1 = infinite
 @export var reach : int = 0
 
+
+#Both false is a passive weapon (shield)
+# turn only - bow
+# move only - javelin
+## Determines if symbol activates during rotation
+@export var activate_turn : bool = true
+## Determines if symbol activates during movement
+@export var activate_move : bool = true
+
+
 #region Effects
 
 ## returns true if symbol can push
@@ -44,8 +54,12 @@ func does_it_shoot() -> bool:
 	return reach > 0
 
 
-func is_offensive() -> bool:
-	return attack_power > 0 or push_power > 0
+func is_offensive(action_type : E.MoveType) -> bool:
+	if (action_type == E.MoveType.TURN and activate_turn) or \
+	   (action_type == E.MoveType.MOVE and activate_move):
+		return attack_power > 0 or push_power > 0
+	else:
+		return false
 
 
 #endregion Effects

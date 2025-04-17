@@ -221,11 +221,11 @@ func _undo_push(_move : MoveInfo , pushed : MoveInfo.PushedUnit) -> void:
 
 ## returns true when unit should stop processing further steps
 ## it died or battle ended
-func _process_symbols(unit : Unit) -> bool:
+func _process_symbols(unit : Unit, move_type : E.MoveType) -> bool:
 	if _should_die_to_counter_attack(unit):
 		_kill_unit(unit)
 		return true
-	_process_offensive_symbols(unit)
+	_process_offensive_symbols(unit, move_type)
 	if not battle_is_ongoing():
 		return true
 	return false
@@ -264,10 +264,10 @@ func _should_die_to_counter_attack(unit : Unit) -> bool:
 	return false
 
 
-func _process_offensive_symbols(unit : Unit) -> void:
+func _process_offensive_symbols(unit : Unit, move_type : E.MoveType) -> void:
 	for side in range(6):
 		var unit_weapon = unit.get_symbol(side)
-		if not unit_weapon.is_offensive():
+		if not unit_weapon.is_offensive(move_type):
 			continue  # We don't have any weapon
 		if unit_weapon.does_it_shoot():
 			_process_bow(unit, side, unit_weapon)
@@ -564,6 +564,8 @@ func _can_kill_or_push(me : Unit, other_unit : Unit, attack_direction : int):
 	var enemy_symbol = other_unit.get_symbol(defense_direction)
 	var front_symbol : DataSymbol = me.get_front_symbol()
 
+	if not front_symbol.activate_turn:  # weapon doesn't activate until unit gets to the next hex
+		return false
 	if not front_symbol.will_melee_effect_occur(enemy_symbol):
 		return false  # parry ignores our melee symbols
 
@@ -694,7 +696,7 @@ func _switch_participant_turn() -> void:
 func _perform_move(unit : Unit, direction : int, target_tile_coord : Vector2i) -> void:
 	# TURN
 	unit.turn(direction)
-	if _process_symbols(unit):
+	if _process_symbols(unit, E.MoveType.TURN):
 		return
 	currently_processed_move_info.register_turning_complete()
 	# MOVE
@@ -706,7 +708,7 @@ func _perform_move(unit : Unit, direction : int, target_tile_coord : Vector2i) -
 	_change_unit_coord(unit, target_tile_coord)
 	unit.move(target_tile_coord, target_tile)
 	currently_processed_move_info.register_locomote_complete()
-	if _process_symbols(unit):
+	if _process_symbols(unit, E.MoveType.MOVE):
 		return
 
 
@@ -728,7 +730,7 @@ func _perform_teleport(unit : Unit, target_tile_coord : Vector2i, direction : in
 	unit.move(target_tile_coord, _get_battle_hex(target_tile_coord))
 	currently_processed_move_info.register_locomote_complete()
 	if not martyr:
-		_process_symbols(unit)
+		_process_symbols(unit, E.MoveType.MOVE)
 
 
 ## Spell effect: [br]
@@ -753,7 +755,7 @@ func _perform_dash(unit : Unit, target_tile_coord : Vector2i, power : int = 3) -
 		unit.move(target_tile_coord, _get_battle_hex(target_tile_coord))
 		target_tile_coord = GenericHexGrid.adjacent_coord(target_tile_coord, direction)
 		#currently_processed_move_info.register_locomote_complete() #TODO verify if needed
-		_process_offensive_symbols(unit)
+		_process_offensive_symbols(unit, E.MoveType.MOVE)
 
 	if _should_die_to_counter_attack(unit):
 		_kill_unit(unit)
@@ -1244,13 +1246,13 @@ func filter_only_kill_moves(all_moves : Array[MoveInfo]) -> Array[MoveInfo]:
 	return all_kill_moves
 
 
-func _get_melee_attack_kills(unit : Unit, direction : int, coord : Vector2i) -> Array[Unit]:
+func _get_melee_attack_kills(unit : Unit, direction : int, coord : Vector2i, move_type : E.MoveType) -> Array[Unit]:
 	var adjacent_units : Array[Unit] = _get_adjacent_units(coord)
 	var killed_enemy_units : Array[Unit] = []
 
 	for side in range(6):
 		var unit_weapon = unit.get_symbol_when_rotated(direction, side)
-		if not unit_weapon.is_offensive():
+		if not unit_weapon.is_offensive(move_type):
 			continue  # We don't have any weapon
 		if unit_weapon.does_it_shoot():
 			continue  # we don't verify ranged weapons here
@@ -1338,7 +1340,7 @@ func _get_counter_attack_killers(unit : Unit, direction : int, coord : Vector2i)
 
 ## Returns unit references of targets that this unit would have pushed it if were to move in given direction [br]
 ## coord argument is optional as it is useful only during teleportation magic prediction
-func _get_pushed_away_targets(unit : Unit, direction : int, coord : Vector2i = Vector2i.ZERO) -> Array[Unit]:
+func _get_pushed_away_targets(unit : Unit, direction : int, move_type : E.MoveType, coord : Vector2i = Vector2i.ZERO) -> Array[Unit]:
 	var pushed_away_units : Array[Unit] = []
 	if coord == Vector2i.ZERO:
 		coord = unit.coord
@@ -1346,7 +1348,7 @@ func _get_pushed_away_targets(unit : Unit, direction : int, coord : Vector2i = V
 	var adjacent_units : Array[Unit] = _get_adjacent_units(coord)
 	for side in range(6):
 		var unit_weapon : DataSymbol = unit.get_symbol_when_rotated(direction, side)
-		if not unit_weapon.is_offensive():
+		if not unit_weapon.is_offensive(move_type):
 			continue  # We don't have any weapon
 		if unit_weapon.does_it_shoot():
 			continue  # we don't verify ranged weapons here
@@ -1386,10 +1388,11 @@ func _is_kill_move(move : MoveInfo) -> bool:
 func get_move_consequences(move : MoveInfo) -> MoveConsequences:
 	# list of checks:
 	# 1 verify if turning in (starting move with that unit) will even work
-	# 2 moving in that direction would shoot someone
+	# 2 turning in that direction would shoot someone
 	# 3 turing in that direction will kill someone
 	# 4 you can survive entering that tile
 	# 5 you can kill someone entering that tile
+	# 6 you can shoot someone after entering that tile
 
 	var kill_registered = false
 
@@ -1410,6 +1413,8 @@ func get_move_consequences(move : MoveInfo) -> MoveConsequences:
 
 		if not symbol.does_it_shoot():
 			continue
+		if not symbol.activate_turn:
+			continue
 
 		var target : Unit = _get_shot_target(move.move_source, side, symbol.reach)
 		if target and target.army_in_battle.team != attacker.army_in_battle.team:
@@ -1420,7 +1425,7 @@ func get_move_consequences(move : MoveInfo) -> MoveConsequences:
 				kill_registered = true  # can shoot enemy in this direction
 
 	# step 3 melee weapon on first rotation
-	var melee_killed_enemy_units = _get_melee_attack_kills(attacker, move_direction, move.move_source)
+	var melee_killed_enemy_units = _get_melee_attack_kills(attacker, move_direction, move.move_source, E.MoveType.TURN)
 	if melee_killed_enemy_units.size() > 0:
 		kill_registered = true
 
@@ -1436,6 +1441,7 @@ func get_move_consequences(move : MoveInfo) -> MoveConsequences:
 
 			if enemy_unit == counter_attack_killers[0] \
 				and front_symbol.does_it_shoot() \
+				and front_symbol.activate_turn \
 				and front_symbol.does_attack_succeed(enemy_symbol):
 				# unit we would kill with our arrow is that killer
 					return MoveConsequences.KILL
@@ -1446,7 +1452,7 @@ func get_move_consequences(move : MoveInfo) -> MoveConsequences:
 			counter_attack_killers.erase(killed)
 
 	# check for rare specific case when spear holder was pushed away during first rotation using melee
-	var pushed_away_units = _get_pushed_away_targets(attacker, move_direction)
+	var pushed_away_units = _get_pushed_away_targets(attacker, move_direction, E.MoveType.TURN)
 
 	for pushed_target in pushed_away_units:
 		if pushed_target in counter_attack_killers:
@@ -1464,9 +1470,26 @@ func get_move_consequences(move : MoveInfo) -> MoveConsequences:
 		if _will_push_kill(pushed_enemy_unit, move_direction, push_power):
 			return MoveConsequences.KILL
 
-	melee_killed_enemy_units = _get_melee_attack_kills(attacker, move_direction, move.target_tile_coord)
+	melee_killed_enemy_units = _get_melee_attack_kills(attacker, move_direction, move.target_tile_coord, E.MoveType.MOVE)
 	if melee_killed_enemy_units.size() > 0:
 		kill_registered = true
+
+	# step 6
+	for side in range(6):  # we check each side for a ranged attack symbol
+		var symbol : DataSymbol = attacker.get_symbol_when_rotated(side, move_direction)
+
+		if not symbol.does_it_shoot():
+			continue
+		if not symbol.activate_move:
+			continue
+
+		var target : Unit = _get_shot_target(move.move_source, side, symbol.reach)
+		if target and target.army_in_battle.team != attacker.army_in_battle.team:
+			var opposite_side = GenericHexGrid.opposite_direction(side)
+			var target_symbol : DataSymbol = target.get_symbol(opposite_side)
+
+			if symbol.does_attack_succeed(target_symbol):
+				kill_registered = true  # can shoot enemy in this direction
 
 	return MoveConsequences.KILL if kill_registered else MoveConsequences.NONE
 

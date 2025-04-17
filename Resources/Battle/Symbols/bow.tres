@@ -14,3 +14,5 @@ counter_attack = false
 parry = false
 parry_break = false
 reach = 4
+activate_turn = false
+activate_move = true

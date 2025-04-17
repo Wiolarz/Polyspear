@@ -24,7 +24,7 @@ var occupier = ""
 ## used for some simpleness at player in world
 var index : int = -1
 
-var team : int = -1  # gets assigned at IM._prepare_to_start_game
+var team : int = -1  # gets assigned at IM func: _prepare_to_start_game
 
 #TODO create a more universal timer for players that will perform well both in battle and in world
 #TODO create a more universal timer for players that will perform well both in battle and in world
@@ -39,7 +39,7 @@ static func create(new_slot : Slot) -> Player:
 	var result := Player.new()
 
 	if new_slot.is_bot():
-		assert(FileAccess.file_exists(new_slot.battle_bot_path), 
+		assert(FileAccess.file_exists(new_slot.battle_bot_path),
 			   "File for bot '%s' does not exist" % [new_slot.battle_bot_path])
 		result.bot_engine = load(new_slot.battle_bot_path).instantiate()
 		assert(result.bot_engine != null, "Bot '%s' does not exist" % new_slot.battle_bot_path)

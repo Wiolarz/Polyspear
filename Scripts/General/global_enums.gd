@@ -9,6 +9,13 @@ enum PlayerType
 	BOT,
 }
 
+enum MoveType
+{
+	TURN,
+	MOVE,
+}
+
+
 enum CameraPosition {WORLD, BATTLE}
 
 enum WorldMapTiles
