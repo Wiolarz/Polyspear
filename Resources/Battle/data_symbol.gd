@@ -8,7 +8,7 @@ extends Resource
 @export var attack_power : int = 0
 
 ## 0 no shield, 1 weak shield (any symbol), 2 normal shield, 3 strong shield
-@export var defense_power : int = 0
+@export var defense_power : int = 1
 
 
 @export var push_power : int = 0

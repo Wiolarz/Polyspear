@@ -13,6 +13,14 @@ extends Resource
 var duration_counter : int = 6
 
 
+#region Specific spells Variables
+
+
+var magic_weapon_durability : int = 4
+
+
+#endregion Specific spells Variables
+
 
 ## used to debug
 func _to_string() -> String:

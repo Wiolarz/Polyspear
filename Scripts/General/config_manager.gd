@@ -51,6 +51,7 @@ const BATTLE_BORDER_HEIGHT = 8
 
 #region Paths
 
+## Foldrs Paths
 const BATTLE_MAPS_PATH = "res://Resources/Battle/Battle_Maps/"
 const UNITS_PATH = "res://Resources/Battle/Units/"
 const HEROES_PATH = "res://Resources/Battle/Heroes/"
@@ -66,12 +67,15 @@ const BATTLE_BOTS_PATH = "res://Resources/Battle/Bots"
 const EMPTY_SYMBOL_PATH = "res://Resources/Battle/Symbols/empty.tres"
 @onready var EMPTY_SYMBOL : DataSymbol = load(EMPTY_SYMBOL_PATH)
 
+
+# Icons
 const ROCK_ICON_PATH = "res://Art/battle_map/rock.png"
 const SWAMP_ICON_PATH = "res://Art/battle_map/swamp.png"
 const MANA_ICON_PATH = "res://Art/battle_map/mana_well.png"
 
 const PLAYER_COLORS_PATH = "res://Art/player_colors/"
 
+# System folders
 const REPLAY_DIRECTORY = "user://replays/"
 const PLAYER_OPTIONS_PATH = "user://player_options.tres"
 
@@ -104,6 +108,11 @@ const OUTPOST_IRON_PATH : String = "res://Resources/Presets/Army/outpost_defende
 const OUTPOST_RUBY_PATH : String = "res://Resources/Presets/Army/outpost_defenders/outpost_ruby_defender.tres"
 
 #const HUNT_PATHS : Array[String] = [HUNT_WOOD_PATH, HUNT_IRON_PATH, HUNT_RUBY_PATH]
+
+
+
+# Heroes Passive Effects
+const tier_2_passive_1 : String = "res://Resources/Battle/Battle_Spells/Heroes_Passives/magic_weapon.tres"
 
 
 #endregion Paths

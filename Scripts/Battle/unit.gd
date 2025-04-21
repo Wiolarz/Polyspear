@@ -26,6 +26,9 @@ var army_in_battle : BattleGridState.ArmyInBattleState
 ## units constant stats resource
 var template : DataUnit
 
+## copied unit symbol data, that can be modified by spells/skills
+var symbols : Array[DataSymbol]
+
 ## coordinates on a battle grid
 var coord : Vector2i
 
@@ -57,6 +60,8 @@ static func create(new_controller : Player, \
 	result.controller = new_controller
 	result.army_in_battle = new_army_in_battle_state
 	result.template = new_template
+	result.symbols = new_template.symbols.duplicate(true)
+
 	result.coord = new_coord
 	result.unit_rotation = new_rotation
 	result.spells = new_template.spells.duplicate() # spells reset every battle
@@ -109,13 +114,13 @@ func get_symbol_when_rotated(side_world : int, hypotetical_rotation : int) -> Da
 		return CFG.EMPTY_SYMBOL
 	var side_local : int = GenericHexGrid.rotate_clockwise( \
 			side_world as GenericHexGrid.GridDirections, -hypotetical_rotation)
-	return template.symbols[side_local]
+	return symbols[side_local]
 
 
 func get_front_symbol() -> DataSymbol:
 	if is_on_swamp:
 		return CFG.EMPTY_SYMBOL
-	return template.symbols[GenericHexGrid.DIRECTION_FRONT]
+	return symbols[GenericHexGrid.DIRECTION_FRONT]
 
 #endregion Unit Symbols
 

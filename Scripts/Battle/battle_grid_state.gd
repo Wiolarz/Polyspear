@@ -819,6 +819,19 @@ func _kill_unit(target : Unit, killer_army : ArmyInBattleState = null) -> void:
 	if killer_army:
 		killer_army.killed_units.append(target.template.level)
 
+		#TODO move this elsewhere so that durability gets lowered by 1 each killing turn regardless of number of killed units
+		for effect in currently_active_unit.effects:
+			if effect.name == "Magic Weapon":
+				effect.magic_weapon_durability -= 1
+				if effect.magic_weapon_durability < 1:
+					effect.magic_weapon_durability = 1
+
+				for symbol in currently_active_unit.symbols:
+					if symbol.attack_power != 0:
+						symbol.attack_power = effect.magic_weapon_durability
+
+
+
 	# removal of unit
 	target_army.kill_unit(target)
 	_remove_unit(target) # remove reference from hextile
@@ -1702,6 +1715,19 @@ class ArmyInBattleState:
 		units_to_summon.erase(unit_data)
 		var player = IM.get_player_by_index(army_reference.controller_index)
 		var result = Unit.create(player, unit_data, coord, rotation, self)
+
+		if army_reference.hero and army_reference.hero.template.data_unit == unit_data:  # it's a hero
+			#TODO add check for acquired passive effects
+			var effect : BattleMagicEffect = load(CFG.tier_2_passive_1)
+			var success : bool = result.try_adding_magic_effect(effect)
+			assert(success, "couldn't add passive effect to a hero unit upon it's placement")
+
+
+			if effect.name == "Magic Weapon":
+				for symbol in result.symbols:
+					if symbol.attack_power != 0:
+						symbol.attack_power = effect.magic_weapon_durability
+
 		units.append(result)
 		return result
 
