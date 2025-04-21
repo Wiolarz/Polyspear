@@ -195,7 +195,8 @@ func set_effects() -> void:
 
 		var spell_texture = load(entity.effects[slot_idx].icon_path)  #TEMP spell icon path
 		spell_effects_slots[slot_idx].texture = spell_texture
-		spell_counters_slots[slot_idx].text = str(entity.effects[slot_idx].duration_counter)
+		if not entity.effects[slot_idx].passive_effect:
+			spell_counters_slots[slot_idx].text = str(entity.effects[slot_idx].duration_counter)
 
 
 

@@ -1081,11 +1081,11 @@ func _end_of_turn_magic() -> void:
 			for effect_idx in range(unit.effects.size() -1, -1, -1):
 				var magic_effect : BattleMagicEffect = unit.effects[effect_idx]
 
-				# Duration
-				magic_effect.duration_counter -= 1
-				if magic_effect.duration_counter == 0:
-					unit.effects.pop_at(effect_idx)
-					continue
+				if not magic_effect.passive_effect:  # Duration
+					magic_effect.duration_counter -= 1
+					if magic_effect.duration_counter == 0:
+						unit.effects.pop_at(effect_idx)
+						continue
 
 				match magic_effect:
 					_:
