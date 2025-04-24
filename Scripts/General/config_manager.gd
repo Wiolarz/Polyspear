@@ -58,7 +58,8 @@ enum SymbolAnimationType
 	MELEE_ATTACK,
 	BLOCK,
 	TELEPORTING_PROJECTILE,
-	COUNTER_ATTACK
+	COUNTER_ATTACK,
+	FAILED_ATTACK
 }
 
 #endregion Animations

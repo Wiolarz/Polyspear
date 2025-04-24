@@ -23,6 +23,7 @@ extends SpriteFrames
 @export_category("Blocking")
 @export var blocking_offset : Vector2 = Vector2(0,0)
 @export var blocking_scale : Vector2 = Vector2(1,1)
+@export var block_on_frame : int = 0
 
 
 # TODO make animations respect fast-forward and anim speed
@@ -36,6 +37,10 @@ func get_animation_duration(animation : StringName) -> float:
 
 func get_time_to_hit(animation : StringName) -> float:
 	return hit_on_frame * get_absolute_frame_duration(animation)
+
+
+func get_time_to_block(animation : StringName) -> float:
+	return block_on_frame * get_absolute_frame_duration(animation)
 
 
 func get_time_to_teleport(animation : StringName) -> float:
