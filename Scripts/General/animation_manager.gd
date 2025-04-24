@@ -1,5 +1,7 @@
 # Singleton - ANIM
+class_name SINGLETON_AnimationManager # just for F1 documentation
 extends Node
+
 
 enum PlaybackMode {
 	NORMAL,
@@ -19,6 +21,7 @@ func _process(_delta: float):
 	change_speed(_speed_scale)
 
 
+## Create a tween with default eases/transitions
 func create_my_tween(settings := TweenPlaybackSettings.new()) -> Tween:
 	var tween = get_tree().create_tween()
 	tween.set_ease(CFG.anim_default_ease).set_trans(CFG.anim_default_trans)
@@ -96,8 +99,66 @@ func play_tween(tween : Tween, settings := TweenPlaybackSettings.new()) -> void:
 			tween.custom_step(INF)
 
 
+## Add tweens to playback so that they are in sync, 
+## providing relative timings between them 
+## (e.g. moment of weapon impact and shield reaction).
+## Tween play callbacks and delays are appended to a given
+## parent tween (by default [code]ANIM.main_tween[/code]) and the 
+## chronologically first action is appended immediately [br]
+## Example: [br]
+## [code]
+## ANIM.sync_tweens([
+##     ANIM.TweenSync.new(attack_tween, 0.3), 
+##     ANIM.TweenSync.new(block_tween, 0.1)
+## ])
+## [/code]
+func sync_tweens(
+		tween_syncs : Array[TweenSync], 
+		parent_tween := main_tween(), 
+		settings := TweenPlaybackSettings.new()):
+	assert(not tween_syncs.is_empty(), "'tween_syncs' must have at least one element")
+	
+	tween_syncs.sort_custom(_sort_tween_sync_by_timing_desc)
+	var time := tween_syncs[0].timing
+	var end = 0.0
+	var first = true
+	
+	for sync in tween_syncs:
+		print(sync.timing, sync.total_time)
+		parent_tween.tween_interval(time - sync.timing)
+		
+		if not first:
+			time += sync.timing
+		first = false
+		
+		end = max(end, time + sync.total_time)
+		
+		sync.tween.finished.connect(_tween_finished.bind(sync.tween))
+		parent_tween.tween_callback(play_tween.bind(sync.tween, settings))
+	
+	parent_tween.tween_interval(end - time)
+
+
 func _tween_finished(tween: Tween) -> void:
-	_running_tweens.erase(tween)
+	var removed := _running_tweens.erase(tween)
+	assert(removed, "Given tween was not marked as playing")
+
+
+func _sort_tween_sync_by_timing_desc(a : TweenSync, b : TweenSync) -> bool:
+	if a.timing > b.timing:
+		return true
+	return false
+
+
+class TweenSync:
+	var tween : Tween
+	var timing : float
+	var total_time : float
+
+	func _init(_tween : Tween, _sync_time : float, _total_time : float):
+		tween = _tween
+		timing = _sync_time
+		total_time = _total_time
 
 
 class TweenPlaybackSettings:

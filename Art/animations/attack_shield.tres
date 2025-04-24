@@ -359,3 +359,4 @@ hit_on_frame = 0
 teleport_at = 0
 blocking_offset = Vector2(330, 0)
 blocking_scale = Vector2(5, 5)
+block_on_frame = 10

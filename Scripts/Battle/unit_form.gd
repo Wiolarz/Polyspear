@@ -156,30 +156,29 @@ func anim_symbol(side : int, animation_type : int, target_coord: Vector2i = Vect
 	
 	match animation_type:
 		CFG.SymbolAnimationType.MELEE_ATTACK, CFG.SymbolAnimationType.COUNTER_ATTACK:
-			symbol.anim_symbol_melee(animation_type)
+			ANIM.sync_tweens([symbol.make_melee_anim(animation_type)])
 		
 		CFG.SymbolAnimationType.TELEPORTING_PROJECTILE:
-			symbol.anim_symbol_teleporting_projectile(target_coord, side)
+			ANIM.sync_tweens([symbol.make_projectile_anim(target_coord, side)])
 		
 		CFG.SymbolAnimationType.BLOCK:
 			var block_anim_duration : float = symbol.get_block_duration()
-			
 			var data_symbol : E.Symbols = \
 				other_unit.entity.template.symbols[opposite_side_local].type
+			var attack_tween_sync: ANIM.TweenSync
 			
 			if Unit.does_it_shoot(data_symbol):
-				other_symbol.anim_symbol_teleporting_projectile(
+				attack_tween_sync = other_symbol.make_projectile_anim(
 					entity.coord, 
 					GenericHexGrid.opposite_direction(side)
 				)
 			else:
-				other_symbol.anim_symbol_melee(
-					CFG.SymbolAnimationType.MELEE_ATTACK, 
-					block_anim_duration
+				attack_tween_sync = other_symbol.make_melee_anim(
+					CFG.SymbolAnimationType.MELEE_ATTACK
 				)
 				
-			symbol.anim_symbol_block()
-		
+			var defense_tween_sync = symbol.make_block_anim()
+			ANIM.sync_tweens([attack_tween_sync, defense_tween_sync])
 		_:
 			assert(false, "Unimplemented animation type")
 
