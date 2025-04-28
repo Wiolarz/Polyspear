@@ -59,7 +59,11 @@ func apply_graphics(template : DataUnit, color : DataPlayerColor):
 	_apply_level_number(template.level)
 
 	for side in range(0,6):
-		var symbol_texture = template.symbols[side].texture_path
+		var symbol_texture
+		if entity:
+			symbol_texture = entity.symbols[side].texture_path
+		else:
+			symbol_texture = template.symbols[side].texture_path
 		_apply_symbol_sprite(side, symbol_texture)
 
 	_flip_unit_sprite()

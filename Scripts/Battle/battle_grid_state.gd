@@ -1738,6 +1738,12 @@ class ArmyInBattleState:
 				for symbol in result.symbols:
 					if symbol.attack_power != 0:
 						symbol.attack_power = effect.magic_weapon_durability
+			var weak_weapon : DataSymbol = load(CFG.weak_weapon)
+			for side in range(6):
+				var symbol = result.symbols[side]
+
+				if symbol.symbol_name == "empty": # TODO verify and note the choice in the documentation, if thats a proper way to verify symbol is empty
+					result.symbols[side] = weak_weapon.duplicate()
 
 		units.append(result)
 		return result
