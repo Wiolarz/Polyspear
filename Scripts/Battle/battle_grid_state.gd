@@ -349,12 +349,18 @@ func _process_bow(unit : Unit, side : int, weapon : DataSymbol) -> void:
 
 	var opposite_side := GenericHexGrid.opposite_direction(side)
 	var enemy_weapon : DataSymbol = target.get_symbol(opposite_side)
-	if not weapon.does_attack_succeed(enemy_weapon):
-		target.unit_is_blocking.emit(opposite_side)  # animation
-		return  # blocked by shield
+	if weapon.does_attack_succeed(enemy_weapon): # not blocked by shield
+		unit.unit_is_shooting.emit(side)  # animation
+		_kill_unit(target, armies_in_battle_state[current_army_index])
+		return  # target died
 
-	unit.unit_is_shooting.emit(side)  # animation
-	_kill_unit(target, armies_in_battle_state[current_army_index])
+	if weapon.push_power > 0:
+		unit.unit_is_shooting.emit(side)  # animation
+		target.unit_is_blocking.emit(opposite_side)  # animation
+		_push_enemy(target, side, weapon.push_power)
+
+
+
 
 ## pushes enemy in non-relative direction, "power" tiles away [br]
 ## checks on each tile if it's possible to be moved to that spot [br]
@@ -1436,6 +1442,9 @@ func get_move_consequences(move : MoveInfo) -> MoveConsequences:
 
 			if symbol.does_attack_succeed(target_symbol):
 				kill_registered = true  # can shoot enemy in this direction
+			if symbol.push_power > 0 and _will_push_kill(target, side, symbol.push_power):
+				kill_registered = true  # shot enemy was pushed to his death
+
 
 	# step 3 melee weapon on first rotation
 	var melee_killed_enemy_units = _get_melee_attack_kills(attacker, move_direction, move.move_source, E.MoveType.TURN)
@@ -1503,6 +1512,8 @@ func get_move_consequences(move : MoveInfo) -> MoveConsequences:
 
 			if symbol.does_attack_succeed(target_symbol):
 				kill_registered = true  # can shoot enemy in this direction
+			if symbol.push_power > 0 and _will_push_kill(target, side, symbol.push_power):
+				kill_registered = true  # shot enemy was pushed to his death
 
 	return MoveConsequences.KILL if kill_registered else MoveConsequences.NONE
 
