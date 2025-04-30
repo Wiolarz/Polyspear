@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dvxxtnoekxj8j"
-path="res://.godot/imported/orc_knight.png-3135b9b421187e80e7b5a1fb0a849ba4.ctex"
+uid="uid://c46oqhkri5qu5"
+path="res://.godot/imported/sickle.png-7344339035993aa23164ee0d2462b88b.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Art/items/orc_knight.png"
-dest_files=["res://.godot/imported/orc_knight.png-3135b9b421187e80e7b5a1fb0a849ba4.ctex"]
+source_file="res://Art/items/sickle.png"
+dest_files=["res://.godot/imported/sickle.png-7344339035993aa23164ee0d2462b88b.ctex"]
 
 [params]
 

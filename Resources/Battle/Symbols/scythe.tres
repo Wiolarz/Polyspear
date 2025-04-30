@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="DataSymbol" load_steps=2 format=3 uid="uid://c88kbo5deq4i8"]
+
+[ext_resource type="Script" path="res://Resources/Battle/data_symbol.gd" id="1_565mh"]
+
+[resource]
+script = ExtResource("1_565mh")
+symbol_name = "scythe"
+texture_path = "res://Art/items/scythe.png"
+attack_power = 2
+defense_power = 1
+push_power = 0
+counter_attack = false
+parry = false
+parry_break = true
+reach = 0
+activate_turn = true
+activate_move = true

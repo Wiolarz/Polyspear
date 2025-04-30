@@ -113,7 +113,7 @@ const OUTPOST_RUBY_PATH : String = "res://Resources/Presets/Army/outpost_defende
 
 # Heroes Passive Effects
 const tier_2_passive_1 : String = "res://Resources/Battle/Battle_Spells/Heroes_Passives/magic_weapon.tres"
-const weak_weapon : String = "res://Resources/Battle/Symbols/staff.tres"
+const weak_weapon : String = "res://Resources/Battle/Symbols/club.tres"
 
 #endregion Paths
 

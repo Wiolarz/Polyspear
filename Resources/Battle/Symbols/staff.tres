@@ -6,7 +6,7 @@
 resource_name = "res://Art/old/bow.png"
 script = ExtResource("1_1g57i")
 symbol_name = "staff"
-texture_path = ""
+texture_path = "res://Art/items/mace.png"
 attack_power = 1
 defense_power = 1
 push_power = 0
