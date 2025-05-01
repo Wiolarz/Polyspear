@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="DataSymbol" load_steps=2 format=3 uid="uid://cpysjnpc02xfy"]
+
+[ext_resource type="Script" path="res://Resources/Battle/data_symbol.gd" id="1_o0i8a"]
+
+[resource]
+resource_name = "res://Art/old/bow.png"
+script = ExtResource("1_o0i8a")
+symbol_name = "club"
+texture_path = "res://Art/items/club.png"
+attack_power = 1
+defense_power = 1
+push_power = 0
+counter_attack = false
+parry = false
+parry_break = false
+reach = 0
+activate_turn = true
+activate_move = true

@@ -221,11 +221,11 @@ func _undo_push(_move : MoveInfo , pushed : MoveInfo.PushedUnit) -> void:
 
 ## returns true when unit should stop processing further steps
 ## it died or battle ended
-func _process_symbols(unit : Unit) -> bool:
+func _process_symbols(unit : Unit, move_type : E.MoveType) -> bool:
 	if _should_die_to_counter_attack(unit):
 		_kill_unit(unit)
 		return true
-	_process_offensive_symbols(unit)
+	_process_offensive_symbols(unit, move_type)
 	if not battle_is_ongoing():
 		return true
 	return false
@@ -243,16 +243,16 @@ func _should_die_to_counter_attack(unit : Unit) -> bool:
 			continue # no unit
 		if enemy.army_in_battle.team == unit.army_in_battle.team:
 			continue # no friendly fire within team
-		var unit_symbol : E.Symbols = unit.get_symbol(side)
+		var unit_symbol : DataSymbol = unit.get_symbol(side)
 		var opposite_side := GenericHexGrid.opposite_direction(side)
-		var enemy_symbol : E.Symbols = enemy.get_symbol(opposite_side)
+		var enemy_symbol : DataSymbol = enemy.get_symbol(opposite_side)
 
-		if Unit.will_parry_occur(enemy_symbol, unit_symbol):
+		if not enemy_symbol.will_melee_effect_occur(unit_symbol):
 			unit.unit_is_blocking.emit(side)  # animation
 			continue  # parry prevents counter attacks
 
-		if Unit.does_it_counter_attack(enemy_symbol):
-			if Unit.does_attack_succeed(enemy_symbol, unit_symbol):
+		if enemy_symbol.counter_attack:
+			if enemy_symbol.does_attack_succeed(unit_symbol):
 				# found killer
 				enemy.unit_is_counter_attacking.emit(opposite_side)  # animation
 				spear_holding_killer_teams.append(enemy.army_in_battle.team)
@@ -264,12 +264,12 @@ func _should_die_to_counter_attack(unit : Unit) -> bool:
 	return false
 
 
-func _process_offensive_symbols(unit : Unit) -> void:
+func _process_offensive_symbols(unit : Unit, move_type : E.MoveType) -> void:
 	for side in range(6):
 		var unit_weapon = unit.get_symbol(side)
-		if unit_weapon == E.Symbols.EMPTY:
+		if not unit_weapon.is_offensive(move_type):
 			continue  # We don't have any weapon
-		if Unit.does_it_shoot(unit_weapon):
+		if unit_weapon.does_it_shoot():
 			_process_bow(unit, side, unit_weapon)
 			continue  # bow is special case
 
@@ -282,13 +282,13 @@ func _process_offensive_symbols(unit : Unit) -> void:
 		var enemy = adjacent_unit
 		var opposite_side := GenericHexGrid.opposite_direction(side)
 		var enemy_weapon = enemy.get_symbol(opposite_side)
-		if Unit.will_parry_occur(unit_weapon, enemy_weapon):
+		if not unit_weapon.will_melee_effect_occur(enemy_weapon):
 			continue  # parry disables all melee symbols
 		else:
 			enemy.unit_is_blocking.emit(opposite_side)  # animation
 
 		# we check if attacking symbol power is able to kill
-		if Unit.does_attack_succeed(unit_weapon, enemy_weapon):
+		if unit_weapon.does_attack_succeed(enemy_weapon):
 			# in case of winning battle - further attack checks won't break anything
 
 			unit.unit_is_slashing.emit(side)  # animation
@@ -298,19 +298,19 @@ func _process_offensive_symbols(unit : Unit) -> void:
 			enemy.unit_is_blocking.emit(opposite_side)  # animation
 
 		# in case enemy defended against attack we check if attacker pushes away enemy
-		if Unit.can_it_push(unit_weapon):
+		if unit_weapon.can_it_push():
 			unit.unit_is_pushing.emit(side)  # animation
-			_push_enemy(enemy, side, Unit.push_power(unit_weapon))
+			_push_enemy(enemy, side, unit_weapon.push_power)
 
 
 ## Occurs only when unit is pushed, the that unit performes attacks with passive symbols
 func _process_passive_symbols(unit : Unit) -> void:
 	for side in range(6):
 		var unit_weapon = unit.get_symbol(side)
-		if not Unit.does_it_counter_attack(unit_weapon):
+		if not unit_weapon.counter_attack:
 			continue
 
-		if Unit.does_it_shoot(unit_weapon):
+		if unit_weapon.does_it_shoot():
 			_process_bow(unit, side, unit_weapon)
 			continue  # bow is special case
 
@@ -323,26 +323,24 @@ func _process_passive_symbols(unit : Unit) -> void:
 		var enemy = adjacent_unit
 		var opposite_side := GenericHexGrid.opposite_direction(side)
 		var enemy_weapon = enemy.get_symbol(opposite_side)
-		if Unit.will_parry_occur(unit_weapon, enemy_weapon):
+		if not unit_weapon.will_melee_effect_occur(enemy_weapon):
 			continue  # parry disables all melee symbols
 
 		# we check if attacking symbol power is able to kill
-		if Unit.does_attack_succeed(unit_weapon, enemy_weapon):
+		if unit_weapon.does_attack_succeed(enemy_weapon):
 			# in case of winning battle - further attack checks won't break anything
 			unit.unit_is_counter_attacking.emit(side)  # animation
 			_kill_unit(enemy, armies_in_battle_state[current_army_index])
 			continue  # enemy unit died
 
 		# in case enemy defended against attack we check if attacker pushes away enemy
-		if Unit.can_it_push(unit_weapon):
+		if unit_weapon.can_it_push():
 			unit.unit_is_pushing.emit(side)  # animation
-			_push_enemy(enemy, side, Unit.push_power(unit_weapon))
+			_push_enemy(enemy, side, unit_weapon.push_power)
 
 
-func _process_bow(unit : Unit, side : int, weapon : E.Symbols) -> void:
-	var reach = Unit.ranged_weapon_reach(weapon)
-
-	var target := _get_shot_target(unit.coord, side, reach)
+func _process_bow(unit : Unit, side : int, weapon : DataSymbol) -> void:
+	var target := _get_shot_target(unit.coord, side, weapon.reach)
 
 	if target == null:
 		return # no target
@@ -350,13 +348,19 @@ func _process_bow(unit : Unit, side : int, weapon : E.Symbols) -> void:
 		return # no friendly fire within team
 
 	var opposite_side := GenericHexGrid.opposite_direction(side)
-	var enemy_weapon : E.Symbols = target.get_symbol(opposite_side)
-	if not Unit.does_attack_succeed(weapon, enemy_weapon):
-		target.unit_is_blocking.emit(opposite_side)  # animation
-		return  # blocked by shield
+	var enemy_weapon : DataSymbol = target.get_symbol(opposite_side)
+	if weapon.does_attack_succeed(enemy_weapon): # not blocked by shield
+		unit.unit_is_shooting.emit(side)  # animation
+		_kill_unit(target, armies_in_battle_state[current_army_index])
+		return  # target died
 
-	unit.unit_is_shooting.emit(side)  # animation
-	_kill_unit(target, armies_in_battle_state[current_army_index])
+	if weapon.push_power > 0:
+		unit.unit_is_shooting.emit(side)  # animation
+		target.unit_is_blocking.emit(opposite_side)  # animation
+		_push_enemy(target, side, weapon.push_power)
+
+
+
 
 ## pushes enemy in non-relative direction, "power" tiles away [br]
 ## checks on each tile if it's possible to be moved to that spot [br]
@@ -564,16 +568,18 @@ func _can_kill_or_push(me : Unit, other_unit : Unit, attack_direction : int):
 
 	var defense_direction = GenericHexGrid.opposite_direction(attack_direction)
 	var enemy_symbol = other_unit.get_symbol(defense_direction)
-	var front_symbol : E.Symbols = me.get_front_symbol()
+	var front_symbol : DataSymbol = me.get_front_symbol()
 
-	if Unit.will_parry_occur(front_symbol, enemy_symbol):
+	if not front_symbol.activate_turn:  # weapon doesn't activate until unit gets to the next hex
+		return false
+	if not front_symbol.will_melee_effect_occur(enemy_symbol):
 		return false  # parry ignores our melee symbols
 
-	if Unit.can_it_push(front_symbol):
+	if front_symbol.can_it_push():
 		return true  # push ignores enemy_unit shields
 
 	# checks if unit attack power is sufficient
-	return Unit.does_attack_succeed(front_symbol, enemy_symbol)
+	return front_symbol.does_attack_succeed(enemy_symbol)
 
 
 func _get_player_army(player : Player) -> BattleGridState.ArmyInBattleState:
@@ -696,7 +702,7 @@ func _switch_participant_turn() -> void:
 func _perform_move(unit : Unit, direction : int, target_tile_coord : Vector2i) -> void:
 	# TURN
 	unit.turn(direction)
-	if _process_symbols(unit):
+	if _process_symbols(unit, E.MoveType.TURN):
 		return
 	currently_processed_move_info.register_turning_complete()
 	# MOVE
@@ -708,7 +714,7 @@ func _perform_move(unit : Unit, direction : int, target_tile_coord : Vector2i) -
 	_change_unit_coord(unit, target_tile_coord)
 	unit.move(target_tile_coord, target_tile)
 	currently_processed_move_info.register_locomote_complete()
-	if _process_symbols(unit):
+	if _process_symbols(unit, E.MoveType.MOVE):
 		return
 
 
@@ -730,7 +736,7 @@ func _perform_teleport(unit : Unit, target_tile_coord : Vector2i, direction : in
 	unit.move(target_tile_coord, _get_battle_hex(target_tile_coord))
 	currently_processed_move_info.register_locomote_complete()
 	if not martyr:
-		_process_symbols(unit)
+		_process_symbols(unit, E.MoveType.MOVE)
 
 
 ## Spell effect: [br]
@@ -755,7 +761,7 @@ func _perform_dash(unit : Unit, target_tile_coord : Vector2i, power : int = 3) -
 		unit.move(target_tile_coord, _get_battle_hex(target_tile_coord))
 		target_tile_coord = GenericHexGrid.adjacent_coord(target_tile_coord, direction)
 		#currently_processed_move_info.register_locomote_complete() #TODO verify if needed
-		_process_offensive_symbols(unit)
+		_process_offensive_symbols(unit, E.MoveType.MOVE)
 
 	if _should_die_to_counter_attack(unit):
 		_kill_unit(unit)
@@ -818,6 +824,19 @@ func _kill_unit(target : Unit, killer_army : ArmyInBattleState = null) -> void:
 
 	if killer_army:
 		killer_army.killed_units.append(target.template.level)
+
+		#TODO move this elsewhere so that durability gets lowered by 1 each killing turn regardless of number of killed units
+		for effect in currently_active_unit.effects:
+			if effect.name == "Magic Weapon":
+				effect.magic_weapon_durability -= 1
+				if effect.magic_weapon_durability < 1:
+					effect.magic_weapon_durability = 1
+
+				for symbol in currently_active_unit.symbols:
+					if symbol.attack_power != 0:
+						symbol.attack_power = effect.magic_weapon_durability
+
+
 
 	# removal of unit
 	target_army.kill_unit(target)
@@ -1081,11 +1100,11 @@ func _end_of_turn_magic() -> void:
 			for effect_idx in range(unit.effects.size() -1, -1, -1):
 				var magic_effect : BattleMagicEffect = unit.effects[effect_idx]
 
-				# Duration
-				magic_effect.duration_counter -= 1
-				if magic_effect.duration_counter == 0:
-					unit.effects.pop_at(effect_idx)
-					continue
+				if not magic_effect.passive_effect:  # Duration
+					magic_effect.duration_counter -= 1
+					if magic_effect.duration_counter == 0:
+						unit.effects.pop_at(effect_idx)
+						continue
 
 				match magic_effect:
 					_:
@@ -1246,15 +1265,15 @@ func filter_only_kill_moves(all_moves : Array[MoveInfo]) -> Array[MoveInfo]:
 	return all_kill_moves
 
 
-func _get_melee_attack_kills(unit : Unit, direction : int, coord : Vector2i) -> Array[Unit]:
+func _get_melee_attack_kills(unit : Unit, direction : int, coord : Vector2i, move_type : E.MoveType) -> Array[Unit]:
 	var adjacent_units : Array[Unit] = _get_adjacent_units(coord)
 	var killed_enemy_units : Array[Unit] = []
 
 	for side in range(6):
 		var unit_weapon = unit.get_symbol_when_rotated(direction, side)
-		if unit_weapon == E.Symbols.EMPTY:
+		if not unit_weapon.is_offensive(move_type):
 			continue  # We don't have any weapon
-		if Unit.does_it_shoot(unit_weapon):
+		if unit_weapon.does_it_shoot():
 			continue  # we don't verify ranged weapons here
 		if not adjacent_units[side]:
 			continue  # nothing to interact with
@@ -1263,17 +1282,17 @@ func _get_melee_attack_kills(unit : Unit, direction : int, coord : Vector2i) -> 
 
 		var enemy : Unit = adjacent_units[side]
 		var opposite_side := GenericHexGrid.opposite_direction(side)
-		var enemy_weapon : E.Symbols = enemy.get_symbol(opposite_side)
-		if Unit.will_parry_occur(unit_weapon, enemy_weapon):
+		var enemy_weapon : DataSymbol = enemy.get_symbol(opposite_side)
+		if not unit_weapon.will_melee_effect_occur(enemy_weapon):
 			continue  # parry disables all melee symbols
 
 		# we check if attacking symbol power is able to kill
-		if Unit.does_attack_succeed(unit_weapon, enemy_weapon):
+		if unit_weapon.does_attack_succeed(enemy_weapon):
 			killed_enemy_units.append(enemy)
 			continue
 		# in case enemy defended against attack we check if attacker pushes away enemy
-		if Unit.can_it_push(unit_weapon):
-			if _will_push_kill(enemy, side, Unit.push_power(unit_weapon)):
+		if unit_weapon.can_it_push():
+			if _will_push_kill(enemy, side, unit_weapon.push_power):
 				killed_enemy_units.append(enemy)
 				continue
 
@@ -1324,15 +1343,15 @@ func _get_counter_attack_killers(unit : Unit, direction : int, coord : Vector2i)
 		if enemy_unit.army_in_battle.team == unit.army_in_battle.team:
 			continue  # no friendly fire within team
 
-		var unit_symbol : E.Symbols = unit.get_symbol_when_rotated(side, direction)
+		var unit_symbol : DataSymbol = unit.get_symbol_when_rotated(side, direction)
 		var opposite_side := GenericHexGrid.opposite_direction(side)
-		var enemy_symbol : E.Symbols = enemy_unit.get_symbol(opposite_side)
+		var enemy_symbol : DataSymbol = enemy_unit.get_symbol(opposite_side)
 
-		if Unit.will_parry_occur(enemy_symbol, unit_symbol):
+		if not enemy_symbol.will_melee_effect_occur(unit_symbol):
 			continue  # parry prevents counter attacks
 
-		if Unit.does_it_counter_attack(enemy_symbol):
-			if Unit.does_attack_succeed(enemy_symbol, unit_symbol):
+		if enemy_symbol.counter_attack:
+			if enemy_symbol.does_attack_succeed(unit_symbol):
 				killer_units.append(enemy_unit)
 
 	return killer_units
@@ -1340,17 +1359,17 @@ func _get_counter_attack_killers(unit : Unit, direction : int, coord : Vector2i)
 
 ## Returns unit references of targets that this unit would have pushed it if were to move in given direction [br]
 ## coord argument is optional as it is useful only during teleportation magic prediction
-func _get_pushed_away_targets(unit : Unit, direction : int, coord : Vector2i = Vector2i.ZERO) -> Array[Unit]:
+func _get_pushed_away_targets(unit : Unit, direction : int, move_type : E.MoveType, coord : Vector2i = Vector2i.ZERO) -> Array[Unit]:
 	var pushed_away_units : Array[Unit] = []
 	if coord == Vector2i.ZERO:
 		coord = unit.coord
 
 	var adjacent_units : Array[Unit] = _get_adjacent_units(coord)
 	for side in range(6):
-		var unit_weapon = unit.get_symbol_when_rotated(direction, side)
-		if unit_weapon == E.Symbols.EMPTY:
+		var unit_weapon : DataSymbol = unit.get_symbol_when_rotated(direction, side)
+		if not unit_weapon.is_offensive(move_type):
 			continue  # We don't have any weapon
-		if Unit.does_it_shoot(unit_weapon):
+		if unit_weapon.does_it_shoot():
 			continue  # we don't verify ranged weapons here
 		if not adjacent_units[side]:
 			continue  # nothing to interact with
@@ -1359,19 +1378,19 @@ func _get_pushed_away_targets(unit : Unit, direction : int, coord : Vector2i = V
 
 		var enemy : Unit = adjacent_units[side]
 		var opposite_side := GenericHexGrid.opposite_direction(side)
-		var enemy_weapon : E.Symbols = enemy.get_symbol(opposite_side)
-		if Unit.will_parry_occur(unit_weapon, enemy_weapon):
+		var enemy_weapon : DataSymbol = enemy.get_symbol(opposite_side)
+		if not unit_weapon.will_melee_effect_occur(enemy_weapon):
 			continue  # parry disables all melee symbols
 
 		# we check if attacking symbol power is able to kill
-		if Unit.does_attack_succeed(unit_weapon, enemy_weapon):
+		if unit_weapon.does_attack_succeed(enemy_weapon):
 			#killed_enemy_units.append(enemy)
 			continue
 		# in case enemy defended against attack we check if attacker pushes away enemy
-		if Unit.can_it_push(unit_weapon):
+		if unit_weapon.can_it_push():
 			pushed_away_units.append(enemy)
 			#TODO consider if removing killed units from result array would be beneficial
-			#if _will_push_kill(enemy, side, Unit.push_power(unit_weapon)):
+			#if _will_push_kill(enemy, side, unit_weapon.push_power()):
 			#	killed_enemy_units.append(enemy)
 			#	continue
 
@@ -1388,10 +1407,11 @@ func _is_kill_move(move : MoveInfo) -> bool:
 func get_move_consequences(move : MoveInfo) -> MoveConsequences:
 	# list of checks:
 	# 1 verify if turning in (starting move with that unit) will even work
-	# 2 moving in that direction would shoot someone
+	# 2 turning in that direction would shoot someone
 	# 3 turing in that direction will kill someone
 	# 4 you can survive entering that tile
 	# 5 you can kill someone entering that tile
+	# 6 you can shoot someone after entering that tile
 
 	var kill_registered = false
 
@@ -1408,22 +1428,26 @@ func get_move_consequences(move : MoveInfo) -> MoveConsequences:
 
 	# step 2 BOW
 	for side in range(6):  # we check each side for a ranged attack symbol
-		var symbol = attacker.get_symbol_when_rotated(side, move_direction)
+		var symbol : DataSymbol = attacker.get_symbol_when_rotated(side, move_direction)
 
-		if not Unit.does_it_shoot(symbol):
+		if not symbol.does_it_shoot():
+			continue
+		if not symbol.activate_turn:
 			continue
 
-		var reach = Unit.ranged_weapon_reach(symbol)
-		var target : Unit = _get_shot_target(move.move_source, side, reach)
+		var target : Unit = _get_shot_target(move.move_source, side, symbol.reach)
 		if target and target.army_in_battle.team != attacker.army_in_battle.team:
 			var opposite_side = GenericHexGrid.opposite_direction(side)
-			var target_symbol = target.get_symbol(opposite_side)
+			var target_symbol : DataSymbol = target.get_symbol(opposite_side)
 
-			if Unit.does_attack_succeed(symbol, target_symbol):
+			if symbol.does_attack_succeed(target_symbol):
 				kill_registered = true  # can shoot enemy in this direction
+			if symbol.push_power > 0 and _will_push_kill(target, side, symbol.push_power):
+				kill_registered = true  # shot enemy was pushed to his death
+
 
 	# step 3 melee weapon on first rotation
-	var melee_killed_enemy_units = _get_melee_attack_kills(attacker, move_direction, move.move_source)
+	var melee_killed_enemy_units = _get_melee_attack_kills(attacker, move_direction, move.move_source, E.MoveType.TURN)
 	if melee_killed_enemy_units.size() > 0:
 		kill_registered = true
 
@@ -1432,14 +1456,15 @@ func get_move_consequences(move : MoveInfo) -> MoveConsequences:
 
 	# Check for rare specific case when archer walks into a single enemy spear killing it during rotation
 	if counter_attack_killers.size() == 1:  # there is only a single spear pointing
-		var front_symbol = attacker.get_front_symbol()
+		var front_symbol : DataSymbol = attacker.get_front_symbol()
 		var enemy_unit = _get_adjacent_unit(move.target_tile_coord, move_direction)
 		if enemy_unit:
-			var enemy_symbol = enemy_unit.get_symbol(GenericHexGrid.opposite_direction(move_direction))
+			var enemy_symbol : DataSymbol = enemy_unit.get_symbol(GenericHexGrid.opposite_direction(move_direction))
 
 			if enemy_unit == counter_attack_killers[0] \
-				and Unit.does_it_shoot(front_symbol) \
-				and Unit.does_attack_succeed(front_symbol, enemy_symbol):
+				and front_symbol.does_it_shoot() \
+				and front_symbol.activate_turn \
+				and front_symbol.does_attack_succeed(enemy_symbol):
 				# unit we would kill with our arrow is that killer
 					return MoveConsequences.KILL
 
@@ -1449,7 +1474,7 @@ func get_move_consequences(move : MoveInfo) -> MoveConsequences:
 			counter_attack_killers.erase(killed)
 
 	# check for rare specific case when spear holder was pushed away during first rotation using melee
-	var pushed_away_units = _get_pushed_away_targets(attacker, move_direction)
+	var pushed_away_units = _get_pushed_away_targets(attacker, move_direction, E.MoveType.TURN)
 
 	for pushed_target in pushed_away_units:
 		if pushed_target in counter_attack_killers:
@@ -1463,13 +1488,32 @@ func get_move_consequences(move : MoveInfo) -> MoveConsequences:
 	var pushed_enemy_unit = get_unit(move.target_tile_coord)
 	if pushed_enemy_unit and not kill_registered:  # no need to check if unit in front was already killed
 		# if kill hasn't occured yet and unit is able to enter tile with enemy it means it ahs push power in front
-		var push_power : int = Unit.push_power(attacker.get_front_symbol()) + 1  # +1 accounts for unit still being on her old spot
+		var push_power : int = attacker.get_front_symbol().push_power + 1  # +1 accounts for unit still being on her old spot
 		if _will_push_kill(pushed_enemy_unit, move_direction, push_power):
 			return MoveConsequences.KILL
 
-	melee_killed_enemy_units = _get_melee_attack_kills(attacker, move_direction, move.target_tile_coord)
+	melee_killed_enemy_units = _get_melee_attack_kills(attacker, move_direction, move.target_tile_coord, E.MoveType.MOVE)
 	if melee_killed_enemy_units.size() > 0:
 		kill_registered = true
+
+	# step 6
+	for side in range(6):  # we check each side for a ranged attack symbol
+		var symbol : DataSymbol = attacker.get_symbol_when_rotated(side, move_direction)
+
+		if not symbol.does_it_shoot():
+			continue
+		if not symbol.activate_move:
+			continue
+
+		var target : Unit = _get_shot_target(move.move_source, side, symbol.reach)
+		if target and target.army_in_battle.team != attacker.army_in_battle.team:
+			var opposite_side = GenericHexGrid.opposite_direction(side)
+			var target_symbol : DataSymbol = target.get_symbol(opposite_side)
+
+			if symbol.does_attack_succeed(target_symbol):
+				kill_registered = true  # can shoot enemy in this direction
+			if symbol.push_power > 0 and _will_push_kill(target, side, symbol.push_power):
+				kill_registered = true  # shot enemy was pushed to his death
 
 	return MoveConsequences.KILL if kill_registered else MoveConsequences.NONE
 
@@ -1563,7 +1607,7 @@ class ArmyInBattleState:
 	var battle_grid_state : WeakRef # BattleGridState
 
 	var army_reference : Army
-	
+
 	## basic idx reference to which units are allies
 	var team : int = -1
 
@@ -1682,6 +1726,25 @@ class ArmyInBattleState:
 		units_to_summon.erase(unit_data)
 		var player = IM.get_player_by_index(army_reference.controller_index)
 		var result = Unit.create(player, unit_data, coord, rotation, self)
+
+		if army_reference.hero and army_reference.hero.template.data_unit == unit_data:  # it's a hero
+			#TODO add check for acquired passive effects
+			var effect : BattleMagicEffect = load(CFG.tier_2_passive_1)
+			var success : bool = result.try_adding_magic_effect(effect)
+			assert(success, "couldn't add passive effect to a hero unit upon it's placement")
+
+
+			if effect.name == "Magic Weapon":
+				for symbol in result.symbols:
+					if symbol.attack_power != 0:
+						symbol.attack_power = effect.magic_weapon_durability
+			var weak_weapon : DataSymbol = load(CFG.weak_weapon)
+			for side in range(6):
+				var symbol = result.symbols[side]
+
+				if symbol.symbol_name == "empty": # TODO verify and note the choice in the documentation, if thats a proper way to verify symbol is empty
+					result.symbols[side] = weak_weapon.duplicate()
+
 		units.append(result)
 		return result
 

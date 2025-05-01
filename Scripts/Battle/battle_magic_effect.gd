@@ -6,9 +6,20 @@ extends Resource
 
 @export var spell_effects : Array[BattleMagicEffect]
 
-## magical effects last only for 6 turns
+
+## makes the effect last indefinitely
+@export var passive_effect : bool = false
+## normal magical effects last only for 6 turns
 var duration_counter : int = 6
 
+
+#region Specific spells Variables
+
+
+var magic_weapon_durability : int = 4
+
+
+#endregion Specific spells Variables
 
 
 ## used to debug
