@@ -155,10 +155,14 @@ func grid_input(coord : Vector2i):
 	if hero_tavel_path.size() == 0 or hero_tavel_path[-1] != coord:  # Generate Path
 		var path_indexes : PackedInt64Array = WS.pathfinding.get_id_path(WS.coord_to_index[selected_hero.coord], WS.coord_to_index[coord])
 		hero_tavel_path = []
+		var is_it_dangerous : bool = false
 		for hex_index in path_indexes:
-			hero_tavel_path.append(WS.coord_to_index.find_key(hex_index))
+			var hex_coord : Vector2i = WS.coord_to_index.find_key(hex_index)
+			hero_tavel_path.append(hex_coord)
+			if not is_it_dangerous and WS.is_enemy_at(hex_coord, WS.current_player_index):
+				is_it_dangerous = true
 
-		_painter_node.draw_path(hero_tavel_path)
+		_painter_node.draw_path(hero_tavel_path, is_it_dangerous)
 		return
 
 

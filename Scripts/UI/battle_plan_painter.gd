@@ -75,9 +75,11 @@ func planning_input(tile_coord : Vector2i, is_it_pressed : bool) -> void:
 	new_arrow = null  # reset arrow path
 
 
-func draw_path(path : Array[Vector2i]) -> void:
+func draw_path(path : Array[Vector2i], danger : bool) -> void:
 	erase()
 	var arrow_color_idx = 0  # default white
+	if danger:
+		arrow_color_idx += 4  # RED
 
 	new_arrow = ChessArrow.creat_chess_arrow(arrow_color_idx, path[0])
 	arrows_to_draw.append(new_arrow)
