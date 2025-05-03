@@ -21,6 +21,11 @@ var armies : Node2D = null
 
 var _is_world_game_active : bool = false
 
+
+var _painter_node : BattlePainter
+
+var hero_tavel_path : Array[Vector2i]
+
 #region Start World
 
 func _ready() -> void:
@@ -35,6 +40,9 @@ func _ready() -> void:
 	add_child(armies)
 
 	UI.add_custom_screen(world_ui)
+
+	_painter_node = load("res://Scenes/UI/Battle/BattlePlanPainter.tscn").instantiate()
+	add_child(_painter_node)
 
 #endregion Start World
 
@@ -133,16 +141,38 @@ func grid_input(coord : Vector2i):
 		print("blocked by BM - Battle Manager")
 		return
 
-	if selected_hero == null:
+	if selected_hero == null or not WS.is_hex_movable(coord):
 		input_try_select(coord)
+		hero_tavel_path = []
+		_painter_node.erase()
 		return
 
-	#TEMP in future there will be pathfiding here
-	if not GenericHexGrid.is_adjacent(selected_hero.coord, coord):
-		set_selected_hero(null)
+	if selected_hero.coord == coord:  # DESELECT HERO
+		selected_hero = null
 		return
 
-	try_interact(selected_hero, coord)
+
+	if hero_tavel_path.size() == 0 or hero_tavel_path[-1] != coord:  # Generate Path
+		var path_indexes : PackedInt64Array = WS.pathfinding.get_id_path(WS.coord_to_index[selected_hero.coord], WS.coord_to_index[coord])
+		hero_tavel_path = []
+		var is_it_dangerous : bool = false
+		for hex_index in path_indexes:
+			var hex_coord : Vector2i = WS.coord_to_index.find_key(hex_index)
+			hero_tavel_path.append(hex_coord)
+			if not is_it_dangerous and WS.is_enemy_at(hex_coord, WS.current_player_index):
+				is_it_dangerous = true
+
+		_painter_node.draw_path(hero_tavel_path, is_it_dangerous)
+		return
+
+
+	hero_tavel_path.pop_front()  # removes tile hero starts at
+	for tile in hero_tavel_path:
+		if selected_hero.has_movement_points():
+			try_interact(selected_hero, tile)
+		else:
+			break
+	_painter_node.erase()
 
 ## Tries to Select owned Hero
 func input_try_select(coord) -> void:  #TODO "nothing is selected try to select stuff"

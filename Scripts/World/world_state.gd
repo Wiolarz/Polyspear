@@ -9,6 +9,9 @@ var current_player_index : int
 var player_states : Array[Faction] = []
 var move_hold_on_combat : Array[Vector2i] # TODO some better form
 
+var pathfinding : AStar2D
+var coord_to_index : Dictionary = {}
+
 ## TODO consider not using signals here
 ## this is signal used by other managers
 signal combat_started(armies : Array, coord : Vector2i)
@@ -79,6 +82,8 @@ func start_world(map : DataWorldMap,
 					hex.army = army
 					army.coord = coord
 
+	generate_astar()  # PATHFINDING
+
 	# add armies to their players if loading from state
 	if saved_state:
 		for i in player_states.size():
@@ -103,6 +108,29 @@ func start_world(map : DataWorldMap,
 	if saved_state:
 		current_player_index = saved_state.current_player
 
+
+func generate_astar() -> void:
+	pathfinding = AStar2D.new()
+	var hex_index : int = -1
+
+	for row in grid.hexes:
+		for hex in row:
+			if not hex.place or not hex.place.movable:  # Sentinel / WALL
+				continue
+			hex_index += 1
+			coord_to_index[hex.place.coord] = hex_index
+			pathfinding.add_point(hex_index, WM.to_position(hex.place.coord))
+
+	hex_index = -1
+	for row in grid.hexes:
+		for hex in row:
+			if not hex.place or not hex.place.movable:  # Sentinel / WALL
+				continue
+			hex_index += 1
+			for side in range(3): # LEFT, TOP_LEFT, TOP_RIGHT,
+				var neighbour_coord : Vector2i = hex.place.coord + GenericHexGrid.DIRECTION_TO_OFFSET[side]
+				if neighbour_coord in coord_to_index.keys():
+					pathfinding.connect_points(hex_index, coord_to_index[neighbour_coord], true)
 
 
 ## fills up players' fields like `cities` and `outposts` after place grid is
