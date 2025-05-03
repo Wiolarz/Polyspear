@@ -21,6 +21,9 @@ var armies : Node2D = null
 
 var _is_world_game_active : bool = false
 
+
+var _painter_node : BattlePainter
+
 #region Start World
 
 func _ready() -> void:
@@ -35,6 +38,9 @@ func _ready() -> void:
 	add_child(armies)
 
 	UI.add_custom_screen(world_ui)
+
+	_painter_node = load("res://Scenes/UI/Battle/BattlePlanPainter.tscn").instantiate()
+	add_child(_painter_node)
 
 #endregion Start World
 
@@ -139,6 +145,12 @@ func grid_input(coord : Vector2i):
 
 	#TEMP in future there will be pathfiding here
 	if not GenericHexGrid.is_adjacent(selected_hero.coord, coord):
+		var path_indexes : PackedInt64Array = WS.pathfinding.get_id_path(WS.coord_to_index[selected_hero.coord], WS.coord_to_index[coord])
+		var path : Array[Vector2i] = []
+		for hex_index in path_indexes:
+			path.append(WS.coord_to_index.find_key(hex_index))
+
+		_painter_node.draw_path(path)
 		set_selected_hero(null)
 		return
 

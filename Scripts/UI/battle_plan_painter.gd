@@ -2,7 +2,7 @@ class_name BattlePainter
 extends Node2D
 
 
-var new_arrow : ChessArrow 
+var new_arrow : ChessArrow
 var arrows_to_draw : Array[ChessArrow] = []  # Array[Array[Vector2]]
 
 
@@ -55,7 +55,7 @@ func planning_input(tile_coord : Vector2i, is_it_pressed : bool) -> void:
 				arrow_color_idx += 2
 			if Input.is_key_pressed(KEY_SHIFT):
 				arrow_color_idx += 4
-			
+
 			new_arrow = ChessArrow.creat_chess_arrow(arrow_color_idx, tile_coord)
 			arrows_to_draw.append(new_arrow)
 			#add_child(new_arrow.end_node)
@@ -69,10 +69,23 @@ func planning_input(tile_coord : Vector2i, is_it_pressed : bool) -> void:
 	# mouse press is released, draw final
 	if not new_arrow:
 		# edge case when godot input is strange and registers mouse unlicking from object which it didnt click
-		return 
+		return
 
 	add_child(new_arrow.end_node)
 	new_arrow = null  # reset arrow path
+
+
+func draw_path(path : Array[Vector2i]) -> void:
+	erase()
+	var arrow_color_idx = 0  # default white
+
+	new_arrow = ChessArrow.creat_chess_arrow(arrow_color_idx, path[0])
+	arrows_to_draw.append(new_arrow)
+	for idx in range(1, path.size()):
+		new_arrow.add_hex(path[idx])
+
+	add_child(new_arrow.end_node)
+	queue_redraw()
 
 
 class ChessArrow:
@@ -110,7 +123,7 @@ class ChessArrow:
 		var offset = hex_path[-2] - hex_path[-1]  # angle between last two coords
 		var rotation_value = GenericHexGrid.DIRECTION_TO_OFFSET.find(offset) * PI / 3
 		end_node.rotation = rotation_value
-		
+
 		end_node.position = draw_path[-1]
 
 #endregion Planning (Chess arrows)
