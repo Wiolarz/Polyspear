@@ -1,5 +1,6 @@
 shader_type canvas_item;
 
+// If you want to modify default values, refer to background.gd
 uniform vec4 color1 : source_color = vec4(0.32941176470588, 0.0, 1.0, 1.0);
 uniform vec4 color2 : source_color = vec4(0.073, 0.0, 0.47, 1.0);
 

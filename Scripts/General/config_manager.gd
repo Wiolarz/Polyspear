@@ -56,7 +56,7 @@ enum SymbolAnimationType
 #endregion
 
 ## battle map is placed this far to the right after world map bounds
-const MAPS_OFFSET_X = 7000
+const MAPS_OFFSET_X = 7000 + 30000 # TEMP increase to include fake snetinel border
 
 const BATTLE_BORDER_WIDTH = 15
 const BATTLE_BORDER_HEIGHT = 8
@@ -66,7 +66,7 @@ const BATTLE_BORDER_HEIGHT = 8
 const BATTLE_MAPS_PATH = "res://Resources/Battle/Battle_Maps/"
 const UNITS_PATH = "res://Resources/Battle/Units/"
 const HEROES_PATH = "res://Resources/Battle/Heroes/"
-const BUILDINGS_PATH = "res://Resources/Factions/Buildings/"
+const BUILDINGS_PATH = "res://Resources/Races/Buildings/"
 const BATTLE_PRESETS_PATH = "res://Resources/Presets/Battle/"
 const WORLD_MAPS_PATH = "res://Resources/World/World_maps/"
 const SENTINEL_TILE_PATH = "res://Resources/World/World_tiles/sentinel.tres"
@@ -84,11 +84,11 @@ const PLAYER_COLORS_PATH = "res://Art/player_colors/"
 const REPLAY_DIRECTORY = "user://replays/"
 const PLAYER_OPTIONS_PATH = "user://player_options.tres"
 
-var FACTION_ELVES : DataFaction = load("res://Resources/Factions/elf.tres")
-var FACTION_ORCS : DataFaction = load("res://Resources/Factions/orc.tres")
-var FACTIONS_LIST : Array[DataFaction] = [
-	FACTION_ELVES,
-	FACTION_ORCS,
+var RACE_ELVES : DataRace = load("res://Resources/Races/elf.tres")
+var RACE_ORCS : DataRace = load("res://Resources/Races/orc.tres")
+var RACES_LIST : Array[DataRace] = [
+	RACE_ELVES,
+	RACE_ORCS,
 ]
 
 
@@ -242,8 +242,8 @@ var AUTO_START_GAME : bool :
 
 var LAST_USED_BATTLE_PRESET_NAME : String :
 	get: return player_options.last_used_battle_preset_name
-var LAST_USED_WORLD_PRESET : PresetWorld : # TODO implement this
-	get: return player_options.last_used_world_preset
+var LAST_USED_WORLD_MAP : DataWorldMap : # TODO implement this
+	get: return player_options.last_used_world_map
 
 
 func save_last_used_for_host_setup(\

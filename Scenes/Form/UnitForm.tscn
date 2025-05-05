@@ -107,12 +107,13 @@ metadata/_edit_use_anchors_ = true
 
 [node name="SpellEffect1" type="Sprite2D" parent="RigidUI"]
 use_parent_material = true
-position = Vector2(598, -304)
+position = Vector2(513, -256)
+scale = Vector2(0.5, 0.5)
 texture = ExtResource("6_kue6p")
 
 [node name="SpellEffect2" type="Sprite2D" parent="RigidUI"]
 use_parent_material = true
-position = Vector2(587, 330)
+position = Vector2(528, 330)
 scale = Vector2(0.5, 0.5)
 texture = ExtResource("7_rdbed")
 
@@ -124,10 +125,10 @@ texture = ExtResource("8_i7m4u")
 
 [node name="SpellEffectCounter1" type="Label" parent="RigidUI"]
 use_parent_material = true
-offset_left = 488.0
-offset_top = -390.0
-offset_right = 528.0
-offset_bottom = -314.0
+offset_left = 274.0
+offset_top = -323.0
+offset_right = 314.0
+offset_bottom = -247.0
 scale = Vector2(3, 3)
 theme_override_font_sizes/font_size = 64
 text = "6"
@@ -135,9 +136,9 @@ metadata/_edit_use_anchors_ = true
 
 [node name="SpellEffectCounter2" type="Label" parent="RigidUI"]
 use_parent_material = true
-offset_left = 483.0
+offset_left = 275.0
 offset_top = 215.0
-offset_right = 523.0
+offset_right = 315.0
 offset_bottom = 291.0
 scale = Vector2(3, 3)
 theme_override_font_sizes/font_size = 64

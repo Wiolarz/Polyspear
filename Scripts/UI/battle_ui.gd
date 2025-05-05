@@ -117,7 +117,7 @@ func update_cyclone():
 	var target : Player = BM.get_cyclone_target()
 
 	#TEMP
-	var target_color = BM.get_player_color(target)
+	var target_color = target.get_player_color()
 	cyclone.modulate = target_color.color
 
 
@@ -275,8 +275,6 @@ func on_player_selected(army_index : int, preview : bool = false):
 				_hovered_unit_button_pointer = null
 		button.mouse_entered.connect(lambda_hover.bind(true))
 		button.mouse_exited.connect(lambda_hover.bind(false))
-
-	BG.set_player_colors(bg_color)
 
 
 func unit_summoned(summon_phase_end : bool):
