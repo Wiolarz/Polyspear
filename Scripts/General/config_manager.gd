@@ -30,9 +30,8 @@ var anim_turn_duration := 0.3
 var anim_death_duration := 0.3
 var anim_symbol_fade_in_out_time := 0.1
 
-# Not used anymore at the point of commenting, but might be in the future
+## TODO Old system of upscaling animation could be used for symbols that don’t have proper animation
 var anim_symbol_activation_scale := Vector2(2.0, 2.0)
-# temporarily cranked up to 0.8, TODO change to 0.5 when
 var anim_symbol_activation_duration := 0.8
 
 

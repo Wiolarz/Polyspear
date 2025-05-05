@@ -8,7 +8,7 @@ signal unit_magic_effect()
 
 const MAX_EFFECTS_PER_UNIT = 2
 
-signal unit_is_shooting(side : int)
+signal unit_is_shooting(side : int, attacker_coord : Vector2i)
 signal unit_is_slashing(side : int)
 signal unit_is_pushing(side : int)
 signal unit_is_blocking(side : int, attacker_coord : Vector2i)

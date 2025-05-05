@@ -431,25 +431,24 @@ func _on_unit_summoned(unit : Unit) -> void:
 					tile.get_node("Sprite2D").texture = load("res://Art/battle_map/grass_tile.png")
 
 
-
 	unit.unit_died.connect(form.anim_die)
 	unit.unit_turned.connect(form.anim_turn)
 	unit.unit_moved.connect(form.anim_move)
 	unit.unit_magic_effect.connect(form.anim_magic)
-	
+
+	unit.unit_captured_mana.connect(capture_mana_well.bind(unit))  # Places flag on mana well tile
+
+	# Symbol animations
 	unit.unit_is_pushing.connect(form.anim_symbol.bind(CFG.SymbolAnimationType.MELEE_ATTACK))
-	# probably not the smartest solution to bind if other projectile animation types are going to be introduced
-	# why does it have no bind like the rest? anim_symbol needed a new argument and
-	# I don't know how to bind a specific argument or if it's even how you should use bind,
-	# anyways right now animation type is passed directly when emiting the signal
-	unit.unit_is_shooting.connect(form.anim_symbol)
 	unit.unit_is_slashing.connect(form.anim_symbol.bind(CFG.SymbolAnimationType.MELEE_ATTACK))
-	unit.unit_is_blocking.connect(func(side, attacker_coord): 
-		form.anim_symbol(side, CFG.SymbolAnimationType.BLOCK, attacker_coord)
-	)
 	unit.unit_is_counter_attacking.connect(form.anim_symbol.bind(CFG.SymbolAnimationType.MELEE_ATTACK))
 
-	unit.unit_captured_mana.connect(capture_mana_well.bind(unit))
+	unit.unit_is_shooting.connect(func(side : int, attacker_coord : Vector2i):
+		form.anim_symbol(side, CFG.SymbolAnimationType.TELEPORTING_PROJECTILE, attacker_coord)
+	)
+	unit.unit_is_blocking.connect(func(side : int, attacker_coord : Vector2i):
+		form.anim_symbol(side, CFG.SymbolAnimationType.BLOCK, attacker_coord)
+	)
 
 
 ## handles player input while during the summoning phase
@@ -709,7 +708,7 @@ func _on_battle_ended() -> void:
 	_disable_ai_preview()
 	_battle_ui.update_mana()
 
-	await get_tree().create_timer(1).timeout # TEMP, don't exit immediately
+	await get_tree().create_timer(2).timeout # TEMP, don't exit immediately # TODO get signal from last animation ending
 
 	_current_summary = _create_summary()
 	if not _replay_is_playing:
