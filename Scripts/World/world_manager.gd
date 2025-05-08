@@ -76,7 +76,7 @@ func world_game_is_active() -> bool:
 
 #region Main functions
 
-func set_selected_hero(army : Army):
+func set_selected_hero(army : Army) -> void:
 	print("selected ", army)
 	if selected_hero:
 		selected_hero.set_selected(false)
@@ -93,6 +93,18 @@ func set_selected_hero(army : Army):
 
 	_painter_node.erase()
 	_draw_path()
+
+
+func _deselect_hero() -> void:
+	if not selected_hero:
+		return
+	selected_hero.set_selected(false)
+	selected_hero = null
+	world_ui.refresh_heroes()
+	world_ui.city_ui._refresh_units_to_buy()
+	world_ui.city_ui._refresh_army_display()
+
+	_painter_node.erase()
 
 
 func get_current_player() -> Player:
@@ -177,7 +189,7 @@ func grid_input(coord : Vector2i):
 		return
 
 	if selected_hero.coord == coord:  # DESELECT HERO
-		selected_hero = null
+		_deselect_hero()
 		_painter_node.erase()
 		return
 
@@ -200,7 +212,7 @@ func grid_input(coord : Vector2i):
 
 	selected_hero.travel_path = []  # TODO make changes to travel path dynamic
 	if not selected_hero.has_movement_points():
-		selected_hero = null
+		_deselect_hero()
 	_painter_node.erase()
 
 ## Tries to Select owned Hero
@@ -389,7 +401,7 @@ func end_of_battle(battle_results : Array[BattleGridState.ArmyInBattleState]):
 func close_world():
 	_is_world_game_active = false
 	combat_tile = Vector2i.MAX
-	selected_hero = null
+	_deselect_hero()
 
 	for army_form in armies.get_children():
 		army_form.queue_free()
