@@ -6,9 +6,12 @@ var entity : Army
 var coord:
 	get: return entity.coord
 
-
 var controller:
 	get: return entity.controller
+
+## world coord, where hero wants to travel
+var travel_path : Array[Vector2i]
+
 
 func _init():
 	name = "ArmyForm"

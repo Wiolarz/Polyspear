@@ -24,8 +24,6 @@ var _is_world_game_active : bool = false
 
 var _painter_node : BattlePainter
 
-var hero_travel_path : Array[Vector2i]
-
 #region Start World
 
 func _ready() -> void:
@@ -93,6 +91,9 @@ func set_selected_hero(army : Army):
 	world_ui.city_ui._refresh_units_to_buy()
 	world_ui.city_ui._refresh_army_display()
 
+	_painter_node.erase()
+	_draw_path()
+
 
 func get_current_player() -> Player:
 	var index : int = WS.current_player_index
@@ -131,6 +132,36 @@ func get_tile_of_hex(hex : WorldHex) -> Node2D:
 
 #region Player Actions
 
+## generation travel path for the currently selected hero
+func _generate_path(destination_coord : Vector2i, hero : ArmyForm = null) -> void:
+	if not hero:  # Could be used by AI to generate paths for all their heroes
+		hero = selected_hero
+
+	var path : Array[Vector2i] = []
+
+	## In case there is no path between coord, path will be empty
+	var path_indexes : PackedInt64Array = WS.pathfinding.get_id_path(WS.coord_to_index[selected_hero.coord], WS.coord_to_index[destination_coord])
+	for hex_index in path_indexes:
+		var hex_coord : Vector2i = WS.coord_to_index.find_key(hex_index)
+		path.append(hex_coord)
+	hero.travel_path = path
+
+
+## if hero isn't passed draws currently selected hero path
+func _draw_path(hero : ArmyForm = null):
+	if not hero:  # Could be used to draw AI desired paths during debuging
+		hero = selected_hero
+	if not hero or hero.travel_path.size() == 0:
+		return
+	var is_it_dangerous : bool = false
+	for hex_coord in hero.travel_path:
+			if WS.is_enemy_at(hex_coord, WS.current_player_index):
+				is_it_dangerous = true
+				break
+
+	_painter_node.draw_path(hero.travel_path, is_it_dangerous)
+
+
 ## Called when player interacts (presses) on the map tile
 ## Selects objects OR orders selected object
 ## City/Heroes -> orders Heroes
@@ -147,7 +178,6 @@ func grid_input(coord : Vector2i):
 
 	if selected_hero.coord == coord:  # DESELECT HERO
 		selected_hero = null
-		hero_travel_path = []
 		_painter_node.erase()
 		return
 
@@ -155,27 +185,22 @@ func grid_input(coord : Vector2i):
 		return
 
 
-	if hero_travel_path.size() == 0 or hero_travel_path[-1] != coord:  # Generate Path
-		var path_indexes : PackedInt64Array = WS.pathfinding.get_id_path(WS.coord_to_index[selected_hero.coord], WS.coord_to_index[coord])
-		hero_travel_path = []
-		var is_it_dangerous : bool = false
-		for hex_index in path_indexes:
-			var hex_coord : Vector2i = WS.coord_to_index.find_key(hex_index)
-			hero_travel_path.append(hex_coord)
-			if not is_it_dangerous and WS.is_enemy_at(hex_coord, WS.current_player_index):
-				is_it_dangerous = true
-
-		_painter_node.draw_path(hero_travel_path, is_it_dangerous)
+	if selected_hero.travel_path.size() == 0 or selected_hero.travel_path[-1] != coord:  # Generate Path
+		_generate_path(coord)
+		_painter_node.erase()
+		_draw_path()
 		return
 
-
-	hero_travel_path.pop_front()  # removes tile hero starts at
-	for tile in hero_travel_path:
+	for tile_idx in range(1, selected_hero.travel_path.size()):  # ignores the tile hero starts at
 		if selected_hero.has_movement_points():
-			try_interact(selected_hero, tile)
+			# TODO add passing through allied heroes
+			try_interact(selected_hero, selected_hero.travel_path[tile_idx])
 		else:
 			break
-	hero_travel_path = []
+
+	selected_hero.travel_path = []  # TODO make changes to travel path dynamic
+	if not selected_hero.has_movement_points():
+		selected_hero = null
 	_painter_node.erase()
 
 ## Tries to Select owned Hero

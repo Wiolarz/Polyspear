@@ -76,7 +76,6 @@ func planning_input(tile_coord : Vector2i, is_it_pressed : bool) -> void:
 
 
 func draw_path(path : Array[Vector2i], danger : bool) -> void:
-	erase()
 	var arrow_color_idx = 0  # default white
 	if danger:
 		arrow_color_idx += 4  # RED
