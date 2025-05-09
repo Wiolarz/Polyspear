@@ -288,7 +288,7 @@ func _process_offensive_symbols(unit : Unit) -> void:
 		var enemy_weapon = enemy.get_symbol(opposite_side)
 		if Unit.will_parry_occur(unit_weapon, enemy_weapon):
 			# We check if parry even parries any attempt
-			if Unit.attack_power(unit_weapon) > 0:  # was there an attack attempt 
+			if Unit.attack_power(unit_weapon) > 0:  # was there an attack attempt
 				enemy.unit_is_blocking.emit(opposite_side, unit.coord)  # animation
 			elif Unit.can_it_push(unit_weapon):  # was there a push attempt
 				enemy.unit_is_blocking.emit(opposite_side, unit.coord)  # animation
@@ -306,7 +306,7 @@ func _process_offensive_symbols(unit : Unit) -> void:
 		elif Unit.can_it_push(unit_weapon):
 			unit.unit_is_pushing.emit(side)  # animation
 			_push_enemy(enemy, side, Unit.push_power(unit_weapon))
-		elif Unit.attack_power(unit_weapon) > 0:  # was there an attack attempt 
+		elif Unit.attack_power(unit_weapon) > 0:  # was there an attack attempt
 			enemy.unit_is_blocking.emit(opposite_side, unit.coord)  # animation
 
 
@@ -1571,7 +1571,7 @@ class ArmyInBattleState:
 	var battle_grid_state : WeakRef # BattleGridState
 
 	var army_reference : Army
-	
+
 	## basic idx reference to which units are allies
 	var team : int = -1
 
@@ -1662,7 +1662,10 @@ class ArmyInBattleState:
 			# mana_value changed gets called after every kill anyway
 
 		units.erase(target)
+
 		dead_units.append(target.template)
+		if not can_fight():  # remove all summons once are alive units have died
+			kill_army()
 		#gdlint: ignore=private-method-call
 
 
@@ -1670,6 +1673,7 @@ class ArmyInBattleState:
 		var unit = kill_info.respawn()
 		unit.controller = IM.get_player_by_index(army_reference.controller_index)
 		unit.army_in_battle = self
+
 		dead_units.erase(unit.template)
 		units.append(unit)
 		return unit
@@ -1683,7 +1687,11 @@ class ArmyInBattleState:
 
 
 	func can_fight() -> bool:
-		return units.size() > 0 or units_to_summon.size() > 0
+		var alive_not_summoned_units : int = 0
+		for unit in units:
+			if not unit.summoned:
+				alive_not_summoned_units += 1
+		return alive_not_summoned_units > 0 or units_to_summon.size() > 0
 
 
 	func summon_unit(unit_data : DataUnit, coord : Vector2i, rotation : int) -> Unit:
