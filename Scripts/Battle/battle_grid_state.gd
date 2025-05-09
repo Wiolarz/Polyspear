@@ -1753,7 +1753,25 @@ class ArmyInBattleState:
 
 		result.turn_started() # TEMP - FIXME - better init for chess clock
 
+		result.apply_rituals() # TEMP placement here, once proper rituals phase will be stablished it will be moved there
+
 		return result
+
+	func apply_rituals() -> void:
+		if not hero:
+			return
+
+		# adding summon units
+
+		# STUB
+		for effect in hero.passive_skills:
+			if effect.name == "Ballista":
+				pass
+		var ballista : DataUnit = load(CFG.BALLISTA_PATH)
+		ballista.summoned = true
+		units_to_summon.append(ballista)
+
+		# TODO add cast other rituals
 
 
 	func turn_started() -> void:

@@ -66,6 +66,7 @@ static func create(new_controller : Player, \
 	result.coord = new_coord
 	result.unit_rotation = new_rotation
 	result.spells = new_template.spells.duplicate() # spells reset every battle
+	result.summoned = new_template.summoned
 	return result
 
 #region Emit Animation Signals
