@@ -8,7 +8,7 @@ extends Node2D
 	get:
 		return anim.sprite_frames
 	set(_new):
-		assert("'frames' must be modified via anim.sprite_frames")
+		assert(false, "'frames' must be modified via anim.sprite_frames")
 
 
 #region Initialization
