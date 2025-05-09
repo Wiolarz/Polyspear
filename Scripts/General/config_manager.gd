@@ -51,7 +51,7 @@ const BATTLE_BORDER_HEIGHT = 8
 
 #region Paths
 
-## Foldrs Paths
+## Folder Paths
 const BATTLE_MAPS_PATH = "res://Resources/Battle/Battle_Maps/"
 const UNITS_PATH = "res://Resources/Battle/Units/"
 const HEROES_PATH = "res://Resources/Battle/Heroes/"

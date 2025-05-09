@@ -306,12 +306,12 @@ func _process_offensive_symbols(unit : Unit, move_type : E.MoveType) -> void:
 ## Occurs only when unit is pushed, the that unit performes attacks with passive symbols
 func _process_passive_symbols(unit : Unit) -> void:
 	for side in range(6):
-		var unit_weapon = unit.get_symbol(side)
-		if not unit_weapon.counter_attack:
+		var unit_symbol = unit.get_symbol(side)
+		if not unit_symbol.counter_attack:
 			continue
 
-		if unit_weapon.does_it_shoot():
-			_process_bow(unit, side, unit_weapon)
+		if unit_symbol.does_it_shoot():
+			_process_bow(unit, side, unit_symbol)
 			continue  # bow is special case
 
 		var adjacent_unit := _get_adjacent_unit(unit.coord, side)
@@ -323,20 +323,20 @@ func _process_passive_symbols(unit : Unit) -> void:
 		var enemy = adjacent_unit
 		var opposite_side := GenericHexGrid.opposite_direction(side)
 		var enemy_weapon = enemy.get_symbol(opposite_side)
-		if not unit_weapon.will_melee_effect_occur(enemy_weapon):
+		if not unit_symbol.will_melee_effect_occur(enemy_weapon):
 			continue  # parry disables all melee symbols
 
 		# we check if attacking symbol power is able to kill
-		if unit_weapon.does_attack_succeed(enemy_weapon):
+		if unit_symbol.does_attack_succeed(enemy_weapon):
 			# in case of winning battle - further attack checks won't break anything
 			unit.unit_is_counter_attacking.emit(side)  # animation
 			_kill_unit(enemy, armies_in_battle_state[current_army_index])
 			continue  # enemy unit died
 
 		# in case enemy defended against attack we check if attacker pushes away enemy
-		if unit_weapon.can_it_push():
+		if unit_symbol.can_it_push():
 			unit.unit_is_pushing.emit(side)  # animation
-			_push_enemy(enemy, side, unit_weapon.push_power)
+			_push_enemy(enemy, side, unit_symbol.push_power)
 
 
 func _process_bow(unit : Unit, side : int, weapon : DataSymbol) -> void:

@@ -60,9 +60,9 @@ func apply_graphics(template : DataUnit, color : DataPlayerColor):
 
 	for side in range(0,6):
 		var symbol_texture
-		if entity:
+		if entity:   # effects may change symbols during battle
 			symbol_texture = entity.symbols[side].texture_path
-		else:
+		else:  # Placement screen
 			symbol_texture = template.symbols[side].texture_path
 		_apply_symbol_sprite(side, symbol_texture)
 
@@ -199,7 +199,7 @@ func set_effects() -> void:
 
 		var spell_texture = load(entity.effects[slot_idx].icon_path)  #TEMP spell icon path
 		spell_effects_slots[slot_idx].texture = spell_texture
-		if not entity.effects[slot_idx].passive_effect:
+		if not entity.effects[slot_idx].passive_effect:  # passive effect are pernament
 			spell_counters_slots[slot_idx].text = str(entity.effects[slot_idx].duration_counter)
 
 
