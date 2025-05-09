@@ -292,7 +292,11 @@ func _process_offensive_symbols(unit : Unit, move_type : E.MoveType) -> void:
 
 		if enemy_weapon.does_parry(unit_weapon):
 			# We check if parry even parries any attempt
-			enemy.unit_is_blocking.emit(opposite_side, unit.coord)  # animation
+			if Unit.attack_power(unit_weapon) > 0:  # was there an attack attempt
+				enemy.unit_is_blocking.emit(opposite_side, unit.coord)  # animation
+			elif Unit.can_it_push(unit_weapon):  # was there a push attempt
+				enemy.unit_is_blocking.emit(opposite_side, unit.coord)  # animation
+
 			continue  # parry disables all melee symbols
 
 		# we check if attacking symbol power is able to kill
@@ -1784,7 +1788,10 @@ class ArmyInBattleState:
 			# mana_value changed gets called after every kill anyway
 
 		units.erase(target)
+
 		dead_units.append(target.template)
+		if not can_fight():  # remove all summons once are alive units have died
+			kill_army()
 		#gdlint: ignore=private-method-call
 
 
@@ -1792,6 +1799,7 @@ class ArmyInBattleState:
 		var unit = kill_info.respawn()
 		unit.controller = IM.get_player_by_index(army_reference.controller_index)
 		unit.army_in_battle = self
+
 		dead_units.erase(unit.template)
 		units.append(unit)
 		return unit
@@ -1805,7 +1813,11 @@ class ArmyInBattleState:
 
 
 	func can_fight() -> bool:
-		return units.size() > 0 or units_to_summon.size() > 0
+		var alive_not_summoned_units : int = 0
+		for unit in units:
+			if not unit.summoned:
+				alive_not_summoned_units += 1
+		return alive_not_summoned_units > 0 or units_to_summon.size() > 0
 
 
 	func summon_unit(unit_data : DataUnit, coord : Vector2i, rotation : int) -> Unit:
