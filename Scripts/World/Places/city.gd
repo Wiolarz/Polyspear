@@ -5,15 +5,22 @@ extends Place
 var buildings : Array[DataBuilding] = []
 
 
+static func translate_city_args(args : PackedStringArray) -> Dictionary:
+	assert(args[0].is_valid_int(), "unrecognised parameter: %s" % args[0])
+	var result : Dictionary = {"player_index" = args[0].to_int()}
+	# TODO add race restriction
+	return result
+
+
+
 # overwrite
 static func create_place(coord_ : Vector2i, args : PackedStringArray) -> Place:
 	var result = City.new()
 
-	var player_index : int = -1
-	assert(args[0].is_valid_int(), "unrecognised parameter: %s" % args[0])
-	if args[0].to_int() >= 0:
-		player_index = args[0].to_int()
-		var owner_faction : Faction = WS.player_states[player_index]
+	var args_dict : Dictionary = City.translate_city_args(args)
+
+	if args_dict["player_index"] >= 0:
+		var owner_faction : Faction = WS.player_states[args_dict["player_index"]]
 		result.faction = owner_faction
 		owner_faction.cities.append(result)
 

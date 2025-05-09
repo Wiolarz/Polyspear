@@ -142,15 +142,13 @@ func _find_max_player_number() -> int:
 			var args : PackedStringArray = tile.type.split(' ')
 			if args.size() < 1 or args[0] != "city":
 				continue
-			var city : City = \
-				City.create_place(coord, args.slice(1))
-			assert(city)
-			var index = city.controller_index
-			if index < 0:
+
+			var player_index : int = City.translate_city_args(args.slice(1))["player_index"]
+			if player_index < 0:
 				continue
-			if index >= players.size():
-				players.resize(index + 1)
-			players[index] += 1
+			if player_index >= players.size():
+				players.resize(player_index + 1)
+			players[player_index] += 1
 	for number in players:
 		if number < 1:
 			push_error("Error: some player does not have a city")
