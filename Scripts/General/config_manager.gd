@@ -132,6 +132,9 @@ const tier_2_passive_1 : String = "res://Resources/Battle/Battle_Spells/Heroes_P
 ## used for passive that replaces all empty symbols with weak weapons
 const weak_weapon : String = "res://Resources/Battle/Symbols/club.tres"
 
+
+const BALLISTA_PATH : String = "res://Resources/Battle/Units/Neutral/ballista.tres"
+
 #endregion Paths
 
 
