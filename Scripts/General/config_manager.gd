@@ -115,6 +115,9 @@ const OUTPOST_RUBY_PATH : String = "res://Resources/Presets/Army/outpost_defende
 #const HUNT_PATHS : Array[String] = [HUNT_WOOD_PATH, HUNT_IRON_PATH, HUNT_RUBY_PATH]
 
 
+
+const BALLISTA_PATH : String = "res://Resources/Battle/Units/Neutral/ballista.tres"
+
 #endregion Paths
 
 

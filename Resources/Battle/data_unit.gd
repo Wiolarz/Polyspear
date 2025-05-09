@@ -17,6 +17,9 @@ extends Resource
 ## each spell is single use only - resets every battle
 @export var spells : Array[BattleSpell] = []
 
+## is unit created using magic
+var summoned : bool = false
+
 static func get_network_id(unit : DataUnit) -> String:
 	if not unit:
 		return ""
