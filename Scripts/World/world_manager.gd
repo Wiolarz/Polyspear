@@ -11,6 +11,11 @@ var world_ui : WorldUI = null
 ## Only army that has a hero can move (army can only have a single hero)
 var selected_hero : ArmyForm
 
+var selected_city : City:
+	set(city):
+		selected_city = city
+		world_ui.city_ui.city = city
+
 # TODO movew to world state chyba
 var combat_tile : Vector2i
 
@@ -79,6 +84,11 @@ func set_selected_hero(army : Army):
 		# world_ui.show_trade_ui(city)
 	var army_form : ArmyForm = get_army_form(army)
 	selected_hero = army_form
+
+	## preselects for player city in case hero is standing on top of it
+	if WS.get_interactable_type_at(selected_hero.coord) == "city":
+		selected_city = WS.get_place_at(selected_hero.coord)
+
 	if selected_hero:
 		selected_hero.set_selected(true)
 	world_ui.refresh_heroes()
@@ -155,6 +165,7 @@ func input_try_select(coord) -> void:  #TODO "nothing is selected try to select 
 
 	if city:
 		if city.controller_index == WS.current_player_index:
+			selected_city = city
 			if not army:
 				world_ui.city_ui.show_recruit_heroes()
 			else:
@@ -375,8 +386,6 @@ func start_world_in_state(world_map : DataWorldMap, \
 
 	_batch_mode = true
 
-	_batch_mode = true
-
 	WS.start_world(
 		world_map, IM.game_setup_info.slots, serializable_WS)
 
@@ -392,14 +401,10 @@ func start_world_in_state(world_map : DataWorldMap, \
 	_batch_mode = false
 
 
-
-
-
 func spawn_player(coord : Vector2i, player : Player):
 	var capital_city = WS.get_city_at(coord)
 	player.set_capital(capital_city)
 
-#endregion
 
 func recreate_tile_forms() -> void:
 	Helpers.remove_all_children(tile_grid)
@@ -425,19 +430,14 @@ func recreate_army_forms() -> void:
 				new_position)
 			armies.add_child(army_form)
 
+#endregion World Setup
+
+
+#region Callbacks
 
 func _refresh_army_form_position(army_form : ArmyForm) -> void:
 	army_form.position = to_position(army_form.entity.coord)
 
-
-func get_serializable_state() -> SerializableWorldState:
-	var state := SerializableWorldState.new()
-	if world_game_is_active():
-		state = WS.to_network_serializable()
-	return state
-
-
-#region callbacks
 
 func callback_player_created(_player : Player) -> void:
 	return # does nothing yet -- TODO add something or delete in future
@@ -478,8 +478,18 @@ func callback_place_changed(coord : Vector2i) -> void:
 func callback_combat_started(armies_ : Array, coord_ : Vector2i) -> void:
 	start_combat(armies_, coord_)
 
+#endregion Callbacks
 
-#endregion callbacks
+
+#region Multiplayer
+
+func get_serializable_state() -> SerializableWorldState:
+	var state := SerializableWorldState.new()
+	if world_game_is_active():
+		state = WS.to_network_serializable()
+	return state
+
+#endregion Multiplayer
 
 
 #region cheats
