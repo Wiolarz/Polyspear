@@ -2,6 +2,13 @@
 extends Node
 
 
+## battle map is placed this far to the right after world map bounds
+const MAPS_OFFSET_X = 7000 + 30000 # TEMP increase to include fake snetinel border
+
+const BATTLE_BORDER_WIDTH = 15
+const BATTLE_BORDER_HEIGHT = 8
+
+
 #region Animations
 
 enum BotSpeed
@@ -53,13 +60,9 @@ enum SymbolAnimationType
 	TELEPORTING_PROJECTILE,
 	COUNTER_ATTACK
 }
-#endregion
 
-## battle map is placed this far to the right after world map bounds
-const MAPS_OFFSET_X = 7000 + 30000 # TEMP increase to include fake snetinel border
+#endregion Animations
 
-const BATTLE_BORDER_WIDTH = 15
-const BATTLE_BORDER_HEIGHT = 8
 
 #region Paths
 
@@ -92,7 +95,6 @@ var RACES_LIST : Array[DataRace] = [
 ]
 
 
-
 const UNIT_FORM_SCENE = preload("res://Scenes/Form/UnitForm.tscn")
 var HEX_TILE_FORM_SCENE := load("res://Scenes/Form/TileForm.tscn") as PackedScene
 const SUMMON_BUTTON_TEXTURE:Texture2D = preload("res://Art/battle_map/grass.png")
@@ -113,7 +115,6 @@ const OUTPOST_IRON_PATH : String = "res://Resources/Presets/Army/outpost_defende
 const OUTPOST_RUBY_PATH : String = "res://Resources/Presets/Army/outpost_defenders/outpost_ruby_defender.tres"
 
 #const HUNT_PATHS : Array[String] = [HUNT_WOOD_PATH, HUNT_IRON_PATH, HUNT_RUBY_PATH]
-
 
 #endregion Paths
 
@@ -153,7 +154,7 @@ var DEFAULT_BATTLE_MAP : DataBattleMap = \
 var BIGGER_BATTLE_MAP : DataBattleMap = \
 	load("res://Resources/Battle/Battle_Maps/8x7duel_10maxUnits.tres")
 
-#endregion
+#endregion Battle maps
 
 
 #region Multiplayer
@@ -177,7 +178,7 @@ const BIG_CYCLONE_COUNTER_VALUE = 30
 const SMALL_CYCLONE_COUNTER_VALUE = 15
 const CYCLONE_MANA_THRESHOLD = 3
 
-#endregion
+#endregion Battle Map properties
 
 
 #region World Map properties
@@ -207,7 +208,7 @@ const WORLD_MOVABLE_TILES = [
 const CHESS_CLOCK_BATTLE_TIME_PER_PLAYER_MS = 3 * 60 * 1000
 const CHESS_CLOCK_BATTLE_TURN_INCREMENT_MS = 2 * 1000
 
-#endregion chess clock
+#endregion Chess clock
 
 
 #region Debugging & tests
@@ -224,7 +225,7 @@ var debug_mcts_max_saved_fail_replays := 16
 ## When true, immediately save replays from BattleManagerFast mismatches with an appropriate name with a suffix "BMFast Mismatch"
 var debug_save_failed_bmfast_integrity := true
 
-#endregion
+#endregion Debugging & tests
 
 
 #region Player Options

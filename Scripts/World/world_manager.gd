@@ -21,6 +21,9 @@ var armies : Node2D = null
 
 var _is_world_game_active : bool = false
 
+
+var _painter_node : BattlePainter
+
 #region Start World
 
 func _ready() -> void:
@@ -35,6 +38,9 @@ func _ready() -> void:
 	add_child(armies)
 
 	UI.add_custom_screen(world_ui)
+
+	_painter_node = load("res://Scenes/UI/Battle/BattlePlanPainter.tscn").instantiate()
+	add_child(_painter_node)
 
 #endregion Start World
 
@@ -70,7 +76,7 @@ func world_game_is_active() -> bool:
 
 #region Main functions
 
-func set_selected_hero(army : Army):
+func set_selected_hero(army : Army) -> void:
 	print("selected ", army)
 	if selected_hero:
 		selected_hero.set_selected(false)
@@ -84,6 +90,21 @@ func set_selected_hero(army : Army):
 	world_ui.refresh_heroes()
 	world_ui.city_ui._refresh_units_to_buy()
 	world_ui.city_ui._refresh_army_display()
+
+	_painter_node.erase()
+	_draw_path()
+
+
+func _deselect_hero() -> void:
+	if not selected_hero:
+		return
+	selected_hero.set_selected(false)
+	selected_hero = null
+	world_ui.refresh_heroes()
+	world_ui.city_ui._refresh_units_to_buy()
+	world_ui.city_ui._refresh_army_display()
+
+	_painter_node.erase()
 
 
 func get_current_player() -> Player:
@@ -123,6 +144,36 @@ func get_tile_of_hex(hex : WorldHex) -> Node2D:
 
 #region Player Actions
 
+## generation travel path for the currently selected hero
+func _generate_path(destination_coord : Vector2i, hero : ArmyForm = null) -> void:
+	if not hero:  # Could be used by AI to generate paths for all their heroes
+		hero = selected_hero
+
+	var path : Array[Vector2i] = []
+
+	## In case there is no path between coord, path will be empty
+	var path_indexes : PackedInt64Array = WS.pathfinding.get_id_path(WS.coord_to_index[selected_hero.coord], WS.coord_to_index[destination_coord])
+	for hex_index in path_indexes:
+		var hex_coord : Vector2i = WS.coord_to_index.find_key(hex_index)
+		path.append(hex_coord)
+	hero.travel_path = path
+
+
+## if hero isn't passed draws currently selected hero path
+func _draw_path(hero : ArmyForm = null):
+	if not hero:  # Could be used to draw AI desired paths during debuging
+		hero = selected_hero
+	if not hero or hero.travel_path.size() == 0:
+		return
+	var is_it_dangerous : bool = false
+	for hex_coord in hero.travel_path:
+			if WS.is_enemy_at(hex_coord, WS.current_player_index):
+				is_it_dangerous = true
+				break
+
+	_painter_node.draw_path(hero.travel_path, is_it_dangerous)
+
+
 ## Called when player interacts (presses) on the map tile
 ## Selects objects OR orders selected object
 ## City/Heroes -> orders Heroes
@@ -133,16 +184,38 @@ func grid_input(coord : Vector2i):
 		print("blocked by BM - Battle Manager")
 		return
 
-	if selected_hero == null:
+	if selected_hero == null:  # SELECT HERO
 		input_try_select(coord)
 		return
 
-	#TEMP in future there will be pathfiding here
-	if not GenericHexGrid.is_adjacent(selected_hero.coord, coord):
-		set_selected_hero(null)
+	if selected_hero.coord == coord:  # DESELECT HERO
+		_deselect_hero()
 		return
 
-	try_interact(selected_hero, coord)
+	if not WS.is_hex_movable(coord):
+		return
+
+
+	if selected_hero.travel_path.size() == 0 or selected_hero.travel_path[-1] != coord:  # Generate Path
+		_generate_path(coord)
+		_painter_node.erase()
+		_draw_path()
+		return
+
+	# Player has pressed again on the last tile of the chosen path
+	# through which he will now travel
+
+	for tile_idx in range(1, selected_hero.travel_path.size()):  # ignores the tile hero starts at
+		if selected_hero.has_movement_points():
+			# TODO add passing through allied heroes
+			try_interact(selected_hero, selected_hero.travel_path[tile_idx])
+		else:
+			break
+
+	selected_hero.travel_path = []  # TODO make changes to travel path dynamic
+	if not selected_hero.has_movement_points():
+		_deselect_hero()
+	_painter_node.erase()
 
 ## Tries to Select owned Hero
 func input_try_select(coord) -> void:  #TODO "nothing is selected try to select stuff"
@@ -330,7 +403,7 @@ func end_of_battle(battle_results : Array[BattleGridState.ArmyInBattleState]):
 func close_world():
 	_is_world_game_active = false
 	combat_tile = Vector2i.MAX
-	selected_hero = null
+	_deselect_hero()
 
 	for army_form in armies.get_children():
 		army_form.queue_free()
