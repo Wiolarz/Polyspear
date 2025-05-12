@@ -35,9 +35,12 @@ var anim_default_trans := Tween.TRANS_CUBIC
 var anim_move_duration := 0.3
 var anim_turn_duration := 0.3
 var anim_death_duration := 0.3
+var anim_symbol_fade_in_out_time := 0.1
+
+## TODO Old system of upscaling animation could be used for symbols that don’t have proper animation
 var anim_symbol_activation_scale := Vector2(2.0, 2.0)
-# temporarily cranked up to 0.8, TODO change to 0.5 when
 var anim_symbol_activation_duration := 0.8
+
 
 # STUB, TBH not used yet really
 enum GuiAnimationMode
@@ -46,6 +49,16 @@ enum GuiAnimationMode
 	NON_DISTRACTION,
 	FULL,
 	MAX_ = FULL + 1,
+}
+
+## To pass as argument for symbol animations to use special behavior
+enum SymbolAnimationType
+{
+	DEFAULT,
+	MELEE_ATTACK,
+	BLOCK,
+	TELEPORTING_PROJECTILE,
+	COUNTER_ATTACK
 }
 
 #endregion Animations

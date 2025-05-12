@@ -1,8 +1,10 @@
-[gd_resource type="Resource" script_class="DataSymbol" load_steps=2 format=3 uid="uid://bp747guikipcb"]
+[gd_resource type="Resource" script_class="DataSymbol" load_steps=3 format=3 uid="uid://bp747guikipcb"]
 
 [ext_resource type="Script" path="res://Resources/Battle/data_symbol.gd" id="1_rdbby"]
+[ext_resource type="SpriteFrames" uid="uid://c74utw2dcipbg" path="res://Art/animations/spear.tres" id="2_akrjp"]
 
 [resource]
 script = ExtResource("1_rdbby")
 type = 1
 texture_path = "res://Art/items/spear.png"
+symbol_animation = ExtResource("2_akrjp")

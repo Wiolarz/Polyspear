@@ -10,7 +10,6 @@ const selection_mark_scene = preload("res://Scenes/Form/SelectionMark.tscn")
 @onready var sprite_border := $sprite_border
 
 var entity : Unit
-var _symbols_flipped : bool = true  # flag used for unit rotation
 
 ## these variables are needed for visual effects -- hex border needs
 ## them both to refresh its hightlight level
@@ -35,7 +34,7 @@ static func create(new_unit : Unit) -> UnitForm:
 	else:
 		color = new_unit.controller.get_player_color()
 
-	result.apply_graphics(new_unit.template, color)
+	result.ready.connect(result.apply_graphics.bind(new_unit.template, color))
 
 	result.global_position = BM.get_tile_global_position(new_unit.coord)
 	result.rotation_degrees = new_unit.unit_rotation * 60
@@ -48,7 +47,8 @@ static func create(new_unit : Unit) -> UnitForm:
 ## no underlying Unit exists
 static func create_for_summon_ui(template: DataUnit, color : DataPlayerColor) -> UnitForm:
 	var result = CFG.UNIT_FORM_SCENE.instantiate()
-	result.apply_graphics(template, color)
+	# defer apply_graphics to after the symbol forms are ready (they must be in order for this to work)
+	result.ready.connect(result.apply_graphics.bind(template, color))
 	return result
 
 
@@ -59,9 +59,14 @@ func apply_graphics(template : DataUnit, color : DataPlayerColor):
 	_apply_level_number(template.level)
 
 	for side in range(0,6):
-		var symbol_texture = template.symbols[side].texture_path
-		_apply_symbol_sprite(side, symbol_texture)
-
+		var data_symbol = template.symbols[side]
+		var symbol = get_symbol(side)
+		var unit_rotation = entity.unit_rotation if entity else 0
+		var side_local = (unit_rotation + side) % 6
+		
+		symbol.apply_sprite(side_local, data_symbol.texture_path)
+		symbol.apply_activation_anim(data_symbol)
+	
 	_flip_unit_sprite()
 	$RigidUI/SpellEffect1.texture = null
 	$RigidUI/SpellEffect2.texture = null
@@ -69,31 +74,6 @@ func apply_graphics(template : DataUnit, color : DataPlayerColor):
 	$RigidUI/SpellEffectCounter2.text = ""
 	$RigidUI/TerrainEffect.texture = null
 
-
-## WARNING: called directly in UNIT EDITOR
-func _apply_symbol_sprite(side : int, texture_path : String) -> void:
-	var sprite_path = "Symbols/%s/SymbolForm/Sprite2D" % [SIDE_NAMES[side]]
-	var symbol_sprite = get_node(sprite_path)
-	if texture_path == null or texture_path.is_empty():
-		symbol_sprite.texture = null
-		symbol_sprite.hide()
-		return
-	symbol_sprite.texture = load(texture_path)
-
-	_flip_symbol_sprite(symbol_sprite, side)
-
-	symbol_sprite.show()
-
-
-## Flips ths sprite so that weapons always point to the top of the screen
-func _flip_symbol_sprite(symbol_sprite : Sprite2D, dir : int):
-	var abstract_rotation : int = 0
-	if entity != null:
-		abstract_rotation = (entity.unit_rotation + dir) % 6
-	if abstract_rotation in [0, 1, 5]:  # LEFT
-		symbol_sprite.flip_v = false
-	else:
-		symbol_sprite.flip_v = true
 
 func _flip_unit_sprite():
 	var abstract_rotation : int = 0
@@ -135,6 +115,7 @@ func anim_move():
 	var target = BM.get_tile_global_position(entity.coord)
 	ANIM.main_tween().tween_property(self, "position", target, CFG.anim_move_duration)
 
+
 func anim_turn():
 	var time = CFG.anim_turn_duration
 	var angle_rel = angle_difference(rotation, deg_to_rad(entity.unit_rotation * 60))
@@ -144,17 +125,65 @@ func anim_turn():
 	_rotation_symbol_flip()
 	_flip_unit_sprite()
 
+
 func anim_die():
 	ANIM.main_tween().tween_property(self, "scale", Vector2.ZERO, CFG.anim_death_duration)
 	ANIM.main_tween().tween_callback(queue_free)
 
-func anim_symbol(side: int):
-	var side_local : int = GenericHexGrid.rotate_clockwise( \
-			side as GenericHexGrid.GridDirections, -entity.unit_rotation)
-	var symbol = get_node("Symbols/%s/SymbolForm" % SIDE_NAMES[side_local])
-	var tween = ANIM.subtween()
-	tween.tween_property(symbol, "scale", CFG.anim_symbol_activation_scale, 0.0)
-	tween.tween_property(symbol, "scale", Vector2(1.0, 1.0), CFG.anim_symbol_activation_duration)
+
+func anim_symbol(side : int, animation_type : int, target_coord: Vector2i = Vector2i.ZERO):
+	if target_coord == Vector2i.ZERO:
+		target_coord = entity.coord + GenericHexGrid.DIRECTION_TO_OFFSET[side]
+	
+	var side_local : int = GenericHexGrid.rotate_clockwise(
+		side, 
+		-entity.unit_rotation
+	)
+	
+	var symbol : SymbolForm = get_symbol(side_local)
+
+	var other_unit : UnitForm = BM.get_unit_form(target_coord)
+	var opposite_side_local : int = GenericHexGrid.rotate_clockwise(
+		GenericHexGrid.opposite_direction(side),
+		-other_unit.entity.unit_rotation
+	)
+	
+	var other_symbol : SymbolForm = other_unit.get_symbol(opposite_side_local)
+
+	# TODO animation delay makes the death animation wait for 
+	# the moment of impact (but makes multihits look way less cool)
+	# could be fixed by somehow detaching death animation from main tween
+	
+	match animation_type:
+		CFG.SymbolAnimationType.MELEE_ATTACK, CFG.SymbolAnimationType.COUNTER_ATTACK:
+			symbol.anim_symbol_melee(animation_type)
+		
+		CFG.SymbolAnimationType.TELEPORTING_PROJECTILE:
+			symbol.anim_symbol_teleporting_projectile(target_coord, side)
+		
+		CFG.SymbolAnimationType.BLOCK:
+			var block_anim_duration : float = symbol.get_block_duration()
+			
+			var data_symbol : E.Symbols = \
+				other_unit.entity.template.symbols[opposite_side_local].type
+			
+			if Unit.does_it_shoot(data_symbol):
+				other_symbol.anim_symbol_teleporting_projectile(
+					entity.coord, 
+					GenericHexGrid.opposite_direction(side)
+				)
+			else:
+				other_symbol.anim_symbol_melee(
+					CFG.SymbolAnimationType.MELEE_ATTACK, 
+					block_anim_duration
+				)
+				
+			symbol.anim_symbol_block()
+		
+		_:
+			assert(false, "Unimplemented animation type")
+
+
 
 func anim_magic():
 	# TODO
@@ -162,14 +191,15 @@ func anim_magic():
 
 #endregion Animations
 
-func _rotation_symbol_flip():
-	_symbols_flipped = true
+func get_symbol(side_local : int) -> SymbolForm:
+	return get_node("Symbols/%s/SymbolForm" % SIDE_NAMES[side_local])
 
+
+func _rotation_symbol_flip():
 	for dir in range(6):
-		var symbol_sprite = $"Symbols".get_children()[dir].get_child(0).get_child(0)
-		if symbol_sprite.texture == null:
-			continue
-		_flip_symbol_sprite(symbol_sprite, dir)
+		var abstract_rotation = (entity.unit_rotation + dir) % 6
+		get_symbol(dir).flip_sprite(abstract_rotation)
+	
 
 #region UI
 
