@@ -74,8 +74,8 @@ func planning_input(tile_coord : Vector2i, is_it_pressed : bool) -> void:
 	add_child(new_arrow.end_node)
 	new_arrow = null  # reset arrow path
 
-
-func draw_path(path : Array[Vector2i], danger : bool) -> void:
+## if there is an danger along the path, line turnes red
+func draw_path(path : Array[Vector2i], danger : bool = false) -> void:
 	var arrow_color_idx = 0  # default white
 	if danger:
 		arrow_color_idx += 4  # RED

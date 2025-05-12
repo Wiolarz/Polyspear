@@ -190,7 +190,6 @@ func grid_input(coord : Vector2i):
 
 	if selected_hero.coord == coord:  # DESELECT HERO
 		_deselect_hero()
-		_painter_node.erase()
 		return
 
 	if not WS.is_hex_movable(coord):
@@ -202,6 +201,9 @@ func grid_input(coord : Vector2i):
 		_painter_node.erase()
 		_draw_path()
 		return
+
+	# Player has pressed again on the last tile of the chosen path
+	# through which he will now travel
 
 	for tile_idx in range(1, selected_hero.travel_path.size()):  # ignores the tile hero starts at
 		if selected_hero.has_movement_points():

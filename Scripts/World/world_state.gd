@@ -119,6 +119,8 @@ func generate_astar() -> void:
 				continue
 			hex_index += 1
 			coord_to_index[hex.place.coord] = hex_index
+			## graphics coordinates are passed to make astart2d work even though it doesn't make sense
+			## TODO write our own custom pathfiding so that portals can work properly
 			pathfinding.add_point(hex_index, WM.to_position(hex.place.coord))
 
 	hex_index = -1
