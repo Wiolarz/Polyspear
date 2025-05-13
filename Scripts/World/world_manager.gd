@@ -128,7 +128,7 @@ func end_turn():
 
 
 func callback_turn_changed():
-	set_selected_hero(null)
+	_deselect_hero()
 	world_ui.refresh_heroes()
 	world_ui.show_trade_ui(get_current_player_capital())
 	world_ui.refresh_player_buttons()
@@ -221,8 +221,8 @@ func grid_input(coord : Vector2i):
 			try_interact(selected_hero, selected_hero.travel_path[tile_idx])
 		else:
 			break
-
-	selected_hero.travel_path = []  # TODO make changes to travel path dynamic
+	var empty_path : Array[Vector2i] = []
+	selected_hero.travel_path = empty_path  # TODO make changes to travel path dynamic
 	if not selected_hero.has_movement_points():
 		_deselect_hero()
 	_painter_node.erase()
@@ -539,7 +539,7 @@ func callback_army_moved(army : Army) -> void:
 func callback_army_destroyed(army : Army) -> void:
 	var army_form = get_army_form(army)
 	if selected_hero == army_form:
-		set_selected_hero(null)
+		_deselect_hero()
 	army_form.queue_free()
 
 
