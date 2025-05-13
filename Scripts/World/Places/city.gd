@@ -32,12 +32,25 @@ static func create_place(coord_ : Vector2i, args : PackedStringArray) -> Place:
 
 # overwrite
 func interact(army : Army) -> void:
-	if faction.controller.team != army.controller.team:  # Enemy players enters the undefended city
-		#TODO add capturing of cities, (game end condition will be more complicated)
-		print("End of the game")
-		WM.win_game(army.controller)  # TEMP
 	if controller_index == army.controller_index:  # player enters his own city
 		army.heal_in_city()
+		return
+	if faction.controller.team == army.controller.team:  # ally hero enters the city
+		return
+
+	# faction.controller.team != army.controller.team:  # Enemy players enters the undefended city
+	capture(army.faction)
+
+
+# overwrite
+func capture(new_faction : Faction) -> void:
+	if faction: # if city had been occupied we need to remove previous player ownership first
+		faction.lost_a_city(self)
+
+	faction = new_faction
+	new_faction.captured_a_city(self)
+	controller_changed.emit()  # VISUAL set the flag color to match the new controller
+
 
 
 # overwrite

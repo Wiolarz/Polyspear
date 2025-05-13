@@ -129,8 +129,15 @@ func end_turn():
 
 func callback_turn_changed():
 	_deselect_hero()
+	var current_faction : Faction = WS.get_current_player()
+	if current_faction.has_faction_lost():
+		end_turn()
+		return
+
 	world_ui.refresh_heroes()
-	world_ui.show_trade_ui(get_current_player_capital())
+	var current_player_capital : City = get_current_player_capital()
+	if current_player_capital:  # player may have lost his last city
+		world_ui.show_trade_ui(current_player_capital)
 	world_ui.refresh_player_buttons()
 
 
@@ -149,7 +156,7 @@ func get_tile_of_hex(hex : WorldHex) -> Node2D:
 			return tile_form
 	return null
 
-#endregion
+#endregion Main functions
 
 
 #region Player Actions
@@ -289,6 +296,7 @@ func perform_world_move_info(world_move_info : WorldMoveInfo) -> void:
 
 
 func win_game(player : Player):
+	_is_world_game_active = false
 	world_ui.show_you_win(player)
 
 
@@ -339,7 +347,7 @@ func do_local_travel(source : Vector2i, target : Vector2i) -> void:
 		NET.desync()
 		return
 
-#endregion
+#endregion City Management
 
 
 #region Battles
@@ -406,7 +414,7 @@ func end_of_battle(battle_results : Array[BattleGridState.ArmyInBattleState]):
 	UI.go_to_custom_ui(world_ui)
 
 
-# endregion
+#endregion Battles
 
 
 #region World End
@@ -422,7 +430,7 @@ func close_world():
 		tile.queue_free()
 
 
-#endregion
+#endregion World End
 
 
 #region World Setup
