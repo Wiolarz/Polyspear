@@ -52,6 +52,10 @@ text = "Streamer mode"
 layout_mode = 2
 text = "Fullscreen"
 
+[node name="ToggleAutoFullscreen" type="CheckBox" parent="Margin/Scroll/VBox"]
+layout_mode = 2
+text = "Auto FullScreen - Main menu is windowed, but game is kept in fullscreen"
+
 [node name="ToggleBackgroundColorFollowsPlayers" type="CheckBox" parent="Margin/Scroll/VBox"]
 layout_mode = 2
 text = "Background color changes with player's turns"
