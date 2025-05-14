@@ -5,7 +5,6 @@ extends Control
 func _ready():
 	# You should put all PlayerOptions-widget connections here
 	_declare_toggle("autostart_map", $ToggleAutoStart)
-	_declare_toggle("use_default_battle", $ToggleBattleDefault)
 	_declare_toggle("use_default_AI_players", $ToggleDefaultAIPlayers)
 	_declare_toggle("streamer_mode", $ToggleStreamerMode)
 	_declare_toggle("fullscreen", $ToggleFullscreen)
