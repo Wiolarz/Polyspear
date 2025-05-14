@@ -229,9 +229,10 @@ func grid_input(coord : Vector2i):
 		else:
 			break
 	var empty_path : Array[Vector2i] = []
-	selected_hero.travel_path = empty_path  # TODO make changes to travel path dynamic
-	if not selected_hero.has_movement_points():
-		_deselect_hero()
+	if selected_hero:  # game might have ended
+		selected_hero.travel_path = empty_path  # TODO make changes to travel path dynamic
+		if not selected_hero.has_movement_points():
+			_deselect_hero()
 	_painter_node.erase()
 
 ## Tries to Select owned Hero
@@ -295,20 +296,13 @@ func perform_world_move_info(world_move_info : WorldMoveInfo) -> void:
 	world_move_done.emit()
 
 
-func win_game(player : Player):
-	_is_world_game_active = false
-	world_ui.show_you_win(player)
-
-
 func perform_network_move(world_move_info : WorldMoveInfo) -> void:
 	perform_world_move_info(world_move_info)
 
-
-#endregion
+#endregion Player Action
 
 
 #region City Management
-
 
 func trade_city(city : City):
 	print("trade_city")
@@ -419,6 +413,66 @@ func end_of_battle(battle_results : Array[BattleGridState.ArmyInBattleState]):
 
 #region World End
 
+func player_has_won_a_game() -> void:
+	_is_world_game_active = false
+
+	var new_summary = _create_summary()
+
+	UI.ui_overlay.show_world_summary(new_summary, IM.go_to_main_menu)
+
+
+## Major function which fully generates information panel at the end of the world
+func _create_summary() -> DataWorldSummary:
+	var summary := DataWorldSummary.new()
+
+	var winning_team : int = WS.player_states[0].controller.team
+	var winning_team_players : Array[Player] = []
+
+	var all_faction : Array[Faction] = WS.player_states
+	all_faction.append_array(WS.defeated_factions)
+
+	# Generate information for every player
+	for faction in all_faction:
+		var player_stats := DataWorldSummaryPlayer.new()
+
+		# Generate heroes info
+		var heroes : Array[Hero] = faction.dead_heroes
+		for army in faction.hero_armies:
+			heroes.append(army.hero)
+
+
+		for hero in heroes:
+			var hero_description = "%s\n" % hero.hero_name
+			player_stats.heroes += hero_description
+
+		var player = faction.controller
+
+		# generates player names for their info column
+		player_stats.player_description = player.get_full_player_description()
+
+		if player.team == winning_team:
+			player_stats.state = "winner"
+			winning_team_players.append(player)
+
+			# TEMP solution - better color system described in TODO notes
+			summary.color = player.get_player_color().color
+		else:
+			player_stats.state = "loser"
+		summary.players.append(player_stats)
+
+	# Summary title creation
+	assert(winning_team_players.size() > 0, "World ended without any winners")
+
+	var team_name : String = "Team %s" % winning_team_players[0].team
+	summary.title = "%s wins" % [team_name]
+	var sep : String = " : "
+	for player in winning_team_players:
+		summary.title += sep + player.get_player_color().name
+		sep = ", "
+
+	return summary
+
+
 func close_world():
 	_is_world_game_active = false
 	combat_tile = Vector2i.MAX
@@ -428,7 +482,6 @@ func close_world():
 		army_form.queue_free()
 	for tile in tile_grid.get_children():
 		tile.queue_free()
-
 
 #endregion World End
 

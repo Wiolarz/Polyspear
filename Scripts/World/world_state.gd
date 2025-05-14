@@ -7,6 +7,7 @@ var grid : GenericHexGrid = null
 var turn_counter : int
 var current_player_index : int
 var player_states : Array[Faction] = []
+var defeated_factions : Array[Faction] = []
 var move_hold_on_combat : Array[Vector2i] # TODO some better form
 
 var pathfinding : AStar2D
@@ -19,7 +20,6 @@ signal combat_started(armies : Array, coord : Vector2i)
 
 #region init
 
-
 ## main init function
 func start_world(map : DataWorldMap,
 		slots : Array[Slot],
@@ -28,6 +28,7 @@ func start_world(map : DataWorldMap,
 	turn_counter = 0
 	current_player_index = 0
 	move_hold_on_combat = []
+	defeated_factions = []
 
 	grid = GenericHexGrid.new(map.grid_width, map.grid_height, WorldHex.new())
 
@@ -677,11 +678,12 @@ func perform_game_over_checks() -> bool:
 		var faction : Faction = player_states[faction_idx]
 		if faction.has_faction_lost():
 			player_states.erase(faction)
+			defeated_factions.append(faction)
 			print("\n\n\n\n\n\n")
 			print(faction.controller.get_full_player_description(), "has been defeated")
 			print("\n\n\n\n\n\n")
 			if player_states.size() == 1:
-				WM.win_game(player_states[0].controller)  # TEMP
+				WM.player_has_won_a_game()
 				return true
 	return false
 
