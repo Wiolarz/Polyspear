@@ -4,7 +4,7 @@ extends Resource
 
 ## How to add settings:
 ## 1. add an export variable here
-## 2. add an appropriate (as in _declare_* functions in settings_menu.gd) 
+## 2. add an appropriate (as in _declare_* functions in settings_menu.gd)
 ##    control to SettingsMenu.tscn
 ## 3. add a "_declare_*" call in settings_menu.gd's _ready function,
 ##    referencing the added control
@@ -48,6 +48,10 @@ extends Resource
 		if new != fullscreen:
 			(func(): UI.set_fullscreen(new)).call_deferred()
 		fullscreen = new
+
+## when player is in main menu his game window is kept minimized
+## but turns fullscreen once the game starts
+@export var keep_main_menu_windowed : bool = false
 
 @export var login : String
 ## if true adds a random number suffix at the end of a login string

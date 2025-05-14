@@ -246,6 +246,9 @@ var LAST_USED_BATTLE_PRESET_NAME : String :
 var LAST_USED_WORLD_MAP : DataWorldMap : # TODO implement this
 	get: return player_options.last_used_world_map
 
+var FULLSCREEN_AUTO_TOGGLE : bool :
+	get: return player_options.keep_main_menu_windowed
+
 
 func save_last_used_for_host_setup(\
 		address : String, port : int, username : String) -> void:

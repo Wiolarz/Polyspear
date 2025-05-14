@@ -36,10 +36,6 @@ theme_override_font_sizes/font_size = 100
 text = "Settings"
 horizontal_alignment = 1
 
-[node name="ToggleBattleDefault" type="CheckBox" parent="Margin/Scroll/VBox"]
-layout_mode = 2
-text = "Use battle as default"
-
 [node name="ToggleAutoStart" type="CheckBox" parent="Margin/Scroll/VBox"]
 layout_mode = 2
 text = "Auto start"
@@ -55,6 +51,10 @@ text = "Streamer mode"
 [node name="ToggleFullscreen" type="CheckBox" parent="Margin/Scroll/VBox"]
 layout_mode = 2
 text = "Fullscreen"
+
+[node name="ToggleAutoFullscreen" type="CheckBox" parent="Margin/Scroll/VBox"]
+layout_mode = 2
+text = "Auto FullScreen - Main menu is windowed, but game is kept in fullscreen"
 
 [node name="ToggleBackgroundColorFollowsPlayers" type="CheckBox" parent="Margin/Scroll/VBox"]
 layout_mode = 2
