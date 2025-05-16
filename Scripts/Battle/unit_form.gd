@@ -54,7 +54,7 @@ static func create_for_summon_ui(template: DataUnit, color : DataPlayerColor) ->
 
 func apply_graphics(template : DataUnit, color : DataPlayerColor):
 	var unit_texture = load(template.texture_path) as Texture2D
-	_apply_unit_texture(unit_texture)
+	_set_texture(unit_texture)
 	_apply_color_texture(color)
 	_apply_level_number(template.level)
 
@@ -91,7 +91,7 @@ func _flip_unit_sprite():
 		$sprite_unit.flip_h = true
 
 ## WARNING: called directly in UNIT EDITOR
-func _apply_unit_texture(texture : Texture2D) -> void:
+func _set_texture(texture : Texture2D) -> void:
 	$sprite_unit.texture = texture
 
 
