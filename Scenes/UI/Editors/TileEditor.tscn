@@ -55,7 +55,7 @@ layout_mode = 2
 [node name="PanelContainer" type="PanelContainer" parent="HBoxContainer/Edition/VBoxContainer/Top"]
 layout_mode = 2
 
-[node name="TileName" type="Label" parent="HBoxContainer/Edition/VBoxContainer/Top/PanelContainer"]
+[node name="ResourceName" type="Label" parent="HBoxContainer/Edition/VBoxContainer/Top/PanelContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 40
 text = "Tile name
@@ -90,7 +90,7 @@ theme_override_styles/normal = SubResource("StyleBoxFlat_nf1n4")
 text = "pick art"
 metadata/_edit_use_anchors_ = true
 
-[node name="TilePreview" parent="HBoxContainer/Edition/VBoxContainer/Preview/Center" instance=ExtResource("4_r3svn")]
+[node name="ResourcePreview" parent="HBoxContainer/Edition/VBoxContainer/Preview/Center" instance=ExtResource("4_r3svn")]
 material = SubResource("ShaderMaterial_utxcc")
 scale = Vector2(0.4, 0.4)
 
@@ -118,7 +118,7 @@ theme_override_styles/normal = SubResource("StyleBoxFlat_srvm0")
 text = "Save"
 metadata/_edit_use_anchors_ = true
 
-[node name="TileBrowserTree" type="Tree" parent="HBoxContainer"]
+[node name="ResourceBrowserTree" type="Tree" parent="HBoxContainer"]
 custom_minimum_size = Vector2(640, 0)
 layout_mode = 2
 metadata/_edit_use_anchors_ = true
