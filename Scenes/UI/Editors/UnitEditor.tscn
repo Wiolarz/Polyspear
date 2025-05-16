@@ -55,7 +55,7 @@ layout_mode = 2
 [node name="PanelContainer" type="PanelContainer" parent="HBoxContainer/Edition/VBoxContainer/Top"]
 layout_mode = 2
 
-[node name="UnitName" type="Label" parent="HBoxContainer/Edition/VBoxContainer/Top/PanelContainer"]
+[node name="ResourceName" type="Label" parent="HBoxContainer/Edition/VBoxContainer/Top/PanelContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 40
 text = "Unit name"
@@ -71,7 +71,7 @@ size_flags_vertical = 3
 [node name="Center" type="Control" parent="HBoxContainer/Edition/VBoxContainer/Preview"]
 layout_mode = 2
 
-[node name="UnitPreview" parent="HBoxContainer/Edition/VBoxContainer/Preview/Center" instance=ExtResource("3_yftbb")]
+[node name="ResourcePreview" parent="HBoxContainer/Edition/VBoxContainer/Preview/Center" instance=ExtResource("3_yftbb")]
 material = SubResource("ShaderMaterial_ttf1t")
 scale = Vector2(0.4, 0.4)
 
@@ -213,7 +213,7 @@ theme_override_styles/normal = SubResource("StyleBoxFlat_srvm0")
 text = "Save"
 metadata/_edit_use_anchors_ = true
 
-[node name="UnitBrowserTree" type="Tree" parent="HBoxContainer"]
+[node name="ResourceBrowserTree" type="Tree" parent="HBoxContainer"]
 custom_minimum_size = Vector2(640, 0)
 layout_mode = 2
 metadata/_edit_use_anchors_ = true
