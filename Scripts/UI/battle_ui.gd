@@ -188,7 +188,7 @@ func update_replay_controls(move_nr: int, total_replay_moves: int, summary: Data
 	if summary:
 		replay_show_summary.disabled = false
 		replay_show_summary.pressed.connect(
-			UI.ui_overlay.show_summary.bind(summary, null)
+			UI.ui_overlay.show_battle_summary.bind(summary, null)
 		)
 	else:
 		replay_show_summary.disabled = true

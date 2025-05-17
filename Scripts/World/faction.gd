@@ -30,6 +30,10 @@ var dead_heroes: Array[Hero] = []
 
 var goods : Goods = Goods.new()
 
+## Ticks down at end of the round if player doesn't posses any cities
+const DEFEAT_TURN_TIMER_RESET : int = 6
+var defeat_turn_timer : int = DEFEAT_TURN_TIMER_RESET
+
 
 static func create_faction(slot : Slot) -> Faction:
 	var new_faction := Faction.new()
@@ -38,6 +42,11 @@ static func create_faction(slot : Slot) -> Faction:
 	new_faction.race = slot.race
 
 	return new_faction
+
+
+func has_faction_lost() -> bool:
+	return defeat_turn_timer == 0 or \
+		(cities.size() == 0 and hero_armies.size() == 0)
 
 
 #region Goods + City Economy
@@ -66,6 +75,18 @@ func destroyed_outpost(outpost : Outpost) -> void:
 		for building in outpost_buildings:
 			if building.outpost_requirement == outpost.outpost_type:
 				outpost_buildings.erase(building)
+
+
+func captured_a_city(city : City) -> void:
+	cities.append(city)
+	if defeat_turn_timer < DEFEAT_TURN_TIMER_RESET:
+		defeat_turn_timer = DEFEAT_TURN_TIMER_RESET
+
+
+func lost_a_city(city : City) -> void:
+	cities.erase(city)
+	WS.perform_game_over_checks()
+
 
 #endregion Goods + City Economy
 

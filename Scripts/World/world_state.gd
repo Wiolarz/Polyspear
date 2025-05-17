@@ -7,6 +7,7 @@ var grid : GenericHexGrid = null
 var turn_counter : int
 var current_player_index : int
 var player_states : Array[Faction] = []
+var defeated_factions : Array[Faction] = []
 var move_hold_on_combat : Array[Vector2i] # TODO some better form
 
 var pathfinding : AStar2D
@@ -19,7 +20,6 @@ signal combat_started(armies : Array, coord : Vector2i)
 
 #region init
 
-
 ## main init function
 func start_world(map : DataWorldMap,
 		slots : Array[Slot],
@@ -28,6 +28,7 @@ func start_world(map : DataWorldMap,
 	turn_counter = 0
 	current_player_index = 0
 	move_hold_on_combat = []
+	defeated_factions = []
 
 	grid = GenericHexGrid.new(map.grid_width, map.grid_height, WorldHex.new())
 
@@ -552,6 +553,7 @@ func remove_army(army : Army) -> void:
 		assert(army in army_array)
 		army_array.erase(army)
 		player.dead_heroes.append(army.hero)
+		WS.perform_game_over_checks()  # Can end the game on the spot
 	# think about when is this ref counted object destroyed
 	WM.callback_army_destroyed(army)
 
@@ -661,6 +663,29 @@ func _end_of_round_callbacks() -> void:
 			var place : Place = grid.get_hex(coord).place
 			if place:
 				place.on_end_of_round()
+
+	for faction_idx in range(player_states.size() - 1, -1, -1):
+		var faction : Faction = player_states[faction_idx]
+		if faction.cities.size() == 0:
+			faction.defeat_turn_timer -= 1
+
+	perform_game_over_checks()
+
+
+## can activate end game screen
+func perform_game_over_checks() -> bool:
+	for faction_idx in range(player_states.size() - 1, -1, -1):
+		var faction : Faction = player_states[faction_idx]
+		if faction.has_faction_lost():
+			player_states.erase(faction)
+			defeated_factions.append(faction)
+			print("\n\n\n\n\n\n")
+			print(faction.controller.get_full_player_description(), "has been defeated")
+			print("\n\n\n\n\n\n")
+			if player_states.size() == 1:
+				WM.player_has_won_a_game()
+				return true
+	return false
 
 #endregion End Turn + Start of The Game - Special Events
 
