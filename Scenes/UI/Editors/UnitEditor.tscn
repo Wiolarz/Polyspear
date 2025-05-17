@@ -255,5 +255,7 @@ use_native_dialog = true
 
 [connection signal="pressed" from="HBoxContainer/Edition/VBoxContainer/Preview/Center/PickArt" to="." method="_on_pick_art_button_pressed"]
 [connection signal="pressed" from="HBoxContainer/Edition/VBoxContainer/Bottom/HBox/BackButton" to="." method="_on_back_button_pressed"]
+[connection signal="pressed" from="HBoxContainer/Edition/VBoxContainer/Bottom/HBox/Add" to="." method="_on_add_pressed"]
+[connection signal="pressed" from="HBoxContainer/Edition/VBoxContainer/Bottom/HBox/Delete" to="." method="_on_delete_pressed"]
 [connection signal="pressed" from="HBoxContainer/Edition/VBoxContainer/Bottom/HBox/Save" to="." method="_on_save_pressed"]
 [connection signal="file_selected" from="PickArtDialog" to="." method="_on_pick_art_dialog_file_selected"]
