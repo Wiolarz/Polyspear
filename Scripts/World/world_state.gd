@@ -475,6 +475,7 @@ func do_recruit_hero(data_hero : DataHero,
 			hero = dead_hero
 	if not hero: # means no hero is revived
 		hero = Hero.construct_hero(data_hero, current_player_index)
+		army.units_data.append(player_state.race.units_data[0])  # provide new hero with level 1 unit
 
 	army.hero = hero
 	army.controller_index = city.controller_index
