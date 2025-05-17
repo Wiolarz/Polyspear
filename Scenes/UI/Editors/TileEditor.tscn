@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://cwv8isdmpg34u"]
+[gd_scene load_steps=13 format=3 uid="uid://cwv8isdmpg34u"]
 
 [ext_resource type="Script" path="res://Scripts/Development/tile_editor.gd" id="1_x074o"]
 [ext_resource type="Shader" path="res://Art/UI/background.gdshader" id="2_812di"]
@@ -24,6 +24,12 @@ shader_parameter/highlight_intensity = 0.0
 shader_parameter/contrast_boost = 0.0
 shader_parameter/modulate_intensity = 0.0
 shader_parameter/modulate_color = Color(1, 1, 1, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_q6bfp"]
+bg_color = Color(0.240985, 0.446397, 0.234178, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_o4ju6"]
+bg_color = Color(0.510906, 0.167793, 0.125219, 1)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_srvm0"]
 bg_color = Color(0.188235, 0.317647, 0.105882, 1)
@@ -108,8 +114,26 @@ shortcut_in_tooltip = false
 text = "Back"
 
 [node name="Sep" type="Control" parent="HBoxContainer/Edition/VBoxContainer/Bottom/HBox"]
+visible = false
 layout_mode = 2
 size_flags_horizontal = 3
+
+[node name="ResourceName" type="TextEdit" parent="HBoxContainer/Edition/VBoxContainer/Bottom/HBox"]
+custom_minimum_size = Vector2(400, 60)
+layout_mode = 2
+text = "New_Tile"
+
+[node name="Add" type="Button" parent="HBoxContainer/Edition/VBoxContainer/Bottom/HBox"]
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_q6bfp")
+text = "Add"
+metadata/_edit_use_anchors_ = true
+
+[node name="Delete" type="Button" parent="HBoxContainer/Edition/VBoxContainer/Bottom/HBox"]
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_o4ju6")
+text = "Delete"
+metadata/_edit_use_anchors_ = true
 
 [node name="Save" type="Button" parent="HBoxContainer/Edition/VBoxContainer/Bottom/HBox"]
 layout_mode = 2
@@ -135,5 +159,7 @@ use_native_dialog = true
 
 [connection signal="pressed" from="HBoxContainer/Edition/VBoxContainer/Preview/Center/PickArt" to="." method="_on_pick_art_button_pressed"]
 [connection signal="pressed" from="HBoxContainer/Edition/VBoxContainer/Bottom/HBox/BackButton" to="." method="_on_back_button_pressed"]
+[connection signal="pressed" from="HBoxContainer/Edition/VBoxContainer/Bottom/HBox/Add" to="." method="_on_add_pressed"]
+[connection signal="pressed" from="HBoxContainer/Edition/VBoxContainer/Bottom/HBox/Delete" to="." method="_on_delete_pressed"]
 [connection signal="pressed" from="HBoxContainer/Edition/VBoxContainer/Bottom/HBox/Save" to="." method="_on_save_pressed"]
 [connection signal="file_selected" from="PickArtDialog" to="." method="_on_pick_art_dialog_file_selected"]

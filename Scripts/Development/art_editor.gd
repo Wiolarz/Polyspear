@@ -1,7 +1,8 @@
 class_name ArtEditor
 extends CanvasLayer
 
-# TODO load first resource at start
+## Resource tree needs to double cklicked or selected using the small button on the right
+## this prevents highlighting of currently edited item
 
 
 var resource_directory_path : String
@@ -34,12 +35,17 @@ var open_button_texture : Texture2D
 ## try display for selecting unit to edit
 @onready var resource_browser_tree : Tree = $HBoxContainer/ResourceBrowserTree
 
+@onready var resource_name_edit : TextEdit = $HBoxContainer/Edition/VBoxContainer/Bottom/HBox/ResourceName
+
+
 #region INIT
 
 func _ready():
+	_init_resource_tree()
 	_load_open_button_texture()
 	_init_resource_type()
 	_load_resources()
+	_select_first_item()
 
 
 ## resizes texture for open button in resource browser tree
@@ -50,13 +56,18 @@ func _load_open_button_texture():
 	open_button_texture = ImageTexture.create_from_image(image)
 
 
-## initializes `resource_browser_tree` and `browser_tree_id_to_resource_path`
-## tree buttons get ids corresponding to indexes in that array
-func _load_resources():
+func _init_resource_tree() -> void:
 	resource_browser_tree.button_clicked.connect(_on_browser_open_button_clicked)
 	resource_browser_tree.item_activated.connect(_on_browser_item_activated)
-	var root = resource_browser_tree.create_item()
 	resource_browser_tree.hide_root = true
+
+
+## initializes `resource_browser_tree` and `browser_tree_id_to_resource_path`
+## tree buttons get ids corresponding to indexes in that array
+func _load_resources() -> void:
+	resource_browser_tree.clear()
+	var root = resource_browser_tree.create_item()
+
 	var dir = DirAccess.open(resource_directory_path)
 	if dir:
 		next_resource_id = 0
@@ -90,6 +101,10 @@ func _load_resources_dir_recursive(dir : DirAccess, parent : TreeItem):
 		var child_dir_access = DirAccess.open( \
 				dir.get_current_dir()+"/"+child_directory)
 		_load_resources_dir_recursive(child_dir_access, directory_in_the_tree)
+
+
+func _select_first_item() -> void:
+	load_resource(browser_tree_id_to_resource_path[0])
 
 #endregion INIT
 
@@ -149,6 +164,26 @@ func _on_pick_art_button_pressed():
 func _on_pick_art_dialog_file_selected(path : String):
 	dirty_changes.texture_path = path
 	resource_preview_form._set_texture(load(path))
+
+
+func _on_delete_pressed():
+	DirAccess.remove_absolute(edited_resource.resource_path)
+	_load_resources()  # unload new resource from the Resource Browser tree
+	_select_first_item()
+
+
+## Creates a new resource which is a duplicate of the selected resource but with a new name
+func _on_add_pressed():
+	var save_path : String = resource_directory_path + resource_name_edit.text + ".tres"
+	if FileAccess.file_exists(save_path):
+		# TODO add warning that file under that name already exists
+		return
+	print("Saved new resource")
+	ResourceSaver.save(dirty_changes, save_path)
+	_load_resources()  # loads new resource into the Resource Browser tree
+	load_resource(save_path)  # auto selects newly created resource
+
+
 
 
 ## applies changes in `resource_preview_form` to `edited_resource` resource
