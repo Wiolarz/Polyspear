@@ -62,6 +62,7 @@ layout_mode = 2
 layout_mode = 2
 
 [node name="ResourceName" type="Label" parent="HBoxContainer/Edition/VBoxContainer/Top/PanelContainer"]
+unique_name_in_owner = true
 layout_mode = 2
 theme_override_font_sizes/font_size = 40
 text = "Unit name"
