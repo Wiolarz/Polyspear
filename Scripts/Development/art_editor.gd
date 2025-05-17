@@ -175,9 +175,12 @@ func _on_delete_pressed():
 func _on_add_pressed():
 	var save_path : String = resource_directory_path + resource_name_edit.text + ".tres"
 	if FileAccess.file_exists(save_path):
+		resource_name_edit.text = "Name is already Taken"
+		resource_name_edit.modulate = Color.FIREBRICK
 		# TODO add warning that file under that name already exists
 		return
 	print("Saved new resource")
+	resource_name_edit.modulate = Color.WHITE
 	ResourceSaver.save(dirty_changes, save_path)
 	_load_resources()  # loads new resource into the Resource Browser tree
 	load_resource(save_path)  # auto selects newly created resource
