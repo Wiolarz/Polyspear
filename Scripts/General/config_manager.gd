@@ -247,6 +247,13 @@ var LAST_USED_WORLD_MAP : DataWorldMap : # TODO implement this
 	get: return player_options.last_used_world_map
 
 
+# Editor preference settings:
+var TILE_EDITOR_BATTLE : bool :
+	get: return player_options.tile_editor_default_battle
+var MAP_EDITOR_BATTLE : bool :
+	get: return player_options.map_editor_default_battle
+
+
 func save_last_used_for_host_setup(\
 		address : String, port : int, username : String) -> void:
 	player_options.login = username
