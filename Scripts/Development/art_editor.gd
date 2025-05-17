@@ -25,8 +25,7 @@ var browser_tree_id_to_resource_path : Dictionary = {}
 var open_button_texture : Texture2D
 
 ## label showing path to currently edited data unit
-@onready var currently_edited_label : Label = \
-	$HBoxContainer/Edition/VBoxContainer/Top/PanelContainer/ResourceName
+@onready var currently_edited_label : Label = %ResourceName
 
 ## unit form for preview and storing unsaved changes temporarily
 @onready var resource_preview_form : Node2D = \

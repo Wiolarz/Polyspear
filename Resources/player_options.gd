@@ -4,7 +4,7 @@ extends Resource
 
 ## How to add settings:
 ## 1. add an export variable here
-## 2. add an appropriate (as in _declare_* functions in settings_menu.gd) 
+## 2. add an appropriate (as in _declare_* functions in settings_menu.gd)
 ##    control to SettingsMenu.tscn
 ## 3. add a "_declare_*" call in settings_menu.gd's _ready function,
 ##    referencing the added control
@@ -59,3 +59,8 @@ extends Resource
 @export var last_remote_host_address : String  = "127.0.0.1"
 @export var last_remote_host_port : int = 12_000
 
+
+
+# Editor settings that remember last selected options
+@export var tile_editor_default_battle : bool = true
+@export var map_editor_default_battle : bool = true
