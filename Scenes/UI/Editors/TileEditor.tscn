@@ -58,10 +58,19 @@ layout_mode = 2
 [node name="Top" type="MarginContainer" parent="HBoxContainer/Edition/VBoxContainer"]
 layout_mode = 2
 
-[node name="PanelContainer" type="PanelContainer" parent="HBoxContainer/Edition/VBoxContainer/Top"]
+[node name="HBox" type="HBoxContainer" parent="HBoxContainer/Edition/VBoxContainer/Top"]
 layout_mode = 2
 
-[node name="ResourceName" type="Label" parent="HBoxContainer/Edition/VBoxContainer/Top/PanelContainer"]
+[node name="SwitchMode" type="Button" parent="HBoxContainer/Edition/VBoxContainer/Top/HBox"]
+layout_mode = 2
+text = "World Tiles"
+
+[node name="PanelContainer" type="PanelContainer" parent="HBoxContainer/Edition/VBoxContainer/Top/HBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ResourceName" type="Label" parent="HBoxContainer/Edition/VBoxContainer/Top/HBox/PanelContainer"]
+unique_name_in_owner = true
 layout_mode = 2
 theme_override_font_sizes/font_size = 40
 text = "Tile name
@@ -157,6 +166,7 @@ root_subfolder = "res://Art"
 filters = PackedStringArray("*.png ; PNG Images")
 use_native_dialog = true
 
+[connection signal="pressed" from="HBoxContainer/Edition/VBoxContainer/Top/HBox/SwitchMode" to="." method="_on_switch_mode_pressed"]
 [connection signal="pressed" from="HBoxContainer/Edition/VBoxContainer/Preview/Center/PickArt" to="." method="_on_pick_art_button_pressed"]
 [connection signal="pressed" from="HBoxContainer/Edition/VBoxContainer/Bottom/HBox/BackButton" to="." method="_on_back_button_pressed"]
 [connection signal="pressed" from="HBoxContainer/Edition/VBoxContainer/Bottom/HBox/Add" to="." method="_on_add_pressed"]

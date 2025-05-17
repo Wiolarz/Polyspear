@@ -297,6 +297,13 @@ var FULLSCREEN_AUTO_TOGGLE : bool :
 	get: return player_options.keep_main_menu_windowed
 
 
+# Editor preference settings:
+var TILE_EDITOR_BATTLE : bool :
+	get: return player_options.tile_editor_default_battle
+var MAP_EDITOR_BATTLE : bool :
+	get: return player_options.map_editor_default_battle
+
+
 func save_last_used_for_host_setup(\
 		address : String, port : int, username : String) -> void:
 	player_options.login = username
