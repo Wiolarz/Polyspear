@@ -23,6 +23,7 @@ static func create_place(coord_ : Vector2i, args : PackedStringArray) -> Place:
 		var owner_faction : Faction = WS.player_states[args_dict["player_index"]]
 		result.faction = owner_faction
 		owner_faction.cities.append(result)
+		result.buildings.append(owner_faction.race.buildings[0])
 
 	result.coord = coord_
 	result.movable = true

@@ -202,7 +202,8 @@ const CYCLONE_MANA_THRESHOLD = 3
 const HERO_LEVEL_CAP = 7
 
 func get_start_goods() -> Goods:
-	return Goods.new(10,5,3)
+	#return Goods.new(10,5,3)
+	return Goods.new(30,15,10)
 
 const WORLD_MOVABLE_TILES = [
 	"EMPTY",
