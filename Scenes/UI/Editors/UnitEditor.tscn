@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://dy1m42bfkq2wv"]
+[gd_scene load_steps=13 format=3 uid="uid://dy1m42bfkq2wv"]
 
 [ext_resource type="Script" path="res://Scripts/Development/unit_editor.gd" id="1_77kxj"]
 [ext_resource type="StyleBox" uid="uid://cr3cpjlxxfm4r" path="res://Art/UI/marble_box.tres" id="2_bfpmc"]
@@ -24,6 +24,12 @@ shader_parameter/modulate_color = Color(1, 1, 1, 1)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_nf1n4"]
 bg_color = Color(0.0235294, 0.227451, 0.372549, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_igpg0"]
+bg_color = Color(0.240985, 0.446397, 0.234178, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jisvi"]
+bg_color = Color(0.510906, 0.167793, 0.125219, 1)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_srvm0"]
 bg_color = Color(0.188235, 0.317647, 0.105882, 1)
@@ -203,8 +209,26 @@ shortcut_in_tooltip = false
 text = "Back"
 
 [node name="Sep" type="Control" parent="HBoxContainer/Edition/VBoxContainer/Bottom/HBox"]
+visible = false
 layout_mode = 2
 size_flags_horizontal = 3
+
+[node name="ResourceName" type="TextEdit" parent="HBoxContainer/Edition/VBoxContainer/Bottom/HBox"]
+custom_minimum_size = Vector2(400, 60)
+layout_mode = 2
+text = "New_Unit"
+
+[node name="Add" type="Button" parent="HBoxContainer/Edition/VBoxContainer/Bottom/HBox"]
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_igpg0")
+text = "Add"
+metadata/_edit_use_anchors_ = true
+
+[node name="Delete" type="Button" parent="HBoxContainer/Edition/VBoxContainer/Bottom/HBox"]
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_jisvi")
+text = "Delete"
+metadata/_edit_use_anchors_ = true
 
 [node name="Save" type="Button" parent="HBoxContainer/Edition/VBoxContainer/Bottom/HBox"]
 layout_mode = 2
