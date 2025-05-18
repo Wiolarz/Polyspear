@@ -9,8 +9,10 @@ var second_army : Army
 
 
 func _ready():
-	first_army_panel.unit_was_selected.connect(attempt_a_unit_transfer)
-	second_army_panel.unit_was_selected.connect(attempt_a_unit_transfer)
+	first_army_panel.unit_was_selected.connect(_attempt_a_unit_transfer)
+	first_army_panel.army_swap.connect(_army_swap)
+	second_army_panel.unit_was_selected.connect(_attempt_a_unit_transfer)
+	second_army_panel.army_swap.connect(_army_swap)
 
 
 
@@ -24,29 +26,25 @@ func start_trade(first_army_ : Army, second_army_ : Army) -> void:
 
 
 
-func attempt_a_unit_transfer():
+
+func _attempt_a_unit_transfer() -> void:
 	## one of the armies is full, and they swap units
 	if first_army_panel.selected_unit_pointer and second_army_panel.selected_unit_pointer:
-		succesful_transfer()
+		_succesful_transfer()
 		return
 
 	# attempt to move unit from first army to the second:
-	if first_army_panel.selected_unit_pointer and second_army.units_data.size() != second_army.hero.max_army_size:
-		succesful_transfer()
+	if first_army_panel.selected_unit_pointer and second_army.units_data.size() <= second_army.max_army_size:
+		_succesful_transfer()
 		return
 
 	# attempt to move unit from second army to the first:
-	if second_army_panel.selected_unit_pointer and first_army.units_data.size() != first_army.hero.max_army_size:
-		succesful_transfer()
+	if second_army_panel.selected_unit_pointer and first_army.units_data.size() != first_army.max_army_size:
+		_succesful_transfer()
 		return
 
 
-
-
-
-
-
-func succesful_transfer():
+func _succesful_transfer() -> void:
 	var unit : DataUnit
 	if first_army_panel.selected_unit_pointer:
 		unit = first_army_panel.selected_unit_pointer
@@ -62,7 +60,14 @@ func succesful_transfer():
 	second_army_panel.transfered_unit()
 
 
-
+func _army_swap() -> void:
+	print("army swap")
+	if first_army.hero.movement_points > 0:
+		## You can always move into a city
+		if not second_army.hero or second_army.hero.movement_points > 0:
+			WS.swap_armies(first_army, second_army)
+			if not second_army.hero:
+				end_trade()
 
 
 ## after trade UI was hidden, it can be re-opened through "show" button
@@ -87,7 +92,7 @@ func _on_hide_button_pressed():
 		hide_trade()
 	else:
 		_show_trade()
-		
+
 
 func _on_close_button_pressed():
 	end_trade()

@@ -4,6 +4,8 @@ extends Place
 
 var buildings : Array[DataBuilding] = []
 
+# Place where defender units are stored in case hero visited the city
+var garrison_reserve : Army
 
 static func translate_city_args(args : PackedStringArray) -> Dictionary:
 	assert(args[0].is_valid_int(), "unrecognised parameter: %s" % args[0])
@@ -30,6 +32,14 @@ static func create_place(coord_ : Vector2i, args : PackedStringArray) -> Place:
 
 	return result
 
+## overwrite
+func get_army_at_start() -> PresetArmy:
+	var new_garrison := PresetArmy.new()
+	new_garrison.units = []
+	new_garrison.team = faction.controller.team
+
+	return new_garrison
+
 
 # overwrite
 func interact(army : Army) -> void:
@@ -52,6 +62,11 @@ func capture(new_faction : Faction) -> void:
 	new_faction.captured_a_city(self)
 	controller_changed.emit()  # VISUAL set the flag color to match the new controller
 
+	# Generate a new Garrison Army for new faction
+	garrison_reserve = Army.new()
+	garrison_reserve.controller_index = controller_index
+	garrison_reserve.faction = faction
+	garrison_reserve.coord = coord
 
 
 # overwrite
@@ -84,9 +99,7 @@ func get_cost_description(hero: DataHero) -> String:
 func can_buy_hero(hero : DataHero) -> bool:
 	if faction.has_hero(hero):
 		return false
-	#TEMP remove check for if defender_Army, as some army should always exist in city, even empty
-	if defender_army and defender_army.hero:  # hero is present in city hex
-		return false
+
 	var cost : Goods = faction.get_hero_cost(hero)
 	return faction.goods.has_enough(cost)
 
@@ -95,6 +108,7 @@ func can_buy_hero(hero : DataHero) -> bool:
 
 #region Units
 
+
 func get_units_to_buy() -> Array[DataUnit]:
 	return faction.race.units_data.duplicate()
 
@@ -102,11 +116,10 @@ func get_units_to_buy() -> Array[DataUnit]:
 # TODO Awaits server authoritative refactor
 # func can_buy_unit(unit : DataUnit) -> bool:
 # 	var army : Army = world_state.get_army_at(coord)
-# 	if not army:
-# 		return false
+# 	assert(army)
 # 	if army.controller_index != controller_index:
 # 		return false
-# 	if army.units_data.size() >= army.hero.max_army_size:
+# 	if army.units_data.size() >= army.max_army_size:
 # 		return false
 # 	if not unit_has_required_building(world_state, unit):
 # 		return false
@@ -117,6 +130,17 @@ func unit_has_required_building(unit : DataUnit) -> bool:
 	if not unit.required_building:
 		return true
 	return has_built(unit.required_building)
+
+
+func move_to_reserve() -> void:
+	print("move to reserve")
+	WS.grid.get_hex(coord).army = null
+
+
+func move_out_of_reserve() -> void:
+	print("move out of reserve")
+	WS.grid.get_hex(coord).army = garrison_reserve
+	WM.callback_army_created(garrison_reserve)
 
 #endregion Units
 

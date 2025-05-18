@@ -72,6 +72,7 @@ text = "Buy Hero
 0 🪓| 0 ⛏️| 0 💎"
 
 [node name="RecruitUnits" type="HBoxContainer" parent="."]
+visible = false
 layout_mode = 1
 anchors_preset = 2
 anchor_top = 1.0
@@ -208,11 +209,6 @@ text = "Recruit Units"
 layout_mode = 2
 text = "Buildings"
 
-[node name="EnterCity" type="Button" parent="OpenButtons"]
-layout_mode = 2
-text = "EnterCity"
-
 [connection signal="pressed" from="OpenButtons/ShowRecruitHeroesUI" to="." method="_on_show_recruit_heroes_ui_pressed"]
 [connection signal="pressed" from="OpenButtons/ShowRecruitUnitsUI" to="." method="_on_show_recruit_units_ui_pressed"]
 [connection signal="pressed" from="OpenButtons/ShowBuildUi" to="." method="_on_show_build_ui_pressed"]
-[connection signal="pressed" from="OpenButtons/EnterCity" to="." method="_on_enter_city_pressed"]

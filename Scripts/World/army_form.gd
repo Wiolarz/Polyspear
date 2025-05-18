@@ -45,7 +45,8 @@ static func create_form_of_army(hex : WorldHex, position_ : Vector2) \
 		image = load(army.hero.data_unit.texture_path)
 	else:
 		result.name = "Neutral army TODO some name"
-		image = load(army.units_data[0].texture_path)
+		if army.units_data.size() > 1:  # City Garrison doesn't need units
+			image = load(army.units_data[0].texture_path)
 		result.get_node("MoveLabel").text = ""
 		result.get_node("DescriptionLabel").text = ""
 	result.get_node("sprite_unit").texture = image
