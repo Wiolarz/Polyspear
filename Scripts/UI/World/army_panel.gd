@@ -2,6 +2,8 @@ extends VBoxContainer
 
 signal unit_was_selected()
 
+signal army_swap()
+
 #TODO make two units columns to fit 9 units + hero on screen for each side
 
 
@@ -27,7 +29,8 @@ const placement_unit_button_size : float = 200.0
 
 var loaded_army : Army
 
-
+func _ready() -> void:
+	$HeroButton.pressed.connect(_attemp_army_swap)
 
 func load_army(army : Army):
 	loaded_army = army
@@ -40,11 +43,12 @@ func load_army(army : Army):
 		assert(city,
 		"attempt to trade with an army without a hero, which isn't a city garrison")
 		is_it_city_garrison = true
-		$HeroButton.texture_normal = load(WS.get_hex(city.coord).data_tile.texture_path)
+		$HeroButton.texture_normal = load(WS.grid.get_hex(city.coord).data_tile.texture_path)
 		$ArmyLabel.text = "City Garrison"
 	else:
 		$ArmyLabel.text = army.hero.hero_name
 		$HeroButton.texture_normal = load(army.hero.data_unit.texture_path)
+	
 
 	# clean unit list column
 	for old_buttons in units_box.get_children():
@@ -120,7 +124,8 @@ func load_army(army : Army):
 	empty_slot.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	empty_slot.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 
-	for i in range(army.hero.max_army_size - army.units_data.size()):
+
+	for i in range(army.max_army_size - army.units_data.size()):
 		empty_slot = empty_slot.duplicate()
 		units_box.add_child(empty_slot)
 
@@ -130,3 +135,6 @@ func transfered_unit():
 	_selected_unit_button_pointer = null
 	load_army(loaded_army)
 
+
+func _attemp_army_swap() -> void:
+	army_swap.emit()

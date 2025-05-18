@@ -201,6 +201,9 @@ const CYCLONE_MANA_THRESHOLD = 3
 
 const HERO_LEVEL_CAP = 7
 
+## TODO allign it to the race weakest hero
+const CITY_MAX_ARMY_SIZE = 2
+
 func get_start_goods() -> Goods:
 	#return Goods.new(10,5,3)
 	return Goods.new(30,15,10)

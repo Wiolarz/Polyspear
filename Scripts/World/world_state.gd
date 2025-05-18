@@ -73,6 +73,10 @@ func start_world(map : DataWorldMap,
 				if army_preset:
 					spawn_army_from_preset(army_preset, coord, \
 						hex.place.controller_index)
+					if hex.place is City:
+						hex.army.controller_index = hex.place.controller_index
+						hex.army.faction = hex.place.faction
+						hex.place.garrison_reserve = hex.army
 
 			if saved_state and coord in saved_state.army_hexes:
 				var loaded : Dictionary = saved_state.army_hexes[coord]
@@ -246,8 +250,8 @@ func check_recruit_unit(data_unit : DataUnit, city_coord : Vector2i,
 		return "no army at coord"
 	if army.controller_index != current_player_index:
 		return "target army has not turn now"
-	if army.hero and army.units_data.size() >= army.hero.max_army_size:
-		return "this hero has maximum size of army now"
+	if army.units_data.size() >= army.max_army_size:
+		return "this army has maximum size now"
 	var city = get_city_at(city_coord)
 	if not city:
 		return "no city chosen"
@@ -268,9 +272,9 @@ func check_recruit_unit(data_unit : DataUnit, city_coord : Vector2i,
 
 func check_recruit_hero(player_index : int, data_hero : DataHero,
 		coord : Vector2i) -> String:
-	if get_army_at(coord):
+	if get_army_at(coord).hero:
 		#TODO based on that information change the UI to show what causes the problem to the player
-		return "cannot recruit hero where some army already is"
+		return "cannot recruit hero where hero is already present"
 	var player_faction : Faction = player_states[player_index]
 	var city : City = get_city_at(coord)
 	if not city:
@@ -481,6 +485,7 @@ func do_recruit_hero(data_hero : DataHero,
 	army.controller_index = city.controller_index
 	army.coord = coord
 	army.faction = WS.player_states[city.controller_index]
+	city.move_to_reserve()
 
 	grid.get_hex(coord).army = army
 	player_state.hero_armies.append(army)
@@ -611,9 +616,41 @@ func change_army_position(army : Army, target_coord : Vector2i) -> void:
 	assert(not target_hex.army, \
 		"can't place armies on occupied tile %s" % target_coord)
 	source_hex.army = null
+	if source_hex.place is City:
+		source_hex.place.move_out_of_reserve()
 	target_hex.army = army
 	army.coord = target_coord
 	WM.callback_army_updated(army)
+
+
+func swap_armies(first_army : Army, second_army : Army) -> void:
+	var source : Vector2i = first_army.coord
+	var target : Vector2i = second_army.coord
+	# Not entering city, checks if both armies have sufficient movement points
+	if first_army.hero and second_army.hero:
+		assert(first_army.hero.movement_points > 0 and second_army.hero.movement_points > 0,
+		"attempt to swap armies that don't have sufficient movement points")
+
+		first_army.hero.movement_points -= 1
+		second_army.hero.movement_points -= 1
+
+		var source_hex = grid.get_hex(first_army.coord)
+		var target_hex = grid.get_hex(second_army.coord)
+		source_hex.army = second_army
+		target_hex.army = first_army
+		first_army.coord = target
+		second_army.coord = source
+		WM.callback_army_updated(first_army)
+		WM.callback_army_updated(second_army)
+
+	else: # attempt to enter a city
+		var city_coord : Vector2i = target  # during trade city is always treated as second army
+		var city : City = WS.get_city_at(city_coord)
+		city.move_to_reserve()
+		first_army.hero.movement_points -= 1
+		change_army_position(first_army, target)
+
+
 
 #endregion Army Movement
 

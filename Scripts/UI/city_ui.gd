@@ -87,7 +87,7 @@ func _refresh_army_display():
 	#TODO CLEAN
 	var army_children : Array = $RecruitUnits/VisitingHeroArmy.get_children()
 	if trading_hero_army:
-		army_children[0].text = "Max size %s" % trading_hero_army.hero.max_army_size
+		army_children[0].text = "Max size %s" % trading_hero_army.max_army_size
 	else:
 		army_children[0].text = "No hero"
 	for i in range(army_children.size()-1):
@@ -167,11 +167,3 @@ func _on_show_build_ui_pressed():
 	unit_panels.hide()
 	_refresh_buildings_display()
 	building_buttons.visible = not building_buttons.visible
-
-
-func _on_enter_city_pressed():
-	if not trading_hero_army:
-		return
-	var move = WorldMoveInfo.make_world_travel(
-		trading_hero_army.coord, city.coord)
-	WM.try_do_move(move)
