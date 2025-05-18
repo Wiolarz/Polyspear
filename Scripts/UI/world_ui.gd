@@ -4,7 +4,7 @@ extends CanvasLayer
 @onready var good_label : Label = $HBoxContainer/GoodsLabel
 @onready var city_ui : CityUi = $CityUi
 @onready var heroes_list : BoxContainer = $HeroesList
-
+@onready var trade_screen : Control = $TradeScreen
 
 
 func _ready():
@@ -58,9 +58,11 @@ func refresh_player_buttons():
 		button.modulate = player.get_player_color().color
 
 
-func show_trade_ui(city : City):
-	city_ui.show_trade_ui(city)
+func show_trade_ui(first_army : Army, second_army : Army):
+	trade_screen.start_trade(first_army, second_army)
 
+func set_viewed_city(city : City) -> void:
+	city_ui.set_viewed_city(city)
 
 func _on_menu_pressed():
 	IM.toggle_in_game_menu()

@@ -28,12 +28,11 @@ func _exit_tree():
 	WM.world_move_done.disconnect(_refresh_all)
 
 
-func show_trade_ui(viewed_city : City):
+func set_viewed_city(viewed_city : City):
 	city = viewed_city
 
 	_refresh_all()
-	if not unit_panels.visible and trading_hero_army:
-		_on_show_recruit_units_ui_pressed()
+
 
 
 func _refresh_all():
