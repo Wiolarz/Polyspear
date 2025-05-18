@@ -1,13 +1,15 @@
-[gd_scene load_steps=6 format=3 uid="uid://c7521eme06u5v"]
+[gd_scene load_steps=8 format=3 uid="uid://c7521eme06u5v"]
 
-[ext_resource type="Script" path="res://Scripts/UI/world_ui.gd" id="1_kic0v"]
-[ext_resource type="Shortcut" uid="uid://fuvss5hfg4q2" path="res://Resources/Shortcuts/go_back.tres" id="2_nfb7t"]
-[ext_resource type="Texture2D" uid="uid://bul31ap566nua" path="res://Art/world_heroes/elf_druid.png" id="3_ft084"]
-[ext_resource type="PackedScene" uid="uid://dm3oqhffhprfy" path="res://Scenes/UI/World/CityUI.tscn" id="3_nvhgh"]
-[ext_resource type="PackedScene" uid="uid://c2tjldwjynnry" path="res://Scenes/UI/GameChat.tscn" id="4_b7mj1"]
+[ext_resource type="Script" path="res://Scripts/UI/world_ui.gd" id="1_50wj5"]
+[ext_resource type="Shortcut" uid="uid://fuvss5hfg4q2" path="res://Resources/Shortcuts/go_back.tres" id="2_yv1kk"]
+[ext_resource type="Texture2D" uid="uid://cyl65pr2i8wia" path="res://Art/elf_hero_druid.png" id="3_jbob5"]
+[ext_resource type="Texture2D" uid="uid://cukwcwy4fikm1" path="res://Art/elf_hero_noble.png" id="4_6gjua"]
+[ext_resource type="PackedScene" uid="uid://dm3oqhffhprfy" path="res://Scenes/UI/World/CityUI.tscn" id="4_r7awa"]
+[ext_resource type="PackedScene" uid="uid://c2tjldwjynnry" path="res://Scenes/UI/GameChat.tscn" id="5_kbxi4"]
+[ext_resource type="PackedScene" uid="uid://da3yl34ys750t" path="res://Scenes/UI/World/TradeScreen.tscn" id="6_qkgtt"]
 
 [node name="WorldUi" type="CanvasLayer"]
-script = ExtResource("1_kic0v")
+script = ExtResource("1_50wj5")
 
 [node name="Menu" type="Button" parent="."]
 offset_left = 20.0
@@ -15,7 +17,7 @@ offset_top = 30.0
 offset_right = 138.0
 offset_bottom = 93.0
 scale = Vector2(2.04, 2.04)
-shortcut = ExtResource("2_nfb7t")
+shortcut = ExtResource("2_yv1kk")
 shortcut_in_tooltip = false
 text = "Menu"
 
@@ -69,20 +71,20 @@ offset_bottom = 125.0
 [node name="TextureButton" type="TextureButton" parent="HeroesList"]
 custom_minimum_size = Vector2(200, 200)
 layout_mode = 2
-texture_normal = ExtResource("3_ft084")
+texture_normal = ExtResource("3_jbob5")
 ignore_texture_size = true
 stretch_mode = 5
 
 [node name="TextureButton2" type="TextureButton" parent="HeroesList"]
 custom_minimum_size = Vector2(200, 200)
 layout_mode = 2
-texture_normal = ExtResource("3_ft084")
+texture_normal = ExtResource("4_6gjua")
 ignore_texture_size = true
 stretch_mode = 5
 
-[node name="CityUi" parent="." instance=ExtResource("3_nvhgh")]
+[node name="CityUi" parent="." instance=ExtResource("4_r7awa")]
 
-[node name="GameChat" parent="." instance=ExtResource("4_b7mj1")]
+[node name="GameChat" parent="." instance=ExtResource("5_kbxi4")]
 anchors_preset = 3
 anchor_left = 1.0
 anchor_top = 1.0
@@ -93,6 +95,14 @@ offset_top = -400.0
 offset_right = 0.0
 grow_horizontal = 0
 grow_vertical = 0
+
+[node name="TradeScreen" parent="." instance=ExtResource("6_qkgtt")]
+visible = false
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
 
 [connection signal="pressed" from="Menu" to="." method="_on_menu_pressed"]
 [connection signal="pressed" from="End Turn" to="." method="_on_end_turn_pressed"]

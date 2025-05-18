@@ -33,7 +33,7 @@ var _painter_node : BattlePainter
 
 func _ready() -> void:
 
-	world_ui = load("res://Scenes/UI/WorldUi.tscn").instantiate()
+	world_ui = load("res://Scenes/UI/World/WorldUi.tscn").instantiate()
 
 	tile_grid = Node2D.new()
 	tile_grid.name = "GRID"
@@ -85,9 +85,7 @@ func set_selected_hero(army : Army) -> void:
 	print("selected ", army)
 	if selected_hero:
 		selected_hero.set_selected(false)
-		# var city = get_current_player_capital()
-		# assert(city)
-		# world_ui.show_trade_ui(city)
+		# TODO add unselect city, in case previously selected hero resided in one
 	var army_form : ArmyForm = get_army_form(army)
 	selected_hero = army_form
 
@@ -137,7 +135,7 @@ func callback_turn_changed():
 	world_ui.refresh_heroes()
 	var current_player_capital : City = get_current_player_capital()
 	if current_player_capital:  # player may have lost his last city
-		world_ui.show_trade_ui(current_player_capital)
+		world_ui.set_viewed_city(current_player_capital)
 	world_ui.refresh_player_buttons()
 
 
@@ -255,10 +253,9 @@ func input_try_select(coord) -> void:  #TODO "nothing is selected try to select 
 
 func try_interact(hero : ArmyForm, coord : Vector2i):
 	var start_coords = hero.coord
-	var city = WS.get_city_at(coord)
-	if city and city.controller_index == hero.entity.controller_index: # we start trade instead of travel
-		# there is separate button to move to city
-		trade_city(city)
+	var second_army = WS.get_army_at(coord)
+	if second_army and second_army.controller_index == hero.entity.controller_index: # we start trade instead of travel
+		trade_armies(second_army)
 		return
 	var world_move_info := \
 		WorldMoveInfo.make_world_travel(start_coords, coord)
@@ -278,8 +275,9 @@ func try_do_move(world_move_info : WorldMoveInfo) -> void:
 
 
 ## STUB
-func trade_armies(_second_army : ArmyForm):
+func trade_armies(_second_army : Army):
 	print("trading armies")
+	world_ui.show_trade_ui(selected_hero.entity, _second_army)
 
 
 ## called by `try_do_move` or when move is received from network
@@ -305,10 +303,10 @@ func perform_network_move(world_move_info : WorldMoveInfo) -> void:
 #region City Management
 
 func trade_city(city : City):
-	print("trade_city")
+	print("trade_city") # TODO remove it
 	# TODO revwert this in world state
 	# hero.heal_in_city()
-	world_ui.show_trade_ui(city)
+	#world_ui.set_viewed_city(city)
 
 
 func try_recruit_unit(city_coord : Vector2i, army_coord : Vector2i,
@@ -491,7 +489,7 @@ func clear_world():
 #region World Setup
 
 func spawn_world_ui():
-	world_ui = load("res://Scenes/UI/WorldUi.tscn").instantiate()
+	world_ui = load("res://Scenes/UI/World/WorldUi.tscn").instantiate()
 	UI.add_custom_screen(world_ui)
 
 
@@ -507,7 +505,7 @@ func start_new_world(world_map : DataWorldMap) -> void:
 	UI.go_to_custom_ui(world_ui)
 	world_ui.game_started()
 
-	world_ui.show_trade_ui(get_current_player_capital())
+	world_ui.set_viewed_city(get_current_player_capital())
 	world_ui.refresh_heroes()
 
 
@@ -531,7 +529,7 @@ func start_world_in_state(world_map : DataWorldMap, \
 	UI.go_to_custom_ui(world_ui)
 	world_ui.game_started()
 
-	world_ui.show_trade_ui(get_current_player_capital())
+	world_ui.set_viewed_city(get_current_player_capital())
 	world_ui.refresh_heroes()
 
 	_batch_mode = false

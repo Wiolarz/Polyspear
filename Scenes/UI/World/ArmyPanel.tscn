@@ -1,0 +1,56 @@
+[gd_scene load_steps=6 format=3 uid="uid://cyu8o32kcgtcv"]
+
+[ext_resource type="Script" path="res://Scripts/UI/World/army_panel.gd" id="1_hrvp7"]
+[ext_resource type="Texture2D" uid="uid://cyl65pr2i8wia" path="res://Art/elf_hero_druid.png" id="2_oj0ba"]
+[ext_resource type="Texture2D" uid="uid://ba68ce0dm6at6" path="res://Art/elf_spearmen.png" id="2_qg0ak"]
+[ext_resource type="Texture2D" uid="uid://d0l8icvbxebbs" path="res://Art/elf_archer.png" id="3_7m38d"]
+[ext_resource type="Texture2D" uid="uid://by6lxadhw2amf" path="res://Art/items/hex_border_light.png" id="5_31oqr"]
+
+[node name="VBoxArmy" type="VBoxContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_hrvp7")
+
+[node name="ArmyLabel" type="Label" parent="."]
+layout_mode = 2
+text = "Hero Name"
+horizontal_alignment = 1
+
+[node name="HeroButton" type="TextureButton" parent="."]
+custom_minimum_size = Vector2(200, 200)
+layout_mode = 2
+texture_normal = ExtResource("2_oj0ba")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 2
+text = "Unit Roster"
+horizontal_alignment = 1
+
+[node name="Units" type="VBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="TextureButton" type="TextureButton" parent="Units"]
+custom_minimum_size = Vector2(200, 200)
+layout_mode = 2
+texture_normal = ExtResource("2_qg0ak")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="TextureButton2" type="TextureButton" parent="Units"]
+custom_minimum_size = Vector2(200, 200)
+layout_mode = 2
+texture_normal = ExtResource("3_7m38d")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="TextureRect" type="TextureRect" parent="Units"]
+custom_minimum_size = Vector2(200, 200)
+layout_mode = 2
+texture = ExtResource("5_31oqr")
+expand_mode = 1
+stretch_mode = 5

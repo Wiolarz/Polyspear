@@ -227,13 +227,13 @@ func check_start_trade(source : Vector2i, target : Vector2i) -> String:
 	var army : Army = get_army_at(source)
 	if not army:
 		return "please choose army to start trade"
-	var city : City = get_city_at(target)
-	if not city:
-		return "please choose city to start trade"
+	var second_army : Army = get_army_at(target)
+	if not second_army:
+		return "please choose valid army to start trade"
 	if army.controller_index != current_player_index:
-		return "this army has not turn now"
-	if city.controller_index != current_player_index:
-		return "this city has not turn now"
+		return "it's not this army turn"
+	if second_army.controller_index != current_player_index:
+		return ""
 	return ""
 
 
