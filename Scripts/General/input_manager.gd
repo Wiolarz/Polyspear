@@ -69,7 +69,7 @@ func _prepare_to_start_game() -> void:
 
 	UI.ensure_camera_is_spawned()
 
-	WM.close_world()
+	WM.clear_world()
 	BM.close_when_quiting_game()
 	UI.go_to_main_menu()
 
@@ -225,13 +225,14 @@ func get_default_or_last_battle_preset() -> Dictionary:
 
 #region Gameplay UI
 
+# MAJOR function that exits gamemodes
 func go_to_main_menu():
 	if CFG.FULLSCREEN_AUTO_TOGGLE:
 		UI.set_fullscreen(false)
 
 	in_map_editor = false
 	BM.close_when_quiting_game()
-	WM.close_world()
+	WM.clear_world()
 	UI.go_to_main_menu()
 
 
