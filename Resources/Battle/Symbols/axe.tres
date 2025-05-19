@@ -1,6 +1,7 @@
-[gd_resource type="Resource" script_class="DataSymbol" load_steps=2 format=3 uid="uid://cngonnqsgsd6e"]
+[gd_resource type="Resource" script_class="DataSymbol" load_steps=3 format=3 uid="uid://cngonnqsgsd6e"]
 
 [ext_resource type="Script" path="res://Resources/Battle/data_symbol.gd" id="1_86jdy"]
+[ext_resource type="SpriteFrames" uid="uid://fch32vlpkdg" path="res://Art/animations/slash.tres" id="2_2ph20"]
 
 [resource]
 script = ExtResource("1_86jdy")
@@ -15,3 +16,4 @@ parry_break = false
 reach = 0
 activate_turn = true
 activate_move = true
+symbol_animation = ExtResource("2_2ph20")

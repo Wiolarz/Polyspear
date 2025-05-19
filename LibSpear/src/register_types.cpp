@@ -1,3 +1,7 @@
+#ifdef WIN32
+#include "windows.h"
+#endif
+
 #include "battle_manager_fast.hpp"
 #include "battle_mcts.hpp"
 #include <gdextension_interface.h>

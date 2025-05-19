@@ -247,17 +247,19 @@ func _should_die_to_counter_attack(unit : Unit) -> bool:
 		var opposite_side := GenericHexGrid.opposite_direction(side)
 		var enemy_symbol : DataSymbol = enemy.get_symbol(opposite_side)
 
-		if not enemy_symbol.will_melee_effect_occur(unit_symbol):
-			unit.unit_is_blocking.emit(side)  # animation
+		if not enemy_symbol.counter_attack:
+			continue  # Counter Attack doesn't even occur
+    
+    if not enemy_symbol.will_melee_effect_occur(unit_symbol):
+			unit.unit_is_blocking.emit(side, unit.coord)  # animation
 			continue  # parry prevents counter attacks
 
-		if enemy_symbol.counter_attack:
-			if enemy_symbol.does_attack_succeed(unit_symbol):
-				# found killer
-				enemy.unit_is_counter_attacking.emit(opposite_side)  # animation
-				spear_holding_killer_teams.append(enemy.army_in_battle.team)
-			else:
-				unit.unit_is_blocking.emit(side)  # animation
+    if enemy_symbol.does_attack_succeed(unit_symbol):
+      # found killer
+      enemy.unit_is_counter_attacking.emit(opposite_side)  # animation
+      spear_holding_killer_teams.append(enemy.army_in_battle.team)
+    else:
+      unit.unit_is_blocking.emit(side, unit.coord)  # animation
 
 	if spear_holding_killer_teams.size() > 0:
 		return true
@@ -282,10 +284,11 @@ func _process_offensive_symbols(unit : Unit, move_type : E.MoveType) -> void:
 		var enemy = adjacent_unit
 		var opposite_side := GenericHexGrid.opposite_direction(side)
 		var enemy_weapon = enemy.get_symbol(opposite_side)
+
 		if not unit_weapon.will_melee_effect_occur(enemy_weapon):
+			# We check if parry even parries any attempt
+			enemy.unit_is_blocking.emit(opposite_side, unit.coord)  # animation
 			continue  # parry disables all melee symbols
-		else:
-			enemy.unit_is_blocking.emit(opposite_side)  # animation
 
 		# we check if attacking symbol power is able to kill
 		if unit_weapon.does_attack_succeed(enemy_weapon):
@@ -294,13 +297,13 @@ func _process_offensive_symbols(unit : Unit, move_type : E.MoveType) -> void:
 			unit.unit_is_slashing.emit(side)  # animation
 			_kill_unit(enemy, armies_in_battle_state[current_army_index])
 			continue  # enemy unit died
-		else:
-			enemy.unit_is_blocking.emit(opposite_side)  # animation
-
 		# in case enemy defended against attack we check if attacker pushes away enemy
+
 		if unit_weapon.can_it_push():
 			unit.unit_is_pushing.emit(side)  # animation
 			_push_enemy(enemy, side, unit_weapon.push_power)
+		elif unit_weapon.attack_power > 0:  # was there an attack attempt 
+			enemy.unit_is_blocking.emit(opposite_side, unit.coord)  # animation
 
 
 ## Occurs only when unit is pushed, the that unit performes attacks with passive symbols
@@ -348,18 +351,17 @@ func _process_bow(unit : Unit, side : int, weapon : DataSymbol) -> void:
 		return # no friendly fire within team
 
 	var opposite_side := GenericHexGrid.opposite_direction(side)
+
 	var enemy_weapon : DataSymbol = target.get_symbol(opposite_side)
+  unit.unit_is_shooting.emit(side, target.coord)  # animation
 	if weapon.does_attack_succeed(enemy_weapon): # not blocked by shield
-		unit.unit_is_shooting.emit(side)  # animation
 		_kill_unit(target, armies_in_battle_state[current_army_index])
 		return  # target died
+	
+  target.unit_is_blocking.emit(opposite_side)  # animation
 
-	if weapon.push_power > 0:
-		unit.unit_is_shooting.emit(side)  # animation
-		target.unit_is_blocking.emit(opposite_side)  # animation
+  if weapon.push_power > 0:
 		_push_enemy(target, side, weapon.push_power)
-
-
 
 
 ## pushes enemy in non-relative direction, "power" tiles away [br]

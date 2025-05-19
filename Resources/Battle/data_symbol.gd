@@ -3,6 +3,7 @@ extends Resource
 
 @export var symbol_name : String
 @export var texture_path : String
+@export var symbol_animation : SymbolAnimation
 
 ## power has to bigger than defense power to kill a unit
 @export var attack_power : int = 0

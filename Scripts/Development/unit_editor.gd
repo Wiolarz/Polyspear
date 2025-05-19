@@ -167,7 +167,7 @@ func on_symbol_selected(dir : int, picker_index : int):
 			[dir, GenericHexGrid.direction_to_name(dir as GenericHexGrid.GridDirections), \
 			picked_symbol.symbol_name, picked_symbol.symbol_name])
 
-	unit_preview_form._apply_symbol_sprite(dir, picked_symbol.texture_path)
+	unit_preview_form.get_symbol(dir).apply_sprite(dir, picked_symbol.texture_path)
 	dirty_changes.symbols[dir] = picked_symbol
 
 

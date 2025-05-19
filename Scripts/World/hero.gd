@@ -22,6 +22,10 @@ var max_army_size : int
 var max_movement_points = 3
 var movement_points = 3
 
+## world coord, where hero wants to travel
+var travel_path : Array[Vector2i]
+
+
 var wounded : bool = false
 
 var xp = 0
