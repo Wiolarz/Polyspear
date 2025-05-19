@@ -6,6 +6,15 @@ extends CanvasLayer
 @onready var heroes_list : BoxContainer = $HeroesList
 @onready var trade_screen : Control = $TradeScreen
 
+var _hideable_context_menu : Control :
+	set(new_menu):
+		if new_menu:
+			$Hide.show()
+			$Hide.text = "Hide"
+		else:
+			$Hide.hide()
+		_hideable_context_menu = new_menu
+
 
 func _ready():
 	city_ui.purchased_hero.connect(refresh_heroes)
@@ -59,10 +68,17 @@ func refresh_player_buttons():
 
 
 func show_trade_ui(first_army : Army, second_army : Army):
+	_hideable_context_menu = trade_screen
 	trade_screen.start_trade(first_army, second_army)
+
 
 func set_viewed_city(city : City) -> void:
 	city_ui.set_viewed_city(city)
+
+
+func close_context_menu() -> void:
+	_hideable_context_menu = null
+
 
 func _on_menu_pressed():
 	IM.toggle_in_game_menu()
@@ -70,3 +86,14 @@ func _on_menu_pressed():
 
 func _on_end_turn_pressed():
 	WM.end_turn()
+
+
+func _on_hide_pressed():
+	if _hideable_context_menu.visible:
+		_hideable_context_menu.hide()
+		$Hide.text = "Show"
+	else:
+		_hideable_context_menu.show()
+		$Hide.text = "Hide"
+		
+	pass # Replace with function body.
