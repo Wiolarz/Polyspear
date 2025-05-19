@@ -16,8 +16,10 @@ var travel_path:
 		assert(entity and entity.hero, "attempt to set a path to non existing hero")
 		entity.hero.travel_path = new_path
 	get:
-		assert(entity and entity.hero, "attempt to get a path from not existing hero")
-		return entity.hero.travel_path
+		#assert(entity and entity.hero, "attempt to get a path from not existing hero")
+		if entity.hero: # TEMP armyform class will not be used by game manager to handle pathfiding
+			return entity.hero.travel_path
+		return null
 
 
 func _init():
@@ -45,7 +47,7 @@ static func create_form_of_army(hex : WorldHex, position_ : Vector2) \
 		image = load(army.hero.data_unit.texture_path)
 	else:
 		result.name = "Neutral army TODO some name"
-		if army.units_data.size() > 1:  # City Garrison doesn't need units
+		if army.units_data.size() > 0:  # City Garrison doesn't need units
 			image = load(army.units_data[0].texture_path)
 		result.get_node("MoveLabel").text = ""
 		result.get_node("DescriptionLabel").text = ""
