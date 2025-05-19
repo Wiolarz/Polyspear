@@ -173,6 +173,9 @@ func _select_setup_page(page):
 
 
 func select_world():
+	CFG.player_options.use_default_battle = false
+	CFG.save_player_options()
+
 	button_world.button_pressed = true
 	IM.game_setup_info.game_mode = GameSetupInfo.GameMode.WORLD
 	_select_setup_page(multi_world_setup_scene)
@@ -181,6 +184,9 @@ func select_world():
 
 
 func select_battle():
+	CFG.player_options.use_default_battle = true
+	CFG.save_player_options()
+
 	button_battle.button_pressed = true
 	if not IM.game_setup_info.is_in_mode_battle():
 		IM.init_battle_mode(not NET.client)

@@ -69,7 +69,7 @@ func _prepare_to_start_game() -> void:
 
 	UI.ensure_camera_is_spawned()
 
-	WM.close_world()
+	WM.clear_world()
 	BM.close_when_quiting_game()
 	UI.go_to_main_menu()
 
@@ -151,6 +151,10 @@ func go_to_map_editor():
 func _start_game_world(world_state : SerializableWorldState = null):
 	UI.go_to_main_menu()
 	var map : DataWorldMap = game_setup_info.world_map
+
+	if CFG.FULLSCREEN_AUTO_TOGGLE:
+		UI.set_fullscreen(true)
+
 	if not world_state:
 		WM.start_new_world(map)
 	else:
@@ -168,6 +172,10 @@ func _start_game_battle(battle_state : SerializableBattleState = null,
 		armies.append(create_army_for(slot))
 
 	UI.go_to_main_menu()
+
+	if CFG.FULLSCREEN_AUTO_TOGGLE:
+		UI.set_fullscreen(true)
+
 	var x_offset = 0.0  # no world map to offset from
 	BM.start_battle(armies, map_data, x_offset, battle_state, replay_template)
 
@@ -217,10 +225,14 @@ func get_default_or_last_battle_preset() -> Dictionary:
 
 #region Gameplay UI
 
+# MAJOR function that exits gamemodes
 func go_to_main_menu():
+	if CFG.FULLSCREEN_AUTO_TOGGLE:
+		UI.set_fullscreen(false)
+
 	in_map_editor = false
 	BM.close_when_quiting_game()
-	WM.close_world()
+	WM.clear_world()
 	UI.go_to_main_menu()
 
 
