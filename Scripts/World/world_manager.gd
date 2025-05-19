@@ -400,7 +400,7 @@ func end_of_battle(battle_results : Array[BattleGridState.ArmyInBattleState]):
 
 #region World End
 
-func close_world():
+func clear_world():
 	_is_world_game_active = false
 	combat_tile = Vector2i.MAX
 	_deselect_hero()
