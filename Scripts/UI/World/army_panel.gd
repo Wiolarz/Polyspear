@@ -76,6 +76,7 @@ func load_army(army : Army):
 
 
 	for i in range(army.max_army_size - army.units_data.size()):
+		added_icon_idx += 1
 		empty_slot = empty_slot.duplicate()
 		if added_icon_idx % 2 == 0:
 			units_box_first_row.add_child(empty_slot)
