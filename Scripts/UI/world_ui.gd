@@ -5,6 +5,9 @@ extends CanvasLayer
 @onready var city_ui : CityUi = $CityUi
 @onready var heroes_list : BoxContainer = $HeroesList
 @onready var trade_screen : Control = $TradeScreen
+@onready var army_panel : BoxContainer = $Army_Panel
+
+var _loaded_army_panel : bool = false
 
 var _hideable_context_menu : Control :
 	set(new_menu):
@@ -18,6 +21,18 @@ var _hideable_context_menu : Control :
 
 func _ready():
 	city_ui.purchased_hero.connect(refresh_heroes)
+
+	## UI visibility is independent from design view
+	good_label.show()
+	city_ui.show()
+	heroes_list.show()
+	trade_screen.hide()
+	army_panel.hide()
+	$Hide.hide()
+	# Game chat visibility is set in its own script
+	$Players.show()
+	$"End Turn".show()
+	$Menu.show()
 
 
 func _process(_delta):
@@ -67,7 +82,25 @@ func refresh_player_buttons():
 		button.modulate = player.get_player_color().color
 
 
+func load_army_to_panel(army : Army) -> void:
+	_loaded_army_panel = true
+	army_panel.show()
+	army_panel.load_army(army)
+
+
+func _try_to_show_army_panel() -> void:
+	if _loaded_army_panel:
+		army_panel.show()
+
+
+func hide_army_panel(unload_army : bool = true) -> void:
+	if unload_army:
+		_loaded_army_panel = false
+	army_panel.hide()
+
+
 func show_trade_ui(first_army : Army, second_army : Army):
+	hide_army_panel(false)
 	_hideable_context_menu = trade_screen
 	trade_screen.start_trade(first_army, second_army)
 
@@ -78,6 +111,7 @@ func set_viewed_city(city : City) -> void:
 
 func close_context_menu() -> void:
 	_hideable_context_menu = null
+	_try_to_show_army_panel()
 
 
 func _on_menu_pressed():
@@ -92,8 +126,10 @@ func _on_hide_pressed():
 	if _hideable_context_menu.visible:
 		_hideable_context_menu.hide()
 		$Hide.text = "Show"
+		_try_to_show_army_panel()
 	else:
 		_hideable_context_menu.show()
 		$Hide.text = "Hide"
-		
+		hide_army_panel(false)
+
 	pass # Replace with function body.

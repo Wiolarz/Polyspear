@@ -1,7 +1,7 @@
 extends Control
 
-@onready var first_army_panel : VBoxContainer = $HBoxContainer/FirstArmyPanel
-@onready var second_army_panel : VBoxContainer = $HBoxContainer/SecondArmyPanel
+@onready var first_army_panel : VBoxContainer = $HBoxContainer/FirstTradeArmyPanel
+@onready var second_army_panel : VBoxContainer = $HBoxContainer/SecondTradeArmyPanel
 
 
 var first_army : Army

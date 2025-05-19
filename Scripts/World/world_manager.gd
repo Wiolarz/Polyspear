@@ -88,16 +88,17 @@ func set_selected_hero(army : Army) -> void:
 		# TODO add unselect city, in case previously selected hero resided in one
 	var army_form : ArmyForm = get_army_form(army)
 	selected_hero = army_form
+	selected_hero.set_selected(true)
 
 	## preselects for player city in case hero is standing on top of it
 	if WS.get_interactable_type_at(selected_hero.coord) == "city":
 		selected_city = WS.get_place_at(selected_hero.coord)
 
-	if selected_hero:
-		selected_hero.set_selected(true)
 	world_ui.refresh_heroes()
 	world_ui.city_ui._refresh_units_to_buy()
 	world_ui.city_ui._refresh_army_display()
+
+	world_ui.load_army_to_panel(army)
 
 	_painter_node.erase()
 	_draw_path()
@@ -111,6 +112,7 @@ func _deselect_hero() -> void:
 	world_ui.refresh_heroes()
 	world_ui.city_ui._refresh_units_to_buy()
 	world_ui.city_ui._refresh_army_display()
+	world_ui.hide_army_panel()
 
 	_painter_node.erase()
 
@@ -626,7 +628,7 @@ func get_serializable_state() -> SerializableWorldState:
 #endregion Multiplayer
 
 
-#region cheats
+#region Cheats
 
 ## Add goods to the player
 func cheat_money(new_wood : int = 100, new_iron : int = 100, new_ruby : int = 100) -> void:
@@ -669,4 +671,4 @@ func city_upgrade_cheat() -> void:
 	world_ui.city_ui._refresh_buildings_display()
 
 
-#endregion
+#endregion Cheats
