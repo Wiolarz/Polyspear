@@ -11,10 +11,6 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_kncfa")
 
-[node name="HideButton" type="Button" parent="."]
-layout_mode = 2
-text = "Hide Trade"
-
 [node name="HBoxContainer" type="HBoxContainer" parent="."]
 layout_mode = 2
 
@@ -33,5 +29,4 @@ text = "Close Trade"
 [node name="SecondArmyPanel" parent="HBoxContainer" instance=ExtResource("1_jm8dv")]
 layout_mode = 2
 
-[connection signal="pressed" from="HideButton" to="." method="_on_hide_button_pressed"]
 [connection signal="pressed" from="HBoxContainer/VBoxContainer/CloseButton" to="." method="_on_close_button_pressed"]

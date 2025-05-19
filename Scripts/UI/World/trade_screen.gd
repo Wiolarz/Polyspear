@@ -70,28 +70,9 @@ func _army_swap() -> void:
 				end_trade()
 
 
-## after trade UI was hidden, it can be re-opened through "show" button
-func _show_trade() -> void:
-	$HBoxContainer.show()
-	$HideButton.text = "Hide Trade"
-
-
-func hide_trade() -> void:
-	$HBoxContainer.hide()
-	$HideButton.text = "Show Trade"
-
-
 func end_trade() -> void:
 	hide()
-
-
-
-
-func _on_hide_button_pressed():
-	if $HBoxContainer.visible:
-		hide_trade()
-	else:
-		_show_trade()
+	WM.world_ui.close_context_menu()
 
 
 func _on_close_button_pressed():
