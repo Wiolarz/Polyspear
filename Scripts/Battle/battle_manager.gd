@@ -720,14 +720,16 @@ func _on_battle_ended() -> void:
 		_replay_data.save()
 	
 	if WM.world_game_is_active():
-		_close_battle_and_return()
+		_close_battle_and_return()  # it may change the state if the world is still active
 		# show battle summary over world map
-		UI.ui_overlay.show_summary(_current_summary, null)
+		UI.ui_overlay.show_battle_summary(_current_summary, null)
+
 	elif _replay_is_playing:
 		_battle_ui.update_replay_controls(_replay_number_of_moves, _replay_number_of_moves, _current_summary)
 		# do not exit immediately
 	else:
 		UI.ui_overlay.show_summary(_current_summary, _close_battle_and_return)
+		UI.ui_overlay.show_battle_summary(_current_summary, _close_custom_battle)
 
 
 ## Ends battle in World game mode
@@ -735,14 +737,14 @@ func _close_battle_and_return() -> void:
 	UI.switch_camera()  # switches camera back to world
 
 	var state_for_world = _battle_grid_state.armies_in_battle_state
-	
-	close_when_quiting_game()
-	
-	if not WM.world_game_is_active():
-		IM.go_to_main_menu()
-		return
 
+	close_when_quiting_game()
 	WM.end_of_battle(state_for_world)
+
+
+func _close_custom_battle() -> void:
+	close_when_quiting_game()
+	IM.go_to_main_menu()
 
 
 func _turn_off_battle_ui() -> void:

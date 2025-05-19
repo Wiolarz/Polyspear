@@ -18,9 +18,6 @@ func _process(_delta):
 
 func game_started():
 	refresh_player_buttons()
-	$YouWinPanel.hide()
-
-
 
 
 func refresh_heroes():
@@ -63,15 +60,6 @@ func refresh_player_buttons():
 
 func show_trade_ui(city : City):
 	city_ui.show_trade_ui(city)
-
-
-func show_you_win(player : Player):
-	var style_box = ($YouWinPanel as Panel).get_theme_stylebox("panel")
-	if not style_box is StyleBoxFlat:
-		return
-	var style_box_flat = style_box as StyleBoxFlat
-	style_box_flat.bg_color = player.get_player_color().color
-	$YouWinPanel.show()
 
 
 func _on_menu_pressed():

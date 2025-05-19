@@ -5,7 +5,16 @@
 [node name="UIOverlay" type="CanvasLayer"]
 script = ExtResource("1_nb8iv")
 
-[node name="Container" type="CenterContainer" parent="."]
+[node name="WorldContainer" type="CenterContainer" parent="."]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="BattleContainer" type="CenterContainer" parent="."]
+visible = false
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
