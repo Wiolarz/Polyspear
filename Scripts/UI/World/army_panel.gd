@@ -30,8 +30,12 @@ func load_army(army : Army):
 		old_icon.queue_free()
 	for old_icon in units_box_second_row.get_children():
 		old_icon.queue_free()
-
-	var	bg_color : DataPlayerColor = army.controller.get_player_color()
+	var bg_color : DataPlayerColor
+	
+	if army.controller:
+		bg_color = army.controller.get_player_color()
+	else:
+		bg_color = CFG.NEUTRAL_COLOR
 
 
 	var added_icon_idx : int = -1
