@@ -170,10 +170,10 @@ func anim_symbol(side : int, animation_type : int, target_coord: Vector2i = Vect
 		CFG.SymbolAnimationType.BLOCK:
 			var block_anim_duration : float = symbol.get_block_duration()
 			
-			var data_symbol : E.Symbols = \
-				other_unit.entity.template.symbols[opposite_side_local].type
+			var data_symbol : DataSymbol = \
+				other_unit.entity.symbols[opposite_side_local]
 			
-			if Unit.does_it_shoot(data_symbol):
+			if data_symbol.does_it_shoot():
 				other_symbol.anim_symbol_teleporting_projectile(
 					entity.coord, 
 					GenericHexGrid.opposite_direction(side)
