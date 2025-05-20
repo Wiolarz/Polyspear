@@ -1344,6 +1344,9 @@ func _get_counter_attack_killers(unit : Unit, direction : int, coord : Vector2i)
 			continue  # no friendly fire within team
 
 		var unit_symbol : DataSymbol = unit.get_symbol_when_rotated(side, direction)
+		if get_hex(coord).swamp:
+			unit_symbol = CFG.EMPTY_SYMBOL
+
 		var opposite_side := GenericHexGrid.opposite_direction(side)
 		var enemy_symbol : DataSymbol = enemy_unit.get_symbol(opposite_side)
 
@@ -1492,20 +1495,25 @@ func get_move_consequences(move : MoveInfo) -> MoveConsequences:
 		if _will_push_kill(pushed_enemy_unit, move_direction, push_power):
 			return MoveConsequences.KILL
 
-	melee_killed_enemy_units = _get_melee_attack_kills(attacker, move_direction, move.target_tile_coord, E.MoveType.MOVE)
+	if not get_hex(move.target_tile_coord).swamp:
+		melee_killed_enemy_units = _get_melee_attack_kills(attacker, move_direction, move.target_tile_coord, E.MoveType.MOVE)
+	else:
+		melee_killed_enemy_units = []
 	if melee_killed_enemy_units.size() > 0:
 		kill_registered = true
 
 	# step 6
 	for side in range(6):  # we check each side for a ranged attack symbol
 		var symbol : DataSymbol = attacker.get_symbol_when_rotated(side, move_direction)
+		if get_hex(move.target_tile_coord).swamp:
+			break
 
 		if not symbol.does_it_shoot():
 			continue
 		if not symbol.activate_move:
 			continue
 
-		var target : Unit = _get_shot_target(move.move_source, side, symbol.reach)
+		var target : Unit = _get_shot_target(move.target_tile_coord, side, symbol.reach)
 		if target and target.army_in_battle.team != attacker.army_in_battle.team:
 			var opposite_side = GenericHexGrid.opposite_direction(side)
 			var target_symbol : DataSymbol = target.get_symbol(opposite_side)
