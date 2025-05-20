@@ -228,9 +228,9 @@ func grid_input(coord : Vector2i):
 			try_interact(selected_hero, selected_hero.travel_path[tile_idx])
 		else:
 			break
-	var empty_path : Array[Vector2i] = []
+
 	if selected_hero:  # game might have ended
-		selected_hero.travel_path = empty_path  # TODO make changes to travel path dynamic
+		selected_hero.travel_path = [] as Array[Vector2i] # TODO make changes to travel path dynamic
 		if not selected_hero.has_movement_points():
 			_deselect_hero()
 	_painter_node.erase()
@@ -626,6 +626,16 @@ func get_serializable_state() -> SerializableWorldState:
 	return state
 
 #endregion Multiplayer
+
+
+#region UI Information
+
+func show_army_units(tile_coord : Vector2i) -> void:
+	var army : Army = WS.get_army_at(tile_coord)
+	if army:
+		world_ui.load_army_to_panel(army)
+
+#endregion UI Information
 
 
 #region Cheats
