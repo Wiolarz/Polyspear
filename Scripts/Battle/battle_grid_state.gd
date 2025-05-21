@@ -258,7 +258,10 @@ func _should_die_to_counter_attack(unit : Unit) -> bool:
 			enemy.unit_is_counter_attacking.emit(opposite_side)  # animation
 			spear_holding_killer_teams.append(enemy.army_in_battle.team)
 		else:
-			unit.unit_is_blocking.emit(side, unit.coord)  # animation
+			if unit_symbol.defense_power > 1:
+				unit.unit_is_blocking.emit(side, unit.coord)  # animation
+			else:
+				enemy.unit_is_counter_attacking.emit(opposite_side)  # temp animation fix for weak weapons
 
 	if spear_holding_killer_teams.size() > 0:
 		return true
@@ -302,7 +305,10 @@ func _process_offensive_symbols(unit : Unit, move_type : E.MoveType) -> void:
 			unit.unit_is_pushing.emit(side)  # animation
 			_push_enemy(enemy, side, unit_weapon.push_power)
 		elif unit_weapon.attack_power > 0:  # was there an attack attempt
-			enemy.unit_is_blocking.emit(opposite_side, unit.coord)  # animation
+			if enemy_weapon.defense_power > 1: # temp fix to account for missing animation for weak weapons
+				enemy.unit_is_blocking.emit(opposite_side, unit.coord)  # animation
+			else:
+				unit.unit_is_slashing.emit(side)  # animation
 
 
 ## Occurs only when unit is pushed, the that unit performes attacks with passive symbols
@@ -351,13 +357,16 @@ func _process_bow(unit : Unit, side : int, weapon : DataSymbol) -> void:
 
 	var opposite_side := GenericHexGrid.opposite_direction(side)
 	var enemy_weapon : DataSymbol = target.get_symbol(opposite_side)
-	unit.unit_is_shooting.emit(side, target.coord)  # animation
+
 	if weapon.does_attack_succeed(enemy_weapon): # not blocked by shield
+		unit.unit_is_shooting.emit(side, target.coord)  # animation
 		_kill_unit(target, armies_in_battle_state[current_army_index])
 		return  # target died
 
 	if enemy_weapon.defense_power > 1:  # TEMP fix as system to play animation for weapons defending from weak attack doesn't exist yet
 		target.unit_is_blocking.emit(opposite_side, unit.coord)  # animation
+	else:
+		unit.unit_is_shooting.emit(side, target.coord)  # TEMP animation of shooting without blocking
 
 	if weapon.push_power > 0:
 		_push_enemy(target, side, weapon.push_power)
