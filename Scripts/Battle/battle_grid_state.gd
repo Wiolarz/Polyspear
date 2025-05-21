@@ -356,7 +356,8 @@ func _process_bow(unit : Unit, side : int, weapon : DataSymbol) -> void:
 		_kill_unit(target, armies_in_battle_state[current_army_index])
 		return  # target died
 
-	target.unit_is_blocking.emit(opposite_side)  # animation
+	if enemy_weapon.defense_power > 1:  # TEMP fix as system to play animation for weapons defending from weak attack doesn't exist yet
+		target.unit_is_blocking.emit(opposite_side, unit.coord)  # animation
 
 	if weapon.push_power > 0:
 		_push_enemy(target, side, weapon.push_power)
