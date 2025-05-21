@@ -499,7 +499,8 @@ func _is_faced_tile_in_range(start_coord : Vector2i, end_coord : Vector2i, direc
 	return false
 
 
-## Returns `MOVE_IS_INVALID` if move is incorrect
+# MAJOR FUNCTION that verifies if the unit move is legal [br]
+## Returns `MOVE_IS_INVALID` if move is incorrect [br]
 ## or a turn direction `E.GridDirections` if move is correct
 func _get_move_direction_if_valid(unit : Unit, coord : Vector2i) -> int:
 	"""
@@ -542,7 +543,18 @@ func _get_move_direction_if_valid(unit : Unit, coord : Vector2i) -> int:
 		if not hex.unit:
 			return move_direction  # empty field
 		else:
-			return MOVE_IS_INVALID  # during jump unit is unable to use their weapon
+			if hex.unit.army_in_battle.team == unit.army_in_battle.team:
+				return MOVE_IS_INVALID  # You cannot jump on top of an allied unit
+
+			var unit_front_weapon : DataSymbol = unit.get_front_symbol()
+			var opposite_side := GenericHexGrid.opposite_direction(move_direction)
+			var enemy_weapon = hex.unit.get_symbol(opposite_side)
+			if unit_front_weapon.is_offensive(E.MoveType.TURN) \
+				and unit_front_weapon.does_it_shoot() \
+				and unit_front_weapon.does_attack_succeed(enemy_weapon):
+				return move_direction  # Unit got shot before jump occured
+			else:
+				return MOVE_IS_INVALID  # during jump unit is unable to use their weapon
 
 	var unit_on_target = hex.unit
 	# empty field
@@ -1408,6 +1420,7 @@ func _is_kill_move(move : MoveInfo) -> bool:
 	return consequences == MoveConsequences.KILL or consequences == MoveConsequences.KAMIKAZE
 
 
+## assumes move is legal
 func get_move_consequences(move : MoveInfo) -> MoveConsequences:
 	# list of checks:
 	# 1 verify if turning in (starting move with that unit) will even work
@@ -1423,7 +1436,7 @@ func get_move_consequences(move : MoveInfo) -> MoveConsequences:
 		return MoveConsequences.NONE # summons don't kill
 
 	var attacker = get_unit(move.move_source)
-	var move_direction = GenericHexGrid.direction_to_adjacent( \
+	var move_direction : int = GenericHexGrid.direction_to_adjacent( \
 			move.move_source, move.target_tile_coord);
 
 	# step 1
@@ -1496,7 +1509,14 @@ func get_move_consequences(move : MoveInfo) -> MoveConsequences:
 		if _will_push_kill(pushed_enemy_unit, move_direction, push_power):
 			return MoveConsequences.KILL
 
-	if not get_hex(move.target_tile_coord).swamp:
+	## ----- MOVE OCCURS ------
+	var target_tile_coord : Vector2i = move.target_tile_coord
+	var target_hex : BattleHex = get_hex(target_tile_coord)
+	if target_hex.pit:  # we perform jump
+		target_tile_coord += GenericHexGrid.DIRECTION_TO_OFFSET[move_direction]
+		target_hex = get_hex(target_tile_coord)
+
+	if not target_hex.swamp:
 		melee_killed_enemy_units = _get_melee_attack_kills(attacker, move_direction, move.target_tile_coord, E.MoveType.MOVE)
 	else:
 		melee_killed_enemy_units = []
@@ -1506,7 +1526,7 @@ func get_move_consequences(move : MoveInfo) -> MoveConsequences:
 	# step 6
 	for side in range(6):  # we check each side for a ranged attack symbol
 		var symbol : DataSymbol = attacker.get_symbol_when_rotated(side, move_direction)
-		if get_hex(move.target_tile_coord).swamp:
+		if get_hex(target_tile_coord).swamp:
 			break
 
 		if not symbol.does_it_shoot():
@@ -1514,7 +1534,7 @@ func get_move_consequences(move : MoveInfo) -> MoveConsequences:
 		if not symbol.activate_move:
 			continue
 
-		var target : Unit = _get_shot_target(move.target_tile_coord, side, symbol.reach)
+		var target : Unit = _get_shot_target(target_tile_coord, side, symbol.reach)
 		if target and target.army_in_battle.team != attacker.army_in_battle.team:
 			var opposite_side = GenericHexGrid.opposite_direction(side)
 			var target_symbol : DataSymbol = target.get_symbol(opposite_side)
