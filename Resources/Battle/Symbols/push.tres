@@ -7,6 +7,7 @@
 script = ExtResource("1_fpy2d")
 symbol_name = "push"
 texture_path = "res://Art/items/fist.png"
+symbol_animation = ExtResource("2_o3tlu")
 attack_power = 0
 defense_power = 0
 push_power = 1
@@ -16,4 +17,3 @@ parry_break = false
 reach = 0
 activate_turn = true
 activate_move = true
-symbol_animation = ExtResource("2_o3tlu")

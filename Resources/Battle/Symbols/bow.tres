@@ -4,10 +4,10 @@
 [ext_resource type="SpriteFrames" uid="uid://d0cc3nmwaam1c" path="res://Art/animations/bow.tres" id="2_gveyh"]
 
 [resource]
-resource_name = "res://Art/old/bow.png"
 script = ExtResource("1_xgyuy")
 symbol_name = "bow"
 texture_path = "res://Art/items/bow.png"
+symbol_animation = ExtResource("2_gveyh")
 attack_power = 2
 defense_power = 1
 push_power = 0
@@ -17,4 +17,3 @@ parry_break = false
 reach = 4
 activate_turn = true
 activate_move = false
-symbol_animation = ExtResource("2_gveyh")

@@ -4,10 +4,10 @@
 [ext_resource type="SpriteFrames" uid="uid://dgtkoataeuj5j" path="res://Art/animations/push.tres" id="2_10hq2"]
 
 [resource]
-resource_name = "res://Art/old/bow.png"
 script = ExtResource("1_neq3m")
 symbol_name = "mace"
 texture_path = "res://Art/items/mace.png"
+symbol_animation = ExtResource("2_10hq2")
 attack_power = 2
 defense_power = 1
 push_power = 3
@@ -17,4 +17,3 @@ parry_break = false
 reach = 0
 activate_turn = true
 activate_move = true
-symbol_animation = ExtResource("2_10hq2")
