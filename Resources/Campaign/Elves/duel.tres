@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="ScriptedBattle" load_steps=2 format=3 uid="uid://0l4pxlo5wi02"]
+
+[ext_resource type="Script" path="res://Resources/Campaign/scripted_battle.gd" id="1_grfgo"]
+
+[resource]
+script = ExtResource("1_grfgo")
+scenario_name = "Duel"
+description = "First introductory fight"

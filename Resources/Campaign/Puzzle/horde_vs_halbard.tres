@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="ScriptedBattle" load_steps=2 format=3 uid="uid://df8h3kvp2gu4j"]
+
+[ext_resource type="Script" path="res://Resources/Campaign/scripted_battle.gd" id="1_luqo0"]
+
+[resource]
+script = ExtResource("1_luqo0")
+scenario_name = "Horde vs Halbard"
+description = "Try to kill as many enemy units using your weak forces.
+----
+Try to kill all enemy units while minimazing your losses."
