@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="ScriptedBattle" load_steps=2 format=3 uid="uid://bbe3vxkni2qp0"]
+
+[ext_resource type="Script" path="res://Resources/Campaign/scripted_battle.gd" id="1_oii0p"]
+
+[resource]
+script = ExtResource("1_oii0p")
+scenario_name = "Basics"
+description = "Explanation of basic controls and fundamental mechanics."

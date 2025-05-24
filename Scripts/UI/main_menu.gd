@@ -39,18 +39,21 @@ func _on_credits_button_pressed():
 	_clear_tabs()
 	$MainContainer/CreditsMenu.show()
 
+
 func _on_replays_tab_pressed():
 	_clear_tabs()
 	$MainContainer/ReplaysMenu.show()
 
 
-func _clear_tabs():
-	$MainContainer/HostLobby.hide()
-	$MainContainer/ClientLobby.hide()
-	$MainContainer/SettingsMenu.hide()
-	$MainContainer/CreditsMenu.hide()
-	$MainContainer/ReplaysMenu.hide()
+func _on_learn_tab_pressed():
+	_clear_tabs()
+	$MainContainer/Learn.show()
 
+
+func _clear_tabs():
+	for child in $MainContainer.get_children():
+		child.hide()
+	$MainContainer/TopMenu.show()
 
 func _on_unit_editor_button_pressed():
 	UI.go_to_unit_editor()
@@ -71,4 +74,5 @@ func _on_tabs_tab_changed(tab_index:int):
 		2: _on_settings_button_pressed()
 		3: _on_credits_button_pressed()
 		4: _on_replays_tab_pressed()
+		5: _on_learn_tab_pressed()
 		_: push_error("_on_tabs_tab_changed index not supported: "+str(tab_index))
