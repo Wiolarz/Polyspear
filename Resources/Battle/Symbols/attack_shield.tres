@@ -5,6 +5,15 @@
 
 [resource]
 script = ExtResource("1_jqp4n")
-type = 10
+symbol_name = "attack_shield"
 texture_path = "res://Art/items/attack_shield.png"
 symbol_animation = ExtResource("2_shmw1")
+attack_power = 2
+defense_power = 2
+push_power = 0
+counter_attack = false
+parry = false
+parry_break = false
+reach = 0
+activate_turn = true
+activate_move = true

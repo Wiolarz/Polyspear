@@ -363,6 +363,15 @@ blocking_scale = Vector2(6, 6)
 
 [resource]
 script = ExtResource("1_1o42a")
-type = 16
+symbol_name = "sword"
 texture_path = "res://Art/items/big_sword.png"
 symbol_animation = SubResource("SpriteFrames_4hqqa")
+attack_power = 2
+defense_power = 1
+push_power = 0
+counter_attack = false
+parry = true
+parry_break = false
+reach = 0
+activate_turn = true
+activate_move = true

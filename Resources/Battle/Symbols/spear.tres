@@ -5,6 +5,15 @@
 
 [resource]
 script = ExtResource("1_rdbby")
-type = 1
+symbol_name = "spear"
 texture_path = "res://Art/items/spear.png"
 symbol_animation = ExtResource("2_akrjp")
+attack_power = 2
+defense_power = 0
+push_power = 0
+counter_attack = true
+parry = false
+parry_break = false
+reach = 0
+activate_turn = true
+activate_move = true
