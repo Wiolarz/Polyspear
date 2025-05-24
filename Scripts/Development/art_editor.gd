@@ -125,6 +125,14 @@ func save_resource() -> void:
 	# use uid_fixer script to fix
 	pass
 
+
+## Parses name for new resource and validates it. Returns empty string on error.
+func _get_validated_resource_name() -> String:
+	var name : String = resource_name_edit.text
+	if name.length() == 0 or not name.is_valid_filename() or name[0] == ".":
+		return ""
+	return name
+
 #endregion Overrideable functions
 
 
@@ -173,7 +181,12 @@ func _on_delete_pressed():
 
 ## Creates a new resource which is a duplicate of the selected resource but with a new name
 func _on_add_pressed():
-	var save_path : String = resource_directory_path + resource_name_edit.text + ".tres"
+	var resource_name : String = _get_validated_resource_name()
+	if resource_name.length() <= 0:
+		resource_name_edit.text = "Invalid name"
+		resource_name_edit.modulate = Color.FIREBRICK
+		return
+	var save_path : String = resource_directory_path + resource_name + ".tres"
 	if FileAccess.file_exists(save_path):
 		resource_name_edit.text = "Name is already Taken"
 		resource_name_edit.modulate = Color.FIREBRICK
@@ -184,8 +197,6 @@ func _on_add_pressed():
 	ResourceSaver.save(dirty_changes, save_path)
 	_load_resources()  # loads new resource into the Resource Browser tree
 	load_resource(save_path)  # auto selects newly created resource
-
-
 
 
 ## applies changes in `resource_preview_form` to `edited_resource` resource
