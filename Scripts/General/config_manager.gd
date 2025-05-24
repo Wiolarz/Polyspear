@@ -94,6 +94,12 @@ const PLAYER_COLORS_PATH = "res://Art/player_colors/"
 const REPLAY_DIRECTORY = "user://replays/"
 const PLAYER_OPTIONS_PATH = "user://player_options.tres"
 
+
+const TUTORIAL_CONTENT_PATH = "res://Resources/Campaign/Tutorial/"
+const PUZZLE_CONTENT_PATH = "res://Resources/Campaign/Puzzle/"
+const CAMPAIGN_BATTLES_ELVES_PATH = "res://Resources/Campaign/Elves/"
+
+
 var RACE_ELVES : DataRace = load("res://Resources/Races/elf.tres")
 var RACE_ORCS : DataRace = load("res://Resources/Races/orc.tres")
 var RACES_LIST : Array[DataRace] = [

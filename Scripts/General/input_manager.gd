@@ -141,6 +141,12 @@ func perform_replay(path):
 	game_setup_info = old_info
 
 
+## STUB
+func start_scripted_battle(battle : ScriptedBattle) -> void:
+	print("started scripted battle: ", battle.scenario_name)
+	pass
+
+
 func go_to_map_editor():
 	UI.ensure_camera_is_spawned()
 	in_map_editor = true
