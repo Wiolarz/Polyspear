@@ -5,18 +5,27 @@ extends Resource
 @export var texture_path : String
 @export var symbol_animation : SymbolAnimation
 
+#region Statistics
+## each statistic is independent ex.
+## special shield could parry without having any damage.
+## or symbol that has parry break with push
+
 ## power has to bigger than defense power to kill a unit
 @export var attack_power : int = 0
 
 ## 0 no shield, 1 weak shield (any symbol), 2 normal shield, 3 strong shield
 @export var defense_power : int = 1
 
-
+## number of tiles unit is pushed away. If tile unit is pushed too is occupied unit dies.
+## With the exception of the last tile is pushed to, if push power is >1. (Pits ignore the last tile rule)
 @export var push_power : int = 0
 
+## currently only works for attack_power and not yet for push power.
 @export var counter_attack : bool = false
 
+## blocks any enemy melee symbol from taking an effect
 @export var parry : bool = false
+## disables parry effect
 @export var parry_break : bool = false
 
 ## return how many tiles does range weapon attack can reach [br]
@@ -32,6 +41,8 @@ extends Resource
 ## Determines if symbol activates during movement
 @export var activate_move : bool = true
 
+#endregion Statistics
+
 
 #region Effects
 
@@ -41,15 +52,13 @@ func can_it_push() -> bool:
 
 
 ## attack_power > defense_symbol.defense_power
-func does_attack_succeed(defense_symbol : DataSymbol) -> bool:
+func does_pierce_defense(defense_symbol : DataSymbol) -> bool:
 	return attack_power > defense_symbol.defense_power
 
 
 ## will_parry_occur (check parry break)
-func will_melee_effect_occur(defense_symbol : DataSymbol) -> bool:
-	if parry_break:
-		return true
-	return not defense_symbol.parry
+func does_parry(attack_symbol : DataSymbol) -> bool:
+	return not attack_symbol.parry_break and parry
 
 
 ## reach > 0

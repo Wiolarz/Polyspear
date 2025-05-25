@@ -1,0 +1,7 @@
+[gd_resource type="Resource" script_class="HeroPassive" load_steps=2 format=3 uid="uid://bcp6abt16pnq4"]
+
+[ext_resource type="Script" path="res://Resources/Battle/hero_passive.gd" id="1_mmsuf"]
+
+[resource]
+script = ExtResource("1_mmsuf")
+passive_name = "weak_weapons"

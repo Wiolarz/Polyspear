@@ -150,7 +150,7 @@ func anim_symbol(side : int, animation_type : int, target_coord: Vector2i = Vect
 
 	var other_unit : UnitForm = BM.get_unit_form(target_coord)
 
-	#TEMP fix to account for bows not shooting before the move
+	#TEMP fix to account for bows not shooting before the move, I'm still not sure how it works exactly
 	if not other_unit:
 		target_coord += GenericHexGrid.DIRECTION_TO_OFFSET[GenericHexGrid.opposite_direction(side)]
 

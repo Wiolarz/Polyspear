@@ -124,8 +124,12 @@ const OUTPOST_RUBY_PATH : String = "res://Resources/Presets/Army/outpost_defende
 #const HUNT_PATHS : Array[String] = [HUNT_WOOD_PATH, HUNT_IRON_PATH, HUNT_RUBY_PATH]
 
 
-# Heroes Passive Effects
-const tier_2_passive_1 : String = "res://Resources/Battle/Battle_Spells/Heroes_Passives/magic_weapon.tres"
+## Heroes Passive Effects
+
+## magic weapon - all weapons have an attack power of 4, but each kills lowers that value by 1 to a min. of 1
+const tier_2_passive_1 : String = "res://Resources/Battle/Battle_Spells/Heroes_Passive_Effects/magic_weapon.tres"
+
+## used for passive that replaces all empty symbols with weak weapons
 const weak_weapon : String = "res://Resources/Battle/Symbols/club.tres"
 
 #endregion Paths
