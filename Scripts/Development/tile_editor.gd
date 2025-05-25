@@ -1,4 +1,4 @@
-extends ArtEditor
+extends ResourceEditor
 
 
 ## override

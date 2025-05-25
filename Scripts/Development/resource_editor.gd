@@ -1,4 +1,4 @@
-class_name ArtEditor
+class_name ResourceEditor
 extends CanvasLayer
 
 ## Resource tree needs to double cklicked or selected using the small button on the right
