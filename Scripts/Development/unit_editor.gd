@@ -1,4 +1,4 @@
-extends ArtEditor
+extends ResourceEditor
 
 
 ## order of symbols here is the same order as in symbol pickers
