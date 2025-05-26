@@ -7,8 +7,8 @@ extends Resource
 
 #region Statistics
 ## each statistic is independent ex.
-## special shield could parry without having any damage.
-## or symbol that has parry break with push
+## a symbol could parry without having any attack power.
+## or a symbol that has parry break with push
 
 ## power has to bigger than defense power to kill a unit
 @export var attack_power : int = 0
@@ -23,7 +23,8 @@ extends Resource
 ## currently only works for attack_power and not yet for push power.
 @export var counter_attack : bool = false
 
-## blocks any enemy melee symbol from taking an effect
+## blocks any enemy melee symbol from taking an effect, [br]
+## prevents enemy symbol from damaging or pushing regardless of its power
 @export var parry : bool = false
 ## disables parry effect
 @export var parry_break : bool = false
