@@ -59,14 +59,20 @@ func apply_graphics(template : DataUnit, color : DataPlayerColor):
 	_apply_level_number(template.level)
 
 	for side in range(0,6):
+		var symbol_texture
+		if entity:   # effects may change symbols during battle
+			symbol_texture = entity.symbols[side].texture_path
+		else:  # Placement screen
+			symbol_texture = template.symbols[side].texture_path
+
 		var data_symbol = template.symbols[side]
 		var symbol = get_symbol(side)
 		var unit_rotation = entity.unit_rotation if entity else 0
 		var side_local = (unit_rotation + side) % 6
-		
-		symbol.apply_sprite(side_local, data_symbol.texture_path)
+
+		symbol.apply_sprite(side_local, symbol_texture)
 		symbol.apply_activation_anim(data_symbol)
-	
+
 	_flip_unit_sprite()
 	$RigidUI/SpellEffect1.texture = null
 	$RigidUI/SpellEffect2.texture = null
@@ -134,52 +140,57 @@ func anim_die():
 func anim_symbol(side : int, animation_type : int, target_coord: Vector2i = Vector2i.ZERO):
 	if target_coord == Vector2i.ZERO:
 		target_coord = entity.coord + GenericHexGrid.DIRECTION_TO_OFFSET[side]
-	
+
 	var side_local : int = GenericHexGrid.rotate_clockwise(
-		side, 
+		side,
 		-entity.unit_rotation
 	)
-	
+
 	var symbol : SymbolForm = get_symbol(side_local)
 
 	var other_unit : UnitForm = BM.get_unit_form(target_coord)
+
+	#TEMP fix to account for bows not shooting before the move, I'm still not sure how it works exactly
+	if not other_unit:
+		target_coord += GenericHexGrid.DIRECTION_TO_OFFSET[GenericHexGrid.opposite_direction(side)]
+
 	var opposite_side_local : int = GenericHexGrid.rotate_clockwise(
 		GenericHexGrid.opposite_direction(side),
 		-other_unit.entity.unit_rotation
 	)
-	
+
 	var other_symbol : SymbolForm = other_unit.get_symbol(opposite_side_local)
 
-	# TODO animation delay makes the death animation wait for 
+	# TODO animation delay makes the death animation wait for
 	# the moment of impact (but makes multihits look way less cool)
 	# could be fixed by somehow detaching death animation from main tween
-	
+
 	match animation_type:
 		CFG.SymbolAnimationType.MELEE_ATTACK, CFG.SymbolAnimationType.COUNTER_ATTACK:
 			symbol.anim_symbol_melee(animation_type)
-		
+
 		CFG.SymbolAnimationType.TELEPORTING_PROJECTILE:
 			symbol.anim_symbol_teleporting_projectile(target_coord, side)
-		
+
 		CFG.SymbolAnimationType.BLOCK:
 			var block_anim_duration : float = symbol.get_block_duration()
-			
-			var data_symbol : E.Symbols = \
-				other_unit.entity.template.symbols[opposite_side_local].type
-			
-			if Unit.does_it_shoot(data_symbol):
+
+			var data_symbol : DataSymbol = \
+				other_unit.entity.symbols[opposite_side_local]
+
+			if data_symbol.does_it_shoot():
 				other_symbol.anim_symbol_teleporting_projectile(
-					entity.coord, 
+					entity.coord,
 					GenericHexGrid.opposite_direction(side)
 				)
 			else:
 				other_symbol.anim_symbol_melee(
-					CFG.SymbolAnimationType.MELEE_ATTACK, 
+					CFG.SymbolAnimationType.MELEE_ATTACK,
 					block_anim_duration
 				)
-				
+
 			symbol.anim_symbol_block()
-		
+
 		_:
 			assert(false, "Unimplemented animation type")
 
@@ -199,7 +210,7 @@ func _rotation_symbol_flip():
 	for dir in range(6):
 		var abstract_rotation = (entity.unit_rotation + dir) % 6
 		get_symbol(dir).flip_sprite(abstract_rotation)
-	
+
 
 #region UI
 
@@ -225,7 +236,8 @@ func set_effects() -> void:
 
 		var spell_texture = load(entity.effects[slot_idx].icon_path)  #TEMP spell icon path
 		spell_effects_slots[slot_idx].texture = spell_texture
-		spell_counters_slots[slot_idx].text = str(entity.effects[slot_idx].duration_counter)
+		if not entity.effects[slot_idx].passive_effect:  # passive effect are pernament
+			spell_counters_slots[slot_idx].text = str(entity.effects[slot_idx].duration_counter)
 
 
 

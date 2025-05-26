@@ -15,8 +15,6 @@ var target_tile : TileForm
 # gameplay
 var hero_name : String
 
-var data_unit : DataUnit
-
 var max_army_size : int
 
 var max_movement_points = 3
@@ -30,6 +28,12 @@ var wounded : bool = false
 
 var xp = 0
 var level = 1
+
+# Battle Gameplay
+var data_unit : DataUnit
+
+var passive_effects : Array[HeroPassive] = []
+
 
 ## DESIGN should current level determine how many exp is needed for level up
 static func level_threshold_at(_level : int) -> int:
@@ -58,6 +62,7 @@ static func construct_hero(data_hero : DataHero,
 	new_hero.data_unit = data_hero.data_unit
 	new_hero.max_army_size = data_hero.max_army_size
 	new_hero.max_movement_points = data_hero.max_movement_points
+	new_hero.passive_effects = data_hero.starting_passives
 	return new_hero
 
 

@@ -8,6 +8,8 @@ extends Resource
 ## COMBAT
 @export var data_unit : DataUnit
 
+@export var starting_passives : Array[HeroPassive] = []
+
 ## COMMAND
 @export var max_army_size : int = 3
 

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dvxxtnoekxj8j"
-path="res://.godot/imported/orc_knight.png-3135b9b421187e80e7b5a1fb0a849ba4.ctex"
+uid="uid://b5iuryrnogp0n"
+path="res://.godot/imported/javelin.png-faad76a7fa66be89cecc3f56b0a4351f.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Art/items/orc_knight.png"
-dest_files=["res://.godot/imported/orc_knight.png-3135b9b421187e80e7b5a1fb0a849ba4.ctex"]
+source_file="res://Art/items/javelin.png"
+dest_files=["res://.godot/imported/javelin.png-faad76a7fa66be89cecc3f56b0a4351f.ctex"]
 
 [params]
 
