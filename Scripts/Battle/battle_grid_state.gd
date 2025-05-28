@@ -19,6 +19,9 @@ const MOVE_IS_INVALID = -1
 const STALEMATE_TURN_REPEATS = 2  # number of repeated moves that fast forward Mana Cyclon Timer
 
 var state : String = STATE_SUMMONNING
+
+## Visible to players counter which works alongside Mana Cyclone system [br]
+## Is incremented after units move/cast_a_spell -> Doesn't after unit placement/sacrifice
 var turn_counter : int = 0
 var current_army_index : int = 0
 var armies_in_battle_state : Array[ArmyInBattleState] = []

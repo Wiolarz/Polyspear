@@ -1,9 +1,10 @@
-[gd_scene load_steps=5 format=3 uid="uid://bawliiem6bw0u"]
+[gd_scene load_steps=6 format=3 uid="uid://bawliiem6bw0u"]
 
 [ext_resource type="Script" path="res://Scripts/UI/battle_ui.gd" id="1_0rgae"]
 [ext_resource type="Shortcut" uid="uid://fuvss5hfg4q2" path="res://Resources/Shortcuts/go_back.tres" id="2_hku4e"]
 [ext_resource type="Texture2D" uid="uid://cukwcwy4fikm1" path="res://Art/elf_hero_noble.png" id="3_arbmx"]
 [ext_resource type="PackedScene" uid="uid://c2tjldwjynnry" path="res://Scenes/UI/GameChat.tscn" id="5_10swj"]
+[ext_resource type="Texture2D" uid="uid://y26ip52rm5p0" path="res://Art/units/new_classic/elf_spearmen.png" id="5_b518w"]
 
 [node name="BattleUI" type="CanvasLayer"]
 script = ExtResource("1_0rgae")
@@ -140,6 +141,7 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 
 [node name="ReplayControls" type="ColorRect" parent="."]
+visible = false
 custom_minimum_size = Vector2(750, 125)
 anchors_preset = 3
 anchor_left = 1.0
@@ -314,9 +316,79 @@ grow_vertical = 2
 layout_mode = 2
 text = "Spell"
 
+[node name="TextBubble" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Background" type="ColorRect" parent="TextBubble"]
+layout_mode = 0
+offset_left = -400.0
+offset_top = -200.0
+offset_right = 400.0
+offset_bottom = 200.0
+color = Color(0.158472, 0.158472, 0.158472, 1)
+
+[node name="Title" type="Label" parent="TextBubble"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -375.0
+offset_top = -182.0
+offset_right = 10.0
+offset_bottom = -134.0
+grow_horizontal = 2
+text = "Title of the text bubble"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Text" type="RichTextLabel" parent="TextBubble"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -408.0
+offset_top = -127.0
+offset_right = 83.0
+offset_bottom = 111.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "Example Text"
+
+[node name="Icon" type="TextureRect" parent="TextBubble"]
+custom_minimum_size = Vector2(400, 400)
+layout_mode = 0
+offset_left = 38.0
+offset_top = -197.0
+offset_right = 438.0
+offset_bottom = 203.0
+texture = ExtResource("5_b518w")
+expand_mode = 1
+
+[node name="TextBubbleButton" type="Button" parent="TextBubble"]
+layout_mode = 0
+offset_left = -148.0
+offset_top = 137.0
+offset_right = -9.0
+offset_bottom = 191.0
+text = "Proceed"
+
 [connection signal="pressed" from="TopL/Menu" to="." method="_on_menu_pressed"]
 [connection signal="pressed" from="TopL/SwitchCamera" to="." method="_on_switch_camera_pressed"]
 [connection signal="pressed" from="ReplayControls/Pause" to="." method="_on_pause_pressed"]
 [connection signal="pressed" from="ReplayControls/Step" to="." method="_on_step_pressed"]
 [connection signal="pressed" from="ReplayControls/Play" to="." method="_on_play_pressed"]
 [connection signal="pressed" from="ReplayControls/Fast" to="." method="_on_fast_pressed"]
+[connection signal="pressed" from="TextBubble/TextBubbleButton" to="." method="_on_text_bubble_button_pressed"]
