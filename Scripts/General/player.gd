@@ -39,7 +39,7 @@ static func create(new_slot : Slot) -> Player:
 	var result := Player.new()
 
 	if new_slot.is_bot():
-		assert(FileAccess.file_exists(new_slot.battle_bot_path), 
+		assert(FileAccess.file_exists(new_slot.battle_bot_path),
 			   "File for bot '%s' does not exist" % [new_slot.battle_bot_path])
 		result.bot_engine = load(new_slot.battle_bot_path).instantiate()
 		assert(result.bot_engine != null, "Bot '%s' does not exist" % new_slot.battle_bot_path)
@@ -65,6 +65,28 @@ static func create(new_slot : Slot) -> Player:
 	result.timer_increment_sec = new_slot.timer_increment_sec
 
 	return result
+
+
+static func create_for_tutorial(is_human : bool, player_index : int) -> Player:
+	var result := Player.new()
+
+	if is_human:
+		result.name = "Player"
+		result.occupier = ""
+	else:
+		result.name = "AI"
+		result.occupier = 1
+		result.bot_engine = load("res://Resources/Battle/Bots/Random.tscn").instantiate()
+		result.add_child(result.bot_engine)
+		result.bot_engine.set_player(result)
+
+
+	result.index = player_index
+	result.team = player_index
+	result.color_idx = player_index
+
+	return result
+
 
 
 #region Getters

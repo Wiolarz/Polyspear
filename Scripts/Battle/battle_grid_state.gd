@@ -19,6 +19,9 @@ const MOVE_IS_INVALID = -1
 const STALEMATE_TURN_REPEATS = 2  # number of repeated moves that fast forward Mana Cyclon Timer
 
 var state : String = STATE_SUMMONNING
+
+## Visible to players counter which works alongside Mana Cyclone system [br]
+## Is incremented after units move/cast_a_spell -> Doesn't after unit placement/sacrifice
 var turn_counter : int = 0
 var current_army_index : int = 0
 var armies_in_battle_state : Array[ArmyInBattleState] = []
@@ -288,7 +291,7 @@ func _process_offensive_symbols(unit : Unit) -> void:
 		var enemy_weapon = enemy.get_symbol(opposite_side)
 		if Unit.will_parry_occur(unit_weapon, enemy_weapon):
 			# We check if parry even parries any attempt
-			if Unit.attack_power(unit_weapon) > 0:  # was there an attack attempt 
+			if Unit.attack_power(unit_weapon) > 0:  # was there an attack attempt
 				enemy.unit_is_blocking.emit(opposite_side, unit.coord)  # animation
 			elif Unit.can_it_push(unit_weapon):  # was there a push attempt
 				enemy.unit_is_blocking.emit(opposite_side, unit.coord)  # animation
@@ -306,7 +309,7 @@ func _process_offensive_symbols(unit : Unit) -> void:
 		elif Unit.can_it_push(unit_weapon):
 			unit.unit_is_pushing.emit(side)  # animation
 			_push_enemy(enemy, side, Unit.push_power(unit_weapon))
-		elif Unit.attack_power(unit_weapon) > 0:  # was there an attack attempt 
+		elif Unit.attack_power(unit_weapon) > 0:  # was there an attack attempt
 			enemy.unit_is_blocking.emit(opposite_side, unit.coord)  # animation
 
 
@@ -1571,7 +1574,7 @@ class ArmyInBattleState:
 	var battle_grid_state : WeakRef # BattleGridState
 
 	var army_reference : Army
-	
+
 	## basic idx reference to which units are allies
 	var team : int = -1
 

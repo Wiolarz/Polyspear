@@ -1,8 +1,64 @@
-[gd_resource type="Resource" script_class="ScriptedBattle" load_steps=2 format=3 uid="uid://bbe3vxkni2qp0"]
+[gd_resource type="Resource" script_class="ScriptedBattle" load_steps=16 format=3 uid="uid://bbe3vxkni2qp0"]
 
 [ext_resource type="Script" path="res://Resources/Campaign/scripted_battle.gd" id="1_oii0p"]
+[ext_resource type="Script" path="res://Resources/Presets/preset_army.gd" id="1_wtwkx"]
+[ext_resource type="Resource" uid="uid://0vft0atich8r" path="res://Resources/Battle/Units/Elves/elf_1_spearmen.tres" id="2_ar0um"]
+[ext_resource type="Resource" uid="uid://bjcrbdv3aq2jk" path="res://Resources/Battle/Units/Orcs/orc_1_brute.tres" id="3_esvk1"]
+[ext_resource type="Resource" uid="uid://bb2aqoi7x3sax" path="res://Resources/Battle/Battle_Maps/basic5x5.tres" id="4_1gglu"]
+[ext_resource type="Texture2D" uid="uid://y26ip52rm5p0" path="res://Art/units/new_classic/elf_spearmen.png" id="6_8rn11"]
+[ext_resource type="Texture2D" uid="uid://ft461wwhtywb" path="res://Art/battle_map/blue_player_spawn.png" id="6_r61h8"]
+[ext_resource type="Script" path="res://Resources/Campaign/text_bubble.gd" id="6_yx11g"]
+[ext_resource type="Texture2D" uid="uid://df7u0x5884v74" path="res://Art/battle_map/grass_tile.png" id="8_het6q"]
+
+[sub_resource type="Resource" id="Resource_soodh"]
+script = ExtResource("1_wtwkx")
+units = Array[Resource("res://Resources/Battle/data_unit.gd")]([ExtResource("2_ar0um")])
+team = 0
+
+[sub_resource type="Resource" id="Resource_w28cx"]
+script = ExtResource("1_wtwkx")
+units = Array[Resource("res://Resources/Battle/data_unit.gd")]([ExtResource("3_esvk1")])
+team = 0
+
+[sub_resource type="Resource" id="Resource_uw6bu"]
+resource_name = "Placement Phase"
+script = ExtResource("6_yx11g")
+prerequisite = "phase summon selected null"
+title = "Placement Phase"
+text = "At the start of every battle every army has to sequentially place their every unit of their starting tiles. Once all units are placed the battle starts. To place your unit select it from the bottom bar."
+icon = ExtResource("6_8rn11")
+
+[sub_resource type="Resource" id="Resource_evoed"]
+resource_name = "Placing Units"
+script = ExtResource("6_yx11g")
+prerequisite = "phase summon selected Spearmen"
+title = "Placing Units"
+text = "Now Click on one of your starting tiles to place your selected unit."
+icon = ExtResource("6_r61h8")
+
+[sub_resource type="Resource" id="Resource_olfqt"]
+resource_name = "Selecting Unit"
+script = ExtResource("6_yx11g")
+prerequisite = "phase fighting time 0 selected null"
+title = "Selecting Unit"
+text = "End of the placement phase is announced with special messege as well the transformation of summoning tiles into a basic grass tiles.
+
+In order to move your units you have to select them."
+icon = ExtResource("8_het6q")
+
+[sub_resource type="Resource" id="Resource_alhyy"]
+resource_name = "Moving around"
+script = ExtResource("6_yx11g")
+prerequisite = "phase fighting time 0 selected Spearmen"
+title = "Moving around"
+text = "choose an adjacent tile which are highlighet with white arrows point from the selected unit."
+icon = ExtResource("6_8rn11")
 
 [resource]
 script = ExtResource("1_oii0p")
 scenario_name = "Basics"
 description = "Explanation of basic controls and fundamental mechanics."
+player_side = 0
+armies = Array[ExtResource("1_wtwkx")]([SubResource("Resource_soodh"), SubResource("Resource_w28cx")])
+battle_map = ExtResource("4_1gglu")
+text_bubbles = Array[ExtResource("6_yx11g")]([SubResource("Resource_uw6bu"), SubResource("Resource_evoed"), SubResource("Resource_olfqt"), SubResource("Resource_alhyy")])
