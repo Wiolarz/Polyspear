@@ -72,3 +72,8 @@ func _on_tabs_tab_changed(tab_index:int):
 		3: _on_credits_button_pressed()
 		4: _on_replays_tab_pressed()
 		_: push_error("_on_tabs_tab_changed index not supported: "+str(tab_index))
+
+
+func _on_return_to_game_button_pressed():
+	UI.main_menu.hide()
+	pass # Replace with function body.

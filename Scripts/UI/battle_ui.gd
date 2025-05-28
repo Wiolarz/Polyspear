@@ -428,7 +428,8 @@ func _on_switch_camera_pressed():
 
 
 func _on_menu_pressed():
-	IM.toggle_in_game_menu()
+	UI.main_menu.show()
+	#IM.toggle_in_game_menu()
 
 
 func _on_pause_pressed():
