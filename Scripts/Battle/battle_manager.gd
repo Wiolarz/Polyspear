@@ -287,7 +287,7 @@ func undo() -> void:
 
 	# VISUALS
 	for unit in revived_units:
-		_on_unit_summoned(unit)  # revive
+		_on_unit_placement(unit)  # revive
 	_battle_ui.refresh_after_undo(_battle_grid_state.is_during_summoning_phase())
 	_end_move()
 	ANIM.fast_forward()
@@ -325,8 +325,8 @@ func grid_input(coord : Vector2i) -> void:
 	var move_info : MoveInfo
 
 	match _battle_grid_state.state:
-		BattleGridState.STATE_SUMMONNING:
-			move_info = _grid_input_summon(coord)
+		BattleGridState.STATE_PLACEMENT:
+			move_info = _grid_input_placement(coord)
 		BattleGridState.STATE_FIGHTING:
 			if _battle_ui.selected_spell == null:
 				move_info = _grid_input_fighting(coord)
@@ -417,11 +417,11 @@ func ai_move() -> void:
 #endregion AI Support
 
 
-#region Summon Phase
+#region Placement Phase
 
 ## handles spawning unit form when unit is spawned on a gameplay map
 ## also connects animation related signals
-func _on_unit_summoned(unit : Unit) -> void:
+func _on_unit_placement(unit : Unit) -> void:
 	var form := UnitForm.create(unit)
 	_unit_forms_node.add_child(form)
 	_unit_to_unit_form[unit] = form
@@ -430,7 +430,7 @@ func _on_unit_summoned(unit : Unit) -> void:
 	form.global_position = get_tile_global_position(unit.coord)
 
 	var is_placement_phase_over : bool = not _battle_grid_state.is_during_summoning_phase()
-	_battle_ui.unit_summoned(is_placement_phase_over)
+	_battle_ui.unit_placed(is_placement_phase_over)
 	if is_placement_phase_over:
 		for row : Array in _tile_grid.hexes:
 			for tile : TileForm in row:
@@ -465,9 +465,9 @@ func _on_unit_summoned(unit : Unit) -> void:
 
 
 ## handles player input while during the summoning phase
-func _grid_input_summon(coord : Vector2i) -> MoveInfo:
-	assert(_battle_grid_state.state == _battle_grid_state.STATE_SUMMONNING, \
-			"_grid_input_summon called in an incorrect state")
+func _grid_input_placement(coord : Vector2i) -> MoveInfo:
+	assert(_battle_grid_state.state == _battle_grid_state.STATE_PLACEMENT, \
+			"_grid_input_placement called in an incorrect state")
 
 	if _battle_ui._selected_unit_pointer == null:
 		return null # no unit selected to summon on ui
@@ -479,7 +479,7 @@ func _grid_input_summon(coord : Vector2i) -> MoveInfo:
 	return MoveInfo.make_summon(_battle_ui._selected_unit_pointer, coord)
 
 
-#endregion Summon Phase
+#endregion Placement Phase
 
 
 #region Mana Cyclone Timer
@@ -684,9 +684,14 @@ func _perform_move_info(move_info : MoveInfo) -> void:
 		MoveInfo.TYPE_MOVE, MoveInfo.TYPE_SACRIFICE, MoveInfo.TYPE_MAGIC:
 			_battle_grid_state.move_info_execute(move_info)
 
-		MoveInfo.TYPE_SUMMON:
-			var unit : Unit = _battle_grid_state.move_info_summon_unit(move_info)
-			_on_unit_summoned(unit)
+			# TODO verify if it's a good enough solution for summoning units
+			if move_info.move_type == MoveInfo.TYPE_MAGIC and move_info.spell.name in ["Summon Dryad"]:
+				_on_unit_placement(_battle_grid_state.get_unit(move_info.target_tile_coord))
+
+
+		MoveInfo.TYPE_PLACEMENT:
+			var unit : Unit = _battle_grid_state.move_info_deploy_unit(move_info)
+			_on_unit_placement(unit)
 
 		_ :
 			assert(false, "Move move_type not supported in perform, " + str(move_info.move_type))

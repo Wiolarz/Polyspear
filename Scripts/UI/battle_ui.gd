@@ -226,7 +226,7 @@ func _on_fast_pressed():
 #endregion Replay Controls
 
 
-#region Summon Phase
+#region Placement Phase
 
 func on_player_selected(army_index : int, preview : bool = false):
 	_selected_unit_pointer = null
@@ -252,7 +252,7 @@ func on_player_selected(army_index : int, preview : bool = false):
 	var bg_color : DataPlayerColor = CFG.NEUTRAL_COLOR
 	if units_controller:
 		bg_color = units_controller.get_player_color()
-	for unit in armies_reference[army_index].units_to_summon:
+	for unit in armies_reference[army_index].units_to_place:
 		# here is the place where unit buttons for placement are
 
 		var button := TextureButton.new()
@@ -307,11 +307,11 @@ func on_player_selected(army_index : int, preview : bool = false):
 		button.mouse_exited.connect(lambda_hover.bind(false))
 
 
-func unit_summoned(summon_phase_end : bool):
+func unit_placed(placement_phase_end : bool):
 	_selected_unit_pointer = null
 	_selected_unit_button_pointer = null
 
-	if summon_phase_end:
+	if placement_phase_end:
 		announcement_end_of_placement_phase_player_name_label.text = BM.get_current_player_name()
 		announcement_end_of_placement_phase.modulate = BM.get_current_slot_color().color
 		#IM.get_player_by_index(army.army_reference.controller_index)
@@ -322,7 +322,7 @@ func unit_summoned(summon_phase_end : bool):
 		tween.tween_property(announcement_end_of_placement_phase, "modulate:a", 0, 0.5)
 		ANIM.play_tween(tween, ANIM.TweenPlaybackSettings.speed_independent())
 
-#endregion Summon Phase
+#endregion Placement Phase
 
 
 #region Grid
@@ -415,6 +415,9 @@ func load_spells(army_index : int, spells : Array[BattleSpell], preview : bool =
 
 		button.texture_normal = CFG.SUMMON_BUTTON_TEXTURE
 		button.texture_normal = load(spell.icon_path)
+		button.ignore_texture_size = true
+		button.stretch_mode = TextureButton.STRETCH_SCALE
+		button.custom_minimum_size = Vector2(200, 200)
 
 		book.add_child(button)
 		var lambda = func on_click():
