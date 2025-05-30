@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="BattleSpell" load_steps=3 format=3 uid="uid://bv6apnrwyhbc5"]
+
+[ext_resource type="Script" path="res://Scripts/Battle/battle_spell.gd" id="1_udpvt"]
+[ext_resource type="Resource" uid="uid://bujeesyrw6q5e" path="res://Resources/Battle/Units/Neutral/wood_dryad.tres" id="2_v2swd"]
+
+[resource]
+script = ExtResource("1_udpvt")
+name = "Summon Dryad"
+icon_path = "res://Art/units/neutral/wood_dryad.png"
+spell_effects = Array[Resource("res://Scripts/Battle/battle_magic_effect.gd")]([])
+summon_unit_data = ExtResource("2_v2swd")
