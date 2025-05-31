@@ -248,7 +248,7 @@ text = "Player1"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="EndPlacementPhaseAnnouncement" type="ColorRect" parent="."]
+[node name="EndDeploymentPhaseAnnouncement" type="ColorRect" parent="."]
 editor_description = "Modulate set to 0 turned up through Tween animation"
 modulate = Color(1, 1, 1, 0)
 anchors_preset = 8
@@ -265,7 +265,7 @@ grow_vertical = 2
 mouse_filter = 2
 color = Color(0, 0, 0, 0.423529)
 
-[node name="FluffText" type="Label" parent="EndPlacementPhaseAnnouncement"]
+[node name="FluffText" type="Label" parent="EndDeploymentPhaseAnnouncement"]
 layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
@@ -274,11 +274,11 @@ offset_left = -244.5
 offset_right = 244.5
 offset_bottom = 106.0
 grow_horizontal = 2
-text = "End of the Placement Phase"
+text = "End of the Deployment Phase"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="FirstPlayerToMoveName" type="Label" parent="EndPlacementPhaseAnnouncement"]
+[node name="FirstPlayerToMoveName" type="Label" parent="EndDeploymentPhaseAnnouncement"]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5

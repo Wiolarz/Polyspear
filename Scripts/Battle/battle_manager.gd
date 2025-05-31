@@ -326,7 +326,7 @@ func grid_input(coord : Vector2i) -> void:
 
 	match _battle_grid_state.state:
 		BattleGridState.STATE_DEPLOYMENT:
-			move_info = _grid_input_placement(coord)
+			move_info = _grid_input_deployment(coord)
 		BattleGridState.STATE_FIGHTING:
 			if _battle_ui.selected_spell == null:
 				move_info = _grid_input_fighting(coord)
@@ -417,7 +417,7 @@ func ai_move() -> void:
 #endregion AI Support
 
 
-#region Placement Phase
+#region Deployment Phase
 
 ## handles spawning unit form when unit is spawned on a gameplay map
 ## also connects animation related signals
@@ -429,9 +429,9 @@ func _on_unit_deployment(unit : Unit) -> void:
 	# apply correct BM position offset in world battles
 	form.global_position = get_tile_global_position(unit.coord)
 
-	var is_placement_phase_over : bool = not _battle_grid_state.is_during_deployment_phase()
-	_battle_ui.unit_placed(is_placement_phase_over)
-	if is_placement_phase_over:
+	var is_deployment_phase_over : bool = not _battle_grid_state.is_during_deployment_phase()
+	_battle_ui.unit_deployed(is_deployment_phase_over)
+	if is_deployment_phase_over:
 		for row : Array in _tile_grid.hexes:
 			for tile : TileForm in row:
 				# TODO replace it with better map editor features
@@ -465,9 +465,9 @@ func _on_unit_deployment(unit : Unit) -> void:
 
 
 ## handles player input while during the deployment phase
-func _grid_input_placement(coord : Vector2i) -> MoveInfo:
+func _grid_input_deployment(coord : Vector2i) -> MoveInfo:
 	assert(_battle_grid_state.state == _battle_grid_state.STATE_DEPLOYMENT, \
-			"_grid_input_placement called in an incorrect state")
+			"_grid_input_deployment called in an incorrect state")
 
 	if _battle_ui._selected_unit_pointer == null:
 		return null # no unit selected to deploy on ui
@@ -479,7 +479,7 @@ func _grid_input_placement(coord : Vector2i) -> MoveInfo:
 	return MoveInfo.make_deploy(_battle_ui._selected_unit_pointer, coord)
 
 
-#endregion Placement Phase
+#endregion Deployment Phase
 
 
 #region Mana Cyclone Timer

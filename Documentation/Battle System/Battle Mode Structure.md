@@ -51,7 +51,7 @@ List of functions which execute given player move.
 `move_info_execute()` as all `move_info support` functions it starts out by performing records for Replay and Undo systems.
 Given overlap in different move types some actions are performed always like retrieving a unit from given starting coordinates. But later function splits through a match method
 
-`move_info_place_unit() -> Unit` unique function as it additionally returns generated Unit object based on given unit data and placement position. Which then is used by Battle Manager to generate `UnitForm.gd` object.
+`move_info_deploy_unit() -> Unit` unique function as it additionally returns generated Unit object based on given unit data and deployment position. Which then is used by Battle Manager to generate `UnitForm.gd` object.
 
 # Units
 Are split into gameplay `Unit.gd` and visual `UnitForm.gd` only the visual side has a reference of the gameplay "entity" so to communicate gameplay changes affecting it like movement, rotation or death it uses signals.

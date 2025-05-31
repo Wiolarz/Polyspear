@@ -61,7 +61,7 @@ func apply_graphics(template : DataUnit, color : DataPlayerColor):
 		var symbol_texture
 		if entity:   # effects may change symbols during battle
 			symbol_texture = entity.symbols[side].texture_path
-		else:  # Placement screen
+		else:  # Deployment screen
 			symbol_texture = template.symbols[side].texture_path
 
 		var data_symbol = template.symbols[side]

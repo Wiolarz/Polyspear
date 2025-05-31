@@ -550,7 +550,7 @@ func _get_move_direction_if_valid(unit : Unit, coord : Vector2i) -> int:
 		# check if a landing spot is a viable move
 		var jump_spot : Vector2i = GenericHexGrid.adjacent_coord(coord, move_direction)
 		hex = _get_battle_hex(jump_spot)
-		if not hex.can_be_moved_to:  # landing spot cannot be a special_move place
+		if not hex.can_be_moved_to:  # landing spot cannot be a special_move tile
 			return MOVE_IS_INVALID
 
 		# is unit present on landing spot
@@ -1752,19 +1752,15 @@ class ArmyInBattleState:
 
 			result.mana_points += unit.mana # MANA
 
+		result.apply_passive_effects()
+
 		#Temp solution for world map, where proper clock system isn't implemented yet
 		if army.timer_reserve_sec == 0:
 			army.timer_reserve_sec = 3000
-
 		#TEMP
 		result.start_turn_clock_time_left_ms = army.timer_reserve_sec * 1000
 		result.turn_increment_ms = army.timer_increment_sec * 1000
-
-		result.apply_passive_effects() # TEMP placement here, once proper rituals phase will be stablished it will be moved there
-
 		result.turn_started() # TEMP - FIXME - better init for chess clock
-
-
 
 		return result
 
@@ -1859,7 +1855,7 @@ class ArmyInBattleState:
 				"magic_weapons":
 					var effect : BattleMagicEffect = load(CFG.tier_2_passive_1)
 					var success : bool = result.try_adding_magic_effect(effect)
-					assert(success, "couldn't add passive effect to a hero unit upon it's placement")
+					assert(success, "couldn't add passive effect to a hero unit upon it's deployment")
 					for symbol in result.symbols:
 						if symbol.attack_power != 0:
 							symbol.attack_power = effect.magic_weapon_durability

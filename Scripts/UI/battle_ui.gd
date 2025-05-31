@@ -1,7 +1,7 @@
 class_name BattleUI
 extends CanvasLayer
 
-@export var placement_unit_button_size = 200.0
+@export var deployment_unit_button_size = 200.0
 
 @onready var players_box : BoxContainer = $TopR/PlayersContainer/Players
 
@@ -27,8 +27,8 @@ extends CanvasLayer
 # announcement nodes
 @onready var announcement_sacrifice = $SacrificeAnnouncement
 @onready var announcement_sacrifice_player_name_label = $SacrificeAnnouncement/CycloneTarget
-@onready var announcement_end_of_placement_phase = $EndPlacementPhaseAnnouncement
-@onready var announcement_end_of_placement_phase_player_name_label = $EndPlacementPhaseAnnouncement/FirstPlayerToMoveName
+@onready var announcement_end_of_deployment_phase = $EndDeploymentPhaseAnnouncement
+@onready var announcement_end_of_deployment_phase_player_name_label = $EndDeploymentPhaseAnnouncement/FirstPlayerToMoveName
 
 var fighting_players_idx = []
 var armies_reference : Array[BattleGridState.ArmyInBattleState]
@@ -257,7 +257,7 @@ func on_player_selected(army_index : int, preview : bool = false):
 
 		var button := TextureButton.new()
 		button.texture_normal = CFG.DEPLOY_BUTTON_TEXTURE
-		button.custom_minimum_size = Vector2.ONE * placement_unit_button_size
+		button.custom_minimum_size = Vector2.ONE * deployment_unit_button_size
 		button.stretch_mode = TextureButton.STRETCH_KEEP_ASPECT_CENTERED
 		button.ignore_texture_size = true
 
@@ -273,7 +273,7 @@ func on_player_selected(army_index : int, preview : bool = false):
 
 		# TEMP need to find out good way to calculate scale, the constant number
 		# here was find empirically
-		var calculated_scale = 0.00058 * placement_unit_button_size
+		var calculated_scale = 0.00058 * deployment_unit_button_size
 		unit_display.scale = Vector2.ONE * calculated_scale
 
 		units_box.add_child(button)
@@ -307,19 +307,19 @@ func on_player_selected(army_index : int, preview : bool = false):
 		button.mouse_exited.connect(lambda_hover.bind(false))
 
 
-func unit_placed(deployment_phase_end : bool):
+func unit_deployed(deployment_phase_end : bool):
 	_selected_unit_pointer = null
 	_selected_unit_button_pointer = null
 
 	if deployment_phase_end:
-		announcement_end_of_placement_phase_player_name_label.text = BM.get_current_player_name()
-		announcement_end_of_placement_phase.modulate = BM.get_current_slot_color().color
+		announcement_end_of_deployment_phase_player_name_label.text = BM.get_current_player_name()
+		announcement_end_of_deployment_phase.modulate = BM.get_current_slot_color().color
 		#IM.get_player_by_index(army.army_reference.controller_index)
 
-		announcement_end_of_placement_phase.modulate.a = 1
+		announcement_end_of_deployment_phase.modulate.a = 1
 		var tween = ANIM.ui_tween()
 		tween.tween_interval(1.5)
-		tween.tween_property(announcement_end_of_placement_phase, "modulate:a", 0, 0.5)
+		tween.tween_property(announcement_end_of_deployment_phase, "modulate:a", 0, 0.5)
 		ANIM.play_tween(tween, ANIM.TweenPlaybackSettings.speed_independent())
 
 #endregion Deployment Phase
