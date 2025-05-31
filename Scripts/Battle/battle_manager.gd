@@ -287,8 +287,8 @@ func undo() -> void:
 
 	# VISUALS
 	for unit in revived_units:
-		_on_unit_placement(unit)  # revive
-	_battle_ui.refresh_after_undo(_battle_grid_state.is_during_summoning_phase())
+		_on_unit_deployment(unit)  # revive
+	_battle_ui.refresh_after_undo(_battle_grid_state.is_during_deployment_phase())
 	_end_move()
 	ANIM.fast_forward()
 
@@ -325,7 +325,7 @@ func grid_input(coord : Vector2i) -> void:
 	var move_info : MoveInfo
 
 	match _battle_grid_state.state:
-		BattleGridState.STATE_PLACEMENT:
+		BattleGridState.STATE_DEPLOYMENT:
 			move_info = _grid_input_placement(coord)
 		BattleGridState.STATE_FIGHTING:
 			if _battle_ui.selected_spell == null:
@@ -421,7 +421,7 @@ func ai_move() -> void:
 
 ## handles spawning unit form when unit is spawned on a gameplay map
 ## also connects animation related signals
-func _on_unit_placement(unit : Unit) -> void:
+func _on_unit_deployment(unit : Unit) -> void:
 	var form := UnitForm.create(unit)
 	_unit_forms_node.add_child(form)
 	_unit_to_unit_form[unit] = form
@@ -429,7 +429,7 @@ func _on_unit_placement(unit : Unit) -> void:
 	# apply correct BM position offset in world battles
 	form.global_position = get_tile_global_position(unit.coord)
 
-	var is_placement_phase_over : bool = not _battle_grid_state.is_during_summoning_phase()
+	var is_placement_phase_over : bool = not _battle_grid_state.is_during_deployment_phase()
 	_battle_ui.unit_placed(is_placement_phase_over)
 	if is_placement_phase_over:
 		for row : Array in _tile_grid.hexes:
@@ -464,19 +464,19 @@ func _on_unit_placement(unit : Unit) -> void:
 	unit.unit_magic_effect.emit()
 
 
-## handles player input while during the summoning phase
+## handles player input while during the deployment phase
 func _grid_input_placement(coord : Vector2i) -> MoveInfo:
-	assert(_battle_grid_state.state == _battle_grid_state.STATE_PLACEMENT, \
+	assert(_battle_grid_state.state == _battle_grid_state.STATE_DEPLOYMENT, \
 			"_grid_input_placement called in an incorrect state")
 
 	if _battle_ui._selected_unit_pointer == null:
-		return null # no unit selected to summon on ui
+		return null # no unit selected to deploy on ui
 
-	if not _battle_grid_state.current_player_can_summon_on(coord):
+	if not _battle_grid_state.current_player_can_deploy_on(coord):
 		return null
 
-	print(NET.get_role_name(), " input - summoning unit")
-	return MoveInfo.make_summon(_battle_ui._selected_unit_pointer, coord)
+	print(NET.get_role_name(), " input - deploying unit")
+	return MoveInfo.make_deploy(_battle_ui._selected_unit_pointer, coord)
 
 
 #endregion Placement Phase
@@ -685,13 +685,14 @@ func _perform_move_info(move_info : MoveInfo) -> void:
 			_battle_grid_state.move_info_execute(move_info)
 
 			# TODO verify if it's a good enough solution for summoning units
+			# as it's hard to create new visible units within battle grid state
 			if move_info.move_type == MoveInfo.TYPE_MAGIC and move_info.spell.name in ["Summon Dryad"]:
-				_on_unit_placement(_battle_grid_state.get_unit(move_info.target_tile_coord))
+				_on_unit_deployment(_battle_grid_state.get_unit(move_info.target_tile_coord))
 
 
-		MoveInfo.TYPE_PLACEMENT:
+		MoveInfo.TYPE_DEPLOY:
 			var unit : Unit = _battle_grid_state.move_info_deploy_unit(move_info)
-			_on_unit_placement(unit)
+			_on_unit_deployment(unit)
 
 		_ :
 			assert(false, "Move move_type not supported in perform, " + str(move_info.move_type))

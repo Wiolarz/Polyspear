@@ -113,7 +113,7 @@ var RACES_LIST : Array[DataRace] = [
 const UNIT_FORM_SCENE = preload("res://Scenes/Form/UnitForm.tscn")
 var HEX_TILE_FORM_SCENE := load("res://Scenes/Form/TileForm.tscn") as PackedScene
 
-const SUMMON_BUTTON_TEXTURE : Texture2D = preload("res://Art/battle_map/grass.png")
+const DEPLOY_BUTTON_TEXTURE : Texture2D = preload("res://Art/battle_map/grass.png")
 const EMPTY_SLOT_TEXTURE : Texture2D = preload("res://Art/items/hex_border_light.png")
 
 const DEFAULT_ARMY_FORM = preload("res://Scenes/Form/ArmyForm.tscn")

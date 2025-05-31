@@ -36,12 +36,12 @@ var armies_reference : Array[BattleGridState.ArmyInBattleState]
 var current_player : int = 0
 
 
-## used only for placement unit tiles, points to currently selected unit/unit-button in placement
+## used only for deployment unit tiles, points to currently selected unit/unit-button in deployment
 ## bar
 var _selected_unit_pointer : DataUnit = null
 var _selected_unit_button_pointer : BaseButton = null
 
-## used only for placement unit tiles, points to currently hovered unit button in placement bar
+## used only for deployment unit tiles, points to currently hovered unit button in deployment bar
 ## (same set of buttons as _`selected_unit_button_pointer` points to
 var _hovered_unit_button_pointer : BaseButton = null
 
@@ -226,7 +226,7 @@ func _on_fast_pressed():
 #endregion Replay Controls
 
 
-#region Placement Phase
+#region Deployment Phase
 
 func on_player_selected(army_index : int, preview : bool = false):
 	_selected_unit_pointer = null
@@ -252,16 +252,16 @@ func on_player_selected(army_index : int, preview : bool = false):
 	var bg_color : DataPlayerColor = CFG.NEUTRAL_COLOR
 	if units_controller:
 		bg_color = units_controller.get_player_color()
-	for unit in armies_reference[army_index].units_to_place:
-		# here is the place where unit buttons for placement are
+	for unit in armies_reference[army_index].units_to_deploy:
+		# here is the place where unit buttons for deployment are
 
 		var button := TextureButton.new()
-		button.texture_normal = CFG.SUMMON_BUTTON_TEXTURE
+		button.texture_normal = CFG.DEPLOY_BUTTON_TEXTURE
 		button.custom_minimum_size = Vector2.ONE * placement_unit_button_size
 		button.stretch_mode = TextureButton.STRETCH_KEEP_ASPECT_CENTERED
 		button.ignore_texture_size = true
 
-		var unit_display := UnitForm.create_for_summon_ui(unit, bg_color)
+		var unit_display := UnitForm.create_for_deployment_ui(unit, bg_color)
 		unit_display.position = button.texture_normal.get_size()/2
 		var center_container = CenterContainer.new()
 		button.add_child(center_container)
@@ -307,11 +307,11 @@ func on_player_selected(army_index : int, preview : bool = false):
 		button.mouse_exited.connect(lambda_hover.bind(false))
 
 
-func unit_placed(placement_phase_end : bool):
+func unit_placed(deployment_phase_end : bool):
 	_selected_unit_pointer = null
 	_selected_unit_button_pointer = null
 
-	if placement_phase_end:
+	if deployment_phase_end:
 		announcement_end_of_placement_phase_player_name_label.text = BM.get_current_player_name()
 		announcement_end_of_placement_phase.modulate = BM.get_current_slot_color().color
 		#IM.get_player_by_index(army.army_reference.controller_index)
@@ -322,7 +322,7 @@ func unit_placed(placement_phase_end : bool):
 		tween.tween_property(announcement_end_of_placement_phase, "modulate:a", 0, 0.5)
 		ANIM.play_tween(tween, ANIM.TweenPlaybackSettings.speed_independent())
 
-#endregion Placement Phase
+#endregion Deployment Phase
 
 
 #region Grid
@@ -413,7 +413,7 @@ func load_spells(army_index : int, spells : Array[BattleSpell], preview : bool =
 
 		#TODO create a proper icon creation (after higher resolution update)
 
-		button.texture_normal = CFG.SUMMON_BUTTON_TEXTURE
+		button.texture_normal = CFG.DEPLOY_BUTTON_TEXTURE
 		button.texture_normal = load(spell.icon_path)
 		button.ignore_texture_size = true
 		button.stretch_mode = TextureButton.STRETCH_SCALE
@@ -450,8 +450,8 @@ func start_player_turn(army_index : int):
 
 
 
-func refresh_after_undo(summon_phase_active : bool):
-	units_box.visible = summon_phase_active
+func refresh_after_undo(deploy_phase_active : bool):
+	units_box.visible = deploy_phase_active
 
 
 func _on_switch_camera_pressed():

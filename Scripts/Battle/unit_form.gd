@@ -42,9 +42,9 @@ static func create(new_unit : Unit) -> UnitForm:
 	return result
 
 
-## HACK, this is for visuals only for summon UI
+## HACK, this is for visuals only for deployment UI
 ## no underlying Unit exists
-static func create_for_summon_ui(template: DataUnit, color : DataPlayerColor) -> UnitForm:
+static func create_for_deployment_ui(template: DataUnit, color : DataPlayerColor) -> UnitForm:
 	var result = CFG.UNIT_FORM_SCENE.instantiate()
 	# defer apply_graphics to after the symbol forms are ready (they must be in order for this to work)
 	result.ready.connect(result.apply_graphics.bind(template, color))

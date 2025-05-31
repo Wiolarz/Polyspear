@@ -112,7 +112,7 @@ func _update_marker(cppmove):
 			markers.push_back(marker)
 
 			pos_marker.score = -1.0
-		MoveInfo.TYPE_PLACEMENT:
+		MoveInfo.TYPE_DEPLOY:
 			pos_marker.icon_path = move.deployed_unit.texture_path
 		MoveInfo.TYPE_SACRIFICE:
 			pos_marker.icon_path = cross_marker_path
