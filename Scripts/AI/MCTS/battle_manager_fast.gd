@@ -84,7 +84,7 @@ static func from(bgstate: BattleGridState, tgrid: TileGridFast = null) -> Battle
 		if martyrs.size() == 2:
 			new.set_unit_martyr(army_idx, martyrs[0], martyrs[1], martyr_duration)
 
-		# Placement processing
+		# Deployment processing
 		for summon_idx in range(army.units_to_deploy.size()):
 			var unit = army.units_to_deploy[summon_idx]
 			var unit_idx = summon_idx + army.units.size()
