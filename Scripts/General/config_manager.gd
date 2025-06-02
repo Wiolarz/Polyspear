@@ -144,14 +144,16 @@ const weak_weapon : String = "res://Resources/Battle/Symbols/club.tres"
 
 const BALLISTA_PATH : String = "res://Resources/Battle/Units/Neutral/ballista.tres"
 
+const SUMMONING_SICKNESS_PATH : String = "res://Resources/Battle/Battle_Spells/Battle_Magic_Effects/summoning_sickness.tres"
+
 #endregion File Paths
+
 
 #region Scene Tree Paths
 
 var NODE_GAMESETUP_PATH : String = "/root/UI/MainMenu/MainContainer/HostLobby/HostMenu/PanelContainer/GameSetup"
 
 #endregion Scene Tree Paths
-
 
 
 #region Colors

@@ -807,6 +807,11 @@ func _summon_a_unit(caster : Unit, summoned_unit : DataUnit, target_tile_coord :
 	summoned_unit.summoned = true
 	var direction : int = GenericHexGrid.direction_to_adjacent(caster.coord, target_tile_coord)
 	var unit : Unit = caster.army_in_battle.deploy_unit(summoned_unit, target_tile_coord, direction)
+
+	# Apply summon sickness
+	var success : bool = unit.try_adding_magic_effect(load(CFG.SUMMONING_SICKNESS_PATH))
+	assert(success, "failure to apply summoning sickness effect")
+
 	_put_unit_on_grid(unit, target_tile_coord)
 
 
@@ -1155,6 +1160,8 @@ func _end_of_turn_magic() -> void:
 					magic_effect.duration_counter -= 1
 					if magic_effect.duration_counter == 0:
 						unit.effects.pop_at(effect_idx)
+						if magic_effect.name == "Summoning Sickness":
+							unit.try_adding_magic_effect(magic_effect.spell_effects[0])
 						continue
 
 				match magic_effect:
