@@ -135,6 +135,8 @@ const weak_weapon : String = "res://Resources/Battle/Symbols/club.tres"
 
 const BALLISTA_PATH : String = "res://Resources/Battle/Units/Neutral/ballista.tres"
 
+const SUMMONING_SICKNESS_PATH : String = "res://Resources/Battle/Battle_Spells/Battle_Magic_Effects/summoning_sickness.tres"
+
 #endregion Paths
 
 
