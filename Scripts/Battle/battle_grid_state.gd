@@ -923,7 +923,7 @@ func end_stalemate() -> void:
 #endregion Gameplay Events
 
 
-#region Deploy Phase
+#region Deployment Phase
 
 func current_player_can_deploy_on(coord : Vector2i) -> bool:
 	return _can_deploy_on(current_army_index, coord)
@@ -945,7 +945,7 @@ func _put_unit_on_grid(unit : Unit, coord : Vector2i) -> void:
 	assert(not hex.unit, "deploying unit to an occupied tile")
 	hex.unit = unit
 
-#endregion Deploy Phase
+#endregion Deployment Phase
 
 
 #region Timer
@@ -1752,7 +1752,7 @@ class ArmyInBattleState:
 
 			result.mana_points += unit.mana # MANA
 
-		result.apply_passive_effects()
+		result.apply_passive_effects(state)
 
 		#Temp solution for world map, where proper clock system isn't implemented yet
 		if army.timer_reserve_sec == 0:
@@ -1764,13 +1764,15 @@ class ArmyInBattleState:
 
 		return result
 
-	func apply_passive_effects() -> void:
+	func apply_passive_effects(state : BattleGridState) -> void:
 		if not hero:
 			return
-
-		for effect in hero.passive_skills:
-			match effect.name:
+		for effect in hero.passive_effects:
+			match effect.passive_name:
 				"ballista_summon":
+					# HACK -> there are no armies in that array, if this army is the first one being created
+					if state.armies_in_battle_state.size() != 0:
+						continue  # only attacker can use ballista
 					var ballista : DataUnit = load(CFG.BALLISTA_PATH)
 					ballista.summoned = true
 					units_to_deploy.append(ballista)
