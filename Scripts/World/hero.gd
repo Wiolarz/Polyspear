@@ -26,8 +26,6 @@ var travel_path : Array[Vector2i]
 
 var wounded : bool = false
 
-var passive_skills : Array[BattleMagicEffect]
-
 var xp = 0
 var level = 1
 
