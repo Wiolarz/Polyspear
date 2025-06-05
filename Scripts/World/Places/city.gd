@@ -7,12 +7,12 @@ var buildings : Array[DataBuilding] = []
 # Place where defender units are stored in case hero visited the city
 var garrison_reserve : Army
 
+
 static func translate_city_args(args : PackedStringArray) -> Dictionary:
 	assert(args[0].is_valid_int(), "unrecognised parameter: %s" % args[0])
 	var result : Dictionary = {"player_index" = args[0].to_int()}
 	# TODO add race restriction
 	return result
-
 
 
 # overwrite
@@ -31,6 +31,7 @@ static func create_place(coord_ : Vector2i, args : PackedStringArray) -> Place:
 	result.movable = true
 
 	return result
+
 
 ## overwrite
 func get_army_at_start() -> PresetArmy:

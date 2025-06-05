@@ -720,7 +720,9 @@ func _on_battle_ended() -> void:
 		_replay_data.save()
 	
 	if WM.world_game_is_active():
-		_close_battle_and_return()  # it may change the state if the world is still active
+		_close_battle_and_return()  # it may deactivate the world,
+		# but summary world summary will be launched automatically
+
 		# show battle summary over world map
 		UI.ui_overlay.show_battle_summary(_current_summary, null)
 

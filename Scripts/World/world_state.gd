@@ -717,9 +717,7 @@ func perform_game_over_checks() -> bool:
 		if faction.has_faction_lost():
 			player_states.erase(faction)
 			defeated_factions.append(faction)
-			print("\n\n\n\n\n\n")
-			print(faction.controller.get_full_player_description(), "has been defeated")
-			print("\n\n\n\n\n\n")
+			#print(faction.controller.get_full_player_description(), "has been defeated")
 			if player_states.size() == 1:
 				WM.player_has_won_a_game()
 				return true
