@@ -1,16 +1,16 @@
 extends ResourceEditor
 
 
-## override
+## override -> applies DataTile type to edited Resource
 func _init_resource_type() -> void:
 	dirty_changes = DataTile.new()
 	set_game_mode()
 
 
-
-##override
+## override
 func apply_texture_to_preview() -> void:
 	resource_preview_form.paint(dirty_changes)
+
 
 ## checks CFG.TILE_EDITOR_BATTLE then enters the selected directory
 func set_game_mode() -> void:
@@ -28,5 +28,3 @@ func _on_switch_mode_pressed():
 	CFG.player_options.tile_editor_default_battle = not CFG.player_options.tile_editor_default_battle
 	CFG.save_player_options()
 	set_game_mode()
-
-

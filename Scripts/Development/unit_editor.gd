@@ -18,12 +18,13 @@ var all_data_symbols : Array[DataSymbol] = []
 ]
 
 
-## override
+## override -> applies DataUnit type to edited Resource
 func _init_resource_type() -> void:
 	dirty_changes = DataUnit.new()
 	resource_directory_path = CFG.UNITS_PATH
 	_load_all_data_symbols()
 	_fill_symbol_pickers()
+
 
 ## override
 func apply_texture_to_preview() -> void:
