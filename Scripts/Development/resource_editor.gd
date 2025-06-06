@@ -1,8 +1,8 @@
 class_name ResourceEditor
 extends CanvasLayer
 
-## Resource tree needs to double cklicked or selected using the small button on the right
-## this prevents highlighting of currently edited item
+## Resource tree needs to double clicked or selected using the small button on the right
+## as current default godot implementation requires selected item to be highlighted first
 
 
 var resource_directory_path : String
@@ -116,6 +116,7 @@ func _init_resource_type() -> void:
 
 func apply_texture_to_preview() -> void:
 	pass
+
 
 func save_resource() -> void:
 	edited_resource.texture_path = dirty_changes.texture_path

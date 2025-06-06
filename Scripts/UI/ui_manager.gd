@@ -70,7 +70,8 @@ func go_to_main_menu():
 func go_to_unit_editor():
 	_hide_all()
 	unit_editor.show()
-	
+
+
 func go_to_tile_editor():
 	_hide_all()
 	tile_editor.show()
@@ -120,7 +121,6 @@ func requests_pause():
 
 
 #region Input Support
-
 
 func _process(delta):
 	# we do not want to process camera when game is paused
@@ -201,8 +201,6 @@ func grid_planning_input_listener(tile_coord : Vector2i, \
 		return
 
 	BM.planning_input(tile_coord, is_it_pressed)
-
-
 
 
 func ensure_camera_is_spawned() -> void:
