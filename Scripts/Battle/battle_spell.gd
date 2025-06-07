@@ -4,7 +4,11 @@ extends Resource
 @export var name : String = ""
 @export var icon_path : String = ""
 
+## optional, used when spell applies an effect to a unit
 @export var spell_effects : Array[BattleMagicEffect]
+
+## optional, used only by summon spells
+@export var summon_unit_data : DataUnit
 
 ## used to debug
 func _to_string() -> String:
@@ -30,5 +34,5 @@ func cast_effect(target : Unit, event_type : String) -> void:
 			if event_type == "casting":
 				target.try_adding_magic_effect(spell_effects[0].duplicate())
 
-				
-				
+
+

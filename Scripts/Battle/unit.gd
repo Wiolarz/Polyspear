@@ -19,7 +19,6 @@ signal unit_captured_mana(target_tile : Vector2i)  # change visuals of the tile 
 
 ## TODO remove this
 var controller : Player
-
 ## reference to army to which the unit belongs
 var army_in_battle : BattleGridState.ArmyInBattleState
 
@@ -31,12 +30,14 @@ var symbols : Array[DataSymbol]
 
 ## coordinates on a battle grid
 var coord : Vector2i
-
 ## see E.GridDirections, int for convinience
 var unit_rotation : int
 
 ## unit died
 var dead : bool
+## is unit created using magic
+var summoned : bool = false
+
 
 ## list of spells unit can cast (all of those are one-time use only)
 var spells : Array[BattleSpell] = []
@@ -65,6 +66,7 @@ static func create(new_controller : Player, \
 	result.coord = new_coord
 	result.unit_rotation = new_rotation
 	result.spells = new_template.spells.duplicate() # spells reset every battle
+	result.summoned = new_template.summoned
 	return result
 
 #region Emit Animation Signals
