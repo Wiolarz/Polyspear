@@ -858,8 +858,6 @@ func _kill_unit(target : Unit, killer_army : ArmyInBattleState = null) -> void:
 					if symbol.attack_power != 0:
 						symbol.attack_power = effect.magic_weapon_durability
 
-
-
 	# removal of unit
 	target_army.kill_unit(target)
 	_remove_unit(target) # remove reference from hextile

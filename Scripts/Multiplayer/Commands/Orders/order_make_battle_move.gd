@@ -2,11 +2,11 @@ class_name OrderMakeBattleMove
 
 const COMMAND_NAME = "make_battle_move"
 
-static func register(commands : Dictionary):
+static func register(commands : Dictionary) -> void:
 	commands[COMMAND_NAME] = \
 			Command.create_on_client(OrderMakeBattleMove.process_command)
 
-static func create_packet(move: MoveInfo):
+static func create_packet(move: MoveInfo) -> Dictionary:
 	var dict = move.to_network_serializable()
 	dict["name"] = COMMAND_NAME
 	return dict
