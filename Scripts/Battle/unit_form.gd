@@ -89,6 +89,7 @@ func _flip_unit_sprite():
 	else:
 		$sprite_unit.flip_h = true
 
+
 ## WARNING: called directly in UNIT EDITOR
 func _set_texture(texture : Texture2D) -> void:
 	$sprite_unit.texture = texture
@@ -113,6 +114,7 @@ func _apply_level_number(level : int) -> void:
 	$RigidUI/UnitLevel.text = roman_numbers[level]
 
 #endregion Init
+
 
 #region Animations
 
@@ -214,6 +216,8 @@ func _rotation_symbol_flip():
 
 #region UI
 
+
+## Unit form has to be in the scene tree for this function to properly apply textures
 func set_effects() -> void:
 	# Terrain effects
 	if entity.is_on_swamp:
@@ -228,12 +232,14 @@ func set_effects() -> void:
 	# Magical effects
 	var spell_effects_slots : Array[Sprite2D] = [$RigidUI/SpellEffect1, $RigidUI/SpellEffect2]
 	var spell_counters_slots : Array[Label] = [$RigidUI/SpellEffectCounter1, $RigidUI/SpellEffectCounter2]
-	for slot_idx in range(spell_effects_slots.size()):
-		if entity.effects.size() - 1 < slot_idx:
-			spell_effects_slots[slot_idx].texture = null
-			spell_counters_slots[slot_idx].text = ""
-			continue
 
+	$RigidUI/SpellEffect1.texture = null
+	$RigidUI/SpellEffect2.texture = null
+	$RigidUI/SpellEffectCounter1.text = ""
+	$RigidUI/SpellEffectCounter2.text = ""
+	$RigidUI/TerrainEffect.texture = null
+	assert(entity.effects.size() < 2, "Unit has too many spell effects")
+	for slot_idx in range(entity.effects.size()):
 		var spell_texture = load(entity.effects[slot_idx].icon_path)  #TEMP spell icon path
 		spell_effects_slots[slot_idx].texture = spell_texture
 		if not entity.effects[slot_idx].passive_effect:  # passive effect are pernament

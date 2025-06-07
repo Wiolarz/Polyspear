@@ -425,6 +425,7 @@ func _on_unit_deployment(unit : Unit) -> void:
 	var form := UnitForm.create(unit)
 	_unit_forms_node.add_child(form)
 	_unit_to_unit_form[unit] = form
+	form.set_effects()
 
 	# apply correct BM position offset in world battles
 	form.global_position = get_tile_global_position(unit.coord)
