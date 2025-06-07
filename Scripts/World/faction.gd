@@ -45,7 +45,8 @@ static func create_faction(slot : Slot) -> Faction:
 
 
 func has_faction_lost() -> bool:
-	return defeat_turn_timer == 0 or \
+	assert(defeat_turn_timer >= 0, "negative defeat turn timer value")
+	return defeat_turn_timer <= 0 or \
 		(cities.size() == 0 and hero_armies.size() == 0)
 
 

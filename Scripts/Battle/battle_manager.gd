@@ -689,7 +689,7 @@ func _perform_move_info(move_info : MoveInfo) -> void:
 
 #region Battle End
 
-func close_when_quiting_game() -> void:
+func close_when_quitting_game() -> void:
 	deselect_unit()
 	_battle_ui.hide_replay_controls()
 	_turn_off_battle_ui()
@@ -738,12 +738,12 @@ func _close_battle_and_return() -> void:
 
 	var state_for_world = _battle_grid_state.armies_in_battle_state
 
-	close_when_quiting_game()
+	close_when_quitting_game()
 	WM.end_of_battle(state_for_world)
 
 
 func _close_custom_battle() -> void:
-	close_when_quiting_game()
+	close_when_quitting_game()
 	IM.go_to_main_menu()
 
 
