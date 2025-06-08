@@ -234,22 +234,24 @@ func get_default_or_last_battle_preset() -> Dictionary:
 	}
 
 
-func start_scripted_battle(scripted_battle : ScriptedBattle) -> void:
+func start_scripted_battle(scripted_battle : ScriptedBattle, battle_bot_path : String = "", player_controlled_side : int = 0) -> void:
 	print("started scripted battle: ", scripted_battle.scenario_name)
 
 	_prepare_to_start_game()
-
-
 
 	var armies : Array[Army]  = []
 	_clear_players()
 
 	var player_idx : int = -1
-	var is_human : bool = true
 	for army_preset in scripted_battle.armies:
 		player_idx += 1
-		var new_controller = Player.create_for_tutorial(is_human, player_idx)
-		is_human = false  # only first player is controller by human
+		var new_controller : Player
+		if player_controlled_side == player_idx:
+			new_controller = Player.create_for_tutorial(true, player_idx)
+		else:
+			new_controller = Player.create_for_tutorial(false, player_idx, battle_bot_path)
+
+
 		players.append(new_controller)
 		add_child(new_controller)
 

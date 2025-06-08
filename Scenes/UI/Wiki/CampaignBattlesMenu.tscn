@@ -29,7 +29,7 @@ layout_mode = 2
 [node name="Title" type="Label" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 100
-text = "Tutorials"
+text = "Campaign Elves"
 horizontal_alignment = 1
 
 [node name="Columns" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
@@ -306,6 +306,9 @@ by allowing them to play on the defensive.
 [node name="PlayButton" type="Button" parent="MarginContainer/VBoxContainer/Columns/VBoxContainer"]
 layout_mode = 2
 text = "Play"
+
+[node name="AIDifficulty" type="OptionButton" parent="MarginContainer/VBoxContainer/Columns/VBoxContainer"]
+layout_mode = 2
 
 [connection signal="visibility_changed" from="." to="." method="_on_visibility_changed"]
 [connection signal="pressed" from="MarginContainer/VBoxContainer/Columns/ScrollContainer/Content/ReplayButton" to="." method="_on_toggle_battle_default_pressed"]
