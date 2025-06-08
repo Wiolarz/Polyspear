@@ -5,15 +5,22 @@ extends Place
 var buildings : Array[DataBuilding] = []
 
 
+static func translate_city_args(args : PackedStringArray) -> Dictionary:
+	assert(args[0].is_valid_int(), "unrecognised parameter: %s" % args[0])
+	var result : Dictionary = {"player_index" = args[0].to_int()}
+	# TODO add race restriction
+	return result
+
+
+
 # overwrite
 static func create_place(coord_ : Vector2i, args : PackedStringArray) -> Place:
 	var result = City.new()
 
-	var player_index : int = -1
-	assert(args[0].is_valid_int(), "unrecognised parameter: %s" % args[0])
-	if args[0].to_int() >= 0:
-		player_index = args[0].to_int()
-		var owner_faction : Faction = WS.player_states[player_index]
+	var args_dict : Dictionary = City.translate_city_args(args)
+
+	if args_dict["player_index"] >= 0:
+		var owner_faction : Faction = WS.player_states[args_dict["player_index"]]
 		result.faction = owner_faction
 		owner_faction.cities.append(result)
 
@@ -25,12 +32,25 @@ static func create_place(coord_ : Vector2i, args : PackedStringArray) -> Place:
 
 # overwrite
 func interact(army : Army) -> void:
-	if faction.controller.team != army.controller.team:  # Enemy players enters the undefended city
-		#TODO add capturing of cities, (game end condition will be more complicated)
-		print("End of the game")
-		WM.win_game(army.controller)  # TEMP
 	if controller_index == army.controller_index:  # player enters his own city
 		army.heal_in_city()
+		return
+	if faction.controller.team == army.controller.team:  # ally hero enters the city
+		return
+
+	# faction.controller.team != army.controller.team:  # Enemy players enters the undefended city
+	capture(army.faction)
+
+
+# overwrite
+func capture(new_faction : Faction) -> void:
+	if faction: # if city had been occupied we need to remove previous player ownership first
+		faction.lost_a_city(self)
+
+	faction = new_faction
+	new_faction.captured_a_city(self)
+	controller_changed.emit()  # VISUAL set the flag color to match the new controller
+
 
 
 # overwrite

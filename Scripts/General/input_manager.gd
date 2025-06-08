@@ -70,7 +70,7 @@ func _prepare_to_start_game() -> void:
 	UI.ensure_camera_is_spawned()
 
 	WM.clear_world()
-	BM.close_when_quiting_game()
+	BM.close_when_quitting_game()
 	UI.go_to_main_menu()
 
 
@@ -231,7 +231,7 @@ func go_to_main_menu():
 		UI.set_fullscreen(false)
 
 	in_map_editor = false
-	BM.close_when_quiting_game()
+	BM.close_when_quitting_game()
 	WM.clear_world()
 	UI.go_to_main_menu()
 
