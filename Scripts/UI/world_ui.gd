@@ -75,8 +75,7 @@ func show_you_win(player : Player):
 
 
 func _on_menu_pressed():
-	UI.main_menu.show()
-	#IM.toggle_in_game_menu()
+	UI.main_menu.open_in_game_menu()
 
 
 func _on_end_turn_pressed():

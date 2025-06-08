@@ -61,7 +61,7 @@ func _hide_all():
 
 func go_to_main_menu():
 	_hide_all()
-	main_menu.show()
+	main_menu.open_main_menu()
 
 
 func go_to_unit_editor():

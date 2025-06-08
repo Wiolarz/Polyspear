@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3 uid="uid://b4ndp6v0ts1on"]
+[gd_scene load_steps=9 format=3 uid="uid://b4ndp6v0ts1on"]
 
 [ext_resource type="Script" path="res://Scripts/UI/main_menu.gd" id="1_iln2i"]
 [ext_resource type="PackedScene" uid="uid://b3dmmym31kdbx" path="res://Scenes/UI/Lobby/HostLobby.tscn" id="2_eyp7f"]
@@ -6,6 +6,9 @@
 [ext_resource type="PackedScene" uid="uid://b6eoph2qpu0d" path="res://Scenes/UI/SettingsMenu.tscn" id="4_f2bj7"]
 [ext_resource type="PackedScene" uid="uid://iqku7lopk1xl" path="res://Scenes/UI/CreditsMenu.tscn" id="5_bvo4w"]
 [ext_resource type="PackedScene" uid="uid://cs7ibsdnsrn5v" path="res://Scenes/UI/ReplaysMenu.tscn" id="6_lxdjb"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_nt26j"]
+bg_color = Color(0.0941176, 0.0941176, 0.0941176, 0.870588)
 
 [sub_resource type="StyleBoxLine" id="StyleBoxLine_3lov4"]
 color = Color(0.701961, 0.701961, 0.701961, 1)
@@ -16,6 +19,15 @@ vertical = true
 
 [node name="MainMenu" type="CanvasLayer"]
 script = ExtResource("1_iln2i")
+
+[node name="InGameMenuCover" type="Panel" parent="."]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_nt26j")
 
 [node name="MainContainer" type="VBoxContainer" parent="."]
 anchors_preset = 15
@@ -33,6 +45,7 @@ theme_override_constants/separation = 20
 
 [node name="ReturnToGameButton" type="Button" parent="MainContainer/TopMenu"]
 layout_mode = 2
+disabled = true
 text = "Foray"
 
 [node name="Tabs" type="TabBar" parent="MainContainer/TopMenu"]
