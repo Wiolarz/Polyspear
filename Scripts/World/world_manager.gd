@@ -90,10 +90,6 @@ func set_selected_hero(army : Army) -> void:
 	selected_hero = army_form
 	selected_hero.set_selected(true)
 
-	## preselects for player city in case hero is standing on top of it
-	if WS.get_interactable_type_at(selected_hero.coord) == "city":
-		selected_city = WS.get_place_at(selected_hero.coord)
-
 	world_ui.refresh_heroes()
 	world_ui.city_ui._refresh_units_to_buy()
 	world_ui.city_ui._refresh_army_display()
@@ -240,10 +236,11 @@ func input_try_select(coord) -> void:  #TODO "nothing is selected try to select 
 	var selection = WS.get_interactable_at(coord)
 	var city = WS.get_city_at(coord)
 	var army = WS.get_army_at(coord)
-	if army:
+	if army and army.hero:
 		if WS.current_player_index == selection.controller_index:
 			set_selected_hero(army)
 
+	## also preselects for player city in case hero is standing on top of it
 	if city:
 		if city.controller_index == WS.current_player_index:
 			selected_city = city
