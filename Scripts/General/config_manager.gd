@@ -271,6 +271,9 @@ var AUTO_WIN_CHEAT : bool :
 var AUTO_WIN_AGAINST_NEUTRALS_CHEAT : bool :
 	get: return player_options.auto_win_against_neutrals
 
+var WORLD_GOD_MODE : bool :
+	get: return player_options.world_god_mode
+
 func save_last_used_for_host_setup(\
 		address : String, port : int, username : String) -> void:
 	player_options.login = username

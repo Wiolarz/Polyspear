@@ -13,6 +13,7 @@ func _ready():
 	_declare_toggle("background_color_follows_players", $ToggleBackgroundColorFollowsPlayers)
 	_declare_toggle("auto_win", $ToggleAutoWin)
 	_declare_toggle("auto_win_against_neutrals", $ToggleAutoWinAgainstNeutrals)
+	_declare_toggle("world_god_mode", $ToggleWorldGodMode)
 	_declare_enum_list("gui_animation_mode", $OptionGuiAnimationMode/Option, {
 		CFG.GuiAnimationMode.NONE: "None",
 		CFG.GuiAnimationMode.NON_DISTRACTION: "Only non-distracting",

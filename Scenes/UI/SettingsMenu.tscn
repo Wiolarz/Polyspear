@@ -72,6 +72,11 @@ text = "Auto Win"
 layout_mode = 2
 text = "Auto Win against Neutrals"
 
+[node name="ToggleWorldGodMode" type="CheckBox" parent="Margin/Scroll/VBox"]
+layout_mode = 2
+text = "World God Mode - Automatically calls cheats like: 
+FAST, MONEY, MAX_UPGRADE, LEVELUP, whenever city/hero is selected"
+
 [node name="OptionGuiAnimationMode" type="HBoxContainer" parent="Margin/Scroll/VBox"]
 layout_mode = 2
 

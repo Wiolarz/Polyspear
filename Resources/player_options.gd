@@ -71,6 +71,9 @@ extends Resource
 #STUB
 @export var auto_win_against_neutrals : bool = false
 
+# Automatically calls cheats like: FAST, MONEY, MAX_UPGRADE, LEVELUP, whenever city/hero is selected
+@export var world_god_mode : bool = false
+
 #endregion DEBUG Settings
 
 
