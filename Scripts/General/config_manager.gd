@@ -265,6 +265,11 @@ var LAST_USED_WORLD_MAP : DataWorldMap : # TODO implement this
 var FULLSCREEN_AUTO_TOGGLE : bool :
 	get: return player_options.keep_main_menu_windowed
 
+var AUTO_WIN_CHEAT : bool :
+	get: return player_options.auto_win
+
+var AUTO_WIN_AGAINST_NEUTRALS_CHEAT : bool :
+	get: return player_options.auto_win_against_neutrals
 
 func save_last_used_for_host_setup(\
 		address : String, port : int, username : String) -> void:

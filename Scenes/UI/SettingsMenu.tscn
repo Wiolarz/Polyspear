@@ -64,6 +64,14 @@ text = "Background color changes with player's turns"
 layout_mode = 2
 text = "Check LibSpear integrity"
 
+[node name="ToggleAutoWin" type="CheckBox" parent="Margin/Scroll/VBox"]
+layout_mode = 2
+text = "Auto Win"
+
+[node name="ToggleAutoWinAgainstNeutrals" type="CheckBox" parent="Margin/Scroll/VBox"]
+layout_mode = 2
+text = "Auto Win against Neutrals"
+
 [node name="OptionGuiAnimationMode" type="HBoxContainer" parent="Margin/Scroll/VBox"]
 layout_mode = 2
 

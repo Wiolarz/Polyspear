@@ -164,6 +164,8 @@ func _on_chat_line_edit_text_submitted(new_text):
 
 		# Cheats
 		match cheat:
+			"help":
+				send_chat_message("money, fast, brain, levelup (optional number of levels), maxupgrade, win")
 			"money":
 				WM.cheat_money.callv(args)
 				print("money cheat")
