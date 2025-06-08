@@ -1,5 +1,6 @@
 extends ContentBrowser
 
+@export var battle_bot_path : String
 
 
 var _battle : ScriptedBattle :
@@ -16,4 +17,4 @@ func get_description() -> String:
 
 
 func activate_content() -> void:
-	IM.start_scripted_battle(_battle)
+	IM.start_scripted_battle(_battle, battle_bot_path)

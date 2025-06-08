@@ -67,7 +67,7 @@ static func create(new_slot : Slot) -> Player:
 	return result
 
 
-static func create_for_tutorial(is_human : bool, player_index : int) -> Player:
+static func create_for_tutorial(is_human : bool, player_index : int, battle_bot_path : String = "") -> Player:
 	var result := Player.new()
 
 	if is_human:
@@ -76,7 +76,13 @@ static func create_for_tutorial(is_human : bool, player_index : int) -> Player:
 	else:
 		result.name = "AI"
 		result.occupier = 1
-		result.bot_engine = load("res://Resources/Battle/Bots/Random.tscn").instantiate()
+		if battle_bot_path.length() == 0:
+			result.bot_engine = load("res://Resources/Battle/Bots/Random.tscn").instantiate()
+		else:
+			result.bot_engine = load(battle_bot_path).instantiate()
+
+		assert(result.bot_engine, "Bot '%s' does not exist" % battle_bot_path)
+
 		result.add_child(result.bot_engine)
 		result.bot_engine.set_player(result)
 

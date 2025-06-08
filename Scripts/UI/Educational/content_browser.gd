@@ -31,6 +31,9 @@ func get_description() -> String:
 func activate_content() -> void:
 	pass
 
+func additonal_selected_content_function() -> void:
+	pass
+
 #endregion Overridable
 
 
@@ -44,8 +47,7 @@ func refresh_content_list():
 
 	Helpers.remove_all_children(_content_buttons_container)
 	var content_paths = FileSystemHelpers.list_files_in_folder(content_folder_path)
-	_on_content_clicked(content_paths[0]) # auto selects first tutorial
-	#TODO addsome kind of checkmarks for completed tutorials, and auto-select first uncompleted from the top
+
 	for content_path in content_paths:
 		var button = Button.new()
 		button.text = content_path
@@ -56,12 +58,15 @@ func refresh_content_list():
 		button.pressed.connect(_on_content_clicked.bind(content_path))
 		_content_buttons_container.add_child(button)
 
+	#TODO addsome kind of checkmarks for completed tutorials, and auto-select first uncompleted from the top
+	_on_content_clicked(content_paths[0]) # auto selects first tutorial
 
 func _on_content_clicked(content_path : String):
 	_selected_item = load(content_folder_path + content_path)
 	var displayed_text : String = get_description()
 
 	_description.set_text(displayed_text)
+	additonal_selected_content_function()
 
 
 func _on_play_button_pressed():
