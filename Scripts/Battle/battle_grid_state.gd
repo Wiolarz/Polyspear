@@ -1164,10 +1164,31 @@ func _check_battle_end() -> void:
 
 
 func force_win_battle():
+	var controller_player_armies : Array[int] = []
+	var teams_not_controlled_by_cheating_player : Array[int] = []
+
+	# Collect infomration about armies to target
+	for army_idx : int in range(armies_in_battle_state.size()):
+		var army : ArmyInBattleState = armies_in_battle_state[army_idx]
+		if IM.players[army.army_reference.controller_index].is_local():  # TODO apply controllers to army in custom battles
+			controller_player_armies.append(army_idx)
+		else:
+			teams_not_controlled_by_cheating_player.append(army.team)
+
+	# unique case where player cheating controlls some part fo every side of the conflict
+	if teams_not_controlled_by_cheating_player.size() == 0:
+		# kill every army expect the current one
+		for army_idx in range(armies_in_battle_state.size()):
+			if army_idx == current_army_index:
+				continue
+			_kill_army(army_idx)
+			return
+
+	# kill all armies that player is not a team member of
 	for army_idx in range(armies_in_battle_state.size()):
-		if army_idx == current_army_index:
-			continue
-		_kill_army(army_idx)
+		var army : ArmyInBattleState = armies_in_battle_state[army_idx]
+		if army.team in teams_not_controlled_by_cheating_player:
+			_kill_army(army_idx)
 
 
 func surrender_on_timeout():
@@ -1175,10 +1196,21 @@ func surrender_on_timeout():
 
 
 func force_surrender():
-	for army_idx in range(armies_in_battle_state.size()):
-		if army_idx != current_army_index:
-			continue
+	var controller_player_army_to_surrender : Array[int] = []
+	var teams_not_controlled_by_surrendering_player : Array[int] = []
+	for army_idx : int in range(armies_in_battle_state.size()):
+		var army : ArmyInBattleState = armies_in_battle_state[army_idx]
+		if IM.players[army.army_reference.controller_index].is_local():  # TODO apply controllers to army in custom battles
+			controller_player_army_to_surrender.append(army_idx)
+		else:
+			teams_not_controlled_by_surrendering_player.append(army.team)
+	if teams_not_controlled_by_surrendering_player.size() == 0:
+		_kill_army(current_army_index)
+		return
+
+	for army_idx in controller_player_army_to_surrender:
 		_kill_army(army_idx)
+
 
 #endregion End Battle
 

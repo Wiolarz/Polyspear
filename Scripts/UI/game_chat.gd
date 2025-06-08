@@ -149,6 +149,9 @@ func _on_message_arrived(content : String):
 
 func _on_chat_line_edit_text_submitted(new_text):
 	# Check if message is a cheat
+	if new_text.length() <= 4 and ("gg" in new_text or "GG" in new_text):
+		BM.force_surrender() # TODO add check in which game mode player is in
+
 	if new_text.length() >= 1 and new_text[0] == '/':
 		# Split message by arguments
 		var args = new_text.split(" ", false)
@@ -176,6 +179,9 @@ func _on_chat_line_edit_text_submitted(new_text):
 			"maxupgrade":
 				WM.city_upgrade_cheat()
 				print("city max upgrade cheat")
+			"win":
+				BM.force_win_battle()
+				print("force win cheat")
 			_:
 				print("unknown cheat")
 

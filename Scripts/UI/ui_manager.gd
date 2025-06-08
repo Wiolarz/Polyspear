@@ -1,7 +1,6 @@
 # Singleton - UI
 extends Node
 
-var in_game_menu
 var main_menu
 var ui_overlay
 var map_editor
@@ -21,7 +20,6 @@ func _ready():
 
 	IM.init_game_setup() # drut
 
-	in_game_menu = load("res://Scenes/UI/GameMenu.tscn").instantiate()
 	main_menu    = load("res://Scenes/UI/MainMenu.tscn").instantiate()
 	ui_overlay   = load("res://Scenes/UI/UIOverlay.tscn").instantiate()
 	map_editor   = load("res://Scenes/UI/Editors/MapEditor.tscn").instantiate()
@@ -33,7 +31,6 @@ func _ready():
 	add_child(unit_editor)
 	add_child(ui_overlay)
 	add_child(hero_level_up)
-	add_child(in_game_menu, false, Node.INTERNAL_MODE_BACK)
 
 	_hide_all()
 
@@ -44,8 +41,6 @@ func add_custom_screen(custom_ui : CanvasLayer):
 	# we need them always at the top
 	if ui_overlay:
 		move_child(ui_overlay, -1)
-	if in_game_menu:
-		move_child(in_game_menu, -1)
 
 
 func go_to_custom_ui(custom_ui : CanvasLayer):
@@ -91,29 +86,7 @@ func hide_hero_level_up():
 	hero_level_up._on_button_hide_pressed()
 
 
-func show_in_game_menu():
-	in_game_menu.show()
-
-
-func hide_in_game_menu():
-	in_game_menu.hide()
-
-
-## Toggles visibility of in-game menu \
-## Disabled in main menu
-func toggle_in_game_menu():
-	if main_menu.visible or in_game_menu.visible:
-		hide_in_game_menu()
-	else:
-		show_in_game_menu()
-
-
-func requests_pause():
-	return in_game_menu.visible
-
-
 #region Input Support
-
 
 func _process(delta):
 	# we do not want to process camera when game is paused
@@ -127,7 +100,7 @@ func _unhandled_input(event : InputEvent) -> void:
 	if event.is_action_pressed("KEY_MAXIMIZE_WINDOW"):
 		toggle_fullscreen()
 	if event.is_action_pressed("KEY_MENU"):
-		toggle_in_game_menu()
+		main_menu.open_in_game_menu()
 	if event.is_action_pressed("KEY_DEBUG_COLLISION_SHAPES"):
 		toggle_collision_debug()
 	if event.is_action_pressed("KEY_BOT_SPEED_SLOW"):
