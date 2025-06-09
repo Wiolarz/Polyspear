@@ -6,6 +6,7 @@ var main_menu
 var ui_overlay
 var map_editor
 var unit_editor
+var tile_editor
 var host_lobby
 var client_lobby
 var hero_level_up
@@ -26,11 +27,13 @@ func _ready():
 	ui_overlay   = load("res://Scenes/UI/UIOverlay.tscn").instantiate()
 	map_editor   = load("res://Scenes/UI/Editors/MapEditor.tscn").instantiate()
 	unit_editor  = load("res://Scenes/UI/Editors/UnitEditor.tscn").instantiate()
+	tile_editor  = load("res://Scenes/UI/Editors/TileEditor.tscn").instantiate()
 	hero_level_up = load("res://Scenes/UI/LevelUp/LevelUpScreen.tscn").instantiate()
 
 	add_child(main_menu)
 	add_child(map_editor)
 	add_child(unit_editor)
+	add_child(tile_editor)
 	add_child(ui_overlay)
 	add_child(hero_level_up)
 	add_child(in_game_menu, false, Node.INTERNAL_MODE_BACK)
@@ -67,6 +70,11 @@ func go_to_main_menu():
 func go_to_unit_editor():
 	_hide_all()
 	unit_editor.show()
+
+
+func go_to_tile_editor():
+	_hide_all()
+	tile_editor.show()
 
 
 ## TEMP
@@ -113,7 +121,6 @@ func requests_pause():
 
 
 #region Input Support
-
 
 func _process(delta):
 	# we do not want to process camera when game is paused
@@ -194,8 +201,6 @@ func grid_planning_input_listener(tile_coord : Vector2i, \
 		return
 
 	BM.planning_input(tile_coord, is_it_pressed)
-
-
 
 
 func ensure_camera_is_spawned() -> void:
