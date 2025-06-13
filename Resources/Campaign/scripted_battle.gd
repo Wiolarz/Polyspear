@@ -22,8 +22,8 @@ extends Resource
 # TODO add function that takes in player world army to use it during scripted battle
 
 ## returns true if a input should be locked until text bubbles are resolved
-func show_text_bubbles(battle_state : BattleGridState) -> void:
+func show_text_bubbles(current_event : BattleEventDescription) -> void:
 	for text_bubble in text_bubbles:
-		if text_bubble.is_prerequisite_fullfilled(battle_state):
+		if text_bubble.is_prerequisite_fullfilled(current_event):
 			print(text_bubble.text)
 			BM._battle_ui.show_text_bubble(text_bubble)

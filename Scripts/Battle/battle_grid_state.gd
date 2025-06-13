@@ -1703,6 +1703,6 @@ class ArmyInBattleState:
 		units_to_summon.append(target.template)
 		#gdlint: ignore=private-method-call
 		battle_grid_state.get_ref()._remove_unit(target)
-		target.unit_killed()
+		target.unit_killed()  #TODO change this signal to a undo specific as to not mess with future animations and text bubbles
 
 #endregion Subclasses

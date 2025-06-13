@@ -58,6 +58,15 @@ var _shown_sacrifice_announcement : bool = false
 
 #region INIT
 
+## Cleans UI
+func _ready():
+	for child in get_children():
+		child.show()
+	$TextBubble.hide()
+	summary_container.hide()
+	replay_controls.hide()
+
+
 func load_armies(army_list : Array[BattleGridState.ArmyInBattleState]):
 	# Disable "Switch camera" button for non world map gameplay
 	var disable_switch_camera : bool = IM.game_setup_info.game_mode != GameSetupInfo.GameMode.WORLD
