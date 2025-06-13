@@ -448,6 +448,7 @@ func do_recruit_unit(data_unit : DataUnit, city_coord : Vector2i,
 	var purchased : bool = army.faction.try_to_pay(data_unit.cost)
 	assert(purchased)
 	army.units_data.append(data_unit)
+	WM.world_ui.refresh_army_panel()
 	return true
 
 

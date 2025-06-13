@@ -13,6 +13,9 @@ var selected_hero : ArmyForm
 
 var selected_city : City:
 	set(city):
+		if city and not selected_hero:
+			world_ui.load_army_to_panel(city.garrison_reserve)
+
 		selected_city = city
 		world_ui.city_ui.city = city
 
@@ -504,7 +507,8 @@ func start_new_world(world_map : DataWorldMap) -> void:
 	UI.go_to_custom_ui(world_ui)
 	world_ui.game_started()
 
-	world_ui.set_viewed_city(get_current_player_capital())
+	selected_city = get_current_player_capital()
+	world_ui.set_viewed_city(selected_city)
 	world_ui.refresh_heroes()
 
 

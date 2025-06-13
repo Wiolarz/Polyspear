@@ -7,7 +7,11 @@ const UNIT_ICON_SIZE : float = 100.0
 @onready var units_box_second_row : BoxContainer = $Units/SecondRow
 
 
+var loaded_army : Army
+
+
 func load_army(army : Army):
+	loaded_army = army
 
 	# city garrison allows player to enter it, even though there is no hero in second army
 	if not army.hero:
@@ -31,7 +35,7 @@ func load_army(army : Army):
 	for old_icon in units_box_second_row.get_children():
 		old_icon.queue_free()
 	var bg_color : DataPlayerColor
-	
+
 	if army.controller:
 		bg_color = army.controller.get_player_color()
 	else:

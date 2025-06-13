@@ -82,6 +82,10 @@ func refresh_player_buttons():
 		button.modulate = player.get_player_color().color
 
 
+func refresh_army_panel() -> void:
+	army_panel.load_army(army_panel.loaded_army)
+
+
 func load_army_to_panel(army : Army) -> void:
 	_loaded_army_panel = true
 	army_panel.show()
