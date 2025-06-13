@@ -127,6 +127,7 @@ func end_turn():
 
 
 func callback_turn_changed():
+	world_ui.on_end_turn()
 	_deselect_hero()
 	var current_faction : Faction = WS.get_current_player()
 	if current_faction.has_faction_lost():

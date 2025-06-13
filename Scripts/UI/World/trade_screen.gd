@@ -71,7 +71,6 @@ func _army_swap() -> void:
 
 
 func end_trade() -> void:
-	hide()
 	WM.world_ui.close_context_menu()
 
 

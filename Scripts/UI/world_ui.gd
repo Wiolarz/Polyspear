@@ -114,9 +114,13 @@ func set_viewed_city(city : City) -> void:
 
 
 func close_context_menu() -> void:
+	_hideable_context_menu.hide()
 	_hideable_context_menu = null
 	_try_to_show_army_panel()
 
+
+func on_end_turn():
+	close_context_menu()
 
 func _on_menu_pressed():
 	IM.toggle_in_game_menu()
