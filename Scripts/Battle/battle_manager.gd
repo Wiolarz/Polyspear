@@ -225,7 +225,8 @@ func _on_turn_started(player : Player) -> void:
 		return
 
 	if _scripted_battle:
-		_scripted_battle.show_text_bubbles(_battle_grid_state)
+		var current_event := BattleEventDescription.generate_current_battle_event(_battle_grid_state)
+		_scripted_battle.show_text_bubbles(current_event)
 
 	_battle_ui.start_player_turn(_battle_grid_state.current_army_index)
 	if _replay_is_playing:
@@ -436,6 +437,7 @@ func _on_unit_summoned(unit : Unit) -> void:
 	unit.unit_magic_effect.connect(_on_unit_magic_effect.bind(unit))  # spell icons UI
 
 	unit.unit_died.connect(form.anim_die)
+	unit.unit_died.connect(_on_unit_death)  # TEXT BUBBLES
 	unit.unit_turned.connect(form.anim_turn)
 	unit.unit_moved.connect(form.anim_move)
 	unit.unit_magic_effect.connect(form.anim_magic)  # STUB
@@ -568,7 +570,6 @@ func _grid_input_fighting(coord : Vector2i) -> MoveInfo:
 	return move_info
 
 
-
 ## Select friendly Unit on a given coord [br]
 ## returns true if unit was selected
 func _try_select_unit(coord : Vector2i) -> bool:
@@ -591,7 +592,8 @@ func _try_select_unit(coord : Vector2i) -> bool:
 	_update_move_highlights(_selected_unit)
 
 	if _scripted_battle:
-		_scripted_battle.show_text_bubbles(_battle_grid_state)
+		var current_event := BattleEventDescription.generate_current_battle_event(_battle_grid_state)
+		_scripted_battle.show_text_bubbles(current_event)
 
 	# attempt to display spells available to selected unit
 	_show_spells(_selected_unit)
@@ -973,3 +975,16 @@ func planning_input(tile_coord : Vector2i, is_it_pressed : bool) -> void:
 
 func _on_unit_magic_effect(unit : Unit) -> void:
 	_unit_to_unit_form[unit].set_effects()
+
+
+#region Scripted Battles
+
+func _on_unit_death() -> void:
+	if not _scripted_battle:
+		return
+
+	var current_event := BattleEventDescription.generate_current_battle_event(_battle_grid_state)
+	_scripted_battle.show_text_bubbles(current_event)
+
+
+#endregion Scripted Battles

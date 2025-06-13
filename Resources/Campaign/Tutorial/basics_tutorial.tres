@@ -1,13 +1,15 @@
-[gd_resource type="Resource" script_class="ScriptedBattle" load_steps=16 format=3 uid="uid://bbe3vxkni2qp0"]
+[gd_resource type="Resource" script_class="ScriptedBattle" load_steps=24 format=3 uid="uid://bbe3vxkni2qp0"]
 
 [ext_resource type="Script" path="res://Resources/Campaign/scripted_battle.gd" id="1_oii0p"]
 [ext_resource type="Script" path="res://Resources/Presets/preset_army.gd" id="1_wtwkx"]
 [ext_resource type="Resource" uid="uid://0vft0atich8r" path="res://Resources/Battle/Units/Elves/elf_1_spearmen.tres" id="2_ar0um"]
 [ext_resource type="Resource" uid="uid://bjcrbdv3aq2jk" path="res://Resources/Battle/Units/Orcs/orc_1_brute.tres" id="3_esvk1"]
-[ext_resource type="Resource" uid="uid://bb2aqoi7x3sax" path="res://Resources/Battle/Battle_Maps/basic5x5.tres" id="4_1gglu"]
+[ext_resource type="Resource" uid="uid://cqu4eowsuirjm" path="res://Resources/Battle/Battle_Maps/basic5x5.tres" id="4_1gglu"]
+[ext_resource type="Resource" uid="uid://syrr32f2nn6u" path="res://Resources/Battle/Units/Classic/orc2.tres" id="4_2s8ow"]
 [ext_resource type="Texture2D" uid="uid://y26ip52rm5p0" path="res://Art/units/new_classic/elf_spearmen.png" id="6_8rn11"]
 [ext_resource type="Texture2D" uid="uid://ft461wwhtywb" path="res://Art/battle_map/blue_player_spawn.png" id="6_r61h8"]
-[ext_resource type="Script" path="res://Resources/Campaign/text_bubble.gd" id="6_yx11g"]
+[ext_resource type="Script" path="res://Resources/Campaign/battle_event_description.gd" id="6_vbqiu"]
+[ext_resource type="Script" path="res://Resources/Campaign/text_bubble.gd" id="7_gajqr"]
 [ext_resource type="Texture2D" uid="uid://df7u0x5884v74" path="res://Art/battle_map/grass_tile.png" id="8_het6q"]
 
 [sub_resource type="Resource" id="Resource_soodh"]
@@ -17,42 +19,88 @@ team = 0
 
 [sub_resource type="Resource" id="Resource_w28cx"]
 script = ExtResource("1_wtwkx")
-units = Array[Resource("res://Resources/Battle/data_unit.gd")]([ExtResource("3_esvk1")])
+units = Array[Resource("res://Resources/Battle/data_unit.gd")]([ExtResource("3_esvk1"), ExtResource("4_2s8ow")])
 team = 0
 
-[sub_resource type="Resource" id="Resource_uw6bu"]
-resource_name = "Placement Phase"
-script = ExtResource("6_yx11g")
-prerequisite = "phase summon selected null"
-title = "Placement Phase"
-text = "At the start of every battle every army has to sequentially place their every unit of their starting tiles. Once all units are placed the battle starts. To place your unit select it from the bottom bar."
+[sub_resource type="Resource" id="Resource_qmhvi"]
+resource_name = "start of the battle"
+script = ExtResource("6_vbqiu")
+state_battle_is_in = "summonning"
+current_turn = -1
+dead_units = Array[String]([])
+selected_unit = "null"
+
+[sub_resource type="Resource" id="Resource_kmuiw"]
+resource_name = "Deploy Phase"
+script = ExtResource("7_gajqr")
+prerequisite = SubResource("Resource_qmhvi")
+title = "Deploy Phase"
+text = "At the start of every battle every army has to sequentially place their every unit of their starting tiles. Once all units are placed the battle starts. To place your unit select it from the bottom bar"
 icon = ExtResource("6_8rn11")
 
-[sub_resource type="Resource" id="Resource_evoed"]
+[sub_resource type="Resource" id="Resource_jaw4x"]
+resource_name = "Selected spearmen unit"
+script = ExtResource("6_vbqiu")
+state_battle_is_in = "summonning"
+current_turn = -1
+dead_units = Array[String]([])
+selected_unit = "Spearmen"
+
+[sub_resource type="Resource" id="Resource_oyada"]
 resource_name = "Placing Units"
-script = ExtResource("6_yx11g")
-prerequisite = "phase summon selected Spearmen"
+script = ExtResource("7_gajqr")
+prerequisite = SubResource("Resource_jaw4x")
 title = "Placing Units"
 text = "Now Click on one of your starting tiles to place your selected unit."
 icon = ExtResource("6_r61h8")
 
-[sub_resource type="Resource" id="Resource_olfqt"]
+[sub_resource type="Resource" id="Resource_7hh6n"]
+resource_name = "start of fighting phase"
+script = ExtResource("6_vbqiu")
+state_battle_is_in = "fighting"
+current_turn = 0
+dead_units = Array[String]([])
+selected_unit = "null"
+
+[sub_resource type="Resource" id="Resource_anbnn"]
 resource_name = "Selecting Unit"
-script = ExtResource("6_yx11g")
-prerequisite = "phase fighting time 0 selected null"
+script = ExtResource("7_gajqr")
+prerequisite = SubResource("Resource_7hh6n")
 title = "Selecting Unit"
 text = "End of the placement phase is announced with special messege as well the transformation of summoning tiles into a basic grass tiles.
-
 In order to move your units you have to select them."
+icon = ExtResource("6_8rn11")
+
+[sub_resource type="Resource" id="Resource_sblun"]
+resource_name = "Selected spearmen during battle"
+script = ExtResource("6_vbqiu")
+state_battle_is_in = "fighting"
+current_turn = 0
+dead_units = Array[String]([])
+selected_unit = "Spearmen"
+
+[sub_resource type="Resource" id="Resource_yf0sj"]
+resource_name = "Moving around"
+script = ExtResource("7_gajqr")
+prerequisite = SubResource("Resource_sblun")
+title = "Moving around"
+text = "Choose an adjacent tile which are highlighet with white arrows point from the selected unit.
+"
 icon = ExtResource("8_het6q")
 
-[sub_resource type="Resource" id="Resource_alhyy"]
-resource_name = "Moving around"
-script = ExtResource("6_yx11g")
-prerequisite = "phase fighting time 0 selected Spearmen"
-title = "Moving around"
-text = "choose an adjacent tile which are highlighet with white arrows point from the selected unit."
-icon = ExtResource("6_8rn11")
+[sub_resource type="Resource" id="Resource_8pgpk"]
+script = ExtResource("6_vbqiu")
+state_battle_is_in = "fighting"
+current_turn = -1
+dead_units = Array[String](["Brute"])
+selected_unit = ""
+
+[sub_resource type="Resource" id="Resource_6rxrp"]
+resource_name = "typ zginol lul"
+script = ExtResource("7_gajqr")
+prerequisite = SubResource("Resource_8pgpk")
+title = "typ zginol lul"
+text = "xd"
 
 [resource]
 script = ExtResource("1_oii0p")
@@ -61,4 +109,4 @@ description = "Explanation of basic controls and fundamental mechanics."
 player_side = 0
 armies = Array[ExtResource("1_wtwkx")]([SubResource("Resource_soodh"), SubResource("Resource_w28cx")])
 battle_map = ExtResource("4_1gglu")
-text_bubbles = Array[ExtResource("6_yx11g")]([SubResource("Resource_uw6bu"), SubResource("Resource_evoed"), SubResource("Resource_olfqt"), SubResource("Resource_alhyy")])
+text_bubbles = Array[ExtResource("7_gajqr")]([SubResource("Resource_kmuiw"), SubResource("Resource_oyada"), SubResource("Resource_anbnn"), SubResource("Resource_yf0sj"), SubResource("Resource_6rxrp")])
