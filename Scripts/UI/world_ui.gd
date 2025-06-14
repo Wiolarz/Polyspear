@@ -120,7 +120,8 @@ func close_context_menu() -> void:
 
 
 func on_end_turn():
-	close_context_menu()
+	if _hideable_context_menu:
+		close_context_menu()
 
 func _on_menu_pressed():
 	IM.toggle_in_game_menu()

@@ -136,6 +136,8 @@ func load_army(army : Army):
 
 
 func transfered_unit():
+	loaded_army.leader_unit_changed.emit()
+
 	selected_unit_pointer = null
 	_selected_unit_button_pointer = null
 	load_army(loaded_army)

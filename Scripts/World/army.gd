@@ -1,6 +1,8 @@
 class_name Army
 extends RefCounted # RefCounted is default
 
+signal leader_unit_changed()
+
 var units_data : Array[DataUnit] = []
 
 var hero : Hero

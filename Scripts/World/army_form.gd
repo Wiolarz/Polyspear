@@ -41,17 +41,18 @@ static func create_form_of_army(hex : WorldHex, position_ : Vector2) \
 	var result : ArmyForm = CFG.DEFAULT_ARMY_FORM.instantiate()
 	var army : Army = hex.army
 	result.entity = army
-	var image = null
+	result.entity.leader_unit_changed.connect(result.change_visual_unit_leader)
+
 	if army.hero:
 		result.name = army.hero.hero_name
-		image = load(army.hero.data_unit.texture_path)
+		var image : Texture2D = load(army.hero.data_unit.texture_path)
+		result.get_node("sprite_unit").texture = image
 	else:
 		result.name = "Neutral army TODO some name"
-		if army.units_data.size() > 0:  # City Garrison doesn't need units
-			image = load(army.units_data[0].texture_path)
+		result.change_visual_unit_leader()  # City Garrison doesn't need units
 		result.get_node("MoveLabel").text = ""
 		result.get_node("DescriptionLabel").text = ""
-	result.get_node("sprite_unit").texture = image
+
 	result.position = position_
 	return result
 
@@ -75,3 +76,16 @@ func set_selected(is_selected : bool) -> void:
 
 func apply_losses(losses : Array[DataUnit]):
 	entity.apply_losses(losses)
+
+
+func change_visual_unit_leader() -> void:
+	if entity.hero:
+		return
+	var new_sprite : Texture2D = null
+	var highest_unit_level : int = 0
+	for unit in entity.units_data:
+		if highest_unit_level < unit.level:
+			highest_unit_level = unit.level
+			new_sprite = load(unit.texture_path)
+
+	get_node("sprite_unit").texture = new_sprite
