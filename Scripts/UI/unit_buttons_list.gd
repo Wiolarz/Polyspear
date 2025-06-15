@@ -55,8 +55,6 @@ func load_unit_buttons(army : Army, units_to_display : Array[DataUnit], containe
 			button.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 			unit_display.position = button.texture.get_size()/2
 
-
-
 		var center_container = CenterContainer.new()
 
 		button.add_child(center_container)

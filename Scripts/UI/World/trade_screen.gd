@@ -16,16 +16,12 @@ func _ready():
 	second_army_panel.army_swap.connect(_army_swap)
 
 
-
 func start_trade(first_army_ : Army, second_army_ : Army) -> void:
 	show()
 	first_army = first_army_
 	second_army = second_army_
 	first_army_panel.load_army(first_army)
 	second_army_panel.load_army(second_army)
-
-
-
 
 
 func _attempt_a_unit_transfer() -> void:
@@ -35,12 +31,12 @@ func _attempt_a_unit_transfer() -> void:
 		return
 
 	# attempt to move unit from first army to the second:
-	if first_army_panel.selected_unit_pointer and second_army.units_data.size() <= second_army.max_army_size:
+	if first_army_panel.selected_unit_pointer and second_army.units_data.size() < second_army.max_army_size:
 		_succesful_transfer()
 		return
 
 	# attempt to move unit from second army to the first:
-	if second_army_panel.selected_unit_pointer and first_army.units_data.size() != first_army.max_army_size:
+	if second_army_panel.selected_unit_pointer and first_army.units_data.size() < first_army.max_army_size:
 		_succesful_transfer()
 		return
 
@@ -77,7 +73,7 @@ func _army_swap() -> void:
 
 
 func end_trade() -> void:
-	WM.world_ui.close_context_menu()
+	WM.world_ui.try_to_close_context_menu()
 
 
 func _on_close_button_pressed():

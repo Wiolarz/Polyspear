@@ -591,6 +591,8 @@ func do_army_travel(source : Vector2i, target : Vector2i) -> bool:
 	if problem != "":
 		push_error(problem)
 		return false
+	WM.world_ui.try_to_close_context_menu() # TODO awaits server authorative to properly block players from still trading while being away
+
 	var army : Army = get_army_at(source)
 
 	if is_enemy_at(target, army.controller_index):
@@ -628,11 +630,11 @@ func change_army_position(army : Army, target_coord : Vector2i) -> void:
 	if source_hex.place is City:
 		army.hero.is_in_city = false
 		var number_of_units_to_be_left : int = army.units_data.size() - army.hero.max_army_size
-		
+
 		for unit_over_limit_idx in range(number_of_units_to_be_left):
 			source_hex.place.garrison_reserve.units_data.append(army.units_data[-unit_over_limit_idx - 1])
 			army.units_data.pop_back()
-		
+
 		WM.world_ui.refresh_army_panel()
 		source_hex.place.move_out_of_reserve()
 	target_hex.army = army
