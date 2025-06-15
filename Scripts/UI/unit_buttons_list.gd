@@ -39,6 +39,9 @@ func load_unit_buttons(army : Army, units_to_display : Array[DataUnit], containe
 
 		var unit_display := UnitForm.create_for_summon_ui(unit, bg_color)
 
+		if army.hero and army.hero.is_in_city and added_icon_idx >= (army.hero.max_army_size - CFG.CITY_MAX_ARMY_SIZE):
+			unit_display.set_marked_for_unit_list()
+
 		var button
 		if is_clickable:
 			button = TextureButton.new()
@@ -74,10 +77,6 @@ func load_unit_buttons(army : Army, units_to_display : Array[DataUnit], containe
 		unit_display.scale = Vector2.ONE * calculated_scale
 
 		containers[added_icon_idx % containers.size()].add_child(button)
-
-		## it oparates on node within scene, so it has to be applied after it's added as a child  # TODO look into it
-		if army.hero and army.hero.is_in_city and added_icon_idx >= (army.hero.max_army_size - CFG.CITY_MAX_ARMY_SIZE):
-			unit_display.set_marked_for_unit_list()
 
 
 		if not is_clickable:
