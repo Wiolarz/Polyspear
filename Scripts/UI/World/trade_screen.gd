@@ -3,8 +3,9 @@ extends Control
 @onready var first_army_panel : VBoxContainer = $HBoxContainer/FirstTradeArmyPanel
 @onready var second_army_panel : VBoxContainer = $HBoxContainer/SecondTradeArmyPanel
 
-
+## Selected hero from World Manager
 var first_army : Army
+## Could be a second hero or a city garrison
 var second_army : Army
 
 
@@ -67,6 +68,11 @@ func _army_swap() -> void:
 		if not second_army.hero or second_army.hero.movement_points > 0:
 			WS.swap_armies(first_army, second_army)
 			if not second_army.hero:
+				first_army.hero.is_in_city = true
+				if second_army.units_data.size() > 0:
+					first_army.units_data.append_array(second_army.units_data)
+					second_army.units_data = []
+					WM.world_ui.refresh_army_panel()
 				end_trade()
 
 

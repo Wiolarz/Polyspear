@@ -48,8 +48,11 @@ static func create_form_of_army(hex : WorldHex, position_ : Vector2) \
 		var image : Texture2D = load(army.hero.data_unit.texture_path)
 		result.get_node("sprite_unit").texture = image
 	else:
-		result.name = "Neutral army TODO some name"
-		result.change_visual_unit_leader()  # City Garrison doesn't need units
+		if army.controller:
+			result.name = "City Garrison " + str(army.coord)
+		else:
+			result.name = "Neutral army " + str(army.coord)
+		result.change_visual_unit_leader()
 		result.get_node("MoveLabel").text = ""
 		result.get_node("DescriptionLabel").text = ""
 
@@ -81,7 +84,7 @@ func apply_losses(losses : Array[DataUnit]):
 func change_visual_unit_leader() -> void:
 	if entity.hero:
 		return
-	var new_sprite : Texture2D = null
+	var new_sprite : Texture2D = null  # City Garrison doesn't need units
 	var highest_unit_level : int = 0
 	for unit in entity.units_data:
 		if highest_unit_level < unit.level:

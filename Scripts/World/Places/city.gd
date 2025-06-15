@@ -47,8 +47,6 @@ func interact(army : Army) -> void:
 	if controller_index == army.controller_index:  # player enters his own city
 		army.heal_in_city()
 		return
-	if faction.controller.team == army.controller.team:  # ally hero enters the city
-		return
 
 	# faction.controller.team != army.controller.team:  # Enemy players enters the undefended city
 	capture(army.faction)
@@ -133,8 +131,10 @@ func unit_has_required_building(unit : DataUnit) -> bool:
 	return has_built(unit.required_building)
 
 
+## Units are transfered to the visiting owned hero in case ally is visitng they will join in battle
 func move_to_reserve() -> void:
 	print("move to reserve")
+	WM.get_army_form(garrison_reserve).queue_free()
 	WS.grid.get_hex(coord).army = null
 
 

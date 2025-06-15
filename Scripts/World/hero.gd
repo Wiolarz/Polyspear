@@ -15,7 +15,15 @@ var target_tile : TileForm
 # gameplay
 var hero_name : String
 
-var max_army_size : int
+## provides bonus to unit count while in the city
+var is_in_city : bool = true  # hero starts recruited in a city
+
+var max_army_size : int :
+	get:
+		if is_in_city:
+			return max_army_size + CFG.CITY_MAX_ARMY_SIZE
+		return max_army_size
+
 
 var max_movement_points = 3
 var movement_points = 3
