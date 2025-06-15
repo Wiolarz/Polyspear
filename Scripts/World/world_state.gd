@@ -602,7 +602,7 @@ func do_army_travel(source : Vector2i, target : Vector2i) -> bool:
 	var spent = army_spend_movement_points(army, 1)
 	assert(spent)
 
-	print("moving ", army," to ",target)
+	print("moving ", army," to ", target)
 	change_army_position(army, target)
 	get_place_at(target).interact(army)
 	return true
@@ -626,6 +626,14 @@ func change_army_position(army : Army, target_coord : Vector2i) -> void:
 		"can't place armies on occupied tile %s" % target_coord)
 	source_hex.army = null
 	if source_hex.place is City:
+		army.hero.is_in_city = false
+		var number_of_units_to_be_left : int = army.units_data.size() - army.hero.max_army_size
+		
+		for unit_over_limit_idx in range(number_of_units_to_be_left):
+			source_hex.place.garrison_reserve.units_data.append(army.units_data[-unit_over_limit_idx - 1])
+			army.units_data.pop_back()
+		
+		WM.world_ui.refresh_army_panel()
 		source_hex.place.move_out_of_reserve()
 	target_hex.army = army
 	army.coord = target_coord

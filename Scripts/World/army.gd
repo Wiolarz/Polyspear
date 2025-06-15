@@ -50,6 +50,8 @@ func apply_losses(losses : Array[DataUnit]):
 
 
 func heal_in_city():
+	if hero:
+		hero.is_in_city = true
 	if hero and hero.wounded:
 		hero.wounded = false
 		print("hero healed")

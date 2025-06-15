@@ -83,7 +83,8 @@ func refresh_player_buttons():
 
 
 func refresh_army_panel() -> void:
-	army_panel.load_army(army_panel.loaded_army)
+	if army_panel.loaded_army:
+		army_panel.load_army(army_panel.loaded_army)
 
 
 func load_army_to_panel(army : Army) -> void:

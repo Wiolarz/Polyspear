@@ -77,6 +77,9 @@ func load_unit_buttons(army : Army, units_to_display : Array[DataUnit], containe
 
 		containers[added_icon_idx % containers.size()].add_child(button)
 
+		## it oparates on node within scene, so it has to be applied after it's added as a child  # TODO look into it
+		if army.hero and army.hero.is_in_city and added_icon_idx >= (army.hero.max_army_size - CFG.CITY_MAX_ARMY_SIZE):
+			unit_display.set_marked_for_unit_list()
 
 
 		if not is_clickable:
@@ -124,8 +127,11 @@ func load_unit_buttons(army : Army, units_to_display : Array[DataUnit], containe
 	empty_slot.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	empty_slot.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 
-
 	for i in range(army.max_army_size - army.units_data.size()):
 		added_icon_idx += 1
 		empty_slot = empty_slot.duplicate()
+
+		if army.hero and army.hero.is_in_city and added_icon_idx >= (army.hero.max_army_size - CFG.CITY_MAX_ARMY_SIZE):
+			empty_slot.modulate = Color("431900")#ffc7aa")
+
 		containers[added_icon_idx % containers.size()].add_child(empty_slot)

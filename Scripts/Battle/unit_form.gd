@@ -8,6 +8,8 @@ const SIDE_NAMES = ["FrontSymbol", "FrontRightSymbol", "BackRightSymbol", "BackS
 const selection_mark_scene = preload("res://Scenes/Form/SelectionMark.tscn")
 
 @onready var sprite_border := $sprite_border
+@onready var sprite_color := $sprite_color
+
 
 var entity : Unit
 
@@ -282,5 +284,9 @@ func _refresh_highlight() -> void:
 		remove_child(get_node_or_null("SelectionMark"))
 		z_index = 0
 
+
+func set_marked_for_unit_list() -> void:
+	sprite_color.modulate = Color("431900")#ffc7aa")
+	sprite_color.use_parent_material = false
 
 #endregion UI
