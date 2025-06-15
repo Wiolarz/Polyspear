@@ -7,8 +7,6 @@ signal anim_end()
 const SIDE_NAMES = ["FrontSymbol", "FrontRightSymbol", "BackRightSymbol", "BackSymbol", "BackLeftSymbol", "FrontLeftSymbol"]
 const selection_mark_scene = preload("res://Scenes/Form/SelectionMark.tscn")
 
-@onready var sprite_border := $sprite_border
-@onready var sprite_color := $sprite_color
 
 var entity : Unit
 
