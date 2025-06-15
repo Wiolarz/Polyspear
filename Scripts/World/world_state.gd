@@ -487,6 +487,13 @@ func do_recruit_hero(data_hero : DataHero,
 	army.controller_index = city.controller_index
 	army.coord = coord
 	army.faction = WS.player_states[city.controller_index]
+
+	# Aborbs city garrison
+	army.units_data.append_array(city.garrison_reserve.units_data)
+	city.garrison_reserve.units_data = []
+	WM.world_ui.load_army_to_panel(army)
+	WM.world_ui.refresh_army_panel()
+
 	city.move_to_reserve()
 
 	grid.get_hex(coord).army = army

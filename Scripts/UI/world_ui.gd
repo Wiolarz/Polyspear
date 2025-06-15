@@ -94,6 +94,7 @@ func load_army_to_panel(army : Army) -> void:
 
 func _try_to_show_army_panel() -> void:
 	if _loaded_army_panel:
+		refresh_army_panel()
 		army_panel.show()
 
 
