@@ -9,7 +9,6 @@ extends CanvasLayer
 
 @onready var camera_button : Button = $TopL/SwitchCamera
 
-@onready var summary_container : Container = $SummaryContainer
 
 @onready var clock = $TopC/TurnsBG/VBox/ClockLeft
 @onready var turns = $TopC/TurnsBG/VBox/TurnCount
@@ -63,7 +62,6 @@ func _ready():
 	for child in get_children():
 		child.show()
 	$TextBubble.hide()
-	summary_container.hide()
 	replay_controls.hide()
 
 
