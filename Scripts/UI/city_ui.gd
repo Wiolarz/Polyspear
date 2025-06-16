@@ -114,7 +114,7 @@ func _buy_unit(unit : DataUnit):
 	if trading_hero_army:
 		WM.try_recruit_unit(city.coord, WM.selected_hero.coord, unit)
 	else:
-		WM.try_recruit_unit(city.coord, city.coord, unit)
+		WM.try_recruit_unit(city.coord, city.coord, unit)  # recruit straight to garrison
 
 
 func _on_buy_hero_button_pressed(hero_index : int):

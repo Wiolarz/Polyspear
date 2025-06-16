@@ -99,6 +99,9 @@ func can_buy_hero(hero : DataHero) -> bool:
 	if faction.has_hero(hero):
 		return false
 
+	if WS.grid.get_hex(coord).army.hero:  # Hero is already present in the city
+		return false
+
 	var cost : Goods = faction.get_hero_cost(hero)
 	return faction.goods.has_enough(cost)
 

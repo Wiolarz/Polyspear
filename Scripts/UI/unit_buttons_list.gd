@@ -3,6 +3,9 @@ extends BoxContainer
 
 signal unit_was_selected()
 
+
+var loaded_army : Army
+
 ## used only for placement unit tiles, points to currently selected unit/unit-button in placement
 ## bar
 var selected_unit_pointer : DataUnit = null
@@ -17,6 +20,7 @@ var _hovered_unit_button_pointer : BaseButton = null
 func load_unit_buttons(army : Army, units_to_display : Array[DataUnit], containers : Array[BoxContainer],
 						unit_button_size : float = 100.0, fill_empty_slots : bool = false,
 						is_clickable : bool = true) -> void:
+	loaded_army = army
 
 	# clean unit icons from rows
 	for container in containers:
@@ -39,7 +43,7 @@ func load_unit_buttons(army : Army, units_to_display : Array[DataUnit], containe
 
 		var unit_display := UnitForm.create_for_summon_ui(unit, bg_color)
 
-		if army.hero and army.hero.is_in_city and added_icon_idx >= (army.hero.max_army_size - CFG.CITY_MAX_ARMY_SIZE):
+		if army.hero and army.hero.is_in_city and added_icon_idx >= (army.max_army_size - CFG.CITY_MAX_ARMY_SIZE):
 			unit_display.set_marked_for_unit_list()
 
 		var button
@@ -62,13 +66,11 @@ func load_unit_buttons(army : Army, units_to_display : Array[DataUnit], containe
 
 		button.add_child(center_container)
 
-
 		center_container.add_child(unit_display)
 		center_container.set_anchors_preset(Control.LayoutPreset.PRESET_CENTER)
 		center_container.name = "Center"
 		unit_display.name = "UnitForm"
 		unit_display.position = Vector2.ZERO
-
 
 
 		# TEMP need to find out good way to calculate scale, the constant number
@@ -79,8 +81,13 @@ func load_unit_buttons(army : Army, units_to_display : Array[DataUnit], containe
 		containers[added_icon_idx % containers.size()].add_child(button)
 
 
-		if not is_clickable:
+
+		if not is_clickable:  # ---- SECOND PART OF THE BUTTON CREATION ----
 			continue
+
+		selected_unit_pointer = null
+		_selected_unit_button_pointer = null
+
 
 		var lambda = func on_click():
 			# TODO for later: move these lambdas outside to increase readability
@@ -115,7 +122,7 @@ func load_unit_buttons(army : Army, units_to_display : Array[DataUnit], containe
 
 
 
-	if not fill_empty_slots:
+	if not fill_empty_slots: # ---- SECOND PART OF THE FUNCTION ----
 		return
 
 	var empty_slot := TextureRect.new()
@@ -128,7 +135,7 @@ func load_unit_buttons(army : Army, units_to_display : Array[DataUnit], containe
 		added_icon_idx += 1
 		empty_slot = empty_slot.duplicate()
 
-		if army.hero and army.hero.is_in_city and added_icon_idx >= (army.hero.max_army_size - CFG.CITY_MAX_ARMY_SIZE):
+		if army.hero and army.hero.is_in_city and added_icon_idx >= (army.max_army_size - CFG.CITY_MAX_ARMY_SIZE):
 			empty_slot.modulate = Color("431900")#ffc7aa")
 
 		containers[added_icon_idx % containers.size()].add_child(empty_slot)

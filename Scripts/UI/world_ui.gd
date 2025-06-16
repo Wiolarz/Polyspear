@@ -7,16 +7,19 @@ extends CanvasLayer
 @onready var trade_screen : Control = $TradeScreen
 @onready var army_panel : BoxContainer = $Army_Panel
 
-var _loaded_army_panel : bool = false
 
 var _hideable_context_menu : Control :
 	set(new_menu):
+		if _hideable_context_menu:
+				_hideable_context_menu.hide()
+		_hideable_context_menu = new_menu
 		if new_menu:
 			$Hide.show()
 			$Hide.text = "Hide"
+			new_menu.show()
 		else:
 			$Hide.hide()
-		_hideable_context_menu = new_menu
+
 
 
 func _ready():
@@ -40,8 +43,16 @@ func _process(_delta):
 		good_label.text = WS.get_current_player().goods.to_string()
 
 
-func game_started():
+func on_game_started():
 	refresh_player_buttons()
+
+
+func on_end_turn():
+	try_to_close_context_menu()
+
+
+func set_viewed_city(city : City) -> void:
+	city_ui.set_viewed_city(city)
 
 
 func refresh_heroes():
@@ -82,37 +93,12 @@ func refresh_player_buttons():
 		button.modulate = player.get_player_color().color
 
 
-func refresh_army_panel() -> void:
-	if army_panel.loaded_army:
-		army_panel.load_army(army_panel.loaded_army)
-
-
-func load_army_to_panel(army : Army) -> void:
-	_loaded_army_panel = true
-	army_panel.show()
-	army_panel.load_army(army)
-
-
-func _try_to_show_army_panel() -> void:
-	if _loaded_army_panel:
-		refresh_army_panel()
-		army_panel.show()
-
-
-func hide_army_panel(unload_army : bool = true) -> void:
-	if unload_army:
-		_loaded_army_panel = false
-	army_panel.hide()
-
+#region Context Menus
 
 func show_trade_ui(first_army : Army, second_army : Army):
 	hide_army_panel(false)
 	_hideable_context_menu = trade_screen
 	trade_screen.start_trade(first_army, second_army)
-
-
-func set_viewed_city(city : City) -> void:
-	city_ui.set_viewed_city(city)
 
 
 func try_to_close_context_menu() -> void:
@@ -121,9 +107,37 @@ func try_to_close_context_menu() -> void:
 		_hideable_context_menu = null
 		_try_to_show_army_panel()
 
+#endregion Context Menus
 
-func on_end_turn():
-	try_to_close_context_menu()
+
+#region Army Panel
+
+func load_army_to_panel(army : Army) -> void:
+	army_panel.show()
+	army_panel.load_army(army)
+
+
+func hide_army_panel(unload_army : bool = true) -> void:
+	if unload_army:
+		army_panel.loaded_army = null
+	army_panel.hide()
+
+
+func _try_to_show_army_panel() -> void:
+	if army_panel.loaded_army:
+		refresh_army_panel()
+		army_panel.show()
+
+
+## Safe function, recreates army panel to account for any possible changes to list of units
+func refresh_army_panel() -> void:
+	if army_panel.loaded_army:
+		army_panel.load_army(army_panel.loaded_army)
+
+#endregion Army Panel
+
+
+#region Buttons
 
 func _on_menu_pressed():
 	IM.toggle_in_game_menu()
@@ -133,6 +147,7 @@ func _on_end_turn_pressed():
 	WM.end_turn()
 
 
+## Hides context menu while letting player option to reveal it
 func _on_hide_pressed():
 	if _hideable_context_menu.visible:
 		_hideable_context_menu.hide()
@@ -144,3 +159,5 @@ func _on_hide_pressed():
 		hide_army_panel(false)
 
 	pass # Replace with function body.
+
+#endregion Buttons

@@ -11,13 +11,12 @@ var second_army : Army
 
 func _ready():
 	first_army_panel.unit_was_selected.connect(_attempt_a_unit_transfer)
-	first_army_panel.army_swap.connect(_army_swap)
 	second_army_panel.unit_was_selected.connect(_attempt_a_unit_transfer)
+	first_army_panel.army_swap.connect(_army_swap)
 	second_army_panel.army_swap.connect(_army_swap)
 
 
 func start_trade(first_army_ : Army, second_army_ : Army) -> void:
-	show()
 	first_army = first_army_
 	second_army = second_army_
 	first_army_panel.load_army(first_army)
@@ -53,12 +52,13 @@ func _succesful_transfer() -> void:
 		second_army.units_data.erase(unit)
 		first_army.units_data.append(unit)
 
+	# Update Visuals
 	first_army_panel.transfered_unit()
 	second_army_panel.transfered_unit()
 
 
 func _army_swap() -> void:
-	print("army swap")
+	#print("army swap")
 	if first_army.hero.movement_points > 0:
 		## You can always move into a city
 		if not second_army.hero or second_army.hero.movement_points > 0:

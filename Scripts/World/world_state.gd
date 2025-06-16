@@ -629,7 +629,7 @@ func change_army_position(army : Army, target_coord : Vector2i) -> void:
 	source_hex.army = null
 	if source_hex.place is City:
 		army.hero.is_in_city = false
-		var number_of_units_to_be_left : int = army.units_data.size() - army.hero.max_army_size
+		var number_of_units_to_be_left : int = army.units_data.size() - army.max_army_size
 
 		for unit_over_limit_idx in range(number_of_units_to_be_left):
 			source_hex.place.garrison_reserve.units_data.append(army.units_data[-unit_over_limit_idx - 1])

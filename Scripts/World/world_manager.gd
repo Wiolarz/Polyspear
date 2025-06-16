@@ -506,7 +506,7 @@ func start_new_world(world_map : DataWorldMap) -> void:
 	recreate_army_forms()
 
 	UI.go_to_custom_ui(world_ui)
-	world_ui.game_started()
+	world_ui.on_game_started()
 
 	selected_city = get_current_player_capital()
 	world_ui.set_viewed_city(selected_city)
@@ -531,7 +531,7 @@ func start_world_in_state(world_map : DataWorldMap, \
 	recreate_army_forms()
 
 	UI.go_to_custom_ui(world_ui)
-	world_ui.game_started()
+	world_ui.on_game_started()
 
 	world_ui.set_viewed_city(get_current_player_capital())
 	world_ui.refresh_heroes()
