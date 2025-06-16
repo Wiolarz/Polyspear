@@ -130,16 +130,6 @@ texture_normal = ExtResource("3_arbmx")
 ignore_texture_size = true
 stretch_mode = 5
 
-[node name="SummaryContainer" type="MarginContainer" parent="."]
-visible = false
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-size_flags_horizontal = 3
-size_flags_vertical = 3
-
 [node name="ReplayControls" type="ColorRect" parent="."]
 visible = false
 custom_minimum_size = Vector2(750, 125)
