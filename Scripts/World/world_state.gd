@@ -481,7 +481,7 @@ func do_recruit_hero(data_hero : DataHero,
 			hero = dead_hero
 	if not hero: # means no hero is revived
 		hero = Hero.construct_hero(data_hero, current_player_index)
-		army.units_data.append(player_state.race.units_data[0])  # provide new hero with level 1 unit
+		army.units_data.append(player_state.race.units_data[0])  # fresh hero starts with a level 1 unit
 
 	army.hero = hero
 	army.controller_index = city.controller_index
@@ -648,12 +648,12 @@ func change_army_position(army : Army, target_coord : Vector2i) -> void:
 func swap_armies(first_army : Army, second_army : Army) -> void:
 	var source : Vector2i = first_army.coord
 	var target : Vector2i = second_army.coord
-	# Not entering city, checks if both armies have sufficient movement points
-	if first_army.hero and second_army.hero:
+	first_army.hero.movement_points -= 1
+	if second_army.hero:
+		# Not entering city, assumes both armies have sufficient movement points
 		assert(first_army.hero.movement_points > 0 and second_army.hero.movement_points > 0,
 		"attempt to swap armies that don't have sufficient movement points")
 
-		first_army.hero.movement_points -= 1
 		second_army.hero.movement_points -= 1
 
 		var source_hex = grid.get_hex(first_army.coord)
@@ -669,9 +669,7 @@ func swap_armies(first_army : Army, second_army : Army) -> void:
 		var city_coord : Vector2i = target  # during trade city is always treated as second army
 		var city : City = WS.get_city_at(city_coord)
 		city.move_to_reserve()
-		first_army.hero.movement_points -= 1
 		change_army_position(first_army, target)
-
 
 
 #endregion Army Movement

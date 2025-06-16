@@ -15,8 +15,8 @@ var target_tile : TileForm
 # gameplay
 var hero_name : String
 
-## provides bonus to unit count while in the city
-var is_in_city : bool = true  # hero starts recruited in a city
+## provides bonus to max_army_size while in the city
+var is_in_city : bool = true  # normally hero starts in a city
 
 var max_army_size : int :
 	get:

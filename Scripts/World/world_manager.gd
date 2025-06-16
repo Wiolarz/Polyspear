@@ -4,8 +4,6 @@ extends GridNode2D
 signal world_move_done
 
 
-
-
 var world_ui : WorldUI = null
 
 ## Only army that has a hero can move (army can only have a single hero)
@@ -88,7 +86,6 @@ func set_selected_hero(army : Army) -> void:
 	print("selected ", army)
 	if selected_hero:
 		selected_hero.set_selected(false)
-		# TODO add unselect city, in case previously selected hero resided in one
 	var army_form : ArmyForm = get_army_form(army)
 	selected_hero = army_form
 	selected_hero.set_selected(true)
@@ -277,10 +274,10 @@ func try_do_move(world_move_info : WorldMoveInfo) -> void:
 		NET.client.queue_request_world_move(world_move_info)
 
 
-## STUB
-func trade_armies(_second_army : Army):
+## opens context menu selected hero army and second owned army present target tile
+func trade_armies(second_army : Army):
 	print("trading armies")
-	world_ui.show_trade_ui(selected_hero.entity, _second_army)
+	world_ui.show_trade_ui(selected_hero.entity, second_army)
 
 
 ## called by `try_do_move` or when move is received from network
@@ -304,13 +301,6 @@ func perform_network_move(world_move_info : WorldMoveInfo) -> void:
 
 
 #region City Management
-
-func trade_city(city : City):
-	print("trade_city") # TODO remove it
-	# TODO revwert this in world state
-	# hero.heal_in_city()
-	#world_ui.set_viewed_city(city)
-
 
 func try_recruit_unit(city_coord : Vector2i, army_coord : Vector2i,
 		unit : DataUnit):
