@@ -519,10 +519,10 @@ func do_build_building(coord : Vector2i, building : DataBuilding) -> bool:
 #region Combat
 
 func start_combat_by_attack(armies : Array[Army], source : Vector2i, \
-		target : Vector2i) -> bool:
+		target : Vector2i) -> void:
 	move_hold_on_combat = [source, target]
 	WM.start_combat(armies, target)
-	return true
+
 
 
 ## Awards exp, applies losses, moves armies that were on hold duo to battle taking place
@@ -596,10 +596,13 @@ func do_army_travel(source : Vector2i, target : Vector2i) -> bool:
 	var army : Army = get_army_at(source)
 
 	if is_enemy_at(target, army.controller_index):
-		var fighting_armies : Array[Army] = [army, get_army_at(target)]
-		var has_combat_started : bool = start_combat_by_attack(fighting_armies, \
-			source, target)
-		return has_combat_started
+		var enemy_army : Army = get_army_at(target)
+		if not enemy_army.hero and enemy_army.units_data.size() == 0:  # checks if player isn't attacking an empty city
+			get_city_at(target).move_to_reserve()
+		else:
+			var fighting_armies : Array[Army] = [army, enemy_army]
+			start_combat_by_attack(fighting_armies, source, target)
+			return true
 
 	var spent = army_spend_movement_points(army, 1)
 	assert(spent)
