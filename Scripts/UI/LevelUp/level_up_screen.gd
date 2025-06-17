@@ -28,7 +28,7 @@ func load_level_up_screen(data_hero : DataHero) -> void:
 	$HeroLevelValue.text = "Hero Level: " + str($HeroLevelValue.selected + 1)
 
 
-func _on_hero_level_value_item_selected(index : int):
+func _on_hero_level_value_item_selected(_index : int):
 	$HeroLevelValue.text = "Hero Level: " + str($HeroLevelValue.selected + 1)
 
 
