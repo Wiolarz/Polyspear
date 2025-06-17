@@ -1,0 +1,30 @@
+[gd_resource type="Resource" script_class="PresetBattle" load_steps=14 format=3 uid="uid://bihxlbtghjdhc"]
+
+[ext_resource type="Script" path="res://Resources/Presets/preset_army.gd" id="1_gj360"]
+[ext_resource type="Resource" uid="uid://dx5rphj40ljm1" path="res://Resources/Battle/Units/Classic/elf1.tres" id="2_tacu6"]
+[ext_resource type="Resource" uid="uid://bwyu6qg7dsisg" path="res://Resources/Battle/Units/Classic/orc1.tres" id="2_v4lhh"]
+[ext_resource type="Resource" uid="uid://cv2ncwgk45l1e" path="res://Resources/Battle/Units/Classic/elf2.tres" id="3_5ugkr"]
+[ext_resource type="Resource" uid="uid://dbj11lf21vekh" path="res://Resources/Battle/Units/Orcs/orc_unit_hero_crusader.tres" id="4_tpvmh"]
+[ext_resource type="Resource" uid="uid://cy0eh6aop7ce7" path="res://Resources/Battle/Units/Elves/elf_unit_hero_druid.tres" id="4_w4uo5"]
+[ext_resource type="Resource" uid="uid://bgu30lp3txcwv" path="res://Resources/Battle/Units/Orcs/orc_3_champion.tres" id="5_05xsw"]
+[ext_resource type="Resource" uid="uid://bh4qurujj27rh" path="res://Resources/Battle/Units/Classic/elf3.tres" id="5_dwl3b"]
+[ext_resource type="Resource" uid="uid://bx2ya2olx578k" path="res://Resources/Battle/Units/Orcs/orc_unit_hero_executioner.tres" id="7_mtqfq"]
+[ext_resource type="Resource" uid="uid://bonqd5t8sh4hu" path="res://Resources/Battle/Battle_Maps/medium_simple.tres" id="10_w1ls8"]
+[ext_resource type="Script" path="res://Resources/Presets/preset_battle.gd" id="11_nf0lw"]
+
+[sub_resource type="Resource" id="Resource_8gfw6"]
+resource_name = "Elf 4"
+script = ExtResource("1_gj360")
+units = Array[Resource("res://Resources/Battle/data_unit.gd")]([ExtResource("2_tacu6"), ExtResource("3_5ugkr"), ExtResource("4_w4uo5"), ExtResource("5_dwl3b")])
+team = 0
+
+[sub_resource type="Resource" id="Resource_7irj2"]
+resource_name = "Orc 4"
+script = ExtResource("1_gj360")
+units = Array[Resource("res://Resources/Battle/data_unit.gd")]([ExtResource("2_v4lhh"), ExtResource("7_mtqfq"), ExtResource("4_tpvmh"), ExtResource("5_05xsw")])
+team = 0
+
+[resource]
+script = ExtResource("11_nf0lw")
+armies = Array[ExtResource("1_gj360")]([SubResource("Resource_8gfw6"), SubResource("Resource_7irj2")])
+battle_map = ExtResource("10_w1ls8")
