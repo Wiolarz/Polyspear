@@ -135,6 +135,17 @@ const weak_weapon : String = "res://Resources/Battle/Symbols/club.tres"
 #endregion Paths
 
 
+#region Heroes Level Up
+##STUB
+@onready var tier_1_passives : Array[HeroPassive] = []
+
+#@onready var tier_2_passives : Array[HeroPassive] = [load(tier_2_passive_1)]
+
+@onready var tier_3_passives : Array[HeroPassive] = []
+
+#endregion Heroes Level Up
+
+
 #region Colors
 
 var TEAM_COLORS : Array[DataPlayerColor] = [

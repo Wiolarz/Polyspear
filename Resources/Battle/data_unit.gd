@@ -17,6 +17,15 @@ extends Resource
 ## each spell is single use only - resets every battle
 @export var spells : Array[BattleSpell] = []
 
+
+## godot deep copy doesn't work
+func duplicate_symbols() -> Array[DataSymbol]:
+	var result : Array[DataSymbol] = []
+	for symbol in symbols:
+		result.append(symbol.duplicate())
+	return result
+
+
 static func get_network_id(unit : DataUnit) -> String:
 	if not unit:
 		return ""
