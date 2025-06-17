@@ -128,6 +128,7 @@ func _refresh_slot(index : int) -> void:
 	var team : int = 0
 	if logic_slot:
 		ui_slot.set_army(logic_slot.units_list)
+		ui_slot.set_hero_option_button(logic_slot.slot_hero)
 		if logic_slot.occupier is String:
 			if logic_slot.occupier == "":
 				username = NET.get_current_login()
@@ -238,7 +239,7 @@ func prepare_player_slots() -> void:
 			player_list.remove_child(ui_slot)
 			ui_slot.queue_free()
 		else:
-			ui_slot.fill_team_list(logic_slots_count)
+			ui_slot.init_team_list(logic_slots_count)
 
 
 func try_to_take_slot(slot) -> bool: # true means something changed

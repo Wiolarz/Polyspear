@@ -75,6 +75,7 @@ func go_to_map_editor():
 	map_editor.open_draw_menu()
 	BG.set_player_colors(CFG.NEUTRAL_COLOR)
 
+#region Hero Level Up
 
 ## TEMP
 func show_hero_level_up(slot_index : int):
@@ -93,6 +94,7 @@ func close_hero_level_up():
 func hide_hero_level_up():
 	hero_level_up._on_button_hide_pressed()
 
+#endregion Hero Level Up
 
 func show_in_game_menu():
 	in_game_menu.show()
@@ -116,13 +118,6 @@ func requests_pause():
 
 
 #region Input Support
-
-
-func _process(delta):
-	# we do not want to process camera when game is paused
-	if camera and not get_tree().paused:
-		camera.process_camera(delta)
-
 
 func _unhandled_input(event : InputEvent) -> void:
 	if event.is_action_pressed("KEY_EXIT_GAME"):
@@ -198,6 +193,16 @@ func grid_planning_input_listener(tile_coord : Vector2i, \
 
 	BM.planning_input(tile_coord, is_it_pressed)
 
+#endregion Input Support
+
+
+#region Camera
+
+func _process(delta):
+	# we do not want to process camera when game is paused
+	if camera and not get_tree().paused:
+		camera.process_camera(delta)
+
 
 func ensure_camera_is_spawned() -> void:
 	if not camera:
@@ -222,6 +227,10 @@ func set_camera(pos : E.CameraPosition) -> void:
 	else :
 		camera.set_bounds(WM.get_bounds_global_position())
 
+#endregion Camera
+
+
+#region Fullscreen
 
 ## NOTE: fullscreen uses old style exclusive fullscreen because of Godot bug
 func set_fullscreen(fullscreen: bool):
@@ -241,6 +250,10 @@ func toggle_fullscreen():
 	CFG.save_player_options()
 	update_settings.emit()
 
+#endregion Fullscreen
+
+
+#region Debug Tools
 
 ## Toggle of default godot Debug tool - visible collision shapes
 func toggle_collision_debug():
@@ -260,3 +273,5 @@ func toggle_collision_debug():
 				node.collision_visibility_mode = TileMap.VISIBILITY_MODE_FORCE_HIDE
 				node.collision_visibility_mode = TileMap.VISIBILITY_MODE_DEFAULT
 			node_stack.append_array(node.get_children())
+
+#endregion Debug Tools
