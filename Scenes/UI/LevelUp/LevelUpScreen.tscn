@@ -47,7 +47,7 @@ offset_bottom = 967.0
 toggle_mode = true
 text = "Hide"
 
-[node name="VBoxContainer" type="VBoxContainer" parent="."]
+[node name="TierPanels" type="VBoxContainer" parent="."]
 offset_left = 128.0
 offset_top = 27.0
 offset_right = 1839.0
@@ -55,14 +55,35 @@ offset_bottom = 904.0
 theme_override_constants/separation = 23
 alignment = 1
 
-[node name="TierPanel" parent="VBoxContainer" instance=ExtResource("1_2ruoq")]
+[node name="TierPanel" parent="TierPanels" instance=ExtResource("1_2ruoq")]
 layout_mode = 2
 
-[node name="TierPanel2" parent="VBoxContainer" instance=ExtResource("1_2ruoq")]
+[node name="TierPanel2" parent="TierPanels" instance=ExtResource("1_2ruoq")]
 layout_mode = 2
 
-[node name="TierPanel3" parent="VBoxContainer" instance=ExtResource("1_2ruoq")]
+[node name="TierPanel3" parent="TierPanels" instance=ExtResource("1_2ruoq")]
 layout_mode = 2
+
+[node name="HeroLevelValue" type="OptionButton" parent="."]
+offset_left = 1582.0
+offset_top = 36.0
+offset_right = 1828.0
+offset_bottom = 90.0
+item_count = 6
+selected = 0
+popup/item_0/text = "Hero Level: 1"
+popup/item_0/id = 0
+popup/item_1/text = "2"
+popup/item_1/id = 1
+popup/item_2/text = "3"
+popup/item_2/id = 2
+popup/item_3/text = "4"
+popup/item_3/id = 3
+popup/item_4/text = "5"
+popup/item_4/id = 4
+popup/item_5/text = "6"
+popup/item_5/id = 5
 
 [connection signal="pressed" from="ButtonConfirm" to="." method="_on_button_confirm_pressed"]
 [connection signal="pressed" from="ButtonHide" to="." method="_on_button_hide_pressed"]
+[connection signal="item_selected" from="HeroLevelValue" to="." method="_on_hero_level_value_item_selected"]

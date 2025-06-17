@@ -77,7 +77,10 @@ func go_to_map_editor():
 
 
 ## TEMP
-func show_hero_level_up():
+func show_hero_level_up(slot_index : int):
+	var slot : Slot = IM.game_setup_info.slots[slot_index]
+	var hero_data : DataHero = slot.slot_hero
+	hero_level_up.load_level_up_screen(hero_data)
 	hero_level_up.hidden = false
 	hero_level_up.show()
 
@@ -194,8 +197,6 @@ func grid_planning_input_listener(tile_coord : Vector2i, \
 		return
 
 	BM.planning_input(tile_coord, is_it_pressed)
-
-
 
 
 func ensure_camera_is_spawned() -> void:

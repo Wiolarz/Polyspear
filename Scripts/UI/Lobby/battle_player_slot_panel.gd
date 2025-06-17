@@ -128,7 +128,7 @@ func _ready():
 	for index in buttons_units.size():
 		var button : OptionButton = buttons_units[index]
 		init_unit_button(button, index)
-	
+
 	bot_paths = FileSystemHelpers.list_files_in_folder(CFG.BATTLE_BOTS_PATH, true, true)
 	init_bots_button()
 
@@ -157,8 +157,12 @@ func init_hero_list(button : OptionButton) -> void:
 func hero_in_army_changed(hero_index) -> void:
 	var hero_path = hero_list.get_item_text(hero_index)
 	var hero_data : DataHero = null
+	var level_up_button : Button = $GeneralVContainer/TopBarHContainer/ButtonLevelUp
 	if hero_path != EMPTY_UNIT_TEXT:
-		hero_data = load(CFG.HEROES_PATH+"/"+hero_path)
+		hero_data = load(CFG.HEROES_PATH + "/" + hero_path)
+		level_up_button.disabled = false
+	else:
+		level_up_button.disabled = true
 	var slot_index = setup_ui.slot_to_index(self)
 
 	IM.game_setup_info.set_hero(slot_index, hero_data)
@@ -180,9 +184,11 @@ func unit_in_army_changed(selected_index, unit_index) -> void:
 	if NET.client:
 		NET.client.queue_lobby_set_unit(slot_index, unit_index, unit_data)
 
+
 func bot_changed(bot_index):
 	# TODO network code
 	IM.game_setup_info.set_battle_bot(setup_ui.slot_to_index(self), bot_paths[bot_index])
+
 
 func set_bot(new_bot_path: String):
 	var bot_path = new_bot_path if new_bot_path != "" else bot_paths[0]
@@ -190,6 +196,7 @@ func set_bot(new_bot_path: String):
 	assert(idx != -1, "Invalid bot '%s'" % bot_path)
 	button_bot.select(idx)
 	bot_changed(idx)
+
 
 func timer_changed(_value) -> void:
 	if not should_react_to_changes():
@@ -233,13 +240,13 @@ func set_unit(unit_button : OptionButton, unit : DataUnit):
 			unit_button.select(idx)
 
 
-
 func fill_team_list(max_player_number : int) -> void:
 	team_list.clear()
 	team_list.add_item("No Team")
 	for idx in range(1, max_player_number + 1):
 		team_list.add_item("Team " + str(idx))
 
+#region Buttons
 
 func _on_button_take_leave_pressed():
 	if not should_react_to_changes():
@@ -252,7 +259,6 @@ func _on_button_take_leave_pressed():
 		TakeLeaveButtonState.TAKEN_BY_OTHER:
 			if IM.is_slot_steal_allowed():
 				try_to_take()
-
 
 
 func _on_button_color_pressed():
@@ -276,4 +282,9 @@ func _on_option_button_team_item_selected(index : int):
 func _on_button_level_up_pressed():
 	if not should_react_to_changes():
 		return
-	UI.show_hero_level_up()
+
+	var slot_index : int = setup_ui.slot_to_index(self)
+
+	UI.show_hero_level_up(slot_index)
+
+#endregion Buttons
