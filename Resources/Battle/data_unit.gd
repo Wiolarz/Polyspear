@@ -18,7 +18,7 @@ extends Resource
 @export var spells : Array[BattleSpell] = []
 
 
-## godot deep copy doesn't work
+## godot deep copy doesn't support arrays within objects
 func duplicate_symbols() -> Array[DataSymbol]:
 	var result : Array[DataSymbol] = []
 	for symbol in symbols:

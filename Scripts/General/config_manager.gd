@@ -128,6 +128,7 @@ const OUTPOST_RUBY_PATH : String = "res://Resources/Presets/Army/outpost_defende
 
 ## magic weapon - all weapons have an attack power of 4, but each kills lowers that value by 1 to a min. of 1
 const tier_2_passive_1 : String = "res://Resources/Battle/Battle_Spells/Heroes_Passive_Effects/magic_weapon.tres"
+const hero_passive_second_wind_effect : String = "res://Resources/Battle/Battle_Spells/Heroes_Passive_Effects/second_wind.tres"
 
 ## used for passive that replaces all empty symbols with weak weapons
 const weak_weapon : String = "res://Resources/Battle/Symbols/club.tres"
