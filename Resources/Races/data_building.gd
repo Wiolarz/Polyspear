@@ -7,13 +7,28 @@ extends Resource
 
 @export var requirements : Array[DataBuilding]
 
+@export var discount_counter : int = 0
+
 ## if a resource type is stated it means this is a special faction wide construction
 @export var outpost_requirement : String
 
 
+func clone() -> DataBuilding:
+	var new_building = DataBuilding.new()
+	new_building.name = name
+	new_building.cost = cost.duplicate()
+	new_building.requirements = requirements.duplicate()
+	new_building.outpost_requirement = outpost_requirement
+	return new_building
+
 func is_outpost_building() -> bool:
 	return outpost_requirement != ""
 
+func increase_discount_counter() -> void:
+	discount_counter += 1
+
+func reset_discount_counter() -> void:
+	discount_counter = 0
 
 static func get_network_id(building : DataBuilding) -> String:
 	if not building:

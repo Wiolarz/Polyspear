@@ -241,6 +241,7 @@ func check_recruit_unit(data_unit : DataUnit, city_coord : Vector2i,
 		army_coord : Vector2i) -> String:
 	var army : Army = get_army_at(army_coord)
 	var army_controller_state = player_states[army.controller_index]
+	var unit_cost = get_city_at(city_coord).get_unit_cost(data_unit)
 
 	if not army:
 		return "no army at coord"
@@ -261,8 +262,8 @@ func check_recruit_unit(data_unit : DataUnit, city_coord : Vector2i,
 		return "cannot recruit such unit in this city"
 	if not city.unit_has_required_building(data_unit):
 		return "not all required buildings are build in this city"
-	if not army_controller_state.goods.has_enough(data_unit.cost):
-		return "not enough resources for this unit, need %s" % data_unit.cost
+	if not army_controller_state.goods.has_enough(unit_cost):
+		return "not enough resources for this unit, need %s" % unit_cost
 	return ""
 
 
@@ -441,7 +442,11 @@ func do_recruit_unit(data_unit : DataUnit, city_coord : Vector2i,
 		push_error(problem)
 		return false
 	var army : Army = get_army_at(army_coord)
+	var city : City = get_city_at(city_coord)
+	var cost : Goods = city.get_unit_cost(data_unit)
 	var purchased : bool = army.faction.try_to_pay(data_unit.cost)
+	if purchased:
+		city.reset_building_discount(data_unit.required_building)
 	assert(purchased)
 	army.units_data.append(data_unit)
 	return true

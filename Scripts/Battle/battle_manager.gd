@@ -42,7 +42,7 @@ func _ready():
 	_unit_forms_node = Node2D.new()
 	_unit_forms_node.name = "UNITS"
 	add_child(_unit_forms_node)
-	
+
 	_painter_node = load("res://Scenes/UI/Battle/BattlePlanPainter.tscn").instantiate()
 	add_child(_painter_node)
 
@@ -62,7 +62,7 @@ func _process(_delta):
 ## x_offset is used to place battle to the right of world map
 ## replay_template - used in replays to avoid juggling player data
 func start_battle(new_armies : Array[Army], battle_map : DataBattleMap, \
-		x_offset : float, battle_state : SerializableBattleState = null, 
+		x_offset : float, battle_state : SerializableBattleState = null,
 		replay_template : BattleReplay = null) -> void:
 
 	assert(_is_clear(), "cannot start battle map, map already loaded")
@@ -71,9 +71,9 @@ func start_battle(new_armies : Array[Army], battle_map : DataBattleMap, \
 		_replay_data = BattleReplay.from_template(replay_template)
 	else:
 		_replay_data = BattleReplay.create(new_armies, battle_map)
-	
+
 	_replay_move_counter = 0
-	
+
 	if not _replay_is_playing and not replay_template:
 		_replay_data.save()
 
@@ -104,13 +104,13 @@ func start_battle(new_armies : Array[Army], battle_map : DataBattleMap, \
 	for player in IM.players:
 		if player.is_local():
 			is_spectator = false
-	
+
 	if is_spectator and CFG.ENABLE_AUTO_BRAIN:
 		_enable_ai_preview()
-	
+
 	# Set first player's color
 	BG.set_player_colors(get_current_slot_color())
-	
+
 	# first turn does not get a signal emit
 	_on_turn_started(_battle_grid_state.get_current_player())
 
@@ -232,21 +232,21 @@ func _on_turn_started(player : Player) -> void:
 
 	if player.bot_engine and not NET.client: # AI is simulated on server only
 		print("AI starts thinking")
-		
+
 		var my_cancel_token = CancellationToken.new()
 		#assert(latest_ai_cancel_token == null)
 		latest_ai_cancel_token = my_cancel_token
-		
+
 		var bot = player.bot_engine
-		
+
 		var thinking_begin_s = Time.get_ticks_msec() / 1000.0
 		var move = await bot.choose_move(_battle_grid_state)
 		await _ai_thinking_delay(thinking_begin_s) # moving too fast feels weird
-		
+
 		bot.cleanup_after_move()
 		if _battle_grid_state == null: # Player quit to main menu before finishing
 			return
-		
+
 		if not my_cancel_token.is_canceled():
 			assert(_battle_grid_state.is_move_possible(move), "AI tried to perform an invalid move")
 			_perform_move_info(move)
@@ -365,7 +365,7 @@ func _end_move() -> void:
 	if _battle_grid_state.battle_is_ongoing():
 		if _ai_move_preview:
 			_ai_move_preview.update(_battle_grid_state)
-		
+
 		_battle_ui.update_mana() # TEMP placement here
 		_on_turn_started(_battle_grid_state.get_current_player())
 	else:
@@ -394,10 +394,10 @@ func ai_move() -> void:
 	if latest_ai_cancel_token:
 		push_warning("ai is already moving, dont stack two simultaneous ai moves race")
 		return
-	
+
 	if _replay_is_playing:
 		return
-	
+
 	var move := AiBotStateRandom.choose_move_static(_battle_grid_state)
 	_perform_move_info(move)
 
@@ -484,7 +484,7 @@ func get_player_mana(player : Player) -> int:
 ## visually captures the well
 ## unit get's their coord updated during animation
 func capture_mana_well(coord : Vector2i, unit : Unit) -> void:
-	
+
 	var controller_sprite = _tile_grid.get_hex(coord).get_node("ControlerSprite")
 	controller_sprite.visible = true
 	var data_color : DataPlayerColor = unit.controller.get_player_color()
@@ -645,19 +645,19 @@ func _perform_move_info(move_info : MoveInfo) -> void:
 	if not _battle_is_ongoing:
 		return
 	print(NET.get_role_name(), " performing move ", move_info)
-	
+
 	ANIM.fast_forward()
 	var bg_transition_tween = ANIM.subtween(
-		ANIM.main_tween(), 
+		ANIM.main_tween(),
 		ANIM.TweenPlaybackSettings.always_smooth()
 	)
-	
+
 	_replay_move_counter += 1
 
 	if not _replay_is_playing:
 		_replay_data.record_move(move_info, get_current_time_left_ms())
 		_replay_data.save()
-	
+
 	if NET.server:
 		NET.server.broadcast_move(move_info)
 
@@ -671,7 +671,7 @@ func _perform_move_info(move_info : MoveInfo) -> void:
 
 		_ :
 			assert(false, "Move move_type not supported in perform, " + str(move_info.move_type))
-	
+
 	# Make sure there's anything to tween to avoid errors
 	ANIM.main_tween().parallel().tween_interval(0.01)
 	# When the animation's done, emit a signal
@@ -680,7 +680,7 @@ func _perform_move_info(move_info : MoveInfo) -> void:
 	ANIM.main_tween().play()
 
 	BG.set_player_colors(get_current_slot_color(), bg_transition_tween)
-	
+
 
 	_end_move()
 
@@ -695,7 +695,7 @@ func close_when_quitting_game() -> void:
 	_turn_off_battle_ui()
 	_reset_grid_and_unit_forms()
 	_disable_ai_preview()
-	
+
 	_replay_is_playing = false # revert to default value for the next battle
 
 
@@ -718,7 +718,7 @@ func _on_battle_ended() -> void:
 	if not _replay_is_playing:
 		_replay_data.summary = _current_summary
 		_replay_data.save()
-	
+
 	if WM.world_game_is_active():
 		_close_battle_and_return()  # it may change the state if the world is still active
 		# show battle summary over world map
@@ -728,7 +728,6 @@ func _on_battle_ended() -> void:
 		_battle_ui.update_replay_controls(_replay_number_of_moves, _replay_number_of_moves, _current_summary)
 		# do not exit immediately
 	else:
-		UI.ui_overlay.show_summary(_current_summary, _close_battle_and_return)
 		UI.ui_overlay.show_battle_summary(_current_summary, _close_custom_battle)
 
 
@@ -848,13 +847,13 @@ func perform_replay(replay : BattleReplay) -> void:
 func _replay_move_delay() -> void:
 	var begin = Time.get_ticks_msec()
 	await move_animation_done
-	
+
 	var elapsed_ms = Time.get_ticks_msec() - begin
 	# Minimal allowed animation duration - 1 second in normal speed
 	var min_duration = CFG.bot_speed_frames / CFG.BotSpeed.NORMAL
 	var delay = max(min_duration - elapsed_ms/1000.0, min_duration/10.0)
 	await get_tree().create_timer(delay).timeout
-	
+
 	while IM.is_game_paused() or CFG.bot_speed_frames == CFG.BotSpeed.FREEZE:
 		await get_tree().create_timer(0.1).timeout
 		if not _battle_is_ongoing:
@@ -887,10 +886,10 @@ func _enable_ai_preview():
 	if not _battle_grid_state:
 		push_error("Failed to enahle AI preview - _battle_grid_state == null")
 		return
-	
+
 	if _ai_move_preview:
 		return
-	
+
 	_ai_move_preview = AIMovePreview.new()
 	add_child(_ai_move_preview)
 	_ai_move_preview.name = "AIMovePreview"
