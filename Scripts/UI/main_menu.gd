@@ -10,6 +10,10 @@ func _ready():
 	if CFG.AUTO_START_GAME:
 		await get_tree().create_timer(0.1).timeout  # Waits for the Main menu UI to properly load, so it can be closed
 		IM.start_game()  # auto start setting stored in player data
+	
+	$MainContainer/TopMenu/Tabs.current_tab = CFG.LAST_OPENED_TAB
+	_on_tabs_tab_changed(CFG.LAST_OPENED_TAB)
+
 
 
 func refresh_replays_disabled():
@@ -67,12 +71,14 @@ func _on_exit_button_pressed():
 	get_tree().quit()
 
 
-func _on_tabs_tab_changed(tab_index:int):
+func _on_tabs_tab_changed(tab_index : int):
 	match tab_index:
-		0: _on_host_button_pressed()
-		1: _on_join_button_pressed()
-		2: _on_settings_button_pressed()
-		3: _on_credits_button_pressed()
-		4: _on_replays_tab_pressed()
-		5: _on_learn_tab_pressed()
+		CFG.Main_Menu_Tabs.SERVER: _on_host_button_pressed() # 0
+		CFG.Main_Menu_Tabs.JOIN: _on_join_button_pressed()  # 1
+		CFG.Main_Menu_Tabs.SETTINGS: _on_settings_button_pressed() # 2
+		CFG.Main_Menu_Tabs.CREDITS: _on_credits_button_pressed() # 3
+		CFG.Main_Menu_Tabs.REPLAYS: _on_replays_tab_pressed() # 4
+		CFG.Main_Menu_Tabs.LEARN: _on_learn_tab_pressed() # 5
 		_: push_error("_on_tabs_tab_changed index not supported: "+str(tab_index))
+	CFG.player_options.last_open_menu_tab = tab_index
+	CFG.save_player_options()

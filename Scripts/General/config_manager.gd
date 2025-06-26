@@ -264,6 +264,19 @@ var DEFAULT_MODE_IS_BATTLE : bool :
 var AUTO_START_GAME : bool :
 	get: return player_options.autostart_map
 
+
+enum Main_Menu_Tabs {
+	SERVER = 0,
+	JOIN = 1,
+	SETTINGS = 2,
+	CREDITS = 3,
+	REPLAYS = 4,
+	LEARN = 5,
+}
+
+var LAST_OPENED_TAB : Main_Menu_Tabs :
+	get: return player_options.last_open_menu_tab
+
 var LAST_USED_BATTLE_PRESET_NAME : String :
 	get: return player_options.last_used_battle_preset_name
 var LAST_USED_WORLD_MAP : DataWorldMap : # TODO implement this
