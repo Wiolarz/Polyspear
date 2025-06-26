@@ -1,8 +1,8 @@
 [gd_scene load_steps=4 format=3 uid="uid://p42st2s5b6o3"]
 
 [ext_resource type="Script" path="res://Scripts/UI/Educational/wiki_magic.gd" id="1_0tkxl"]
-[ext_resource type="PackedScene" uid="uid://pfnqgp6b3k1u" path="res://Scenes/UI/Wiki/wiki_symbol_button.tscn" id="2_jq46o"]
-[ext_resource type="Texture2D" uid="uid://nqopde6ucyqy" path="res://Art/items/big_sword.png" id="3_7v3u2"]
+[ext_resource type="PackedScene" uid="uid://w7gt7at72a2o" path="res://Scenes/UI/Wiki/wiki_spell_button.tscn" id="2_e84kj"]
+[ext_resource type="Texture2D" uid="uid://d1vofsv8lia8m" path="res://Art/items/claws.png" id="3_6wr1h"]
 
 [node name="WikiMagic" type="Panel"]
 clip_contents = true
@@ -29,7 +29,7 @@ layout_mode = 2
 [node name="Title" type="Label" parent="Margin/VBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 100
-text = "Symbols"
+text = "Magic"
 horizontal_alignment = 1
 
 [node name="HBoxContainer" type="HBoxContainer" parent="Margin/VBoxContainer"]
@@ -53,30 +53,30 @@ layout_mode = 2
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="SymbolButton" parent="Margin/VBoxContainer/HBoxContainer/Scroll/VBox/HBoxContainer/Column1" instance=ExtResource("2_jq46o")]
+[node name="SpellButton" parent="Margin/VBoxContainer/HBoxContainer/Scroll/VBox/HBoxContainer/Column1" instance=ExtResource("2_e84kj")]
 layout_mode = 2
 
-[node name="SymbolButton2" parent="Margin/VBoxContainer/HBoxContainer/Scroll/VBox/HBoxContainer/Column1" instance=ExtResource("2_jq46o")]
+[node name="SpellButton2" parent="Margin/VBoxContainer/HBoxContainer/Scroll/VBox/HBoxContainer/Column1" instance=ExtResource("2_e84kj")]
 layout_mode = 2
 
 [node name="Column2" type="VBoxContainer" parent="Margin/VBoxContainer/HBoxContainer/Scroll/VBox/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="SymbolButton3" parent="Margin/VBoxContainer/HBoxContainer/Scroll/VBox/HBoxContainer/Column2" instance=ExtResource("2_jq46o")]
+[node name="SpellButton3" parent="Margin/VBoxContainer/HBoxContainer/Scroll/VBox/HBoxContainer/Column2" instance=ExtResource("2_e84kj")]
 layout_mode = 2
 
-[node name="SymbolButton4" parent="Margin/VBoxContainer/HBoxContainer/Scroll/VBox/HBoxContainer/Column2" instance=ExtResource("2_jq46o")]
+[node name="SpellButton4" parent="Margin/VBoxContainer/HBoxContainer/Scroll/VBox/HBoxContainer/Column2" instance=ExtResource("2_e84kj")]
 layout_mode = 2
 
 [node name="Column3" type="VBoxContainer" parent="Margin/VBoxContainer/HBoxContainer/Scroll/VBox/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="SymbolButton3" parent="Margin/VBoxContainer/HBoxContainer/Scroll/VBox/HBoxContainer/Column3" instance=ExtResource("2_jq46o")]
+[node name="SpellButton5" parent="Margin/VBoxContainer/HBoxContainer/Scroll/VBox/HBoxContainer/Column3" instance=ExtResource("2_e84kj")]
 layout_mode = 2
 
-[node name="SymbolButton4" parent="Margin/VBoxContainer/HBoxContainer/Scroll/VBox/HBoxContainer/Column3" instance=ExtResource("2_jq46o")]
+[node name="SpellButton6" parent="Margin/VBoxContainer/HBoxContainer/Scroll/VBox/HBoxContainer/Column3" instance=ExtResource("2_e84kj")]
 layout_mode = 2
 
 [node name="Control" type="Control" parent="Margin/VBoxContainer/HBoxContainer"]
@@ -91,23 +91,22 @@ horizontal_scroll_mode = 0
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="WeaponName" type="Label" parent="Margin/VBoxContainer/HBoxContainer/SpellInformationContainer/VBox"]
+[node name="SpellName" type="Label" parent="Margin/VBoxContainer/HBoxContainer/SpellInformationContainer/VBox"]
 layout_mode = 2
-text = "Big Sword"
+text = "Blood Ritual"
 horizontal_alignment = 1
 
 [node name="RichTextLabel" type="RichTextLabel" parent="Margin/VBoxContainer/HBoxContainer/SpellInformationContainer/VBox"]
 layout_mode = 2
-text = "Attack  : 2
-Defense : 1
+text = "Chosen enemy unit will die after it becomes the last unit left alive on the enemy side
 
-Tags:
-- Parry"
+
+Spell cannot be casted if enemy has less than 3 units left."
 fit_content = true
 
 [node name="TextureRect" type="TextureRect" parent="Margin/VBoxContainer/HBoxContainer/SpellInformationContainer/VBox"]
 custom_minimum_size = Vector2(100, 400)
 layout_mode = 2
 size_flags_horizontal = 4
-texture = ExtResource("3_7v3u2")
+texture = ExtResource("3_6wr1h")
 expand_mode = 1

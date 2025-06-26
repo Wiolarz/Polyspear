@@ -1,9 +1,9 @@
 [gd_scene load_steps=3 format=3 uid="uid://w7gt7at72a2o"]
 
-[ext_resource type="Texture2D" uid="uid://nqopde6ucyqy" path="res://Art/items/big_sword.png" id="1_a5d14"]
+[ext_resource type="Texture2D" uid="uid://d1vofsv8lia8m" path="res://Art/items/claws.png" id="1_ui8kd"]
 [ext_resource type="Script" path="res://Scripts/UI/Educational/wiki_spell_button.gd" id="2_uy6rs"]
 
-[node name="SymbolButton" type="TextureButton"]
+[node name="SpellButton" type="TextureButton"]
 custom_minimum_size = Vector2(100, 400)
 anchors_preset = 8
 anchor_left = 0.5
@@ -18,7 +18,7 @@ grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
-texture_normal = ExtResource("1_a5d14")
+texture_normal = ExtResource("1_ui8kd")
 ignore_texture_size = true
 stretch_mode = 4
 script = ExtResource("2_uy6rs")
@@ -32,6 +32,6 @@ offset_left = -86.0
 offset_right = 86.0
 offset_bottom = 48.0
 grow_horizontal = 2
-text = "Big Sword"
+text = "Blood Ritual"
 
 [connection signal="pressed" from="." to="." method="_on_pressed"]

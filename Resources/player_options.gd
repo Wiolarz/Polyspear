@@ -43,6 +43,9 @@ extends Resource
 ## Default first option after opening the game should be last selected one
 @export var last_used_world_map : DataWorldMap
 
+## Automatically opens last viewed learn tab
+@export var last_selected_learn_Tab : int = 1
+
 @export var fullscreen : bool:
 	set(new):
 		if new != fullscreen:

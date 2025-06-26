@@ -322,10 +322,10 @@ grow_vertical = 2
 
 [node name="Background" type="ColorRect" parent="TextBubble"]
 layout_mode = 0
-offset_left = -400.0
+offset_left = -466.0
 offset_top = -200.0
-offset_right = 400.0
-offset_bottom = 200.0
+offset_right = 448.0
+offset_bottom = 299.0
 color = Color(0.158472, 0.158472, 0.158472, 1)
 
 [node name="Title" type="Label" parent="TextBubble"]
@@ -352,7 +352,7 @@ anchor_bottom = 0.5
 offset_left = -408.0
 offset_top = -127.0
 offset_right = 83.0
-offset_bottom = 111.0
+offset_bottom = 195.0
 grow_horizontal = 2
 grow_vertical = 2
 text = "Example Text"
@@ -370,10 +370,10 @@ stretch_mode = 5
 
 [node name="TextBubbleButton" type="Button" parent="TextBubble"]
 layout_mode = 0
-offset_left = -148.0
-offset_top = 137.0
-offset_right = -9.0
-offset_bottom = 191.0
+offset_left = -82.0
+offset_top = 221.0
+offset_right = 57.0
+offset_bottom = 275.0
 text = "Proceed"
 
 [connection signal="pressed" from="TopL/Menu" to="." method="_on_menu_pressed"]

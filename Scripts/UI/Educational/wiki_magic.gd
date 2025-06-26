@@ -6,7 +6,7 @@ extends Panel
 	$Margin/VBoxContainer/HBoxContainer/Scroll/VBox/HBoxContainer/Column3]
 
 
-@onready var spell_information_title = $Margin/VBoxContainer/HBoxContainer/SpellInformationContainer/VBox/WeaponName
+@onready var spell_information_title = $Margin/VBoxContainer/HBoxContainer/SpellInformationContainer/VBox/SpellName
 @onready var spell_information_description = $Margin/VBoxContainer/HBoxContainer/SpellInformationContainer/VBox/RichTextLabel
 @onready var spell_information_icon = $Margin/VBoxContainer/HBoxContainer/SpellInformationContainer/VBox/TextureRect
 
@@ -22,7 +22,7 @@ func load_spell(battle_spell : BattleSpell) -> void:
 	var text_description = ""
 	match battle_spell.name:
 		"Blood Ritual":
-			text_description += "Chosen enemy unit will die after it becomes the last unit left alive on the enmy side \n\n" + \
+			text_description += "Chosen enemy unit will die after it becomes the last unit left alive on the enemy side \n\n" + \
 			"Spell cannot be casted if enemy has less than 3 units left."
 
 		"Fireball":

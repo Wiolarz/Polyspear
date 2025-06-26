@@ -268,6 +268,8 @@ var LAST_USED_BATTLE_PRESET_NAME : String :
 	get: return player_options.last_used_battle_preset_name
 var LAST_USED_WORLD_MAP : DataWorldMap : # TODO implement this
 	get: return player_options.last_used_world_map
+var LAST_SELECTED_LEARN_TAB : int :
+	get: return player_options.last_selected_learn_Tab
 
 var FULLSCREEN_AUTO_TOGGLE : bool :
 	get: return player_options.keep_main_menu_windowed

@@ -63,7 +63,6 @@ tab_7/title = "Economy"
 tab_7/disabled = true
 
 [node name="Tutorials" parent="VBox" instance=ExtResource("2_rdoye")]
-visible = false
 layout_mode = 2
 
 [node name="Puzzles" parent="VBox" instance=ExtResource("2_xisac")]
@@ -75,6 +74,7 @@ visible = false
 layout_mode = 2
 
 [node name="WikiSymbols" parent="VBox" instance=ExtResource("3_7py82")]
+visible = false
 layout_mode = 2
 
 [node name="WikiMagic" parent="VBox" instance=ExtResource("6_c6jlk")]
