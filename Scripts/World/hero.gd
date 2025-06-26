@@ -19,6 +19,7 @@ var max_army_size : int
 
 var max_movement_points = 3
 var movement_points = 3
+var movements_points_renewal = 3
 
 ## world coord, where hero wants to travel
 var travel_path : Array[Vector2i]
@@ -97,6 +98,7 @@ func _level_up() -> void:
 	var old_max_move = max_movement_points
 	max_army_size = 2 + level
 	max_movement_points =  3 + (level / 2)
+	movements_points_renewal =  3 + (level / 2)
 	movement_points += max_movement_points - old_max_move
 
 

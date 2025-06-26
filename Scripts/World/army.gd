@@ -59,7 +59,9 @@ func add_xp(gained_xp : int) -> void:
 
 func on_end_of_round():
 	if hero:
-		hero.movement_points = hero.max_movement_points
+		hero.movement_points += hero.movements_points_renewal
+		if hero.movement_points > hero.max_movement_points:
+			hero.movement_points = hero.max_movement_points
 
 
 ## remember that is some player's army is created, it also needs to be
