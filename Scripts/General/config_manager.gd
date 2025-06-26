@@ -127,22 +127,45 @@ const OUTPOST_RUBY_PATH : String = "res://Resources/Presets/Army/outpost_defende
 ## Heroes Passive Effects
 
 ## magic weapon - all weapons have an attack power of 4, but each kills lowers that value by 1 to a min. of 1
-const tier_2_passive_1 : String = "res://Resources/Battle/Battle_Spells/Heroes_Passive_Effects/magic_weapon.tres"
-const hero_passive_second_wind_effect : String = "res://Resources/Battle/Battle_Spells/Heroes_Passive_Effects/second_wind.tres"
+const hero_magic_weapon_effect : String = "res://Resources/Battle/Battle_Spells/Heroes_Passive_Effects/magic_weapon.tres"
+const hero_second_wind_effect : String = "res://Resources/Battle/Battle_Spells/Heroes_Passive_Effects/second_wind.tres"
+
 
 ## used for passive that replaces all empty symbols with weak weapons
 const weak_weapon : String = "res://Resources/Battle/Symbols/club.tres"
+
+
+## Hero Passives
+
+const _hero_talent_second_wind : String = "res://Resources/Battle/Hero_Passives/second_wind.tres"
+const _hero_talent_magic_weapons : String = "res://Resources/Battle/Hero_Passives/magic_weapons.tres"
+const _hero_talent_weak_weapons : String = "res://Resources/Battle/Hero_Passives/weak_weapons.tres"
+const _hero_talent_wind_weapons : String = "res://Resources/Battle/Hero_Passives/wind_weapons.tres"
 
 #endregion Paths
 
 
 #region Heroes Level Up
 ##STUB
-@onready var tier_1_passives : Array[HeroPassive] = []
+@onready var _tier_1_talents : Array[HeroPassive] = [load(_hero_talent_second_wind),
+													load(_hero_talent_magic_weapons),
+													load(_hero_talent_weak_weapons)]
 
-#@onready var tier_2_passives : Array[HeroPassive] = [load(tier_2_passive_1)]
+@onready var _tier_2_talents : Array[HeroPassive] = []
 
-@onready var tier_3_passives : Array[HeroPassive] = []
+@onready var _tier_3_talents : Array[HeroPassive] = []
+
+@onready var talents : Array = [_tier_1_talents, _tier_2_talents, _tier_3_talents]
+
+
+@onready var _tier_1_abilities : Array[HeroPassive] = []
+
+@onready var _tier_2_abilities : Array[HeroPassive] = []
+
+@onready var _tier_3_abilities : Array[HeroPassive] = []
+
+@onready var abilities : Array = [_tier_1_abilities, _tier_2_abilities, _tier_3_abilities]
+
 
 #endregion Heroes Level Up
 

@@ -230,6 +230,7 @@ func _process_symbols(unit : Unit, move_type : E.MoveType) -> bool:
 		return true
 	return false
 
+
 ## Returns true if Enemy counter_attack can kill the target [br]
 ## Starts animation for stabbing in case
 func _should_die_to_counter_attack(unit : Unit) -> bool:
@@ -1785,7 +1786,7 @@ class ArmyInBattleState:
 		for passive_effect in army_reference.hero.passive_effects:
 			match passive_effect.passive_name:
 				"magic_weapons":
-					var effect : BattleMagicEffect = load(CFG.tier_2_passive_1)
+					var effect : BattleMagicEffect = load(CFG.hero_magic_weapon_effect)
 					var success : bool = result.try_adding_magic_effect(effect)
 					assert(success, "couldn't add passive effect to a hero unit upon it's placement")
 					for symbol in result.symbols:

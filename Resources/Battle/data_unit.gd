@@ -1,6 +1,7 @@
 class_name DataUnit
 extends Resource
 
+
 @export_category("General")
 @export var unit_name : String
 @export var texture_path : String
@@ -15,10 +16,12 @@ extends Resource
 @export var mana : int = 0
 ## list of spells this unit can cast during a battle [br]
 ## each spell is single use only - resets every battle
+
 @export var spells : Array[BattleSpell] = []
 
 
-## godot deep copy doesn't support arrays within objects
+## godot deep copy doesn't support arrays within objects [br]
+## symbols.duplicate(true) wouldn't work
 func duplicate_symbols() -> Array[DataSymbol]:
 	var result : Array[DataSymbol] = []
 	for symbol in symbols:
