@@ -469,4 +469,5 @@ func show_text_bubble(text_bubble : TextBubble) -> void:
 
 
 func _on_text_bubble_button_pressed():
+	IM.set_game_paused(false)
 	$TextBubble.hide()
