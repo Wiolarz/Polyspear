@@ -197,14 +197,14 @@ func create_army_for(slot : Slot) -> Army:
 	return army
 
 
-## Creates army based on army_preset and assigns controlloler
+## Creates army based on army_preset and assigns controller
 func create_army_from_preset(army_preset : PresetArmy, player_index : int) -> Army:
 	var army = Army.new()
 	army.controller_index = player_index
 
 	var hero_data : DataHero = army_preset.hero
 	if hero_data:
-		var new_hero = Hero.construct_hero(hero_data, army_preset.index)
+		var new_hero = Hero.construct_hero(hero_data, player_index)
 		army.hero = new_hero
 
 	army.units_data = army_preset.units

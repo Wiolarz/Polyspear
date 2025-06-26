@@ -40,7 +40,7 @@ func _on_magic_wiki_button_pressed():
 func _on_tabs_tab_changed(tab_index : int):
 	CFG.player_options.last_selected_learn_Tab = tab_index
 	CFG.save_player_options()
-
+	$VBox/HBoxContainer/TabBar.current_tab = tab_index
 	match tab_index:
 		0: pass  # disabled
 		1: _on_tutorial_button_pressed()
