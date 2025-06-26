@@ -234,7 +234,8 @@ func get_default_or_last_battle_preset() -> Dictionary:
 	}
 
 
-func start_scripted_battle(scripted_battle : ScriptedBattle, battle_bot_path : String = "", player_controlled_side : int = 0) -> void:
+func start_scripted_battle(scripted_battle : ScriptedBattle, battle_bot_path : String = "",
+							player_controlled_side : int = 0) -> void:
 	print("started scripted battle: ", scripted_battle.scenario_name)
 
 	_prepare_to_start_game()
@@ -264,7 +265,6 @@ func _clear_players() -> void:
 	for player in players:
 		player.queue_free()
 	players = []
-
 
 #endregion Game setup
 

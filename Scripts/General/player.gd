@@ -75,7 +75,7 @@ static func create_for_tutorial(is_human : bool, player_index : int, battle_bot_
 		result.occupier = ""
 	else:
 		result.name = "AI"
-		result.occupier = 1
+		result.occupier = 1  # TODO assign a proper difficulty rating
 		if battle_bot_path.length() == 0:
 			result.bot_engine = load("res://Resources/Battle/Bots/Random.tscn").instantiate()
 		else:

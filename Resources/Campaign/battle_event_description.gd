@@ -1,6 +1,11 @@
 class_name BattleEventDescription
 extends Resource
 
+## Description of the state needs to occur before Text Bubble can show up
+## Developer lists all things that need to occur creating a new BattleEventDescription
+## which will be compared to current battle state through do_description_allign()
+
+
 #TODO consider generating those events for battle replays, to be compared to with new ones for unit tests
 
 @export_enum(BattleGridState.STATE_FIGHTING,
@@ -16,13 +21,19 @@ extends Resource
 ## event check will provide freshly dead unit with additional info string and compare to this
 @export var dead_units : Array[String] = []
 
+## Index of the player which turn it is: [br]
+## 0 - first player [br]
+## -1 - any player
+@export var current_army_index : int = 0 # -1
 
+## Those variables are not generated automatically during generate_current_battle_event()
+## do_description_allign() compares manaully selected values from this category
+## with the singletons on its own
 @export_category("Manually applied")
 
 ## Checks singleton, so doesn't care about provided battle state
 @export var selected_unit : String
 
-var current_army_index : int
 
 static func generate_current_battle_event(battle_state : BattleGridState, additional_info : String = "") \
 	-> BattleEventDescription:
@@ -31,8 +42,6 @@ static func generate_current_battle_event(battle_state : BattleGridState, additi
 	result.state_battle_is_in = battle_state.state
 
 	result.current_turn = battle_state.turn_counter
-
-
 
 	for army : BattleGridState.ArmyInBattleState in battle_state.armies_in_battle_state:
 		for dead_unit in army.dead_units:
@@ -54,8 +63,6 @@ static func generate_current_battle_event(battle_state : BattleGridState, additi
 	return result
 
 
-
-
 func _print_reason(debug_note : String) -> void:
 	print(resource_name, "||REASON|| -->", debug_note)
 
@@ -63,7 +70,7 @@ func _print_reason(debug_note : String) -> void:
 ## Core functionality for TextBubbles and Battle Events -> It verifies prerequesites. [br]
 ## Prerequisite Object - BattleEventDescription is provided [br]
 ## with the description of the current battle state. [br]
-## If in its requirments something misalign with the current Battle Event it returns FALSE
+## If in its requirements something misalign with the current Battle Event it returns FALSE
 func do_description_allign(event : BattleEventDescription) -> bool:
 	if event.current_army_index != 0:
 		return false
@@ -85,7 +92,7 @@ func do_description_allign(event : BattleEventDescription) -> bool:
   	# TEMP->TODO discuss if selected unit should be public
 
 	match selected_unit:
-		"":  # no set requriment
+		"":  # no set requirement
 			pass
 		"any":
 			if not BM._selected_unit:

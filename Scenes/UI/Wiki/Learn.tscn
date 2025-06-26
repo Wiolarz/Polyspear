@@ -17,7 +17,7 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("1_6475f")
 
-[node name="VBox" type="VBoxContainer" parent="."]
+[node name="MainContainer" type="VBoxContainer" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -26,26 +26,26 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/separation = 0
 
-[node name="HBoxContainer" type="HBoxContainer" parent="VBox"]
+[node name="TopMenu" type="HBoxContainer" parent="MainContainer"]
 layout_mode = 2
 size_flags_vertical = 0
 
-[node name="Seperator" type="Control" parent="VBox/HBoxContainer"]
+[node name="Seperator" type="Control" parent="MainContainer/TopMenu"]
 custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
 
-[node name="Title" type="Label" parent="VBox/HBoxContainer"]
+[node name="Title" type="Label" parent="MainContainer/TopMenu"]
 layout_mode = 2
 size_flags_horizontal = 4
 theme_override_font_sizes/font_size = 100
 text = "Learn"
 horizontal_alignment = 1
 
-[node name="VSeparator" type="VSeparator" parent="VBox/HBoxContainer"]
+[node name="VSeparator" type="VSeparator" parent="MainContainer/TopMenu"]
 custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
 
-[node name="TabBar" type="TabBar" parent="VBox/HBoxContainer"]
+[node name="TabBar" type="TabBar" parent="MainContainer/TopMenu"]
 layout_mode = 2
 size_flags_horizontal = 3
 tab_count = 8
@@ -62,23 +62,23 @@ tab_6/title = "Magic"
 tab_7/title = "Economy"
 tab_7/disabled = true
 
-[node name="Tutorials" parent="VBox" instance=ExtResource("2_rdoye")]
+[node name="Tutorials" parent="MainContainer" instance=ExtResource("2_rdoye")]
 layout_mode = 2
 
-[node name="Puzzles" parent="VBox" instance=ExtResource("2_xisac")]
+[node name="Puzzles" parent="MainContainer" instance=ExtResource("2_xisac")]
 visible = false
 layout_mode = 2
 
-[node name="CampaignBattles" parent="VBox" instance=ExtResource("3_x5eob")]
+[node name="CampaignBattles" parent="MainContainer" instance=ExtResource("3_x5eob")]
 visible = false
 layout_mode = 2
 
-[node name="WikiSymbols" parent="VBox" instance=ExtResource("3_7py82")]
+[node name="WikiSymbols" parent="MainContainer" instance=ExtResource("3_7py82")]
 visible = false
 layout_mode = 2
 
-[node name="WikiMagic" parent="VBox" instance=ExtResource("6_c6jlk")]
+[node name="WikiMagic" parent="MainContainer" instance=ExtResource("6_c6jlk")]
 visible = false
 layout_mode = 2
 
-[connection signal="tab_changed" from="VBox/HBoxContainer/TabBar" to="." method="_on_tabs_tab_changed"]
+[connection signal="tab_changed" from="MainContainer/TopMenu/TabBar" to="." method="_on_tabs_tab_changed"]

@@ -465,7 +465,8 @@ func show_text_bubble(text_bubble : TextBubble) -> void:
 	$TextBubble.show()
 	$TextBubble/Title.text = text_bubble.title
 	$TextBubble/Text.text = text_bubble.text
-	$TextBubble/Icon.texture = text_bubble.icon
+	$TextBubble/Icon.texture = load(text_bubble.icon_path)
+	IM.set_game_paused(true)
 
 
 func _on_text_bubble_button_pressed():

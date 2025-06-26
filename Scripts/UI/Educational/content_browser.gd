@@ -14,6 +14,7 @@ var _selected_item : Variant
 
 var content_folder_path : String
 
+
 func _ready():
 	_set_types()
 	refresh_content_list()
@@ -25,11 +26,14 @@ func _ready():
 func _set_types() -> void:
 	pass
 
+
 func get_description() -> String:
 	return ""
 
+
 func activate_content() -> void:
 	pass
+
 
 func additonal_selected_content_function() -> void:
 	pass
@@ -44,7 +48,6 @@ func _on_visibility_changed():
 
 
 func refresh_content_list():
-
 	Helpers.remove_all_children(_content_buttons_container)
 	var content_paths = FileSystemHelpers.list_files_in_folder(content_folder_path)
 
@@ -60,6 +63,7 @@ func refresh_content_list():
 
 	#TODO addsome kind of checkmarks for completed tutorials, and auto-select first uncompleted from the top
 	_on_content_clicked(content_paths[0]) # auto selects first tutorial
+
 
 func _on_content_clicked(content_path : String):
 	_selected_item = load(content_folder_path + content_path)

@@ -1,9 +1,6 @@
-[gd_scene load_steps=3 format=3 uid="uid://baltedrhixfl7"]
+[gd_scene load_steps=2 format=3 uid="uid://baltedrhixfl7"]
 
 [ext_resource type="Script" path="res://Scripts/UI/Educational/tutorial_menu.gd" id="1_gtpmc"]
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jf720"]
-bg_color = Color(0.0401178, 0.126136, 0.355491, 1)
 
 [node name="Tutorials" type="Panel"]
 anchors_preset = 15
@@ -14,7 +11,6 @@ grow_vertical = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("1_gtpmc")
-battle_bot_path = "res://Resources/Battle/Bots/Random.tscn"
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
 layout_mode = 1
@@ -48,248 +44,21 @@ layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 8
 
-[node name="ReplayButton" type="Button" parent="MarginContainer/VBoxContainer/Columns/ScrollContainer/Content"]
-custom_minimum_size = Vector2(0, 64)
+[node name="Button" type="Button" parent="MarginContainer/VBoxContainer/Columns/ScrollContainer/Content"]
 layout_mode = 2
-theme_override_styles/normal = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/hover = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/focus = SubResource("StyleBoxFlat_jf720")
-text = "Replay 123-1234-124"
+text = "Basic Tutorial"
 
-[node name="ReplayButton2" type="Button" parent="MarginContainer/VBoxContainer/Columns/ScrollContainer/Content"]
+[node name="Button2" type="Button" parent="MarginContainer/VBoxContainer/Columns/ScrollContainer/Content"]
 layout_mode = 2
-theme_override_styles/normal = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/hover = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/focus = SubResource("StyleBoxFlat_jf720")
-text = "Replay 123-1234-124"
-text_overrun_behavior = 3
-clip_text = true
+text = "Mana Cyclone Timer"
 
-[node name="ReplayButton3" type="Button" parent="MarginContainer/VBoxContainer/Columns/ScrollContainer/Content"]
+[node name="Button3" type="Button" parent="MarginContainer/VBoxContainer/Columns/ScrollContainer/Content"]
 layout_mode = 2
-theme_override_styles/normal = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/hover = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/focus = SubResource("StyleBoxFlat_jf720")
-text = "Replay 123-1234-124"
+text = "Spears and Shields"
 
-[node name="ReplayButton4" type="Button" parent="MarginContainer/VBoxContainer/Columns/ScrollContainer/Content"]
+[node name="Button4" type="Button" parent="MarginContainer/VBoxContainer/Columns/ScrollContainer/Content"]
 layout_mode = 2
-theme_override_styles/normal = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/hover = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/focus = SubResource("StyleBoxFlat_jf720")
-text = "Replay 123-1234-124"
-
-[node name="ReplayButton5" type="Button" parent="MarginContainer/VBoxContainer/Columns/ScrollContainer/Content"]
-layout_mode = 2
-theme_override_styles/normal = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/hover = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/focus = SubResource("StyleBoxFlat_jf720")
-text = "Replay 123-1234-124"
-
-[node name="ReplayButton6" type="Button" parent="MarginContainer/VBoxContainer/Columns/ScrollContainer/Content"]
-layout_mode = 2
-theme_override_styles/normal = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/hover = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/focus = SubResource("StyleBoxFlat_jf720")
-text = "Replay 123-1234-124"
-
-[node name="ReplayButton7" type="Button" parent="MarginContainer/VBoxContainer/Columns/ScrollContainer/Content"]
-layout_mode = 2
-theme_override_styles/normal = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/hover = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/focus = SubResource("StyleBoxFlat_jf720")
-text = "Replay 123-1234-124"
-
-[node name="ReplayButton8" type="Button" parent="MarginContainer/VBoxContainer/Columns/ScrollContainer/Content"]
-layout_mode = 2
-theme_override_styles/normal = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/hover = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/focus = SubResource("StyleBoxFlat_jf720")
-text = "Replay 123-1234-124"
-
-[node name="ReplayButton9" type="Button" parent="MarginContainer/VBoxContainer/Columns/ScrollContainer/Content"]
-layout_mode = 2
-theme_override_styles/normal = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/hover = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/focus = SubResource("StyleBoxFlat_jf720")
-text = "Replay 123-1234-124"
-
-[node name="ReplayButton10" type="Button" parent="MarginContainer/VBoxContainer/Columns/ScrollContainer/Content"]
-layout_mode = 2
-theme_override_styles/normal = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/hover = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/focus = SubResource("StyleBoxFlat_jf720")
-text = "Replay 123-1234-124"
-
-[node name="ReplayButton11" type="Button" parent="MarginContainer/VBoxContainer/Columns/ScrollContainer/Content"]
-layout_mode = 2
-theme_override_styles/normal = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/hover = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/focus = SubResource("StyleBoxFlat_jf720")
-text = "Replay 123-1234-124"
-
-[node name="ReplayButton12" type="Button" parent="MarginContainer/VBoxContainer/Columns/ScrollContainer/Content"]
-layout_mode = 2
-theme_override_styles/normal = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/hover = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/focus = SubResource("StyleBoxFlat_jf720")
-text = "Replay 123-1234-124"
-
-[node name="ReplayButton13" type="Button" parent="MarginContainer/VBoxContainer/Columns/ScrollContainer/Content"]
-layout_mode = 2
-theme_override_styles/normal = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/hover = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/focus = SubResource("StyleBoxFlat_jf720")
-text = "Replay 123-1234-124"
-
-[node name="ReplayButton14" type="Button" parent="MarginContainer/VBoxContainer/Columns/ScrollContainer/Content"]
-layout_mode = 2
-theme_override_styles/normal = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/hover = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/focus = SubResource("StyleBoxFlat_jf720")
-text = "Replay 123-1234-124"
-
-[node name="ReplayButton15" type="Button" parent="MarginContainer/VBoxContainer/Columns/ScrollContainer/Content"]
-layout_mode = 2
-theme_override_styles/normal = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/hover = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/focus = SubResource("StyleBoxFlat_jf720")
-text = "Replay 123-1234-124"
-
-[node name="ReplayButton16" type="Button" parent="MarginContainer/VBoxContainer/Columns/ScrollContainer/Content"]
-layout_mode = 2
-theme_override_styles/normal = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/hover = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/focus = SubResource("StyleBoxFlat_jf720")
-text = "Replay 123-1234-124"
-
-[node name="ReplayButton17" type="Button" parent="MarginContainer/VBoxContainer/Columns/ScrollContainer/Content"]
-layout_mode = 2
-theme_override_styles/normal = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/hover = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/focus = SubResource("StyleBoxFlat_jf720")
-text = "Replay 123-1234-124"
-
-[node name="ReplayButton18" type="Button" parent="MarginContainer/VBoxContainer/Columns/ScrollContainer/Content"]
-layout_mode = 2
-theme_override_styles/normal = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/hover = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/focus = SubResource("StyleBoxFlat_jf720")
-text = "Replay 123-1234-124"
-
-[node name="ReplayButton19" type="Button" parent="MarginContainer/VBoxContainer/Columns/ScrollContainer/Content"]
-layout_mode = 2
-theme_override_styles/normal = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/hover = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/focus = SubResource("StyleBoxFlat_jf720")
-text = "Replay 123-1234-124"
-
-[node name="ReplayButton20" type="Button" parent="MarginContainer/VBoxContainer/Columns/ScrollContainer/Content"]
-layout_mode = 2
-theme_override_styles/normal = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/hover = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/focus = SubResource("StyleBoxFlat_jf720")
-text = "Replay 123-1234-124"
-
-[node name="ReplayButton21" type="Button" parent="MarginContainer/VBoxContainer/Columns/ScrollContainer/Content"]
-layout_mode = 2
-theme_override_styles/normal = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/hover = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/focus = SubResource("StyleBoxFlat_jf720")
-text = "Replay 123-1234-124"
-
-[node name="ReplayButton22" type="Button" parent="MarginContainer/VBoxContainer/Columns/ScrollContainer/Content"]
-layout_mode = 2
-theme_override_styles/normal = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/hover = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/focus = SubResource("StyleBoxFlat_jf720")
-text = "Replay 123-1234-124"
-
-[node name="ReplayButton23" type="Button" parent="MarginContainer/VBoxContainer/Columns/ScrollContainer/Content"]
-layout_mode = 2
-theme_override_styles/normal = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/hover = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/focus = SubResource("StyleBoxFlat_jf720")
-text = "Replay 123-1234-124"
-
-[node name="ReplayButton24" type="Button" parent="MarginContainer/VBoxContainer/Columns/ScrollContainer/Content"]
-layout_mode = 2
-theme_override_styles/normal = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/hover = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/focus = SubResource("StyleBoxFlat_jf720")
-text = "Replay 123-1234-124"
-
-[node name="ReplayButton25" type="Button" parent="MarginContainer/VBoxContainer/Columns/ScrollContainer/Content"]
-layout_mode = 2
-theme_override_styles/normal = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/hover = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/focus = SubResource("StyleBoxFlat_jf720")
-text = "Replay 123-1234-124"
-
-[node name="ReplayButton26" type="Button" parent="MarginContainer/VBoxContainer/Columns/ScrollContainer/Content"]
-layout_mode = 2
-theme_override_styles/normal = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/hover = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/focus = SubResource("StyleBoxFlat_jf720")
-text = "Replay 123-1234-124"
-
-[node name="ReplayButton27" type="Button" parent="MarginContainer/VBoxContainer/Columns/ScrollContainer/Content"]
-layout_mode = 2
-theme_override_styles/normal = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/hover = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/focus = SubResource("StyleBoxFlat_jf720")
-text = "Replay 123-1234-124"
-
-[node name="ReplayButton28" type="Button" parent="MarginContainer/VBoxContainer/Columns/ScrollContainer/Content"]
-layout_mode = 2
-theme_override_styles/normal = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/hover = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/focus = SubResource("StyleBoxFlat_jf720")
-text = "Replay 123-1234-124"
-
-[node name="ReplayButton29" type="Button" parent="MarginContainer/VBoxContainer/Columns/ScrollContainer/Content"]
-layout_mode = 2
-theme_override_styles/normal = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/hover = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/focus = SubResource("StyleBoxFlat_jf720")
-text = "Replay 123-1234-124"
-
-[node name="ReplayButton30" type="Button" parent="MarginContainer/VBoxContainer/Columns/ScrollContainer/Content"]
-layout_mode = 2
-theme_override_styles/normal = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/hover = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_jf720")
-theme_override_styles/focus = SubResource("StyleBoxFlat_jf720")
-text = "Replay 123-1234-124"
+text = "Parry and Parry Break"
 
 [node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer/Columns"]
 layout_mode = 2
@@ -309,34 +78,4 @@ layout_mode = 2
 text = "Play"
 
 [connection signal="visibility_changed" from="." to="." method="_on_visibility_changed"]
-[connection signal="pressed" from="MarginContainer/VBoxContainer/Columns/ScrollContainer/Content/ReplayButton" to="." method="_on_toggle_battle_default_pressed"]
-[connection signal="pressed" from="MarginContainer/VBoxContainer/Columns/ScrollContainer/Content/ReplayButton2" to="." method="_on_toggle_battle_default_pressed"]
-[connection signal="pressed" from="MarginContainer/VBoxContainer/Columns/ScrollContainer/Content/ReplayButton3" to="." method="_on_toggle_battle_default_pressed"]
-[connection signal="pressed" from="MarginContainer/VBoxContainer/Columns/ScrollContainer/Content/ReplayButton4" to="." method="_on_toggle_battle_default_pressed"]
-[connection signal="pressed" from="MarginContainer/VBoxContainer/Columns/ScrollContainer/Content/ReplayButton5" to="." method="_on_toggle_battle_default_pressed"]
-[connection signal="pressed" from="MarginContainer/VBoxContainer/Columns/ScrollContainer/Content/ReplayButton6" to="." method="_on_toggle_battle_default_pressed"]
-[connection signal="pressed" from="MarginContainer/VBoxContainer/Columns/ScrollContainer/Content/ReplayButton7" to="." method="_on_toggle_battle_default_pressed"]
-[connection signal="pressed" from="MarginContainer/VBoxContainer/Columns/ScrollContainer/Content/ReplayButton8" to="." method="_on_toggle_battle_default_pressed"]
-[connection signal="pressed" from="MarginContainer/VBoxContainer/Columns/ScrollContainer/Content/ReplayButton9" to="." method="_on_toggle_battle_default_pressed"]
-[connection signal="pressed" from="MarginContainer/VBoxContainer/Columns/ScrollContainer/Content/ReplayButton10" to="." method="_on_toggle_battle_default_pressed"]
-[connection signal="pressed" from="MarginContainer/VBoxContainer/Columns/ScrollContainer/Content/ReplayButton11" to="." method="_on_toggle_battle_default_pressed"]
-[connection signal="pressed" from="MarginContainer/VBoxContainer/Columns/ScrollContainer/Content/ReplayButton12" to="." method="_on_toggle_battle_default_pressed"]
-[connection signal="pressed" from="MarginContainer/VBoxContainer/Columns/ScrollContainer/Content/ReplayButton13" to="." method="_on_toggle_battle_default_pressed"]
-[connection signal="pressed" from="MarginContainer/VBoxContainer/Columns/ScrollContainer/Content/ReplayButton14" to="." method="_on_toggle_battle_default_pressed"]
-[connection signal="pressed" from="MarginContainer/VBoxContainer/Columns/ScrollContainer/Content/ReplayButton15" to="." method="_on_toggle_battle_default_pressed"]
-[connection signal="pressed" from="MarginContainer/VBoxContainer/Columns/ScrollContainer/Content/ReplayButton16" to="." method="_on_toggle_battle_default_pressed"]
-[connection signal="pressed" from="MarginContainer/VBoxContainer/Columns/ScrollContainer/Content/ReplayButton17" to="." method="_on_toggle_battle_default_pressed"]
-[connection signal="pressed" from="MarginContainer/VBoxContainer/Columns/ScrollContainer/Content/ReplayButton18" to="." method="_on_toggle_battle_default_pressed"]
-[connection signal="pressed" from="MarginContainer/VBoxContainer/Columns/ScrollContainer/Content/ReplayButton19" to="." method="_on_toggle_battle_default_pressed"]
-[connection signal="pressed" from="MarginContainer/VBoxContainer/Columns/ScrollContainer/Content/ReplayButton20" to="." method="_on_toggle_battle_default_pressed"]
-[connection signal="pressed" from="MarginContainer/VBoxContainer/Columns/ScrollContainer/Content/ReplayButton21" to="." method="_on_toggle_battle_default_pressed"]
-[connection signal="pressed" from="MarginContainer/VBoxContainer/Columns/ScrollContainer/Content/ReplayButton22" to="." method="_on_toggle_battle_default_pressed"]
-[connection signal="pressed" from="MarginContainer/VBoxContainer/Columns/ScrollContainer/Content/ReplayButton23" to="." method="_on_toggle_battle_default_pressed"]
-[connection signal="pressed" from="MarginContainer/VBoxContainer/Columns/ScrollContainer/Content/ReplayButton24" to="." method="_on_toggle_battle_default_pressed"]
-[connection signal="pressed" from="MarginContainer/VBoxContainer/Columns/ScrollContainer/Content/ReplayButton25" to="." method="_on_toggle_battle_default_pressed"]
-[connection signal="pressed" from="MarginContainer/VBoxContainer/Columns/ScrollContainer/Content/ReplayButton26" to="." method="_on_toggle_battle_default_pressed"]
-[connection signal="pressed" from="MarginContainer/VBoxContainer/Columns/ScrollContainer/Content/ReplayButton27" to="." method="_on_toggle_battle_default_pressed"]
-[connection signal="pressed" from="MarginContainer/VBoxContainer/Columns/ScrollContainer/Content/ReplayButton28" to="." method="_on_toggle_battle_default_pressed"]
-[connection signal="pressed" from="MarginContainer/VBoxContainer/Columns/ScrollContainer/Content/ReplayButton29" to="." method="_on_toggle_battle_default_pressed"]
-[connection signal="pressed" from="MarginContainer/VBoxContainer/Columns/ScrollContainer/Content/ReplayButton30" to="." method="_on_toggle_battle_default_pressed"]
 [connection signal="pressed" from="MarginContainer/VBoxContainer/Columns/VBoxContainer/PlayButton" to="." method="_on_play_button_pressed"]

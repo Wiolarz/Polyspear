@@ -5,42 +5,41 @@ func _ready():
 
 
 func _clear_tabs():
-	$VBox/Tutorials.hide()
-	$VBox/Puzzles.hide()
-	$VBox/CampaignBattles.hide()
-	$VBox/WikiSymbols.hide()
-	$VBox/WikiMagic.hide()
+	for child in $MainContainer.get_children():
+		child.hide()
+	$MainContainer/TopMenu.show()
+
 
 
 func _on_tutorial_button_pressed():
 	_clear_tabs()
-	$VBox/Tutorials.show()
+	$MainContainer/Tutorials.show()
 
 
 func _on_puzzle_button_pressed():
 	_clear_tabs()
-	$VBox/Puzzles.show()
+	$MainContainer/Puzzles.show()
 
 
 func _on_campaign_button_pressed():
 	_clear_tabs()
-	$VBox/CampaignBattles.show()
+	$MainContainer/CampaignBattles.show()
 
 
 func _on_symbols_wiki_button_pressed():
 	_clear_tabs()
-	$VBox/WikiSymbols.show()
+	$MainContainer/WikiSymbols.show()
 
 
 func _on_magic_wiki_button_pressed():
 	_clear_tabs()
-	$VBox/WikiMagic.show()
+	$MainContainer/WikiMagic.show()
 
 
 func _on_tabs_tab_changed(tab_index : int):
 	CFG.player_options.last_selected_learn_Tab = tab_index
 	CFG.save_player_options()
-	$VBox/HBoxContainer/TabBar.current_tab = tab_index
+	$MainContainer/TopMenu/TabBar.current_tab = tab_index
 	match tab_index:
 		0: pass  # disabled
 		1: _on_tutorial_button_pressed()

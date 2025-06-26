@@ -972,8 +972,13 @@ func planning_input(tile_coord : Vector2i, is_it_pressed : bool) -> void:
 
 #endregion Painting
 
+
+#region UI
+
 func _on_unit_magic_effect(unit : Unit) -> void:
 	_unit_to_unit_form[unit].set_effects()
+
+#endregion UI
 
 
 #region Scripted Battles
@@ -984,6 +989,5 @@ func _on_unit_death() -> void:
 
 	var current_event := BattleEventDescription.generate_current_battle_event(_battle_grid_state)
 	_scripted_battle.show_text_bubbles(current_event)
-
 
 #endregion Scripted Battles

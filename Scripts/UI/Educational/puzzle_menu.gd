@@ -1,9 +1,5 @@
-extends ContentBrowser
+extends ScriptedBattleBrowser
 
-
-var _battle : ScriptedBattle :
-	get:
-		return _selected_item as ScriptedBattle
 
 @onready var player_side : SpinBox = $MarginContainer/VBoxContainer/Columns/VBoxContainer/SpinBox
 @onready var ai_difficulty_selection : OptionButton = $MarginContainer/VBoxContainer/Columns/VBoxContainer/AIDifficulty
@@ -26,11 +22,6 @@ func _set_types():
 	content_folder_path = CFG.PUZZLE_CONTENT_PATH
 
 
-func get_description() -> String:
-	return _battle.scenario_name + "\n\n" + _battle.description
-
-
 func activate_content() -> void:
 	var bot_path : String =  CFG.BATTLE_BOTS_PATH + ai_difficulty_selection.get_item_text(ai_difficulty_selection.get_selected())
-
-	IM.start_scripted_battle(_battle, bot_path, player_side.value - 1)
+	IM.start_scripted_battle(_battle, bot_path, int(player_side.value) - 1)

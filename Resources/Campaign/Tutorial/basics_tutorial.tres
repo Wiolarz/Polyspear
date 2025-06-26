@@ -1,18 +1,12 @@
-[gd_resource type="Resource" script_class="ScriptedBattle" load_steps=32 format=3 uid="uid://bbe3vxkni2qp0"]
+[gd_resource type="Resource" script_class="ScriptedBattle" load_steps=26 format=3 uid="uid://bbe3vxkni2qp0"]
 
 [ext_resource type="Script" path="res://Resources/Campaign/scripted_battle.gd" id="1_oii0p"]
 [ext_resource type="Script" path="res://Resources/Presets/preset_army.gd" id="1_wtwkx"]
 [ext_resource type="Resource" uid="uid://bwyu6qg7dsisg" path="res://Resources/Battle/Units/Classic/orc1.tres" id="2_1vjmh"]
 [ext_resource type="Resource" uid="uid://dx5rphj40ljm1" path="res://Resources/Battle/Units/Classic/elf1.tres" id="3_lbmjq"]
 [ext_resource type="Resource" uid="uid://cjg1axmjp3nh7" path="res://Resources/Battle/Battle_Maps/basic5x5.tres" id="4_1gglu"]
-[ext_resource type="Texture2D" uid="uid://ft461wwhtywb" path="res://Art/battle_map/blue_player_spawn.png" id="6_r61h8"]
-[ext_resource type="Texture2D" uid="uid://bh08w1pqf7vni" path="res://Art/units/orc/orc_axe_fighter.png" id="6_tkuxg"]
 [ext_resource type="Script" path="res://Resources/Campaign/battle_event_description.gd" id="6_vbqiu"]
 [ext_resource type="Script" path="res://Resources/Campaign/text_bubble.gd" id="7_gajqr"]
-[ext_resource type="Texture2D" uid="uid://df7u0x5884v74" path="res://Art/battle_map/grass_tile.png" id="8_het6q"]
-[ext_resource type="Texture2D" uid="uid://ba68ce0dm6at6" path="res://Art/elf_spearmen.png" id="11_2q7b3"]
-[ext_resource type="Texture2D" uid="uid://hemq1q4l7xbk" path="res://Art/items/blue_axe.png" id="12_un4nv"]
-[ext_resource type="Texture2D" uid="uid://3hnweulxtbex" path="res://Art/items/spear.png" id="13_2mqsi"]
 
 [sub_resource type="Resource" id="Resource_soodh"]
 script = ExtResource("1_wtwkx")
@@ -30,6 +24,7 @@ script = ExtResource("6_vbqiu")
 state_battle_is_in = "summonning"
 current_turn = -1
 dead_units = Array[String]([])
+current_army_index = 0
 selected_unit = "null"
 
 [sub_resource type="Resource" id="Resource_kmuiw"]
@@ -38,7 +33,7 @@ script = ExtResource("7_gajqr")
 prerequisite = SubResource("Resource_qmhvi")
 title = "Deploy Phase"
 text = "At the start of every battle every army has to sequentially place their every unit of their starting tiles. Once all units are placed the battle starts. To place your unit select it from the bottom bar"
-icon = ExtResource("6_tkuxg")
+icon_path = "res://Art/units/new_classic/orc_grunt.png"
 
 [sub_resource type="Resource" id="Resource_jaw4x"]
 resource_name = "Selected spearmen unit"
@@ -46,6 +41,7 @@ script = ExtResource("6_vbqiu")
 state_battle_is_in = "summonning"
 current_turn = -1
 dead_units = Array[String]([])
+current_army_index = 0
 selected_unit = "orc1"
 
 [sub_resource type="Resource" id="Resource_oyada"]
@@ -54,7 +50,7 @@ script = ExtResource("7_gajqr")
 prerequisite = SubResource("Resource_jaw4x")
 title = "Placing Units"
 text = "Now Click on one of your starting tiles to place your selected unit."
-icon = ExtResource("6_r61h8")
+icon_path = "res://Art/battle_map/blue_player_spawn.png"
 
 [sub_resource type="Resource" id="Resource_7hh6n"]
 resource_name = "start of fighting phase"
@@ -62,6 +58,7 @@ script = ExtResource("6_vbqiu")
 state_battle_is_in = "fighting"
 current_turn = 0
 dead_units = Array[String]([])
+current_army_index = 0
 selected_unit = "null"
 
 [sub_resource type="Resource" id="Resource_anbnn"]
@@ -71,15 +68,16 @@ prerequisite = SubResource("Resource_7hh6n")
 title = "Selecting Unit"
 text = "End of the placement phase is announced with special messege as well the transformation of summoning tiles into a basic grass tiles.
 In order to move your units you have to select them."
-icon = ExtResource("6_tkuxg")
+icon_path = "res://Art/units/new_classic/orc_grunt.png"
 
 [sub_resource type="Resource" id="Resource_sblun"]
-resource_name = "Selected spearmen during battle"
+resource_name = "Selected unit during battle"
 script = ExtResource("6_vbqiu")
 state_battle_is_in = "fighting"
 current_turn = 0
 dead_units = Array[String]([])
-selected_unit = "Spearmen"
+current_army_index = 0
+selected_unit = "any"
 
 [sub_resource type="Resource" id="Resource_yf0sj"]
 resource_name = "Moving around"
@@ -88,7 +86,7 @@ prerequisite = SubResource("Resource_sblun")
 title = "Moving around"
 text = "Choose an adjacent tile which are highlighet with white arrows point from the selected unit.
 "
-icon = ExtResource("8_het6q")
+icon_path = "res://Art/battle_map/grass_tile.png"
 
 [sub_resource type="Resource" id="Resource_8pgpk"]
 resource_name = "Enemy was killed"
@@ -96,6 +94,7 @@ script = ExtResource("6_vbqiu")
 state_battle_is_in = "fighting"
 current_turn = -1
 dead_units = Array[String](["elf_1"])
+current_army_index = 0
 selected_unit = ""
 
 [sub_resource type="Resource" id="Resource_6rxrp"]
@@ -104,13 +103,14 @@ script = ExtResource("7_gajqr")
 prerequisite = SubResource("Resource_8pgpk")
 title = "You managed to kill an enemy"
 text = "All units in the game have only 1 health point, just hit them where they don't have any defenses."
-icon = ExtResource("11_2q7b3")
+icon_path = "res://Art/elf_spearmen.png"
 
 [sub_resource type="Resource" id="Resource_vsk03"]
 script = ExtResource("6_vbqiu")
 state_battle_is_in = "fighting"
 current_turn = -1
 dead_units = Array[String](["orc_1"])
+current_army_index = 0
 selected_unit = ""
 
 [sub_resource type="Resource" id="Resource_ainhg"]
@@ -120,13 +120,14 @@ prerequisite = SubResource("Resource_vsk03")
 title = "Your Unit has been killed"
 text = "Enemy units can only kill your units if you walk into their spear or stay in front of them.
 To win try to step away and strike them from any side."
-icon = ExtResource("11_2q7b3")
+icon_path = "res://Art/elf_spearmen.png"
 
 [sub_resource type="Resource" id="Resource_ga363"]
 script = ExtResource("6_vbqiu")
 state_battle_is_in = "fighting"
 current_turn = 2
 dead_units = Array[String]([])
+current_army_index = 0
 selected_unit = ""
 
 [sub_resource type="Resource" id="Resource_mqhe2"]
@@ -135,13 +136,14 @@ script = ExtResource("7_gajqr")
 prerequisite = SubResource("Resource_ga363")
 title = "Dealing Damage"
 text = "Once Your Unit enters a tile near the side of the enemy sides where it has an Axe Symbol will swing at an enemy dealing damage."
-icon = ExtResource("12_un4nv")
+icon_path = "res://Art/items/blue_axe.png"
 
 [sub_resource type="Resource" id="Resource_xwwxr"]
 script = ExtResource("6_vbqiu")
 state_battle_is_in = "fighting"
 current_turn = 4
 dead_units = Array[String]([])
+current_army_index = 0
 selected_unit = ""
 
 [sub_resource type="Resource" id="Resource_gcjq6"]
@@ -150,7 +152,7 @@ script = ExtResource("7_gajqr")
 prerequisite = SubResource("Resource_xwwxr")
 title = "Enemy Spears"
 text = "Enemy Spears behave in the same way as your axes, but in addition they also swing during your turn if you were to step on the tile they are pointing at."
-icon = ExtResource("13_2mqsi")
+icon_path = "res://Art/items/spear.png"
 
 [resource]
 script = ExtResource("1_oii0p")
