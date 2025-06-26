@@ -128,7 +128,7 @@ func _ready():
 	for index in buttons_units.size():
 		var button : OptionButton = buttons_units[index]
 		init_unit_button(button, index)
-	
+
 	bot_paths = FileSystemHelpers.list_files_in_folder(CFG.BATTLE_BOTS_PATH, true, true)
 	init_bots_button()
 

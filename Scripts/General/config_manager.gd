@@ -77,6 +77,7 @@ const SENTINEL_TILE_PATH = "res://Resources/World/World_tiles/sentinel.tres"
 const BATTLE_MAP_TILES_PATH = "res://Resources/Battle/Battle_tiles/"
 const WORLD_MAP_TILES_PATH = "res://Resources/World/World_tiles/"
 const SYMBOLS_PATH = "res://Resources/Battle/Symbols/"
+const SPELLS_PATH = "res://Resources/Battle/Battle_Spells/"
 const BATTLE_BOTS_PATH = "res://Resources/Battle/Bots"
 
 const EMPTY_SYMBOL_PATH = "res://Resources/Battle/Symbols/empty.tres"
@@ -93,6 +94,12 @@ const PLAYER_COLORS_PATH = "res://Art/player_colors/"
 # System folders
 const REPLAY_DIRECTORY = "user://replays/"
 const PLAYER_OPTIONS_PATH = "user://player_options.tres"
+
+
+const TUTORIAL_CONTENT_PATH = "res://Resources/Campaign/Tutorial/"
+const PUZZLE_CONTENT_PATH = "res://Resources/Campaign/Puzzle/"
+const CAMPAIGN_BATTLES_ELVES_PATH = "res://Resources/Campaign/Elves/"
+
 
 var RACE_ELVES : DataRace = load("res://Resources/Races/elf.tres")
 var RACE_ORCS : DataRace = load("res://Resources/Races/orc.tres")
@@ -257,10 +264,25 @@ var DEFAULT_MODE_IS_BATTLE : bool :
 var AUTO_START_GAME : bool :
 	get: return player_options.autostart_map
 
+
+enum Main_Menu_Tabs {
+	SERVER = 0,
+	JOIN = 1,
+	SETTINGS = 2,
+	CREDITS = 3,
+	REPLAYS = 4,
+	LEARN = 5,
+}
+
+var LAST_OPENED_TAB : Main_Menu_Tabs :
+	get: return player_options.last_open_menu_tab
+
 var LAST_USED_BATTLE_PRESET_NAME : String :
 	get: return player_options.last_used_battle_preset_name
 var LAST_USED_WORLD_MAP : DataWorldMap : # TODO implement this
 	get: return player_options.last_used_world_map
+var LAST_SELECTED_LEARN_TAB : int :
+	get: return player_options.last_selected_learn_Tab
 
 var FULLSCREEN_AUTO_TOGGLE : bool :
 	get: return player_options.keep_main_menu_windowed
