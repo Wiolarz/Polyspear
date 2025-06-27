@@ -32,6 +32,7 @@ func _ready():
 		tier_panel.init_tier_panel(tier_idx, null)
 		tier_panel.talent_chosen.connect(_selected_talent)
 		tier_panel.ability_chosen.connect(_selected_ability)
+		tier_panel.set_hero_level(1)
 
 
 func load_level_up_screen(data_hero : DataHero) -> void:
@@ -41,7 +42,10 @@ func load_level_up_screen(data_hero : DataHero) -> void:
 
 
 func _on_hero_level_value_item_selected(_index : int):
-	$HeroLevelValue.text = "Hero Level: " + str($HeroLevelValue.selected + 1)
+	var hero_level : int = $HeroLevelValue.selected + 1
+	$HeroLevelValue.text = "Hero Level: " + str(hero_level)
+	for tier_panel : PanelContainer in tier_panels.get_children():
+		tier_panel.set_hero_level(hero_level)
 
 
 func apply_talents_and_abilities() -> void:
