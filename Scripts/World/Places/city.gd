@@ -56,7 +56,7 @@ func capture(new_faction : Faction) -> void:
 func on_end_of_round() -> void:
 	faction.goods.add(Goods.new(0, 1, 0))
 	for building in buildings:
-		building.increase_discount_counter()
+		building.on_end_of_round()
 		if building.name == "sawmill":
 			faction.goods.add(Goods.new(3, 0, 0))
 
@@ -118,18 +118,18 @@ func unit_has_required_building(unit : DataUnit) -> bool:
 	return has_built(unit.required_building)
 
 func get_unit_cost(unit : DataUnit) -> Goods:
-	var discount_counter : int = get_building_discount_counter(unit.required_building)
-	return Goods.new(unit.cost.wood / (1 + discount_counter), unit.cost.iron / (1 + discount_counter), unit.cost.ruby / (1 + discount_counter))
+	var discount : Goods = get_building(unit.required_building).apply_discounts(unit.cost)
+	return discount
 
-func reset_building_discount(building : DataBuilding) -> void:
+func reset_building_discounts(building : DataBuilding) -> void:
 	if building.is_outpost_building():
 		for already_built in faction.outpost_buildings:
 			if already_built.name == building.name:
-				already_built.reset_discount_counter()
+				already_built.reset_discounts()
 				return
 	for already_built in buildings:
 		if already_built.name == building.name:
-			already_built.reset_discount_counter()
+			already_built.reset_discounts()
 			return
 
 #endregion Units
@@ -171,15 +171,15 @@ func can_build(building : DataBuilding) -> bool:
 
 	return building.requirements.all(has_built)
 
-func get_building_discount_counter(building : DataBuilding) -> int:
+func get_building(building : DataBuilding) -> DataBuilding:
 	if building.is_outpost_building():
 		for already_built in faction.outpost_buildings:
 			if already_built.name == building.name:
-				return already_built.discount_counter
+				return already_built
 	for already_built in buildings:
 		if already_built.name == building.name:
-			return already_built.discount_counter
-	return 0
+			return already_built
+	return null
 
 #endregion Buildings
 
