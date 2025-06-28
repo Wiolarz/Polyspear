@@ -1784,6 +1784,8 @@ class ArmyInBattleState:
 
 		## Applying hero passive effects
 		for passive_effect in army_reference.hero.passive_effects:
+			if not passive_effect:  # TEMP null check until all pasives in level_up_screen are present
+				continue
 			match passive_effect.passive_name:
 				"magic_weapons":
 					var effect : BattleMagicEffect = load(CFG.hero_magic_weapon_effect)
@@ -1804,7 +1806,7 @@ class ArmyInBattleState:
 						if symbol.attack_power != 0:
 							symbol.push_power += 1
 				"second_wind":
-					var effect : BattleMagicEffect = load(CFG.hero_passive_second_wind_effect)
+					var effect : BattleMagicEffect = load(CFG.hero_second_wind_effect)
 					var success : bool = result.try_adding_magic_effect(effect)
 					assert(success, "couldn't add passive effect to a hero unit upon it's placement")
 

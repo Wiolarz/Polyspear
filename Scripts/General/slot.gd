@@ -23,7 +23,11 @@ var battle_bot_path : String
 
 ## for battle only mode
 var units_list : Array[DataUnit] = [null,null,null,null,null] #TODO refactor to change variable to private as we have a clean getter for it
+
+## Editable by the level up screen data_hero
 var slot_hero : DataHero = null
+## hero_data template to compare to and reset state to
+var slot_hero_template : DataHero = null
 
 # for World mode only
 var race : DataRace = null

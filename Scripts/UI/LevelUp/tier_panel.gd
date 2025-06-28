@@ -32,7 +32,7 @@ var number_of_avalaible_abilities : int
 	$MainContainer/TierSkills/MagicSkillButton,
 ]
 
-# STUB
+## called by _ready in level_up_screen
 func init_tier_panel(tier_ : int, _race : DataRace) -> void:
 	tier_name.text = "TIER - " + str(tier_ + 1)
 	tier = tier_
@@ -40,39 +40,40 @@ func init_tier_panel(tier_ : int, _race : DataRace) -> void:
 	for ability_button in ability_buttons:
 		button_idx += 1
 		var lambda = func on_click():
-			ability_pressed(button_idx)
+			_ability_pressed(button_idx)
 		ability_button.pressed.connect(lambda)
 
 	button_idx = -1
 	for talent_button in talent_buttons:
 		button_idx += 1
 		var lambda = func on_click():
-			talent_pressed(button_idx)
+			_talent_pressed(button_idx)
 		talent_button.pressed.connect(lambda)
 
+#region Hero level
 
 func set_hero_level(hero_level_ : int) -> void:
 	hero_level = hero_level_
 
 	number_of_avalaible_abilities = (hero_level + 1) - (((tier + 1) * 2) - 1)
-	print("number_of_avalaible_abilities", tier, number_of_avalaible_abilities)
+	#print("number_of_avalaible_abilities", tier, number_of_avalaible_abilities)
 
 	var can_choose_talent : bool = true
 	if tier == 0 and hero_level == 1:
 		can_choose_talent = false
 	elif (hero_level - (((tier + 1) * 2) - 1)) < 0:  # 3 or 5
 		can_choose_talent = false
-	print("talents", tier, can_choose_talent)
+	#print("talents", tier, can_choose_talent)
 	if not can_choose_talent:
-		disable_talents()
+		_disable_talents()
 	else:
 		for talent_button in talent_buttons:   # enable buttons
 			talent_button.disabled = false
 
 	if number_of_avalaible_abilities == 1:
-		disable_abilities(true)
+		_disable_abilities(true)
 	elif number_of_avalaible_abilities < 1:
-		disable_abilities(false)
+		_disable_abilities(false)
 	else:
 		var number_of_selected_abilities : int = 0
 		for ability_button in ability_buttons:  # enable buttons
@@ -83,20 +84,19 @@ func set_hero_level(hero_level_ : int) -> void:
 				ability_button.disabled = false
 
 
-
-func disable_talents() -> void:
+func _disable_talents() -> void:
 	talent_chosen.emit(tier, 0)  # deselects
 	for talent_button in talent_buttons:
 		talent_button.button_pressed = false
 		talent_button.disabled = true
 
 
-func disable_abilities(hero_can_take_one_ability : bool = false) -> void:
+func _disable_abilities(hero_can_take_one_ability : bool = false) -> void:
 	if not hero_can_take_one_ability: # disable all abilities
 		for button_idx in range(3):
 			if ability_buttons[button_idx].button_pressed:
 				ability_buttons[button_idx].button_pressed = false
-				ability_pressed(button_idx) # Deselects
+				_ability_pressed(button_idx) # Deselects
 
 		for ability_button in ability_buttons:
 			ability_button.disabled = true
@@ -110,7 +110,7 @@ func disable_abilities(hero_can_take_one_ability : bool = false) -> void:
 			continue
 		elif ability_buttons[button_idx].button_pressed:
 			ability_buttons[button_idx].button_pressed = false
-			ability_pressed(button_idx) # Deselects
+			_ability_pressed(button_idx) # Deselects
 
 
 	for ability_button in ability_buttons:
@@ -119,8 +119,12 @@ func disable_abilities(hero_can_take_one_ability : bool = false) -> void:
 		else:
 			ability_button.disabled = false
 
+#endregion Hero level
 
-func ability_pressed(pressed_button_idx : int):
+
+#region Buttons
+
+func _ability_pressed(pressed_button_idx : int):
 	print("ability " + str(pressed_button_idx))
 
 	if not ability_buttons[pressed_button_idx].button_pressed:  # Deselects
@@ -155,7 +159,7 @@ func ability_pressed(pressed_button_idx : int):
 		ability_buttons[buttons_indexes[0]].disabled = true
 
 
-func talent_pressed(pressed_button_idx : int):
+func _talent_pressed(pressed_button_idx : int):
 	print("talent " + str(pressed_button_idx))
 	if talent_buttons[pressed_button_idx].button_pressed:
 		talent_chosen.emit(tier, pressed_button_idx)
@@ -169,3 +173,4 @@ func talent_pressed(pressed_button_idx : int):
 		if pressed_button_idx != button_idx:
 			talent_button.button_pressed = false
 
+#endregion Buttons

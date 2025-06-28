@@ -151,18 +151,18 @@ const _hero_talent_wind_weapons : String = "res://Resources/Battle/Hero_Passives
 													load(_hero_talent_magic_weapons),
 													load(_hero_talent_weak_weapons)]
 
-@onready var _tier_2_talents : Array[HeroPassive] = []
+@onready var _tier_2_talents : Array[HeroPassive] = [null, null, null]
 
-@onready var _tier_3_talents : Array[HeroPassive] = []
+@onready var _tier_3_talents : Array[HeroPassive] = [null, null, null]
 
 @onready var talents : Array = [_tier_1_talents, _tier_2_talents, _tier_3_talents]
 
 
-@onready var _tier_1_abilities : Array[HeroPassive] = []
+@onready var _tier_1_abilities : Array[HeroPassive] = [null, null, null]
 
-@onready var _tier_2_abilities : Array[HeroPassive] = []
+@onready var _tier_2_abilities : Array[HeroPassive] = [null, null, null]
 
-@onready var _tier_3_abilities : Array[HeroPassive] = []
+@onready var _tier_3_abilities : Array[HeroPassive] = [null, null, null]
 
 @onready var abilities : Array = [_tier_1_abilities, _tier_2_abilities, _tier_3_abilities]
 

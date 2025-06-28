@@ -10,7 +10,7 @@ extends CanvasLayer
 
 var hidden : bool = true
 
-var selected_hero : Hero
+var selected_hero : DataHero
 
 ## Each number represents choice from subsequent tier [br]
 ##  0 - No Talent taken [br]
@@ -36,6 +36,7 @@ func _ready():
 
 
 func load_level_up_screen(data_hero : DataHero) -> void:
+	selected_hero = data_hero  # not duplicated - confirm button will edit the slot data_hero
 	$HeroLevelValue.set_item_text(0, "1")
 	$HeroLevelValue.selected = data_hero.starting_level - 1
 	$HeroLevelValue.text = "Hero Level: " + str($HeroLevelValue.selected + 1)
@@ -49,15 +50,17 @@ func _on_hero_level_value_item_selected(_index : int):
 
 
 func apply_talents_and_abilities() -> void:
-	selected_hero.passive_effects = []
 	for tier in range(3):
 		var talent_idx = chosen_talents[tier]
 		if talent_idx > 0:
 			var new_talent : HeroPassive = CFG.talents[tier][talent_idx - 1]
-			selected_hero.passive_effects.append(new_talent)
+			if new_talent not in selected_hero.starting_passives:
+				selected_hero.starting_passives.append(new_talent)
 
-		for ability in chosen_abilities[tier]:
-			selected_hero.passive_effects.append(CFG.abilities[tier][ability - 1])
+		for ability_idx : int in chosen_abilities[tier]:
+			var ability : HeroPassive = CFG.abilities[tier][ability_idx - 1]
+			if ability not in selected_hero.starting_passives:
+				selected_hero.starting_passives.append(ability)
 
 
 func _selected_talent(tier : int, button_idx : int) -> void:
@@ -88,5 +91,6 @@ func _on_button_hide_pressed():
 
 
 func _on_button_confirm_pressed():
+	apply_talents_and_abilities()
 	hidden = true
 	hide()

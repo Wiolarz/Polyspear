@@ -261,13 +261,13 @@ func set_army(units_list : Array[DataUnit]):
 		set_unit(buttons_units[index], units_list[index])
 
 
-func set_hero_option_button(slot_hero : DataHero) -> void:
-	if not slot_hero:
+func set_hero_option_button(slot_hero_template : DataHero) -> void:
+	if not slot_hero_template:
 		level_up_button.disabled = true
 		hero_list.select(0)
 		return
 	for idx in hero_list.item_count:
-		if slot_hero.resource_path.ends_with(hero_list.get_item_text(idx)):
+		if slot_hero_template.resource_path.ends_with(hero_list.get_item_text(idx)):
 			hero_list.select(idx)
 			level_up_button.disabled = false
 			return
