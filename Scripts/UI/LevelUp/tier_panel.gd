@@ -38,6 +38,9 @@ func init_tier_panel(tier_ : int, _race : DataRace) -> void:
 	tier = tier_
 	var button_idx : int = -1
 	for ability_button in ability_buttons:
+		var ability : HeroPassive = CFG.abilities[tier][button_idx]
+		if ability: # TEMP null check until all pasives in level_up_screen are present
+			ability_button.text = ability.passive_name
 		button_idx += 1
 		var lambda = func on_click():
 			_ability_pressed(button_idx)
@@ -45,6 +48,9 @@ func init_tier_panel(tier_ : int, _race : DataRace) -> void:
 
 	button_idx = -1
 	for talent_button in talent_buttons:
+		var talent : HeroPassive = CFG.talents[tier][button_idx]
+		if talent:  # TEMP null check until all pasives in level_up_screen are present
+			talent_button.text = talent.passive_name
 		button_idx += 1
 		var lambda = func on_click():
 			_talent_pressed(button_idx)
