@@ -75,9 +75,9 @@ func go_to_map_editor():
 	map_editor.open_draw_menu()
 	BG.set_player_colors(CFG.NEUTRAL_COLOR)
 
+
 #region Hero Level Up
 
-## TEMP
 func show_hero_level_up(slot_index : int):
 	var slot : Slot = IM.game_setup_info.slots[slot_index]
 	var hero_data : DataHero = slot.slot_hero
@@ -95,6 +95,7 @@ func hide_hero_level_up():
 	hero_level_up._on_button_hide_pressed()
 
 #endregion Hero Level Up
+
 
 func show_in_game_menu():
 	in_game_menu.show()

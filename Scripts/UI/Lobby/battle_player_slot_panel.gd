@@ -61,6 +61,7 @@ func init_unit_button(button : OptionButton, index : int):
 		button.add_item(unit_path.trim_prefix(CFG.UNITS_PATH))
 	button.item_selected.connect(unit_in_army_changed.bind(index))
 
+
 func init_bots_button():
 	button_bot.clear()
 	for bot_name in bot_paths:

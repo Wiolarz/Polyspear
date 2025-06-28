@@ -37,6 +37,8 @@ func _ready():
 
 func load_level_up_screen(data_hero : DataHero) -> void:
 	selected_hero = data_hero  # not duplicated - confirm button will edit the slot data_hero
+	for tier_panel in tier_panels.get_children():
+		tier_panel.set_hero_level(1)
 	$HeroLevelValue.set_item_text(0, "1")
 	$HeroLevelValue.selected = data_hero.starting_level - 1
 	$HeroLevelValue.text = "Hero Level: " + str($HeroLevelValue.selected + 1)
