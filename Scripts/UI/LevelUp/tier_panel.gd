@@ -4,7 +4,7 @@ extends PanelContainer
 
 signal talent_chosen(tier_idx : int, button_idx : int)
 
-signal ability_chosen(tier_idx : int, button_idx : int, diselect : bool)
+signal ability_chosen(tier_idx : int, button_idx : int, deselect : bool)
 
 
 var tier : int
@@ -13,10 +13,10 @@ var hero_level : int
 ## tiers += 1 (tiers go from 1-3, not 0-2)
 ## level corresponds with number of avalaible_abilities directly 1-1 3-3 etc.
 ## but on a tier
-## (tier + 1) * 2) - 1 for tiers: 1, 3, 5
-## hero_level +1 for easier calucaltions so 2-7
-## Tier 1: lvl 1: 2-1 = 1 avalaible skill lvl 2: 3-1 = 2
-## Tier 2: lvl 3: 4 - 3 = 1
+## tier * 2 for tiers: 0, 2, 4
+## hero_level 1-6
+## Tier 1: lvl 1: 1 - 0 = 1 avalaible skill lvl 2: 2 - 0 = 2
+## Tier 2: lvl 3: 3-2 = 1 etc.
 var number_of_avalaible_abilities : int
 
 @onready var tier_name = $MainContainer/TierLabel
@@ -61,19 +61,19 @@ func init_tier_panel(tier_ : int, _race : DataRace) -> void:
 func set_hero_level(hero_level_ : int) -> void:
 	hero_level = hero_level_
 
-	number_of_avalaible_abilities = (hero_level + 1) - (((tier + 1) * 2) - 1)
+	number_of_avalaible_abilities = hero_level - (tier * 2)
 	#print("number_of_avalaible_abilities", tier, number_of_avalaible_abilities)
 
 	var can_choose_talent : bool = true
 	if tier == 0 and hero_level == 1:
 		can_choose_talent = false
-	elif (hero_level - (((tier + 1) * 2) - 1)) < 0:  # 3 or 5
+	elif (hero_level - (tier * 2)) <= 0:  # 3 or 5
 		can_choose_talent = false
 	#print("talents", tier, can_choose_talent)
 	if not can_choose_talent:
 		_disable_talents()
 	else:
-		for talent_button in talent_buttons:   # enable buttons
+		for talent_button in talent_buttons:   # enable talent buttons
 			talent_button.disabled = false
 
 	if number_of_avalaible_abilities == 1:
@@ -82,11 +82,11 @@ func set_hero_level(hero_level_ : int) -> void:
 		_disable_abilities(false)
 	else:
 		var number_of_selected_abilities : int = 0
-		for ability_button in ability_buttons:  # enable buttons
+		for ability_button in ability_buttons:  # check if buttons can be enabled
 			if ability_button.button_pressed:
 				number_of_selected_abilities += 1
 		if number_of_selected_abilities < 2:
-			for ability_button in ability_buttons:  # enable buttons
+			for ability_button in ability_buttons:  # enable ability buttons
 				ability_button.disabled = false
 
 
@@ -108,22 +108,21 @@ func _disable_abilities(hero_can_take_one_ability : bool = false) -> void:
 			ability_button.disabled = true
 		return
 
-	# hero_can_take_one_ability
-	var one_is_chosen : bool = false
+	# hero_can_take_one_ability Region:
+
+	var one_is_chosen : bool = false  # first option selected is not touched
 	for button_idx in range(3):
 		if ability_buttons[button_idx].button_pressed and not one_is_chosen:
-			one_is_chosen = true
-			continue
-		elif ability_buttons[button_idx].button_pressed:
+			one_is_chosen = true  # Ignore this one
+		elif ability_buttons[button_idx].button_pressed:  #
 			ability_buttons[button_idx].button_pressed = false
 			_ability_pressed(button_idx) # Deselects
 
-
-	for ability_button in ability_buttons:
+	for ability_button in ability_buttons:  # Disabling / Unlocking based on one_is_chosen
 		if one_is_chosen and not ability_button.button_pressed:  # disable other buttons
 			ability_button.disabled = true
 		else:
-			ability_button.disabled = false
+			ability_button.disabled = false  # unlock all buttons
 
 #endregion Hero level
 
@@ -131,8 +130,7 @@ func _disable_abilities(hero_can_take_one_ability : bool = false) -> void:
 #region Buttons
 
 func _ability_pressed(pressed_button_idx : int):
-	print("ability " + str(pressed_button_idx))
-
+	#print("ability " + str(pressed_button_idx))
 	if not ability_buttons[pressed_button_idx].button_pressed:  # Deselects
 		ability_chosen.emit(tier, pressed_button_idx, false)
 		for ability_button in ability_buttons:
@@ -166,7 +164,7 @@ func _ability_pressed(pressed_button_idx : int):
 
 
 func _talent_pressed(pressed_button_idx : int):
-	print("talent " + str(pressed_button_idx))
+	#print("talent " + str(pressed_button_idx))
 	if talent_buttons[pressed_button_idx].button_pressed:
 		talent_chosen.emit(tier, pressed_button_idx)
 	else:

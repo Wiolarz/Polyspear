@@ -5,7 +5,7 @@ extends CanvasLayer
 
 @onready var children = get_children()  # scene is static
 
-@onready var tier_panels : VBoxContainer = $TierPanels
+@onready var tier_panels_container : VBoxContainer = $TierPanels
 
 
 var hidden : bool = true
@@ -26,8 +26,9 @@ var chosen_abilities : Array = [[], [], []]
 
 ## Currently there is no difference between level up for various races so level up screen can be generated once
 func _ready():
+	$HeroLevelValue.set_item_text(0, "1")  # mockup cleanup
 	var tier_idx = -1
-	for tier_panel in tier_panels.get_children():
+	for tier_panel in tier_panels_container.get_children():
 		tier_idx += 1
 		tier_panel.init_tier_panel(tier_idx, null)
 		tier_panel.talent_chosen.connect(_selected_talent)
@@ -37,9 +38,8 @@ func _ready():
 
 func load_level_up_screen(data_hero : DataHero) -> void:
 	selected_hero = data_hero  # not duplicated - confirm button will edit the slot data_hero
-	for tier_panel in tier_panels.get_children():
-		tier_panel.set_hero_level(1)
-	$HeroLevelValue.set_item_text(0, "1")
+	for tier_panel in tier_panels_container.get_children():
+		tier_panel.set_hero_level(data_hero.starting_level)
 	$HeroLevelValue.selected = data_hero.starting_level - 1
 	$HeroLevelValue.text = "Hero Level: " + str($HeroLevelValue.selected + 1)
 
@@ -47,7 +47,7 @@ func load_level_up_screen(data_hero : DataHero) -> void:
 func _on_hero_level_value_item_selected(_index : int):
 	var hero_level : int = $HeroLevelValue.selected + 1
 	$HeroLevelValue.text = "Hero Level: " + str(hero_level)
-	for tier_panel : PanelContainer in tier_panels.get_children():
+	for tier_panel : PanelContainer in tier_panels_container.get_children():
 		tier_panel.set_hero_level(hero_level)
 
 
@@ -60,18 +60,18 @@ func apply_talents_and_abilities() -> void:
 				selected_hero.starting_passives.append(new_talent)
 
 		for ability_idx : int in chosen_abilities[tier]:
-			var ability : HeroPassive = CFG.abilities[tier][ability_idx - 1]
-			if ability not in selected_hero.starting_passives:
-				selected_hero.starting_passives.append(ability)
+			var new_ability : HeroPassive = CFG.abilities[tier][ability_idx - 1]
+			if new_ability not in selected_hero.starting_passives:
+				selected_hero.starting_passives.append(new_ability)
 
 
 func _selected_talent(tier : int, button_idx : int) -> void:
-	print(tier, button_idx)
+	#print(tier, button_idx)
 	chosen_talents[tier] = button_idx
 
 
 func _selected_ability(tier : int, button_idx : int, selected : bool) -> void:
-	print(tier, button_idx)
+	#print(tier, button_idx)
 	if selected:
 		chosen_abilities[tier].append(button_idx)
 		assert(chosen_abilities[tier].size() <= 2)
