@@ -118,18 +118,21 @@ func unit_has_required_building(unit : DataUnit) -> bool:
 	return has_built(unit.required_building)
 
 func get_unit_cost(unit : DataUnit) -> Goods:
-	var discount : Goods = get_building(unit.required_building).apply_discounts(unit.cost)
+	var required_building : DataBuilding = get_building(unit.required_building)
+	if not required_building:
+		return unit.cost
+	var discount : Goods = required_building.apply_discounts(unit.cost)
 	return discount
 
-func reset_building_discounts(building : DataBuilding) -> void:
+func on_purchase(building : DataBuilding) -> void:
 	if building.is_outpost_building():
 		for already_built in faction.outpost_buildings:
 			if already_built.name == building.name:
-				already_built.reset_discounts()
+				already_built.on_purchase()
 				return
 	for already_built in buildings:
 		if already_built.name == building.name:
-			already_built.reset_discounts()
+			already_built.on_purchase()
 			return
 
 #endregion Units

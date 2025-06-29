@@ -20,9 +20,9 @@ func apply_discounts(price : Goods) -> Goods:
 		price = discount.apply_discount(price)
 	return price
 
-func reset_discounts() -> void:
+func on_purchase() -> void:
 	for discount in discounts:
-		discount.reset_discount_counter()
+		discount.on_purchase()
 
 func is_outpost_building() -> bool:
 	return outpost_requirement != ""
