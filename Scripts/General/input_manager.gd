@@ -146,6 +146,7 @@ func go_to_map_editor():
 	in_map_editor = true
 	UI.go_to_map_editor()
 
+
 ## Full game - World game mode
 ## new game <=> world_state == null
 func _start_game_world(world_state : SerializableWorldState = null):

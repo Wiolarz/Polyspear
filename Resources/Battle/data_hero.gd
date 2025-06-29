@@ -10,12 +10,16 @@ extends Resource
 
 @export var starting_passives : Array[HeroPassive] = []
 
+
 ## COMMAND
 @export var max_army_size : int = 3
 
 ## GENERAL
 @export var max_movement_points : int = 3
 
+## Campaign
+##TODO make it also apply to custom battles
+@export var starting_level : int = 1
 
 static func get_network_id(hero : DataHero) -> String:
 	var splitted = hero.resource_path.split("/", false)

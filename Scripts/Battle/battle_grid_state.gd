@@ -230,6 +230,7 @@ func _process_symbols(unit : Unit, move_type : E.MoveType) -> bool:
 		return true
 	return false
 
+
 ## Returns true if Enemy counter_attack can kill the target [br]
 ## Starts animation for stabbing in case
 func _should_die_to_counter_attack(unit : Unit) -> bool:
@@ -825,7 +826,7 @@ func _kill_unit(target : Unit, killer_army : ArmyInBattleState = null) -> void:
 		match spell.name:
 			"Martyr":
 				target.effects.erase(spell)
-				target.effect_state_changed()
+				target.effect_state_changed()  # Visuals
 
 				for unit in target_army.units:
 					if replaced_target:
@@ -836,8 +837,19 @@ func _kill_unit(target : Unit, killer_army : ArmyInBattleState = null) -> void:
 							target = unit
 							new_target_pos = unit.coord
 							break
+			"Second Wind":
+				target.effects.erase(spell)
+				target.effect_state_changed()  # Visuals
+
+				#TODO consider getting info of the killer position to make it a knockback from them instead of just a push to the back
+
+				_push_enemy(target, GenericHexGrid.opposite_direction(target.unit_rotation), 3)
+
+				#_perform_teleport(replaced_target, new_target_pos, -1, true)
+				return
 
 	currently_processed_move_info.register_kill(target_army_index, target)
+
 
 	# killing starts - award exp
 	if spear_holding_killer_teams.size() > 0:
@@ -859,7 +871,6 @@ func _kill_unit(target : Unit, killer_army : ArmyInBattleState = null) -> void:
 						symbol.attack_power = effect.magic_weapon_durability
 
 
-
 	# removal of unit
 	target_army.kill_unit(target)
 	_remove_unit(target) # remove reference from hextile
@@ -872,6 +883,7 @@ func _kill_unit(target : Unit, killer_army : ArmyInBattleState = null) -> void:
 
 	if replaced_target: # "Martyr" spell quick hack
 		_perform_teleport(replaced_target, new_target_pos, -1, true) # martyr teleport temp fix
+
 
 	# trigger any post death spell effect
 	for spell in target.effects:
@@ -890,6 +902,7 @@ func _kill_unit(target : Unit, killer_army : ArmyInBattleState = null) -> void:
 	and units_on_board.has("orc_2"):
 		stalemate_failsafe_on = true
 		stalemate_failsafe_start = turn_counter
+
 
 ## Rare event when all players repeated their moves -> it pushes cyclone timer to activate next turn
 func end_stalemate() -> void:
@@ -1771,9 +1784,11 @@ class ArmyInBattleState:
 
 		## Applying hero passive effects
 		for passive_effect in army_reference.hero.passive_effects:
+			if not passive_effect:  # TEMP null check until all pasives in level_up_screen are present
+				continue
 			match passive_effect.passive_name:
 				"magic_weapons":
-					var effect : BattleMagicEffect = load(CFG.tier_2_passive_1)
+					var effect : BattleMagicEffect = load(CFG.hero_magic_weapon_effect)
 					var success : bool = result.try_adding_magic_effect(effect)
 					assert(success, "couldn't add passive effect to a hero unit upon it's placement")
 					for symbol in result.symbols:
@@ -1786,6 +1801,14 @@ class ArmyInBattleState:
 
 						if symbol.symbol_name == "empty": # TODO verify and note the choice in the documentation, if thats a proper way to verify symbol is empty
 							result.symbols[side] = weak_weapon.duplicate()
+				"wind_weapons":
+					for symbol in result.symbols:
+						if symbol.attack_power != 0:
+							symbol.push_power += 1
+				"second_wind":
+					var effect : BattleMagicEffect = load(CFG.hero_second_wind_effect)
+					var success : bool = result.try_adding_magic_effect(effect)
+					assert(success, "couldn't add passive effect to a hero unit upon it's placement")
 
 		return result
 
