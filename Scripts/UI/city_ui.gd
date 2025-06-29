@@ -77,7 +77,8 @@ func _refresh_units_to_buy():
 			if not city.unit_has_required_building(unit):
 				b.text += "\n" + "needs 🏛"
 			else:
-				b.text += "\n" + unit.cost.to_string_short("free")
+				var cost : Goods = city.get_unit_cost(unit)
+				b.text += "\n" + cost.to_string_short("free")
 			b.pressed.connect(_buy_unit.bind(unit))
 			b.disabled = true if not WM.selected_hero else \
 				(WS.check_recruit_unit(unit, city.coord, \
