@@ -368,6 +368,7 @@ void BattleManagerFast::_process_spell(UnitID uid, int8_t spell_id, Position tar
 				unit2.value().unit.try_apply_martyr(uid);
 			}
 			break;
+		/// Add new spell behaviors right before this line
 		case BattleSpell::State::NONE:
 		case BattleSpell::State::SENTINEL:
 			BM_ASSERT(false, "Invalid spell id chosen in a move");

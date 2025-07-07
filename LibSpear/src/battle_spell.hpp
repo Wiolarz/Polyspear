@@ -36,6 +36,7 @@ struct BattleSpell {
 		else if(string == godot::String("Vengeance")) {
 			state = State::VENGEANCE;
 		}
+		/// Add new spell-string mappings right before this line
 		else {
 			ERR_FAIL_MSG(std::format("Unknown spell: '{}'", string.ascii().get_data()).c_str());
 		}
