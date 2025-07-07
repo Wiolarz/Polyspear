@@ -13,8 +13,6 @@ extends Resource
 ## COMMAND
 @export var max_army_size : int = 3
 
-## GENERAL
-@export var max_movement_points : int = 3
 
 
 static func get_network_id(hero : DataHero) -> String:
