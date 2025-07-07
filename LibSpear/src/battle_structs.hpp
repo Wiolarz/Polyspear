@@ -90,7 +90,7 @@ public:
 	}
 
 	bool try_apply_effect(EffectMask mask, uint8_t duration = DEFAULT_EFFECT_DURATION) {
-		for(auto& eff : effects) {
+		for(Effect& eff : effects) {
 			if(eff.mask == 0) {
 				flags |= mask;
 				eff.mask |= mask;
@@ -112,7 +112,7 @@ public:
 	}
 
 	void remove_effect(EffectMask mask) {
-		for(auto& eff : effects) {
+		for(Effect& eff : effects) {
 			eff.mask &= ~mask;
 		}
 	}
@@ -126,7 +126,7 @@ public:
 	}
 
 	void on_turn_end() {
-		for(auto& eff : effects) {
+		for(Effect& eff : effects) {
 			if(eff.counter == 0 || eff.mask == 0) {
 				continue;
 			}
@@ -165,7 +165,7 @@ public:
 	}
 
 	int get_effect_duration_counter(EffectMask mask) const {
-		for(auto& eff : effects) {
+		for(const Effect& eff : effects) {
 			if(eff.mask & mask) {
 				return eff.counter;
 			}

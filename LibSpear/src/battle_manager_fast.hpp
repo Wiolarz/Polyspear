@@ -224,7 +224,7 @@ public:
 	int get_unit_spell_count(int army, int idx);
 
 	Vector2i get_unit_position(int army, int unit) const {
-		auto p = bm._armies[army].units[unit].pos; 
+		Position p = bm._armies[army].units[unit].pos; 
 		return Vector2i(p.x, p.y);
 	}
 
