@@ -444,10 +444,9 @@ func do_recruit_unit(data_unit : DataUnit, city_coord : Vector2i,
 	var army : Army = get_army_at(army_coord)
 	var city : City = get_city_at(city_coord)
 	var cost : Goods = city.get_unit_cost(data_unit)
-	var purchased : bool = army.faction.try_to_pay(data_unit.cost)
-	if purchased:
-		city.on_purchase(data_unit.required_building)
+	var purchased : bool = army.faction.try_to_pay(cost)
 	assert(purchased)
+	city.on_purchase(data_unit.required_building)
 	army.units_data.append(data_unit)
 	return true
 

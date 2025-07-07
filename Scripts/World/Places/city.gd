@@ -117,12 +117,14 @@ func unit_has_required_building(unit : DataUnit) -> bool:
 		return true
 	return has_built(unit.required_building)
 
+
 func get_unit_cost(unit : DataUnit) -> Goods:
 	var required_building : DataBuilding = get_building(unit.required_building)
 	if not required_building:
-		return unit.cost
+		return null
 	var discount : Goods = required_building.apply_discounts(unit.cost)
 	return discount
+
 
 func on_purchase(building : DataBuilding) -> void:
 	if building.is_outpost_building():
@@ -173,6 +175,7 @@ func can_build(building : DataBuilding) -> bool:
 		return false
 
 	return building.requirements.all(has_built)
+
 
 func get_building(building : DataBuilding) -> DataBuilding:
 	if building.is_outpost_building():
