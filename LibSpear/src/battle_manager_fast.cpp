@@ -374,6 +374,13 @@ void BattleManagerFast::_process_spell(UnitID uid, int8_t spell_id, Position tar
 				unit2.value().unit.try_apply_martyr(uid);
 			}
 			break;
+		case BattleSpell::State::BLOOD_CURSE:
+			{
+				auto unit = _get_unit(uid2);
+				BM_ASSERT(unit.has_value(), "Unknown unit id for blood curse spell");
+				unit.value().unit.try_apply_effect(Unit::FLAG_EFFECT_BLOOD_CURSE);
+			}
+			break;
 		case BattleSpell::State::NONE:
 		case BattleSpell::State::SENTINEL:
 			BM_ASSERT(false, "Invalid spell id chosen in a move");
@@ -661,6 +668,9 @@ void BattleManagerFast::_spells_append_moves() {
 			case BattleSpell::State::MARTYR:
 				_append_moves_unit(spell.unit, i, TeamRelation::ME, false);
 				break;
+			case BattleSpell::State::BLOOD_CURSE:
+				_append_moves_unit(spell.unit, i, TeamRelation::ENEMY, true);
+				break;
 			case BattleSpell::State::NONE:
 			case BattleSpell::State::SENTINEL:
 				break;
@@ -812,7 +822,7 @@ void BattleManagerFast::_append_moves_unit(UnitID uid, int8_t spell_id, TeamRela
 
 		for(unsigned i = 0; i < other_army.units.size(); i++) {
 			auto& unit = other_army.units[i];
-			if(unit.status != UnitStatus::ALIVE || (!include_self && int(i) == uid.unit)) {
+			if(unit.status != UnitStatus::ALIVE || (!include_self && int(i) == uid.unit && army.id == uid.army)) {
 				continue;
 			}
 
@@ -909,9 +919,9 @@ void BattleManagerFast::_move_unit(UnitID id, Position pos) {
 
 void BattleManagerFast::_kill_unit(UnitID id, UnitID killer_id) {
 	auto unit_opt = _get_unit(id);
-	BM_ASSERT(unit_opt.has_value(), "Trying to move a dead unit");
+	BM_ASSERT(unit_opt.has_value(), "Trying to remove a dead unit");
 	auto [unit, army] = unit_opt.value();
-	BM_ASSERT(unit.status != UnitStatus::DEAD, "Trying to move a non-existent unit");
+	BM_ASSERT(unit.status != UnitStatus::DEAD, "Trying to remove a non-existent unit");
 
 	auto victim_team = army.team;
 
@@ -956,6 +966,18 @@ void BattleManagerFast::_kill_unit(UnitID id, UnitID killer_id) {
 
 		unit.remove_effect(Unit::FLAG_EFFECT_VENGEANCE);
 		killer_opt.value().unit.try_apply_effect(Unit::FLAG_EFFECT_DEATH_MARK);
+	}
+	if(unit.is_effect_active(Unit::FLAG_EFFECT_BLOOD_CURSE)) {
+
+		if (army.count_alive_units() == 1) {
+			int8_t idx = -1;
+			for (Unit& unit : army.units) {
+				idx += 1;
+				if (unit.status == UnitStatus::ALIVE) {
+					_kill_unit(UnitID{army.id, idx}, NO_UNIT);
+				}
+			}
+		}
 	}
 }
 

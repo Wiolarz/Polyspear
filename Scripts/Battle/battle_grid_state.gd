@@ -1032,8 +1032,8 @@ func is_spell_target_valid(caster : Unit, coord : Vector2i, spell : BattleSpell)
 
 		"Blood Ritual":  # any enemy units
 			var target = get_unit(coord)
-			#if target and target.controller.team != caster.controller.team: #TEMP awaits major world refactor
-			if target: #TEMP
+			if target and target.controller.team != caster.controller.team: #TEMP awaits major world refactor
+				#if target: #TEMP
 				return true
 		_:
 			printerr("Spell targeting not supported: ", spell.name)

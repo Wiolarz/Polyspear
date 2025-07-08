@@ -72,6 +72,7 @@ public:
 	static const uint8_t FLAG_EFFECT_VENGEANCE = 0x02;
 	static const uint8_t FLAG_EFFECT_DEATH_MARK = 0x04;
 	static const uint8_t FLAG_EFFECT_MARTYR = 0x08;
+	static const uint8_t FLAG_EFFECT_BLOOD_CURSE = 0x10;
 
 	Symbol symbol_when_rotated(int side) const {
 		if(flags & FLAG_ON_SWAMP) {
@@ -128,8 +129,15 @@ public:
 			if(eff.counter == 0 || eff.mask == 0) {
 				continue;
 			}
+			switch (eff.mask) {
+				case FLAG_EFFECT_BLOOD_CURSE:
+					continue;
 
-			eff.counter--;
+				default:
+					eff.counter--;
+					break;
+			}
+
 			if(eff.counter == 0) {
 				if(eff.mask & FLAG_EFFECT_MARTYR) {
 					_martyr_id = NO_UNIT;
@@ -149,6 +157,9 @@ public:
 		}
 		else if(str == godot::String("Martyr")) {
 			return FLAG_EFFECT_MARTYR;
+		}
+		else if(str == godot::String("Blood Ritual")) {
+			return FLAG_EFFECT_BLOOD_CURSE;
 		}
 		else {
 			ERR_FAIL_V_MSG(0, std::format("Unknown effect: '{}'", str.ascii().get_data()).c_str());
@@ -186,6 +197,17 @@ struct Army {
 
 	int find_unit_id_to_summon(int from = 0) const;
 	bool is_defeated() const;
+
+	/// Counts number of alive and undeployed units
+	int count_alive_units() const {
+		int result = 0;
+		for (const Unit& unit : units) {
+			if (unit.status == UnitStatus::SUMMONING || unit.status == UnitStatus::ALIVE) {
+				result++;
+			}
+		}
+		return result;
+	}
 };
 
 using ArmyList = std::array<Army, MAX_ARMIES>;
