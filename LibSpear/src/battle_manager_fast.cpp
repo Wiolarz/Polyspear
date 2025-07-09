@@ -190,7 +190,7 @@ void BattleManagerFast::_process_unit(UnitID unit_id, MovePhase phase) {
 		auto neighbor_symbol = neighbor.symbol_when_rotated(flip(side));
 
 		// enemy's counter/spear
-		if(unit_symbol.dies_to(neighbor_symbol, MovePhase::PASSIVE)) {
+		if(phase != MovePhase::DASH && unit_symbol.dies_to(neighbor_symbol, MovePhase::PASSIVE)) {
 			_kill_unit(unit_id, neighbor_id);
 			return;
 		}
@@ -236,6 +236,36 @@ void BattleManagerFast::_process_unit(UnitID unit_id, MovePhase phase) {
 	}
 
 	_process_bow(unit_id, phase);
+
+	if (phase != MovePhase::DASH) {
+		return;
+	}
+	// check dash
+	for(int side = 0; side < 6; side++) {
+		auto pos = unit.pos + DIRECTIONS[side];
+		auto neighbor_id = _unit_cache.get(pos);
+		auto neighbor_opt = _get_unit(neighbor_id);
+
+		if(!neighbor_opt.has_value()) {
+			continue;
+		}
+
+		auto [neighbor, enemy_army] = neighbor_opt.value();
+
+		if(neighbor.status != UnitStatus::ALIVE || enemy_army.team == army.team) {
+			continue;
+		}
+
+		auto unit_symbol = unit.symbol_when_rotated(side);
+		auto neighbor_symbol = neighbor.symbol_when_rotated(flip(side));
+
+		// enemy's counter/spear
+		if(unit_symbol.dies_to(neighbor_symbol, MovePhase::PASSIVE)) {
+			_kill_unit(unit_id, neighbor_id);
+			return;
+		}
+	}
+
 }
 
 void BattleManagerFast::_process_push(UnitID pushed, UnitID pusher, Position direction, uint8_t max_power) {
@@ -379,6 +409,39 @@ void BattleManagerFast::_process_spell(UnitID uid, int8_t spell_id, Position tar
 				auto unit = _get_unit(uid2);
 				BM_ASSERT(unit.has_value(), "Unknown unit id for blood curse spell");
 				unit.value().unit.try_apply_effect(Unit::FLAG_EFFECT_BLOOD_CURSE);
+			}
+			break;
+		case BattleSpell::State::WIND_DASH:
+			{
+				auto [unit, army] = _get_unit(uid).value();
+
+				_process_unit(uid, MovePhase::DASH);  // activation in place
+				for (int i = 0; i < 3; i++) {
+					if (!(_tiles.get_tile(target).is_passable())) {
+						_kill_unit(uid, NO_UNIT);
+						break;
+					}
+
+					const auto o_blocker_unit = _get_unit(target);
+					if (o_blocker_unit) {
+						/*auto [blocker_unit, blocker_army] = *o_blocker_unit;
+
+						int8_t idx = -1;
+						for (Unit& unit : blocker_army.units) {
+							idx += 1;
+							if (&unit == &blocker_unit) {
+
+								_kill_unit(uid, UnitID{blocker_army.id, idx});
+								break;
+							}
+						}*/
+						_kill_unit(uid, NO_UNIT);
+						break;
+					}
+					_move_unit(uid, target);
+					target += DIRECTIONS[unit.rotation];
+					_process_unit(uid, MovePhase::DASH);
+				}
 			}
 			break;
 		case BattleSpell::State::NONE:
@@ -670,6 +733,9 @@ void BattleManagerFast::_spells_append_moves() {
 				break;
 			case BattleSpell::State::BLOOD_CURSE:
 				_append_moves_unit(spell.unit, i, TeamRelation::ENEMY, true);
+				break;
+			case BattleSpell::State::WIND_DASH:
+				_append_moves_line(spell.unit, i, unit.pos, unit.rotation, 1, 1);
 				break;
 			case BattleSpell::State::NONE:
 			case BattleSpell::State::SENTINEL:

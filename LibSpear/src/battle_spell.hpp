@@ -20,6 +20,7 @@ struct BattleSpell {
 		MARTYR,
 		VENGEANCE,
 		BLOOD_CURSE,
+		WIND_DASH,
 	} state = State::SENTINEL;
 	UnitID unit = NO_UNIT; // An owner for uncast spells
 
@@ -39,6 +40,9 @@ struct BattleSpell {
 		}
 		else if(string == godot::String("Blood Ritual")) {
 			state = State::BLOOD_CURSE;
+		}
+		else if(string == godot::String("Wind Dash")) {
+			state = State::WIND_DASH;
 		}
 		else {
 			ERR_FAIL_MSG(std::format("Unknown spell: '{}'", string.ascii().get_data()).c_str());
