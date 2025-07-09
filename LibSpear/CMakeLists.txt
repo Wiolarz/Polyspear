@@ -88,6 +88,8 @@ set_target_properties(libspear PROPERTIES PREFIX "")
 
 if (CMAKE_BUILD_TYPE STREQUAL "")
   set (BUILD_TYPE_LOWERCASE debug)
+elseif (CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
+  set (BUILD_TYPE_LOWERCASE debug)
 else ()
   string(TOLOWER ${CMAKE_BUILD_TYPE} BUILD_TYPE_LOWERCASE)
 endif ()

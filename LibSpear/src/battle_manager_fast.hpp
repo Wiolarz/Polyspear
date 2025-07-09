@@ -64,8 +64,8 @@ class BattleManagerFast {
 
 	void _spells_append_moves();
 
-	void _append_moves_unit(UnitID uid, int8_t spell_id, TeamRelation relation, bool include_self);
-	void _append_moves_all_tiles(UnitID uid, int8_t spell_id, bool include_impassable);
+	void _append_moves_unit(UnitID uid, int8_t spell_id, TeamRelation relation, IncludeSelf include_self);
+	void _append_moves_all_tiles(UnitID uid, int8_t spell_id, IncludeImpassable include_impassable);
 	void _append_moves_lines(UnitID uid, int8_t spell_id, Position center, int range_min, int range_max);
 	void _append_moves_line(UnitID uid, int8_t spell_id, Position center, uint8_t dir, int range_min, int range_max);
 

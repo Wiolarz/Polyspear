@@ -152,6 +152,7 @@ public:
 		else if(str == godot::String("Martyr")) {
 			return FLAG_EFFECT_MARTYR;
 		}
+		/// Add new effect-string mappings before this line
 		else {
 			ERR_FAIL_V_MSG(0, std::format("Unknown effect: '{}'", str.ascii().get_data()).c_str());
 		}
@@ -239,6 +240,9 @@ struct std::hash<Move> {
 	}
 };
 
+/// Reference to unit and its army - please use it only as a
+/// temporary convenience value and only ever use it as a local variable.
+/// Do not pass it to functions/objects - pass UnitIDs instead
 struct UnitRef {
 	Unit& unit;
 	Army& army;
@@ -250,6 +254,18 @@ enum class TeamRelation {
 	ALLY,
 	ENEMY,
 	ANY
+};
+
+
+enum IncludeSelf : bool {
+	INCLUDE_SELF = true,
+	NO_INCLUDE_SELF = false
+};
+
+
+enum IncludeImpassable : bool {
+	INCLUDE_IMPASSABLE = true,
+	NO_INCLUDE_IMPASSABLE = false
 };
 
 #endif //BATTLE_STRUCTS_H
