@@ -42,7 +42,7 @@ if (NICE_COMPILER)
     "-Wno-useless-cast"
   )
 
-  if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+  if (CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
     list (APPEND SPEAR_COMPILE_OPTIONS
       "-Werror=null-dereference"
     )

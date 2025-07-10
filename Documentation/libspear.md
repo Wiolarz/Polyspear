@@ -20,6 +20,14 @@ cmake ..
 make
 ```
 
+Generating `compile_commands.json` for LSP integration is done as usual:
+
+```
+cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON ..
+make
+ln -s compile_commands.json ../compile_commands.json
+```
+
 After reloading the project the changes should be visible in the editor.
 
 ## SCons CLI
@@ -46,7 +54,7 @@ After that you can use your favourite debugger and run Godot inside Polyspear's 
 
 ## VSCode integration
 
-In order to have a fully working IntelliSense integration in VSCode, make sure to install 'C/C++' and 'CMake Tools' extensions and make sure to configure/build using the menu on the left sidebar (with the CMake Tools icon). Make sure that the compiler version listed here is recent enough for C++20 support (at least GCC 13).
+In order to have a fully working IntelliSense integration in VSCode, make sure to install 'C/C++' and 'CMake Tools' extensions and make sure to configure/build using the menu on the left sidebar (with the CMake Tools icon). Make sure that the compiler version listed here is recent enough for C++20 support (at least GCC 13). After that you should be able to build project and have working IntelliSense.
 
 ## Optimization
 
@@ -68,7 +76,7 @@ With CMake you need to use custom toolchain files. You can find an example [here
 cmake -DCMAKE_TOOLCHAIN_FILE=path/to/my/toolchainfile.cmake ..
 ```
 
-and compile it as usual.
+and compile it as usual. Of course make sure you have MinGW and OpenMP development libraries installed.
 
 ## On Windows
 
@@ -87,10 +95,10 @@ Additionally, there's a builtin AI move evaluator, which is automatically enable
 # Architecture
 
 LibSpear defines a few classes that are, e.g. `BattleManagerFast`, `BattleMCTSManager`, `TileGridFast`.
-To clear things up, classes in follow the naming convention:
+To clear things up, classes in LibSpear follow the naming convention:
 - C++ `MyClass` without prefix denotes an owned class directly implementing game logic,
 - C++ `MyClassCpp` denotes a class exposed in Godot which wraps the non-prefix class and adds getters/setters/other interoperation functions, which however should not be used directly in GDScript,
-- GDScript `MyClass` which adds utility functions (such as `static func` constructors from corresponding ) 
+- GDScript `MyClass` which adds utility functions (such as `static func` constructors from corresponding Godot classes). 
 Currently the only exception to the naming convention is the `BattleMCTSManager` class, because it both implements logic and is exposed to Godot.
 
 When interfacing with Godot, LibSpear extensively uses a "tuple" format of moves, e.g. an array in a format of either \[unit_id, position] or \[unit_id, position, spell_id]. These can be converted using `BattleManagerFastCpp`'s `libspear_tuple_to_move_info` and `move_info_to_libspear_tuple` functions.
