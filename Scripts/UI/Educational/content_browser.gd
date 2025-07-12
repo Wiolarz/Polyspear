@@ -24,17 +24,19 @@ func _ready():
 
 ## Defines folder path for "content_folder_path" and Variant for "_selected_item"
 func _set_types() -> void:
-	pass
+	assert(false, "has to be overriden")
 
 
+## Optional Override
 func get_description() -> String:
 	return ""
 
 
 func activate_content() -> void:
-	pass
+	assert(false, "has to be overriden")
 
 
+## Optional Override
 func additonal_selected_content_function() -> void:
 	pass
 
