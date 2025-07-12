@@ -85,6 +85,7 @@ func to_network_serializable() -> Dictionary:
 		"move_source" : move_source,
 		"target_tile_coord": target_tile_coord,
 		"summon_unit": DataUnit.get_network_id(summon_unit),
+		"spell": BattleSpell.get_network_id(spell),
 	}
 
 
@@ -99,6 +100,8 @@ static func from_network_serializable(dict : Dictionary) -> MoveInfo:
 					dict["target_tile_coord"])
 		MoveInfo.TYPE_SACRIFICE:
 			return MoveInfo.make_sacrifice(dict["move_source"])
+		MoveInfo.TYPE_MAGIC:
+			return MoveInfo.make_magic(dict["move_source"], dict["target_tile_coord"], BattleSpell.from_network_id(dict["spell"]))
 	push_error("move_type not supported: ", dict["move_type"])
 	return null
 
