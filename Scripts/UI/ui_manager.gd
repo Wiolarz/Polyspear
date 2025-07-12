@@ -124,11 +124,11 @@ func _process(delta):
 func _unhandled_input(event : InputEvent) -> void:
 	if event.is_action_pressed("KEY_EXIT_GAME"):
 		IM.quit_game()
-	if event.is_action_pressed("KEY_MAXIMIZE_WINDOW"):
+	if Input.is_action_just_pressed("KEY_MAXIMIZE_WINDOW"):
 		toggle_fullscreen()
-	if event.is_action_pressed("KEY_MENU"):
+	if Input.is_action_just_pressed("KEY_MENU"):
 		toggle_in_game_menu()
-	if event.is_action_pressed("KEY_DEBUG_COLLISION_SHAPES"):
+	if Input.is_action_just_pressed("KEY_DEBUG_COLLISION_SHAPES"):
 		toggle_collision_debug()
 	if event.is_action_pressed("KEY_BOT_SPEED_SLOW"):
 		print("anim speed - slow")
@@ -142,7 +142,7 @@ func _unhandled_input(event : InputEvent) -> void:
 		print("anim speed - fast")
 		CFG.animation_speed_frames = CFG.AnimationSpeed.INSTANT
 		CFG.bot_speed_frames = CFG.BotSpeed.FAST
-	elif event.is_action_pressed("KEY_FORCE_DESYNC"):
+	elif Input.is_action_just_pressed("KEY_FORCE_DESYNC"):
 		print("forcing desynchronization")
 		NET.desync()
 	if camera and not get_tree().paused:

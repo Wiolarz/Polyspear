@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3 uid="uid://b4ndp6v0ts1on"]
+[gd_scene load_steps=9 format=3 uid="uid://b4ndp6v0ts1on"]
 
 [ext_resource type="Script" path="res://Scripts/UI/main_menu.gd" id="1_iln2i"]
 [ext_resource type="PackedScene" uid="uid://b3dmmym31kdbx" path="res://Scenes/UI/Lobby/HostLobby.tscn" id="2_eyp7f"]
@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://b6eoph2qpu0d" path="res://Scenes/UI/SettingsMenu.tscn" id="4_f2bj7"]
 [ext_resource type="PackedScene" uid="uid://iqku7lopk1xl" path="res://Scenes/UI/CreditsMenu.tscn" id="5_bvo4w"]
 [ext_resource type="PackedScene" uid="uid://cs7ibsdnsrn5v" path="res://Scenes/UI/ReplaysMenu.tscn" id="6_lxdjb"]
+[ext_resource type="PackedScene" uid="uid://hxaial4lcwu7" path="res://Scenes/UI/Wiki/Learn.tscn" id="7_frqj7"]
 
 [sub_resource type="StyleBoxLine" id="StyleBoxLine_3lov4"]
 color = Color(0.701961, 0.701961, 0.701961, 1)
@@ -33,13 +34,15 @@ theme_override_constants/separation = 20
 
 [node name="Tabs" type="TabBar" parent="MainContainer/TopMenu"]
 layout_mode = 2
-tab_count = 5
+tab_count = 6
+current_tab = 5
 clip_tabs = false
 tab_0/title = " >> Host <<"
 tab_1/title = "-- Join --"
 tab_2/title = "Settings"
 tab_3/title = "Credits"
 tab_4/title = "Replays"
+tab_5/title = "Learn"
 
 [node name="VSeparator" type="VSeparator" parent="MainContainer/TopMenu"]
 layout_mode = 2
@@ -62,6 +65,7 @@ size_flags_horizontal = 10
 text = "Exit"
 
 [node name="HostLobby" parent="MainContainer" instance=ExtResource("2_eyp7f")]
+visible = false
 layout_mode = 2
 size_flags_vertical = 3
 
@@ -79,6 +83,9 @@ layout_mode = 2
 
 [node name="ReplaysMenu" parent="MainContainer" instance=ExtResource("6_lxdjb")]
 visible = false
+layout_mode = 2
+
+[node name="Learn" parent="MainContainer" instance=ExtResource("7_frqj7")]
 layout_mode = 2
 
 [connection signal="visibility_changed" from="." to="." method="_on_visibility_changed"]

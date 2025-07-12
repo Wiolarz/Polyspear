@@ -39,8 +39,7 @@ func get_battle_maps_list() -> Array[String]:
 
 
 func _prepare_to_start_game() -> void:
-	for player in players:
-		player.queue_free()
+	_clear_players()
 
 	# Assigning unique team id's to player's without a team
 	# To avoid players without a team being treated as allies
@@ -61,7 +60,6 @@ func _prepare_to_start_game() -> void:
 			new_team_idx += 1
 
 
-	players = []
 	for slot in game_setup_info.slots:
 		var player := Player.create(slot)
 		players.append(player)
@@ -199,6 +197,21 @@ func create_army_for(slot : Slot) -> Army:
 	return army
 
 
+## Creates army based on army_preset and assigns controller
+func create_army_from_preset(army_preset : PresetArmy, player_index : int) -> Army:
+	var army = Army.new()
+	army.controller_index = player_index
+
+	var hero_data : DataHero = army_preset.hero
+	if hero_data:
+		var new_hero = Hero.construct_hero(hero_data, player_index)
+		army.hero = new_hero
+
+	army.units_data = army_preset.units
+
+	return army
+
+
 func get_default_or_last_battle_preset() -> Dictionary:
 	var last_preset_name : String = CFG.LAST_USED_BATTLE_PRESET_NAME
 	var last_preset_path : String = CFG.BATTLE_PRESETS_PATH + "/" + last_preset_name
@@ -219,6 +232,39 @@ func get_default_or_last_battle_preset() -> Dictionary:
 		"data": preset,
 		"name": presets[0].trim_prefix(CFG.BATTLE_PRESETS_PATH)
 	}
+
+
+func start_scripted_battle(scripted_battle : ScriptedBattle, battle_bot_path : String = "",
+							player_controlled_side : int = 0) -> void:
+	print("started scripted battle: ", scripted_battle.scenario_name)
+
+	_prepare_to_start_game()
+
+	var armies : Array[Army]  = []
+	_clear_players()
+
+	var player_idx : int = -1
+	for army_preset in scripted_battle.armies:
+		player_idx += 1
+		var new_controller : Player
+		if player_controlled_side == player_idx:
+			new_controller = Player.create_for_tutorial(player_idx)
+		else:
+			new_controller = Player.create_for_tutorial(player_idx, battle_bot_path)
+
+
+		players.append(new_controller)
+		add_child(new_controller)
+
+		armies.append(create_army_from_preset(army_preset, player_idx))
+
+	BM.start_battle(armies, scripted_battle.battle_map, 0, null, null, scripted_battle)
+
+
+func _clear_players() -> void:
+	for player in players:
+		player.queue_free()
+	players = []
 
 #endregion Game setup
 
