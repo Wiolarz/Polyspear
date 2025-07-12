@@ -248,9 +248,9 @@ func start_scripted_battle(scripted_battle : ScriptedBattle, battle_bot_path : S
 		player_idx += 1
 		var new_controller : Player
 		if player_controlled_side == player_idx:
-			new_controller = Player.create_for_tutorial(true, player_idx)
+			new_controller = Player.create_for_tutorial(player_idx)
 		else:
-			new_controller = Player.create_for_tutorial(false, player_idx, battle_bot_path)
+			new_controller = Player.create_for_tutorial(player_idx, battle_bot_path)
 
 
 		players.append(new_controller)

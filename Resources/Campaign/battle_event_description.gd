@@ -3,7 +3,7 @@ extends Resource
 
 ## Description of the state needs to occur before Text Bubble can show up
 ## Developer lists all things that need to occur creating a new BattleEventDescription
-## which will be compared to current battle state through do_description_allign()
+## which will be compared to current battle state through is_description_satisfied()
 
 
 #TODO consider generating those events for battle replays, to be compared to with new ones for unit tests
@@ -27,7 +27,7 @@ extends Resource
 @export var current_army_index : int = 0 # -1
 
 ## Those variables are not generated automatically during generate_current_battle_event()
-## do_description_allign() compares manaully selected values from this category
+## is_description_satisfied() compares manaully selected values from this category
 ## with the singletons on its own
 @export_category("Manually applied")
 
@@ -71,7 +71,7 @@ func _print_reason(debug_note : String) -> void:
 ## Prerequisite Object - BattleEventDescription is provided [br]
 ## with the description of the current battle state. [br]
 ## If in its requirements something misalign with the current Battle Event it returns FALSE
-func do_description_allign(event : BattleEventDescription) -> bool:
+func is_description_satisfied(event : BattleEventDescription) -> bool:
 	if event.current_army_index != 0:
 		return false
 

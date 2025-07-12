@@ -265,7 +265,18 @@ var AUTO_START_GAME : bool :
 	get: return player_options.autostart_map
 
 
-enum Main_Menu_Tabs {
+enum LearnTabs {
+	TUTORIAL = 1,
+	PUZZLE = 2,
+	CAMPAIGN = 3,
+	SYMBOLS_WIKI = 5,
+	MAGIC_WIKI = 6,
+}
+
+var LAST_OPENED_LEARN_TAB : LearnTabs :
+	get: return player_options.last_open_learn_tab
+
+enum MainMenuTabs {
 	SERVER = 0,
 	JOIN = 1,
 	SETTINGS = 2,
@@ -274,15 +285,13 @@ enum Main_Menu_Tabs {
 	LEARN = 5,
 }
 
-var LAST_OPENED_TAB : Main_Menu_Tabs :
+var LAST_OPENED_TAB : MainMenuTabs :
 	get: return player_options.last_open_menu_tab
 
 var LAST_USED_BATTLE_PRESET_NAME : String :
 	get: return player_options.last_used_battle_preset_name
 var LAST_USED_WORLD_MAP : DataWorldMap : # TODO implement this
 	get: return player_options.last_used_world_map
-var LAST_SELECTED_LEARN_TAB : int :
-	get: return player_options.last_selected_learn_Tab
 
 var FULLSCREEN_AUTO_TOGGLE : bool :
 	get: return player_options.keep_main_menu_windowed

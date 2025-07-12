@@ -15,4 +15,4 @@ extends Resource
 @export_file var icon_path : String
 
 func is_prerequisite_fullfilled(current_event : BattleEventDescription) -> bool:
-	return prerequisite.do_description_allign(current_event)
+	return prerequisite.is_description_satisfied(current_event)

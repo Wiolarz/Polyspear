@@ -36,7 +36,10 @@ extends Resource
 @export var gui_animation_mode := CFG.GuiAnimationMode.FULL
 
 ## Default first option when opening the game
-@export var last_open_menu_tab := CFG.Main_Menu_Tabs.LEARN
+@export var last_open_menu_tab := CFG.MainMenuTabs.LEARN
+
+## Default first learn tab option when opening the game
+@export var last_open_learn_tab := CFG.LearnTabs.TUTORIAL
 
 ## Default first option after opening the game should be last selected one
 ## [br]
@@ -46,8 +49,6 @@ extends Resource
 ## Default first option after opening the game should be last selected one
 @export var last_used_world_map : DataWorldMap
 
-## Automatically opens last viewed learn tab
-@export var last_selected_learn_Tab : int = 1
 
 @export var fullscreen : bool:
 	set(new):
