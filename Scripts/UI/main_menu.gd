@@ -63,6 +63,10 @@ func _on_unit_editor_button_pressed():
 	UI.go_to_unit_editor()
 
 
+func _on_tile_editor_button_pressed():
+	UI.go_to_tile_editor()
+
+
 func _on_map_editor_button_pressed():
 	IM.go_to_map_editor()
 

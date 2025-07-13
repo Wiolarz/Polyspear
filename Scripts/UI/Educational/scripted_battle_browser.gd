@@ -6,7 +6,7 @@ var _battle : ScriptedBattle :
 		return _selected_item as ScriptedBattle
 
 
-@export_file var battle_bot_path : String
+@export_file var battle_bot_path : String = "res://Resources/Battle/Bots/Random.tscn"
 
 
 func get_description() -> String:

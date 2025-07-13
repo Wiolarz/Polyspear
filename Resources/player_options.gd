@@ -70,3 +70,8 @@ extends Resource
 @export var last_remote_host_address : String  = "127.0.0.1"
 @export var last_remote_host_port : int = 12_000
 
+
+
+# Editor settings that remember last selected options
+@export var tile_editor_default_battle : bool = true
+@export var map_editor_default_battle : bool = true
