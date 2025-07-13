@@ -5,6 +5,7 @@ var main_menu
 var ui_overlay
 var map_editor
 var unit_editor
+var tile_editor
 var host_lobby
 var client_lobby
 var hero_level_up
@@ -24,11 +25,13 @@ func _ready():
 	ui_overlay   = load("res://Scenes/UI/UIOverlay.tscn").instantiate()
 	map_editor   = load("res://Scenes/UI/Editors/MapEditor.tscn").instantiate()
 	unit_editor  = load("res://Scenes/UI/Editors/UnitEditor.tscn").instantiate()
+	tile_editor  = load("res://Scenes/UI/Editors/TileEditor.tscn").instantiate()
 	hero_level_up = load("res://Scenes/UI/LevelUp/LevelUpScreen.tscn").instantiate()
 
 	add_child(main_menu)
 	add_child(map_editor)
 	add_child(unit_editor)
+	add_child(tile_editor)
 	add_child(ui_overlay)
 	add_child(hero_level_up)
 
@@ -64,6 +67,11 @@ func go_to_unit_editor():
 	unit_editor.show()
 
 
+func go_to_tile_editor():
+	_hide_all()
+	tile_editor.show()
+
+
 ## TEMP
 func go_to_map_editor():
 	_hide_all()
@@ -97,11 +105,12 @@ func _process(delta):
 func _unhandled_input(event : InputEvent) -> void:
 	if event.is_action_pressed("KEY_EXIT_GAME"):
 		IM.quit_game()
-	if event.is_action_pressed("KEY_MAXIMIZE_WINDOW"):
+	if Input.is_action_just_pressed("KEY_MAXIMIZE_WINDOW"):
 		toggle_fullscreen()
-	if event.is_action_pressed("KEY_MENU"):
+
+	if Input.is_action_just_pressed("KEY_MENU"):
 		main_menu.open_in_game_menu()
-	if event.is_action_pressed("KEY_DEBUG_COLLISION_SHAPES"):
+	if Input.is_action_just_pressed("KEY_DEBUG_COLLISION_SHAPES"):
 		toggle_collision_debug()
 	if event.is_action_pressed("KEY_BOT_SPEED_SLOW"):
 		print("anim speed - slow")
@@ -115,7 +124,7 @@ func _unhandled_input(event : InputEvent) -> void:
 		print("anim speed - fast")
 		CFG.animation_speed_frames = CFG.AnimationSpeed.INSTANT
 		CFG.bot_speed_frames = CFG.BotSpeed.FAST
-	elif event.is_action_pressed("KEY_FORCE_DESYNC"):
+	elif Input.is_action_just_pressed("KEY_FORCE_DESYNC"):
 		print("forcing desynchronization")
 		NET.desync()
 	if camera and not get_tree().paused:
@@ -167,8 +176,6 @@ func grid_planning_input_listener(tile_coord : Vector2i, \
 		return
 
 	BM.planning_input(tile_coord, is_it_pressed)
-
-
 
 
 func ensure_camera_is_spawned() -> void:

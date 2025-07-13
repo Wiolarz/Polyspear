@@ -11,6 +11,11 @@ var world_ui : WorldUI = null
 ## Only army that has a hero can move (army can only have a single hero)
 var selected_hero : ArmyForm
 
+var selected_city : City:
+	set(city):
+		selected_city = city
+		world_ui.city_ui.city = city
+
 # TODO movew to world state chyba
 var combat_tile : Vector2i
 
@@ -85,6 +90,11 @@ func set_selected_hero(army : Army) -> void:
 		# world_ui.show_trade_ui(city)
 	var army_form : ArmyForm = get_army_form(army)
 	selected_hero = army_form
+
+	## preselects for player city in case hero is standing on top of it
+	if WS.get_interactable_type_at(selected_hero.coord) == "city":
+		selected_city = WS.get_place_at(selected_hero.coord)
+
 	if selected_hero:
 		selected_hero.set_selected(true)
 	world_ui.refresh_heroes()
@@ -125,9 +135,16 @@ func end_turn():
 
 
 func callback_turn_changed():
-	set_selected_hero(null)
+	_deselect_hero()
+	var current_faction : Faction = WS.get_current_player()
+	if current_faction.has_faction_lost():
+		end_turn()
+		return
+
 	world_ui.refresh_heroes()
-	world_ui.show_trade_ui(get_current_player_capital())
+	var current_player_capital : City = get_current_player_capital()
+	if current_player_capital:  # player may have lost his last city
+		world_ui.show_trade_ui(current_player_capital)
 	world_ui.refresh_player_buttons()
 
 
@@ -146,7 +163,7 @@ func get_tile_of_hex(hex : WorldHex) -> Node2D:
 			return tile_form
 	return null
 
-#endregion
+#endregion Main functions
 
 
 #region Player Actions
@@ -218,10 +235,11 @@ func grid_input(coord : Vector2i):
 			try_interact(selected_hero, selected_hero.travel_path[tile_idx])
 		else:
 			break
-
-	selected_hero.travel_path = []  # TODO make changes to travel path dynamic
-	if not selected_hero.has_movement_points():
-		_deselect_hero()
+	var empty_path : Array[Vector2i] = []
+	if selected_hero:  # game might have ended
+		selected_hero.travel_path = empty_path  # TODO make changes to travel path dynamic
+		if not selected_hero.has_movement_points():
+			_deselect_hero()
 	_painter_node.erase()
 
 ## Tries to Select owned Hero
@@ -235,6 +253,7 @@ func input_try_select(coord) -> void:  #TODO "nothing is selected try to select 
 
 	if city:
 		if city.controller_index == WS.current_player_index:
+			selected_city = city
 			if not army:
 				world_ui.city_ui.show_recruit_heroes()
 			else:
@@ -284,19 +303,13 @@ func perform_world_move_info(world_move_info : WorldMoveInfo) -> void:
 	world_move_done.emit()
 
 
-func win_game(player : Player):
-	world_ui.show_you_win(player)
-
-
 func perform_network_move(world_move_info : WorldMoveInfo) -> void:
 	perform_world_move_info(world_move_info)
 
-
-#endregion
+#endregion Player Action
 
 
 #region City Management
-
 
 func trade_city(city : City):
 	print("trade_city")
@@ -335,7 +348,7 @@ func do_local_travel(source : Vector2i, target : Vector2i) -> void:
 		NET.desync()
 		return
 
-#endregion
+#endregion City Management
 
 
 #region Battles
@@ -402,10 +415,72 @@ func end_of_battle(battle_results : Array[BattleGridState.ArmyInBattleState]):
 	UI.go_to_custom_ui(world_ui)
 
 
-# endregion
+#endregion Battles
 
 
 #region World End
+
+
+func player_has_won_a_game() -> void:
+	_is_world_game_active = false
+
+	var new_summary = _create_summary()
+
+	UI.ui_overlay.show_world_summary(new_summary, IM.go_to_main_menu)
+
+
+## Major function which fully generates information panel at the end of the world
+func _create_summary() -> DataWorldSummary:
+	var summary := DataWorldSummary.new()
+
+	var winning_team : int = WS.player_states[0].controller.team
+	var winning_team_players : Array[Player] = []
+
+	var all_faction : Array[Faction] = WS.player_states
+	all_faction.append_array(WS.defeated_factions)
+
+	# Generate information for every player
+	for faction in all_faction:
+		var player_stats := DataWorldSummaryPlayer.new()
+
+		# Generate heroes info
+		var heroes : Array[Hero] = faction.dead_heroes
+		for army in faction.hero_armies:
+			heroes.append(army.hero)
+
+
+		for hero in heroes:
+			var hero_description = "%s\n" % hero.hero_name
+			player_stats.heroes += hero_description
+
+		var player = faction.controller
+
+		# generates player names for their info column
+		player_stats.player_description = player.get_full_player_description()
+
+		if player.team == winning_team:
+			player_stats.state = "winner"
+			winning_team_players.append(player)
+
+			# TEMP solution - better color system described in TODO notes
+			summary.color = player.get_player_color().color
+		else:
+			player_stats.state = "loser"
+		summary.players.append(player_stats)
+
+	# Summary title creation
+	assert(winning_team_players.size() > 0, "World ended without any winners")
+
+	var team_name : String = "Team %s" % winning_team_players[0].team
+	summary.title = "%s wins" % [team_name]
+	var sep : String = " : "
+	for player in winning_team_players:
+		summary.title += sep + player.get_player_color().name
+		sep = ", "
+
+	return summary
+
+
 
 func clear_world():
 	_is_world_game_active = false
@@ -417,8 +492,7 @@ func clear_world():
 	for tile in tile_grid.get_children():
 		tile.queue_free()
 
-
-#endregion
+#endregion World End
 
 
 #region World Setup
@@ -455,8 +529,6 @@ func start_world_in_state(world_map : DataWorldMap, \
 
 	_batch_mode = true
 
-	_batch_mode = true
-
 	WS.start_world(
 		world_map, IM.game_setup_info.slots, serializable_WS)
 
@@ -472,14 +544,10 @@ func start_world_in_state(world_map : DataWorldMap, \
 	_batch_mode = false
 
 
-
-
-
 func spawn_player(coord : Vector2i, player : Player):
 	var capital_city = WS.get_city_at(coord)
 	player.set_capital(capital_city)
 
-#endregion
 
 func recreate_tile_forms() -> void:
 	Helpers.remove_all_children(tile_grid)
@@ -505,19 +573,14 @@ func recreate_army_forms() -> void:
 				new_position)
 			armies.add_child(army_form)
 
+#endregion World Setup
+
+
+#region Callbacks
 
 func _refresh_army_form_position(army_form : ArmyForm) -> void:
 	army_form.position = to_position(army_form.entity.coord)
 
-
-func get_serializable_state() -> SerializableWorldState:
-	var state := SerializableWorldState.new()
-	if world_game_is_active():
-		state = WS.to_network_serializable()
-	return state
-
-
-#region callbacks
 
 func callback_player_created(_player : Player) -> void:
 	return # does nothing yet -- TODO add something or delete in future
@@ -546,7 +609,7 @@ func callback_army_moved(army : Army) -> void:
 func callback_army_destroyed(army : Army) -> void:
 	var army_form = get_army_form(army)
 	if selected_hero == army_form:
-		set_selected_hero(null)
+		_deselect_hero()
 	army_form.queue_free()
 
 
@@ -558,8 +621,18 @@ func callback_place_changed(coord : Vector2i) -> void:
 func callback_combat_started(armies_ : Array, coord_ : Vector2i) -> void:
 	start_combat(armies_, coord_)
 
+#endregion Callbacks
 
-#endregion callbacks
+
+#region Multiplayer
+
+func get_serializable_state() -> SerializableWorldState:
+	var state := SerializableWorldState.new()
+	if world_game_is_active():
+		state = WS.to_network_serializable()
+	return state
+
+#endregion Multiplayer
 
 
 #region cheats

@@ -6,6 +6,8 @@ extends Resource
 
 @export var spell_effects : Array[BattleMagicEffect]
 
+@export_multiline var description : String = ""
+
 ## used to debug
 func _to_string() -> String:
 	return "BattleSpell: " + name

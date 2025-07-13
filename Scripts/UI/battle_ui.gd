@@ -9,7 +9,6 @@ extends CanvasLayer
 
 @onready var camera_button : Button = $TopL/SwitchCamera
 
-@onready var summary_container : Container = $SummaryContainer
 
 @onready var clock = $TopC/TurnsBG/VBox/ClockLeft
 @onready var turns = $TopC/TurnsBG/VBox/TurnCount
@@ -57,6 +56,14 @@ var selected_spell_button : TextureButton = null
 var _shown_sacrifice_announcement : bool = false
 
 #region INIT
+
+## Cleans UI
+func _ready():
+	for child in get_children():
+		child.show()
+	$TextBubble.hide()
+	replay_controls.hide()
+
 
 func load_armies(army_list : Array[BattleGridState.ArmyInBattleState]):
 	# Disable "Switch camera" button for non world map gameplay
@@ -188,10 +195,33 @@ func update_replay_controls(move_nr: int, total_replay_moves: int, summary: Data
 	if summary:
 		replay_show_summary.disabled = false
 		replay_show_summary.pressed.connect(
-			UI.ui_overlay.show_summary.bind(summary, null)
+			UI.ui_overlay.show_battle_summary.bind(summary, null)
 		)
 	else:
 		replay_show_summary.disabled = true
+
+
+func _on_pause_pressed():
+	CFG.animation_speed_frames = CFG.AnimationSpeed.NORMAL
+	CFG.bot_speed_frames = CFG.BotSpeed.FREEZE
+
+
+func _on_step_pressed():
+	# TODO improve/un-DRUTify playback (especially step) controls
+	CFG.animation_speed_frames = CFG.AnimationSpeed.NORMAL
+	CFG.bot_speed_frames = CFG.BotSpeed.NORMAL
+	await get_tree().create_timer(0.1).timeout
+	CFG.bot_speed_frames = CFG.BotSpeed.FREEZE
+
+
+func _on_play_pressed():
+	CFG.animation_speed_frames = CFG.AnimationSpeed.NORMAL
+	CFG.bot_speed_frames = CFG.BotSpeed.NORMAL
+
+
+func _on_fast_pressed():
+	CFG.animation_speed_frames = CFG.AnimationSpeed.INSTANT
+	CFG.bot_speed_frames = CFG.BotSpeed.FAST
 
 #endregion Replay Controls
 
@@ -431,24 +461,14 @@ func _on_menu_pressed():
 	UI.main_menu.open_in_game_menu()
 
 
-func _on_pause_pressed():
-	CFG.animation_speed_frames = CFG.AnimationSpeed.NORMAL
-	CFG.bot_speed_frames = CFG.BotSpeed.FREEZE
+func show_text_bubble(text_bubble : TextBubble) -> void:
+	$TextBubble.show()
+	$TextBubble/Title.text = text_bubble.title
+	$TextBubble/Text.text = text_bubble.text
+	$TextBubble/Icon.texture = load(text_bubble.icon_path)
+	IM.set_game_paused(true)
 
 
-func _on_step_pressed():
-	# TODO improve/un-DRUTify playback (especially step) controls
-	CFG.animation_speed_frames = CFG.AnimationSpeed.NORMAL
-	CFG.bot_speed_frames = CFG.BotSpeed.NORMAL
-	await get_tree().create_timer(0.1).timeout
-	CFG.bot_speed_frames = CFG.BotSpeed.FREEZE
-
-
-func _on_play_pressed():
-	CFG.animation_speed_frames = CFG.AnimationSpeed.NORMAL
-	CFG.bot_speed_frames = CFG.BotSpeed.NORMAL
-
-
-func _on_fast_pressed():
-	CFG.animation_speed_frames = CFG.AnimationSpeed.INSTANT
-	CFG.bot_speed_frames = CFG.BotSpeed.FAST
+func _on_text_bubble_button_pressed():
+	IM.set_game_paused(false)
+	$TextBubble.hide()
