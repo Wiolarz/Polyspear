@@ -281,11 +281,6 @@ func go_to_main_menu():
 	WM.clear_world()
 	UI.go_to_main_menu()
 
-
-func toggle_in_game_menu():
-	UI.toggle_in_game_menu()
-	set_game_paused(UI.requests_pause())
-
 #endregion Gameplay UI
 
 

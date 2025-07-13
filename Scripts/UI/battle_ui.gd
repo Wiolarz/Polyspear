@@ -458,7 +458,7 @@ func _on_switch_camera_pressed():
 
 
 func _on_menu_pressed():
-	IM.toggle_in_game_menu()
+	UI.main_menu.open_in_game_menu()
 
 
 func show_text_bubble(text_bubble : TextBubble) -> void:

@@ -8,6 +8,9 @@
 [ext_resource type="PackedScene" uid="uid://cs7ibsdnsrn5v" path="res://Scenes/UI/ReplaysMenu.tscn" id="6_lxdjb"]
 [ext_resource type="PackedScene" uid="uid://hxaial4lcwu7" path="res://Scenes/UI/Wiki/Learn.tscn" id="7_frqj7"]
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_nt26j"]
+bg_color = Color(0.0941176, 0.0941176, 0.0941176, 0.870588)
+
 [sub_resource type="StyleBoxLine" id="StyleBoxLine_3lov4"]
 color = Color(0.701961, 0.701961, 0.701961, 1)
 grow_begin = 0.0
@@ -17,6 +20,15 @@ vertical = true
 
 [node name="MainMenu" type="CanvasLayer"]
 script = ExtResource("1_iln2i")
+
+[node name="InGameMenuCover" type="Panel" parent="."]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_nt26j")
 
 [node name="MainContainer" type="VBoxContainer" parent="."]
 anchors_preset = 15
@@ -31,6 +43,11 @@ theme_override_constants/separation = 0
 layout_mode = 2
 size_flags_vertical = 0
 theme_override_constants/separation = 20
+
+[node name="ReturnToGameButton" type="Button" parent="MainContainer/TopMenu"]
+layout_mode = 2
+disabled = true
+text = "Foray"
 
 [node name="Tabs" type="TabBar" parent="MainContainer/TopMenu"]
 layout_mode = 2
@@ -94,6 +111,7 @@ layout_mode = 2
 layout_mode = 2
 
 [connection signal="visibility_changed" from="." to="." method="_on_visibility_changed"]
+[connection signal="pressed" from="MainContainer/TopMenu/ReturnToGameButton" to="." method="_on_return_to_game_button_pressed"]
 [connection signal="tab_changed" from="MainContainer/TopMenu/Tabs" to="." method="_on_tabs_tab_changed"]
 [connection signal="pressed" from="MainContainer/TopMenu/UnitEditorButton" to="." method="_on_unit_editor_button_pressed"]
 [connection signal="pressed" from="MainContainer/TopMenu/TileEditorButton" to="." method="_on_tile_editor_button_pressed"]

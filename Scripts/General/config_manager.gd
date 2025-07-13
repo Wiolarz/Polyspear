@@ -296,6 +296,14 @@ var LAST_USED_WORLD_MAP : DataWorldMap : # TODO implement this
 var FULLSCREEN_AUTO_TOGGLE : bool :
 	get: return player_options.keep_main_menu_windowed
 
+var AUTO_WIN_CHEAT : bool :
+	get: return player_options.auto_win
+
+var AUTO_WIN_AGAINST_NEUTRALS_CHEAT : bool :
+	get: return player_options.auto_win_against_neutrals
+
+var WORLD_GOD_MODE : bool :
+	get: return player_options.world_god_mode
 
 # Editor preference settings:
 var TILE_EDITOR_BATTLE : bool :

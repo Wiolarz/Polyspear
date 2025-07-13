@@ -20,6 +20,24 @@ func refresh_replays_disabled():
 	($MainContainer/TopMenu/Tabs as TabBar).set_tab_disabled(4, not BattleReplay.has_replays())
 
 
+func open_main_menu() -> void:
+	show()
+	$InGameMenuCover.visible = false
+	$MainContainer/TopMenu/ReturnToGameButton.disabled = true
+
+
+func open_in_game_menu() -> void:
+	show()
+	$InGameMenuCover.visible = true
+	$MainContainer/TopMenu/ReturnToGameButton.disabled = false
+
+
+#region Buttons
+
+func _on_return_to_game_button_pressed() -> void:
+	hide()
+
+
 func _on_visibility_changed():
 	refresh_replays_disabled()
 
@@ -84,5 +102,8 @@ func _on_tabs_tab_changed(tab_index : int):
 		CFG.MainMenuTabs.REPLAYS: _on_replays_tab_pressed() # 4
 		CFG.MainMenuTabs.LEARN: _on_learn_tab_pressed() # 5
 		_: push_error("_on_tabs_tab_changed index not supported: "+str(tab_index))
+
 	CFG.player_options.last_open_menu_tab = tab_index
 	CFG.save_player_options()
+
+#endregion Buttons
