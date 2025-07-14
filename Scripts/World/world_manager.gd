@@ -322,15 +322,15 @@ func cast_ritual(ritual : Ritual) -> void:
 		return
 
 
-	var ritualist_present : bool = false
+	var shaman_present : bool = false
 	var hero : Hero = selected_hero.entity.hero
 	for passive in hero.passive_effects:
-		if passive.passive_name == "ritualist":
-			ritualist_present = true
+		if passive.passive_name == "shaman":
+			shaman_present = true
 
 
 
-	if not ritualist_present and hero.movement_points + hero.ritual_cost_reduction < ritual.mp_cost: #TODO make it an assert
+	if not shaman_present and hero.movement_points + hero.ritual_cost_reduction < ritual.mp_cost: #TODO make it an assert
 		printerr("hero doesn't have enough movement points left")
 		return
 
