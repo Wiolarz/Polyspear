@@ -156,12 +156,10 @@ func move_info_execute(move_info : MoveInfo) -> void:
 	# BMFast integrity check contd. - live testing purposes only
 	bmfast.check_integrity_after_move(self)
 
-
 #endregion move_info support
 
 
 #region Undo
-
 
 ## used only by BM.undo()
 ## returns array of revived units
@@ -1785,10 +1783,17 @@ class ArmyInBattleState:
 
 
 	func kill_army() -> void:
+		var army_to_award_exp : ArmyInBattleState = BM._battle_grid_state._find_proper_exp_winner(team)
+
 		dead_units.append_array(units_to_summon)
+		if army_to_award_exp:
+			for killed_deployed_unit : DataUnit in units_to_summon:
+				army_to_award_exp.killed_units.append(killed_deployed_unit.level)
+
 		units_to_summon.clear()
 		for unit_idx in range(units.size() - 1, -1, -1):
-			battle_grid_state.get_ref()._kill_unit(units[unit_idx])
+			battle_grid_state.get_ref()._kill_unit(units[unit_idx], army_to_award_exp)
+
 
 
 	func can_fight() -> bool:

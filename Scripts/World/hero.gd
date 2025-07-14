@@ -17,8 +17,17 @@ var hero_name : String
 
 var max_army_size : int
 
-var max_movement_points = 3
+var max_movement_points : int = 3 :
+	get:
+		var result_max : int = max_movement_points
+		for passive in passive_effects:
+			if passive.passive_name == "scouting":
+				result_max += 5
+
+		return result_max
+
 var movement_points = 3
+var movements_points_renewal = 3
 
 ## world coord, where hero wants to travel
 var travel_path : Array[Vector2i]
@@ -61,7 +70,6 @@ static func construct_hero(data_hero : DataHero,
 	new_hero.controller_index = player_index
 	new_hero.data_unit = data_hero.data_unit
 	new_hero.max_army_size = data_hero.max_army_size
-	new_hero.max_movement_points = data_hero.max_movement_points
 	new_hero.passive_effects = data_hero.starting_passives
 	return new_hero
 
@@ -97,6 +105,7 @@ func _level_up() -> void:
 	var old_max_move = max_movement_points
 	max_army_size = 2 + level
 	max_movement_points =  3 + (level / 2)
+	movements_points_renewal =  3 + (level / 2)
 	movement_points += max_movement_points - old_max_move
 
 
