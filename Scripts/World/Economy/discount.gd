@@ -4,15 +4,14 @@ extends Resource
 enum discount_type_enum {
 	SUBTRACT,
 	DIVIDE,
-	INCREASING_SUBTRACT,
-	ON_PURCHASE
+	INCREASING_SUBTRACT
 }
 
 @export var wood_mult : int
 @export var iron_mult : int
 @export var ruby_mult : int
 
-@export var type : int
+@export var type := discount_type_enum.SUBTRACT 
 
 @export var value : int = 0
 
