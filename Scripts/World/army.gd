@@ -68,6 +68,10 @@ func on_end_of_round():
 			hero.movement_points = hero.max_movement_points
 		hero.rituals = hero.rituals_book.duplicate()
 
+		for passive in hero.passive_effects:
+			if passive.passive_name == "arch mage":
+				hero.ritual_cost_reduction += 1
+
 
 ## remember that is some player's army is created, it also needs to be
 static func create_from_preset(army_preset : PresetArmy) \

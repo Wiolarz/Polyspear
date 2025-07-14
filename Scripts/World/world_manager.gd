@@ -321,15 +321,28 @@ func cast_ritual(ritual : Ritual) -> void:
 		printerr("ritual is not present on a hero")
 		return
 
-	if selected_hero.entity.hero.movement_points < ritual.mp_cost: #TODO make it an assert
+
+	var ritualist_present : bool = false
+	var hero : Hero = selected_hero.entity.hero
+	for passive in hero.passive_effects:
+		if passive.passive_name == "ritualist":
+			ritualist_present = true
+
+
+
+	if not ritualist_present and hero.movement_points + hero.ritual_cost_reduction < ritual.mp_cost: #TODO make it an assert
 		printerr("hero doesn't have enough movement points left")
 		return
 
+	var cost : int = ritual.mp_cost
+	var reduction : int = min(hero.ritual_cost_reduction, cost)
 
+	cost -= reduction
+	hero.ritual_cost_reduction -= reduction
 
-	selected_hero.entity.hero.movement_points -= ritual.mp_cost
+	hero.movement_points -= cost
 
-	selected_hero.entity.hero.rituals.erase(ritual)
+	hero.rituals.erase(ritual)
 
 	print(ritual)
 	match ritual.name:
