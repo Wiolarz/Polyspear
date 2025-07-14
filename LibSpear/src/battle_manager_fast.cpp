@@ -424,17 +424,6 @@ void BattleManagerFast::_process_spell(UnitID uid, int8_t spell_id, Position tar
 
 					const auto o_blocker_unit = _get_unit(target);
 					if (o_blocker_unit) {
-						/*auto [blocker_unit, blocker_army] = *o_blocker_unit;
-
-						int8_t idx = -1;
-						for (Unit& unit : blocker_army.units) {
-							idx += 1;
-							if (&unit == &blocker_unit) {
-
-								_kill_unit(uid, UnitID{blocker_army.id, idx});
-								break;
-							}
-						}*/
 						_kill_unit(uid, NO_UNIT);
 						break;
 					}
