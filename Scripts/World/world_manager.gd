@@ -235,6 +235,7 @@ func grid_input(coord : Vector2i):
 			_deselect_hero()
 	_painter_node.erase()
 
+
 ## Tries to Select owned Hero
 func input_try_select(coord) -> void:  #TODO "nothing is selected try to select stuff"
 	var selection = WS.get_interactable_at(coord)
@@ -298,6 +299,48 @@ func perform_world_move_info(world_move_info : WorldMoveInfo) -> void:
 
 func perform_network_move(world_move_info : WorldMoveInfo) -> void:
 	perform_world_move_info(world_move_info)
+
+
+func temp_cast_first_ritual() -> void:
+	if not selected_hero: #TODO make it an assert
+		printerr("No selected hero")
+		return
+
+	if selected_hero.entity.hero.rituals.size() == 0: #TODO make it an assert
+		printerr("ritual is not present on a hero")
+		return
+	cast_ritual(selected_hero.entity.hero.rituals[0])
+
+
+func cast_ritual(ritual : Ritual) -> void:
+	if not selected_hero: #TODO make it an assert
+		printerr("No selected hero")
+		return
+
+	if ritual not in selected_hero.entity.hero.rituals: #TODO make it an assert
+		printerr("ritual is not present on a hero")
+		return
+
+	if selected_hero.entity.hero.movement_points < ritual.mp_cost: #TODO make it an assert
+		printerr("hero doesn't have enough movement points left")
+		return
+
+
+
+	selected_hero.entity.hero.movement_points -= ritual.mp_cost
+
+	selected_hero.entity.hero.rituals.erase(ritual)
+
+	print(ritual)
+	match ritual.name:
+		"Town Portal":
+			## TODO add selecting city to teleport to / implement logic to select closest/last visited city
+			if not selected_city: #TODO make it an assert
+				printerr("no destination")
+				return
+			# TODO check if army is present
+			WS.change_army_position(selected_hero.entity, selected_city.coord)
+			WS.get_place_at(selected_city.coord).interact(selected_hero.entity)
 
 #endregion Player Action
 

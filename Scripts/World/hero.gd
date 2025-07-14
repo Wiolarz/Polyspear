@@ -38,6 +38,12 @@ var wounded : bool = false
 var xp = 0
 var level = 1
 
+## List of rituals player can cast each turn
+var rituals_book : Array[Ritual] = []
+## List of rituals player can cast this turn [br]
+## gets generated from rituals_book
+var rituals : Array[Ritual] = []
+
 # Battle Gameplay
 var data_unit : DataUnit
 
@@ -108,9 +114,17 @@ func _level_up() -> void:
 	movements_points_renewal =  3 + (level / 2)
 	movement_points += max_movement_points - old_max_move
 
+	if level == 2:
+		add_ritual(load("res://Resources/World/Rituals/town_portal.tres"))
+
 
 func revive():
 	movement_points = max_movement_points
+
+
+func add_ritual(ritual : Ritual) -> void:
+	rituals_book.append(ritual.duplicate())
+	rituals.append(ritual.duplicate())
 
 
 func to_network_serializable() -> Dictionary:

@@ -66,6 +66,7 @@ func on_end_of_round():
 		hero.movement_points += hero.movements_points_renewal
 		if hero.movement_points > hero.max_movement_points:
 			hero.movement_points = hero.max_movement_points
+		hero.rituals = hero.rituals_book.duplicate()
 
 
 ## remember that is some player's army is created, it also needs to be
