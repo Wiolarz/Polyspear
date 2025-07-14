@@ -41,7 +41,7 @@ extends Resource
 ## if true all player slots are placed in control of AI controller [br]
 ## if false all slots are by default controlled by host (human player)
 @export var use_default_AI_players : bool = false
-=======
+
 ## Default first option when opening the game
 @export var last_open_menu_tab := CFG.MainMenuTabs.LEARN
 
@@ -61,13 +61,6 @@ extends Resource
 # Editor settings that remember last selected options
 @export var tile_editor_default_battle : bool = true
 @export var map_editor_default_battle : bool = true
-
-
-@export var fullscreen : bool:
-	set(new):
-		if new != fullscreen:
-			(func(): UI.set_fullscreen(new)).call_deferred()
-		fullscreen = new
 
 #endregion UX Preferences
 
