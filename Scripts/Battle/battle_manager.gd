@@ -28,6 +28,8 @@ var _batch_mode : bool = false # flagged true when recreating game state
 var _ai_move_preview : AIMovePreview = null
 var _painter_node : BattlePainter
 
+var _scripted_battle : ScriptedBattle
+
 signal move_animation_done()
 
 
@@ -63,7 +65,8 @@ func _process(_delta):
 ## replay_template - used in replays to avoid juggling player data
 func start_battle(new_armies : Array[Army], battle_map : DataBattleMap, \
 		x_offset : float, battle_state : SerializableBattleState = null,
-		replay_template : BattleReplay = null) -> void:
+		replay_template : BattleReplay = null,
+		scripted_battle : ScriptedBattle = null) -> void:
 
 	assert(_is_clear(), "cannot start battle map, map already loaded")
 
@@ -71,6 +74,8 @@ func start_battle(new_armies : Array[Army], battle_map : DataBattleMap, \
 		_replay_data = BattleReplay.from_template(replay_template)
 	else:
 		_replay_data = BattleReplay.create(new_armies, battle_map)
+
+	_scripted_battle = scripted_battle
 
 	_replay_move_counter = 0
 
@@ -144,7 +149,7 @@ func get_bounds_global_position() -> Rect2:
 	var size : Vector2 = bottom_right_tile_position - top_left_tile_position
 	return Rect2(top_left_tile_position, size)
 
-#endregion
+#endregion Battle Setup
 
 
 #region helpers
@@ -218,6 +223,10 @@ func _is_clear() -> bool:
 func _on_turn_started(player : Player) -> void:
 	if not _battle_is_ongoing:
 		return
+
+	if _scripted_battle:
+		var current_event := BattleEventDescription.generate_current_battle_event(_battle_grid_state)
+		_scripted_battle.show_text_bubbles(current_event)
 
 	_battle_ui.start_player_turn(_battle_grid_state.current_army_index)
 	if _replay_is_playing:
@@ -428,6 +437,7 @@ func _on_unit_summoned(unit : Unit) -> void:
 	unit.unit_magic_effect.connect(_on_unit_magic_effect.bind(unit))  # spell icons UI
 
 	unit.unit_died.connect(form.anim_die)
+	unit.unit_died.connect(_on_unit_death)  # TEXT BUBBLES
 	unit.unit_turned.connect(form.anim_turn)
 	unit.unit_moved.connect(form.anim_move)
 	unit.unit_magic_effect.connect(form.anim_magic)  # STUB
@@ -560,7 +570,6 @@ func _grid_input_fighting(coord : Vector2i) -> MoveInfo:
 	return move_info
 
 
-
 ## Select friendly Unit on a given coord [br]
 ## returns true if unit was selected
 func _try_select_unit(coord : Vector2i) -> bool:
@@ -581,6 +590,10 @@ func _try_select_unit(coord : Vector2i) -> bool:
 	_selected_unit = new_unit
 	_unit_to_unit_form[_selected_unit].set_selected(true)
 	_update_move_highlights(_selected_unit)
+
+	if _scripted_battle:
+		var current_event := BattleEventDescription.generate_current_battle_event(_battle_grid_state)
+		_scripted_battle.show_text_bubbles(current_event)
 
 	# attempt to display spells available to selected unit
 	_show_spells(_selected_unit)
@@ -959,5 +972,22 @@ func planning_input(tile_coord : Vector2i, is_it_pressed : bool) -> void:
 
 #endregion Painting
 
+
+#region UI
+
 func _on_unit_magic_effect(unit : Unit) -> void:
 	_unit_to_unit_form[unit].set_effects()
+
+#endregion UI
+
+
+#region Scripted Battles
+
+func _on_unit_death() -> void:
+	if not _scripted_battle:
+		return
+
+	var current_event := BattleEventDescription.generate_current_battle_event(_battle_grid_state)
+	_scripted_battle.show_text_bubbles(current_event)
+
+#endregion Scripted Battles
