@@ -26,7 +26,8 @@ enum class BattleState : uint8_t {
 enum class MovePhase : uint8_t {
 	TURN,
 	LEAP,
-	PASSIVE
+	PASSIVE,
+	DASH,
 };
 
 struct Position {
@@ -41,8 +42,20 @@ struct Position {
 		return Position(x + other.x, y + other.y);
 	}
 
+	Position& operator+=(const Position& other) {
+		x += other.x;
+		y += other.y;
+		return *this;
+	}
+
 	Position operator-(const Position& other) const {
 		return Position(x - other.x, y - other.y);
+	}
+
+	Position& operator-=(const Position& other) {
+		x -= other.x;
+		y -= other.y;
+		return *this;
 	}
 
 	Position operator*(const int mult) const {
@@ -69,16 +82,16 @@ public:
 	static const uint8_t FLAG_COUNTER_ATTACK = 0x01;
 	static const uint8_t FLAG_PARRY = 0x02;
 	static const uint8_t FLAG_PARRY_BREAK = 0x04;
-	
+
 	static const int MIN_SHIELD_DEFENSE = 2;
 
 	Symbol() = default;
-	Symbol(uint8_t attack_strength, uint8_t defense_strength, uint8_t push_force, uint8_t ranged_reach, uint8_t flags) 
+	Symbol(uint8_t attack_strength, uint8_t defense_strength, uint8_t push_force, uint8_t ranged_reach, uint8_t flags)
 		: _attack_strength(attack_strength),
 		_defense_strength(defense_strength),
 		_push_strength(push_force),
 		_ranged_reach(ranged_reach),
-		_flags(flags) 
+		_flags(flags)
 	{
 
 	}
@@ -102,7 +115,7 @@ public:
 	int get_reach() {
 		return _ranged_reach;
 	}
-	
+
 	int get_push_force() {
 		return _push_strength;
 	}
@@ -112,7 +125,7 @@ public:
 		if(other.get_bow_force() <= 0 && (parries() && !other.breaks_parry())) {
 			return true;
 		}
-		
+
 		int other_force = (phase == MovePhase::PASSIVE) ? other.get_counter_force() : other.get_attack_force();
 		return other_force <= get_defense_force();
 	}
@@ -167,7 +180,7 @@ public:
 		_army(army),
 		_spawning_direction(direction)
 	{}
-	
+
 	bool is_passable() {
 		return (_flags & PASSABLE) != 0;
 	}

@@ -1031,10 +1031,10 @@ func is_spell_target_valid(caster : Unit, coord : Vector2i, spell : BattleSpell)
 			if _is_faced_tile_in_range(caster.coord, coord, caster.unit_rotation, spell_range):
 				return true
 
-		"Blood Ritual":  # any enemy units
+		"Blood Ritual":  # any enemy units -> when enemy has more than 1 unit
 			var target = get_unit(coord)
-			#if target and target.controller.team != caster.controller.team: #TEMP awaits major world refactor
-			if target: #TEMP
+			if target and target.controller.team != caster.controller.team and \
+				target.army_in_battle.units.size() >= 2:
 				return true
 		_:
 			printerr("Spell targeting not supported: ", spell.name)
