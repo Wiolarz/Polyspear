@@ -70,6 +70,7 @@ enum SymbolAnimationType
 const BATTLE_MAPS_PATH = "res://Resources/Battle/Battle_Maps/"
 const UNITS_PATH = "res://Resources/Battle/Units/"
 const HEROES_PATH = "res://Resources/Battle/Heroes/"
+const SPELLS_PATH = "res://Resources/Battle/Battle_Spells/"
 const BUILDINGS_PATH = "res://Resources/Races/Buildings/"
 const BATTLE_PRESETS_PATH = "res://Resources/Presets/Battle/"
 const WORLD_MAPS_PATH = "res://Resources/World/World_maps/"

@@ -32,5 +32,17 @@ func cast_effect(target : Unit, event_type : String) -> void:
 			if event_type == "casting":
 				target.try_adding_magic_effect(spell_effects[0].duplicate())
 
-				
-				
+
+static func get_network_id(spell : BattleSpell) -> String:
+	if not spell:
+		return ""
+	assert(spell.resource_path.begins_with(CFG.SPELLS_PATH), \
+			"spell serialization not supported")
+	return spell.resource_path.trim_prefix(CFG.SPELLS_PATH)
+
+
+static func from_network_id(network_id : String) -> BattleSpell:
+	if network_id.is_empty():
+		return null
+	print("loading BattleSpell - ","%s/%s" % [ CFG.SPELLS_PATH, network_id ])
+	return load("%s/%s" % [ CFG.SPELLS_PATH, network_id ]) as BattleSpell
