@@ -721,7 +721,7 @@ void BattleManagerFast::_spells_append_moves() {
 				_append_moves_unit(spell.unit, i, TeamRelation::ME, false);
 				break;
 			case BattleSpell::State::BLOOD_CURSE:
-				_append_moves_unit(spell.unit, i, TeamRelation::ENEMY, true);
+				_append_curse_moves_unit(spell.unit, i, TeamRelation::ENEMY, true, 2);
 				break;
 			case BattleSpell::State::WIND_DASH:
 				_append_moves_line(spell.unit, i, unit.pos, unit.rotation, 1, 1);
@@ -874,6 +874,28 @@ void BattleManagerFast::_append_moves_unit(UnitID uid, int8_t spell_id, TeamRela
 		if(skip_army(army, other_army, relation)) {
 			continue;
 		}
+
+		for(unsigned i = 0; i < other_army.units.size(); i++) {
+			auto& unit = other_army.units[i];
+			if(unit.status != UnitStatus::ALIVE || (!include_self && int(i) == uid.unit && army.id == uid.army)) {
+				continue;
+			}
+
+			_moves.emplace_back(uid.unit, unit.pos, spell_id);
+		}
+	}
+}
+
+void BattleManagerFast::_append_curse_moves_unit(UnitID uid, int8_t spell_id, TeamRelation relation, bool include_self, int8_t min_units) {
+	auto [_, army] = _get_unit(uid).value();
+	for(auto& other_army : _armies) {
+		if(skip_army(army, other_army, relation)) {
+			continue;
+		}
+		if(min_units > 0 && other_army.count_alive_units() < min_units) {
+			continue;
+		}
+
 
 		for(unsigned i = 0; i < other_army.units.size(); i++) {
 			auto& unit = other_army.units[i];
