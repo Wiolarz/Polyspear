@@ -96,7 +96,7 @@ void BattleManagerFast::play_move(Move move) {
 			_current_army %= _armies.size();
 			skip_count += 1;
 			// no player has anything to summon, go to next phase
-			if(skip_count == _armies.size()) {
+			if(skip_count == int(_armies.size())) {
 				end_summon = true;
 				break;
 			}
