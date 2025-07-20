@@ -1044,15 +1044,13 @@ void BattleManagerFast::_kill_unit(UnitID id, UnitID killer_id) {
 		unit.remove_effect(Unit::FLAG_EFFECT_VENGEANCE);
 		killer_opt.value().unit.try_apply_effect(Unit::FLAG_EFFECT_DEATH_MARK);
 	}
-	if(unit.is_effect_active(Unit::FLAG_EFFECT_BLOOD_CURSE)) {
 
-		if (army.count_alive_units() == 1) {
-			int8_t idx = -1;
-			for (Unit& unit : army.units) {
-				idx += 1;
-				if (unit.status == UnitStatus::ALIVE) {
-					_kill_unit(UnitID{army.id, idx}, NO_UNIT);
-				}
+	if (army.count_alive_units() == 1) {
+		int8_t idx = -1;
+		for (Unit& unit : army.units) {
+			idx += 1;
+			if (unit.status == UnitStatus::ALIVE && unit.is_effect_active(Unit::FLAG_EFFECT_BLOOD_CURSE)) {
+				_kill_unit(UnitID{army.id, idx}, NO_UNIT);
 			}
 		}
 	}
