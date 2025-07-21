@@ -13,6 +13,7 @@ extends Resource
 ## COMMAND
 @export var max_army_size : int = 3
 
+@export var starting_rituals : Array[Ritual] = []
 
 
 static func get_network_id(hero : DataHero) -> String:

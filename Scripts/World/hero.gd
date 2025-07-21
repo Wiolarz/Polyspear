@@ -79,7 +79,11 @@ static func construct_hero(data_hero : DataHero,
 	new_hero.controller_index = player_index
 	new_hero.data_unit = data_hero.data_unit
 	new_hero.max_army_size = data_hero.max_army_size
-	new_hero.passive_effects = data_hero.starting_passives
+
+	#TODO check if duplicate could be useful in the future
+	new_hero.passive_effects = data_hero.starting_passives.duplicate()
+	new_hero.rituals_book = data_hero.starting_rituals.duplicate()
+	new_hero.rituals = new_hero.rituals_book.duplicate()
 	return new_hero
 
 
