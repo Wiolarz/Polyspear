@@ -161,7 +161,7 @@ func _on_chat_line_edit_text_submitted(new_text):
 
 		# Cheats
 		match cheat:
-			"tp":
+			"r":
 				WM.temp_cast_first_ritual()
 			"money":
 				WM.cheat_money.callv(args)
