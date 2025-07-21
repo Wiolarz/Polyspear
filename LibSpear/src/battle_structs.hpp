@@ -90,7 +90,8 @@ public:
 	}
 
 	bool try_apply_effect(uint8_t mask, uint8_t duration = DEFAULT_EFFECT_DURATION) {
-		if (effects_counter == 2) {
+		//BM_ASSERT(effects_counter <= 2, "effects_counter cannot be higher"); // TODO add some kind of assertion
+		if (effects_counter >= 2) { // TODO move magic value 2 to some a reference to a const in config file
 			return false;
 		}
 		for(auto& eff : effects) {
