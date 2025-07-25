@@ -1124,6 +1124,12 @@ void BattleManagerFastCpp::set_unit_martyr(int army, int idx, int martyr_idx, in
 	bm._armies[army].units[martyr_idx].try_apply_martyr(UnitID(army, idx), duration);
 }
 
+void BattleManagerFastCpp::set_unit_solo_martyr(int army, int martyr_idx, int duration) {
+	//CHECK_UNIT(idx,); //TEMP
+	//CHECK_ARMY(army,);
+	bm._armies[army].units[martyr_idx].try_apply_martyr(NO_UNIT, duration);
+}
+
 void BattleManagerFastCpp::set_current_participant(int army) {
 	CHECK_ARMY(army,);
 	bm._current_army = army;
@@ -1225,6 +1231,7 @@ void BattleManagerFastCpp::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_unit_mana", "army", "unit", "mana"), &BattleManagerFastCpp::set_unit_mana);
 	ClassDB::bind_method(D_METHOD("set_unit_effect", "army", "unit", "effect", "duration"), &BattleManagerFastCpp::set_unit_effect);
 	ClassDB::bind_method(D_METHOD("set_unit_martyr", "army", "unit", "martyr_id", "duration"), &BattleManagerFastCpp::set_unit_martyr);
+	ClassDB::bind_method(D_METHOD("set_unit_solo_martyr", "army", "martyr_id", "duration"), &BattleManagerFastCpp::set_unit_solo_martyr);
 	ClassDB::bind_method(D_METHOD("set_army_cyclone_timer", "army", "timer"), &BattleManagerFastCpp::set_army_cyclone_timer);
 	ClassDB::bind_method(D_METHOD("set_tile_grid", "tilegrid"), &BattleManagerFastCpp::set_tile_grid);
 	ClassDB::bind_method(D_METHOD("set_current_participant", "army"), &BattleManagerFastCpp::set_current_participant);

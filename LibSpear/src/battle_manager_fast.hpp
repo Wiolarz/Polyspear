@@ -193,6 +193,7 @@ public:
 
 	void set_unit_effect(int army, int idx, godot::String effect, int duration);
 	void set_unit_martyr(int army, int idx, int martyr_id, int duration);
+	void set_unit_solo_martyr(int army, int martyr_id, int duration);
 
 	void insert_spell(int army, int unit, int spell_id, godot::String spell_name);
 	void set_army_cyclone_timer(int army, int timer);
