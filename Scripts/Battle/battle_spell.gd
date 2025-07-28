@@ -25,10 +25,11 @@ func enchanted_unit_dies() -> void:
 			return
 
 
-
+## Based of event type applies effect to the target unit [br]
+## each new effects needs to be addded here
 func cast_effect(target : Unit, event_type : String) -> void:
 	match name:
-		"Vengeance", "Blood Ritual", "Martyr":
+		"Vengeance", "Blood Ritual", "Martyr", "Anchor":
 			if event_type == "casting":
 				target.try_adding_magic_effect(spell_effects[0].duplicate())
 
