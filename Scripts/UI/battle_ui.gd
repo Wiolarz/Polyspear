@@ -413,6 +413,8 @@ func load_spells(army_index : int, spells : Array[BattleSpell], preview : bool =
 
 		button.texture_normal = CFG.SUMMON_BUTTON_TEXTURE
 		button.texture_normal = load(spell.icon_path)
+		
+		button.tooltip_text = spell.description
 
 		book.add_child(button)
 		var lambda = func on_click():
