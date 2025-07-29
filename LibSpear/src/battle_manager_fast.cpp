@@ -230,7 +230,8 @@ void BattleManagerFast::_process_unit(UnitID unit_id, MovePhase phase) {
 
 		auto direction = neighbor.pos - unit.pos;
 		auto push_force = unit_symbol.get_push_force();
-		if(neighbor.status != UnitStatus::DEAD && push_force > 0) {
+		if(neighbor.status != UnitStatus::DEAD && push_force > 0 &&
+			(!neighbor_symbol.parries() || unit_symbol.breaks_parry())) {
 			_process_push(neighbor_id, unit_id, direction, push_force);
 		}
 	}
