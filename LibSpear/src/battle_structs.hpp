@@ -63,7 +63,6 @@ struct Unit {
 	uint8_t flags = 0;
 	std::array<Symbol, 6> sides{};
 	std::array<Effect, MAX_EFFECTS_PER_UNIT> effects{};
-	uint8_t effects_counter = 0;
 
 private:
 	UnitID _martyr_id = NO_UNIT;
@@ -90,16 +89,11 @@ public:
 	}
 
 	bool try_apply_effect(uint8_t mask, uint8_t duration = DEFAULT_EFFECT_DURATION) {
-		//BM_ASSERT(effects_counter <= 2, "effects_counter cannot be higher"); // TODO add some kind of assertion
-		if (effects_counter >= 2) { // TODO move magic value 2 to some a reference to a const in config file
-			return false;
-		}
 		for(auto& eff : effects) {
 			if(eff.mask == 0) {
 				flags |= mask;
-				eff.mask |= mask;
+				eff.mask = mask;
 				eff.counter = duration;
-				effects_counter++;
 				return true;
 			}
 		}
@@ -107,9 +101,6 @@ public:
 	}
 
 	bool try_apply_martyr(UnitID id, uint8_t duration = DEFAULT_EFFECT_DURATION) {
-		if (effects_counter == 2) {
-			return false;
-		}
 		_martyr_id = id;
 		return try_apply_effect(FLAG_EFFECT_MARTYR, duration);
 	}
@@ -123,7 +114,6 @@ public:
 		for(auto& eff : effects) {
 			eff.mask &= ~mask;
 		}
-		effects_counter--;
 	}
 
 	UnitID get_martyr_id() const {
