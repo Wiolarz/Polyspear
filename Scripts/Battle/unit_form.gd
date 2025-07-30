@@ -171,7 +171,7 @@ func anim_symbol(side : int, animation_type : int, target_coord: Vector2i = Vect
 		
 		CFG.SymbolAnimationType.TELEPORTING_PROJECTILE:
 			ANIM.sync_tweens([symbol.make_projectile_anim(target_coord, side)])
-		
+
 		CFG.SymbolAnimationType.BLOCK:
 			var data_symbol : DataSymbol = \
 				other_unit.entity.template.symbols[opposite_side_local]
@@ -184,7 +184,7 @@ func anim_symbol(side : int, animation_type : int, target_coord: Vector2i = Vect
 				)
 			else:
 				attack_tween_sync = other_symbol.make_melee_anim(
-					CFG.SymbolAnimationType.MELEE_ATTACK
+					CFG.SymbolAnimationType.FAILED_ATTACK
 				)
 				
 			var defense_tween_sync = symbol.make_block_anim()

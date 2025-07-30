@@ -69,7 +69,7 @@ func make_melee_anim(type : CFG.SymbolAnimationType) -> ANIM.TweenSync:
 		CFG.SymbolAnimationType.COUNTER_ATTACK:
 			animation_name = "counter"
 
-	var time_to_hit = frames.get_time_to_hit(animation_name) + CFG.anim_symbol_fade_in_out_time
+	var time_to_hit = frames.get_time_to_hit(animation_name)
 
 	assert(frames.has_animation(animation_name),
 		"Missing %s animation from %s" % [animation_name, frames.resource_path] )
@@ -84,13 +84,18 @@ func make_melee_anim(type : CFG.SymbolAnimationType) -> ANIM.TweenSync:
 		anim_tween.tween_callback(anim.play.bind(animation_name))
 		anim_tween.tween_interval(max(0, time_to_hit))
 		anim_tween.tween_callback(anim.pause)
-		anim_tween.tween_property(anim, "modulate:a", 0, CFG.anim_symbol_fade_in_out_time)
+		anim_tween.tween_interval(CFG.anim_symbol_fade_in_out_time*2)
+		anim_tween.tween_property(anim, "modulate:a", 0, CFG.anim_symbol_fade_in_out_time*2)
 		# Reset to known state
 		anim_tween.tween_callback(anim.stop)
 		anim_tween.tween_property(anim, "modulate:a", 1, 0)
 
 	_fade_symbol_in(anim_tween)
-	return ANIM.TweenSync.new(anim_tween, time_to_hit, frames.get_animation_duration(animation_name))
+	return ANIM.TweenSync.new(
+		anim_tween, 
+		time_to_hit + CFG.anim_symbol_fade_in_out_time, 
+		frames.get_animation_duration(animation_name)
+	)
 
 
 func make_projectile_anim(target_coord : Vector2i, side : int) -> ANIM.TweenSync:

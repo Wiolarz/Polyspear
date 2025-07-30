@@ -105,7 +105,6 @@ func play_tween(tween : Tween, settings := TweenPlaybackSettings.new()) -> void:
 		PlaybackMode.FAST_FORWARD when settings.interrupt_on_fast_forward:
 			tween.pause()
 			tween.kill()
-			tween.free()
 		PlaybackMode.FAST_FORWARD when not settings.interrupt_on_fast_forward:
 			tween.play()
 			tween.custom_step(INF)
@@ -136,7 +135,6 @@ func sync_tweens(
 	var first = true
 	
 	for sync in tween_syncs:
-		print(sync.timing, sync.total_time)
 		parent_tween.tween_interval(time - sync.timing)
 		
 		if not first:
@@ -157,9 +155,7 @@ func _tween_finished(tween: Tween) -> void:
 
 
 func _sort_tween_sync_by_timing_desc(a : TweenSync, b : TweenSync) -> bool:
-	if a.timing > b.timing:
-		return true
-	return false
+	return a.timing > b.timing
 
 
 class TweenSync:
