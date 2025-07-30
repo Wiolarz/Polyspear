@@ -168,7 +168,10 @@ void BattleManagerFast::play_move(Move move) {
 
 
 void BattleManagerFast::_process_unit(UnitID unit_id, MovePhase phase) {
-	auto [unit, army] = _get_unit(unit_id).value();
+	auto unit_opt = _get_unit(unit_id);
+	BM_ASSERT(unit_opt.has_value(), "Cannot process a non-existent unit");
+	auto [unit, army] = unit_opt.value();
+	BM_ASSERT(unit.status == UnitStatus::ALIVE, "Cannot process a dead unit");
 
 	// Passive phase
 	for(int side = 0; side < 6; side++) {
@@ -959,9 +962,9 @@ bool BattleManagerFast::is_occupied(Position pos, const Army& army, TeamRelation
 
 void BattleManagerFast::_move_unit(UnitID id, Position pos) {
 	auto unit_opt = _get_unit(id);
-	BM_ASSERT(unit_opt.has_value(), "Trying to move a dead unit");
+	BM_ASSERT(unit_opt.has_value(), "Trying to move a non-existent unit");
 	auto [unit, army] = unit_opt.value();
-	BM_ASSERT(unit.status != UnitStatus::DEAD, "Trying to move a non-existent unit");
+	BM_ASSERT(unit.status != UnitStatus::DEAD, "Trying to move a dead unit");
 	BM_ASSERT(_unit_cache.get(pos) == NO_UNIT, "Unexpected unit during moving - units should be killed manually");
 
 	if(unit.status == UnitStatus::ALIVE) {
@@ -997,9 +1000,9 @@ void BattleManagerFast::_move_unit(UnitID id, Position pos) {
 
 void BattleManagerFast::_kill_unit(UnitID id, UnitID killer_id) {
 	auto unit_opt = _get_unit(id);
-	BM_ASSERT(unit_opt.has_value(), "Trying to remove a dead unit");
+	BM_ASSERT(unit_opt.has_value(), "Trying to remove a non-existent unit");
 	auto [unit, army] = unit_opt.value();
-	BM_ASSERT(unit.status != UnitStatus::DEAD, "Trying to remove a non-existent unit");
+	BM_ASSERT(unit.status != UnitStatus::DEAD, "Trying to remove a dead unit");
 
 	auto victim_team = army.team;
 
@@ -1014,7 +1017,12 @@ void BattleManagerFast::_kill_unit(UnitID id, UnitID killer_id) {
 		unit.remove_martyr();
 		martyr.unit.remove_martyr();
 		_kill_unit(martyr_id, killer_id);
-		_move_unit(id, pos);
+
+		// Edge case - when blood curse is activated after martyr's death, 
+		// the second martyr target might die too
+		if(unit.status == UnitStatus::ALIVE) {
+			_move_unit(id, pos);
+		}
 		return;
 	}
 
@@ -1046,9 +1054,14 @@ void BattleManagerFast::_kill_unit(UnitID id, UnitID killer_id) {
 		killer_opt.value().unit.try_apply_effect(Unit::FLAG_EFFECT_DEATH_MARK);
 	}
 
-	if (army.count_alive_units() == 1) {
+	_check_blood_curse(id.army);
+}
+
+void BattleManagerFast::_check_blood_curse(int8_t army_id) {
+	Army& army = _armies[army_id];
+	if(army.count_alive_units() == 1) {
 		int8_t idx = -1;
-		for (Unit& unit : army.units) {
+		for(Unit& unit : army.units) {
 			idx += 1;
 			if (unit.status == UnitStatus::ALIVE && unit.is_effect_active(Unit::FLAG_EFFECT_BLOOD_CURSE)) {
 				_kill_unit(UnitID{army.id, idx}, NO_UNIT);
