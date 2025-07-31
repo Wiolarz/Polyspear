@@ -168,7 +168,10 @@ void BattleManagerFast::play_move(Move move) {
 
 
 void BattleManagerFast::_process_unit(UnitID unit_id, MovePhase phase) {
-	auto [unit, army] = _get_unit(unit_id).value();
+	auto unit_opt = _get_unit(unit_id);
+	BM_ASSERT(unit_opt.has_value(), "Cannot process a non-existent unit");
+	auto [unit, army] = unit_opt.value();
+	BM_ASSERT(unit.status == UnitStatus::ALIVE, "Cannot process a dead unit");
 
 	// Passive phase
 	for(int side = 0; side < 6; side++) {
@@ -230,7 +233,8 @@ void BattleManagerFast::_process_unit(UnitID unit_id, MovePhase phase) {
 
 		auto direction = neighbor.pos - unit.pos;
 		auto push_force = unit_symbol.get_push_force();
-		if(neighbor.status != UnitStatus::DEAD && push_force > 0) {
+		if(neighbor.status != UnitStatus::DEAD && push_force > 0 &&
+			(!neighbor_symbol.parries() || unit_symbol.breaks_parry())) {
 			_process_push(neighbor_id, unit_id, direction, push_force);
 		}
 	}
@@ -958,9 +962,9 @@ bool BattleManagerFast::is_occupied(Position pos, const Army& army, TeamRelation
 
 void BattleManagerFast::_move_unit(UnitID id, Position pos) {
 	auto unit_opt = _get_unit(id);
-	BM_ASSERT(unit_opt.has_value(), "Trying to move a dead unit");
+	BM_ASSERT(unit_opt.has_value(), "Trying to move a non-existent unit");
 	auto [unit, army] = unit_opt.value();
-	BM_ASSERT(unit.status != UnitStatus::DEAD, "Trying to move a non-existent unit");
+	BM_ASSERT(unit.status != UnitStatus::DEAD, "Trying to move a dead unit");
 	BM_ASSERT(_unit_cache.get(pos) == NO_UNIT, "Unexpected unit during moving - units should be killed manually");
 
 	if(unit.status == UnitStatus::ALIVE) {
@@ -996,9 +1000,9 @@ void BattleManagerFast::_move_unit(UnitID id, Position pos) {
 
 void BattleManagerFast::_kill_unit(UnitID id, UnitID killer_id) {
 	auto unit_opt = _get_unit(id);
-	BM_ASSERT(unit_opt.has_value(), "Trying to remove a dead unit");
+	BM_ASSERT(unit_opt.has_value(), "Trying to remove a non-existent unit");
 	auto [unit, army] = unit_opt.value();
-	BM_ASSERT(unit.status != UnitStatus::DEAD, "Trying to remove a non-existent unit");
+	BM_ASSERT(unit.status != UnitStatus::DEAD, "Trying to remove a dead unit");
 
 	auto victim_team = army.team;
 
@@ -1006,6 +1010,7 @@ void BattleManagerFast::_kill_unit(UnitID id, UnitID killer_id) {
 		auto martyr_opt = _get_unit(unit.get_martyr_id());
 		BM_ASSERT(martyr_opt.has_value(), "Invalid martyr id");
 		auto martyr = martyr_opt.value();
+		BM_ASSERT(martyr.unit.status != UnitStatus::DEAD, "Trying to kill a dead martyr");
 
 		auto pos = martyr.unit.pos;
 		auto martyr_id = unit.get_martyr_id();
@@ -1013,7 +1018,12 @@ void BattleManagerFast::_kill_unit(UnitID id, UnitID killer_id) {
 		unit.remove_martyr();
 		martyr.unit.remove_martyr();
 		_kill_unit(martyr_id, killer_id);
-		_move_unit(id, pos);
+
+		// Edge case - when blood curse is activated after martyr's death,
+		// the second martyr target might die too
+		if(unit.status == UnitStatus::ALIVE) {
+			_move_unit(id, pos);
+		}
 		return;
 	}
 
@@ -1044,15 +1054,19 @@ void BattleManagerFast::_kill_unit(UnitID id, UnitID killer_id) {
 		unit.remove_effect(Unit::FLAG_EFFECT_VENGEANCE);
 		killer_opt.value().unit.try_apply_effect(Unit::FLAG_EFFECT_DEATH_MARK);
 	}
-	if(unit.is_effect_active(Unit::FLAG_EFFECT_BLOOD_CURSE)) {
 
-		if (army.count_alive_units() == 1) {
-			int8_t idx = -1;
-			for (Unit& unit : army.units) {
-				idx += 1;
-				if (unit.status == UnitStatus::ALIVE) {
-					_kill_unit(UnitID{army.id, idx}, NO_UNIT);
-				}
+	_check_blood_curse(id.army);
+}
+
+/// to be used only within _kill_unit()
+void BattleManagerFast::_check_blood_curse(int8_t army_id) {
+	Army& army = _armies[army_id];
+	if(army.count_alive_units() == 1) {
+		int8_t idx = -1;
+		for(Unit& unit : army.units) {
+			idx += 1;
+			if (unit.status == UnitStatus::ALIVE && unit.is_effect_active(Unit::FLAG_EFFECT_BLOOD_CURSE)) {
+				_kill_unit(UnitID{army.id, idx}, NO_UNIT);
 			}
 		}
 	}
@@ -1124,6 +1138,12 @@ void BattleManagerFastCpp::set_unit_martyr(int army, int idx, int martyr_idx, in
 
 	bm._armies[army].units[idx].try_apply_martyr(UnitID(army, martyr_idx), duration);
 	bm._armies[army].units[martyr_idx].try_apply_martyr(UnitID(army, idx), duration);
+}
+
+void BattleManagerFastCpp::set_unit_solo_martyr(int army, int martyr_idx, int duration) {
+	//CHECK_UNIT(idx,); //TEMP
+	//CHECK_ARMY(army,);
+	bm._armies[army].units[martyr_idx].try_apply_martyr(NO_UNIT, duration);
 }
 
 void BattleManagerFastCpp::set_current_participant(int army) {
@@ -1227,6 +1247,7 @@ void BattleManagerFastCpp::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_unit_mana", "army", "unit", "mana"), &BattleManagerFastCpp::set_unit_mana);
 	ClassDB::bind_method(D_METHOD("set_unit_effect", "army", "unit", "effect", "duration"), &BattleManagerFastCpp::set_unit_effect);
 	ClassDB::bind_method(D_METHOD("set_unit_martyr", "army", "unit", "martyr_id", "duration"), &BattleManagerFastCpp::set_unit_martyr);
+	ClassDB::bind_method(D_METHOD("set_unit_solo_martyr", "army", "martyr_id", "duration"), &BattleManagerFastCpp::set_unit_solo_martyr);
 	ClassDB::bind_method(D_METHOD("set_army_cyclone_timer", "army", "timer"), &BattleManagerFastCpp::set_army_cyclone_timer);
 	ClassDB::bind_method(D_METHOD("set_tile_grid", "tilegrid"), &BattleManagerFastCpp::set_tile_grid);
 	ClassDB::bind_method(D_METHOD("set_current_participant", "army"), &BattleManagerFastCpp::set_current_participant);

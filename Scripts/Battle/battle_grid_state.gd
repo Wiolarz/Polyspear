@@ -730,6 +730,15 @@ func _perform_move(unit : Unit, direction : int, target_tile_coord : Vector2i) -
 	if _process_symbols(unit, E.MoveType.TURN):
 		return
 	currently_processed_move_info.register_turning_complete()
+
+	var anchored := false
+	for effect in unit.effects:
+		if effect.name == "Anchor":
+			anchored = true
+
+	if anchored:
+		return
+
 	# MOVE
 	var target_tile : BattleGridState.BattleHex = _get_battle_hex(target_tile_coord)
 	if target_tile.pit:
@@ -1016,6 +1025,10 @@ func is_spell_target_valid(caster : Unit, coord : Vector2i, spell : BattleSpell)
 				return true
 		"Fireball": # any hex target is valid
 			return true
+		"Anchor": # any unit
+			var target = get_unit(coord)
+			if target:
+				return true
 		"Teleport", "Wind Dash": # tile in range that is in front of the caster
 			if get_unit(coord) or not _get_battle_hex(coord).can_be_moved_to:  # tile has to be empty
 				return false
@@ -1047,7 +1060,7 @@ func is_spell_target_valid(caster : Unit, coord : Vector2i, spell : BattleSpell)
 func _perform_magic(unit : Unit, target_tile_coord : Vector2i, spell : BattleSpell) -> void:
 
 	match spell.name:
-		"Vengeance", "Blood Ritual":
+		"Vengeance", "Blood Ritual", "Anchor":
 			spell.cast_effect(get_unit(target_tile_coord), "casting")
 			#print(get_unit(target_tile_coord).effects)
 

@@ -61,6 +61,7 @@ class BattleManagerFast {
 	void _process_spell(UnitID uid, int8_t spell_id, Position target);
 	void _update_move_end();
 	void _update_turn_end();
+	void _check_blood_curse(int8_t army_id);
 
 	void _spells_append_moves();
 
@@ -193,6 +194,7 @@ public:
 
 	void set_unit_effect(int army, int idx, godot::String effect, int duration);
 	void set_unit_martyr(int army, int idx, int martyr_id, int duration);
+	void set_unit_solo_martyr(int army, int martyr_id, int duration);
 
 	void insert_spell(int army, int unit, int spell_id, godot::String spell_name);
 	void set_army_cyclone_timer(int army, int timer);
