@@ -111,6 +111,7 @@ public:
 	}
 
 	void remove_effect(uint8_t mask) {
+		flags &= ~mask;
 		for(auto& eff : effects) {
 			eff.mask &= ~mask;
 		}

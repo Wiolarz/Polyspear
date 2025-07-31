@@ -1010,6 +1010,7 @@ void BattleManagerFast::_kill_unit(UnitID id, UnitID killer_id) {
 		auto martyr_opt = _get_unit(unit.get_martyr_id());
 		BM_ASSERT(martyr_opt.has_value(), "Invalid martyr id");
 		auto martyr = martyr_opt.value();
+		BM_ASSERT(martyr.unit.status != UnitStatus::DEAD, "Trying to kill a dead martyr");
 
 		auto pos = martyr.unit.pos;
 		auto martyr_id = unit.get_martyr_id();
