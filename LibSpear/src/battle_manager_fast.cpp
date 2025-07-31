@@ -1019,7 +1019,7 @@ void BattleManagerFast::_kill_unit(UnitID id, UnitID killer_id) {
 		martyr.unit.remove_martyr();
 		_kill_unit(martyr_id, killer_id);
 
-		// Edge case - when blood curse is activated after martyr's death, 
+		// Edge case - when blood curse is activated after martyr's death,
 		// the second martyr target might die too
 		if(unit.status == UnitStatus::ALIVE) {
 			_move_unit(id, pos);
@@ -1058,6 +1058,7 @@ void BattleManagerFast::_kill_unit(UnitID id, UnitID killer_id) {
 	_check_blood_curse(id.army);
 }
 
+/// to be used only within _kill_unit()
 void BattleManagerFast::_check_blood_curse(int8_t army_id) {
 	Army& army = _armies[army_id];
 	if(army.count_alive_units() == 1) {

@@ -333,6 +333,7 @@ func reset_grid_hover() -> void:
 	if BM.battle_is_active():
 		if _hovered_unit_form_pointer != null:
 			# sometimes it's a bugged null which isn't detected with just "if value:"
+			# Bug is fixed in Godot 4.4
 			_hovered_unit_form_pointer.set_hovered(false)
 	if _hovered_tile_form_pointer and is_instance_valid(_hovered_tile_form_pointer):
 		_hovered_tile_form_pointer.set_hovered(false)
