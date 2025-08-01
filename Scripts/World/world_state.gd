@@ -501,7 +501,6 @@ func do_build_building(coord : Vector2i, building : DataBuilding) -> bool:
 	var city := get_city_at(coord)
 	return city.build_building(building)
 
-
 #endregion City Economy
 
 
@@ -763,3 +762,66 @@ static func deserialize_army(dict : Dictionary) -> Army:
 	return army
 
 #endregion Networking
+
+
+#region AI tools
+
+func get_heroes_to_buy() -> Array[WorldMoveInfo]:
+	var recruit_hero_moves : Array[WorldMoveInfo] = []
+
+	var faction = player_states[current_player_index]
+	if faction.cities.size() == 0:
+		return recruit_hero_moves
+	for hero in faction.cities[0].get_heroes_to_buy():
+		for city in faction.cities:
+			if city.can_buy_hero(hero):
+				recruit_hero_moves.append(
+					WorldMoveInfo.make_recruit_hero(current_player_index, hero, city.coord))
+
+	return recruit_hero_moves
+
+
+func get_all_building_purchases() -> Array[WorldMoveInfo]:
+	var build_moves : Array[WorldMoveInfo] = []
+	var faction = player_states[current_player_index]
+
+	for city in faction.cities:
+		for building in faction.race.buildings:
+			if city.can_build(building):
+				build_moves.append(WorldMoveInfo.make_build(city.coord, building))
+	return build_moves
+
+
+func get_all_unit_purchaces(city : City, army : Army) -> Array[WorldMoveInfo]:
+	var purchase_moves : Array[WorldMoveInfo] = []
+	for unit in city.get_units_to_buy():
+		if army.units_data.size() >= army.hero.max_army_size: # no place in army
+			continue
+		elif not city.unit_has_required_building(unit):
+			continue
+		elif not WS.has_player_enough(army.controller_index, unit.cost):
+			continue
+		purchase_moves.append(WorldMoveInfo.make_recruit_unit(city.coord, army.coord, unit))
+
+	return purchase_moves
+
+
+func get_all_goods_spending_moves() -> Array[WorldMoveInfo]:
+	var spending_moves : Array[WorldMoveInfo] = []
+	var faction = player_states[current_player_index]
+	if faction.cities.size() == 0:
+		return spending_moves
+
+	spending_moves.append_array(get_heroes_to_buy())
+	spending_moves.append_array(get_all_building_purchases())
+
+	for hero in faction.hero_armies:
+		for city in faction.cities:
+			if not GenericHexGrid.is_adjacent(hero.coord, city.coord):
+				continue
+			spending_moves.append_array(get_all_unit_purchaces(city, hero))
+	return spending_moves
+
+#TODO purchases_shopping_list
+
+#endregion AI tools
