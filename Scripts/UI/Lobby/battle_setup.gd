@@ -152,7 +152,7 @@ func _refresh_slot(index : int) -> void:
 	ui_slot.set_visible_take_leave_button_state(take_leave_button_state)
 	ui_slot.set_visible_timers(reserve_seconds, increment_seconds)
 	ui_slot.setup_ui = self
-	ui_slot.set_bot(logic_slot.battle_bot_path)
+	ui_slot.set_battle_bot(logic_slot.battle_bot_path)
 
 
 func slot_to_index(slot : BattlePlayerSlotPanel) -> int:
@@ -266,16 +266,6 @@ func cycle_color_slot(slot : BattlePlayerSlotPanel, backwards : bool) -> bool:
 		return false
 	var index : int = slot_to_index(slot)
 	var changed = game_setup.try_to_cycle_color_slot(index, backwards)
-	if changed:
-		_refresh_slot(index)
-	return changed
-
-
-func cycle_race_slot(slot : BattlePlayerSlotPanel, backwards : bool) -> bool:
-	if not game_setup:
-		return false
-	var index : int = slot_to_index(slot)
-	var changed = game_setup.try_to_cycle_race_slot(index, backwards)
 	if changed:
 		_refresh_slot(index)
 	return changed
