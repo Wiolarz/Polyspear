@@ -68,5 +68,19 @@ func hide_bots_option_buttons() -> void:
 	button_battle_bot.visible = false
 	button_world_bot.visible = false
 
+##override
+func apply_bots_from_slot(slot : Slot) -> void:
+	set_battle_bot(slot.battle_bot_path)
+	set_world_bot(slot.world_bot_path)
+
+
+
+func set_world_bot(new_bot_path : String) -> void:
+	var bot_path = new_bot_path if new_bot_path != "" else world_bots_paths[0]
+	var idx = world_bots_paths.find(bot_path)
+	assert(idx != -1, "Invalid bot '%s'" % bot_path)
+	button_world_bot.select(idx)
+	world_bot_changed(idx)
+
 
 

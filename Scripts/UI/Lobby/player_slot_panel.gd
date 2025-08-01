@@ -31,6 +31,7 @@ var button_battle_bot : OptionButton
 
 var battle_bots_paths : Array[String]
 
+
 #region Init
 
 func _ready() -> void:
@@ -165,16 +166,12 @@ func _on_button_take_leave_pressed():
 
 	if not should_react_to_changes():
 		return
-	print("xd")
 	match button_take_leave_state:
 		TakeLeaveButtonState.FREE:
-			print("xd1")
 			try_to_take()
 		TakeLeaveButtonState.TAKEN_BY_YOU:
-			print("xd2")
 			try_to_leave()
 		TakeLeaveButtonState.TAKEN_BY_OTHER:
-			print("xd3")
 			if IM.is_slot_steal_allowed():
 				try_to_take()
 
@@ -232,4 +229,8 @@ func set_visible_take_leave_button_state(state : TakeLeaveButtonState):
 		TakeLeaveButtonState.GHOST:
 			button_take_leave.text = "ghost"
 			button_take_leave.disabled = true
+
+
+func apply_bots_from_slot(slot : Slot) -> void:
+	set_battle_bot(slot.battle_bot_path)
 

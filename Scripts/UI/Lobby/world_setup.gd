@@ -62,6 +62,7 @@ func _refresh_slot(index : int):
 	if not index in range(player_slot_panels.size()):
 		return
 	var ui_slot : WorldPlayerSlotPanel = player_slot_panels[index]
+	ui_slot.setup_ui = self
 	var logic_slot : Slot = \
 		IM.game_setup_info.slots[index] if index in \
 				range(IM.game_setup_info.slots.size()) \
@@ -87,11 +88,13 @@ func _refresh_slot(index : int):
 				WorldPlayerSlotPanel.TakeLeaveButtonState.FREE
 		race = logic_slot.race
 		color = CFG.get_team_color_at(logic_slot.color_idx)
+		ui_slot.apply_bots_from_slot(logic_slot)
+
 	ui_slot.set_visible_color(color.color)
 	ui_slot.set_visible_name(username)
 	ui_slot.set_visible_race(race)
 	ui_slot.set_visible_take_leave_button_state(take_leave_button_state)
-	ui_slot.setup_ui = self
+
 
 
 func slot_to_index(slot) -> int:
