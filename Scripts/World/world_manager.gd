@@ -29,6 +29,10 @@ var _is_world_game_active : bool = false
 
 var _painter_node : BattlePainter
 
+
+var latest_ai_cancel_token : CancellationToken
+
+
 #region Start World
 
 func _ready() -> void:
@@ -146,6 +150,39 @@ func callback_turn_changed():
 	if current_player_capital:  # player may have lost his last city
 		world_ui.show_trade_ui(current_player_capital)
 	world_ui.refresh_player_buttons()
+
+	var player : Player = current_faction.controller
+
+	print("your move %s - %s" % [player.get_player_name(), player.get_player_color().name])
+
+	if player.world_bot_engine and not NET.client: # AI is simulated on server only
+		print("AI starts thinking")
+
+		var my_cancel_token = CancellationToken.new()
+		#assert(latest_ai_cancel_token == null)
+		latest_ai_cancel_token = my_cancel_token
+
+		var bot = player.world_bot_engine
+
+		var thinking_begin_s = Time.get_ticks_msec() / 1000.0
+		var move : WorldMoveInfo = null
+		move = await bot.choose_move()
+		assert(move)
+		while move.move_type != WorldMoveInfo.TYPE_END_TURN:
+			await _ai_thinking_delay(thinking_begin_s) # moving too fast feels weird
+			if not world_game_is_active(): # Player quit to main menu before finishing
+				return
+			if my_cancel_token.is_canceled():
+				return
+			assert(WS.check_move_allowed(move) == "", "AI tried to perform an invalid move")
+			try_do_move(move)
+			bot.cleanup_after_move()
+			move = await bot.choose_move()
+		assert(move)
+		try_do_move(move) # always ends with TYPE_END_TURN
+
+
+		latest_ai_cancel_token = null # TODO ask, where this should be
 
 
 ## this function may be temporary, the sure thing is it needs to be made better
@@ -679,3 +716,15 @@ func city_upgrade_cheat() -> void:
 
 
 #endregion
+
+#region AI
+
+func _ai_thinking_delay(thinking_begin_s) -> void:
+	var max_seconds = CFG.bot_speed_frames / 60.0
+	var seconds = max(0.01, max_seconds - (Time.get_ticks_msec()/1000.0 - thinking_begin_s))
+	await get_tree().create_timer(seconds).timeout
+	while IM.is_game_paused() or CFG.bot_speed_frames == CFG.BotSpeed.FREEZE:
+		await get_tree().create_timer(0.1).timeout
+
+
+#endregion AI

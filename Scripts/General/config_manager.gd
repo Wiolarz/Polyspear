@@ -78,8 +78,8 @@ const SENTINEL_TILE_PATH = "res://Resources/World/World_tiles/sentinel.tres"
 const BATTLE_MAP_TILES_PATH = "res://Resources/Battle/Battle_tiles/"
 const WORLD_MAP_TILES_PATH = "res://Resources/World/World_tiles/"
 const SYMBOLS_PATH = "res://Resources/Battle/Symbols/"
-const SPELLS_PATH = "res://Resources/Battle/Battle_Spells/"
 const BATTLE_BOTS_PATH = "res://Resources/Battle/Bots"
+const WORLD_BOTS_PATH = "res://Resources/World/Bots"
 
 const EMPTY_SYMBOL_PATH = "res://Resources/Battle/Symbols/empty.tres"
 @onready var EMPTY_SYMBOL : DataSymbol = load(EMPTY_SYMBOL_PATH)
