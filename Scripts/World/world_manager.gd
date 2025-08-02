@@ -96,6 +96,13 @@ func set_selected_hero(army : Army) -> void:
 
 	world_ui.load_army_to_panel(army)
 
+	if CFG.WORLD_GOD_MODE:
+		WM.hero_speed_cheat()
+		WM.hero_level_up(6)
+		#TODO move city upgrade logic to selecting cities
+		WM.city_upgrade_cheat()
+		WM.cheat_money()
+
 	_painter_node.erase()
 	_draw_path()
 

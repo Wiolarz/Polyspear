@@ -34,7 +34,7 @@ if (NICE_COMPILER)
     "-Werror=nonnull"
     "-Werror=cast-qual"
     "-Werror=cast-align"
-    "-Werror=dangling-pointer"
+    "-Werror=return-local-addr"
     "-Werror=date-time"
     "-Wno-type-limits"
     "-Wno-unused-parameter"

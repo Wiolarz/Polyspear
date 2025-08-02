@@ -76,7 +76,8 @@ func _refresh_units_to_buy():
 			if not city.unit_has_required_building(unit):
 				b.text += "\n" + "needs 🏛"
 			else:
-				b.text += "\n" + unit.cost.to_string_short("free")
+				var cost : Goods = city.get_unit_cost(unit)
+				b.text += "\n" + cost.to_string_short("free")
 			b.pressed.connect(_buy_unit.bind(unit))
 
 			var should_button_be_disabled := true  # if false, player can purchase this unit

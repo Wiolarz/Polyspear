@@ -140,7 +140,7 @@ func refresh_army_panel() -> void:
 #region Buttons
 
 func _on_menu_pressed():
-	IM.toggle_in_game_menu()
+	UI.main_menu.open_in_game_menu()
 
 
 func _on_end_turn_pressed():

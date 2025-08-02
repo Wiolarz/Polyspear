@@ -4,6 +4,7 @@ extends Place
 
 var buildings : Array[DataBuilding] = []
 
+
 # Place where defender units are stored in case hero visited the city
 var garrison_reserve : Army
 
@@ -72,6 +73,7 @@ func capture(new_faction : Faction) -> void:
 func on_end_of_round() -> void:
 	faction.goods.add(Goods.new(0, 1, 0))
 	for building in buildings:
+		building.on_end_of_round()
 		if building.name == "sawmill":
 			faction.goods.add(Goods.new(3, 0, 0))
 
@@ -146,6 +148,26 @@ func move_out_of_reserve() -> void:
 	WS.grid.get_hex(coord).army = garrison_reserve
 	WM.callback_army_created(garrison_reserve)
 
+
+func get_unit_cost(unit : DataUnit) -> Goods:
+	var required_building : DataBuilding = get_building(unit.required_building)
+	if not required_building:
+		return null
+	var discount : Goods = required_building.apply_discounts(unit.cost)
+	return discount
+
+
+func on_purchase(building : DataBuilding) -> void:
+	if building.is_outpost_building():
+		for already_built in faction.outpost_buildings:
+			if already_built.name == building.name:
+				already_built.on_purchase()
+				return
+	for already_built in buildings:
+		if already_built.name == building.name:
+			already_built.on_purchase()
+			return
+
 #endregion Units
 
 
@@ -156,18 +178,21 @@ func build_building(building : DataBuilding) -> bool:
 		return false
 	if faction.try_to_pay(building.cost):
 		if not building.is_outpost_building():
-			buildings.append(building)
+			buildings.append(building.clone())
 		else:
-			faction.outpost_buildings.append(building)
+			faction.outpost_buildings.append(building.clone())
 		return true
 	return false
 
 
 func has_built(building : DataBuilding) -> bool:
-	var built_here : bool = building in buildings
-	if built_here:
-		return true
-	return building in faction.outpost_buildings
+	for already_built in buildings:
+		if already_built.name == building.name:
+			return true
+	for already_built in faction.outpost_buildings:
+		if already_built.name == building.name:
+			return true
+	return false
 
 
 func can_build(building : DataBuilding) -> bool:
@@ -181,6 +206,17 @@ func can_build(building : DataBuilding) -> bool:
 		return false
 
 	return building.requirements.all(has_built)
+
+
+func get_building(building : DataBuilding) -> DataBuilding:
+	if building.is_outpost_building():
+		for already_built in faction.outpost_buildings:
+			if already_built.name == building.name:
+				return already_built
+	for already_built in buildings:
+		if already_built.name == building.name:
+			return already_built
+	return null
 
 #endregion Buildings
 
