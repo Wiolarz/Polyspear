@@ -767,11 +767,11 @@ static func deserialize_army(dict : Dictionary) -> Army:
 #region AI tools
 
 func get_heroes_to_buy() -> Array[WorldMoveInfo]:
-	var recruit_hero_moves : Array[WorldMoveInfo] = []
-
 	var faction = player_states[current_player_index]
 	if faction.cities.size() == 0:
-		return recruit_hero_moves
+		return []
+
+	var recruit_hero_moves : Array[WorldMoveInfo] = []
 	for hero in faction.cities[0].get_heroes_to_buy():
 		for city in faction.cities:
 			if city.can_buy_hero(hero):
@@ -782,9 +782,11 @@ func get_heroes_to_buy() -> Array[WorldMoveInfo]:
 
 
 func get_all_building_purchases() -> Array[WorldMoveInfo]:
-	var build_moves : Array[WorldMoveInfo] = []
 	var faction = player_states[current_player_index]
+	if faction.cities.size() == 0:
+		return []
 
+	var build_moves : Array[WorldMoveInfo] = []
 	for city in faction.cities:
 		for building in faction.race.buildings:
 			if city.can_build(building):
@@ -807,10 +809,11 @@ func get_all_unit_purchaces(city : City, army : Army) -> Array[WorldMoveInfo]:
 
 
 func get_all_goods_spending_moves() -> Array[WorldMoveInfo]:
-	var spending_moves : Array[WorldMoveInfo] = []
 	var faction = player_states[current_player_index]
 	if faction.cities.size() == 0:
-		return spending_moves
+		return []
+
+	var spending_moves : Array[WorldMoveInfo] = []
 
 	spending_moves.append_array(get_heroes_to_buy())
 	spending_moves.append_array(get_all_building_purchases())
@@ -822,6 +825,22 @@ func get_all_goods_spending_moves() -> Array[WorldMoveInfo]:
 			spending_moves.append_array(get_all_unit_purchaces(city, hero))
 	return spending_moves
 
+
 #TODO purchases_shopping_list
+
+
+func get_all_combat_destinations() -> Array[Vector2i]:
+	var faction = player_states[current_player_index]
+	if faction.hero_armies.size() == 0:
+		return [] as Array[Vector2i]
+
+	var combat_destinations : Array[Vector2i] = []
+
+	for x in range(grid.hexes.size()):
+		for y in range(grid.hexes[x].size()):
+			if is_enemy_at(Vector2i(x, y), current_player_index):
+				combat_destinations.append(Vector2i(x, y))
+
+	return combat_destinations
 
 #endregion AI tools

@@ -3,7 +3,7 @@ extends GridNode2D
 
 signal world_move_done
 
-
+signal on_battle_ended
 
 
 var world_ui : WorldUI = null
@@ -139,6 +139,7 @@ func end_turn():
 
 
 func callback_turn_changed():
+	print(WS.get_all_combat_destinations)
 	_deselect_hero()
 	var current_faction : Faction = WS.get_current_player()
 	if current_faction.has_faction_lost():
@@ -174,8 +175,12 @@ func callback_turn_changed():
 				return
 			if my_cancel_token.is_canceled():
 				return
-			assert(WS.check_move_allowed(move) == "", "AI tried to perform an invalid move")
+			#assert(WS.check_move_allowed(move) == "", "AI tried to perform an invalid move")
 			try_do_move(move)
+			if BM.battle_is_active():
+				await on_battle_ended
+			#while BM.battle_is_active():
+
 			bot.cleanup_after_move()
 			move = await bot.choose_move()
 		assert(move)
@@ -321,6 +326,21 @@ func try_do_move(world_move_info : WorldMoveInfo) -> void:
 		NET.client.queue_request_world_move(world_move_info)
 
 
+## attempts to move selected hero along his travel path until:
+## reaching destination/combat/running out of movement points
+func try_to_travel() -> void:
+	## TEMP Code from grid_input will be moved here once trade system is merged.
+	for tile_idx in range(1, selected_hero.travel_path.size()):  # ignores the tile hero starts at
+		if selected_hero.has_movement_points():
+			# TODO add passing through allied heroes
+			try_interact(selected_hero, selected_hero.travel_path[tile_idx])
+		else:
+			break
+	if selected_hero:  # game might have ended
+		selected_hero.travel_path = [] as Array[Vector2i]  # TODO make changes to travel path dynamic
+		_deselect_hero()
+
+
 ## STUB
 func trade_armies(_second_army : ArmyForm):
 	print("trading armies")
@@ -450,6 +470,8 @@ func end_of_battle(battle_results : Array[BattleGridState.ArmyInBattleState]):
 	WS.end_combat(battle_results)
 
 	UI.go_to_custom_ui(world_ui)
+
+	on_battle_ended.emit()
 
 
 #endregion Battles
@@ -721,10 +743,15 @@ func city_upgrade_cheat() -> void:
 
 func _ai_thinking_delay(thinking_begin_s) -> void:
 	var max_seconds = CFG.bot_speed_frames / 60.0
-	var seconds = max(0.01, max_seconds - (Time.get_ticks_msec()/1000.0 - thinking_begin_s))
+	var seconds = max(1, max_seconds - (Time.get_ticks_msec()/1000.0 - thinking_begin_s))
 	await get_tree().create_timer(seconds).timeout
 	while IM.is_game_paused() or CFG.bot_speed_frames == CFG.BotSpeed.FREEZE:
 		await get_tree().create_timer(0.1).timeout
+
+
+func ai_generate_path(army : Army, destination : Vector2i):
+	set_selected_hero(army)
+	_generate_path(destination)
 
 
 #endregion AI

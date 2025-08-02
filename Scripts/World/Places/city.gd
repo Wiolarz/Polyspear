@@ -86,6 +86,8 @@ func can_buy_hero(hero : DataHero) -> bool:
 	#TEMP remove check for if defender_Army, as some army should always exist in city, even empty
 	if defender_army and defender_army.hero:  # hero is present in city hex
 		return false
+	if WS.get_army_at(coord):
+		return false # TEMP FIX?
 	var cost : Goods = faction.get_hero_cost(hero)
 	return faction.goods.has_enough(cost)
 
