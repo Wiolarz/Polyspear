@@ -169,10 +169,10 @@ func grid_planning_input_listener(tile_coord : Vector2i, \
 		is_it_pressed : bool):
 	#print("tile ", tile_coord)
 
-	if not tile_type == GameSetupInfo.GameMode.BATTLE:
-		printerr("Support for drawing arrows in different modes isn't supported yet")
-		# There are plans for right click to have a different purpouse in World Map
-		# drawing could be reanabled there with addition of holding alt
+	if tile_type == GameSetupInfo.GameMode.WORLD and is_it_pressed:
+		# basic right click has different purpose in World Map
+		#TODO classic drawing could be reanabled with addition of holding alt
+		WM.show_army_units(tile_coord)
 		return
 
 	BM.planning_input(tile_coord, is_it_pressed)
