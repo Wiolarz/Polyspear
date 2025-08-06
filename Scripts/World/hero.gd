@@ -74,7 +74,6 @@ static func construct_hero(data_hero : DataHero,
 	return new_hero
 
 
-
 func _init():
 	name = "Hero"
 

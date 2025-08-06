@@ -16,11 +16,18 @@ var _selected_unit_button_pointer : BaseButton = null
 ## (same set of buttons as _`selected_unit_button_pointer` points to
 var _hovered_unit_button_pointer : BaseButton = null
 
+var unit_button_size : float
 
-func load_unit_buttons(army : Army, units_to_display : Array[DataUnit], containers : Array[BoxContainer],
-						unit_button_size : float = 100.0, fill_empty_slots : bool = false,
-						is_clickable : bool = true) -> void:
+
+func load_unit_buttons(army : Army, units_to_display : Array[DataUnit],
+						containers : Array[BoxContainer], unit_button_size_ : float = 100.0,
+						fill_empty_slots : bool = false, is_clickable : bool = true) -> void:
+	# reset object state
+	selected_unit_pointer = null
+	_selected_unit_button_pointer = null
+
 	loaded_army = army
+	unit_button_size = unit_button_size_
 
 	# clean unit icons from rows
 	for container in containers:
@@ -44,7 +51,7 @@ func load_unit_buttons(army : Army, units_to_display : Array[DataUnit], containe
 		var unit_display := UnitForm.create_for_summon_ui(unit, bg_color)
 
 		if army.hero and army.hero.is_in_city and added_icon_idx >= (army.max_army_size - CFG.CITY_MAX_ARMY_SIZE):
-			unit_display.set_marked_for_unit_list()
+			unit_display.set_marked_for_unit_list()  # mark units that breach max army size
 
 		var button
 		if is_clickable:
@@ -80,62 +87,58 @@ func load_unit_buttons(army : Army, units_to_display : Array[DataUnit], containe
 
 		containers[added_icon_idx % containers.size()].add_child(button)
 
+		if is_clickable:
+			button.pressed.connect(_button_on_click.bind(button, unit))
+
+			button.mouse_entered.connect(_button_on_hover.bind(true, button))
+			button.mouse_exited.connect(_button_on_hover.bind(false, button))
+
+	if fill_empty_slots:
+		_fill_empty_slots(added_icon_idx, containers)
 
 
-		if not is_clickable:  # ---- SECOND PART OF THE BUTTON CREATION ----
-			continue
-
-		selected_unit_pointer = null
-		_selected_unit_button_pointer = null
-
-
-		var lambda = func on_click():
-			# TODO for later: move these lambdas outside to increase readability
-			if not army.controller.is_local():  # block multiplayer input
-				return
-			if _selected_unit_button_pointer:  # Deselects previously selected unit
-				_selected_unit_button_pointer.get_node("Center/UnitForm").set_selected(false)
-
-			if _selected_unit_button_pointer == button: # Selecting the same unit twice deselects it
-				selected_unit_pointer = null
-				_selected_unit_button_pointer = null
-			else:
-				selected_unit_pointer = unit
-				_selected_unit_button_pointer = button
-				_selected_unit_button_pointer.get_node("Center/UnitForm").set_selected(true)
-				unit_was_selected.emit()
-
-		button.pressed.connect(lambda)
-
-		var lambda_hover = func(is_hovered : bool):
-			# TODO for later: move these lambdas outside to increase readability
-			if _hovered_unit_button_pointer:
-				_hovered_unit_button_pointer.get_node("Center/UnitForm").set_hovered(false)
-
-			if is_hovered:
-				_hovered_unit_button_pointer = button
-				_hovered_unit_button_pointer.get_node("Center/UnitForm").set_hovered(true)
-			else:
-				_hovered_unit_button_pointer = null
-		button.mouse_entered.connect(lambda_hover.bind(true))
-		button.mouse_exited.connect(lambda_hover.bind(false))
-
-
-
-	if not fill_empty_slots: # ---- SECOND PART OF THE FUNCTION ----
-		return
-
+func _fill_empty_slots(added_icon_idx : int, containers : Array[BoxContainer]) -> void:
 	var empty_slot := TextureRect.new()
 	empty_slot.texture = preload("res://Art/items/hex_border_light.png")
 	empty_slot.custom_minimum_size = Vector2.ONE * unit_button_size
 	empty_slot.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	empty_slot.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 
-	for i in range(army.max_army_size - army.units_data.size()):
+	for i in range(loaded_army.max_army_size - loaded_army.units_data.size()):
 		added_icon_idx += 1
 		empty_slot = empty_slot.duplicate()
 
-		if army.hero and army.hero.is_in_city and added_icon_idx >= (army.max_army_size - CFG.CITY_MAX_ARMY_SIZE):
-			empty_slot.modulate = Color("431900")#ffc7aa")
+		if loaded_army.hero and loaded_army.hero.is_in_city and added_icon_idx >= (loaded_army.max_army_size - CFG.CITY_MAX_ARMY_SIZE):
+			empty_slot.modulate = Color("ffc7aa") #ffc7aa for debuging use -> #431900
 
 		containers[added_icon_idx % containers.size()].add_child(empty_slot)
+
+
+## buttons lambda
+func _button_on_click(button : Control, unit : DataUnit) -> void:
+	if not loaded_army.controller.is_local():  # block multiplayer input
+		return
+	if _selected_unit_button_pointer:  # Deselects previously selected unit
+		_selected_unit_button_pointer.get_node("Center/UnitForm").set_selected(false)
+
+	if _selected_unit_button_pointer == button: # Selecting the same unit twice deselects it
+		selected_unit_pointer = null
+		_selected_unit_button_pointer = null
+	else:
+		selected_unit_pointer = unit
+		_selected_unit_button_pointer = button
+		_selected_unit_button_pointer.get_node("Center/UnitForm").set_selected(true)
+		unit_was_selected.emit()
+
+
+## buttons lambda
+func _button_on_hover(is_hovered : bool, button : Control) -> void:
+	if _hovered_unit_button_pointer:
+		_hovered_unit_button_pointer.get_node("Center/UnitForm").set_hovered(false)
+
+	if is_hovered:
+		_hovered_unit_button_pointer = button
+		_hovered_unit_button_pointer.get_node("Center/UnitForm").set_hovered(true)
+	else:
+		_hovered_unit_button_pointer = null
+

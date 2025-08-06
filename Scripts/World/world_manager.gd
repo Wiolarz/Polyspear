@@ -4,7 +4,7 @@ extends GridNode2D
 signal world_move_done
 
 
-var world_ui : WorldUI = null
+@onready var world_ui : WorldUI = preload("res://Scenes/UI/World/WorldUi.tscn").instantiate()
 
 ## Only army that has a hero can move (army can only have a single hero)
 var selected_hero : ArmyForm
@@ -33,9 +33,6 @@ var _painter_node : BattlePainter
 #region Start World
 
 func _ready() -> void:
-
-	world_ui = load("res://Scenes/UI/World/WorldUi.tscn").instantiate()
-
 	tile_grid = Node2D.new()
 	tile_grid.name = "GRID"
 	add_child(tile_grid)

@@ -59,17 +59,21 @@ func _succesful_transfer() -> void:
 
 func _army_swap() -> void:
 	#print("army swap")
-	if first_army.hero.movement_points > 0:
-		## You can always move into a city
-		if not second_army.hero or second_army.hero.movement_points > 0:
-			WS.swap_armies(first_army, second_army)
-			if not second_army.hero:
-				first_army.hero.is_in_city = true
-				if second_army.units_data.size() > 0:
-					first_army.units_data.append_array(second_army.units_data)
-					second_army.units_data = []
-					WM.world_ui.refresh_army_panel()
-				end_trade()
+	if first_army.hero.movement_points <= 0:
+		return
+	## You can always move into a city, so we check only "first" army
+	## if there is no hero in second army it's a city
+	if second_army.hero and second_army.hero.movement_points <= 0:
+		return
+
+	WS.swap_armies(first_army, second_army)
+	if not second_army.hero:  # ENTERING CITY
+		first_army.hero.is_in_city = true
+		if second_army.units_data.size() > 0:  # merging city garrison into hero's army
+			first_army.units_data.append_array(second_army.units_data)
+			second_army.units_data = []
+			WM.world_ui.refresh_army_panel()
+		end_trade()  # UX: entering city closes trade screen
 
 
 func end_trade() -> void:

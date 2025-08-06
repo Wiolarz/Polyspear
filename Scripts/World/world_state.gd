@@ -492,7 +492,7 @@ func do_recruit_hero(data_hero : DataHero,
 	army.coord = coord
 	army.faction = WS.player_states[city.controller_index]
 
-	# Aborbs city garrison
+	# Absorbs city garrison
 	army.units_data.append_array(city.garrison_reserve.units_data)
 	city.garrison_reserve.units_data = []
 	WM.world_ui.load_army_to_panel(army)
