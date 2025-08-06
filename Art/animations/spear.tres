@@ -410,6 +410,7 @@ animations = [{
 script = ExtResource("2_g4krp")
 offset = Vector2(0, 0)
 scale = Vector2(5, 5)
+failed_offset = Vector2(0, 0)
 hit_on_frame = 15
 teleport_at = 0
 blocking_offset = Vector2(0, 0)

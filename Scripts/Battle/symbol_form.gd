@@ -64,10 +64,15 @@ func make_melee_anim(type : CFG.SymbolAnimationType) -> ANIM.TweenSync:
 
 	var animation_name : String
 	match type:
-		CFG.SymbolAnimationType.MELEE_ATTACK, CFG.SymbolAnimationType.FAILED_ATTACK:
+		CFG.SymbolAnimationType.MELEE_ATTACK:
 			animation_name = "default"
+			anim.position = frames.offset
+		CFG.SymbolAnimationType.FAILED_ATTACK:
+			animation_name = "default"
+			anim.position = frames.failed_offset
 		CFG.SymbolAnimationType.COUNTER_ATTACK:
 			animation_name = "counter"
+			anim.position = frames.offset
 
 	var time_to_hit = frames.get_time_to_hit(animation_name)
 
@@ -92,8 +97,8 @@ func make_melee_anim(type : CFG.SymbolAnimationType) -> ANIM.TweenSync:
 
 	_fade_symbol_in(anim_tween)
 	return ANIM.TweenSync.new(
-		anim_tween, 
-		time_to_hit + CFG.anim_symbol_fade_in_out_time, 
+		anim_tween,
+		time_to_hit + CFG.anim_symbol_fade_in_out_time,
 		frames.get_animation_duration(animation_name)
 	)
 

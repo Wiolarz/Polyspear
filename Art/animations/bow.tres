@@ -266,6 +266,7 @@ animations = [{
 script = ExtResource("1_c6awn")
 offset = Vector2(300, 0)
 scale = Vector2(5, 5)
+failed_offset = Vector2(300, 0)
 hit_on_frame = 0
 projectile_animation_frames = ExtResource("2_xpgss")
 teleport_at = 30

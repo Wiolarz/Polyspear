@@ -209,6 +209,7 @@ animations = [{
 script = ExtResource("2_lwjfu")
 offset = Vector2(0, 0)
 scale = Vector2(1, 1)
+failed_offset = Vector2(0, 0)
 hit_on_frame = 0
 teleport_at = 0
 blocking_offset = Vector2(230, 0)
