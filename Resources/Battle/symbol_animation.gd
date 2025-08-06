@@ -11,6 +11,7 @@ extends SpriteFrames
 @export_category("Active Behavior")
 @export var offset : Vector2 = Vector2(0,0)
 @export var scale : Vector2 = Vector2(1,1)
+@export var failed_offset : Vector2 = Vector2(0,0)
 ## The frame of animation on which the "hit" visually connects
 @export var hit_on_frame : int = 0
 
