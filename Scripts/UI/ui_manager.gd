@@ -194,12 +194,12 @@ func switch_camera() -> void:
 			set_camera(E.CameraPosition.WORLD)
 
 
-func set_camera(pos : E.CameraPosition) -> void:
+func set_camera(pos : E.CameraPosition, reset_position : bool = true) -> void:
 	current_camera_position = pos
 	if pos == E.CameraPosition.BATTLE:
-		camera.set_bounds(BM.get_bounds_global_position())
+		camera.set_bounds(BM.get_bounds_global_position(), reset_position)
 	else :
-		camera.set_bounds(WM.get_bounds_global_position())
+		camera.set_bounds(WM.get_bounds_global_position(), reset_position)
 
 
 ## NOTE: fullscreen uses old style exclusive fullscreen because of Godot bug
