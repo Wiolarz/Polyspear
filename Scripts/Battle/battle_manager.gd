@@ -457,6 +457,8 @@ func _on_unit_summoned(unit : Unit) -> void:
 		form.anim_symbol(side, CFG.SymbolAnimationType.BLOCK, attacker_coord)
 	)
 
+	unit.unit_magic_effect.emit()
+
 
 ## handles player input while during the summoning phase
 func _grid_input_summon(coord : Vector2i) -> MoveInfo:
