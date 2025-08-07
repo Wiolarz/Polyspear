@@ -89,8 +89,8 @@ func make_melee_anim(type : CFG.SymbolAnimationType) -> ANIM.TweenSync:
 		anim_tween.tween_callback(anim.play.bind(animation_name))
 		anim_tween.tween_interval(max(0, time_to_hit))
 		anim_tween.tween_callback(anim.pause)
-		anim_tween.tween_interval(CFG.anim_symbol_fade_in_out_time*2)
-		anim_tween.tween_property(anim, "modulate:a", 0, CFG.anim_symbol_fade_in_out_time*2)
+		anim_tween.tween_interval(CFG.anim_symbol_fade_in_out_time * 2)
+		anim_tween.tween_property(anim, "modulate:a", 0, CFG.anim_symbol_fade_in_out_time * 2)
 		# Reset to known state
 		anim_tween.tween_callback(anim.stop)
 		anim_tween.tween_property(anim, "modulate:a", 1, 0)

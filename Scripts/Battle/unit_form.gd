@@ -168,7 +168,7 @@ func anim_symbol(side : int, animation_type : int, target_coord: Vector2i = Vect
 	match animation_type:
 		CFG.SymbolAnimationType.MELEE_ATTACK, CFG.SymbolAnimationType.COUNTER_ATTACK:
 			ANIM.sync_tweens([symbol.make_melee_anim(animation_type)])
-		
+
 		CFG.SymbolAnimationType.TELEPORTING_PROJECTILE:
 			ANIM.sync_tweens([symbol.make_projectile_anim(target_coord, side)])
 
@@ -176,17 +176,17 @@ func anim_symbol(side : int, animation_type : int, target_coord: Vector2i = Vect
 			var data_symbol : DataSymbol = \
 				other_unit.entity.template.symbols[opposite_side_local]
 			var attack_tween_sync: ANIM.TweenSync
-			
+
 			if data_symbol.does_it_shoot():
 				attack_tween_sync = other_symbol.make_projectile_anim(
-					entity.coord, 
+					entity.coord,
 					GenericHexGrid.opposite_direction(side)
 				)
 			else:
 				attack_tween_sync = other_symbol.make_melee_anim(
 					CFG.SymbolAnimationType.FAILED_ATTACK
 				)
-				
+
 			var defense_tween_sync = symbol.make_block_anim()
 			ANIM.sync_tweens([attack_tween_sync, defense_tween_sync])
 		_:
