@@ -16,7 +16,8 @@ var travel_path:
 		assert(entity and entity.hero, "attempt to set a path to non existing hero")
 		entity.hero.travel_path = new_path
 	get:
-		assert(entity and entity.hero, "attempt to get a path from not existing hero")
+		if not entity or not entity.hero:
+			return null #attempt to get a path from not existing hero
 		return entity.hero.travel_path
 
 
@@ -43,11 +44,13 @@ static func create_form_of_army(hex : WorldHex, position_ : Vector2) \
 	if army.hero:
 		result.name = army.hero.hero_name
 		image = load(army.hero.data_unit.texture_path)
+		result.get_node("sprite_color").texture = CFG.TEAM_COLOR_TEXTURES[army.controller.color_idx]
 	else:
-		result.name = "Neutral army TODO some name"
+		result.name = "Neutral army " + str(hex.place.coord)
 		image = load(army.units_data[0].texture_path)
 		result.get_node("MoveLabel").text = ""
 		result.get_node("DescriptionLabel").text = ""
+		result.get_node("sprite_color").texture = CFG.NEUTRAL_COLOR_TEXTURE
 	result.get_node("sprite_unit").texture = image
 	result.position = position_
 	return result

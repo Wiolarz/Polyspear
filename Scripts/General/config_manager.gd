@@ -152,6 +152,15 @@ var TEAM_COLORS : Array[DataPlayerColor] = [
 	DataPlayerColor.create("green", Color(0.0, 0.9, 0.0)),
 	DataPlayerColor.create("yellow", Color(0.9, 0.8, 0.0)),
 ]
+var TEAM_COLOR_TEXTURES : Array[Texture2D] = [
+	preload("res://Art/player_colors/blue_color.png"),
+	preload("res://Art/player_colors/orange_color.png"),
+	preload("res://Art/player_colors/red_color.png"),
+	preload("res://Art/player_colors/purple_color.png"),
+	preload("res://Art/player_colors/green_color.png"),
+	preload("res://Art/player_colors/yellow_color.png"),
+]
+var NEUTRAL_COLOR_TEXTURE : Texture2D = preload("res://Art/player_colors/gray_color.png")
 
 var NEUTRAL_COLOR := \
 	DataPlayerColor.create_with_texture("neutral", Color(0.5, 0.5, 0.5), \
