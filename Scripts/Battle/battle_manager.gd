@@ -96,7 +96,7 @@ func start_battle(new_armies : Array[Army], battle_map : DataBattleMap, \
 	# GRAPHICS GRID:
 	_load_map(battle_map)
 	_grid_tiles_node.position.x = x_offset
-
+	horizontal_offset = x_offset
 	_battle_ui.load_armies(_battle_grid_state.armies_in_battle_state)
 
 	if battle_state: # recreate state if present
