@@ -243,13 +243,14 @@ func _on_save_map_pressed():
 			return
 		save_path = CFG.WORLD_MAPS_PATH + map_file_name + ".tres"
 
-
 	ResourceSaver.save(new_map, save_path)
 	# WARNING clears uids
 	# see https://github.com/godotengine/godot/issues/83259
 	# use uid_fixer script to fix
 
 	show_info("map saved")
+	get_node("/root/UI/MainMenu/MainContainer/HostLobby/HostMenu/" + \
+		"PanelContainer/GameSetup").container.get_child(0).fill_maps_list()
 
 	print("end save map")
 	# print("reloading map")
