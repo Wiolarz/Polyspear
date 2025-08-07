@@ -18,7 +18,6 @@ var _hovered_unit_button_pointer : BaseButton = null
 
 var unit_button_size : float
 
-
 func load_unit_buttons(army : Army, units_to_display : Array[DataUnit],
 						containers : Array[BoxContainer], unit_button_size_ : float = 100.0,
 						fill_empty_slots : bool = false, is_clickable : bool = true) -> void:
@@ -53,21 +52,14 @@ func load_unit_buttons(army : Army, units_to_display : Array[DataUnit],
 		if army.hero and army.hero.is_in_city and added_icon_idx >= (army.max_army_size - CFG.CITY_MAX_ARMY_SIZE):
 			unit_display.set_marked_for_unit_list()  # mark units that breach max army size
 
-		var button
-		if is_clickable:
-			button = TextureButton.new()
-			button.texture_normal = CFG.SUMMON_BUTTON_TEXTURE
-			button.custom_minimum_size = Vector2.ONE * unit_button_size
-			button.stretch_mode = TextureButton.STRETCH_KEEP_ASPECT_CENTERED
-			button.ignore_texture_size = true
-			unit_display.position = button.texture_normal.get_size()/2
-		else:
-			button = TextureRect.new()
-			button.texture = preload("res://Art/items/hex_border_light.png")
-			button.custom_minimum_size = Vector2.ONE * unit_button_size
-			button.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-			button.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-			unit_display.position = button.texture.get_size()/2
+		var button = TextureButton.new()
+		button.texture_normal = CFG.SUMMON_BUTTON_TEXTURE
+		button.custom_minimum_size = Vector2.ONE * unit_button_size
+		button.stretch_mode = TextureButton.STRETCH_KEEP_ASPECT_CENTERED
+		button.ignore_texture_size = true
+		unit_display.position = button.texture_normal.get_size()/2
+		if not is_clickable:
+			button.disabled = true
 
 		var center_container = CenterContainer.new()
 
@@ -98,11 +90,13 @@ func load_unit_buttons(army : Army, units_to_display : Array[DataUnit],
 
 
 func _fill_empty_slots(added_icon_idx : int, containers : Array[BoxContainer]) -> void:
-	var empty_slot := TextureRect.new()
-	empty_slot.texture = preload("res://Art/items/hex_border_light.png")
+	var empty_slot = TextureButton.new()
+	empty_slot.texture_normal = CFG.EMPTY_SLOT_TEXTURE
 	empty_slot.custom_minimum_size = Vector2.ONE * unit_button_size
-	empty_slot.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	empty_slot.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	empty_slot.stretch_mode = TextureButton.STRETCH_KEEP_ASPECT_CENTERED
+	empty_slot.ignore_texture_size = true
+
+	empty_slot.disabled = true
 
 	for i in range(loaded_army.max_army_size - loaded_army.units_data.size()):
 		added_icon_idx += 1

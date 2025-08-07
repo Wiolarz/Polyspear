@@ -485,11 +485,6 @@ func clear_world():
 
 #region World Setup
 
-func spawn_world_ui():
-	world_ui = load("res://Scenes/UI/World/WorldUi.tscn").instantiate()
-	UI.add_custom_screen(world_ui)
-
-
 func start_new_world(world_map : DataWorldMap) -> void:
 
 	_is_world_game_active = true
