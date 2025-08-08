@@ -54,7 +54,7 @@ func get_port() -> int:
 func get_username()-> String:
 	var user_name : String = username_line.text
 	if user_name.is_empty():
-		user_name = "player"
+		user_name = CFG.DEFAULT_PLAYER_NAME
 	username_line.text = user_name
 	return user_name
 

@@ -249,8 +249,7 @@ func _on_save_map_pressed():
 	# use uid_fixer script to fix
 
 	show_info("map saved")
-	get_node("/root/UI/MainMenu/MainContainer/HostLobby/HostMenu/" + \
-		"PanelContainer/GameSetup").container.get_child(0).fill_maps_list()
+	get_node(CFG.NODE_GAMESETUP_PATH).container.get_child(0).fill_maps_list()
 
 	print("end save map")
 	# print("reloading map")

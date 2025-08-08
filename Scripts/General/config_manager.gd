@@ -64,7 +64,7 @@ enum SymbolAnimationType
 #endregion Animations
 
 
-#region Paths
+#region File Paths
 
 ## Folder Paths
 const BATTLE_MAPS_PATH = "res://Resources/Battle/Battle_Maps/"
@@ -139,7 +139,13 @@ const tier_2_passive_1 : String = "res://Resources/Battle/Battle_Spells/Heroes_P
 ## used for passive that replaces all empty symbols with weak weapons
 const weak_weapon : String = "res://Resources/Battle/Symbols/club.tres"
 
-#endregion Paths
+#endregion File Paths
+
+#region Scene Tree Paths
+
+var NODE_GAMESETUP_PATH : String = "/root/UI/MainMenu/MainContainer/HostLobby/HostMenu/PanelContainer/GameSetup"
+
+#endregion Scene Tree Paths
 
 
 #region Colors
@@ -199,6 +205,8 @@ const FETCH_EXTERNAL_IP_GET_URL = "https://api.ipify.org"
 const POLYAPI_BASE_URL = "https://polyserver.onrender.com/"
 # for tests:
 # const POLYAPI_BASE_URL = "http://localhost:3001/"
+
+const DEFAULT_PLAYER_NAME = "player"
 
 #endregion Multiplayer
 
