@@ -608,41 +608,6 @@ std::pair<size_t, size_t> BattleManagerFast::_get_cyclone_worst_and_best_idx() c
 
 #pragma endregion Mana processing
 
-int BattleManagerFast::get_winner_team() {
-
-	if(_state == BattleState::SUMMONING) {
-		return -1;
-	}
-
-	int last_team_alive = -2;
-	int teams_alive = MAX_ARMIES;
-	std::array<int, MAX_ARMIES> armies_in_teams_alive = {0,0,0,0};
-
-	for(unsigned i = 0; i < _armies.size(); i++) {
-		if(!_armies[i].is_defeated()) {
-			armies_in_teams_alive[_armies[i].team] += 1;
-		}
-	}
-
-	for(unsigned i = 0; i < MAX_ARMIES; i++) {
-		if(armies_in_teams_alive[i] == 0) {
-			teams_alive--;
-		}
-		else {
-			last_team_alive = i;
-		}
-	}
-
-	BM_ASSERT_V(teams_alive > 0, -2, "No teams alive after battle, should not be possible");
-
-	if(teams_alive == 1) {
-		_state = BattleState::FINISHED;
-		return last_team_alive;
-	}
-
-	return -1;
-}
-
 #pragma region Move checking
 
 const std::vector<Move>& BattleManagerFast::get_legal_moves() {
@@ -782,7 +747,7 @@ void BattleManagerFast::_spells_append_moves() {
 				_append_moves_unit(spell.unit, i, TeamRelation::ME, NO_INCLUDE_SELF);
 				break;
 			case BattleSpell::State::BLOOD_CURSE:
-				_append_curse_moves_unit(spell.unit, i, TeamRelation::ENEMY, true, 2);
+				_append_curse_moves_unit(spell.unit, i, TeamRelation::ENEMY, INCLUDE_SELF, 2);
 				break;
 			case BattleSpell::State::WIND_DASH:
 				_append_moves_line(spell.unit, i, unit.pos, unit.rotation, 1, 1);
