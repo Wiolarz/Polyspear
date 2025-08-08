@@ -4,7 +4,7 @@ extends RefCounted # default
 signal unit_died()
 signal unit_turned()
 signal unit_moved()
-signal unit_magic_effect()
+signal unit_magic_effect(effect : BattleMagicEffect)
 
 const MAX_EFFECTS_PER_UNIT = 2
 
@@ -133,7 +133,7 @@ func try_adding_magic_effect(effect : BattleMagicEffect) -> bool:
 	if effects.size() >= MAX_EFFECTS_PER_UNIT:
 		return false
 	effects.append(effect)
-	unit_magic_effect.emit()
+	unit_magic_effect.emit(effect)
 	return true
 
 
