@@ -63,7 +63,7 @@ func show_trade_ui(city : City):
 
 
 func _on_menu_pressed():
-	IM.toggle_in_game_menu()
+	UI.main_menu.open_in_game_menu()
 
 
 func _on_end_turn_pressed():
