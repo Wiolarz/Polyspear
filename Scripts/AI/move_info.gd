@@ -153,6 +153,7 @@ class KilledUnit:
 	var template : DataUnit
 	var coord : Vector2i
 	var unit_rotation : int
+	var symbols : Array[DataSymbol]
 
 	static func create(army_idx_:int, unit:Unit) -> KilledUnit:
 		var result = KilledUnit.new()
@@ -160,6 +161,7 @@ class KilledUnit:
 		result.coord = unit.coord
 		result.template = unit.template
 		result.unit_rotation = unit.unit_rotation
+		result.symbols = unit.symbols.duplicate(true) # TEMP awaits proper duplication from #161PR
 		return result
 
 	func respawn() -> Unit:
@@ -167,6 +169,7 @@ class KilledUnit:
 		result.coord = coord
 		result.template = template
 		result.unit_rotation = unit_rotation
+		result.symbols = symbols
 		return result
 
 
