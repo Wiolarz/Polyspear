@@ -280,8 +280,6 @@ func undo() -> void:
 	cancel_pending_ai_move()
 
 	var last_move : MoveInfo = _replay_data.moves.pop_back()
-	if last_move.move_type == MoveInfo.TYPE_SUMMON:  # visual
-		get_unit_form(last_move.target_tile_coord).queue_free()
 	var revived_units : Array[Unit] = _battle_grid_state.undo(last_move)
 
 	# VISUALS
@@ -289,6 +287,7 @@ func undo() -> void:
 		_on_unit_summoned(unit)  # revive
 	_battle_ui.refresh_after_undo(_battle_grid_state.is_during_summoning_phase())
 	_end_move()
+	ANIM.fast_forward()
 
 
 ## STUB
