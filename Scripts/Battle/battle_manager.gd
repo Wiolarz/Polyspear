@@ -119,6 +119,9 @@ func start_battle(new_armies : Array[Army], battle_map : DataBattleMap, \
 	# first turn does not get a signal emit
 	_on_turn_started(_battle_grid_state.get_current_player())
 
+	# Play battle music
+	AUDIO.play_music("battle")
+
 
 func _load_map(map : DataBattleMap) -> void:
 	assert(_is_clear(), "cannot load map, map already loaded")

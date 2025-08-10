@@ -18,6 +18,19 @@ extends Node
 	"unit_death": $UnitDeath
 }
 
+
+## How to add new tracks: [br]
+## 1. Put the music in Audio/Music folder [br]
+## 2. Make sure to enable loop (double-click on a music file -> Loop) [br]
+## 3. Add an entry in a dictionary below
+@onready var tracks : Dictionary = {
+	"menu": preload("res://Audio/Music/exp.mp3"),
+	"battle": preload("res://Audio/Music/polyspear_battle_demo_update.ogg"),
+	"world": preload("res://Audio/Music/exploring.mp3"),
+}
+
+var current_track : String = ""
+
 @onready var bus_idxs : Dictionary = {
 	"volume_master": AudioServer.get_bus_index("Master"),
 	"volume_music":  AudioServer.get_bus_index("Music"),
@@ -27,20 +40,38 @@ extends Node
 
 
 func _ready():
+	update_bus_volumes() # Apply instantly to prevent a sonic jumpscare upon start
 	get_tree().node_added.connect(_node_added)
 
 
 func _process(_delta : float):
-	for name in bus_idxs:
-		var volume_slider = CFG.player_options.get(name)
+	update_bus_volumes()
+
+
+func update_bus_volumes():
+	for bus_name in bus_idxs:
+		var volume_slider = CFG.player_options.get(bus_name)
 		var volume_linear = volume_slider/100.0
 		var volume_db = 10.0 * log(volume_linear) / log(2)
-		AudioServer.set_bus_volume_db(bus_idxs[name], volume_db)
+		AudioServer.set_bus_volume_db(bus_idxs[bus_name], volume_db)
 
 
-func play(name : String):
-	assert(sounds.get(name) != null, "Unknown sound '%s'" % [name])
-	sounds[name].play()
+func play(sound_name : String):
+	assert(sounds.get(sound_name) != null, "Unknown sound '%s'" % [sound_name])
+	sounds[sound_name].play()
+
+
+# For now a very simple immediate restart without even a fade-out
+# TODO replace with Godot 4.4's AudioStreamInteractive
+func play_music(track_name : String):
+	assert(tracks.get(track_name) != null, "Unknown track '%s'" % [track_name])
+	if current_track == track_name:
+		return
+
+	current_track = name
+	$Music.stop()
+	$Music.stream = tracks[track_name]
+	$Music.play()
 
 
 ## Automatically bind sounds to all newly created UI elements
