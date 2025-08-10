@@ -15,7 +15,9 @@ extends Node
 @onready var sounds : Dictionary = {
 	"click": $Click,
 	"parry": $Parry,
-	"unit_death": $UnitDeath
+	"unit_death": $UnitDeath,
+	"move": $Move,
+	"turn": $Turn
 }
 
 

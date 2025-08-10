@@ -1,9 +1,11 @@
-[gd_scene load_steps=5 format=3 uid="uid://diyqm5aj41hpd"]
+[gd_scene load_steps=7 format=3 uid="uid://diyqm5aj41hpd"]
 
 [ext_resource type="Script" path="res://Scripts/General/audio_manager.gd" id="1_ob81y"]
 [ext_resource type="AudioStream" uid="uid://rrjgl1gl2ru0" path="res://Audio/UI/click.wav" id="2_w4hvw"]
 [ext_resource type="AudioStream" uid="uid://cl4jknmjmbvjn" path="res://Audio/Game/parry2.wav" id="3_3tvte"]
 [ext_resource type="AudioStream" uid="uid://dx8x52iv4bier" path="res://Audio/Game/unit_death.wav" id="4_qwmxk"]
+[ext_resource type="AudioStream" uid="uid://ckq6lf3hoggmv" path="res://Audio/Game/move.wav" id="5_muwp6"]
+[ext_resource type="AudioStream" uid="uid://bev6d0mucrt2" path="res://Audio/Game/turn.wav" id="6_rp8sj"]
 
 [node name="AudioManager" type="Node"]
 script = ExtResource("1_ob81y")
@@ -23,5 +25,15 @@ bus = &"Game"
 
 [node name="UnitDeath" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("4_qwmxk")
+max_polyphony = 2
+bus = &"Game"
+
+[node name="Move" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("5_muwp6")
+max_polyphony = 2
+bus = &"Game"
+
+[node name="Turn" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("6_rp8sj")
 max_polyphony = 2
 bus = &"Game"
