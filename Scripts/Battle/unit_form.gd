@@ -133,6 +133,7 @@ func anim_turn():
 
 
 func anim_die():
+	ANIM.main_tween().tween_callback(AUDIO.play.bind("unit_death"))
 	ANIM.main_tween().tween_property(self, "scale", Vector2.ZERO, CFG.anim_death_duration)
 	ANIM.main_tween().tween_callback(queue_free)
 

@@ -7,13 +7,15 @@ extends Node
 ## 1. Add the sound file to one of Audio/* folders [br]
 ## 2. Add an AudioStreamPlayer (or AudioStreamPlayer2D) [br]
 ##    as a child node to Scenes/AudioManager.tscn [br]
-##    Make sure to set appropriate *stream* and *bus*. [br] 
+##    Make sure to set appropriate *stream* and *bus*. [br]
 ##    You also may (or may not) want to adjust volume and max polyphony [br]
 ## 3. Add an entry in a dictionary below
 
 
 @onready var sounds : Dictionary = {
-	"click": $Click
+	"click": $Click,
+	"parry": $Parry,
+	"unit_death": $UnitDeath
 }
 
 @onready var bus_idxs : Dictionary = {
