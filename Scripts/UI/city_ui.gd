@@ -11,8 +11,7 @@ var trading_hero_army : Army:
 	get: return WM.selected_hero.entity if WM.selected_hero else null
 	set(_v): assert(false, "no set here")
 
-## this should be replaced somehow after this refactor
-var world_state_ugly : WorldState
+
 
 # TODO consider some pointer to world_state
 
@@ -45,7 +44,7 @@ func _refresh_all():
 
 
 func _refresh_heroes_to_buy():
-	var heroes = city.get_heroes_to_buy(world_state_ugly)
+	var heroes = city.get_heroes_to_buy()
 	assert(heroes.size() == hero_panels.get_child_count(),\
 			"panels should equal heroes count, check fraction settings and city ui")
 	for i in range(hero_panels.get_child_count()):
@@ -56,16 +55,16 @@ func _refresh_heroes_to_buy():
 			load(heroes[i].data_unit.texture_path)
 
 		var button = hero_panel.get_node("BuyHeroButton")
-		var description = city.get_cost_description(world_state_ugly, hero_to_buy)
+		var description = city.get_cost_description(hero_to_buy)
 		button.text = "Buy %s\n%s" % [hero_to_buy.hero_name, description]
-		button.disabled = not city.can_buy_hero(heroes[i], world_state_ugly)
+		button.disabled = not city.can_buy_hero(heroes[i])
 		for s in button.pressed.get_connections():
 			button.pressed.disconnect(s["callable"])
 		button.pressed.connect(_on_buy_hero_button_pressed.bind(i))
 
 
 func _refresh_units_to_buy():
-	var units = city.get_units_to_buy(world_state_ugly)
+	var units = city.get_units_to_buy()
 	var buy_children = $RecruitUnits/UnitsToBuy.get_children()
 	for i in range(buy_children.size()-1):
 		var b = buy_children[i+1] as Button
@@ -75,13 +74,14 @@ func _refresh_units_to_buy():
 		if i < units.size():
 			var unit = units[i]
 			b.text = unit.unit_name
-			if not city.unit_has_required_building(world_state_ugly, unit):
+			if not city.unit_has_required_building(unit):
 				b.text += "\n" + "needs 🏛"
 			else:
-				b.text += "\n" + unit.cost.to_string_short("free")
+				var cost : Goods = city.get_unit_cost(unit)
+				b.text += "\n" + cost.to_string_short("free")
 			b.pressed.connect(_buy_unit.bind(unit))
 			b.disabled = true if not WM.selected_hero else \
-				(world_state_ugly.check_recruit_unit(unit, city.coord, \
+				(WS.check_recruit_unit(unit, city.coord, \
 					WM.selected_hero.coord) != "")
 
 
@@ -109,9 +109,8 @@ func _buy_unit(unit : DataUnit):
 func _on_buy_hero_button_pressed(hero_index : int):
 	print("trying to buy a hero ")
 
-	# var hero_to_buy : DataHero = city.controller.get_faction().heroes[hero_index]
 	var hero_to_buy : DataHero = \
-		world_state_ugly.get_hero_to_buy_in_city(city, hero_index)
+		WS.get_hero_to_buy_in_city(city, hero_index)
 
 	if not hero_to_buy:
 		return
@@ -123,17 +122,17 @@ func _on_buy_hero_button_pressed(hero_index : int):
 
 
 func _refresh_buildings_display():
-	var buildings_data = city.get_faction(world_state_ugly).buildings
+	var buildings_data = city.faction.race.buildings
 	for i in range(buildings_data.size()):
 		var building_data = buildings_data[i]
 		var b_button = building_buttons.get_child(i+1) as Button
 		if not b_button:
 			continue
 		var description = str(building_data.cost)
-		if city.has_built(world_state_ugly, building_data):
+		if city.has_built(building_data):
 			description = "✔"
 		b_button.text = "%s\n%s" % [building_data.name, description]
-		b_button.disabled = not city.can_build(world_state_ugly, building_data)
+		b_button.disabled = not city.can_build(building_data)
 		for s in b_button.pressed.get_connections():
 			b_button.pressed.disconnect(s["callable"])
 		b_button.pressed.connect(func build():

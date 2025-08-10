@@ -6,9 +6,19 @@ var entity : Army
 var coord:
 	get: return entity.coord
 
-
 var controller:
 	get: return entity.controller
+
+## TODO refactor world manager to utilise hero object more directly
+## world coord, where hero wants to travel
+var travel_path:
+	set(new_path):
+		assert(entity and entity.hero, "attempt to set a path to non existing hero")
+		entity.hero.travel_path = new_path
+	get:
+		assert(entity and entity.hero, "attempt to get a path from not existing hero")
+		return entity.hero.travel_path
+
 
 func _init():
 	name = "ArmyForm"
@@ -36,7 +46,6 @@ static func create_form_of_army(hex : WorldHex, position_ : Vector2) \
 	else:
 		result.name = "Neutral army TODO some name"
 		image = load(army.units_data[0].texture_path)
-		result.get_node("sprite_unit").scale = Vector2(0.9, 0.9)
 		result.get_node("MoveLabel").text = ""
 		result.get_node("DescriptionLabel").text = ""
 	result.get_node("sprite_unit").texture = image

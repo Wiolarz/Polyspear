@@ -1,25 +1,21 @@
 #ifndef DATA_H
 #define DATA_H
 
-#ifdef WIN32
-#include "windows.h"
-#endif
-
-#include <stdint.h>
-#include <stdio.h>
+#include <cstdint>
+#include <cstdio>
 #include <array>
 
 #include "godot_cpp/variant/vector2i.hpp"
 #include "godot_cpp/variant/string.hpp"
 
 
-enum class UnitStatus: uint8_t {
+enum class UnitStatus : uint8_t {
 	SUMMONING,
 	ALIVE,
 	DEAD
 };
 
-enum class BattleState: uint8_t {
+enum class BattleState : uint8_t {
 	INITIALIZING,
 	SUMMONING,
 	ONGOING,
@@ -27,35 +23,48 @@ enum class BattleState: uint8_t {
 	FINISHED
 };
 
-enum class MovePhase: uint8_t {
+enum class MovePhase : uint8_t {
 	TURN,
 	LEAP,
-	PASSIVE
+	PASSIVE,
+	DASH,
 };
 
 struct Position {
 	int8_t x{};
 	int8_t y{};
 
-	inline Position() : x(0), y(0) {};
-	inline Position(int8_t x, int8_t y) : x(x), y(y) {};
-	inline Position(godot::Vector2i p) : x(p.x), y(p.y) {};
+	Position() : x(0), y(0) {};
+	Position(int8_t x, int8_t y) : x(x), y(y) {};
+	Position(godot::Vector2i p) : x(p.x), y(p.y) {};
 
-	inline Position operator+(const Position& other) const {
+	Position operator+(const Position& other) const {
 		return Position(x + other.x, y + other.y);
 	}
 
-	inline Position operator-(const Position& other) const {
+	Position& operator+=(const Position& other) {
+		x += other.x;
+		y += other.y;
+		return *this;
+	}
+
+	Position operator-(const Position& other) const {
 		return Position(x - other.x, y - other.y);
 	}
 
-	inline Position operator*(const int mult) const {
+	Position& operator-=(const Position& other) {
+		x -= other.x;
+		y -= other.y;
+		return *this;
+	}
+
+	Position operator*(const int mult) const {
 		return Position(x * mult, y * mult);
 	}
 
 	std::strong_ordering operator<=>(const Position& other) const = default;
 
-	inline bool is_in_line_with(Position other) const {
+	bool is_in_line_with(Position other) const {
 		auto delta = *this - other;
 		return delta.x == -delta.y || delta.x == 0 || delta.y == 0;
 	}
@@ -73,71 +82,71 @@ public:
 	static const uint8_t FLAG_COUNTER_ATTACK = 0x01;
 	static const uint8_t FLAG_PARRY = 0x02;
 	static const uint8_t FLAG_PARRY_BREAK = 0x04;
-	
+
 	static const int MIN_SHIELD_DEFENSE = 2;
 
 	Symbol() = default;
-	Symbol(uint8_t attack_strength, uint8_t defense_strength, uint8_t push_force, uint8_t ranged_reach, uint8_t flags) 
+	Symbol(uint8_t attack_strength, uint8_t defense_strength, uint8_t push_force, uint8_t ranged_reach, uint8_t flags)
 		: _attack_strength(attack_strength),
 		_defense_strength(defense_strength),
 		_push_strength(push_force),
 		_ranged_reach(ranged_reach),
-		_flags(flags) 
+		_flags(flags)
 	{
 
 	}
 
-	inline int get_attack_force() {
+	int get_attack_force() {
 		return _attack_strength;
 	}
 
-	inline int get_counter_force() {
+	int get_counter_force() {
 		return (_flags & FLAG_COUNTER_ATTACK) ? _attack_strength : 0;
 	}
 
-	inline int get_defense_force() {
+	int get_defense_force() {
 		return _defense_strength;
 	}
 
-	inline int get_bow_force() {
+	int get_bow_force() {
 		return (_ranged_reach > 1) ? _attack_strength : 0;
 	}
 
-	inline int get_reach() {
+	int get_reach() {
 		return _ranged_reach;
 	}
-	
-	inline int get_push_force() {
+
+	int get_push_force() {
 		return _push_strength;
 	}
 
-	inline bool protects_against(Symbol other, MovePhase phase) {
+	bool protects_against(Symbol other, MovePhase phase) {
 		// Parry disables melee attacks
 		if(other.get_bow_force() <= 0 && (parries() && !other.breaks_parry())) {
 			return true;
 		}
-		
+
 		int other_force = (phase == MovePhase::PASSIVE) ? other.get_counter_force() : other.get_attack_force();
 		return other_force <= get_defense_force();
 	}
 
-	inline bool holds_ground_against(Symbol other, MovePhase phase) {
+	bool holds_ground_against(Symbol other, MovePhase phase) {
 		return protects_against(other, phase) && other.get_push_force() <= 0;
 	}
 
-	inline bool dies_to(Symbol other, MovePhase phase) {
+	bool dies_to(Symbol other, MovePhase phase) {
 		return !protects_against(other, phase);
 	}
 
-	inline bool parries() {
+	bool parries() {
 		return (_flags & FLAG_PARRY);
 	}
 
-	inline bool breaks_parry() {
+	bool breaks_parry() {
 		return (_flags & FLAG_PARRY_BREAK);
 	}
 
-	inline void print() {
+	void print() {
 		printf("a%dc%dd%d", get_attack_force(), get_counter_force(), get_defense_force());
 	}
 };
@@ -171,49 +180,49 @@ public:
 		_army(army),
 		_spawning_direction(direction)
 	{}
-	
-	inline bool is_passable() {
+
+	bool is_passable() {
 		return (_flags & PASSABLE) != 0;
 	}
 
-	inline bool is_wall() {
+	bool is_wall() {
 		return (_flags & WALL) != 0;
 	}
 
-	inline bool is_swamp() {
+	bool is_swamp() {
 		return (_flags & SWAMP) != 0;
 	}
 
-	inline bool is_mana_well() {
+	bool is_mana_well() {
 		return (_flags & MANA_WELL) != 0;
 	}
 
-	inline bool is_hill() {
+	bool is_hill() {
 		return (_flags & HILL) != 0;
 	}
 
-	inline bool is_pit() {
+	bool is_pit() {
 		return (_flags & PIT) != 0;
 	}
 
-	inline bool is_spawn() {
+	bool is_spawn() {
 		return (_flags & SPAWN) != 0;
 	}
 
-	inline int get_spawning_army() {
+	int get_spawning_army() {
 		return is_spawn() ? _army : -1;
 	}
 
-	inline int get_controlling_army() {
+	int get_controlling_army() {
 		return is_mana_well() ? _army : -1;
 	}
 
-	inline void set_controlling_army(int army_id) {
+	void set_controlling_army(int army_id) {
 		ERR_FAIL_COND_MSG(!is_mana_well(), "Only mana well tiles can be controlled as an army");
 		_army = army_id;
 	}
 
-	inline unsigned get_spawn_rotation() {
+	unsigned get_spawn_rotation() {
 		return _spawning_direction;
 	}
 };

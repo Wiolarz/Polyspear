@@ -2,6 +2,13 @@
 extends Node
 
 
+## battle map is placed this far to the right after world map bounds
+const MAPS_OFFSET_X = 7000 + 30000 # TEMP increase to include fake snetinel border
+
+const BATTLE_BORDER_WIDTH = 15
+const BATTLE_BORDER_HEIGHT = 8
+
+
 #region Animations
 
 enum BotSpeed
@@ -28,9 +35,12 @@ var anim_default_trans := Tween.TRANS_CUBIC
 var anim_move_duration := 0.3
 var anim_turn_duration := 0.3
 var anim_death_duration := 0.3
+var anim_symbol_fade_in_out_time := 0.1
+
+## TODO Old system of upscaling animation could be used for symbols that don’t have proper animation
 var anim_symbol_activation_scale := Vector2(2.0, 2.0)
-# temporarily cranked up to 0.8, TODO change to 0.5 when
 var anim_symbol_activation_duration := 0.8
+
 
 # STUB, TBH not used yet really
 enum GuiAnimationMode
@@ -41,20 +51,27 @@ enum GuiAnimationMode
 	MAX_ = FULL + 1,
 }
 
-#endregion
+## To pass as argument for symbol animations to use special behavior
+enum SymbolAnimationType
+{
+	DEFAULT,
+	MELEE_ATTACK,
+	BLOCK,
+	TELEPORTING_PROJECTILE,
+	COUNTER_ATTACK
+}
 
-## battle map is placed this far to the right after world map bounds
-const MAPS_OFFSET_X = 7000
+#endregion Animations
 
-const BATTLE_BORDER_WIDTH = 15
-const BATTLE_BORDER_HEIGHT = 8
 
 #region Paths
 
+## Folder Paths
 const BATTLE_MAPS_PATH = "res://Resources/Battle/Battle_Maps/"
 const UNITS_PATH = "res://Resources/Battle/Units/"
 const HEROES_PATH = "res://Resources/Battle/Heroes/"
-const BUILDINGS_PATH = "res://Resources/Factions/Buildings/"
+const SPELLS_PATH = "res://Resources/Battle/Battle_Spells/"
+const BUILDINGS_PATH = "res://Resources/Races/Buildings/"
 const BATTLE_PRESETS_PATH = "res://Resources/Presets/Battle/"
 const WORLD_MAPS_PATH = "res://Resources/World/World_maps/"
 const SENTINEL_TILE_PATH = "res://Resources/World/World_tiles/sentinel.tres"
@@ -63,22 +80,33 @@ const WORLD_MAP_TILES_PATH = "res://Resources/World/World_tiles/"
 const SYMBOLS_PATH = "res://Resources/Battle/Symbols/"
 const BATTLE_BOTS_PATH = "res://Resources/Battle/Bots"
 
+const EMPTY_SYMBOL_PATH = "res://Resources/Battle/Symbols/empty.tres"
+@onready var EMPTY_SYMBOL : DataSymbol = load(EMPTY_SYMBOL_PATH)
+
+
+# Icons
 const ROCK_ICON_PATH = "res://Art/battle_map/rock.png"
 const SWAMP_ICON_PATH = "res://Art/battle_map/swamp.png"
 const MANA_ICON_PATH = "res://Art/battle_map/mana_well.png"
 
 const PLAYER_COLORS_PATH = "res://Art/player_colors/"
 
+# System folders
 const REPLAY_DIRECTORY = "user://replays/"
 const PLAYER_OPTIONS_PATH = "user://player_options.tres"
 
-var FACTION_ELVES : DataFaction = load("res://Resources/Factions/elf.tres")
-var FACTION_ORCS : DataFaction = load("res://Resources/Factions/orc.tres")
-var FACTIONS_LIST : Array[DataFaction] = [
-	FACTION_ELVES,
-	FACTION_ORCS,
-]
 
+const TUTORIAL_CONTENT_PATH = "res://Resources/Campaign/Tutorial/"
+const PUZZLE_CONTENT_PATH = "res://Resources/Campaign/Puzzle/"
+const CAMPAIGN_BATTLES_ELVES_PATH = "res://Resources/Campaign/Elves/"
+
+
+var RACE_ELVES : DataRace = load("res://Resources/Races/elf.tres")
+var RACE_ORCS : DataRace = load("res://Resources/Races/orc.tres")
+var RACES_LIST : Array[DataRace] = [
+	RACE_ELVES,
+	RACE_ORCS,
+]
 
 
 const UNIT_FORM_SCENE = preload("res://Scenes/Form/UnitForm.tscn")
@@ -102,6 +130,14 @@ const OUTPOST_RUBY_PATH : String = "res://Resources/Presets/Army/outpost_defende
 
 #const HUNT_PATHS : Array[String] = [HUNT_WOOD_PATH, HUNT_IRON_PATH, HUNT_RUBY_PATH]
 
+
+## Heroes Passive Effects
+
+## magic weapon - all weapons have an attack power of 4, but each kills lowers that value by 1 to a min. of 1
+const tier_2_passive_1 : String = "res://Resources/Battle/Battle_Spells/Heroes_Passive_Effects/magic_weapon.tres"
+
+## used for passive that replaces all empty symbols with weak weapons
+const weak_weapon : String = "res://Resources/Battle/Symbols/club.tres"
 
 #endregion Paths
 
@@ -141,7 +177,7 @@ var DEFAULT_BATTLE_MAP : DataBattleMap = \
 var BIGGER_BATTLE_MAP : DataBattleMap = \
 	load("res://Resources/Battle/Battle_Maps/8x7duel_10maxUnits.tres")
 
-#endregion
+#endregion Battle maps
 
 
 #region Multiplayer
@@ -165,7 +201,7 @@ const BIG_CYCLONE_COUNTER_VALUE = 30
 const SMALL_CYCLONE_COUNTER_VALUE = 15
 const CYCLONE_MANA_THRESHOLD = 3
 
-#endregion
+#endregion Battle Map properties
 
 
 #region World Map properties
@@ -195,7 +231,7 @@ const WORLD_MOVABLE_TILES = [
 const CHESS_CLOCK_BATTLE_TIME_PER_PLAYER_MS = 3 * 60 * 1000
 const CHESS_CLOCK_BATTLE_TURN_INCREMENT_MS = 2 * 1000
 
-#endregion chess clock
+#endregion Chess clock
 
 
 #region Debugging & tests
@@ -212,7 +248,7 @@ var debug_mcts_max_saved_fail_replays := 16
 ## When true, immediately save replays from BattleManagerFast mismatches with an appropriate name with a suffix "BMFast Mismatch"
 var debug_save_failed_bmfast_integrity := true
 
-#endregion
+#endregion Debugging & tests
 
 
 #region Player Options
@@ -228,10 +264,52 @@ var DEFAULT_MODE_IS_BATTLE : bool :
 var AUTO_START_GAME : bool :
 	get: return player_options.autostart_map
 
+
+enum LearnTabs {
+	TUTORIAL = 1,
+	PUZZLE = 2,
+	CAMPAIGN = 3,
+	SYMBOLS_WIKI = 5,
+	MAGIC_WIKI = 6,
+}
+
+var LAST_OPENED_LEARN_TAB : LearnTabs :
+	get: return player_options.last_open_learn_tab
+
+enum MainMenuTabs {
+	SERVER = 0,
+	JOIN = 1,
+	SETTINGS = 2,
+	CREDITS = 3,
+	REPLAYS = 4,
+	LEARN = 5,
+}
+
+var LAST_OPENED_TAB : MainMenuTabs :
+	get: return player_options.last_open_menu_tab
+
 var LAST_USED_BATTLE_PRESET_NAME : String :
 	get: return player_options.last_used_battle_preset_name
-var LAST_USED_WORLD_PRESET : PresetWorld : # TODO implement this
-	get: return player_options.last_used_world_preset
+var LAST_USED_WORLD_MAP : DataWorldMap : # TODO implement this
+	get: return player_options.last_used_world_map
+
+var FULLSCREEN_AUTO_TOGGLE : bool :
+	get: return player_options.keep_main_menu_windowed
+
+var AUTO_WIN_CHEAT : bool :
+	get: return player_options.auto_win
+
+var AUTO_WIN_AGAINST_NEUTRALS_CHEAT : bool :
+	get: return player_options.auto_win_against_neutrals
+
+var WORLD_GOD_MODE : bool :
+	get: return player_options.world_god_mode
+
+# Editor preference settings:
+var TILE_EDITOR_BATTLE : bool :
+	get: return player_options.tile_editor_default_battle
+var MAP_EDITOR_BATTLE : bool :
+	get: return player_options.map_editor_default_battle
 
 
 func save_last_used_for_host_setup(\

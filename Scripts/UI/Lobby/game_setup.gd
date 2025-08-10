@@ -107,38 +107,38 @@ func try_to_cycle_color_slot(index : int, backwards : bool) -> bool:
 	if NET.client:
 		NET.client.queue_cycle_color(index, backwards)
 		return false # we will change this after server responds
-	var new_color_index = slots[index].color
+	var new_color_index = slots[index].color_idx
 	var diff : int = 1 if not backwards else -1
 	while true:
 		new_color_index = (new_color_index + diff) % CFG.TEAM_COLORS.size()
-		if new_color_index == slots[index].color: # all colors are taken
+		if new_color_index == slots[index].color_idx: # all colors are taken
 			return false
 		var is_color_unique = func() -> bool:
 			for slot in slots:
-				if slot.color == new_color_index:
+				if slot.color_idx == new_color_index:
 					return false
 			return true
 		if is_color_unique.call():
-			slots[index].color = new_color_index
+			slots[index].color_idx = new_color_index
 			break
 	if NET.server:
 		NET.server.broadcast_full_game_setup(IM.game_setup_info)
 	return true
 
 
-func try_to_cycle_faction_slot(index : int, backwards : bool) -> bool:
+func try_to_cycle_race_slot(index : int, backwards : bool) -> bool:
 	var slots = IM.game_setup_info.slots
 	if index < 0 or index >= slots.size():
 		return false
 	var diff : int = 1 if not backwards else -1
 	if NET.client:
-		NET.client.queue_cycle_faction(index, backwards)
+		NET.client.queue_cycle_race(index, backwards)
 		return false # we will change this after server responds
-	var faction_index = CFG.FACTIONS_LIST.find(slots[index].faction)
-	var new_faction_index = \
-		(faction_index + diff) % CFG.FACTIONS_LIST.size()
-	slots[index].faction = CFG.FACTIONS_LIST[new_faction_index]
-	print("faction: ",index," --> ",slots[index].faction.get_network_id())
+	var race_index = CFG.RACES_LIST.find(slots[index].race)
+	var new_race_index = \
+		(race_index + diff) % CFG.RACES_LIST.size()
+	slots[index].race = CFG.RACES_LIST[new_race_index]
+	print("race: ",index," --> ",slots[index].race.get_network_id())
 	if NET.server:
 		NET.server.broadcast_full_game_setup(IM.game_setup_info)
 	return true
@@ -173,6 +173,9 @@ func _select_setup_page(page):
 
 
 func select_world():
+	CFG.player_options.use_default_battle = false
+	CFG.save_player_options()
+
 	button_world.button_pressed = true
 	IM.game_setup_info.game_mode = GameSetupInfo.GameMode.WORLD
 	_select_setup_page(multi_world_setup_scene)
@@ -181,6 +184,9 @@ func select_world():
 
 
 func select_battle():
+	CFG.player_options.use_default_battle = true
+	CFG.save_player_options()
+
 	button_battle.button_pressed = true
 	if not IM.game_setup_info.is_in_mode_battle():
 		IM.init_battle_mode(not NET.client)
@@ -203,4 +209,4 @@ func _on_button_confirm_pressed():
 	if NET.client:
 		NET.client.queue_request_start()
 	else:
-		IM.start_game(null, null)
+		IM.start_game()  # Button press in single player lobby

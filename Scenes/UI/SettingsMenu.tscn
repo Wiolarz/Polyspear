@@ -36,10 +36,6 @@ theme_override_font_sizes/font_size = 100
 text = "Settings"
 horizontal_alignment = 1
 
-[node name="ToggleBattleDefault" type="CheckBox" parent="Margin/Scroll/VBox"]
-layout_mode = 2
-text = "Use battle as default"
-
 [node name="ToggleAutoStart" type="CheckBox" parent="Margin/Scroll/VBox"]
 layout_mode = 2
 text = "Auto start"
@@ -56,6 +52,10 @@ text = "Streamer mode"
 layout_mode = 2
 text = "Fullscreen"
 
+[node name="ToggleAutoFullscreen" type="CheckBox" parent="Margin/Scroll/VBox"]
+layout_mode = 2
+text = "Auto FullScreen - Main menu is windowed, but game is kept in fullscreen"
+
 [node name="ToggleBackgroundColorFollowsPlayers" type="CheckBox" parent="Margin/Scroll/VBox"]
 layout_mode = 2
 text = "Background color changes with player's turns"
@@ -63,6 +63,19 @@ text = "Background color changes with player's turns"
 [node name="ToggleBMFastIntegrityChecks" type="CheckBox" parent="Margin/Scroll/VBox"]
 layout_mode = 2
 text = "Check LibSpear integrity"
+
+[node name="ToggleAutoWin" type="CheckBox" parent="Margin/Scroll/VBox"]
+layout_mode = 2
+text = "Auto Win"
+
+[node name="ToggleAutoWinAgainstNeutrals" type="CheckBox" parent="Margin/Scroll/VBox"]
+layout_mode = 2
+text = "Auto Win against Neutrals"
+
+[node name="ToggleWorldGodMode" type="CheckBox" parent="Margin/Scroll/VBox"]
+layout_mode = 2
+text = "World God Mode - Automatically calls cheats like: 
+FAST, MONEY, MAX_UPGRADE, LEVELUP, whenever city/hero is selected"
 
 [node name="OptionGuiAnimationMode" type="HBoxContainer" parent="Margin/Scroll/VBox"]
 layout_mode = 2

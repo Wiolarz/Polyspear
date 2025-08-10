@@ -1,7 +1,7 @@
 #ifndef BATTLE_STRUCTS_H
 #define BATTLE_STRUCTS_H
 
-#include <stdint.h>
+#include <cstdint>
 #include <array>
 #include <format>
 #include "godot_cpp/variant/array.hpp"
@@ -72,26 +72,27 @@ public:
 	static const uint8_t FLAG_EFFECT_VENGEANCE = 0x02;
 	static const uint8_t FLAG_EFFECT_DEATH_MARK = 0x04;
 	static const uint8_t FLAG_EFFECT_MARTYR = 0x08;
+	static const uint8_t FLAG_EFFECT_BLOOD_CURSE = 0x10;
 
-	inline Symbol symbol_when_rotated(int side) const {
+	Symbol symbol_when_rotated(int side) const {
 		if(flags & FLAG_ON_SWAMP) {
 			return Symbol();
 		}
 		return sides[(6-rotation + side) % 6];
 	}
 
-	inline Symbol front_symbol() const {
+	Symbol front_symbol() const {
 		if(flags & FLAG_ON_SWAMP) {
 			return Symbol();
 		}
 		return sides[0];
 	}
 
-	inline bool try_apply_effect(uint8_t mask, uint8_t duration = DEFAULT_EFFECT_DURATION) {
+	bool try_apply_effect(uint8_t mask, uint8_t duration = DEFAULT_EFFECT_DURATION) {
 		for(auto& eff : effects) {
 			if(eff.mask == 0) {
 				flags |= mask;
-				eff.mask |= mask;
+				eff.mask = mask;
 				eff.counter = duration;
 				return true;
 			}
@@ -99,37 +100,45 @@ public:
 		return false;
 	}
 
-	inline bool try_apply_martyr(UnitID id, uint8_t duration = DEFAULT_EFFECT_DURATION) {
+	bool try_apply_martyr(UnitID id, uint8_t duration = DEFAULT_EFFECT_DURATION) {
 		_martyr_id = id;
 		return try_apply_effect(FLAG_EFFECT_MARTYR, duration);
 	}
 
-	inline void remove_martyr() {
+	void remove_martyr() {
 		_martyr_id = NO_UNIT;
 		remove_effect(FLAG_EFFECT_MARTYR);
 	}
 
-	inline void remove_effect(uint8_t mask) {
+	void remove_effect(uint8_t mask) {
+		flags &= ~mask;
 		for(auto& eff : effects) {
 			eff.mask &= ~mask;
 		}
 	}
 
-	inline UnitID get_martyr_id() const {
+	UnitID get_martyr_id() const {
 		return _martyr_id;
 	}
 
-	inline bool is_effect_active(uint8_t effect_mask) const {
+	bool is_effect_active(uint8_t effect_mask) const {
 		return (flags & effect_mask);
 	}
 
-	inline void on_turn_end() {
+	void on_turn_end() {
 		for(auto& eff : effects) {
 			if(eff.counter == 0 || eff.mask == 0) {
 				continue;
 			}
+			switch (eff.mask) {
+				case FLAG_EFFECT_BLOOD_CURSE:
+					continue;
 
-			eff.counter--;
+				default:
+					eff.counter--;
+					break;
+			}
+
 			if(eff.counter == 0) {
 				if(eff.mask & FLAG_EFFECT_MARTYR) {
 					_martyr_id = NO_UNIT;
@@ -140,7 +149,7 @@ public:
 		}
 	}
 
-	static inline uint8_t effect_string_to_flag(godot::String str) {
+	static uint8_t effect_string_to_flag(godot::String str) {
 		if(str == godot::String("Vengeance")) {
 			return FLAG_EFFECT_VENGEANCE;
 		}
@@ -150,19 +159,22 @@ public:
 		else if(str == godot::String("Martyr")) {
 			return FLAG_EFFECT_MARTYR;
 		}
+		else if(str == godot::String("Blood Ritual")) {
+			return FLAG_EFFECT_BLOOD_CURSE;
+		}
 		else {
 			ERR_FAIL_V_MSG(0, std::format("Unknown effect: '{}'", str.ascii().get_data()).c_str());
 		}
 	}
 
 	/// Convert Godot effects (except Martyr) to LibSpear flags
-	inline void set_effect_gd(godot::String str, int duration) {
+	void set_effect_gd(godot::String str, int duration) {
 		if(!try_apply_effect(effect_string_to_flag(str), duration)) {
 			ERR_FAIL_MSG(std::format("Failed to apply effect: '{}'", str.ascii().get_data()).c_str());
 		}
 	}
 
-	inline int get_effect_duration_counter(uint8_t mask) const {
+	int get_effect_duration_counter(uint8_t mask) const {
 		for(auto& eff : effects) {
 			if(eff.mask & mask) {
 				return eff.counter;
@@ -186,6 +198,17 @@ struct Army {
 
 	int find_unit_id_to_summon(int from = 0) const;
 	bool is_defeated() const;
+
+	/// Counts number of alive and undeployed units
+	int count_alive_units() const {
+		int result = 0;
+		for (const Unit& unit : units) {
+			if (unit.status == UnitStatus::SUMMONING || unit.status == UnitStatus::ALIVE) {
+				result++;
+			}
+		}
+		return result;
+	}
 };
 
 using ArmyList = std::array<Army, MAX_ARMIES>;

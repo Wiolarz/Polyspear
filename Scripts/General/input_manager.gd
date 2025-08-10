@@ -39,9 +39,27 @@ func get_battle_maps_list() -> Array[String]:
 
 
 func _prepare_to_start_game() -> void:
-	for player in players:
-		player.queue_free()
-	players = []
+	_clear_players()
+
+	# Assigning unique team id's to player's without a team
+	# To avoid players without a team being treated as allies
+	# assigning players without a team
+	var occupied_team_slots : Array[int] = []
+	for slot in game_setup_info.slots: # assigning NO team players
+		if slot.team == 0:
+			continue
+		elif slot.team not in occupied_team_slots:
+			occupied_team_slots.append(slot.team)
+
+	var new_team_idx = 1
+	for slot in game_setup_info.slots:
+		if slot.team == 0:
+			while new_team_idx in occupied_team_slots:
+				new_team_idx += 1
+			slot.team = new_team_idx
+			new_team_idx += 1
+
+
 	for slot in game_setup_info.slots:
 		var player := Player.create(slot)
 		players.append(player)
@@ -49,8 +67,8 @@ func _prepare_to_start_game() -> void:
 
 	UI.ensure_camera_is_spawned()
 
-	WM.close_world()
-	BM.close_when_quiting_game()
+	WM.clear_world()
+	BM.close_when_quitting_game()
 	UI.go_to_main_menu()
 
 
@@ -58,8 +76,8 @@ func _prepare_to_start_game() -> void:
 ## [br]
 ## If both states are null, then game is started as new and no state load is
 ## performed -- only game_setup_info is taken into account.
-func start_game(world_state : SerializableWorldState,
-		battle_state : SerializableBattleState,
+func start_game(world_state : SerializableWorldState = null,
+		battle_state : SerializableBattleState = null,
 		replay_template : BattleReplay = null) -> void:
 
 	assert(not battle_state or battle_state.valid())
@@ -84,7 +102,7 @@ func start_game(world_state : SerializableWorldState,
 		if battle_state:
 			var armies : Array[Army] = []
 			for army_coord in battle_state.world_armies:
-				armies.append(WM.world_state.get_army_at(army_coord))
+				armies.append(WS.get_army_at(army_coord))
 			WM.start_combat(armies, battle_state.combat_coord, battle_state)
 
 	if NET.server:
@@ -109,7 +127,7 @@ func perform_replay(path):
 		var slot = game_setup_info.slots[slot_id]
 		var units_array = replay.units_at_start[slot_id]
 		slot.occupier = replay.get_player_name(slot_id)
-		slot.color = replay.get_player_color(slot_id)
+		slot.color_idx = replay.get_player_color(slot_id)
 		slot.timer_reserve_sec = replay.player_initial_timers_ms[slot_id] / 1000
 		slot.timer_increment_sec = replay.player_increments_ms[slot_id] / 1000
 		slot.set_units(units_array)
@@ -126,46 +144,70 @@ func go_to_map_editor():
 	in_map_editor = true
 	UI.go_to_map_editor()
 
-
+## Full game - World game mode
 ## new game <=> world_state == null
-func _start_game_world(world_state : SerializableWorldState):
+func _start_game_world(world_state : SerializableWorldState = null):
 	UI.go_to_main_menu()
 	var map : DataWorldMap = game_setup_info.world_map
+
+	if CFG.FULLSCREEN_AUTO_TOGGLE:
+		UI.set_fullscreen(true)
+
 	if not world_state:
 		WM.start_new_world(map)
 	else:
 		WM.start_world_in_state(map, world_state)
 
 
+## Single Battle - game mode
 ## new game <=> battle_state == null
-func _start_game_battle(battle_state : SerializableBattleState,
+func _start_game_battle(battle_state : SerializableBattleState = null,
 		replay_template : BattleReplay = null):
 	var map_data = game_setup_info.battle_map
 	var armies : Array[Army]  = []
 
-	for player in players:
-		armies.append(create_army_for(player))
+	for slot in game_setup_info.slots:
+		armies.append(create_army_for(slot))
 
 	UI.go_to_main_menu()
-	var x_offset = 0.0
-	BM.start_battle(armies, map_data, battle_state, x_offset, replay_template)
+
+	if CFG.FULLSCREEN_AUTO_TOGGLE:
+		UI.set_fullscreen(true)
+
+	var x_offset = 0.0  # no world map to offset from
+	BM.start_battle(armies, map_data, x_offset, battle_state, replay_template)
 
 
 ## Creates army based on player slot data
-func create_army_for(player : Player) -> Army:
+func create_army_for(slot : Slot) -> Army:
 	var army = Army.new()
-	army.controller_index = player.index
+	army.controller_index = slot.index
 
-	var hero_data : DataHero = player.slot.slot_hero
+	var hero_data : DataHero = slot.slot_hero
 	if hero_data:
-		var new_hero = Hero.construct_hero(hero_data, player.index)
+		var new_hero = Hero.construct_hero(hero_data, slot.index)
 		army.hero = new_hero
 
-	army.units_data = player.slot.get_units_list()
+	army.units_data = slot.get_units_list()
 
 	#TEMP
-	army.timer_reserve_sec = player.slot.timer_reserve_sec
-	army.timer_increment_sec = player.slot.timer_increment_sec
+	army.timer_reserve_sec = slot.timer_reserve_sec
+	army.timer_increment_sec = slot.timer_increment_sec
+
+	return army
+
+
+## Creates army based on army_preset and assigns controller
+func create_army_from_preset(army_preset : PresetArmy, player_index : int) -> Army:
+	var army = Army.new()
+	army.controller_index = player_index
+
+	var hero_data : DataHero = army_preset.hero
+	if hero_data:
+		var new_hero = Hero.construct_hero(hero_data, player_index)
+		army.hero = new_hero
+
+	army.units_data = army_preset.units
 
 	return army
 
@@ -192,21 +234,52 @@ func get_default_or_last_battle_preset() -> Dictionary:
 	}
 
 
+func start_scripted_battle(scripted_battle : ScriptedBattle, battle_bot_path : String = "",
+							player_controlled_side : int = 0) -> void:
+	print("started scripted battle: ", scripted_battle.scenario_name)
+
+	_prepare_to_start_game()
+
+	var armies : Array[Army]  = []
+	_clear_players()
+
+	var player_idx : int = -1
+	for army_preset in scripted_battle.armies:
+		player_idx += 1
+		var new_controller : Player
+		if player_controlled_side == player_idx:
+			new_controller = Player.create_for_tutorial(player_idx)
+		else:
+			new_controller = Player.create_for_tutorial(player_idx, battle_bot_path)
+
+
+		players.append(new_controller)
+		add_child(new_controller)
+
+		armies.append(create_army_from_preset(army_preset, player_idx))
+
+	BM.start_battle(armies, scripted_battle.battle_map, 0, null, null, scripted_battle)
+
+
+func _clear_players() -> void:
+	for player in players:
+		player.queue_free()
+	players = []
+
 #endregion Game setup
 
 
 #region Gameplay UI
 
+# MAJOR function that exits gamemodes
 func go_to_main_menu():
+	if CFG.FULLSCREEN_AUTO_TOGGLE:
+		UI.set_fullscreen(false)
+
 	in_map_editor = false
-	BM.close_when_quiting_game()
-	WM.close_world()
+	BM.close_when_quitting_game()
+	WM.clear_world()
 	UI.go_to_main_menu()
-
-
-func toggle_in_game_menu():
-	UI.toggle_in_game_menu()
-	set_game_paused(UI.requests_pause())
 
 #endregion Gameplay UI
 
@@ -244,25 +317,6 @@ func get_index_of_player(player : Player) -> int:
 
 
 #region Information
-
-func get_player_name(player : Player) -> String:
-	if not player:
-		return "neutral"
-	var slot = player.slot
-	if slot == null:
-		return "neutral"
-	return slot.get_occupier_name(game_setup_info.slots)
-
-
-func get_player_color(player : Player) -> DataPlayerColor:
-	if not player:
-		return CFG.DEFAULT_TEAM_COLOR
-	return player.get_player_color()
-
-## 2 line string - Player color | controller name
-func get_full_player_description(player : Player) -> String:
-	return "%s\n%s" % [get_player_color(player).name, get_player_name(player)]
-
 
 func get_serializable_world_state() -> SerializableWorldState:
 	var state := SerializableWorldState.new()

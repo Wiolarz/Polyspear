@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://Scripts/Development/map_editor.gd" id="1_y7q6u"]
 [ext_resource type="Shortcut" uid="uid://fuvss5hfg4q2" path="res://Resources/Shortcuts/go_back.tres" id="3_a1hl2"]
-[ext_resource type="Texture2D" uid="uid://boa1b3papyx4r" path="res://Art/world_map/elven_city.png" id="3_jrkaq"]
+[ext_resource type="Texture2D" uid="uid://b5fpivvev0i1e" path="res://Art/world_map/simple_city_orange.png" id="3_jrkaq"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_l3dvo"]
 bg_color = Color(0, 0.670588, 0.67451, 0.588235)

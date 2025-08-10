@@ -101,5 +101,6 @@ static func make_end_turn() -> WorldMoveInfo:
 	return result
 
 
+# TODO make this function at least tell what kind of move it is
 func _to_string() -> String:
 	return str(target_tile_coord) + " from " + str(move_source)

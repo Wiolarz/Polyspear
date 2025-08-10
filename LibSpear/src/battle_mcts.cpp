@@ -1,17 +1,14 @@
 #include "battle_mcts.hpp"
 
-#include <math.h>
-#include <assert.h>
+#include <cmath>
+#include <cassert>
 #include <limits>
 #include <utility>
 #include <algorithm>
 #include <chrono>
 #include <random>
+#include <omp.h>
 
-#include "BS_thread_pool.hpp"
-
-
-BS::thread_pool mcts_workers;
 
 BattleMCTSNode::BattleMCTSNode(BattleManagerFast bm, BattleMCTSManager& manager, BattleMCTSNode* parent, Move move) 
 	: _manager(manager),
@@ -125,16 +122,15 @@ BattleResult BattleMCTSNode::simulate(int max_sim_iterations, int simulations) {
 		return _bm.get_result();
 	}
 
-	std::vector<std::future<BattleResult>> results;
+	std::vector<BattleResult> results{size_t(simulations)};
 
+	#pragma omp parallel for schedule(dynamic)
 	for(int i = 0; i < simulations; i++) {
-		results.push_back(mcts_workers.submit_task([*this]() {
-			return _simulate_thread(_bm, this->_manager, *this);
-		}));
+		results[i] = _simulate_thread(_bm, this->_manager, *this);
 	}
 
 	for(auto& fut : results) {
-		auto result = fut.get();
+		auto result = fut;
 		for(unsigned i = 0; i < ret.total_scores.size(); i++) {
 			ret.total_scores[i] += result.total_scores[i];
 			ret.max_scores[i] += result.max_scores[i];

@@ -5,12 +5,15 @@ extends Control
 func _ready():
 	# You should put all PlayerOptions-widget connections here
 	_declare_toggle("autostart_map", $ToggleAutoStart)
-	_declare_toggle("use_default_battle", $ToggleBattleDefault)
 	_declare_toggle("use_default_AI_players", $ToggleDefaultAIPlayers)
 	_declare_toggle("streamer_mode", $ToggleStreamerMode)
 	_declare_toggle("fullscreen", $ToggleFullscreen)
+	_declare_toggle("keep_main_menu_windowed", $ToggleAutoFullscreen)
 	_declare_toggle("bmfast_integrity_checks", $ToggleBMFastIntegrityChecks)
 	_declare_toggle("background_color_follows_players", $ToggleBackgroundColorFollowsPlayers)
+	_declare_toggle("auto_win", $ToggleAutoWin)
+	_declare_toggle("auto_win_against_neutrals", $ToggleAutoWinAgainstNeutrals)
+	_declare_toggle("world_god_mode", $ToggleWorldGodMode)
 	_declare_enum_list("gui_animation_mode", $OptionGuiAnimationMode/Option, {
 		CFG.GuiAnimationMode.NONE: "None",
 		CFG.GuiAnimationMode.NON_DISTRACTION: "Only non-distracting",
