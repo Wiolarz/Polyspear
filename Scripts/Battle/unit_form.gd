@@ -7,7 +7,6 @@ signal anim_end()
 const SIDE_NAMES = ["FrontSymbol", "FrontRightSymbol", "BackRightSymbol", "BackSymbol", "BackLeftSymbol", "FrontLeftSymbol"]
 const selection_mark_scene = preload("res://Scenes/Form/SelectionMark.tscn")
 
-@onready var sprite_border := $sprite_border
 
 var entity : Unit
 
@@ -252,7 +251,7 @@ func set_hovered(is_hovered : bool):
 ## used after every set_hovered and set_selected to refresh level of highlight
 func _refresh_highlight() -> void:
 	var overall_shader_material := material as ShaderMaterial
-	var border_shader_material := sprite_border.material as ShaderMaterial
+	var border_shader_material := $sprite_border.material as ShaderMaterial
 	var overall_intensity = 0.25 if _hovered else 0.0
 	var border_intensity = 0.0
 	border_intensity = lerpf(border_intensity, 1.0, 0.25 if _hovered else 0.0)
@@ -280,5 +279,12 @@ func _refresh_highlight() -> void:
 		remove_child(get_node_or_null("SelectionMark"))
 		z_index = 0
 
+
+## marks visually units to distinct them by applying a color tint to their background [br]
+## currently only used to show which units will be left in the garrison once hero leaves the city
+## with insufficient max_army_size to take all units with him
+func set_marked_for_unit_list() -> void:
+	$sprite_color.modulate = Color("ffc7aa") #ffc7aa for debuging use -> #431900
+	$sprite_color.use_parent_material = false
 
 #endregion UI
