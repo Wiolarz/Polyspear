@@ -19,6 +19,9 @@ const MOVE_IS_INVALID = -1
 const STALEMATE_TURN_REPEATS = 2  # number of repeated moves that fast forward Mana Cyclon Timer
 
 var state : String = STATE_SUMMONNING
+
+## Visible to players counter which works alongside Mana Cyclone system [br]
+## Is incremented after units move/cast_a_spell -> Doesn't after unit placement/sacrifice
 var turn_counter : int = 0
 var current_army_index : int = 0
 var armies_in_battle_state : Array[ArmyInBattleState] = []
@@ -333,6 +336,7 @@ func _process_passive_symbols(unit : Unit) -> void:
 		var opposite_side := GenericHexGrid.opposite_direction(side)
 		var enemy_weapon = enemy.get_symbol(opposite_side)
 		if enemy_weapon.does_parry(unit_symbol):
+			enemy.unit_is_blocking.emit(opposite_side, unit.coord)
 			continue  # parry disables all melee symbols
 
 		# we check if attacking symbol power is able to kill
@@ -728,6 +732,15 @@ func _perform_move(unit : Unit, direction : int, target_tile_coord : Vector2i) -
 	if _process_symbols(unit, E.MoveType.TURN):
 		return
 	currently_processed_move_info.register_turning_complete()
+
+	var anchored := false
+	for effect in unit.effects:
+		if effect.name == "Anchor":
+			anchored = true
+
+	if anchored:
+		return
+
 	# MOVE
 	var target_tile : BattleGridState.BattleHex = _get_battle_hex(target_tile_coord)
 	if target_tile.pit:
@@ -869,7 +882,6 @@ func _kill_unit(target : Unit, killer_army : ArmyInBattleState = null) -> void:
 				for symbol in currently_active_unit.symbols:
 					if symbol.attack_power != 0:
 						symbol.attack_power = effect.magic_weapon_durability
-
 
 	# removal of unit
 	target_army.kill_unit(target)
@@ -1028,6 +1040,10 @@ func is_spell_target_valid(caster : Unit, coord : Vector2i, spell : BattleSpell)
 				return true
 		"Fireball": # any hex target is valid
 			return true
+		"Anchor": # any unit
+			var target = get_unit(coord)
+			if target:
+				return true
 		"Teleport", "Wind Dash": # tile in range that is in front of the caster
 			if get_unit(coord) or not _get_battle_hex(coord).can_be_moved_to:  # tile has to be empty
 				return false
@@ -1043,10 +1059,10 @@ func is_spell_target_valid(caster : Unit, coord : Vector2i, spell : BattleSpell)
 			if _is_faced_tile_in_range(caster.coord, coord, caster.unit_rotation, spell_range):
 				return true
 
-		"Blood Ritual":  # any enemy units
+		"Blood Ritual":  # any enemy units -> when enemy has more than 1 unit
 			var target = get_unit(coord)
-			#if target and target.controller.team != caster.controller.team: #TEMP awaits major world refactor
-			if target: #TEMP
+			if target and target.controller.team != caster.controller.team and \
+				target.army_in_battle.units.size() >= 2:
 				return true
 		_:
 			printerr("Spell targeting not supported: ", spell.name)
@@ -1059,7 +1075,7 @@ func is_spell_target_valid(caster : Unit, coord : Vector2i, spell : BattleSpell)
 func _perform_magic(unit : Unit, target_tile_coord : Vector2i, spell : BattleSpell) -> void:
 
 	match spell.name:
-		"Vengeance", "Blood Ritual":
+		"Vengeance", "Blood Ritual", "Anchor":
 			spell.cast_effect(get_unit(target_tile_coord), "casting")
 			#print(get_unit(target_tile_coord).effects)
 
@@ -1177,10 +1193,31 @@ func _check_battle_end() -> void:
 
 
 func force_win_battle():
+	var controller_player_armies : Array[int] = []
+	var teams_not_controlled_by_cheating_player : Array[int] = []
+
+	# Collect infomration about armies to target
+	for army_idx : int in range(armies_in_battle_state.size()):
+		var army : ArmyInBattleState = armies_in_battle_state[army_idx]
+		if IM.players[army.army_reference.controller_index].is_local():  # TODO apply controllers to army in custom battles
+			controller_player_armies.append(army_idx)
+		else:
+			teams_not_controlled_by_cheating_player.append(army.team)
+
+	# unique case where player cheating controlls some part fo every side of the conflict
+	if teams_not_controlled_by_cheating_player.size() == 0:
+		# kill every army expect the current one
+		for army_idx in range(armies_in_battle_state.size()):
+			if army_idx == current_army_index:
+				continue
+			_kill_army(army_idx)
+			return
+
+	# kill all armies that player is not a team member of
 	for army_idx in range(armies_in_battle_state.size()):
-		if army_idx == current_army_index:
-			continue
-		_kill_army(army_idx)
+		var army : ArmyInBattleState = armies_in_battle_state[army_idx]
+		if army.team in teams_not_controlled_by_cheating_player:
+			_kill_army(army_idx)
 
 
 func surrender_on_timeout():
@@ -1188,10 +1225,21 @@ func surrender_on_timeout():
 
 
 func force_surrender():
-	for army_idx in range(armies_in_battle_state.size()):
-		if army_idx != current_army_index:
-			continue
+	var controller_player_army_to_surrender : Array[int] = []
+	var teams_not_controlled_by_surrendering_player : Array[int] = []
+	for army_idx : int in range(armies_in_battle_state.size()):
+		var army : ArmyInBattleState = armies_in_battle_state[army_idx]
+		if IM.players[army.army_reference.controller_index].is_local():  # TODO apply controllers to army in custom battles
+			controller_player_army_to_surrender.append(army_idx)
+		else:
+			teams_not_controlled_by_surrendering_player.append(army.team)
+	if teams_not_controlled_by_surrendering_player.size() == 0:
+		_kill_army(current_army_index)
+		return
+
+	for army_idx in controller_player_army_to_surrender:
 		_kill_army(army_idx)
+
 
 #endregion End Battle
 
@@ -1819,6 +1867,6 @@ class ArmyInBattleState:
 		units_to_summon.append(target.template)
 		#gdlint: ignore=private-method-call
 		battle_grid_state.get_ref()._remove_unit(target)
-		target.unit_killed()
+		target.unit_killed()  #TODO change this signal to a undo specific as to not mess with future animations and text bubbles
 
 #endregion Subclasses

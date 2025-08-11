@@ -1,11 +1,11 @@
 # Singleton - UI
 extends Node
 
-var in_game_menu
 var main_menu
 var ui_overlay
 var map_editor
 var unit_editor
+var tile_editor
 var host_lobby
 var client_lobby
 var hero_level_up
@@ -21,19 +21,19 @@ func _ready():
 
 	IM.init_game_setup() # drut
 
-	in_game_menu = load("res://Scenes/UI/GameMenu.tscn").instantiate()
 	main_menu    = load("res://Scenes/UI/MainMenu.tscn").instantiate()
 	ui_overlay   = load("res://Scenes/UI/UIOverlay.tscn").instantiate()
 	map_editor   = load("res://Scenes/UI/Editors/MapEditor.tscn").instantiate()
 	unit_editor  = load("res://Scenes/UI/Editors/UnitEditor.tscn").instantiate()
+	tile_editor  = load("res://Scenes/UI/Editors/TileEditor.tscn").instantiate()
 	hero_level_up = load("res://Scenes/UI/LevelUp/LevelUpScreen.tscn").instantiate()
 
 	add_child(main_menu)
 	add_child(map_editor)
 	add_child(unit_editor)
+	add_child(tile_editor)
 	add_child(ui_overlay)
 	add_child(hero_level_up)
-	add_child(in_game_menu, false, Node.INTERNAL_MODE_BACK)
 
 	_hide_all()
 
@@ -44,8 +44,6 @@ func add_custom_screen(custom_ui : CanvasLayer):
 	# we need them always at the top
 	if ui_overlay:
 		move_child(ui_overlay, -1)
-	if in_game_menu:
-		move_child(in_game_menu, -1)
 
 
 func go_to_custom_ui(custom_ui : CanvasLayer):
@@ -61,12 +59,17 @@ func _hide_all():
 
 func go_to_main_menu():
 	_hide_all()
-	main_menu.show()
+	main_menu.open_main_menu()
 
 
 func go_to_unit_editor():
 	_hide_all()
 	unit_editor.show()
+
+
+func go_to_tile_editor():
+	_hide_all()
+	tile_editor.show()
 
 
 ## TEMP
@@ -97,37 +100,17 @@ func hide_hero_level_up():
 #endregion Hero Level Up
 
 
-func show_in_game_menu():
-	in_game_menu.show()
-
-
-func hide_in_game_menu():
-	in_game_menu.hide()
-
-
-## Toggles visibility of in-game menu \
-## Disabled in main menu
-func toggle_in_game_menu():
-	if main_menu.visible or in_game_menu.visible:
-		hide_in_game_menu()
-	else:
-		show_in_game_menu()
-
-
-func requests_pause():
-	return in_game_menu.visible
-
-
 #region Input Support
 
 func _unhandled_input(event : InputEvent) -> void:
 	if event.is_action_pressed("KEY_EXIT_GAME"):
 		IM.quit_game()
-	if event.is_action_pressed("KEY_MAXIMIZE_WINDOW"):
+	if Input.is_action_just_pressed("KEY_MAXIMIZE_WINDOW"):
 		toggle_fullscreen()
-	if event.is_action_pressed("KEY_MENU"):
-		toggle_in_game_menu()
-	if event.is_action_pressed("KEY_DEBUG_COLLISION_SHAPES"):
+
+	if Input.is_action_just_pressed("KEY_MENU"):
+		main_menu.open_in_game_menu()
+	if Input.is_action_just_pressed("KEY_DEBUG_COLLISION_SHAPES"):
 		toggle_collision_debug()
 	if event.is_action_pressed("KEY_BOT_SPEED_SLOW"):
 		print("anim speed - slow")
@@ -141,7 +124,7 @@ func _unhandled_input(event : InputEvent) -> void:
 		print("anim speed - fast")
 		CFG.animation_speed_frames = CFG.AnimationSpeed.INSTANT
 		CFG.bot_speed_frames = CFG.BotSpeed.FAST
-	elif event.is_action_pressed("KEY_FORCE_DESYNC"):
+	elif Input.is_action_just_pressed("KEY_FORCE_DESYNC"):
 		print("forcing desynchronization")
 		NET.desync()
 	if camera and not get_tree().paused:
@@ -186,16 +169,15 @@ func grid_planning_input_listener(tile_coord : Vector2i, \
 		is_it_pressed : bool):
 	#print("tile ", tile_coord)
 
-	if not tile_type == GameSetupInfo.GameMode.BATTLE:
-		printerr("Support for drawing arrows in different modes isn't supported yet")
-		# There are plans for right click to have a different purpouse in World Map
-		# drawing could be reanabled there with addition of holding alt
+	if tile_type == GameSetupInfo.GameMode.WORLD and is_it_pressed:
+		# basic right click has different purpose in World Map
+		#TODO classic drawing could be reanabled with addition of holding alt
+		WM.show_army_units(tile_coord)
 		return
 
 	BM.planning_input(tile_coord, is_it_pressed)
 
 #endregion Input Support
-
 
 #region Camera
 

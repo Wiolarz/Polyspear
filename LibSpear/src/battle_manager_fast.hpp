@@ -61,11 +61,14 @@ class BattleManagerFast {
 	void _process_spell(UnitID uid, int8_t spell_id, Position target);
 	void _update_move_end();
 	void _update_turn_end();
+	void _check_blood_curse(int8_t army_id);
 
 	void _spells_append_moves();
 
-	void _append_moves_unit(UnitID uid, int8_t spell_id, TeamRelation relation, bool include_self);
-	void _append_moves_all_tiles(UnitID uid, int8_t spell_id, bool include_impassable);
+	void _append_moves_unit(UnitID uid, int8_t spell_id, TeamRelation relation, IncludeSelf include_self);
+  void _append_curse_moves_unit(UnitID uid, int8_t spell_id, TeamRelation relation, IncludeSelf include_self, int8_t min_units);
+	void _append_moves_all_tiles(UnitID uid, int8_t spell_id, IncludeImpassable include_impassable);
+
 	void _append_moves_lines(UnitID uid, int8_t spell_id, Position center, int range_min, int range_max);
 	void _append_moves_line(UnitID uid, int8_t spell_id, Position center, uint8_t dir, int range_min, int range_max);
 
@@ -93,7 +96,7 @@ public:
 	/// Get winner team, or -1 if the battle has not yet ended. On error returns -2.
 	int get_winner_team();
 	BattleResult& get_result() {return _result;}
-	
+
 	const std::vector<Move>& get_legal_moves();
 	unsigned get_move_count();
 	/// Get moves that are likely to increase score/win the game/avoid losses. If there are no notable moves, returns all moves
@@ -107,7 +110,7 @@ public:
 	int get_army_team(int army) {
 		return _armies[army].team;
 	}
-	
+
 	bool skip_army(const Army& army, const Army& other_army, TeamRelation relation) const {
 		switch(relation) {
 			case TeamRelation::ME:
@@ -120,7 +123,7 @@ public:
 				return false;
 		}
 		return false;
-	} 
+	}
 
 	int get_current_participant() const {
 		return _current_army;
@@ -146,7 +149,7 @@ private:
 			return {};
 		}
 
-		BM_ASSERT_V(unsigned(id.army) < _armies.size(), {}, "Invalid army id {}", id.army); 
+		BM_ASSERT_V(unsigned(id.army) < _armies.size(), {}, "Invalid army id {}", id.army);
 		BM_ASSERT_V(unsigned(id.unit) < _armies[id.army].units.size(), {}, "Invalid unit id {}/{}", id.army, id.unit);
 
 		return UnitRef{_armies[id.army].units[id.unit], _armies[id.army]};
@@ -178,11 +181,11 @@ public:
 
 	int play_move(godot::Array libspear_tuple);
 	int play_moves(godot::Array libspear_tuple_array);
-	
+
 	void insert_unit(int army, int idx, Vector2i pos, int rotation, bool is_summoning);
 	void set_army_team(int army, int team);
 	void set_unit_symbol(
-		int army, int unit, int side, 
+		int army, int unit, int side,
 		int attack_strength, int defense_strength, int ranged_reach,
 		bool is_counter, int push_force, bool parries, bool breaks_parry
 	);
@@ -192,6 +195,7 @@ public:
 
 	void set_unit_effect(int army, int idx, godot::String effect, int duration);
 	void set_unit_martyr(int army, int idx, int martyr_id, int duration);
+	void set_unit_solo_martyr(int army, int martyr_id, int duration);
 
 	void insert_spell(int army, int unit, int spell_id, godot::String spell_name);
 	void set_army_cyclone_timer(int army, int timer);
@@ -219,12 +223,12 @@ public:
 	int get_previous_participant() const {
 		return bm.get_previous_participant();
 	}
-	
+
 	int count_spell(int army, int idx, godot::String name);
 	int get_unit_spell_count(int army, int idx);
 
 	Vector2i get_unit_position(int army, int unit) const {
-		auto p = bm._armies[army].units[unit].pos; 
+		Position p = bm._armies[army].units[unit].pos; 
 		return Vector2i(p.x, p.y);
 	}
 
@@ -269,7 +273,7 @@ public:
 	}
 
 	int get_unit_effect_count(int army, int idx);
-	
+
 	int get_unit_martyr_id(int army, int idx) const {
 		return bm._armies[army].units[idx].get_martyr_id().unit;
 	}
