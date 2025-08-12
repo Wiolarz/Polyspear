@@ -244,6 +244,8 @@ func set_effects() -> void:
 
 func set_selected(is_selected : bool):
 	_selected = is_selected
+	if _selected:
+		AUDIO.play("ingame_click")
 	_refresh_highlight()
 
 

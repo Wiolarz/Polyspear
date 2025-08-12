@@ -14,6 +14,7 @@ extends Node
 
 @onready var sounds : Dictionary = {
 	"click": $Click,
+	"ingame_click": $IngameClick,
 	"parry": $Parry,
 	"unit_death": $UnitDeath,
 	"move": $Move,
@@ -70,7 +71,7 @@ func play_music(track_name : String):
 	if current_track == track_name:
 		return
 
-	current_track = name
+	current_track = track_name
 	$Music.stop()
 	$Music.stream = tracks[track_name]
 	$Music.play()
