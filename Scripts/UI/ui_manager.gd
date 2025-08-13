@@ -14,7 +14,7 @@ var camera : PolyCamera
 var current_camera_position = E.CameraPosition.WORLD
 
 signal update_settings()
-
+signal resources_list_changed()
 
 func _ready():
 	process_mode = Node.PROCESS_MODE_ALWAYS

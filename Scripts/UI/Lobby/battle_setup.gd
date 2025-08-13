@@ -24,6 +24,7 @@ var settings_are_being_refreshed : bool = false
 func _ready():
 	fill_maps_list()
 	fill_presets_list()
+	UI.resources_list_changed.connect(refresh_after_resource_list_changed)
 
 
 ## It is used to know if changes in gui are made by user and should be passed to
@@ -31,6 +32,13 @@ func _ready():
 ## gui to state in backend
 func should_react_to_changes() -> bool:
 	return not settings_are_being_refreshed and not uninitialized
+
+
+func refresh_after_resource_list_changed() -> void:
+	fill_maps_list()
+	for slot : BattlePlayerSlotPanel in player_list.get_children():
+		slot.load_unit_buttons()
+	apply_preset_by_name(CFG.LAST_USED_BATTLE_PRESET_NAME)
 
 
 func fill_maps_list() -> void:
@@ -78,6 +86,7 @@ func make_client_side() -> void:
 	map_select.get_node("Label").text = "Selected map"
 	maps_list.queue_free()
 	maps_list = null
+	UI.resources_list_changed.disconnect(refresh_after_resource_list_changed)  #TODO look into compatibility with multiplayer of resource list changes
 	client_side_map_label = Label.new()
 	client_side_map_label.text = "some map"
 	map_select.get_node("ColorRect").add_child(client_side_map_label)
@@ -193,7 +202,7 @@ func apply_preset_by_name(preset_name : String) -> bool:
 
 	if NET.server:
 		NET.server.broadcast_full_game_setup(IM.game_setup_info)
-
+	refresh() # TODO look into those refreshes
 	return true
 
 
