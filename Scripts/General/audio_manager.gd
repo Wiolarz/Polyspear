@@ -1,5 +1,5 @@
 # AUDIO - singleton
-class_name AudioManager
+#class_name SINGLETON_AudioManager # TODO wait for class_name+singleton Godot bugfix, just like with ANIM
 extends Node
 
 

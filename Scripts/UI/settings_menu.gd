@@ -21,8 +21,8 @@ func _ready():
 	})
 	_declare_volume_slider("volume_master", $VolumeContainer/Sliders/Master)
 	_declare_volume_slider("volume_music", $VolumeContainer/Sliders/Music)
-	_declare_volume_slider("volume_game", $"VolumeContainer/Sliders/Game FX")
-	_declare_volume_slider("volume_ui", $VolumeContainer/Sliders/GUI)
+	_declare_volume_slider("volume_game", $VolumeContainer/Sliders/Game)
+	_declare_volume_slider("volume_ui", $VolumeContainer/Sliders/UI)
 
 #region Widgets
 #region - Toggle
@@ -90,6 +90,7 @@ func _declare_volume_slider(option : StringName, node : VolumeSlider):
 		node.actual_slider.value = value
 		node.mute_button.button_pressed = mute
 		node.actual_slider.modulate = Color.WHITE if not mute else Color.DIM_GRAY
+		AUDIO.update_bus_volumes()
 
 	# Refresh now
 	update.call()

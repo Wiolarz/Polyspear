@@ -92,45 +92,15 @@ extends Resource
 #region Audio
 
 ## Slider value, ranging from 0 to 100
-@export var volume_master : float = 100.0:
-	set(new):
-		volume_master = new
-		AUDIO.update_bus_volumes()
+@export var volume_master : float = 100.0
+@export var volume_music : float = 100.0
+@export var volume_game : float = 100.0
+@export var volume_ui : float = 100.0
 
-@export var volume_music : float = 100.0:
-	set(new):
-		volume_music = new
-		AUDIO.update_bus_volumes()
-
-@export var volume_game : float = 100.0:
-	set(new):
-		volume_game = new
-		AUDIO.update_bus_volumes()
-
-@export var volume_ui : float = 100.0:
-	set(new):
-		volume_ui = new
-		AUDIO.update_bus_volumes()
-
-@export var volume_master_muted : bool = false:
-	set(new):
-		volume_master_muted = new
-		AUDIO.update_bus_volumes()
-
-@export var volume_music_muted : bool = false:
-	set(new):
-		volume_music_muted = new
-		AUDIO.update_bus_volumes()
-
-@export var volume_game_muted : bool = false:
-	set(new):
-		volume_game_muted = new
-		AUDIO.update_bus_volumes()
-
-@export var volume_ui_muted : bool = false:
-	set(new):
-		volume_ui_muted = new
-		AUDIO.update_bus_volumes()
+@export var volume_master_muted : bool = false
+@export var volume_music_muted : bool = false
+@export var volume_game_muted : bool = false
+@export var volume_ui_muted : bool = false
 
 #endregion Audio
 
