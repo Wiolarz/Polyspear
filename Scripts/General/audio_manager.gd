@@ -47,13 +47,10 @@ func _ready():
 	get_tree().node_added.connect(_node_added)
 
 
-func _process(_delta : float):
-	update_bus_volumes()
-
-
 func update_bus_volumes():
 	for bus_name in bus_idxs:
-		var volume_slider = CFG.player_options.get(bus_name)
+		var muted = CFG.player_options.get(bus_name + "_muted")
+		var volume_slider = CFG.player_options.get(bus_name) if not muted else 0
 		var volume_linear = volume_slider/100.0
 		var volume_db = 10.0 * log(volume_linear) / log(2)
 		AudioServer.set_bus_volume_db(bus_idxs[bus_name], volume_db)

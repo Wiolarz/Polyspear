@@ -22,8 +22,8 @@ buses/default_bus_layout="res://Audio/default_bus_layout.tres"
 
 [autoload]
 
-CFG="*res://Scripts/General/config_manager.gd"
 AUDIO="*res://Scenes/AudioManager.tscn"
+CFG="*res://Scripts/General/config_manager.gd"
 BG="*res://Scripts/UI/background.gd"
 WS="*res://Scripts/World/world_state.gd"
 WM="*res://Scripts/World/world_manager.gd"
