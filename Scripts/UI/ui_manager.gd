@@ -8,7 +8,6 @@ var unit_editor
 var tile_editor
 var host_lobby
 var client_lobby
-var hero_level_up
 
 var camera : PolyCamera
 var current_camera_position = E.CameraPosition.WORLD
@@ -26,14 +25,12 @@ func _ready():
 	map_editor   = load("res://Scenes/UI/Editors/MapEditor.tscn").instantiate()
 	unit_editor  = load("res://Scenes/UI/Editors/UnitEditor.tscn").instantiate()
 	tile_editor  = load("res://Scenes/UI/Editors/TileEditor.tscn").instantiate()
-	hero_level_up = load("res://Scenes/UI/LevelUp/LevelUpScreen.tscn").instantiate()
 
 	add_child(main_menu)
 	add_child(map_editor)
 	add_child(unit_editor)
 	add_child(tile_editor)
 	add_child(ui_overlay)
-	add_child(hero_level_up)
 
 	_hide_all()
 
@@ -77,27 +74,6 @@ func go_to_map_editor():
 	_hide_all()
 	map_editor.open_draw_menu()
 	BG.set_player_colors(CFG.NEUTRAL_COLOR)
-
-
-#region Hero Level Up
-
-func show_hero_level_up(slot_index : int):
-	var slot : Slot = IM.game_setup_info.slots[slot_index]
-	var hero_data : DataHero = slot.slot_hero
-	hero_level_up.load_level_up_screen(hero_data)
-	hero_level_up.hidden = false
-	hero_level_up.show()
-
-
-func close_hero_level_up():
-	hero_level_up.hidden = true
-	hero_level_up.hide()
-
-
-func hide_hero_level_up():
-	hero_level_up._on_button_hide_pressed()
-
-#endregion Hero Level Up
 
 
 #region Input Support

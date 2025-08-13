@@ -313,9 +313,9 @@ func _on_option_button_team_item_selected(index : int):
 func _on_button_level_up_pressed():
 	if not should_react_to_changes():
 		return
-
 	var slot_index : int = setup_ui.slot_to_index(self)
 
-	UI.show_hero_level_up(slot_index)
+	setup_ui.show_hero_level_up(slot_index)
+
 
 #endregion Buttons

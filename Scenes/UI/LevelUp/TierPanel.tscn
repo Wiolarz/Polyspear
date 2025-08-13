@@ -18,7 +18,7 @@ text = "Tier 1"
 
 [node name="TierUpgrades" type="HBoxContainer" parent="MainContainer"]
 layout_mode = 2
-theme_override_constants/separation = 150
+theme_override_constants/separation = 10
 alignment = 1
 
 [node name="PowerPassiveButton" type="Button" parent="MainContainer/TierUpgrades"]
@@ -42,7 +42,7 @@ text = "List of skills:"
 
 [node name="TierSkills" type="HBoxContainer" parent="MainContainer"]
 layout_mode = 2
-theme_override_constants/separation = 150
+theme_override_constants/separation = 10
 alignment = 1
 
 [node name="PowerSkillButton" type="Button" parent="MainContainer/TierSkills"]

@@ -1,16 +1,11 @@
-extends CanvasLayer
+class_name LevelUpScreen
+extends Control
 
-
-@onready var hide_button : Button = $ButtonHide
 
 @onready var children = get_children()  # scene is static
 
-@onready var tier_panels_container : VBoxContainer = $TierPanels
+var tier_panels_container : VBoxContainer
 
-
-var hidden : bool = true
-
-var selected_hero : DataHero
 
 ## Each number represents choice from subsequent tier [br]
 ##  0 - No Talent taken [br]
@@ -23,10 +18,9 @@ var chosen_talents : Array[int] = [0, 0, 0]
 ## 1-3 Might, Tactic, Magic
 var chosen_abilities : Array = [[], [], []]
 
-
 ## Currently there is no difference between level up for various races so level up screen can be generated once
-func _ready():
-	$HeroLevelValue.set_item_text(0, "1")  # mockup cleanup
+func _ready() -> void:
+	_setup()
 	var tier_idx = -1
 	for tier_panel in tier_panels_container.get_children():
 		tier_idx += 1
@@ -36,33 +30,14 @@ func _ready():
 		tier_panel.set_hero_level(1)
 
 
-func load_level_up_screen(data_hero : DataHero) -> void:
-	selected_hero = data_hero  # not duplicated - confirm button will edit the slot data_hero
-	for tier_panel in tier_panels_container.get_children():
-		tier_panel.set_hero_level(data_hero.starting_level)
-	$HeroLevelValue.selected = data_hero.starting_level - 1
-	$HeroLevelValue.text = "Hero Level: " + str($HeroLevelValue.selected + 1)
+# to be overriden
+func _setup() -> void:
+	pass
 
 
-func _on_hero_level_value_item_selected(_index : int):
-	var hero_level : int = $HeroLevelValue.selected + 1
-	$HeroLevelValue.text = "Hero Level: " + str(hero_level)
-	for tier_panel : PanelContainer in tier_panels_container.get_children():
-		tier_panel.set_hero_level(hero_level)
-
-
+# to be overriden
 func apply_talents_and_abilities() -> void:
-	for tier in range(3):
-		var talent_idx = chosen_talents[tier]
-		if talent_idx > 0:
-			var new_talent : HeroPassive = CFG.talents[tier][talent_idx - 1]
-			if new_talent not in selected_hero.starting_passives:
-				selected_hero.starting_passives.append(new_talent)
-
-		for ability_idx : int in chosen_abilities[tier]:
-			var new_ability : HeroPassive = CFG.abilities[tier][ability_idx - 1]
-			if new_ability not in selected_hero.starting_passives:
-				selected_hero.starting_passives.append(new_ability)
+	pass
 
 
 func _selected_talent(tier : int, button_idx : int) -> void:
@@ -77,22 +52,3 @@ func _selected_ability(tier : int, button_idx : int, selected : bool) -> void:
 		assert(chosen_abilities[tier].size() <= 2)
 	else:
 		chosen_abilities[tier].erase(button_idx)
-
-
-func _on_button_hide_pressed():
-	if hidden:
-		for child in children:
-			child.show()
-		hidden = false
-		return
-	hidden = true
-	for child in children:
-		child.hide()
-
-	hide_button.show()
-
-
-func _on_button_confirm_pressed():
-	apply_talents_and_abilities()
-	hidden = true
-	hide()
