@@ -45,17 +45,20 @@ static func create_form_of_army(hex : WorldHex, position_ : Vector2) \
 
 	if army.hero:
 		result.name = army.hero.hero_name
-		image = load(army.hero.data_unit.texture_path)
+		var image : Texture2D = load(army.hero.data_unit.texture_path)
+		result.get_node("sprite_unit").texture = image
 		result.get_node("sprite_color").texture = CFG.TEAM_COLOR_TEXTURES[army.controller.color_idx]
 	else:
 		if army.controller:
 			result.name = "City Garrison " + str(army.coord)
+			result.get_node("sprite_color").texture = CFG.TEAM_COLOR_TEXTURES[army.controller.color_idx]
 		else:
 			result.name = "Neutral army " + str(army.coord)
+			result.get_node("sprite_color").texture = CFG.NEUTRAL_COLOR_TEXTURE
 		result.change_visual_unit_leader()
 		result.get_node("MoveLabel").text = ""
 		result.get_node("DescriptionLabel").text = ""
-		result.get_node("sprite_color").texture = CFG.NEUTRAL_COLOR_TEXTURE
+		
 
 
 	result.position = position_
