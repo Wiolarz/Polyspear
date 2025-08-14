@@ -65,17 +65,20 @@ func go_to_main_menu():
 func go_to_unit_editor():
 	_hide_all()
 	unit_editor.show()
+	AUDIO.play_music("battle_drums")
 
 
 func go_to_tile_editor():
 	_hide_all()
 	tile_editor.show()
+	AUDIO.play_music("battle_drums")
 
 
 ## TEMP
 func go_to_map_editor():
 	_hide_all()
 	map_editor.open_draw_menu()
+	AUDIO.play_music("battle_drums")
 	BG.set_player_colors(CFG.NEUTRAL_COLOR)
 
 
