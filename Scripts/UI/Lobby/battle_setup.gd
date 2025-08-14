@@ -132,7 +132,10 @@ func _refresh_slot(index : int) -> void:
 	var team : int = 0
 	if logic_slot:
 		ui_slot.set_army(logic_slot.units_list)
-		ui_slot.set_hero_option_button(logic_slot.slot_hero_template)
+		if logic_slot.slot_hero:
+			ui_slot.set_hero_option_button(logic_slot.slot_hero.template)
+		else:
+			ui_slot.set_hero_option_button(null)
 		if logic_slot.occupier is String:
 			if logic_slot.occupier == "":
 				username = NET.get_current_login()
@@ -288,8 +291,7 @@ func cycle_race_slot(slot : BattlePlayerSlotPanel, backwards : bool) -> bool:
 
 func show_hero_level_up(slot_index : int) -> void:
 	var slot : Slot = IM.game_setup_info.slots[slot_index]
-	var hero_data : DataHero = slot.slot_hero
-	hero_level_up.load_lobby_level_up_screen(hero_data)
+	hero_level_up.load_lobby_level_up_screen(slot.slot_hero)
 	hero_level_up_container.show()
 	main_container.hide()
 

@@ -8,14 +8,14 @@ var tier_panels_container : VBoxContainer
 
 
 ## Each number represents choice from subsequent tier [br]
-##  0 - No Talent taken [br]
-## 1-3 Might, Tactic, Magic
-var chosen_talents : Array[int] = [0, 0, 0]
+##  -1 - No Talent taken [br]
+## 0-2 Might, Tactic, Magic
+var chosen_talents : Array[int] = [-1, -1, -1]
 
 ## 3 sub arrays Each coresponds each tier [br]
 ## Tier can have at most two numbers [br]
 ## If number appears this ability has been chosen [br]
-## 1-3 Might, Tactic, Magic
+## 0-2 Might, Tactic, Magic
 var chosen_abilities : Array = [[], [], []]
 
 ## Currently there is no difference between level up for various races so level up screen can be generated once
@@ -27,7 +27,6 @@ func _ready() -> void:
 		tier_panel.init_tier_panel(tier_idx, null)
 		tier_panel.talent_chosen.connect(_selected_talent)
 		tier_panel.ability_chosen.connect(_selected_ability)
-		tier_panel.set_hero_level(1)
 
 
 # to be overriden

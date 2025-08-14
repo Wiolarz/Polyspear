@@ -184,10 +184,7 @@ func create_army_for(slot : Slot) -> Army:
 	var army = Army.new()
 	army.controller_index = slot.index
 
-	var hero_data : DataHero = slot.slot_hero
-	if hero_data:
-		var new_hero = Hero.construct_hero(hero_data, slot.index)
-		army.hero = new_hero
+	army.hero = slot.slot_hero
 
 	army.units_data = slot.get_units_list()
 

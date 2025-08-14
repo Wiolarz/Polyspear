@@ -10,7 +10,7 @@ func _setup() -> void:
 func load_selected_hero_level_up_screen(hero : Hero) -> void:
 	selected_hero = hero  # not duplicated - confirm button will edit the slot data_hero
 	for tier_panel in tier_panels_container.get_children():
-		tier_panel.set_hero_level(selected_hero.level)
+		tier_panel.set_hero(selected_hero)
 	$HeroLevelValue.text = "Hero Level: " + str(selected_hero.level)
 
 

@@ -21,12 +21,12 @@ var number_of_avalaible_abilities : int
 
 @onready var tier_name = $MainContainer/TierLabel
 
-@onready var talent_buttons : Array[Button] = [
+@onready var talent_buttons : Array[PassiveButton] = [
 	$MainContainer/TierUpgrades/PowerPassiveButton,
 	$MainContainer/TierUpgrades/TacticPassiveButton,
 	$MainContainer/TierUpgrades/MagicPassiveButton
 ]
-@onready var ability_buttons : Array[Button] = [
+@onready var ability_buttons : Array[PassiveButton] = [
 	$MainContainer/TierSkills/PowerSkillButton,
 	$MainContainer/TierSkills/TacticSkillButton,
 	$MainContainer/TierSkills/MagicSkillButton,
@@ -38,32 +38,50 @@ func init_tier_panel(tier_ : int, _race : DataRace) -> void:
 	tier = tier_
 	var button_idx : int = -1
 	for ability_button in ability_buttons:
+		button_idx += 1
 		var ability : HeroPassive = CFG.abilities[tier][button_idx]
 		if ability: # TEMP null check until all pasives in level_up_screen are present
-			ability_button.text = ability.passive_name
-		button_idx += 1
+			ability_button.load_passive(ability)
+
 		var lambda = func on_click():
 			_ability_pressed(button_idx)
-		ability_button.pressed.connect(lambda)
+		ability_button.button_pressed.connect(lambda)
 
 	button_idx = -1
 	for talent_button in talent_buttons:
+		button_idx += 1
 		var talent : HeroPassive = CFG.talents[tier][button_idx]
 		if talent:  # TEMP null check until all pasives in level_up_screen are present
-			talent_button.text = talent.passive_name
-		button_idx += 1
+			talent_button.load_passive(talent)
+
 		var lambda = func on_click():
 			_talent_pressed(button_idx)
-		talent_button.pressed.connect(lambda)
+		talent_button.button_pressed.connect(lambda)
 
 #region Hero level
 
-func set_hero_level(hero_level_ : int) -> void:
-	hero_level = hero_level_
-
+func set_hero(hero : Hero, is_in_world : bool = false) -> void:
+	hero_level = hero.level
 	number_of_avalaible_abilities = hero_level - (tier * 2)
 	#print("number_of_avalaible_abilities", tier, number_of_avalaible_abilities)
 
+	# 1 Reset state to load a new hero
+	for talent_button in talent_buttons:
+		talent_button.deselect()
+	for ability_button in ability_buttons:
+		ability_button.deselect()
+
+	# 2 Load selected hero already chosen passives
+	for talent_idx in range(3):
+		if CFG.talents[tier][talent_idx] in hero.passive_effects:
+			talent_buttons[talent_idx].selected()
+
+	for ability_idx in range(3):
+		if CFG.abilities[tier][ability_idx] in hero.passive_effects:
+			ability_buttons[ability_idx].selected()
+
+
+	# 3 adjust TALENTS buttons
 	var can_choose_talent : bool = true
 	if tier == 0 and hero_level == 1:
 		can_choose_talent = false
@@ -74,8 +92,9 @@ func set_hero_level(hero_level_ : int) -> void:
 		_disable_talents()
 	else:
 		for talent_button in talent_buttons:   # enable talent buttons
-			talent_button.disabled = false
+			talent_button.enable()
 
+	# 4 adjust ABILITIES buttons
 	if number_of_avalaible_abilities == 1:
 		_disable_abilities(true)
 	elif number_of_avalaible_abilities < 1:
@@ -83,46 +102,45 @@ func set_hero_level(hero_level_ : int) -> void:
 	else:
 		var number_of_selected_abilities : int = 0
 		for ability_button in ability_buttons:  # check if buttons can be enabled
-			if ability_button.button_pressed:
+			if ability_button.pressed:
 				number_of_selected_abilities += 1
 		if number_of_selected_abilities < 2:
 			for ability_button in ability_buttons:  # enable ability buttons
-				ability_button.disabled = false
+				ability_button.enable()
 
 
 func _disable_talents() -> void:
-	talent_chosen.emit(tier, 0)  # deselects
+	talent_chosen.emit(tier, -1)  # deselects
 	for talent_button in talent_buttons:
-		talent_button.button_pressed = false
-		talent_button.disabled = true
+		talent_button.disable()
 
 
 func _disable_abilities(hero_can_take_one_ability : bool = false) -> void:
 	if not hero_can_take_one_ability: # disable all abilities
 		for button_idx in range(3):
-			if ability_buttons[button_idx].button_pressed:
-				ability_buttons[button_idx].button_pressed = false
+			if ability_buttons[button_idx].pressed:
+				ability_buttons[button_idx].pressed = false
 				_ability_pressed(button_idx) # Deselects
 
 		for ability_button in ability_buttons:
-			ability_button.disabled = true
+			ability_button.disable()
 		return
 
 	# hero_can_take_one_ability Region:
 
 	var one_is_chosen : bool = false  # first option selected is not touched
 	for button_idx in range(3):
-		if ability_buttons[button_idx].button_pressed and not one_is_chosen:
+		if ability_buttons[button_idx].pressed and not one_is_chosen:
 			one_is_chosen = true  # Ignore this one
-		elif ability_buttons[button_idx].button_pressed:  #
-			ability_buttons[button_idx].button_pressed = false
+		elif ability_buttons[button_idx].pressed:  #
+			ability_buttons[button_idx].pressed = false
 			_ability_pressed(button_idx) # Deselects
 
 	for ability_button in ability_buttons:  # Disabling / Unlocking based on one_is_chosen
-		if one_is_chosen and not ability_button.button_pressed:  # disable other buttons
-			ability_button.disabled = true
+		if one_is_chosen and not ability_button.pressed:  # disable other buttons
+			ability_button.disable()
 		else:
-			ability_button.disabled = false  # unlock all buttons
+			ability_button.enable()  # unlock all buttons
 
 #endregion Hero level
 
@@ -131,10 +149,10 @@ func _disable_abilities(hero_can_take_one_ability : bool = false) -> void:
 
 func _ability_pressed(pressed_button_idx : int):
 	#print("ability " + str(pressed_button_idx))
-	if not ability_buttons[pressed_button_idx].button_pressed:  # Deselects
+	if not ability_buttons[pressed_button_idx].pressed:  # Deselects
 		ability_chosen.emit(tier, pressed_button_idx, false)
 		for ability_button in ability_buttons:
-			ability_button.disabled = false
+			ability_button.enable()
 		return
 
 	ability_chosen.emit(tier, pressed_button_idx, true)
@@ -146,35 +164,35 @@ func _ability_pressed(pressed_button_idx : int):
 		for ability_button in ability_buttons:
 			button_idx += 1
 			if pressed_button_idx != button_idx:
-				assert(not ability_button.button_pressed)
-				ability_button.disabled = true
+				assert(not ability_button.pressed)
+				ability_button.disable()
 		return
 
 	## Hero can have two Abilities
 	var buttons_indexes : Array[int] = [0, 1, 2]
 	for button_idx in range(3):
-		if ability_buttons[button_idx].button_pressed:
+		if ability_buttons[button_idx].pressed:
 			buttons_indexes.erase(button_idx)
 
 	if buttons_indexes.size() == 2:
 		return
 
 	if buttons_indexes.size() == 1:  # Two buttons are pressed -> disable 3rd one
-		ability_buttons[buttons_indexes[0]].disabled = true
+		ability_buttons[buttons_indexes[0]].disable()
 
 
 func _talent_pressed(pressed_button_idx : int):
 	#print("talent " + str(pressed_button_idx))
-	if talent_buttons[pressed_button_idx].button_pressed:
+	if talent_buttons[pressed_button_idx].pressed:
 		talent_chosen.emit(tier, pressed_button_idx)
 	else:
-		talent_chosen.emit(tier, 0)  # resets the state
+		talent_chosen.emit(tier, -1)  # resets the state
 		return
 
 	var button_idx = -1
 	for talent_button in talent_buttons:
 		button_idx += 1
 		if pressed_button_idx != button_idx:
-			talent_button.button_pressed = false
+			talent_button.pressed = false
 
 #endregion Buttons

@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://bukisun1sjf4t"]
+[gd_scene load_steps=3 format=3 uid="uid://bukisun1sjf4t"]
 
 [ext_resource type="Script" path="res://Scripts/UI/LevelUp/tier_panel.gd" id="1_xb5c6"]
+[ext_resource type="PackedScene" path="res://Scenes/UI/LevelUp/PassiveButton.tscn" id="2_4vdkt"]
 
 [node name="TierPanel" type="PanelContainer"]
 offset_right = 482.0
@@ -21,20 +22,14 @@ layout_mode = 2
 theme_override_constants/separation = 10
 alignment = 1
 
-[node name="PowerPassiveButton" type="Button" parent="MainContainer/TierUpgrades"]
+[node name="PowerPassiveButton" parent="MainContainer/TierUpgrades" instance=ExtResource("2_4vdkt")]
 layout_mode = 2
-toggle_mode = true
-text = "Power Passive"
 
-[node name="TacticPassiveButton" type="Button" parent="MainContainer/TierUpgrades"]
+[node name="TacticPassiveButton" parent="MainContainer/TierUpgrades" instance=ExtResource("2_4vdkt")]
 layout_mode = 2
-toggle_mode = true
-text = "Tactic Passive"
 
-[node name="MagicPassiveButton" type="Button" parent="MainContainer/TierUpgrades"]
+[node name="MagicPassiveButton" parent="MainContainer/TierUpgrades" instance=ExtResource("2_4vdkt")]
 layout_mode = 2
-toggle_mode = true
-text = "Magic Passive"
 
 [node name="Skill label" type="Label" parent="MainContainer"]
 layout_mode = 2
@@ -45,17 +40,11 @@ layout_mode = 2
 theme_override_constants/separation = 10
 alignment = 1
 
-[node name="PowerSkillButton" type="Button" parent="MainContainer/TierSkills"]
+[node name="PowerSkillButton" parent="MainContainer/TierSkills" instance=ExtResource("2_4vdkt")]
 layout_mode = 2
-toggle_mode = true
-text = "Power"
 
-[node name="TacticSkillButton" type="Button" parent="MainContainer/TierSkills"]
+[node name="TacticSkillButton" parent="MainContainer/TierSkills" instance=ExtResource("2_4vdkt")]
 layout_mode = 2
-toggle_mode = true
-text = "Magic"
 
-[node name="MagicSkillButton" type="Button" parent="MainContainer/TierSkills"]
+[node name="MagicSkillButton" parent="MainContainer/TierSkills" instance=ExtResource("2_4vdkt")]
 layout_mode = 2
-toggle_mode = true
-text = "Tactic"
