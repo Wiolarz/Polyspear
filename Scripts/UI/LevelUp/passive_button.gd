@@ -17,15 +17,20 @@ var pressed : bool :
 
 
 ## Obtained used in world to distinquished passives already locked to a character
-func load_passive(passive : HeroPassive, obtained : bool = false) -> void:
-	if obtained:
+func load_passive(passive : HeroPassive) -> void:
+	label.hide()
+	button.show()
+	label.text = passive.passive_name
+	button.text = passive.passive_name
+
+
+func set_locked(locked_state : bool) -> void:
+	if locked_state:
 		button.hide()
 		label.show()
-		label.text = passive.passive_name
 	else:
-		label.hide()
 		button.show()
-		button.text = passive.passive_name
+		label.hide()
 
 
 func enable() -> void:

@@ -62,8 +62,7 @@ func init_tier_panel(tier_ : int, _race : DataRace) -> void:
 
 func set_hero(hero : Hero, is_in_world : bool = false) -> void:
 	hero_level = hero.level
-	number_of_avalaible_abilities = hero_level - (tier * 2)
-	#print("number_of_avalaible_abilities", tier, number_of_avalaible_abilities)
+
 
 	# 1 Reset state to load a new hero
 	for talent_button in talent_buttons:
@@ -71,17 +70,41 @@ func set_hero(hero : Hero, is_in_world : bool = false) -> void:
 	for ability_button in ability_buttons:
 		ability_button.deselect()
 
+	var locked_talent : int = -1
 	# 2 Load selected hero already chosen passives
 	for talent_idx in range(3):
 		if CFG.talents[tier][talent_idx] in hero.passive_effects:
-			talent_buttons[talent_idx].selected()
+			if is_in_world:
+				locked_talent = true
+				talent_buttons[talent_idx].set_locked(true)
+				talent_buttons[talent_idx].selected()
+			else:
+				talent_buttons[talent_idx].set_locked(false)
+				talent_buttons[talent_idx].selected()
+		else:
+			talent_buttons[talent_idx].set_locked(false)
 
+	var locked_abilities : Array[int] = []
 	for ability_idx in range(3):
 		if CFG.abilities[tier][ability_idx] in hero.passive_effects:
-			ability_buttons[ability_idx].selected()
+			if is_in_world:
+				locked_abilities.append(ability_idx)
+				ability_buttons[ability_idx].set_locked(true)
+				ability_buttons[ability_idx].selected()
+			else:
+				ability_buttons[ability_idx].set_locked(false)
+				ability_buttons[ability_idx].selected()
+		else:
+			ability_buttons[ability_idx].set_locked(false)
+
+	if is_in_world:
+		_world_buttons_adjustment(locked_talent, locked_abilities)
+	else:
+		_talents_adjustments()
+		_abilities_adjustments()
 
 
-	# 3 adjust TALENTS buttons
+func _talents_adjustments() -> void:
 	var can_choose_talent : bool = true
 	if tier == 0 and hero_level == 1:
 		can_choose_talent = false
@@ -94,7 +117,12 @@ func set_hero(hero : Hero, is_in_world : bool = false) -> void:
 		for talent_button in talent_buttons:   # enable talent buttons
 			talent_button.enable()
 
-	# 4 adjust ABILITIES buttons
+
+func _abilities_adjustments() -> void:
+	number_of_avalaible_abilities = hero_level - (tier * 2)
+	#print("number_of_avalaible_abilities", tier, number_of_avalaible_abilities)
+
+
 	if number_of_avalaible_abilities == 1:
 		_disable_abilities(true)
 	elif number_of_avalaible_abilities < 1:
@@ -107,6 +135,35 @@ func set_hero(hero : Hero, is_in_world : bool = false) -> void:
 		if number_of_selected_abilities < 2:
 			for ability_button in ability_buttons:  # enable ability buttons
 				ability_button.enable()
+
+
+func _world_buttons_adjustment(locked_talent : int, locked_abilities : Array[int]) -> void:
+	# adjust TALENTS buttons
+	if locked_talent != -1:
+		for talent_idx in range(3):
+			if talent_idx != locked_talent:
+				talent_buttons[talent_idx].disable()
+	else:
+		_talents_adjustments()
+
+	if locked_abilities.size() == 0:
+		_abilities_adjustments()
+	if locked_abilities.size() == 2:
+		for ability_idx in range(3):
+			if ability_idx not in locked_abilities:
+				ability_buttons[ability_idx].disable()
+	if locked_abilities.size() == 1:
+		number_of_avalaible_abilities = hero_level - (tier * 2)
+		for ability_idx in range(3):
+			if ability_idx not in locked_abilities:
+				if number_of_avalaible_abilities > 1:
+					ability_buttons[ability_idx].enable()
+				else:
+					ability_buttons[ability_idx].disable()
+
+
+
+
 
 
 func _disable_talents() -> void:

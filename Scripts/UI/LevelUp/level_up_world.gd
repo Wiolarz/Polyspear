@@ -10,7 +10,7 @@ func _setup() -> void:
 func load_selected_hero_level_up_screen(hero : Hero) -> void:
 	selected_hero = hero  # not duplicated - confirm button will edit the slot data_hero
 	for tier_panel in tier_panels_container.get_children():
-		tier_panel.set_hero(selected_hero)
+		tier_panel.set_hero(selected_hero, true)
 	$HeroLevelValue.text = "Hero Level: " + str(selected_hero.level)
 
 
@@ -18,13 +18,13 @@ func load_selected_hero_level_up_screen(hero : Hero) -> void:
 func apply_talents_and_abilities() -> void:
 	for tier in range(3):
 		var talent_idx = chosen_talents[tier]
-		if talent_idx > 0:
-			var new_talent : HeroPassive = CFG.talents[tier][talent_idx - 1]
+		if talent_idx >= 0:
+			var new_talent : HeroPassive = CFG.talents[tier][talent_idx]
 			if new_talent not in selected_hero.passive_effects:
 				selected_hero.passive_effects.append(new_talent)
 
 		for ability_idx : int in chosen_abilities[tier]:
-			var new_ability : HeroPassive = CFG.abilities[tier][ability_idx - 1]
+			var new_ability : HeroPassive = CFG.abilities[tier][ability_idx]
 			if new_ability not in selected_hero.passive_effects:
 				selected_hero.passive_effects.append(new_ability)
 
