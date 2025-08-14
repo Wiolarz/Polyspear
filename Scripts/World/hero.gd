@@ -15,7 +15,15 @@ var target_tile : TileForm
 # gameplay
 var hero_name : String
 
-var max_army_size : int
+## provides bonus to max_army_size while in the city
+var is_in_city : bool = true  # normally hero starts in a city
+
+var max_army_size : int :
+	get:
+		if is_in_city:
+			return max_army_size + CFG.CITY_MAX_ARMY_SIZE
+		return max_army_size
+
 
 var max_movement_points = 3
 var movement_points = 3
@@ -64,7 +72,6 @@ static func construct_hero(data_hero : DataHero,
 	new_hero.max_movement_points = data_hero.max_movement_points
 	new_hero.passive_effects = data_hero.starting_passives
 	return new_hero
-
 
 
 func _init():

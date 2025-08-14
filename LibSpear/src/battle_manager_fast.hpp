@@ -65,9 +65,10 @@ class BattleManagerFast {
 
 	void _spells_append_moves();
 
-	void _append_moves_unit(UnitID uid, int8_t spell_id, TeamRelation relation, bool include_self);
-	void _append_curse_moves_unit(UnitID uid, int8_t spell_id, TeamRelation relation, bool include_self, int8_t min_units);
-	void _append_moves_all_tiles(UnitID uid, int8_t spell_id, bool include_impassable);
+	void _append_moves_unit(UnitID uid, int8_t spell_id, TeamRelation relation, IncludeSelf include_self);
+  void _append_curse_moves_unit(UnitID uid, int8_t spell_id, TeamRelation relation, IncludeSelf include_self, int8_t min_units);
+	void _append_moves_all_tiles(UnitID uid, int8_t spell_id, IncludeImpassable include_impassable);
+
 	void _append_moves_lines(UnitID uid, int8_t spell_id, Position center, int range_min, int range_max);
 	void _append_moves_line(UnitID uid, int8_t spell_id, Position center, uint8_t dir, int range_min, int range_max);
 
@@ -227,7 +228,7 @@ public:
 	int get_unit_spell_count(int army, int idx);
 
 	Vector2i get_unit_position(int army, int unit) const {
-		auto p = bm._armies[army].units[unit].pos;
+		Position p = bm._armies[army].units[unit].pos; 
 		return Vector2i(p.x, p.y);
 	}
 

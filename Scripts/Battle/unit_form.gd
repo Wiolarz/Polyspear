@@ -7,7 +7,6 @@ signal anim_end()
 const SIDE_NAMES = ["FrontSymbol", "FrontRightSymbol", "BackRightSymbol", "BackSymbol", "BackLeftSymbol", "FrontLeftSymbol"]
 const selection_mark_scene = preload("res://Scenes/Form/SelectionMark.tscn")
 
-@onready var sprite_border := $sprite_border
 
 var entity : Unit
 
@@ -167,30 +166,28 @@ func anim_symbol(side : int, animation_type : int, target_coord: Vector2i = Vect
 
 	match animation_type:
 		CFG.SymbolAnimationType.MELEE_ATTACK, CFG.SymbolAnimationType.COUNTER_ATTACK:
-			symbol.anim_symbol_melee(animation_type)
+			ANIM.sync_tweens([symbol.make_melee_anim(animation_type)])
 
 		CFG.SymbolAnimationType.TELEPORTING_PROJECTILE:
-			symbol.anim_symbol_teleporting_projectile(target_coord, side)
+			ANIM.sync_tweens([symbol.make_projectile_anim(target_coord, side)])
 
 		CFG.SymbolAnimationType.BLOCK:
-			var block_anim_duration : float = symbol.get_block_duration()
-
 			var data_symbol : DataSymbol = \
-				other_unit.entity.symbols[opposite_side_local]
+				other_unit.entity.template.symbols[opposite_side_local]
+			var attack_tween_sync: ANIM.TweenSync
 
 			if data_symbol.does_it_shoot():
-				other_symbol.anim_symbol_teleporting_projectile(
+				attack_tween_sync = other_symbol.make_projectile_anim(
 					entity.coord,
 					GenericHexGrid.opposite_direction(side)
 				)
 			else:
-				other_symbol.anim_symbol_melee(
-					CFG.SymbolAnimationType.MELEE_ATTACK,
-					block_anim_duration
+				attack_tween_sync = other_symbol.make_melee_anim(
+					CFG.SymbolAnimationType.FAILED_ATTACK
 				)
 
-			symbol.anim_symbol_block()
-
+			var defense_tween_sync = symbol.make_block_anim()
+			ANIM.sync_tweens([attack_tween_sync, defense_tween_sync])
 		_:
 			assert(false, "Unimplemented animation type")
 
@@ -254,7 +251,7 @@ func set_hovered(is_hovered : bool):
 ## used after every set_hovered and set_selected to refresh level of highlight
 func _refresh_highlight() -> void:
 	var overall_shader_material := material as ShaderMaterial
-	var border_shader_material := sprite_border.material as ShaderMaterial
+	var border_shader_material := $sprite_border.material as ShaderMaterial
 	var overall_intensity = 0.25 if _hovered else 0.0
 	var border_intensity = 0.0
 	border_intensity = lerpf(border_intensity, 1.0, 0.25 if _hovered else 0.0)
@@ -282,5 +279,12 @@ func _refresh_highlight() -> void:
 		remove_child(get_node_or_null("SelectionMark"))
 		z_index = 0
 
+
+## marks visually units to distinct them by applying a color tint to their background [br]
+## currently only used to show which units will be left in the garrison once hero leaves the city
+## with insufficient max_army_size to take all units with him
+func set_marked_for_unit_list() -> void:
+	$sprite_color.modulate = Color("ffc7aa") #ffc7aa for debuging use -> #431900
+	$sprite_color.use_parent_material = false
 
 #endregion UI

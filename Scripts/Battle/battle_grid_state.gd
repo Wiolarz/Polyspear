@@ -335,6 +335,7 @@ func _process_passive_symbols(unit : Unit) -> void:
 		var opposite_side := GenericHexGrid.opposite_direction(side)
 		var enemy_weapon = enemy.get_symbol(opposite_side)
 		if enemy_weapon.does_parry(unit_symbol):
+			enemy.unit_is_blocking.emit(opposite_side, unit.coord)
 			continue  # parry disables all melee symbols
 
 		# we check if attacking symbol power is able to kill

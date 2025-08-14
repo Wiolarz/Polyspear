@@ -4,15 +4,16 @@ extends GridNode2D
 signal world_move_done
 
 
-
-
-var world_ui : WorldUI = null
+@onready var world_ui : WorldUI = preload("res://Scenes/UI/World/WorldUi.tscn").instantiate()
 
 ## Only army that has a hero can move (army can only have a single hero)
 var selected_hero : ArmyForm
 
 var selected_city : City:
 	set(city):
+		if city and not selected_hero:
+			world_ui.load_army_to_panel(city.garrison_reserve)
+
 		selected_city = city
 		world_ui.city_ui.city = city
 
@@ -32,9 +33,6 @@ var _painter_node : BattlePainter
 #region Start World
 
 func _ready() -> void:
-
-	world_ui = load("res://Scenes/UI/WorldUi.tscn").instantiate()
-
 	tile_grid = Node2D.new()
 	tile_grid.name = "GRID"
 	add_child(tile_grid)
@@ -85,21 +83,15 @@ func set_selected_hero(army : Army) -> void:
 	print("selected ", army)
 	if selected_hero:
 		selected_hero.set_selected(false)
-		# var city = get_current_player_capital()
-		# assert(city)
-		# world_ui.show_trade_ui(city)
 	var army_form : ArmyForm = get_army_form(army)
 	selected_hero = army_form
+	selected_hero.set_selected(true)
 
-	## preselects for player city in case hero is standing on top of it
-	if WS.get_interactable_type_at(selected_hero.coord) == "city":
-		selected_city = WS.get_place_at(selected_hero.coord)
-
-	if selected_hero:
-		selected_hero.set_selected(true)
 	world_ui.refresh_heroes()
 	world_ui.city_ui._refresh_units_to_buy()
 	world_ui.city_ui._refresh_army_display()
+
+	world_ui.load_army_to_panel(army)
 
 	if CFG.WORLD_GOD_MODE:
 		WM.hero_speed_cheat()
@@ -120,6 +112,7 @@ func _deselect_hero() -> void:
 	world_ui.refresh_heroes()
 	world_ui.city_ui._refresh_units_to_buy()
 	world_ui.city_ui._refresh_army_display()
+	world_ui.hide_army_panel()
 
 	_painter_node.erase()
 
@@ -135,6 +128,7 @@ func end_turn():
 
 
 func callback_turn_changed():
+	world_ui.on_end_turn()
 	_deselect_hero()
 	var current_faction : Faction = WS.get_current_player()
 	if current_faction.has_faction_lost():
@@ -144,7 +138,7 @@ func callback_turn_changed():
 	world_ui.refresh_heroes()
 	var current_player_capital : City = get_current_player_capital()
 	if current_player_capital:  # player may have lost his last city
-		world_ui.show_trade_ui(current_player_capital)
+		world_ui.set_viewed_city(current_player_capital)
 	world_ui.refresh_player_buttons()
 
 
@@ -235,9 +229,9 @@ func grid_input(coord : Vector2i):
 			try_interact(selected_hero, selected_hero.travel_path[tile_idx])
 		else:
 			break
-	var empty_path : Array[Vector2i] = []
+
 	if selected_hero:  # game might have ended
-		selected_hero.travel_path = empty_path  # TODO make changes to travel path dynamic
+		selected_hero.travel_path = [] as Array[Vector2i] # TODO make changes to travel path dynamic
 		if not selected_hero.has_movement_points():
 			_deselect_hero()
 	_painter_node.erase()
@@ -247,10 +241,11 @@ func input_try_select(coord) -> void:  #TODO "nothing is selected try to select 
 	var selection = WS.get_interactable_at(coord)
 	var city = WS.get_city_at(coord)
 	var army = WS.get_army_at(coord)
-	if army:
+	if army and army.hero:
 		if WS.current_player_index == selection.controller_index:
 			set_selected_hero(army)
 
+	## also preselects for player city in case hero is standing on top of it
 	if city:
 		if city.controller_index == WS.current_player_index:
 			selected_city = city
@@ -262,10 +257,9 @@ func input_try_select(coord) -> void:  #TODO "nothing is selected try to select 
 
 func try_interact(hero : ArmyForm, coord : Vector2i):
 	var start_coords = hero.coord
-	var city = WS.get_city_at(coord)
-	if city and city.controller_index == hero.entity.controller_index: # we start trade instead of travel
-		# there is separate button to move to city
-		trade_city(city)
+	var second_army = WS.get_army_at(coord)
+	if second_army and second_army.controller_index == hero.entity.controller_index: # we start trade instead of travel
+		trade_armies(second_army)
 		return
 	var world_move_info := \
 		WorldMoveInfo.make_world_travel(start_coords, coord)
@@ -284,9 +278,10 @@ func try_do_move(world_move_info : WorldMoveInfo) -> void:
 		NET.client.queue_request_world_move(world_move_info)
 
 
-## STUB
-func trade_armies(_second_army : ArmyForm):
+## opens context menu selected hero army and second owned army present target tile
+func trade_armies(second_army : Army):
 	print("trading armies")
+	world_ui.show_trade_ui(selected_hero.entity, second_army)
 
 
 ## called by `try_do_move` or when move is received from network
@@ -310,13 +305,6 @@ func perform_network_move(world_move_info : WorldMoveInfo) -> void:
 
 
 #region City Management
-
-func trade_city(city : City):
-	print("trade_city")
-	# TODO revwert this in world state
-	# hero.heal_in_city()
-	world_ui.show_trade_ui(city)
-
 
 func try_recruit_unit(city_coord : Vector2i, army_coord : Vector2i,
 		unit : DataUnit):
@@ -497,11 +485,6 @@ func clear_world():
 
 #region World Setup
 
-func spawn_world_ui():
-	world_ui = load("res://Scenes/UI/WorldUi.tscn").instantiate()
-	UI.add_custom_screen(world_ui)
-
-
 func start_new_world(world_map : DataWorldMap) -> void:
 
 	_is_world_game_active = true
@@ -512,9 +495,10 @@ func start_new_world(world_map : DataWorldMap) -> void:
 	recreate_army_forms()
 
 	UI.go_to_custom_ui(world_ui)
-	world_ui.game_started()
+	world_ui.on_game_started()
 
-	world_ui.show_trade_ui(get_current_player_capital())
+	selected_city = get_current_player_capital()
+	world_ui.set_viewed_city(selected_city)
 	world_ui.refresh_heroes()
 
 
@@ -536,9 +520,9 @@ func start_world_in_state(world_map : DataWorldMap, \
 	recreate_army_forms()
 
 	UI.go_to_custom_ui(world_ui)
-	world_ui.game_started()
+	world_ui.on_game_started()
 
-	world_ui.show_trade_ui(get_current_player_capital())
+	world_ui.set_viewed_city(get_current_player_capital())
 	world_ui.refresh_heroes()
 
 	_batch_mode = false
@@ -635,7 +619,17 @@ func get_serializable_state() -> SerializableWorldState:
 #endregion Multiplayer
 
 
-#region cheats
+#region UI Information
+
+func show_army_units(tile_coord : Vector2i) -> void:
+	var army : Army = WS.get_army_at(tile_coord)
+	if army:
+		world_ui.load_army_to_panel(army)
+
+#endregion UI Information
+
+
+#region Cheats
 
 ## Add goods to the player
 func cheat_money(new_wood : int = 100, new_iron : int = 100, new_ruby : int = 100) -> void:
@@ -678,4 +672,4 @@ func city_upgrade_cheat() -> void:
 	world_ui.city_ui._refresh_buildings_display()
 
 
-#endregion
+#endregion Cheats

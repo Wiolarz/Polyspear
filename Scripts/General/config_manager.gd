@@ -58,7 +58,8 @@ enum SymbolAnimationType
 	MELEE_ATTACK,
 	BLOCK,
 	TELEPORTING_PROJECTILE,
-	COUNTER_ATTACK
+	COUNTER_ATTACK,
+	FAILED_ATTACK
 }
 
 #endregion Animations
@@ -111,7 +112,9 @@ var RACES_LIST : Array[DataRace] = [
 
 const UNIT_FORM_SCENE = preload("res://Scenes/Form/UnitForm.tscn")
 var HEX_TILE_FORM_SCENE := load("res://Scenes/Form/TileForm.tscn") as PackedScene
-const SUMMON_BUTTON_TEXTURE:Texture2D = preload("res://Art/battle_map/grass.png")
+
+const SUMMON_BUTTON_TEXTURE : Texture2D = preload("res://Art/battle_map/grass.png")
+const EMPTY_SLOT_TEXTURE : Texture2D = preload("res://Art/items/hex_border_light.png")
 
 const DEFAULT_ARMY_FORM = preload("res://Scenes/Form/ArmyForm.tscn")
 
@@ -225,8 +228,12 @@ const CYCLONE_MANA_THRESHOLD = 3
 
 const HERO_LEVEL_CAP = 7
 
+## TODO allign it to the race weakest hero
+const CITY_MAX_ARMY_SIZE = 2
+
 func get_start_goods() -> Goods:
-	return Goods.new(10,5,3)
+	#return Goods.new(10,5,3)
+	return Goods.new(30,15,10)
 
 const WORLD_MOVABLE_TILES = [
 	"EMPTY",
