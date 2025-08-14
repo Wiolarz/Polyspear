@@ -25,10 +25,12 @@ extends Node
 ## How to add new tracks: [br]
 ## 1. Put the music in Audio/Music folder [br]
 ## 2. Make sure to enable loop (double-click on a music file -> Loop) [br]
-## 3. Add an entry in a dictionary below
+## 3. Add an entry in a dictionary below``
 @onready var tracks : Dictionary = {
 	"menu": preload("res://Audio/Music/exp.mp3"),
 	"battle": preload("res://Audio/Music/polyspear_battle_demo_update.ogg"),
+	"battle_drums": preload("res://Audio/Music/combat_drums.wav"),
+	"victory": preload("res://Audio/Music/victory_song.wav"),
 	"world": preload("res://Audio/Music/exploring.mp3"),
 }
 

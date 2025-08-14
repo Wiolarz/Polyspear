@@ -744,6 +744,7 @@ func _on_battle_ended() -> void:
 		_battle_ui.update_replay_controls(_replay_number_of_moves, _replay_number_of_moves, _current_summary)
 		# do not exit immediately
 	else:
+		AUDIO.play_music("victory")
 		UI.ui_overlay.show_battle_summary(_current_summary, _close_custom_battle)
 
 
