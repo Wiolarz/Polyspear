@@ -6,10 +6,12 @@ signal talent_chosen(tier_idx : int, button_idx : int)
 
 signal ability_chosen(tier_idx : int, button_idx : int, deselect : bool)
 
-
+## helps determine already selected passives
 var tier : int
+## dynamically limits buttons
 var hero_level : int
-## heor level 1-6
+
+## hero level 1-6
 ## tiers += 1 (tiers go from 1-3, not 0-2)
 ## level corresponds with number of avalaible_abilities directly 1-1 3-3 etc.
 ## but on a tier
@@ -58,11 +60,11 @@ func init_tier_panel(tier_ : int, _race : DataRace) -> void:
 			_talent_pressed(button_idx)
 		talent_button.button_pressed.connect(lambda)
 
+
 #region Hero level
 
 func set_hero(hero : Hero, is_in_world : bool = false) -> void:
 	hero_level = hero.level
-
 
 	# 1 Reset state to load a new hero
 	for talent_button in talent_buttons:
@@ -74,26 +76,22 @@ func set_hero(hero : Hero, is_in_world : bool = false) -> void:
 	# 2 Load selected hero already chosen passives
 	for talent_idx in range(3):
 		if CFG.talents[tier][talent_idx] in hero.passive_effects:
+			talent_chosen.emit(tier, talent_idx)
+			talent_buttons[talent_idx].selected()
+			talent_buttons[talent_idx].set_locked(is_in_world)
 			if is_in_world:
 				locked_talent = true
-				talent_buttons[talent_idx].set_locked(true)
-				talent_buttons[talent_idx].selected()
-			else:
-				talent_buttons[talent_idx].set_locked(false)
-				talent_buttons[talent_idx].selected()
 		else:
 			talent_buttons[talent_idx].set_locked(false)
 
 	var locked_abilities : Array[int] = []
 	for ability_idx in range(3):
 		if CFG.abilities[tier][ability_idx] in hero.passive_effects:
+			ability_chosen.emit(tier, ability_idx, false)
+			ability_buttons[ability_idx].selected()
+			ability_buttons[ability_idx].set_locked(is_in_world)
 			if is_in_world:
 				locked_abilities.append(ability_idx)
-				ability_buttons[ability_idx].set_locked(true)
-				ability_buttons[ability_idx].selected()
-			else:
-				ability_buttons[ability_idx].set_locked(false)
-				ability_buttons[ability_idx].selected()
 		else:
 			ability_buttons[ability_idx].set_locked(false)
 
@@ -200,7 +198,6 @@ func _disable_abilities(hero_can_take_one_ability : bool = false) -> void:
 			ability_button.enable()  # unlock all buttons
 
 #endregion Hero level
-
 
 #region Buttons
 

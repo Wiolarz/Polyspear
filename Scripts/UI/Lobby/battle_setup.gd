@@ -302,6 +302,7 @@ func hide_hero_level_up() -> void:
 
 
 func _on_level_up_confirm_button_pressed():
+	hero_level_up.selected_hero.passive_effects.clear()
 	hero_level_up.apply_talents_and_abilities()
 	hide_hero_level_up()
 
