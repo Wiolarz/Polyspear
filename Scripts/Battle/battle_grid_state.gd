@@ -477,6 +477,7 @@ func _get_shot_target(coord : Vector2i, direction : int, reach : int = -1) -> Un
 	assert(reach != 0, "attempt to shoot with non ranged weapon")
 	var target_coord := GenericHexGrid.adjacent_coord(coord, direction)
 	var hex := _get_battle_hex(target_coord)
+	reach -= 1
 	while not hex.unit and not hex.blocks_shots():
 		if reach == 0:
 			break

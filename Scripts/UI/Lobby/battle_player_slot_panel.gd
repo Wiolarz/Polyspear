@@ -124,13 +124,17 @@ func _ready():
 	hero_paths = FileSystemHelpers.list_files_in_folder(CFG.HEROES_PATH, true, true)
 	init_hero_list(hero_list)
 
+	load_unit_buttons()
+
+	bot_paths = FileSystemHelpers.list_files_in_folder(CFG.BATTLE_BOTS_PATH, true, true)
+	init_bots_button()
+
+
+func load_unit_buttons() -> void:
 	unit_paths = FileSystemHelpers.list_files_in_folder(CFG.UNITS_PATH, true, true)
 	for index in buttons_units.size():
 		var button : OptionButton = buttons_units[index]
 		init_unit_button(button, index)
-
-	bot_paths = FileSystemHelpers.list_files_in_folder(CFG.BATTLE_BOTS_PATH, true, true)
-	init_bots_button()
 
 
 func init_unit_button(button : OptionButton, index : int):
@@ -138,7 +142,8 @@ func init_unit_button(button : OptionButton, index : int):
 	button.add_item(EMPTY_UNIT_TEXT)
 	for unit_path in unit_paths:
 		button.add_item(unit_path.trim_prefix(CFG.UNITS_PATH))
-	button.item_selected.connect(unit_in_army_changed.bind(index))
+	if not button.item_selected.is_connected(unit_in_army_changed):
+		button.item_selected.connect(unit_in_army_changed.bind(index))
 
 func init_bots_button():
 	button_bot.clear()
