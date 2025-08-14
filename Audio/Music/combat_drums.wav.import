@@ -3,12 +3,12 @@
 importer="wav"
 type="AudioStreamWAV"
 uid="uid://ojfjx2ixylvt"
-path="res://.godot/imported/combat_drums.wav-3e8f9883064db63405ce4e0d604b42aa.sample"
+path="res://.godot/imported/combat_drums.wav-69b7b91f4bf3ac5c0547029732459322.sample"
 
 [deps]
 
-source_file="res://Audio/combat_drums.wav"
-dest_files=["res://.godot/imported/combat_drums.wav-3e8f9883064db63405ce4e0d604b42aa.sample"]
+source_file="res://Audio/Music/combat_drums.wav"
+dest_files=["res://.godot/imported/combat_drums.wav-69b7b91f4bf3ac5c0547029732459322.sample"]
 
 [params]
 
