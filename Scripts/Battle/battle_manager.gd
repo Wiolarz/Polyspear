@@ -96,7 +96,7 @@ func start_battle(new_armies : Array[Army], battle_map : DataBattleMap, \
 	# GRAPHICS GRID:
 	_load_map(battle_map)
 	_grid_tiles_node.position.x = x_offset
-
+	horizontal_offset = x_offset
 	_battle_ui.load_armies(_battle_grid_state.armies_in_battle_state)
 
 	if battle_state: # recreate state if present
@@ -118,6 +118,9 @@ func start_battle(new_armies : Array[Army], battle_map : DataBattleMap, \
 
 	# first turn does not get a signal emit
 	_on_turn_started(_battle_grid_state.get_current_player())
+
+	# Play battle music
+	AUDIO.play_music("battle")
 
 
 func _load_map(map : DataBattleMap) -> void:
@@ -287,6 +290,7 @@ func undo() -> void:
 		_on_unit_summoned(unit)  # revive
 	_battle_ui.refresh_after_undo(_battle_grid_state.is_during_summoning_phase())
 	_end_move()
+	ANIM.fast_forward()
 
 
 ## STUB
@@ -456,6 +460,8 @@ func _on_unit_summoned(unit : Unit) -> void:
 	unit.unit_is_blocking.connect(func(side : int, attacker_coord : Vector2i):
 		form.anim_symbol(side, CFG.SymbolAnimationType.BLOCK, attacker_coord)
 	)
+
+	unit.unit_magic_effect.emit()
 
 
 ## handles player input while during the summoning phase
@@ -745,6 +751,7 @@ func _on_battle_ended() -> void:
 		_battle_ui.update_replay_controls(_replay_number_of_moves, _replay_number_of_moves, _current_summary)
 		# do not exit immediately
 	else:
+		AUDIO.play_music("victory")
 		UI.ui_overlay.show_battle_summary(_current_summary, _close_custom_battle)
 
 

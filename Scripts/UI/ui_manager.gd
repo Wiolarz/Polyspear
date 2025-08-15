@@ -13,7 +13,7 @@ var camera : PolyCamera
 var current_camera_position = E.CameraPosition.WORLD
 
 signal update_settings()
-
+signal resources_list_changed()
 
 func _ready():
 	process_mode = Node.PROCESS_MODE_ALWAYS
@@ -62,17 +62,20 @@ func go_to_main_menu():
 func go_to_unit_editor():
 	_hide_all()
 	unit_editor.show()
+	AUDIO.play_music("battle_drums")
 
 
 func go_to_tile_editor():
 	_hide_all()
 	tile_editor.show()
+	AUDIO.play_music("battle_drums")
 
 
 ## TEMP
 func go_to_map_editor():
 	_hide_all()
 	map_editor.open_draw_menu()
+	AUDIO.play_music("battle_drums")
 	BG.set_player_colors(CFG.NEUTRAL_COLOR)
 
 
@@ -179,12 +182,12 @@ func switch_camera() -> void:
 			set_camera(E.CameraPosition.WORLD)
 
 
-func set_camera(pos : E.CameraPosition) -> void:
+func set_camera(pos : E.CameraPosition, reset_position : bool = true) -> void:
 	current_camera_position = pos
 	if pos == E.CameraPosition.BATTLE:
-		camera.set_bounds(BM.get_bounds_global_position())
+		camera.set_bounds(BM.get_bounds_global_position(), reset_position)
 	else :
-		camera.set_bounds(WM.get_bounds_global_position())
+		camera.set_bounds(WM.get_bounds_global_position(), reset_position)
 
 #endregion Camera
 

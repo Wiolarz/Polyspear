@@ -119,6 +119,7 @@ func _apply_level_number(level : int) -> void:
 func anim_move():
 	var target = BM.get_tile_global_position(entity.coord)
 	ANIM.main_tween().tween_property(self, "position", target, CFG.anim_move_duration)
+	ANIM.main_tween().parallel().tween_callback(AUDIO.play.bind("move"))
 
 
 func anim_turn():
@@ -127,11 +128,13 @@ func anim_turn():
 	ANIM.main_tween().tween_property(self, "rotation", angle_rel, time).as_relative()
 	ANIM.main_tween().parallel().tween_property($sprite_unit, "rotation", -angle_rel, time).as_relative()
 	ANIM.main_tween().parallel().tween_property($RigidUI, "rotation", -angle_rel, time).as_relative()
+	ANIM.main_tween().parallel().tween_callback(AUDIO.play.bind("turn"))
 	_rotation_symbol_flip()
 	_flip_unit_sprite()
 
 
 func anim_die():
+	ANIM.main_tween().tween_callback(AUDIO.play.bind("unit_death"))
 	ANIM.main_tween().tween_property(self, "scale", Vector2.ZERO, CFG.anim_death_duration)
 	ANIM.main_tween().tween_callback(queue_free)
 
@@ -240,6 +243,8 @@ func set_effects() -> void:
 
 func set_selected(is_selected : bool):
 	_selected = is_selected
+	if _selected:
+		AUDIO.play("ingame_click")
 	_refresh_highlight()
 
 

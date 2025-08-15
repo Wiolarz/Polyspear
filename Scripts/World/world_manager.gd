@@ -401,6 +401,7 @@ func end_of_battle(battle_results : Array[BattleGridState.ArmyInBattleState]):
 	WS.end_combat(battle_results)
 
 	UI.go_to_custom_ui(world_ui)
+	AUDIO.play_music("world")
 
 
 #endregion Battles
@@ -500,6 +501,7 @@ func start_new_world(world_map : DataWorldMap) -> void:
 	selected_city = get_current_player_capital()
 	world_ui.set_viewed_city(selected_city)
 	world_ui.refresh_heroes()
+	AUDIO.play_music("world")
 
 
 #STUB

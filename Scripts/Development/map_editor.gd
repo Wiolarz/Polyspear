@@ -243,13 +243,13 @@ func _on_save_map_pressed():
 			return
 		save_path = CFG.WORLD_MAPS_PATH + map_file_name + ".tres"
 
-
 	ResourceSaver.save(new_map, save_path)
 	# WARNING clears uids
 	# see https://github.com/godotengine/godot/issues/83259
 	# use uid_fixer script to fix
 
 	show_info("map saved")
+	UI.resources_list_changed.emit()
 
 	print("end save map")
 	# print("reloading map")
@@ -340,7 +340,6 @@ func get_tile_grid_data() -> Array:
 		return world_grid.get_tile_grid_data()
 
 
-
 func _on_add_column_pressed():
 	if CFG.MAP_EDITOR_BATTLE:
 		var new_map := get_battle_map(false)
@@ -348,10 +347,12 @@ func _on_add_column_pressed():
 		new_map.grid_width += 1
 		BM.unload_for_editor()
 		BM.load_editor_map(new_map)
+		UI.set_camera(E.CameraPosition.BATTLE, false)
 	else:
 		var size = world_grid.size()
 		size.x += 1
 		world_grid.resize(size)
+		UI.set_camera(E.CameraPosition.WORLD, false)
 
 
 func create_empty_row(length : int) -> Array[DataTile]:
@@ -369,7 +370,9 @@ func _on_add_row_pressed():
 		new_map.grid_height += 1
 		BM.unload_for_editor()
 		BM.load_editor_map(new_map)
+		UI.set_camera(E.CameraPosition.BATTLE, false)
 	else:
 		var size = world_grid.size()
 		size.y += 1
 		world_grid.resize(size)
+		UI.set_camera(E.CameraPosition.WORLD, false)

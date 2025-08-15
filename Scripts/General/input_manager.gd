@@ -274,6 +274,7 @@ func go_to_main_menu():
 	if CFG.FULLSCREEN_AUTO_TOGGLE:
 		UI.set_fullscreen(false)
 
+	AUDIO.play_music("menu")
 	in_map_editor = false
 	BM.close_when_quitting_game()
 	WM.clear_world()
