@@ -1,0 +1,66 @@
+[gd_scene load_steps=4 format=3 uid="uid://5g2iqdyqmc75"]
+
+[ext_resource type="Script" path="res://Scripts/UI/LevelUp/level_up_world.gd" id="1_kwwbk"]
+[ext_resource type="PackedScene" uid="uid://bukisun1sjf4t" path="res://Scenes/UI/LevelUp/TierPanel.tscn" id="2_ip6k2"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bud47"]
+bg_color = Color(0, 0, 0, 1)
+
+[node name="LevelUpWorldScreen" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_kwwbk")
+
+[node name="Panel" type="Panel" parent="."]
+editor_description = "STUB
+Has a simple Theme Overide"
+layout_mode = 0
+offset_left = 76.0
+offset_top = 11.0
+offset_right = 1846.0
+offset_bottom = 984.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_bud47")
+
+[node name="RichTextLabel" type="RichTextLabel" parent="."]
+layout_mode = 0
+offset_left = 87.0
+offset_top = 917.0
+offset_right = 1410.0
+offset_bottom = 1061.0
+text = "Examle skill/passive description"
+
+[node name="ButtonConfirm" type="Button" parent="."]
+layout_mode = 0
+offset_left = 1530.0
+offset_top = 898.0
+offset_right = 1729.0
+offset_bottom = 980.0
+text = "Confirm"
+
+[node name="TierPanels" type="VBoxContainer" parent="."]
+layout_mode = 0
+offset_left = 128.0
+offset_top = 27.0
+offset_right = 1839.0
+offset_bottom = 904.0
+theme_override_constants/separation = 23
+alignment = 1
+
+[node name="TierPanel" parent="TierPanels" instance=ExtResource("2_ip6k2")]
+layout_mode = 2
+
+[node name="TierPanel2" parent="TierPanels" instance=ExtResource("2_ip6k2")]
+layout_mode = 2
+
+[node name="TierPanel3" parent="TierPanels" instance=ExtResource("2_ip6k2")]
+layout_mode = 2
+
+[node name="HeroLevelValue" type="Label" parent="."]
+layout_mode = 0
+offset_left = 1582.0
+offset_top = 36.0
+offset_right = 1828.0
+offset_bottom = 90.0
+text = "Hero Level: 1"
+
+[connection signal="pressed" from="ButtonConfirm" to="." method="_on_button_confirm_pressed"]
