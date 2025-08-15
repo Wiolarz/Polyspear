@@ -425,7 +425,7 @@ func _on_unit_deployment(unit : Unit) -> void:
 	var form := UnitForm.create(unit)
 	_unit_forms_node.add_child(form)
 	_unit_to_unit_form[unit] = form
-	form.set_effects()
+	form.set_effects()  # VISUAL makes hero passives visible on the unit
 
 	# apply correct BM position offset in world battles
 	form.global_position = get_tile_global_position(unit.coord)
@@ -461,8 +461,6 @@ func _on_unit_deployment(unit : Unit) -> void:
 	unit.unit_is_blocking.connect(func(side : int, attacker_coord : Vector2i):
 		form.anim_symbol(side, CFG.SymbolAnimationType.BLOCK, attacker_coord)
 	)
-
-	unit.unit_magic_effect.emit()
 
 
 ## handles player input while during the deployment phase
