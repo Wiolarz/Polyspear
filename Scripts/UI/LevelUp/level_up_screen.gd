@@ -3,10 +3,7 @@ extends Control
 
 var selected_hero : Hero
 
-@onready var children = get_children()  # scene is static
-
-var tier_panels_container : VBoxContainer
-
+var tier_panels : Array[PanelContainer]#PanelContainer
 
 ## Each number represents choice from subsequent tier [br]
 ##  -1 - No Talent taken [br]
@@ -21,9 +18,13 @@ var chosen_abilities : Array = [[], [], []]
 
 ## Currently there is no difference between level up for various races so level up screen can be generated once
 func _ready() -> void:
-	_setup()
+	var tier_panel_container_children : Array[Node] = _get_tier_panel_children()
+	for tier_panel_child : Node in tier_panel_container_children:
+		assert(tier_panel_child is PanelContainer)
+		tier_panels.append(tier_panel_child as PanelContainer)
+
 	var tier_idx = -1
-	for tier_panel in tier_panels_container.get_children():
+	for tier_panel in tier_panels:
 		tier_idx += 1
 		tier_panel.init_tier_panel(tier_idx, null)
 		tier_panel.talent_chosen.connect(_selected_talent)
@@ -31,8 +32,9 @@ func _ready() -> void:
 
 
 # to be overriden
-func _setup() -> void:
-	pass
+func _get_tier_panel_children() -> Array[Node]:
+	assert(false)
+	return []
 
 
 func apply_talents_and_abilities() -> void:

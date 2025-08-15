@@ -2,15 +2,15 @@ extends LevelUpScreen
 
 
 # override
-func _setup() -> void:
-	tier_panels_container = get_node("TierPanels")
+func _get_tier_panel_children() -> Array[Node]:
+	return get_node("TierPanels").get_children()
 
 
 func load_selected_hero_level_up_screen(hero : Hero) -> void:
 	selected_hero = hero
 	chosen_abilities = [[], [], []]
 	chosen_talents = [-1, -1, -1]
-	for tier_panel in tier_panels_container.get_children():
+	for tier_panel in tier_panels:
 		tier_panel.set_hero(selected_hero, true)
 	$HeroLevelValue.text = "Hero Level: " + str(selected_hero.level)
 

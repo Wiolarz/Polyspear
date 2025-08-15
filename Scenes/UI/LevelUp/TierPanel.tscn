@@ -24,12 +24,15 @@ alignment = 1
 
 [node name="PowerPassiveButton" parent="MainContainer/TierUpgrades" instance=ExtResource("2_4vdkt")]
 layout_mode = 2
+size_flags_horizontal = 3
 
 [node name="TacticPassiveButton" parent="MainContainer/TierUpgrades" instance=ExtResource("2_4vdkt")]
 layout_mode = 2
+size_flags_horizontal = 3
 
 [node name="MagicPassiveButton" parent="MainContainer/TierUpgrades" instance=ExtResource("2_4vdkt")]
 layout_mode = 2
+size_flags_horizontal = 3
 
 [node name="Skill label" type="Label" parent="MainContainer"]
 layout_mode = 2
@@ -42,9 +45,12 @@ alignment = 1
 
 [node name="PowerSkillButton" parent="MainContainer/TierSkills" instance=ExtResource("2_4vdkt")]
 layout_mode = 2
+size_flags_horizontal = 3
 
 [node name="TacticSkillButton" parent="MainContainer/TierSkills" instance=ExtResource("2_4vdkt")]
 layout_mode = 2
+size_flags_horizontal = 3
 
 [node name="MagicSkillButton" parent="MainContainer/TierSkills" instance=ExtResource("2_4vdkt")]
 layout_mode = 2
+size_flags_horizontal = 3
