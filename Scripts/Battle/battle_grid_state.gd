@@ -137,16 +137,6 @@ func move_info_execute(move_info : MoveInfo) -> void:
 
 	turn_counter += 1
 
-	if stalemate_failsafe_on and stalemate_failsafe_start + 6 < turn_counter:
-		for army in armies_in_battle_state:
-			for _unit in army.units:
-				if _unit.template.unit_name != "orc_2": continue
-
-				var vengeance_effect : BattleMagicEffect = \
-					load("res://Resources/Battle/Battle_Spells/Battle_Magic_Effects/vengeance_effect.tres")
-
-				vengeance_effect.apply_effect(_unit, "post death spell effect")
-
 	_check_battle_end()
 	if battle_is_ongoing():
 		_switch_participant_turn()
@@ -871,7 +861,7 @@ func _kill_unit(target : Unit, killer_army : ArmyInBattleState = null) -> void:
 		spear_holding_killer_teams = []
 
 	if killer_army:
-		killer_army.killed_units.append(target.template.level)
+		killer_army.killed_units.append(target.level)
 
 		#TODO move this elsewhere so that durability gets lowered by 1 each killing turn regardless of number of killed units
 		for effect in currently_active_unit.effects:
@@ -1735,7 +1725,7 @@ class ArmyInBattleState:
 	## alive already deployed units
 	var units : Array[Unit] = []
 	## owned units that died during combat
-	var dead_units : Array[DataUnit] = []
+	var dead_units : Array[Unit] = []
 
 	#STUB - the only relevant information about killed units is their level
 	var killed_units : Array[int]
@@ -1763,8 +1753,9 @@ class ArmyInBattleState:
 		var result = ArmyInBattleState.new()
 		result.battle_grid_state = weakref(state)
 		result.army_reference = army
-		if army.hero and not army.hero.wounded: #TEMP
+		if army.hero and not army.hero.wounded:
 			var hero_unit : DataUnit = army.hero.template.data_unit
+			hero_unit.level = army.hero.level  # TODO its giga broken
 			result.units_to_deploy.append(hero_unit)
 
 		# unit list
@@ -1825,13 +1816,13 @@ class ArmyInBattleState:
 	func kill_unit(target : Unit) -> void:
 		print("killing ", target.coord, " ",target.template.unit_name)
 		assert(target in units)
-		if target.template.mana > 0:
-			mana_points -= target.template.mana
+		if target.mana > 0:
+			mana_points -= target.mana
 			# mana_value changed gets called after every kill anyway
 
 		units.erase(target)
 
-		dead_units.append(target.template)
+		dead_units.append(target)
 		if not can_fight():  # remove all summons once are alive units have died
 			kill_army()
 		#gdlint: ignore=private-method-call
@@ -1841,8 +1832,7 @@ class ArmyInBattleState:
 		var unit = kill_info.respawn()
 		unit.controller = IM.get_player_by_index(army_reference.controller_index)
 		unit.army_in_battle = self
-
-		dead_units.erase(unit.template)
+		dead_units.erase(unit)
 		units.append(unit)
 		return unit
 

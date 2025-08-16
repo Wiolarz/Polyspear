@@ -61,11 +61,11 @@ static func from(bgstate: BattleGridState, tgrid: TileGridFast = null) -> Battle
 				continue
 
 			new.insert_unit(army_idx, unit_idx, unit.coord, unit.unit_rotation, false)
-			new.set_unit_score(army_idx, unit_idx, unit.template.level)
-			new.set_unit_mana(army_idx, unit_idx, unit.template.mana)
+			new.set_unit_score(army_idx, unit_idx, unit.level)
+			new.set_unit_mana(army_idx, unit_idx, unit.mana)
 
 			for i in range(6):
-				new.set_unit_symbol(army_idx, unit_idx, i, unit.template.symbols[i])
+				new.set_unit_symbol(army_idx, unit_idx, i, unit.symbols[i])
 
 			for spell in unit.spells:
 				new.insert_spell(army_idx, unit_idx, new.spell_mapping.size(), spell.name)
@@ -300,7 +300,7 @@ func compare_grid_state(bgs: BattleGridState) -> bool:
 				if eff.duration_counter != duration_fast:
 					push_error("BMFast mismatch - effect '%s' has duration %s in slow and %s in fast" % [eff.name, eff.duration_counter, duration_fast])
 					is_ok = false
-			
+
 			# TEMP awaits Maryr code rework
 			#if is_martyr != (get_unit_martyr_id(army_id, unit_id) != -1):
 				#push_error("BMFast mismatch - martyr status for unit %s - slow %s vs fast %s"

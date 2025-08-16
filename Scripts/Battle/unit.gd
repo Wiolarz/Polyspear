@@ -38,12 +38,16 @@ var dead : bool
 ## is unit created using magic
 var summoned : bool = false
 
+## determines if exp can be awarded to the enemy hero
+var level : int
 
 ## list of spells unit can cast (all of those are one-time use only)
 var spells : Array[BattleSpell] = []
 
 ## magic effects, size_limit == 2
 var effects : Array[BattleMagicEffect] = []
+
+var mana : int = 0
 
 var is_on_swamp : bool = false
 
@@ -58,15 +62,17 @@ static func create(new_controller : Player, \
 		new_rotation : GenericHexGrid.GridDirections, \
 		new_army_in_battle_state : BattleGridState.ArmyInBattleState) -> Unit:
 	var result = Unit.new()
+	result.template = new_template
+	result.symbols = new_template.symbols.duplicate(true) # TEMP TODO fix symbols to another type too
+	result.level = new_template.level
+	result.mana = new_template.mana
+	result.summoned = new_template.summoned
+	result.spells = new_template.spells.duplicate() # spells reset every battle
+
 	result.controller = new_controller
 	result.army_in_battle = new_army_in_battle_state
-	result.template = new_template
-	result.symbols = new_template.symbols.duplicate(true)
-
 	result.coord = new_coord
 	result.unit_rotation = new_rotation
-	result.spells = new_template.spells.duplicate() # spells reset every battle
-	result.summoned = new_template.summoned
 	return result
 
 #region Emit Animation Signals

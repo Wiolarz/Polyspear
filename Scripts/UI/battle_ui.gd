@@ -36,8 +36,8 @@ var armies_reference : Array[BattleGridState.ArmyInBattleState]
 var current_player : int = 0
 
 
-## used only for deployment unit tiles, points to currently selected unit/unit-button in deployment
-## bar
+## used only for deployment unit tiles,
+## points to currently selected unit/unit-button in deployment bar
 var _selected_unit_pointer : DataUnit = null
 var _selected_unit_button_pointer : BaseButton = null
 

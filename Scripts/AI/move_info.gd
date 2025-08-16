@@ -150,27 +150,17 @@ func _to_string() -> String:
 
 class KilledUnit:
 	var army_idx: int
-	var template : DataUnit
-	var coord : Vector2i
-	var unit_rotation : int
-	var symbols : Array[DataSymbol]
+	var unit : Unit
 
-	static func create(army_idx_:int, unit:Unit) -> KilledUnit:
+	static func create(army_idx_ : int, unit_ : Unit) -> KilledUnit:
 		var result = KilledUnit.new()
 		result.army_idx = army_idx_
-		result.coord = unit.coord
-		result.template = unit.template
-		result.unit_rotation = unit.unit_rotation
-		result.symbols = unit.symbols.duplicate(true) # TEMP awaits proper duplication from #161PR
+		result.unit = unit_
 		return result
 
 	func respawn() -> Unit:
-		var result = Unit.new()
-		result.coord = coord
-		result.template = template
-		result.unit_rotation = unit_rotation
-		result.symbols = symbols
-		return result
+		unit.dead = false
+		return unit
 
 
 class PushedUnit:
