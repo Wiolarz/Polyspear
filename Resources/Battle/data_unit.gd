@@ -5,7 +5,7 @@ extends Resource
 @export var unit_name : String
 @export var texture_path : String
 @export var symbols : Array[DataSymbol] = [null,null,null,null,null,null]
-@export var cost : Goods = Goods.new()
+@export var cost : Goods
 @export var required_building : DataBuilding = null #TEMP
 ## determines ability to award expirience to a hero
 @export var level : int = 1
