@@ -804,9 +804,9 @@ func _perform_dash(unit : Unit, target_tile_coord : Vector2i, power : int = 3) -
 
 
 func _summon_a_unit(caster : Unit, summoned_unit : DataUnit, target_tile_coord : Vector2i) -> void:
-	summoned_unit.summoned = true
 	var direction : int = GenericHexGrid.direction_to_adjacent(caster.coord, target_tile_coord)
 	var unit : Unit = caster.army_in_battle.deploy_unit(summoned_unit, target_tile_coord, direction)
+	unit.summoned = true
 
 	# Apply summon sickness
 	var success : bool = unit.try_adding_magic_effect(load(CFG.SUMMONING_SICKNESS_PATH))
@@ -1795,7 +1795,6 @@ class ArmyInBattleState:
 					if state.armies_in_battle_state.size() != 0:
 						continue  # only attacker can use ballista
 					var ballista : DataUnit = load(CFG.BALLISTA_PATH)
-					ballista.summoned = true
 					units_to_deploy.append(ballista)
 
 
