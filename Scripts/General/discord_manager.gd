@@ -32,11 +32,15 @@ func init_discord_rich_presence() -> void:
 func change_state(state: String) -> void:
 	DiscordRPC.state = state
 
+	DiscordRPC.refresh()
+
 
 ## Change details in rich presence [br]
 ## [details] stands for "What the player is currently doing"
 func change_details(details: String) -> void:
 	DiscordRPC.details = details
+
+	DiscordRPC.refresh()
 
 
 ## Change party size in rich presence [br]
@@ -45,3 +49,5 @@ func change_details(details: String) -> void:
 func change_party_size(current_party_size: int, max_party_size: int) -> void:
 	DiscordRPC.current_party_size = current_party_size
 	DiscordRPC.max_party_size = max_party_size
+
+	DiscordRPC.refresh()
