@@ -477,6 +477,8 @@ func do_recruit_hero(data_hero : DataHero,
 			dead_hero.revive()
 			dead_hero.controller_index = current_player_index
 			hero = dead_hero
+			player_state.dead_heroes.erase(dead_hero)
+			break
 	if not hero: # means no hero is revived
 		hero = Hero.construct_hero(data_hero, current_player_index)
 
@@ -801,7 +803,7 @@ func get_all_unit_purchaces(city : City, army : Army) -> Array[WorldMoveInfo]:
 			continue
 		elif not city.unit_has_required_building(unit):
 			continue
-		elif not WS.has_player_enough(army.controller_index, unit.cost):
+		elif not city.faction.goods.has_enough(unit.cost):
 			continue
 		purchase_moves.append(WorldMoveInfo.make_recruit_unit(city.coord, army.coord, unit))
 
@@ -820,7 +822,7 @@ func get_all_goods_spending_moves() -> Array[WorldMoveInfo]:
 
 	for hero in faction.hero_armies:
 		for city in faction.cities:
-			if not GenericHexGrid.is_adjacent(hero.coord, city.coord):
+			if not GenericHexGrid.is_adjacent(hero.coord, city.coord) and hero.coord != city.coord:
 				continue
 			spending_moves.append_array(get_all_unit_purchaces(city, hero))
 	return spending_moves
@@ -842,5 +844,22 @@ func get_all_combat_destinations() -> Array[Vector2i]:
 				combat_destinations.append(Vector2i(x, y))
 
 	return combat_destinations
+
+
+func assess_combat_difficulty(hero_army : Army, target_army : Army) -> int:
+	var hero_army_level : int = 0#hero_army.hero.level TEMP awaits unit data level fix
+	for unit in hero_army.units_data:
+		hero_army_level += unit.level
+
+	var target_army_level : int = 0
+	for unit in target_army.units_data:
+		target_army_level += unit.level
+	print(hero_army_level, target_army_level)
+	if target_army_level * 1.5 < hero_army_level:
+		return 3
+	elif target_army_level < hero_army_level:
+		return 2
+	else:
+		return 1
 
 #endregion AI tools

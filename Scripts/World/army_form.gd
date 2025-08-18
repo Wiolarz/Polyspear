@@ -16,8 +16,11 @@ var travel_path:
 		assert(entity and entity.hero, "attempt to set a path to non existing hero")
 		entity.hero.travel_path = new_path
 	get:
-		assert(entity and entity.hero, "attempt to get a path from not existing hero")
-		return entity.hero.travel_path
+		#assert(entity and entity.hero, "attempt to get a path from not existing hero")
+		if entity.hero and entity.hero.travel_path:
+			return entity.hero.travel_path
+		else:
+			return null
 
 
 func _init():

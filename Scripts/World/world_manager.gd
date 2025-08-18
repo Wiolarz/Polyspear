@@ -184,7 +184,9 @@ func callback_turn_changed():
 			bot.cleanup_after_move()
 			move = await bot.choose_move()
 		assert(move)
+		await get_tree().create_timer(1).timeout # TEMP
 		try_do_move(move) # always ends with TYPE_END_TURN
+
 
 
 		latest_ai_cancel_token = null # TODO ask, where this should be
@@ -229,7 +231,7 @@ func _generate_path(destination_coord : Vector2i, hero : ArmyForm = null) -> voi
 func _draw_path(hero : ArmyForm = null):
 	if not hero:  # Could be used to draw AI desired paths during debuging
 		hero = selected_hero
-	if not hero or hero.travel_path.size() == 0:
+	if not hero or not hero.travel_path or hero.travel_path.size() == 0:
 		return
 	var is_it_dangerous : bool = false
 	for hex_coord in hero.travel_path:
@@ -744,7 +746,9 @@ func city_upgrade_cheat() -> void:
 func _ai_thinking_delay(thinking_begin_s) -> void:
 	var max_seconds = CFG.bot_speed_frames / 60.0
 	var seconds = max(1, max_seconds - (Time.get_ticks_msec()/1000.0 - thinking_begin_s))
-	await get_tree().create_timer(seconds).timeout
+	await get_tree().create_timer(seconds).timeout # doesnt work properly
+
+
 	while IM.is_game_paused() or CFG.bot_speed_frames == CFG.BotSpeed.FREEZE:
 		await get_tree().create_timer(0.1).timeout
 
