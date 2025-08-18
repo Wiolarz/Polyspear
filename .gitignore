@@ -21,7 +21,7 @@ LibSpear/compile_commands.json
 LibSpear/src/**.os
 LibSpear/build
 #windows cpp :)
-LibSpear/bin/~*.dll
+
 LibSpear/bin/~*.TMP
 
 # Documentation settings
