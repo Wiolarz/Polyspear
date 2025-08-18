@@ -19,7 +19,7 @@ func _process(_delta: float) -> void:
 
 func init_discord_rich_presence() -> void:
 	DiscordRPC.app_id = 1406284593891643483  # Application ID
-	DiscordRPC.state = "Looking for a Quest"
+	DiscordRPC.state = "Sitting in main menu"
 	DiscordRPC.large_image = "outpost_wood"  # Images stored at https://discord.com/developers
 
 	DiscordRPC.start_timestamp = int(Time.get_unix_time_from_system())

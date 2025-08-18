@@ -60,7 +60,7 @@ func _hide_all():
 func go_to_main_menu():
 	_hide_all()
 	main_menu.open_main_menu()
-	DM.change_state("Looking for a Quest")
+	DM.change_state("Sitting in main menu")
 
 
 func go_to_unit_editor():
