@@ -53,7 +53,7 @@ func load_unit_buttons(army : Army, units_to_display : Array[DataUnit],
 			unit_display.set_marked_for_unit_list()  # mark units that breach max army size
 
 		var button = TextureButton.new()
-		button.texture_normal = CFG.SUMMON_BUTTON_TEXTURE
+		button.texture_normal = CFG.DEPLOY_BUTTON_TEXTURE
 		button.custom_minimum_size = Vector2.ONE * unit_button_size
 		button.stretch_mode = TextureButton.STRETCH_KEEP_ASPECT_CENTERED
 		button.ignore_texture_size = true
