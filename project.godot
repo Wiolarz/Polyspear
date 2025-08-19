@@ -32,7 +32,7 @@ IM="*res://Scripts/General/input_manager.gd"
 NET="*res://Scripts/Multiplayer/NET_manager.gd"
 UI="*res://Scripts/UI/ui_manager.gd"
 ANIM="*res://Scripts/General/animation_manager.gd"
-DM="*res://Scripts/General/discord_manager.gd"
+DISCORD="*res://Scripts/General/discord_manager.gd"
 
 [debug]
 
