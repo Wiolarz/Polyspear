@@ -9,6 +9,7 @@ enum TakeLeaveButtonState {
 }
 
 const EMPTY_UNIT_TEXT = " - empty - "
+const ALL_RACES_TEXT = "All Races"
 
 var setup_ui : BattleSetup = null
 var button_take_leave_state : TakeLeaveButtonState = TakeLeaveButtonState.FREE
@@ -16,6 +17,7 @@ var button_take_leave_state : TakeLeaveButtonState = TakeLeaveButtonState.FREE
 var unit_paths : Array[String]
 var bot_paths : Array[String]
 var hero_paths : Array[String]
+var races_paths : Array[String]
 var army_paths : Array[String]
 
 @onready var button_take_leave = $GeneralVContainer/TopBarHContainer/ButtonTakeLeave
@@ -39,6 +41,7 @@ var army_paths : Array[String]
 @onready var timer_reserve_seconds : SpinBox = $GeneralVContainer/TimerContainer/ReserveTime_Sec_Edit
 @onready var timer_increment_seconds : SpinBox = $GeneralVContainer/TimerContainer/IncrementTimeEdit
 
+@onready var races_list : OptionButton = $GeneralVContainer/HBoxRacesAndPresets/OptionButtonRace
 @onready var army_preset_list : OptionButton = $GeneralVContainer/HBoxRacesAndPresets/OptionButtonArmy
 
 
@@ -50,6 +53,8 @@ func _ready():
 
 	bot_paths = FileSystemHelpers.list_files_in_folder(CFG.BATTLE_BOTS_PATH, true, true)
 	init_bots_button()
+
+	init_race_list()
 
 	army_paths = FileSystemHelpers.list_files_in_folder(CFG.ARMY_PRESETS_PATH, true, true)
 	init_army_list()
@@ -251,6 +256,38 @@ func timer_changed(_value) -> void:
 
 #region Races And Presets Bar
 
+
+func init_race_list() -> void:
+	races_list.clear()
+	races_list.add_item(ALL_RACES_TEXT)
+	for race in CFG.RACES_LIST:
+		races_list.add_item(race.race_name)
+	races_list.item_selected.connect(selected_race.bind())
+
+
+func selected_race(race_index : int) -> void:
+	if race_index == 0:
+		load_unit_buttons()
+		return
+
+	race_index -= 1
+
+	selected_army_preset(0)  # reset unit selection
+	var race : DataRace = CFG.RACES_LIST[race_index]
+	#new_army_preset.units
+
+	unit_paths = FileSystemHelpers.list_files_in_folder(CFG.UNITS_PATH, true, true)
+	for index in buttons_units.size():
+		var button : OptionButton = buttons_units[index]
+		button.clear()
+		button.add_item(EMPTY_UNIT_TEXT)
+		for data_unit in race.units_data:
+			button.add_item(data_unit.resource_path.trim_prefix(CFG.UNITS_PATH))
+		if not button.item_selected.is_connected(unit_in_army_changed):
+			button.item_selected.connect(unit_in_army_changed.bind(index))
+
+
+
 func init_army_list() -> void:
 	army_preset_list.clear()
 	for army_path in army_paths:
@@ -288,7 +325,6 @@ func selected_army_preset(army_preset_index : int) -> void:
 	if NET.client:
 		for unit_idx : int in range(units.size()):
 			NET.client.queue_lobby_set_unit(slot_index, unit_idx, units[unit_idx])
-
 
 
 ## VISUALS ONLY
