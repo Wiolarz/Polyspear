@@ -80,6 +80,7 @@ const BATTLE_MAP_TILES_PATH = "res://Resources/Battle/Battle_tiles/"
 const WORLD_MAP_TILES_PATH = "res://Resources/World/World_tiles/"
 const SYMBOLS_PATH = "res://Resources/Battle/Symbols/"
 const BATTLE_BOTS_PATH = "res://Resources/Battle/Bots"
+const ARMY_PRESETS_PATH = "res://Resources/Presets/Custom_Armies/"
 
 const EMPTY_SYMBOL_PATH = "res://Resources/Battle/Symbols/empty.tres"
 @onready var EMPTY_SYMBOL : DataSymbol = load(EMPTY_SYMBOL_PATH)
