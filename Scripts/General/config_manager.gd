@@ -58,13 +58,14 @@ enum SymbolAnimationType
 	MELEE_ATTACK,
 	BLOCK,
 	TELEPORTING_PROJECTILE,
-	COUNTER_ATTACK
+	COUNTER_ATTACK,
+	FAILED_ATTACK
 }
 
 #endregion Animations
 
 
-#region Paths
+#region File Paths
 
 ## Folder Paths
 const BATTLE_MAPS_PATH = "res://Resources/Battle/Battle_Maps/"
@@ -78,7 +79,6 @@ const SENTINEL_TILE_PATH = "res://Resources/World/World_tiles/sentinel.tres"
 const BATTLE_MAP_TILES_PATH = "res://Resources/Battle/Battle_tiles/"
 const WORLD_MAP_TILES_PATH = "res://Resources/World/World_tiles/"
 const SYMBOLS_PATH = "res://Resources/Battle/Symbols/"
-const SPELLS_PATH = "res://Resources/Battle/Battle_Spells/"
 const BATTLE_BOTS_PATH = "res://Resources/Battle/Bots"
 
 const EMPTY_SYMBOL_PATH = "res://Resources/Battle/Symbols/empty.tres"
@@ -112,7 +112,9 @@ var RACES_LIST : Array[DataRace] = [
 
 const UNIT_FORM_SCENE = preload("res://Scenes/Form/UnitForm.tscn")
 var HEX_TILE_FORM_SCENE := load("res://Scenes/Form/TileForm.tscn") as PackedScene
-const SUMMON_BUTTON_TEXTURE:Texture2D = preload("res://Art/battle_map/grass.png")
+
+const DEPLOY_BUTTON_TEXTURE : Texture2D = preload("res://Art/battle_map/grass.png")
+const EMPTY_SLOT_TEXTURE : Texture2D = preload("res://Art/items/hex_border_light.png")
 
 const DEFAULT_ARMY_FORM = preload("res://Scenes/Form/ArmyForm.tscn")
 
@@ -140,7 +142,18 @@ const tier_2_passive_1 : String = "res://Resources/Battle/Battle_Spells/Heroes_P
 ## used for passive that replaces all empty symbols with weak weapons
 const weak_weapon : String = "res://Resources/Battle/Symbols/club.tres"
 
-#endregion Paths
+const BALLISTA_PATH : String = "res://Resources/Battle/Units/Neutral/ballista.tres"
+
+const SUMMONING_SICKNESS_PATH : String = "res://Resources/Battle/Battle_Spells/Battle_Magic_Effects/summoning_sickness.tres"
+
+#endregion File Paths
+
+
+#region Scene Tree Paths
+
+var NODE_GAMESETUP_PATH : String = "/root/UI/MainMenu/MainContainer/HostLobby/HostMenu/PanelContainer/GameSetup"
+
+#endregion Scene Tree Paths
 
 
 #region Colors
@@ -153,6 +166,15 @@ var TEAM_COLORS : Array[DataPlayerColor] = [
 	DataPlayerColor.create("green", Color(0.0, 0.9, 0.0)),
 	DataPlayerColor.create("yellow", Color(0.9, 0.8, 0.0)),
 ]
+var TEAM_COLOR_TEXTURES : Array[Texture2D] = [
+	preload("res://Art/player_colors/blue_color.png"),
+	preload("res://Art/player_colors/orange_color.png"),
+	preload("res://Art/player_colors/red_color.png"),
+	preload("res://Art/player_colors/purple_color.png"),
+	preload("res://Art/player_colors/green_color.png"),
+	preload("res://Art/player_colors/yellow_color.png"),
+]
+var NEUTRAL_COLOR_TEXTURE : Texture2D = preload("res://Art/player_colors/gray_color.png")
 
 var NEUTRAL_COLOR := \
 	DataPlayerColor.create_with_texture("neutral", Color(0.5, 0.5, 0.5), \
@@ -192,6 +214,8 @@ const POLYAPI_BASE_URL = "https://polyserver.onrender.com/"
 # for tests:
 # const POLYAPI_BASE_URL = "http://localhost:3001/"
 
+const DEFAULT_PLAYER_NAME = "player"
+
 #endregion Multiplayer
 
 
@@ -209,8 +233,12 @@ const CYCLONE_MANA_THRESHOLD = 3
 
 const HERO_LEVEL_CAP = 7
 
+## TODO allign it to the race weakest hero
+const CITY_MAX_ARMY_SIZE = 2
+
 func get_start_goods() -> Goods:
-	return Goods.new(10,5,3)
+	#return Goods.new(10,5,3)
+	return Goods.new(30,15,10)
 
 const WORLD_MOVABLE_TILES = [
 	"EMPTY",

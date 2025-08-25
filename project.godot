@@ -16,8 +16,13 @@ run/main_scene="res://Scenes/MainScene.tscn"
 config/features=PackedStringArray("4.2", "GL Compatibility")
 config/icon="res://Art/world_map/outpost_wood.png"
 
+[audio]
+
+buses/default_bus_layout="res://Audio/default_bus_layout.tres"
+
 [autoload]
 
+AUDIO="*res://Scenes/AudioManager.tscn"
 CFG="*res://Scripts/General/config_manager.gd"
 BG="*res://Scripts/UI/background.gd"
 WS="*res://Scripts/World/world_state.gd"
@@ -27,6 +32,7 @@ IM="*res://Scripts/General/input_manager.gd"
 NET="*res://Scripts/Multiplayer/NET_manager.gd"
 UI="*res://Scripts/UI/ui_manager.gd"
 ANIM="*res://Scripts/General/animation_manager.gd"
+DISCORD="*res://Scripts/General/discord_manager.gd"
 
 [debug]
 
@@ -48,7 +54,7 @@ export/convert_text_resources_to_binary=false
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/gut/plugin.cfg")
+enabled=PackedStringArray("res://addons/discord-rpc-gd/plugin.cfg", "res://addons/gut/plugin.cfg")
 
 [file_customization]
 

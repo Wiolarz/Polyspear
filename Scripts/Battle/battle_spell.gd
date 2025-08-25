@@ -3,10 +3,13 @@ extends Resource
 
 @export var name : String = ""
 @export var icon_path : String = ""
+@export_multiline var description : String = ""
 
+## optional, used when spell applies an effect to a unit
 @export var spell_effects : Array[BattleMagicEffect]
 
-@export_multiline var description : String = ""
+## optional, used only by summon spells
+@export var summon_unit_data : DataUnit
 
 ## used to debug
 func _to_string() -> String:
@@ -25,10 +28,11 @@ func enchanted_unit_dies() -> void:
 			return
 
 
-
+## Based of event type applies effect to the target unit [br]
+## each new effects needs to be addded here
 func cast_effect(target : Unit, event_type : String) -> void:
 	match name:
-		"Vengeance", "Blood Ritual", "Martyr":
+		"Vengeance", "Blood Ritual", "Martyr", "Anchor":
 			if event_type == "casting":
 				target.try_adding_magic_effect(spell_effects[0].duplicate())
 

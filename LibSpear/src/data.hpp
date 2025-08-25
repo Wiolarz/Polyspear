@@ -65,7 +65,7 @@ struct Position {
 	std::strong_ordering operator<=>(const Position& other) const = default;
 
 	bool is_in_line_with(Position other) const {
-		auto delta = *this - other;
+		Position delta = *this - other;
 		return delta.x == -delta.y || delta.x == 0 || delta.y == 0;
 	}
 
@@ -238,7 +238,7 @@ const std::array<Position, 6> DIRECTIONS = {
 
 
 inline int get_rotation(Position origin, Position relative) {
-	auto pos = relative - origin;
+	Position pos = relative - origin;
 	for(int i = 0; i < 6; i++) {
 		if(DIRECTIONS[i] == pos) {
 			return i;

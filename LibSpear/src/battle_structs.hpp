@@ -46,9 +46,10 @@ struct UnitID {
 static const UnitID NO_UNIT = UnitID(-1,-1);
 static UnitID _err_return_dummy_uid = UnitID(-1,-1);
 
+using EffectMask = uint8_t;
 
 struct Effect {
-	uint8_t mask = 0;
+	EffectMask mask = 0;
 	int8_t counter = 0;
 };
 
@@ -68,11 +69,12 @@ private:
 	UnitID _martyr_id = NO_UNIT;
 public:
 
-	static const uint8_t FLAG_ON_SWAMP = 0x01;
-	static const uint8_t FLAG_EFFECT_VENGEANCE = 0x02;
-	static const uint8_t FLAG_EFFECT_DEATH_MARK = 0x04;
-	static const uint8_t FLAG_EFFECT_MARTYR = 0x08;
-	static const uint8_t FLAG_EFFECT_BLOOD_CURSE = 0x10;
+	static const EffectMask FLAG_ON_SWAMP = 0x01;
+	static const EffectMask FLAG_EFFECT_VENGEANCE = 0x02;
+	static const EffectMask FLAG_EFFECT_DEATH_MARK = 0x04;
+	static const EffectMask FLAG_EFFECT_MARTYR = 0x08;
+	static const EffectMask FLAG_EFFECT_BLOOD_CURSE = 0x10;
+	/// Add new effect types/flags before this line
 
 	Symbol symbol_when_rotated(int side) const {
 		if(flags & FLAG_ON_SWAMP) {
@@ -88,11 +90,11 @@ public:
 		return sides[0];
 	}
 
-	bool try_apply_effect(uint8_t mask, uint8_t duration = DEFAULT_EFFECT_DURATION) {
-		for(auto& eff : effects) {
+	bool try_apply_effect(EffectMask mask, uint8_t duration = DEFAULT_EFFECT_DURATION) {
+		for(Effect& eff : effects) {
 			if(eff.mask == 0) {
 				flags |= mask;
-				eff.mask |= mask;
+				eff.mask = mask;
 				eff.counter = duration;
 				return true;
 			}
@@ -110,7 +112,8 @@ public:
 		remove_effect(FLAG_EFFECT_MARTYR);
 	}
 
-	void remove_effect(uint8_t mask) {
+	void remove_effect(EffectMask mask) {
+		flags &= ~mask;
 		for(auto& eff : effects) {
 			eff.mask &= ~mask;
 		}
@@ -120,12 +123,12 @@ public:
 		return _martyr_id;
 	}
 
-	bool is_effect_active(uint8_t effect_mask) const {
+	bool is_effect_active(EffectMask effect_mask) const {
 		return (flags & effect_mask);
 	}
 
 	void on_turn_end() {
-		for(auto& eff : effects) {
+		for(Effect& eff : effects) {
 			if(eff.counter == 0 || eff.mask == 0) {
 				continue;
 			}
@@ -161,6 +164,7 @@ public:
 		else if(str == godot::String("Blood Ritual")) {
 			return FLAG_EFFECT_BLOOD_CURSE;
 		}
+		/// Add new effect-string mappings before this line
 		else {
 			ERR_FAIL_V_MSG(0, std::format("Unknown effect: '{}'", str.ascii().get_data()).c_str());
 		}
@@ -173,8 +177,8 @@ public:
 		}
 	}
 
-	int get_effect_duration_counter(uint8_t mask) const {
-		for(auto& eff : effects) {
+	int get_effect_duration_counter(EffectMask mask) const {
+		for(const Effect& eff : effects) {
 			if(eff.mask & mask) {
 				return eff.counter;
 			}
@@ -259,6 +263,9 @@ struct std::hash<Move> {
 	}
 };
 
+/// Reference to unit and its army - please use it only as a
+/// temporary convenience value and only ever use it as a local variable.
+/// Do not pass it to functions/objects - pass UnitIDs instead
 struct UnitRef {
 	Unit& unit;
 	Army& army;
@@ -270,6 +277,18 @@ enum class TeamRelation {
 	ALLY,
 	ENEMY,
 	ANY
+};
+
+
+enum IncludeSelf : bool {
+	INCLUDE_SELF = true,
+	NO_INCLUDE_SELF = false
+};
+
+
+enum IncludeImpassable : bool {
+	INCLUDE_IMPASSABLE = true,
+	NO_INCLUDE_IMPASSABLE = false
 };
 
 #endif //BATTLE_STRUCTS_H

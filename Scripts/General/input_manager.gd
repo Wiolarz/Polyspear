@@ -90,6 +90,7 @@ func start_game(world_state : SerializableWorldState = null,
 
 		_start_game_battle(battle_state, replay_template)
 		UI.set_camera(E.CameraPosition.BATTLE)
+		DISCORD.change_state("Playing custom battle")
 
 	elif game_setup_info.is_in_mode_world():
 		# in world mode we can have no states, only world state or both states
@@ -104,6 +105,7 @@ func start_game(world_state : SerializableWorldState = null,
 			for army_coord in battle_state.world_armies:
 				armies.append(WS.get_army_at(army_coord))
 			WM.start_combat(armies, battle_state.combat_coord, battle_state)
+		DISCORD.change_state("Exploring the world map")
 
 	if NET.server:
 		NET.server.broadcast_start_game()
@@ -276,6 +278,7 @@ func go_to_main_menu():
 	if CFG.FULLSCREEN_AUTO_TOGGLE:
 		UI.set_fullscreen(false)
 
+	AUDIO.play_music("menu")
 	in_map_editor = false
 	BM.close_when_quitting_game()
 	WM.clear_world()

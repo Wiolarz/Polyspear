@@ -61,12 +61,14 @@ class BattleManagerFast {
 	void _process_spell(UnitID uid, int8_t spell_id, Position target);
 	void _update_move_end();
 	void _update_turn_end();
+	void _check_blood_curse(int8_t army_id);
 
 	void _spells_append_moves();
 
-	void _append_moves_unit(UnitID uid, int8_t spell_id, TeamRelation relation, bool include_self);
-	void _append_curse_moves_unit(UnitID uid, int8_t spell_id, TeamRelation relation, bool include_self, int8_t min_units);
-	void _append_moves_all_tiles(UnitID uid, int8_t spell_id, bool include_impassable);
+	void _append_moves_unit(UnitID uid, int8_t spell_id, TeamRelation relation, IncludeSelf include_self);
+  void _append_curse_moves_unit(UnitID uid, int8_t spell_id, TeamRelation relation, IncludeSelf include_self, int8_t min_units);
+	void _append_moves_all_tiles(UnitID uid, int8_t spell_id, IncludeImpassable include_impassable);
+
 	void _append_moves_lines(UnitID uid, int8_t spell_id, Position center, int range_min, int range_max);
 	void _append_moves_line(UnitID uid, int8_t spell_id, Position center, uint8_t dir, int range_min, int range_max);
 
@@ -193,6 +195,7 @@ public:
 
 	void set_unit_effect(int army, int idx, godot::String effect, int duration);
 	void set_unit_martyr(int army, int idx, int martyr_id, int duration);
+	void set_unit_solo_martyr(int army, int martyr_id, int duration);
 
 	void insert_spell(int army, int unit, int spell_id, godot::String spell_name);
 	void set_army_cyclone_timer(int army, int timer);
@@ -225,7 +228,7 @@ public:
 	int get_unit_spell_count(int army, int idx);
 
 	Vector2i get_unit_position(int army, int unit) const {
-		auto p = bm._armies[army].units[unit].pos;
+		Position p = bm._armies[army].units[unit].pos; 
 		return Vector2i(p.x, p.y);
 	}
 

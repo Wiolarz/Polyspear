@@ -14,7 +14,7 @@ var camera : PolyCamera
 var current_camera_position = E.CameraPosition.WORLD
 
 signal update_settings()
-
+signal resources_list_changed()
 
 func _ready():
 	process_mode = Node.PROCESS_MODE_ALWAYS
@@ -60,22 +60,26 @@ func _hide_all():
 func go_to_main_menu():
 	_hide_all()
 	main_menu.open_main_menu()
+	DISCORD.change_state("Sitting in main menu")
 
 
 func go_to_unit_editor():
 	_hide_all()
 	unit_editor.show()
+	AUDIO.play_music("battle_drums")
 
 
 func go_to_tile_editor():
 	_hide_all()
 	tile_editor.show()
+	AUDIO.play_music("battle_drums")
 
 
 ## TEMP
 func go_to_map_editor():
 	_hide_all()
 	map_editor.open_draw_menu()
+	AUDIO.play_music("battle_drums")
 	BG.set_player_colors(CFG.NEUTRAL_COLOR)
 
 
@@ -169,10 +173,10 @@ func grid_planning_input_listener(tile_coord : Vector2i, \
 		is_it_pressed : bool):
 	#print("tile ", tile_coord)
 
-	if not tile_type == GameSetupInfo.GameMode.BATTLE:
-		printerr("Support for drawing arrows in different modes isn't supported yet")
-		# There are plans for right click to have a different purpouse in World Map
-		# drawing could be reanabled there with addition of holding alt
+	if tile_type == GameSetupInfo.GameMode.WORLD and is_it_pressed:
+		# basic right click has different purpose in World Map
+		#TODO classic drawing could be reanabled with addition of holding alt
+		WM.show_army_units(tile_coord)
 		return
 
 	BM.planning_input(tile_coord, is_it_pressed)
@@ -194,12 +198,12 @@ func switch_camera() -> void:
 			set_camera(E.CameraPosition.WORLD)
 
 
-func set_camera(pos : E.CameraPosition) -> void:
+func set_camera(pos : E.CameraPosition, reset_position : bool = true) -> void:
 	current_camera_position = pos
 	if pos == E.CameraPosition.BATTLE:
-		camera.set_bounds(BM.get_bounds_global_position())
+		camera.set_bounds(BM.get_bounds_global_position(), reset_position)
 	else :
-		camera.set_bounds(WM.get_bounds_global_position())
+		camera.set_bounds(WM.get_bounds_global_position(), reset_position)
 
 
 ## NOTE: fullscreen uses old style exclusive fullscreen because of Godot bug

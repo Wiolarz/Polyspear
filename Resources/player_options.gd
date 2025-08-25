@@ -89,6 +89,22 @@ extends Resource
 #endregion DEBUG Settings
 
 
+#region Audio
+
+## Slider value, ranging from 0 to 100
+@export var volume_master : float = 100.0
+@export var volume_music : float = 100.0
+@export var volume_game : float = 100.0
+@export var volume_ui : float = 100.0
+
+@export var volume_master_muted : bool = false
+@export var volume_music_muted : bool = false
+@export var volume_game_muted : bool = false
+@export var volume_ui_muted : bool = false
+
+#endregion Audio
+
+
 #region Multiplayer
 
 @export var login : String

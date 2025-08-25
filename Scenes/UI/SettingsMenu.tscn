@@ -108,10 +108,10 @@ title = "Master"
 layout_mode = 2
 title = "Music"
 
-[node name="Game FX" parent="Margin/Scroll/VBox/VolumeContainer/Sliders" instance=ExtResource("2_brx2j")]
+[node name="Game" parent="Margin/Scroll/VBox/VolumeContainer/Sliders" instance=ExtResource("2_brx2j")]
 layout_mode = 2
 title = "Game FX"
 
-[node name="GUI" parent="Margin/Scroll/VBox/VolumeContainer/Sliders" instance=ExtResource("2_brx2j")]
+[node name="UI" parent="Margin/Scroll/VBox/VolumeContainer/Sliders" instance=ExtResource("2_brx2j")]
 layout_mode = 2
 title = "GUI"
