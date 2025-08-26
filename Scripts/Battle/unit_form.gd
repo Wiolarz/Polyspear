@@ -208,6 +208,7 @@ func anim_magic(effect: BattleMagicEffect):
 	add_child(sprite)
 	sprite.global_rotation = 0
 	ANIM.main_tween().tween_property(sprite, "visible", true, 0.0)
+	ANIM.main_tween().tween_callback(AUDIO.play.bind("magic_effect"))
 	ANIM.main_tween().tween_property(sprite, "scale", Vector2(6.0, 6.0), 0.7)
 	ANIM.main_tween().parallel().tween_property(sprite, "modulate:a", 0.0, 0.7)
 	ANIM.main_tween().tween_callback(sprite.queue_free)
