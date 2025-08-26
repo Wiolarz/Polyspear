@@ -105,9 +105,11 @@ const CAMPAIGN_BATTLES_ELVES_PATH = "res://Resources/Campaign/Elves/"
 
 var RACE_ELVES : DataRace = load("res://Resources/Races/elf.tres")
 var RACE_ORCS : DataRace = load("res://Resources/Races/orc.tres")
+var RACE_UNDEAD : DataRace = load("res://Resources/Races/undead.tres")
 var RACES_LIST : Array[DataRace] = [
 	RACE_ELVES,
 	RACE_ORCS,
+	RACE_UNDEAD,
 ]
 
 
@@ -124,13 +126,13 @@ const PLAN_POINTER_SCENE = preload("res://Scenes/UI/Battle/BattlePlanPointer.tsc
 const PLAN_ARROW_END_SCENE = preload("res://Scenes/UI/Battle/BattlePlanArrowEnd.tscn")
 
 # Neutral Units armies
-const HUNT_WOOD_PATH : String = "res://Resources/Presets/Army/hunt_wood/"
-const HUNT_IRON_PATH : String = "res://Resources/Presets/Army/hunt_iron/"
-const HUNT_RUBY_PATH : String = "res://Resources/Presets/Army/hunt_ruby/"
+const HUNT_WOOD_PATH : String = "res://Resources/Presets/World_Armies/hunt_wood/"
+const HUNT_IRON_PATH : String = "res://Resources/Presets/World_Armies/hunt_iron/"
+const HUNT_RUBY_PATH : String = "res://Resources/Presets/World_Armies/hunt_ruby/"
 
-const OUTPOST_WOOD_PATH : String = "res://Resources/Presets/Army/outpost_defenders/outpost_wood_defender.tres"
-const OUTPOST_IRON_PATH : String = "res://Resources/Presets/Army/outpost_defenders/outpost_iron_defender.tres"
-const OUTPOST_RUBY_PATH : String = "res://Resources/Presets/Army/outpost_defenders/outpost_ruby_defender.tres"
+const OUTPOST_WOOD_PATH : String = "res://Resources/Presets/World_Armies/outpost_defenders/outpost_wood_defender.tres"
+const OUTPOST_IRON_PATH : String = "res://Resources/Presets/World_Armies/outpost_defenders/outpost_iron_defender.tres"
+const OUTPOST_RUBY_PATH : String = "res://Resources/Presets/World_Armies/outpost_defenders/outpost_ruby_defender.tres"
 
 #const HUNT_PATHS : Array[String] = [HUNT_WOOD_PATH, HUNT_IRON_PATH, HUNT_RUBY_PATH]
 
