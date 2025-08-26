@@ -248,7 +248,6 @@ func set_effects() -> void:
 	$RigidUI/SpellEffect2.texture = null
 	$RigidUI/SpellEffectCounter1.text = ""
 	$RigidUI/SpellEffectCounter2.text = ""
-	$RigidUI/TerrainEffect.texture = null
 	assert(entity.effects.size() <= 2, "Unit has too many spell effects")
 	for slot_idx in range(entity.effects.size()):
 		var spell_texture = load(entity.effects[slot_idx].icon_path)  #TEMP spell icon path
