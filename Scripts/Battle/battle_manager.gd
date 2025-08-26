@@ -624,10 +624,16 @@ func update_move_highlights():
 
 	# Process spell moves if spell selected, TODO magic consequences, check if BGS cloning is viable
 	if _battle_ui and _battle_ui.selected_spell != null:
-		for move in _battle_grid_state._get_magic_moves(_selected_unit, _battle_ui.selected_spell):
+
+		var magic_moves = _battle_grid_state._get_magic_moves(
+			_selected_unit,
+			_battle_ui.selected_spell
+		)
+
+		for move in magic_moves:
 			var highlight = CFG.PLAN_POINTER_SCENE.instantiate() # TODO maybe dedicated highlight gfx
 			highlight.position = BM.to_position(move.target_tile_coord)
-			highlight.z_index = 20
+			highlight.z_index = 2 # Render on top of the selected unit too
 			_move_highlights_node.add_child(highlight)
 		return
 
