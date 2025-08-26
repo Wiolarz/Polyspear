@@ -201,7 +201,7 @@ func anim_symbol(side : int, animation_type : int, target_coord: Vector2i = Vect
 func anim_magic(effect: BattleMagicEffect):
 	if not effect:
 		return
-	
+
 	var sprite = Sprite2D.new()
 	sprite.texture = load(effect.icon_path)
 	sprite.visible = true
@@ -209,6 +209,7 @@ func anim_magic(effect: BattleMagicEffect):
 	ANIM.main_tween().tween_property(sprite, "visible", true, 0.0)
 	ANIM.main_tween().tween_property(sprite, "scale", Vector2(6.0, 6.0), 0.7)
 	ANIM.main_tween().parallel().tween_property(sprite, "modulate:a", 0.0, 0.7)
+	ANIM.main_tween().tween_callback(sprite.queue_free)
 
 #endregion Animations
 

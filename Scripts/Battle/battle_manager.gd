@@ -439,7 +439,8 @@ func _on_unit_deployment(unit : Unit) -> void:
 				if tile.type in ["1_player_spawn", "2_player_spawn", "3_player_spawn", "4_player_spawn"]:
 					tile.get_node("Sprite2D").texture = load("res://Art/battle_map/grass_tile.png")
 
-	unit.unit_magic_effect.connect(_on_unit_magic_effect.bind(unit))  # spell icons UI
+	# TODO imo should be refactored
+	unit.unit_magic_effect.connect(func(_effect: BattleMagicEffect): _on_unit_magic_effect(unit))  # spell icons UI
 
 	unit.unit_died.connect(form.anim_die)
 	unit.unit_died.connect(_on_unit_death)  # TEXT BUBBLES

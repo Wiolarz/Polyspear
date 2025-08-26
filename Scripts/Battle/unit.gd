@@ -85,7 +85,7 @@ func move(new_coord : Vector2i, battle_tile : BattleGridState.BattleHex):
 	is_on_swamp = battle_tile.swamp
 	is_on_rock = battle_tile.hill
 	is_on_mana = battle_tile.mana
-	unit_magic_effect.emit()
+	unit_magic_effect.emit(null)
 
 	var old = coord
 	coord = new_coord
@@ -141,6 +141,6 @@ func try_adding_magic_effect(effect : BattleMagicEffect) -> bool:
 
 ## currently used only to update UI
 func effect_state_changed() -> void:
-	unit_magic_effect.emit()
+	unit_magic_effect.emit(null)
 
 #endregion Magic
