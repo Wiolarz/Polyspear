@@ -627,6 +627,7 @@ func update_move_highlights():
 		for move in _battle_grid_state._get_magic_moves(_selected_unit, _battle_ui.selected_spell):
 			var highlight = CFG.PLAN_POINTER_SCENE.instantiate() # TODO maybe dedicated highlight gfx
 			highlight.position = BM.to_position(move.target_tile_coord)
+			highlight.z_index = 20
 			_move_highlights_node.add_child(highlight)
 		return
 
