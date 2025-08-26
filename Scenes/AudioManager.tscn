@@ -31,7 +31,7 @@ bus = &"Game"
 
 [node name="MagicEffect" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("3_3tvte")
-pitch_scale = 1.83
+pitch_scale = 0.53
 max_polyphony = 2
 bus = &"Game"
 
