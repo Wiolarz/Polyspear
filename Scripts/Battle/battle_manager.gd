@@ -439,7 +439,8 @@ func _on_unit_deployment(unit : Unit) -> void:
 				if tile.type in ["1_player_spawn", "2_player_spawn", "3_player_spawn", "4_player_spawn"]:
 					tile.get_node("Sprite2D").texture = load("res://Art/battle_map/grass_tile.png")
 
-	unit.unit_magic_effect.connect(_on_unit_magic_effect.bind(unit))  # spell icons UI
+	# TODO imo should be refactored
+	unit.unit_magic_effect.connect(func(_effect: BattleMagicEffect): _on_unit_magic_effect(unit))  # spell icons UI
 
 	unit.unit_died.connect(form.anim_die)
 	unit.unit_died.connect(_on_unit_death)  # TEXT BUBBLES
@@ -594,7 +595,7 @@ func _try_select_unit(coord : Vector2i) -> bool:
 
 	_selected_unit = new_unit
 	_unit_to_unit_form[_selected_unit].set_selected(true)
-	_update_move_highlights(_selected_unit)
+	update_move_highlights()
 
 	if _scripted_battle:
 		var current_event := BattleEventDescription.generate_current_battle_event(_battle_grid_state)
@@ -613,17 +614,33 @@ func deselect_unit() -> void:
 	_selected_unit = null
 	_battle_ui.selected_spell = null
 	_battle_ui.reset_spells()
-	_update_move_highlights(null)
+	update_move_highlights()
 
 
-func _update_move_highlights(selected_unit: Unit):
+func update_move_highlights():
 	Helpers.remove_all_children(_move_highlights_node)
-	if not selected_unit:
+	if not _selected_unit:
+		return
+
+	# Process spell moves if spell selected, TODO magic consequences, check if BGS cloning is viable
+	if _battle_ui and _battle_ui.selected_spell != null:
+
+		var magic_moves = _battle_grid_state._get_magic_moves(
+			_selected_unit,
+			_battle_ui.selected_spell
+		)
+
+		for move in magic_moves:
+			var highlight = CFG.PLAN_POINTER_SCENE.instantiate() # TODO maybe dedicated highlight gfx
+			highlight.position = BM.to_position(move.target_tile_coord)
+			highlight.z_index = 2 # Render on top of the selected unit too
+			_move_highlights_node.add_child(highlight)
 		return
 
 	for move in _battle_grid_state.get_possible_moves():
-		if move.move_source != selected_unit.coord:
+		if move.move_source != _selected_unit.coord:
 			continue
+
 		if move.move_type != MoveInfo.TYPE_MOVE: # TODO highlighting other move types
 			continue
 

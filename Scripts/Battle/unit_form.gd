@@ -198,9 +198,20 @@ func anim_symbol(side : int, animation_type : int, target_coord: Vector2i = Vect
 
 
 
-func anim_magic():
-	# TODO
-	pass
+func anim_magic(effect: BattleMagicEffect):
+	if not effect:
+		return
+
+	var sprite := Sprite2D.new()
+	sprite.texture = load(effect.icon_path)
+	sprite.visible = false
+	add_child(sprite)
+	sprite.global_rotation = 0
+	ANIM.main_tween().tween_property(sprite, "visible", true, 0.0)
+	ANIM.main_tween().tween_callback(AUDIO.play.bind("magic_effect"))
+	ANIM.main_tween().tween_property(sprite, "scale", Vector2(6.0, 6.0), 0.7)
+	ANIM.main_tween().parallel().tween_property(sprite, "modulate:a", 0.0, 0.7)
+	ANIM.main_tween().tween_callback(sprite.queue_free)
 
 #endregion Animations
 
@@ -237,8 +248,7 @@ func set_effects() -> void:
 	$RigidUI/SpellEffect2.texture = null
 	$RigidUI/SpellEffectCounter1.text = ""
 	$RigidUI/SpellEffectCounter2.text = ""
-	$RigidUI/TerrainEffect.texture = null
-	assert(entity.effects.size() < 2, "Unit has too many spell effects")
+	assert(entity.effects.size() <= 2, "Unit has too many spell effects")
 	for slot_idx in range(entity.effects.size()):
 		var spell_texture = load(entity.effects[slot_idx].icon_path)  #TEMP spell icon path
 		spell_effects_slots[slot_idx].texture = spell_texture

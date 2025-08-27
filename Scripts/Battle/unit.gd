@@ -4,7 +4,7 @@ extends RefCounted # default
 signal unit_died()
 signal unit_turned()
 signal unit_moved()
-signal unit_magic_effect()
+signal unit_magic_effect(effect : BattleMagicEffect)
 
 const MAX_EFFECTS_PER_UNIT = 2
 
@@ -85,7 +85,7 @@ func move(new_coord : Vector2i, battle_tile : BattleGridState.BattleHex):
 	is_on_swamp = battle_tile.swamp
 	is_on_rock = battle_tile.hill
 	is_on_mana = battle_tile.mana
-	unit_magic_effect.emit()
+	unit_magic_effect.emit(null)
 
 	var old = coord
 	coord = new_coord
@@ -135,12 +135,12 @@ func try_adding_magic_effect(effect : BattleMagicEffect) -> bool:
 	if effects.size() >= MAX_EFFECTS_PER_UNIT:
 		return false
 	effects.append(effect)
-	unit_magic_effect.emit()
+	unit_magic_effect.emit(effect)
 	return true
 
 
 ## currently used only to update UI
 func effect_state_changed() -> void:
-	unit_magic_effect.emit()
+	unit_magic_effect.emit(null)
 
 #endregion Magic
