@@ -411,7 +411,9 @@ func load_spells(army_index : int, spells : Array[BattleSpell], preview : bool =
 	for spell in spells:
 		var button := TextureButton.new()
 
-		#TODO create a proper icon creation (after higher resolution update)
+		button.stretch_mode = TextureButton.STRETCH_KEEP_ASPECT
+		button.custom_minimum_size = Vector2(400, 400)
+		button.ignore_texture_size = true
 
 		button.texture_normal = CFG.DEPLOY_BUTTON_TEXTURE
 		button.texture_normal = load(spell.icon_path)
