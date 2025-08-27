@@ -36,7 +36,7 @@ func load_symbol(symbol : DataSymbol) -> void:
 
 	match symbol.defense_power:
 			0:
-				text_description += "Lack of Defense 0 - even weak attacks can kill this unit if its not defended by any symbol\n\n"
+				text_description += "Lack of Defense 0 - even weak attacks can kill this unit if its not defended by any melee weapon\n\n"
 			1:
 				pass
 			2:
