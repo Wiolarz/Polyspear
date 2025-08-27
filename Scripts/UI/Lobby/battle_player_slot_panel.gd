@@ -262,10 +262,10 @@ func init_race_list() -> void:
 	races_list.add_item(ALL_RACES_TEXT)
 	for race in CFG.RACES_LIST:
 		races_list.add_item(race.race_name)
-	races_list.item_selected.connect(selected_race.bind())
+	races_list.item_selected.connect(_on_race_selected .bind())
 
 
-func selected_race(race_index : int) -> void:
+func _on_race_selected (race_index : int) -> void:
 	if race_index == 0:
 		load_unit_buttons()
 		return
@@ -274,7 +274,6 @@ func selected_race(race_index : int) -> void:
 
 	selected_army_preset(0)  # reset unit selection
 	var race : DataRace = CFG.RACES_LIST[race_index]
-	#new_army_preset.units
 
 	unit_paths = FileSystemHelpers.list_files_in_folder(CFG.UNITS_PATH, true, true)
 	for index in buttons_units.size():
@@ -297,7 +296,6 @@ func init_army_list() -> void:
 
 func selected_army_preset(army_preset_index : int) -> void:
 	var new_army_preset : PresetArmy = load(army_paths[army_preset_index])
-	#new_army_preset.units
 	var slot_index : int = setup_ui.slot_to_index(self) # determine on which slot player is
 
 	var slot : Slot = IM.game_setup_info.slots[slot_index]
