@@ -111,6 +111,10 @@ text = "Unit3"
 layout_mode = 2
 text = "Unit3"
 
+[node name="Button6" type="Button" parent="RecruitUnits/UnitsToBuy"]
+layout_mode = 2
+text = "Unit3"
+
 [node name="VisitingHeroArmy" type="VBoxContainer" parent="RecruitUnits"]
 layout_mode = 2
 
