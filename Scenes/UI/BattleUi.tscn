@@ -7,6 +7,7 @@
 [ext_resource type="Texture2D" uid="uid://ba68ce0dm6at6" path="res://Art/elf_spearmen.png" id="5_51fsi"]
 [ext_resource type="Texture2D" uid="uid://nqopde6ucyqy" path="res://Art/items/big_sword.png" id="5_agdfp"]
 [ext_resource type="Texture2D" uid="uid://i280h28mqf1x" path="res://Art/units/neutral/wood_dryad.png" id="6_mh66x"]
+[ext_resource type="Texture2D" uid="uid://d1muvxfwq45g1" path="res://Art/magic/spell_icons/fireball.png" id="6_k3xvn"]
 
 [node name="BattleUI" type="CanvasLayer"]
 script = ExtResource("1_0rgae")
@@ -297,6 +298,7 @@ horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="SpellBook" type="VBoxContainer" parent="."]
+visible = false
 custom_minimum_size = Vector2(200, 500)
 anchors_preset = 4
 anchor_top = 0.5
