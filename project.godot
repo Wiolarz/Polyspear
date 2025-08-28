@@ -10,11 +10,11 @@ config_version=5
 
 [application]
 
-config/name="Polyspear"
-config/version="0.2.0"
+config/name="Foray"
+config/version="0.8.1"
 run/main_scene="res://Scenes/MainScene.tscn"
 config/features=PackedStringArray("4.2", "GL Compatibility")
-config/icon="res://Art/world_map/outpost_wood.png"
+config/icon="res://Art/magic/spell_icons/blood_curse.png"
 
 [audio]
 
