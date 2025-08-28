@@ -14,11 +14,11 @@ ruby = 0
 
 [resource]
 script = ExtResource("3_vtghw")
-unit_name = "Spearmen"
+unit_name = "Hammerer"
 texture_path = "res://Art/units/cyclops/cyclops_4_hammer.png"
 symbols = Array[Resource("res://Resources/Battle/data_symbol.gd")]([ExtResource("4_mhe5v"), ExtResource("4_mhe5v"), ExtResource("6_5xegs"), ExtResource("6_5xegs"), ExtResource("6_5xegs"), ExtResource("4_mhe5v")])
 cost = SubResource("Resource_8qfgt")
 required_building = ExtResource("2_uhbwr")
-level = 1
+level = 4
 mana = 0
 spells = Array[Resource("res://Scripts/Battle/battle_spell.gd")]([])

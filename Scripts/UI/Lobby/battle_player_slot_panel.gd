@@ -286,7 +286,6 @@ func _on_race_selected (race_index : int) -> void:
 			button.item_selected.connect(unit_in_army_changed.bind(index))
 
 
-
 func init_army_list() -> void:
 	army_preset_list.clear()
 	for army_path in army_paths:

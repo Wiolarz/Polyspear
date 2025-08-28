@@ -21,5 +21,5 @@ symbols = Array[Resource("res://Resources/Battle/data_symbol.gd")]([ExtResource(
 cost = SubResource("Resource_vofdp")
 required_building = ExtResource("2_ym8x5")
 level = 6
-mana = 6
+mana = 4
 spells = Array[Resource("res://Scripts/Battle/battle_spell.gd")]([ExtResource("4_fhb2r")])

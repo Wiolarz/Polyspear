@@ -106,10 +106,12 @@ const CAMPAIGN_BATTLES_ELVES_PATH = "res://Resources/Campaign/Elves/"
 var RACE_ELVES : DataRace = load("res://Resources/Races/elf.tres")
 var RACE_ORCS : DataRace = load("res://Resources/Races/orc.tres")
 var RACE_UNDEAD : DataRace = load("res://Resources/Races/undead.tres")
+var RACE_CYCLOPS : DataRace = load("res://Resources/Races/cyclops.tres")
 var RACES_LIST : Array[DataRace] = [
 	RACE_ELVES,
 	RACE_ORCS,
 	RACE_UNDEAD,
+	RACE_CYCLOPS,
 ]
 
 

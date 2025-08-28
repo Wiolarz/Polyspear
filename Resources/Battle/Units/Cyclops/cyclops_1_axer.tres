@@ -15,7 +15,7 @@ ruby = 0
 
 [resource]
 script = ExtResource("3_bksf1")
-unit_name = "Spearmen"
+unit_name = "Axer"
 texture_path = "res://Art/units/cyclops/cyclops_1_axer.png"
 symbols = Array[Resource("res://Resources/Battle/data_symbol.gd")]([ExtResource("4_ifvq8"), ExtResource("5_326h0"), ExtResource("5_ssn8t"), ExtResource("5_ssn8t"), ExtResource("5_ssn8t"), ExtResource("5_326h0")])
 cost = SubResource("Resource_8qfgt")

@@ -31,7 +31,7 @@ var currently_active_unit : Unit = null
 
 var number_of_mana_wells : int = 0
 var cyclone_target : ArmyInBattleState
-const MANA_WELL_POWER : int = 100
+const MANA_WELL_POWER : int = 5
 
 #TEMP HACK for proper awarding of exp in spear kills
 var spear_holding_killer_teams : Array[int] = []
