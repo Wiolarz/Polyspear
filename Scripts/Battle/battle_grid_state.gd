@@ -994,6 +994,7 @@ func mana_values_changed() -> void:
 	cyclone_target = current_worst
 
 	var mana_difference = current_best.mana_points - current_worst.mana_points
+	## TODO consider moving it to a sepereta balance file instead of CFG
 	var new_cylone_counter = 0
 	if mana_difference >= 11:
 		new_cylone_counter = 5

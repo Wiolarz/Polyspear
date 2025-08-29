@@ -55,7 +55,7 @@ func apply_graphics(template : DataUnit, color : DataPlayerColor):
 	var unit_texture = load(template.texture_path) as Texture2D
 	_set_texture(unit_texture)
 	_apply_color_texture(color)
-	_apply_level_and_mana_number(template.level, template.mana)
+	_apply_level_and_mana_numbers(template.level, template.mana)
 
 	for side in range(0,6):
 		var symbol_texture
@@ -106,7 +106,7 @@ func _apply_color_texture(color : DataPlayerColor) -> void:
 		color.color)
 
 
-func _apply_level_and_mana_number(level : int, mana : int) -> void:
+func _apply_level_and_mana_numbers(level : int, mana : int) -> void:
 	const roman_numbers = ["", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"]
 	if level > 10 or level < 0 and mana > 10 or mana < 0:
 		assert(false, "Design wise higher level units don't make sense")

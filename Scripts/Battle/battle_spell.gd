@@ -11,6 +11,7 @@ extends Resource
 ## optional, used only by summon spells
 @export var summon_unit_data : DataUnit
 
+##STUB category
 @export_category("restrictions for spell targeting")
 
 ## -1 infinite | 0 allows to cast on itself
