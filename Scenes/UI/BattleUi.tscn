@@ -5,8 +5,8 @@
 [ext_resource type="Texture2D" uid="uid://cukwcwy4fikm1" path="res://Art/elf_hero_noble.png" id="3_arbmx"]
 [ext_resource type="PackedScene" uid="uid://c2tjldwjynnry" path="res://Scenes/UI/GameChat.tscn" id="5_10swj"]
 [ext_resource type="Texture2D" uid="uid://ba68ce0dm6at6" path="res://Art/elf_spearmen.png" id="5_51fsi"]
-[ext_resource type="Texture2D" uid="uid://nqopde6ucyqy" path="res://Art/items/big_sword.png" id="5_agdfp"]
-[ext_resource type="Texture2D" uid="uid://i280h28mqf1x" path="res://Art/units/neutral/wood_dryad.png" id="6_mh66x"]
+[ext_resource type="Texture2D" uid="uid://1hbpqpqeo60k" path="res://Art/magic/spell_icons/blood_curse.png" id="5_mgkn6"]
+[ext_resource type="Texture2D" uid="uid://d1muvxfwq45g1" path="res://Art/magic/spell_icons/fireball.png" id="6_7sot2"]
 
 [node name="BattleUI" type="CanvasLayer"]
 script = ExtResource("1_0rgae")
@@ -304,15 +304,17 @@ anchor_bottom = 0.5
 offset_left = 15.0
 grow_vertical = 2
 
-[node name="TextureButton" type="TextureButton" parent="SpellBook"]
-layout_mode = 2
-texture_normal = ExtResource("5_agdfp")
-ignore_texture_size = true
-
-[node name="TextureButton2" type="TextureButton" parent="SpellBook"]
+[node name="ExampleSpell" type="TextureButton" parent="SpellBook"]
 custom_minimum_size = Vector2(200, 200)
 layout_mode = 2
-texture_normal = ExtResource("6_mh66x")
+texture_normal = ExtResource("5_mgkn6")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="ExampleSpell2" type="TextureButton" parent="SpellBook"]
+custom_minimum_size = Vector2(200, 200)
+layout_mode = 2
+texture_normal = ExtResource("6_7sot2")
 ignore_texture_size = true
 stretch_mode = 0
 

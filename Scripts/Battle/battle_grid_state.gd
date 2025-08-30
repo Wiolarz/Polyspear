@@ -31,7 +31,7 @@ var currently_active_unit : Unit = null
 
 var number_of_mana_wells : int = 0
 var cyclone_target : ArmyInBattleState
-const MANA_WELL_POWER : int = 100
+const MANA_WELL_POWER : int = 5
 
 #TEMP HACK for proper awarding of exp in spear kills
 var spear_holding_killer_teams : Array[int] = []
@@ -992,8 +992,22 @@ func mana_values_changed() -> void:
 			current_best = army
 
 	cyclone_target = current_worst
+
 	var mana_difference = current_best.mana_points - current_worst.mana_points
-	var new_cylone_counter = CFG.BIG_CYCLONE_COUNTER_VALUE
+	## TODO consider moving it to a sepereta balance file instead of CFG
+	var new_cylone_counter = 0
+	if mana_difference >= 11:
+		new_cylone_counter = 5
+	elif mana_difference >= 8:
+		new_cylone_counter = 10
+	elif mana_difference >= 4:
+		new_cylone_counter = 15
+	elif mana_difference >= 2:
+		new_cylone_counter = 20
+	elif mana_difference == 1:
+		new_cylone_counter = CFG.BIG_CYCLONE_COUNTER_VALUE
+
+
 	if mana_difference > CFG.CYCLONE_MANA_THRESHOLD:
 		new_cylone_counter = CFG.SMALL_CYCLONE_COUNTER_VALUE
 
