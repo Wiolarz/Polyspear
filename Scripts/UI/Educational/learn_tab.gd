@@ -8,7 +8,7 @@ extends Panel
 }
 
 @onready var practice_tabs_paired_with_scene = {
-	CFG.PracitceTabs.BASIC: get_node("MainContainer/Tutorials"),
+	CFG.PracitceTabs.BASIC: get_node("MainContainer/WikiIntroduction"),
 	CFG.PracitceTabs.TUTORIAL: get_node("MainContainer/Tutorials"),
 	CFG.PracitceTabs.PUZZLE: get_node("MainContainer/Puzzles"),
 	CFG.PracitceTabs.CAMPAIGN: get_node("MainContainer/CampaignBattles"),
@@ -18,13 +18,13 @@ extends Panel
 	CFG.BattleWiki.SYMBOLS_WIKI: get_node("MainContainer/WikiSymbols"),
 	CFG.BattleWiki.MAGIC_WIKI: get_node("MainContainer/WikiMagic"),
 	CFG.BattleWiki.TERRAIN: get_node("MainContainer/WikiBattleTerrain"),
-	CFG.BattleWiki.MAGIC_CYCLONE: get_node("MainContainer/WikiSymbols"),
+	CFG.BattleWiki.MAGIC_CYCLONE: get_node("MainContainer/WikiMagicCyclone"),
 }
 
 @onready var world_wiki_tabs_paired_with_scene = {
 	CFG.WorldWiki.FACTIONS: get_node("MainContainer/WikiWorldTerrain"),
 	CFG.WorldWiki.HEROES: get_node("MainContainer/WikiWorldTerrain"),
-	CFG.WorldWiki.ECONOMY: get_node("MainContainer/WikiWorldTerrain"),
+	CFG.WorldWiki.ECONOMY: get_node("MainContainer/WikiEconomy"),
 	CFG.WorldWiki.BUILDINGS: get_node("MainContainer/WikiWorldTerrain"),
 	CFG.WorldWiki.TERRAIN: get_node("MainContainer/WikiWorldTerrain"),
 	CFG.WorldWiki.RITUALS: get_node("MainContainer/WikiWorldTerrain"),

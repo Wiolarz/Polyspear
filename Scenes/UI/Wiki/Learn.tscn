@@ -1,6 +1,7 @@
-[gd_scene load_steps=9 format=3 uid="uid://hxaial4lcwu7"]
+[gd_scene load_steps=12 format=3 uid="uid://hxaial4lcwu7"]
 
 [ext_resource type="Script" path="res://Scripts/UI/Educational/learn_tab.gd" id="1_6475f"]
+[ext_resource type="PackedScene" uid="uid://dffua4js758nx" path="res://Scenes/UI/Wiki/Practice/WikiIntroduction.tscn" id="2_230xd"]
 [ext_resource type="PackedScene" uid="uid://baltedrhixfl7" path="res://Scenes/UI/Wiki/Practice/TutorialsMenu.tscn" id="2_rdoye"]
 [ext_resource type="PackedScene" uid="uid://b5f677a5bdad" path="res://Scenes/UI/Wiki/Practice/PuzzlesMenu.tscn" id="2_xisac"]
 [ext_resource type="PackedScene" uid="uid://bvh2qsh5v3et" path="res://Scenes/UI/Wiki/BattleWiki/WikiSymbols.tscn" id="3_7py82"]
@@ -8,6 +9,8 @@
 [ext_resource type="PackedScene" uid="uid://p42st2s5b6o3" path="res://Scenes/UI/Wiki/BattleWiki/WikiMagic.tscn" id="6_c6jlk"]
 [ext_resource type="PackedScene" uid="uid://cmi3w4brn1nc7" path="res://Scenes/UI/Wiki/WorldWiki/WikiWorldTerrain.tscn" id="7_7mprj"]
 [ext_resource type="PackedScene" uid="uid://nnt62jra4vmv" path="res://Scenes/UI/Wiki/BattleWiki/WikiBattleTerrain.tscn" id="7_y8iyh"]
+[ext_resource type="PackedScene" uid="uid://cmmq8s1lme2oe" path="res://Scenes/UI/Wiki/BattleWiki/WikiMagicCyclone.tscn" id="8_s6pqf"]
+[ext_resource type="PackedScene" uid="uid://chbkr4ic76rs" path="res://Scenes/UI/Wiki/WorldWiki/WikiEconomy.tscn" id="9_7jjs7"]
 
 [node name="Learn" type="Panel"]
 anchors_preset = 15
@@ -74,7 +77,11 @@ size_flags_horizontal = 3
 
 [node name="PracticeSection" type="Node2D" parent="MainContainer"]
 
+[node name="WikiIntroduction" parent="MainContainer" instance=ExtResource("2_230xd")]
+layout_mode = 2
+
 [node name="Tutorials" parent="MainContainer" instance=ExtResource("2_rdoye")]
+visible = false
 layout_mode = 2
 
 [node name="Puzzles" parent="MainContainer" instance=ExtResource("2_xisac")]
@@ -99,9 +106,17 @@ layout_mode = 2
 visible = false
 layout_mode = 2
 
+[node name="WikiMagicCyclone" parent="MainContainer" instance=ExtResource("8_s6pqf")]
+visible = false
+layout_mode = 2
+
 [node name="WorldWikiSection" type="Node2D" parent="MainContainer"]
 
 [node name="WikiWorldTerrain" parent="MainContainer" instance=ExtResource("7_7mprj")]
+visible = false
+layout_mode = 2
+
+[node name="WikiEconomy" parent="MainContainer" instance=ExtResource("9_7jjs7")]
 visible = false
 layout_mode = 2
 
