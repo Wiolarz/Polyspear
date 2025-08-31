@@ -1,12 +1,13 @@
-[gd_scene load_steps=8 format=3 uid="uid://hxaial4lcwu7"]
+[gd_scene load_steps=9 format=3 uid="uid://hxaial4lcwu7"]
 
 [ext_resource type="Script" path="res://Scripts/UI/Educational/learn_tab.gd" id="1_6475f"]
-[ext_resource type="PackedScene" uid="uid://baltedrhixfl7" path="res://Scenes/UI/Wiki/TutorialsMenu.tscn" id="2_rdoye"]
-[ext_resource type="PackedScene" uid="uid://b5f677a5bdad" path="res://Scenes/UI/Wiki/PuzzlesMenu.tscn" id="2_xisac"]
-[ext_resource type="PackedScene" uid="uid://bvh2qsh5v3et" path="res://Scenes/UI/Wiki/WikiSymbols.tscn" id="3_7py82"]
-[ext_resource type="PackedScene" uid="uid://q0k58xy6fkre" path="res://Scenes/UI/Wiki/CampaignBattlesMenu.tscn" id="3_x5eob"]
-[ext_resource type="PackedScene" uid="uid://p42st2s5b6o3" path="res://Scenes/UI/Wiki/WikiMagic.tscn" id="6_c6jlk"]
+[ext_resource type="PackedScene" uid="uid://baltedrhixfl7" path="res://Scenes/UI/Wiki/Practice/TutorialsMenu.tscn" id="2_rdoye"]
+[ext_resource type="PackedScene" uid="uid://b5f677a5bdad" path="res://Scenes/UI/Wiki/Practice/PuzzlesMenu.tscn" id="2_xisac"]
+[ext_resource type="PackedScene" uid="uid://bvh2qsh5v3et" path="res://Scenes/UI/Wiki/BattleWiki/WikiSymbols.tscn" id="3_7py82"]
+[ext_resource type="PackedScene" uid="uid://q0k58xy6fkre" path="res://Scenes/UI/Wiki/Practice/CampaignBattlesMenu.tscn" id="3_x5eob"]
+[ext_resource type="PackedScene" uid="uid://p42st2s5b6o3" path="res://Scenes/UI/Wiki/BattleWiki/WikiMagic.tscn" id="6_c6jlk"]
 [ext_resource type="PackedScene" uid="uid://cmi3w4brn1nc7" path="res://Scenes/UI/Wiki/WorldWiki/WikiWorldTerrain.tscn" id="7_7mprj"]
+[ext_resource type="PackedScene" uid="uid://nnt62jra4vmv" path="res://Scenes/UI/Wiki/BattleWiki/WikiBattleTerrain.tscn" id="7_y8iyh"]
 
 [node name="Learn" type="Panel"]
 anchors_preset = 15
@@ -91,6 +92,10 @@ visible = false
 layout_mode = 2
 
 [node name="WikiMagic" parent="MainContainer" instance=ExtResource("6_c6jlk")]
+visible = false
+layout_mode = 2
+
+[node name="WikiBattleTerrain" parent="MainContainer" instance=ExtResource("7_y8iyh")]
 visible = false
 layout_mode = 2
 

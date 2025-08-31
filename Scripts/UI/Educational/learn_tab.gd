@@ -16,8 +16,8 @@ extends Panel
 
 @onready var battle_wiki_tabs_paired_with_scene = {
 	CFG.BattleWiki.SYMBOLS_WIKI: get_node("MainContainer/WikiSymbols"),
-	CFG.BattleWiki.MAGIC_WIKI: get_node("MainContainer/WikiSymbols"),
-	CFG.BattleWiki.TERRAIN: get_node("MainContainer/WikiSymbols"),
+	CFG.BattleWiki.MAGIC_WIKI: get_node("MainContainer/WikiMagic"),
+	CFG.BattleWiki.TERRAIN: get_node("MainContainer/WikiBattleTerrain"),
 	CFG.BattleWiki.MAGIC_CYCLONE: get_node("MainContainer/WikiSymbols"),
 }
 

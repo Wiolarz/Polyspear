@@ -10,7 +10,7 @@ extends Panel
 @onready var spell_information_description = $Margin/VBoxContainer/HBoxContainer/SpellInformationContainer/VBox/RichTextLabel
 @onready var spell_information_icon = $Margin/VBoxContainer/HBoxContainer/SpellInformationContainer/VBox/TextureRect
 
-@onready var button_template : Resource = load("res://Scenes/UI/Wiki/wiki_spell_button.tscn")
+@onready var button_template : Resource = load("res://Scenes/UI/Wiki/BattleWiki/wiki_spell_button.tscn")
 
 func _ready():
 	generate_battle_spell_buttons()
