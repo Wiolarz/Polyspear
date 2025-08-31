@@ -33,7 +33,6 @@ extends Panel
 
 #region INIT
 
-
 func _ready():
 	_init_learn_tabs()
 
@@ -79,16 +78,21 @@ func _on_tab_bar_mode_selection_tab_changed(tab_index):
 
 	for tabbar in general_learn_tabs_paired_with_scene.values():
 		tabbar.hide()
-	print("dupa1")
 	general_learn_tabs_paired_with_scene[tab_index].show()
 
+	match CFG.LearnTabs.values()[tab_index]:
+		CFG.LearnTabs.PRACTICE:
+			_on_tab_bar_practice_tab_changed(CFG.LAST_OPENED_PRACTICE_TAB)
+		CFG.LearnTabs.BATTLE_WIKI:
+			_on_tab_bar_battle_wiki_tab_changed(CFG.LAST_OPENED_BATTLE_WIKI_TAB)
+		CFG.LearnTabs.WORLD_WIKI:
+			_on_tab_bar_world_wiki_tab_changed(CFG.LAST_OPENED_WORLD_WIKI_TAB)
 
 
 func _on_tab_bar_practice_tab_changed(tab_index):
 	CFG.player_options.last_open_practice_tab = tab_index
 	CFG.save_player_options()
 	_clear_tabs()
-	print("dupa2")
 	practice_tabs_paired_with_scene[tab_index].show()
 
 
@@ -96,7 +100,6 @@ func _on_tab_bar_battle_wiki_tab_changed(tab_index):
 	CFG.player_options.last_open_battle_wiki_tab = tab_index
 	CFG.save_player_options()
 	_clear_tabs()
-	print("dupa3")
 	battle_wiki_tabs_paired_with_scene[tab_index].show()
 
 
@@ -104,5 +107,4 @@ func _on_tab_bar_world_wiki_tab_changed(tab_index):
 	CFG.player_options.last_open_world_wiki_tab = tab_index
 	CFG.save_player_options()
 	_clear_tabs()
-	print("dupa4")
 	world_wiki_tabs_paired_with_scene[tab_index].show()
