@@ -17,8 +17,31 @@ func _ready():
 
 
 func load_tile(battle_tile : DataTile) -> void:
-	tile_information_title.text = battle_tile.type # TODO generate better name based on type
+	tile_information_title.text = battle_tile.type.capitalize() # TODO generate better name based on type
 	tile_information_icon.texture = load(battle_tile.texture_path)
+	match battle_tile.type:
+		"wall": tile_information_description.text = \
+"Special Move Tile - you can only move toward it if you faced it before starting the move.
+
+Stops ranged attacks- but not if you stand on top of it.
+
+In case of pushing acts as a wall."
+
+		"hole": tile_information_description.text = \
+"Special Move Tile - you can only move toward it if you faced it before starting the move.
+Upon moving toward it unit is moved to the opposite tile
+which needs to be free and moveable to allow move to occur
+
+In case of pushing immidietly kills, even if it's the last tile someone were to be pushed to."
+
+		"swamp": tile_information_description.text = \
+"Units present on this tile have their weapons disabled, and all sides are treated as empty"
+
+		"mana_well": tile_information_description.text = \
+"Capturable special mana providing tile, for more information read Mana Cyclone page"
+
+		_: tile_information_description.text = ""
+
 
 	#tile_information_description.text = world_tile.description #TODO generate description based ontype
 

@@ -17,8 +17,27 @@ func _ready():
 
 
 func load_tile(world_tile : DataTile) -> void:
-	tile_information_title.text = world_tile.type # TODO generate better name based on type
+	tile_information_title.text = world_tile.type.capitalize()
 	tile_information_icon.texture = load(world_tile.texture_path)
+
+	if world_tile.type.begins_with("city"):
+		tile_information_description.text = \
+"Player main base, upon loosing it, player is only few turns away from defeat if he doesn't recapture it"
+		return
+	elif world_tile.type.begins_with("hunt"):
+		tile_information_description.text = \
+"Defended tile with constantly respawing enemy, which provide goods upon defeat
+read more on Economy page"
+		return
+	elif world_tile.type.begins_with("outpost"):
+		tile_information_description.text = \
+"Defended but capturable goods producing tile, read more on Economy page"
+		return
+	match world_tile.type:
+		"WALL":
+			tile_information_description.text = "Unpassable Terrain"
+		_:
+			tile_information_description.text = ""
 
 	#tile_information_description.text = world_tile.description #TODO generate description based ontype
 

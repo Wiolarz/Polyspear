@@ -16,7 +16,7 @@ func _ready():
 
 
 func load_symbol(symbol : DataSymbol) -> void:
-	symbol_information_title.text = symbol.symbol_name
+	symbol_information_title.text = symbol.symbol_name.capitalize()
 	if symbol.symbol_name == "empty":
 		symbol_information_icon.texture = null
 	else:

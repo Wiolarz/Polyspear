@@ -12,6 +12,6 @@ func _on_pressed():
 func load_tile(tile_ : DataTile) -> void:
 		tile = tile_
 
-		get_node("Label").text = tile.type
+		get_node("Label").text = tile.type.capitalize()
 
 		texture_normal = load(tile.texture_path)
