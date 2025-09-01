@@ -1006,6 +1006,8 @@ func mana_values_changed() -> void:
 		new_cylone_counter = 20
 	elif mana_difference == 1:
 		new_cylone_counter = CFG.BIG_CYCLONE_COUNTER_VALUE
+	else: # mana_difference == 0
+		new_cylone_counter = CFG.BIG_CYCLONE_COUNTER_VALUE
 
 
 	if mana_difference > CFG.CYCLONE_MANA_THRESHOLD:
