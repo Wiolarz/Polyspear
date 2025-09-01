@@ -13,6 +13,9 @@ var players : Array[Player] = []
 ## flag for MAP EDITOR
 var in_map_editor : bool = false
 
+## flag for City Defense game mode
+var is_city_defense_active : bool = false
+
 
 func init_game_setup():
 	game_setup_info = GameSetupInfo.create_empty()
@@ -347,3 +350,11 @@ func is_slot_steal_allowed() -> bool:
 	return true # local game
 
 #endregion Information
+
+
+#region City Defense
+
+func end_city_defense_battle(armies : Array[BattleGridState.ArmyInBattleState]) -> void:
+	UI.main_menu.get_node("MainContainer/CityDefense").battle_ended(armies)
+
+#endregion City Defense
