@@ -15,6 +15,28 @@ extends Panel
 func _ready():
 	generate_terrain_buttons()
 
+## INIT
+func generate_terrain_buttons() -> void:
+	# clean mockup ui
+	for column in button_columns:
+		Helpers.remove_all_children(column)
+
+	var path = CFG.WORLD_MAP_TILES_PATH
+	var dir = DirAccess.open(path)
+	var tile_idx : int = -1
+	for world_tile_file_path in dir.get_files():
+		tile_idx += 1
+
+		var world_tile : DataTile = load(path + world_tile_file_path)
+		if tile_idx == 0:  # load first tile automatically
+			load_tile(world_tile)
+
+		var button : WikiTerrainButton = button_template.instantiate()
+		button_columns[tile_idx % button_columns.size()].add_child(button)
+		button.load_tile(world_tile)
+
+		button.selected.connect(load_tile)
+
 
 func load_tile(world_tile : DataTile) -> void:
 	tile_information_title.text = world_tile.type.capitalize()
@@ -38,26 +60,3 @@ read more on Economy page"
 			tile_information_description.text = "Unpassable Terrain"
 		_:
 			tile_information_description.text = ""
-
-
-func generate_terrain_buttons() -> void:
-	# clean mockup ui
-	for column in button_columns:
-		for mock_button in column.get_children():
-			mock_button.queue_free()
-
-	var path = CFG.WORLD_MAP_TILES_PATH
-	var dir = DirAccess.open(path)
-	var tile_idx : int = -1
-	for world_tile_file_path in dir.get_files():
-		tile_idx += 1
-
-		var world_tile : DataTile = load(path + world_tile_file_path)
-		if tile_idx == 0:  # load first tile automatically
-			load_tile(world_tile)
-
-		var button : WikiTerrainButton = button_template.instantiate()
-		button_columns[tile_idx % button_columns.size()].add_child(button)
-		button.load_tile(world_tile)
-
-		button.selected.connect(load_tile)

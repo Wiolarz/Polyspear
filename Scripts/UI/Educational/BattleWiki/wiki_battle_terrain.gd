@@ -16,6 +16,29 @@ func _ready():
 	generate_terrain_buttons()
 
 
+## INIT
+func generate_terrain_buttons() -> void:
+	# clean mockup ui
+	for column in button_columns:
+		Helpers.remove_all_children(column)
+
+	var path = CFG.BATTLE_MAP_TILES_PATH
+	var dir = DirAccess.open(path)
+	var tile_idx : int = -1
+	for world_tile_file_path in dir.get_files():
+		tile_idx += 1
+
+		var battle_tile : DataTile = load(path + world_tile_file_path)
+		if tile_idx == 0:  # load first tile automatically
+			load_tile(battle_tile)
+
+		var button : WikiTerrainButton = button_template.instantiate()
+		button_columns[tile_idx % button_columns.size()].add_child(button)
+		button.load_tile(battle_tile)
+
+		button.selected.connect(load_tile)
+
+
 func load_tile(battle_tile : DataTile) -> void:
 	tile_information_title.text = battle_tile.type.capitalize() # TODO generate better name based on type
 	tile_information_icon.texture = load(battle_tile.texture_path)
@@ -41,26 +64,3 @@ In case of pushing immidietly kills, even if it's the last tile someone were to 
 "Capturable special mana providing tile, for more information read Mana Cyclone page"
 
 		_: tile_information_description.text = ""
-
-
-func generate_terrain_buttons() -> void:
-	# clean mockup ui
-	for column in button_columns:
-		for mock_button in column.get_children():
-			mock_button.queue_free()
-
-	var path = CFG.BATTLE_MAP_TILES_PATH
-	var dir = DirAccess.open(path)
-	var tile_idx : int = -1
-	for world_tile_file_path in dir.get_files():
-		tile_idx += 1
-
-		var battle_tile : DataTile = load(path + world_tile_file_path)
-		if tile_idx == 0:  # load first tile automatically
-			load_tile(battle_tile)
-
-		var button : WikiTerrainButton = button_template.instantiate()
-		button_columns[tile_idx % button_columns.size()].add_child(button)
-		button.load_tile(battle_tile)
-
-		button.selected.connect(load_tile)

@@ -14,4 +14,4 @@ func load_race(race_ : DataRace) -> void:
 
 		get_node("Label").text = race.race_name.capitalize()
 
-		texture_normal = load(race.units_data[0].texture_path)
+		texture_normal = load(race.units_data[0].texture_path) # TODO add race icon

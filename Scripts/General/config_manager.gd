@@ -337,7 +337,7 @@ enum BattleWiki {
 	MAGIC_WIKI,
 	TERRAIN,
 	MAGIC_CYCLONE,
-}
+} # TODO add heroes battle passives
 
 const BATTLE_WIKI_TABS_NAMES = {
 	BattleWiki.SYMBOLS_WIKI: "Symbols",
@@ -348,20 +348,14 @@ const BATTLE_WIKI_TABS_NAMES = {
 
 enum WorldWiki {
 	FACTIONS,
-	HEROES,
 	ECONOMY,
-	BUILDINGS,
 	TERRAIN,
-	RITUALS,
-}
+} # TODO add rituals + heroes world passives
 
 const WORLD_WIKI_TABS_NAMES = {
 	WorldWiki.FACTIONS: "Factions",
-	WorldWiki.HEROES: "Heroes",
 	WorldWiki.ECONOMY: "Economy",
-	WorldWiki.BUILDINGS: "Buildings",
 	WorldWiki.TERRAIN: "Terrain",
-	WorldWiki.RITUALS: "Rituals",
 }
 
 

@@ -15,46 +15,18 @@ $Margin/VBoxContainer/HBoxContainer/RaceInformationContainer/VBox/HBoxHeroes
 $Margin/VBoxContainer/HBoxContainer/RaceInformationContainer/VBox/HBoxUnits
 
 
-
-
 @onready var race_button_template : Resource = load("res://Scenes/UI/Wiki/WorldWiki/WikiRaceButton.tscn")
 @onready var unit_button_template : Resource = load("res://Scenes/UI/Wiki/BattleWiki/WikiUnitButton.tscn")
-
 
 
 func _ready():
 	generate_race_buttons()
 
 
-func load_race(race : DataRace) -> void:
-	race_information_title.text = race.race_name.capitalize()
-	race_information_icon.texture = load(race.units_data[0].texture_path) # TODO add icons to each race
-
-	race_information_description.text = race.description
-
-
-	# clean previous display
-	for button in race_heroes_list_container.get_children():
-		button.queue_free()
-	for button in race_units_list_container.get_children():
-		button.queue_free()
-
-	for hero in race.heroes:
-		var button : WikiUnitButton = unit_button_template.instantiate()
-		race_heroes_list_container.add_child(button)
-		button.load_unit(hero.data_unit)
-	for unit in race.units_data:
-		var button : WikiUnitButton = unit_button_template.instantiate()
-		race_units_list_container.add_child(button)
-		button.load_unit(unit)
-
-
-
-
+## INIT
 func generate_race_buttons() -> void:
 	# clean mockup ui
-	for mock_button in race_selection_buttons_column.get_children():
-		mock_button.queue_free()
+	Helpers.remove_all_children(race_selection_buttons_column)
 
 	var race_idx = -1
 	for race_data in CFG.RACES_LIST:
@@ -68,3 +40,25 @@ func generate_race_buttons() -> void:
 		button.load_race(race_data)
 
 		button.selected.connect(load_race)
+
+
+func load_race(race : DataRace) -> void:
+	race_information_title.text = race.race_name.capitalize()
+	race_information_icon.texture = load(race.units_data[0].texture_path) # TODO add icons to each race
+
+	race_information_description.text = race.description
+
+
+	# clean previous display
+	Helpers.remove_all_children(race_heroes_list_container)
+	Helpers.remove_all_children(race_units_list_container)
+
+	## TODO make those buttons useful to show more information about unit, it could be a unit wiki page with listed weapons cost etc.
+	for hero in race.heroes:
+		var button : WikiUnitButton = unit_button_template.instantiate()
+		race_heroes_list_container.add_child(button)
+		button.load_unit(hero.data_unit)
+	for unit in race.units_data:
+		var button : WikiUnitButton = unit_button_template.instantiate()
+		race_units_list_container.add_child(button)
+		button.load_unit(unit)

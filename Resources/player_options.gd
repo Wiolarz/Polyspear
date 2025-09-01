@@ -45,13 +45,12 @@ extends Resource
 ## Default first option when opening the game
 @export var last_open_menu_tab := CFG.MainMenuTabs.LEARN
 
-## Default first learn tab option when opening the game
+## Default first learn tab option when opening the game [br]
+## specifc last opened page within a section are saved in variables: [br]
+## last_open_practice_tab, last_open_battle_wiki_tab, last_open_world_wiki_tab
 @export var last_open_learn_tab := CFG.LearnTabs.PRACTICE
-## Specific Page within
 @export var last_open_practice_tab := CFG.PracitceTabs.BASIC
-## Specific Page within
 @export var last_open_battle_wiki_tab := CFG.BattleWiki.SYMBOLS_WIKI
-## Specific Page within
 @export var last_open_world_wiki_tab := CFG.WorldWiki.FACTIONS
 
 ## Default first option after opening the game should be last selected one
