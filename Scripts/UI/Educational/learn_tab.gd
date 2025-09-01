@@ -22,7 +22,7 @@ extends Panel
 }
 
 @onready var world_wiki_tabs_paired_with_scene = {
-	CFG.WorldWiki.FACTIONS: get_node("MainContainer/WikiWorldTerrain"),
+	CFG.WorldWiki.FACTIONS: get_node("MainContainer/WikiRaces"),
 	CFG.WorldWiki.HEROES: get_node("MainContainer/WikiWorldTerrain"),
 	CFG.WorldWiki.ECONOMY: get_node("MainContainer/WikiEconomy"),
 	CFG.WorldWiki.BUILDINGS: get_node("MainContainer/WikiWorldTerrain"),

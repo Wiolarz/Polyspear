@@ -13,7 +13,7 @@ extends Panel
 @onready var button_template : Resource = load("res://Scenes/UI/Wiki/BattleWiki/WikiBattleTileButton.tscn")
 
 func _ready():
-	generate_battle_spell_buttons()
+	generate_terrain_buttons()
 
 
 func load_tile(battle_tile : DataTile) -> void:
@@ -43,10 +43,7 @@ In case of pushing immidietly kills, even if it's the last tile someone were to 
 		_: tile_information_description.text = ""
 
 
-	#tile_information_description.text = world_tile.description #TODO generate description based ontype
-
-
-func generate_battle_spell_buttons() -> void:
+func generate_terrain_buttons() -> void:
 	# clean mockup ui
 	for column in button_columns:
 		for mock_button in column.get_children():

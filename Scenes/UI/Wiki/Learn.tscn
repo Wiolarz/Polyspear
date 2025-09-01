@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://hxaial4lcwu7"]
+[gd_scene load_steps=13 format=3 uid="uid://hxaial4lcwu7"]
 
 [ext_resource type="Script" path="res://Scripts/UI/Educational/learn_tab.gd" id="1_6475f"]
 [ext_resource type="PackedScene" uid="uid://dffua4js758nx" path="res://Scenes/UI/Wiki/Practice/WikiIntroduction.tscn" id="2_230xd"]
@@ -11,6 +11,7 @@
 [ext_resource type="PackedScene" uid="uid://nnt62jra4vmv" path="res://Scenes/UI/Wiki/BattleWiki/WikiBattleTerrain.tscn" id="7_y8iyh"]
 [ext_resource type="PackedScene" uid="uid://cmmq8s1lme2oe" path="res://Scenes/UI/Wiki/BattleWiki/WikiMagicCyclone.tscn" id="8_s6pqf"]
 [ext_resource type="PackedScene" uid="uid://chbkr4ic76rs" path="res://Scenes/UI/Wiki/WorldWiki/WikiEconomy.tscn" id="9_7jjs7"]
+[ext_resource type="PackedScene" uid="uid://d4jfwmwytwjsc" path="res://Scenes/UI/Wiki/WorldWiki/WikiRaces.tscn" id="12_xnxw7"]
 
 [node name="Learn" type="Panel"]
 anchors_preset = 15
@@ -117,6 +118,10 @@ visible = false
 layout_mode = 2
 
 [node name="WikiEconomy" parent="MainContainer" instance=ExtResource("9_7jjs7")]
+visible = false
+layout_mode = 2
+
+[node name="WikiRaces" parent="MainContainer" instance=ExtResource("12_xnxw7")]
 visible = false
 layout_mode = 2
 
