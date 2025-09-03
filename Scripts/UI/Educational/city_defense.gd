@@ -1,32 +1,15 @@
 extends Panel
 
+#New run rules
+
 @onready var ai_difficulty_selection : OptionButton = \
-$MarginContainer/VBoxContainer/VBoxContainer/VBoxNewRunRules/HBoxAIDifficulty/AIDifficulty
+$MarginContainer/VBoxContainer/VBoxNewRun/VBoxNewRunRules/HBoxAIDifficulty/AIDifficulty
 
 @onready var attacker_selection : OptionButton = \
-$MarginContainer/VBoxContainer/VBoxContainer/VBoxNewRunRules/HBoxAttackerArmy/AttackerOptionButton
+$MarginContainer/VBoxContainer/VBoxNewRun/VBoxNewRunRules/HBoxArmiesSettings/AttackerOptionButton
 
 @onready var defender_selection : OptionButton = \
-$MarginContainer/VBoxContainer/VBoxContainer/VBoxNewRunRules/HBoxDefenderArmy/DefenderOptionButton
-
-
-@onready var starting_army_path : String = "res://Resources/Presets/City_Defense/undead_start_force.tres"
-@onready var map : DataBattleMap = load("res://Resources/Battle/Battle_Maps/large_city.tres")
-
-
-
-
-var attacker_waves : Array[PresetArmy] = []
-
-
-@onready var units_purchases : HBoxContainer = $MarginContainer/VBoxContainer/VBoxContainer/HBoxPurchases
-
-
-@onready var continue_button : Button = $MarginContainer/VBoxContainer/VBoxContainer/ContinueButton
-
-@onready var current_run_information : Label = $MarginContainer/VBoxContainer/VBoxContainer/CurrentRunLabel
-
-@onready var army_display : UnitsButtonsList = $MarginContainer/VBoxContainer/VBoxContainer/HBoxArmy
+$MarginContainer/VBoxContainer/VBoxNewRun/VBoxNewRunRules/HBoxArmiesSettings/DefenderOptionButton
 
 
 @onready var player_factions = {
@@ -37,19 +20,33 @@ var attacker_waves : Array[PresetArmy] = []
 }
 
 const attacker_folder_path := "res://Resources/Presets/City_Defense/Attacker_Waves/"
-
 @onready var attacker_folders = FileSystemHelpers.list_folders_in_folder(attacker_folder_path)
 
-@onready var gamemode_description : Label = $MarginContainer/VBoxContainer/VBoxContainer/Description
 
+#VBoxCurrentRun
 
 var new_run_attacker_waves_folder_path : String
 var new_run_army_path : String
 var new_run_selected_race : DataRace
 
+## Current Run
 
+var attacker_waves : Array[PresetArmy] = []
 var current_roster : PresetArmy
 var player_race : DataRace
+
+
+@onready var map : DataBattleMap = load("res://Resources/Battle/Battle_Maps/large_city.tres")
+
+
+@onready var units_purchases : HBoxContainer = $MarginContainer/VBoxContainer/VBoxCurrentRun/HBoxPurchases
+
+
+@onready var continue_button : Button = $MarginContainer/VBoxContainer/VBoxCurrentRun/ContinueButton
+
+@onready var current_run_information : Label = $MarginContainer/VBoxContainer/VBoxCurrentRun/CurrentRunLabel
+
+@onready var army_display : UnitsButtonsList = $MarginContainer/VBoxContainer/VBoxCurrentRun/HBoxArmy
 
 
 
@@ -62,6 +59,8 @@ var current_wave : int = -1
 
 var player_goods : Goods
 
+## Next Wave Informations
+
 ## TODO check if it has to be on_ready [br]
 ## In case there are more waves than awards, last one is repeated
 @onready var goods_awards : Array[Goods] = \
@@ -73,6 +72,12 @@ var player_goods : Goods
 ] # 4th wave is currently last
 
 
+@onready var next_wave_label = $MarginContainer/VBoxContainer/VBoxCurrentRun/VBoxNextWave/HBoxNextWaveInfo/Label
+@onready var next_wave_roster = $MarginContainer/VBoxContainer/VBoxCurrentRun/VBoxNextWave/HBoxNextWaveArmy
+@onready var next_wave_selection = $MarginContainer/VBoxContainer/VBoxCurrentRun/VBoxNextWave/HBoxNextWaveInfo/OptionWaveSelection
+
+
+#region New Run Setup
 
 func _ready():
 	##TODO add support for more starting armies and attacker types
@@ -94,18 +99,8 @@ func _ready():
 		defender_selection.add_item(defender.race_name)
 	defender_selection.item_selected.connect(defender_changed)
 
-	attacker_changed(0)
+	attacker_changed(1) # 1 currently points to orcs, which work with AI properly
 	defender_changed(0)
-
-	var goods_awards_text := ""
-	var wave_index := -1
-	for award : Goods in goods_awards:
-		wave_index += 1
-		if wave_index == 0:
-			continue
-		goods_awards_text += " | Wave " + str(wave_index) + ": " + award.to_string_short()
-
-	gamemode_description.text += "\n" + goods_awards_text
 
 
 func attacker_changed(attacker_index) -> void:
@@ -118,6 +113,59 @@ func defender_changed(defender_index) -> void:
 	new_run_army_path = player_factions.values()[defender_index]
 	#print(new_run_selected_race.race_name)
 	#print(new_run_army_path)
+
+
+
+
+func _start_new_run() -> void:
+	is_run_ongoing = true
+	current_wave = -1
+
+	attacker_waves = []
+	for wave_path in FileSystemHelpers.list_files_in_folder(new_run_attacker_waves_folder_path):
+		var full_wave_path : String = new_run_attacker_waves_folder_path + "/" + wave_path
+
+		var attacker_army : PresetArmy = load(full_wave_path)
+		#print(full_wave_path)
+		#print(attacker_army.units.size())
+		attacker_waves.append(attacker_army)
+
+	selected_bot_path =  CFG.BATTLE_BOTS_PATH + ai_difficulty_selection.get_item_text(ai_difficulty_selection.get_selected())
+
+	player_race = new_run_selected_race
+	current_roster = load(new_run_army_path)
+
+	continue_button.disabled = false
+	IM.is_city_defense_active = true
+
+
+	player_goods = goods_awards[0]
+	current_run_information.text = "Current Run: " + player_goods.to_string_short()
+
+	_refresh_unit_purchases()
+	_refresh_roster_display()
+
+
+	next_wave_selection.clear()
+	for wave_idx : int in range(attacker_waves.size()):
+		next_wave_selection.add_item(str(wave_idx + 1))
+	next_wave_selection.item_selected.connect(_displayed_next_wave_changed)
+	_displayed_next_wave_changed(0)
+
+#endregion New Run Setup
+
+
+#region Run UI
+
+func _displayed_next_wave_changed(wave_idx : int) -> void:
+
+	var award_idx : int = wave_idx
+	if award_idx + 1 >= goods_awards.size():
+		award_idx = goods_awards.size() - 2
+	# first value is starting goods
+	next_wave_label.text = "Next Wave: " + goods_awards[award_idx + 1].to_string_short()
+
+	next_wave_roster.simplified_display_load_army(attacker_waves[wave_idx])
 
 
 
@@ -183,38 +231,16 @@ func battle_ended(armies : Array[BattleGridState.ArmyInBattleState]) -> void:
 		continue_button.disabled = true
 		current_run_information.text += "\nYOU WON"
 
+#endregion Run UI
 
 
-## Button
-func start_new_run() -> void:
-	is_run_ongoing = true
-	current_wave = -1
+#region Buttons
 
-	attacker_waves = []
-	for wave_path in FileSystemHelpers.list_files_in_folder(new_run_attacker_waves_folder_path):
-		var full_wave_path : String = new_run_attacker_waves_folder_path + "/" + wave_path
-
-		var attacker_army : PresetArmy = load(full_wave_path)
-		#print(full_wave_path)
-		#print(attacker_army.units.size())
-		attacker_waves.append(attacker_army)
-
-	selected_bot_path =  CFG.BATTLE_BOTS_PATH + ai_difficulty_selection.get_item_text(ai_difficulty_selection.get_selected())
-
-	player_race = new_run_selected_race
-	current_roster = load(new_run_army_path)
-
-	continue_button.disabled = false
-	IM.is_city_defense_active = true
-
-
-	player_goods = goods_awards[0]
-	current_run_information.text = "Current Run: " + player_goods.to_string_short()
-
-	_refresh_unit_purchases()
-	_refresh_roster_display()
-
-
-## Button
-func continue_run() -> void:
+func _on_continue_button_pressed() -> void:
 	_launch_battle()
+
+
+func _on_start_new_run_button_pressed() -> void:
+	_start_new_run()
+
+#endregion Buttons
