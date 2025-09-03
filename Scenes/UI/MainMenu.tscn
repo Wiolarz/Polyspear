@@ -43,7 +43,7 @@ theme_override_constants/separation = 0
 [node name="TopMenu" type="HBoxContainer" parent="MainContainer"]
 layout_mode = 2
 size_flags_vertical = 0
-theme_override_constants/separation = 20
+theme_override_constants/separation = 17
 
 [node name="ReturnToGameButton" type="Button" parent="MainContainer/TopMenu"]
 layout_mode = 2
@@ -65,7 +65,6 @@ tab_6/title = "Defense"
 
 [node name="VSeparator" type="VSeparator" parent="MainContainer/TopMenu"]
 layout_mode = 2
-theme_override_constants/separation = 92
 theme_override_styles/separator = SubResource("StyleBoxLine_3lov4")
 
 [node name="UnitEditorButton" type="Button" parent="MainContainer/TopMenu"]
