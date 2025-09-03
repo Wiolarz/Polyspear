@@ -30,39 +30,34 @@ theme_override_font_sizes/font_size = 100
 text = "City Defense"
 horizontal_alignment = 1
 
-[node name="Columns" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
-layout_mode = 2
-size_flags_vertical = 3
-theme_override_constants/separation = 30
-
-[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer/Columns"]
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="Description" type="Label" parent="MarginContainer/VBoxContainer/Columns/VBoxContainer"]
+[node name="Description" type="Label" parent="MarginContainer/VBoxContainer/VBoxContainer"]
 custom_minimum_size = Vector2(1000, 0)
 layout_mode = 2
 text = "Single Player series of defense battles where your army persists between them,
 but you can purchase additional units."
 horizontal_alignment = 1
 
-[node name="StartNewRunButton" type="Button" parent="MarginContainer/VBoxContainer/Columns/VBoxContainer"]
+[node name="StartNewRunButton" type="Button" parent="MarginContainer/VBoxContainer/VBoxContainer"]
 layout_mode = 2
 text = "Start new Run"
 
-[node name="VBoxNewRunRules" type="VBoxContainer" parent="MarginContainer/VBoxContainer/Columns/VBoxContainer"]
+[node name="VBoxNewRunRules" type="VBoxContainer" parent="MarginContainer/VBoxContainer/VBoxContainer"]
 layout_mode = 2
 
-[node name="HBoxDefenderArmy" type="HBoxContainer" parent="MarginContainer/VBoxContainer/Columns/VBoxContainer/VBoxNewRunRules"]
+[node name="HBoxDefenderArmy" type="HBoxContainer" parent="MarginContainer/VBoxContainer/VBoxContainer/VBoxNewRunRules"]
 layout_mode = 2
 
-[node name="DefenderArmy" type="Label" parent="MarginContainer/VBoxContainer/Columns/VBoxContainer/VBoxNewRunRules/HBoxDefenderArmy"]
+[node name="DefenderArmy" type="Label" parent="MarginContainer/VBoxContainer/VBoxContainer/VBoxNewRunRules/HBoxDefenderArmy"]
 custom_minimum_size = Vector2(1000, 0)
 layout_mode = 2
 text = "Defender Army:"
 horizontal_alignment = 1
 
-[node name="OptionButton" type="OptionButton" parent="MarginContainer/VBoxContainer/Columns/VBoxContainer/VBoxNewRunRules/HBoxDefenderArmy"]
+[node name="DefenderOptionButton" type="OptionButton" parent="MarginContainer/VBoxContainer/VBoxContainer/VBoxNewRunRules/HBoxDefenderArmy"]
 layout_mode = 2
 alignment = 1
 item_count = 1
@@ -70,16 +65,16 @@ selected = 0
 popup/item_0/text = "Undead"
 popup/item_0/id = 0
 
-[node name="HBoxAttackerArmy" type="HBoxContainer" parent="MarginContainer/VBoxContainer/Columns/VBoxContainer/VBoxNewRunRules"]
+[node name="HBoxAttackerArmy" type="HBoxContainer" parent="MarginContainer/VBoxContainer/VBoxContainer/VBoxNewRunRules"]
 layout_mode = 2
 
-[node name="AttackerArmy" type="Label" parent="MarginContainer/VBoxContainer/Columns/VBoxContainer/VBoxNewRunRules/HBoxAttackerArmy"]
+[node name="AttackerArmy" type="Label" parent="MarginContainer/VBoxContainer/VBoxContainer/VBoxNewRunRules/HBoxAttackerArmy"]
 custom_minimum_size = Vector2(1000, 0)
 layout_mode = 2
 text = "Attacker Army:"
 horizontal_alignment = 1
 
-[node name="OptionButton2" type="OptionButton" parent="MarginContainer/VBoxContainer/Columns/VBoxContainer/VBoxNewRunRules/HBoxAttackerArmy"]
+[node name="AttackerOptionButton" type="OptionButton" parent="MarginContainer/VBoxContainer/VBoxContainer/VBoxNewRunRules/HBoxAttackerArmy"]
 layout_mode = 2
 alignment = 1
 item_count = 1
@@ -87,69 +82,69 @@ selected = 0
 popup/item_0/text = "Orcs"
 popup/item_0/id = 0
 
-[node name="HBoxAIDifficulty" type="HBoxContainer" parent="MarginContainer/VBoxContainer/Columns/VBoxContainer/VBoxNewRunRules"]
+[node name="HBoxAIDifficulty" type="HBoxContainer" parent="MarginContainer/VBoxContainer/VBoxContainer/VBoxNewRunRules"]
 layout_mode = 2
 
-[node name="AIDifficultyLabel" type="Label" parent="MarginContainer/VBoxContainer/Columns/VBoxContainer/VBoxNewRunRules/HBoxAIDifficulty"]
+[node name="AIDifficultyLabel" type="Label" parent="MarginContainer/VBoxContainer/VBoxContainer/VBoxNewRunRules/HBoxAIDifficulty"]
 custom_minimum_size = Vector2(1000, 0)
 layout_mode = 2
 text = "AI Difficulty:"
 horizontal_alignment = 1
 
-[node name="AIDifficulty" type="OptionButton" parent="MarginContainer/VBoxContainer/Columns/VBoxContainer/VBoxNewRunRules/HBoxAIDifficulty"]
+[node name="AIDifficulty" type="OptionButton" parent="MarginContainer/VBoxContainer/VBoxContainer/VBoxNewRunRules/HBoxAIDifficulty"]
 layout_mode = 2
 item_count = 1
 popup/item_0/text = "Random"
 popup/item_0/id = 0
 
-[node name="CurrentRunLabel" type="Label" parent="MarginContainer/VBoxContainer/Columns/VBoxContainer"]
+[node name="CurrentRunLabel" type="Label" parent="MarginContainer/VBoxContainer/VBoxContainer"]
 custom_minimum_size = Vector2(1000, 0)
 layout_mode = 2
 text = "Current Run:"
 horizontal_alignment = 1
 
-[node name="HBoxPurchases" type="HBoxContainer" parent="MarginContainer/VBoxContainer/Columns/VBoxContainer"]
+[node name="HBoxPurchases" type="HBoxContainer" parent="MarginContainer/VBoxContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_constants/separation = 50
 alignment = 1
 
-[node name="Button" type="Button" parent="MarginContainer/VBoxContainer/Columns/VBoxContainer/HBoxPurchases"]
+[node name="Button" type="Button" parent="MarginContainer/VBoxContainer/VBoxContainer/HBoxPurchases"]
 layout_mode = 2
 text = "unit1"
 
-[node name="Button2" type="Button" parent="MarginContainer/VBoxContainer/Columns/VBoxContainer/HBoxPurchases"]
+[node name="Button2" type="Button" parent="MarginContainer/VBoxContainer/VBoxContainer/HBoxPurchases"]
 layout_mode = 2
 text = "unit2"
 
-[node name="Button3" type="Button" parent="MarginContainer/VBoxContainer/Columns/VBoxContainer/HBoxPurchases"]
+[node name="Button3" type="Button" parent="MarginContainer/VBoxContainer/VBoxContainer/HBoxPurchases"]
 layout_mode = 2
 text = "unit3"
 
-[node name="Button4" type="Button" parent="MarginContainer/VBoxContainer/Columns/VBoxContainer/HBoxPurchases"]
+[node name="Button4" type="Button" parent="MarginContainer/VBoxContainer/VBoxContainer/HBoxPurchases"]
 layout_mode = 2
 text = "unit4"
 
-[node name="Button5" type="Button" parent="MarginContainer/VBoxContainer/Columns/VBoxContainer/HBoxPurchases"]
+[node name="Button5" type="Button" parent="MarginContainer/VBoxContainer/VBoxContainer/HBoxPurchases"]
 layout_mode = 2
 text = "unit5"
 
-[node name="Button6" type="Button" parent="MarginContainer/VBoxContainer/Columns/VBoxContainer/HBoxPurchases"]
+[node name="Button6" type="Button" parent="MarginContainer/VBoxContainer/VBoxContainer/HBoxPurchases"]
 layout_mode = 2
 text = "unit6"
 
-[node name="CurrentRoster" type="Label" parent="MarginContainer/VBoxContainer/Columns/VBoxContainer"]
+[node name="CurrentRoster" type="Label" parent="MarginContainer/VBoxContainer/VBoxContainer"]
 custom_minimum_size = Vector2(1000, 0)
 layout_mode = 2
 text = "Unit Roster:"
 horizontal_alignment = 1
 
-[node name="HBoxArmy" parent="MarginContainer/VBoxContainer/Columns/VBoxContainer" instance=ExtResource("2_016xn")]
+[node name="HBoxArmy" parent="MarginContainer/VBoxContainer/VBoxContainer" instance=ExtResource("2_016xn")]
 layout_mode = 2
 
-[node name="ContinueButton" type="Button" parent="MarginContainer/VBoxContainer/Columns/VBoxContainer"]
+[node name="ContinueButton" type="Button" parent="MarginContainer/VBoxContainer/VBoxContainer"]
 layout_mode = 2
 disabled = true
 text = "Continue"
 
-[connection signal="pressed" from="MarginContainer/VBoxContainer/Columns/VBoxContainer/StartNewRunButton" to="." method="start_new_run"]
-[connection signal="pressed" from="MarginContainer/VBoxContainer/Columns/VBoxContainer/ContinueButton" to="." method="continue_run"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/VBoxContainer/StartNewRunButton" to="." method="start_new_run"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/VBoxContainer/ContinueButton" to="." method="continue_run"]

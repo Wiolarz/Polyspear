@@ -109,7 +109,7 @@ func _on_tabs_tab_changed(tab_index : int):
 		CFG.MainMenuTabs.DEFENSE: _on_defense_tab_pressed() # 6
 		_: push_error("_on_tabs_tab_changed index not supported: "+str(tab_index))
 
-	CFG.player_options.last_open_menu_tab = tab_index
+	CFG.player_options.last_open_menu_tab = tab_index as CFG.MainMenuTabs
 	CFG.save_player_options()
 
 #endregion Buttons
