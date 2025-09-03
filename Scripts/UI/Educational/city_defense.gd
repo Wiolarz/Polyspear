@@ -22,8 +22,8 @@ $MarginContainer/VBoxContainer/VBoxNewRun/VBoxNewRunRules/HBoxArmiesSettings/Def
 const attacker_folder_path := "res://Resources/Presets/City_Defense/Attacker_Waves/"
 @onready var attacker_folders = FileSystemHelpers.list_folders_in_folder(attacker_folder_path)
 
+@onready var new_run_container : VBoxContainer = $MarginContainer/VBoxContainer/VBoxNewRun
 
-#VBoxCurrentRun
 
 var new_run_attacker_waves_folder_path : String
 var new_run_army_path : String
@@ -34,6 +34,8 @@ var new_run_selected_race : DataRace
 var attacker_waves : Array[PresetArmy] = []
 var current_roster : PresetArmy
 var player_race : DataRace
+
+@onready var current_run_container : VBoxContainer = $MarginContainer/VBoxContainer/VBoxCurrentRun
 
 
 @onready var map : DataBattleMap = load("res://Resources/Battle/Battle_Maps/large_city.tres")
@@ -99,8 +101,11 @@ func _ready():
 		defender_selection.add_item(defender.race_name)
 	defender_selection.item_selected.connect(defender_changed)
 
+	attacker_selection.select(1) # visually changes OptionButton to match the settings
 	attacker_changed(1) # 1 currently points to orcs, which work with AI properly
 	defender_changed(0)
+
+	next_wave_selection.item_selected.connect(_displayed_next_wave_changed)
 
 
 func attacker_changed(attacker_index) -> void:
@@ -118,6 +123,9 @@ func defender_changed(defender_index) -> void:
 
 
 func _start_new_run() -> void:
+	new_run_container.visible = false
+	current_run_container.visible = true
+
 	is_run_ongoing = true
 	current_wave = -1
 
@@ -149,7 +157,6 @@ func _start_new_run() -> void:
 	next_wave_selection.clear()
 	for wave_idx : int in range(attacker_waves.size()):
 		next_wave_selection.add_item(str(wave_idx + 1))
-	next_wave_selection.item_selected.connect(_displayed_next_wave_changed)
 	_displayed_next_wave_changed(0)
 
 #endregion New Run Setup
@@ -241,6 +248,10 @@ func _on_continue_button_pressed() -> void:
 
 
 func _on_start_new_run_button_pressed() -> void:
-	_start_new_run()
+	if new_run_container.visible:
+		_start_new_run()
+	else:
+		new_run_container.visible = true
+		current_run_container.visible = false
 
 #endregion Buttons

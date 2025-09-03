@@ -24,14 +24,14 @@ grow_vertical = 2
 [node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
 layout_mode = 2
 
-[node name="VBoxNewRun" type="VBoxContainer" parent="MarginContainer/VBoxContainer"]
-layout_mode = 2
-
-[node name="Title" type="Label" parent="MarginContainer/VBoxContainer/VBoxNewRun"]
+[node name="Title" type="Label" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 100
 text = "City Defense"
 horizontal_alignment = 1
+
+[node name="VBoxNewRun" type="VBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
 
 [node name="Description" type="Label" parent="MarginContainer/VBoxContainer/VBoxNewRun"]
 custom_minimum_size = Vector2(1000, 0)
@@ -103,6 +103,7 @@ layout_mode = 2
 text = "Start new Run"
 
 [node name="VBoxCurrentRun" type="VBoxContainer" parent="MarginContainer/VBoxContainer"]
+visible = false
 layout_mode = 2
 
 [node name="CurrentRunLabel" type="Label" parent="MarginContainer/VBoxContainer/VBoxCurrentRun"]
