@@ -40,6 +40,8 @@ const attacker_folder_path := "res://Resources/Presets/City_Defense/Attacker_Wav
 
 @onready var attacker_folders = FileSystemHelpers.list_folders_in_folder(attacker_folder_path)
 
+@onready var gamemode_description : Label = $MarginContainer/VBoxContainer/VBoxContainer/Description
+
 
 var new_run_attacker_waves_folder_path : String
 var new_run_army_path : String
@@ -59,6 +61,16 @@ var current_wave : int = -1
 
 
 var player_goods : Goods
+
+## TODO check if it has to be on_ready [br]
+## In case there are more waves than awards, last one is repeated
+@onready var goods_awards : Array[Goods] = \
+[
+	Goods.new(3, 3, 0), # Starting goods
+	Goods.new(3, 2, 1), # after 1st
+	Goods.new(5, 4, 2), # after 2nd
+	Goods.new(7, 6, 3), # after 3rd
+] # 4th wave is currently last
 
 
 
@@ -84,6 +96,16 @@ func _ready():
 
 	attacker_changed(0)
 	defender_changed(0)
+
+	var goods_awards_text := ""
+	var wave_index := -1
+	for award : Goods in goods_awards:
+		wave_index += 1
+		if wave_index == 0:
+			continue
+		goods_awards_text += " | Wave " + str(wave_index) + ": " + award.to_string_short()
+
+	gamemode_description.text += "\n" + goods_awards_text
 
 
 func attacker_changed(attacker_index) -> void:
@@ -147,11 +169,16 @@ func battle_ended(armies : Array[BattleGridState.ArmyInBattleState]) -> void:
 	for dead_unit in armies[0].dead_units:
 		current_roster.units.erase(dead_unit)
 
-	player_goods.add(Goods.new(10, 5, 3))
+	# goods awards 0 is starting amount, so we always add + 1
+	if current_wave + 1 >= goods_awards.size():
+		player_goods.add(goods_awards[-1])
+	else:
+		player_goods.add(goods_awards[current_wave + 1])
+
 	_refresh_unit_purchases()
 	_refresh_roster_display()
 	current_run_information.text = "Current Run: " + player_goods.to_string_short()
-	if current_wave == attacker_waves.size():
+	if current_wave + 1 == attacker_waves.size():
 		is_run_ongoing = false
 		continue_button.disabled = true
 		current_run_information.text += "\nYOU WON"
@@ -181,7 +208,7 @@ func start_new_run() -> void:
 	IM.is_city_defense_active = true
 
 
-	player_goods = Goods.new(15, 10, 5)
+	player_goods = goods_awards[0]
 	current_run_information.text = "Current Run: " + player_goods.to_string_short()
 
 	_refresh_unit_purchases()
