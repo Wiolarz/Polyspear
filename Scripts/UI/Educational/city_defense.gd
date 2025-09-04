@@ -79,6 +79,8 @@ var player_goods : Goods
 @onready var next_wave_selection = $MarginContainer/VBoxContainer/VBoxCurrentRun/VBoxNextWave/HBoxNextWaveInfo/OptionWaveSelection
 
 
+
+
 #region New Run Setup
 
 func _ready():
@@ -147,8 +149,8 @@ func _start_new_run() -> void:
 	IM.is_city_defense_active = true
 
 
-	player_goods = goods_awards[0]
-	current_run_information.text = "Current Run: " + player_goods.to_string_short()
+	player_goods = goods_awards[0].duplicate()
+	refresh__run_info()
 
 	_refresh_unit_purchases()
 	_refresh_roster_display()
@@ -165,7 +167,7 @@ func _start_new_run() -> void:
 #region Run UI
 
 func _displayed_next_wave_changed(wave_idx : int) -> void:
-
+	next_wave_selection.select(wave_idx)
 	var award_idx : int = wave_idx
 	if award_idx + 1 >= goods_awards.size():
 		award_idx = goods_awards.size() - 2
@@ -173,6 +175,14 @@ func _displayed_next_wave_changed(wave_idx : int) -> void:
 	next_wave_label.text = "Next Wave: " + goods_awards[award_idx + 1].to_string_short()
 
 	next_wave_roster.simplified_display_load_army(attacker_waves[wave_idx])
+
+
+func refresh__run_info():
+	var text := "Current Run - Wave: " + str(current_wave + 2) + \
+	" Goods: " + player_goods.to_string_short()
+	current_run_information.text = text
+	if current_wave + 1 == attacker_waves.size():
+		current_run_information.text += "\nVICTORY"
 
 
 
@@ -232,11 +242,13 @@ func battle_ended(armies : Array[BattleGridState.ArmyInBattleState]) -> void:
 
 	_refresh_unit_purchases()
 	_refresh_roster_display()
-	current_run_information.text = "Current Run: " + player_goods.to_string_short()
-	if current_wave + 1 == attacker_waves.size():
+
+	refresh__run_info()
+	if current_wave + 1 == attacker_waves.size():  # Victory
 		is_run_ongoing = false
 		continue_button.disabled = true
-		current_run_information.text += "\nYOU WON"
+	else:
+		_displayed_next_wave_changed(current_wave + 1)
 
 #endregion Run UI
 
