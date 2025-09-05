@@ -74,6 +74,8 @@ public:
 	static const EffectMask FLAG_EFFECT_DEATH_MARK = 0x04;
 	static const EffectMask FLAG_EFFECT_MARTYR = 0x08;
 	static const EffectMask FLAG_EFFECT_BLOOD_CURSE = 0x10;
+	static const EffectMask FLAG_EFFECT_ANCHOR = 0x20;
+	static const EffectMask FLAG_EFFECT_SUMMONING_SICKNESS = 0x40;
 	/// Add new effect types/flags before this line
 
 	Symbol symbol_when_rotated(int side) const {
@@ -164,6 +166,12 @@ public:
 		else if(str == godot::String("Blood Ritual")) {
 			return FLAG_EFFECT_BLOOD_CURSE;
 		}
+		else if(str == godot::String("Anchor")) {
+			return FLAG_EFFECT_ANCHOR;
+		}
+		else if(str == godot::String("Summoning Sickness")) {
+			return FLAG_EFFECT_SUMMONING_SICKNESS;
+		}
 		/// Add new effect-string mappings before this line
 		else {
 			ERR_FAIL_V_MSG(0, std::format("Unknown effect: '{}'", str.ascii().get_data()).c_str());
@@ -200,6 +208,7 @@ struct Army {
 
 
 	int find_unit_id_to_deploy(int from = 0) const;
+	int find_empty_unit_slot() const;
 	bool is_defeated() const;
 
 	/// Counts number of alive and undeployed units

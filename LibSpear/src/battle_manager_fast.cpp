@@ -126,7 +126,11 @@ void BattleManagerFast::play_move(Move move) {
 			unit.rotation = rot_new;
 			_process_unit(uid, MovePhase::TURN);
 
-			if(unit.status == UnitStatus::ALIVE && unit.pos == old_pos) {
+			bool can_move = unit.status == UnitStatus::ALIVE 
+				&& unit.pos == old_pos 
+				&& !unit.is_effect_active(Unit::FLAG_EFFECT_ANCHOR);
+
+			if(can_move) {
 				_move_unit(uid, move.pos);
 				_process_unit(uid, MovePhase::LEAP);
 			}
@@ -445,14 +449,46 @@ void BattleManagerFast::_process_spell(UnitID uid, int8_t spell_id, Position tar
 				}
 			}
 			break;
+		case BattleSpell::State::ANCHOR:
+			{
+				auto unit = _get_unit(uid2);
+				BM_ASSERT(unit.has_value(), "Unknown unit id for anchor spell");
+				unit.value().unit.try_apply_effect(Unit::FLAG_EFFECT_ANCHOR);
+			}
+			break;
+		case BattleSpell::State::SUMMON_DRYAD:
+			{
+				auto unit1 = _get_unit(uid);
+				auto unit2 = _get_unit(uid2);
+				BM_ASSERT(unit1.has_value(), "Unknown unit id for summon dryad spell");
+				BM_ASSERT(!unit2.has_value(), "Unit already found @{},{} while spawning dryad", target.x, target.y);
+				auto [caster, army] = unit1.value();
+				
+				int new_uid = army.find_empty_unit_slot();
+				BM_ASSERT(new_uid >= 0, "No empty slot found for summoned dryad");
+				
+				Unit new_unit{};
+				new_unit.rotation = get_rotation(caster.pos, target);
+				new_unit.status = UnitStatus::ALIVE;
+
+				//            ATK DEF PUSH RANGE FLAGS
+				Symbol attack{1,  1,  0,   0,    0};
+				new_unit.sides[0] = new_unit.sides[1] = new_unit.sides[5] = attack;
+				new_unit.try_apply_effect(Unit::FLAG_EFFECT_SUMMONING_SICKNESS);
+
+				army.units[new_uid] = new_unit;
+
+				_move_unit(UnitID(army.id, new_uid), target);
+			}
+			break;
 		/// Add new spell behaviors right before this line
 		case BattleSpell::State::NONE:
 		case BattleSpell::State::SENTINEL:
 			BM_ASSERT(false, "Invalid spell id chosen in a move");
 			return;
-		default:
-			BM_ASSERT(false, "Invalid spell type");
-			return;
+		// No default case - rely on compiler for compile time warnings
+		// sadly we can't have both default case for runtime checking for 
+		// (unlikely) corrupted states and compile time warning
 	}
 	spell.state = BattleSpell::State::NONE;
 	spell.unit = NO_UNIT;
@@ -472,8 +508,18 @@ void BattleManagerFast::_update_turn_end() {
 			auto uid = UnitID(army_id, unit_id);
 			auto unitref = _get_unit(uid);
 
-			if(unitref.has_value() && unitref.value().unit.status != UnitStatus::DEAD) {
-				unitref.value().unit.on_turn_end();
+			if(!unitref.has_value() || unitref.value().unit.status == UnitStatus::DEAD) {
+				continue;
+			}
+
+			auto [unit, _army] = unitref.value();
+			bool is_a_summon = unit.is_effect_active(Unit::FLAG_EFFECT_SUMMONING_SICKNESS);
+
+			unit.on_turn_end();
+
+			// Kill a summon after sickness effect ends
+			if(is_a_summon && !unit.is_effect_active(Unit::FLAG_EFFECT_SUMMONING_SICKNESS)) {
+				unit.try_apply_effect(Unit::FLAG_EFFECT_DEATH_MARK);
 			}
 		}
 	}
@@ -750,6 +796,12 @@ void BattleManagerFast::_spells_append_moves() {
 			case BattleSpell::State::WIND_DASH:
 				_append_moves_line(spell.unit, i, unit.pos, unit.rotation, 1, 1);
 				break;
+			case BattleSpell::State::ANCHOR:
+				_append_moves_unit(spell.unit, i, TeamRelation::ANY, INCLUDE_SELF);
+				break;
+			case BattleSpell::State::SUMMON_DRYAD:
+				_append_moves_neighbors(spell.unit, i, unit.pos, NO_INCLUDE_IMPASSABLE);
+				break;
 			case BattleSpell::State::NONE:
 			case BattleSpell::State::SENTINEL:
 				break;
@@ -970,6 +1022,16 @@ void BattleManagerFast::_append_moves_line(UnitID uid, int8_t spell_id, Position
 		Position pos = center + DIRECTIONS[dir] * r;
 
 		if(_tiles.get_tile(pos).is_passable() && _unit_cache.get(pos) == NO_UNIT) {
+			_moves.emplace_back(uid.unit, pos, spell_id);
+		}
+	}
+}
+
+void BattleManagerFast::_append_moves_neighbors(UnitID uid, int8_t spell_id, Position center, IncludeImpassable include_impassable) {
+	for(const auto dir: DIRECTIONS) {
+		Position pos = center + dir;
+
+		if(include_impassable || (_tiles.get_tile(pos).is_passable() && _unit_cache.get(pos) == NO_UNIT)) {
 			_moves.emplace_back(uid.unit, pos, spell_id);
 		}
 	}

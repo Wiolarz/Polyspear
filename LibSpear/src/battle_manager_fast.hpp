@@ -71,6 +71,7 @@ class BattleManagerFast {
 
 	void _append_moves_lines(UnitID uid, int8_t spell_id, Position center, int range_min, int range_max);
 	void _append_moves_line(UnitID uid, int8_t spell_id, Position center, uint8_t dir, int range_min, int range_max);
+	void _append_moves_neighbors(UnitID uid, int8_t spell_id, Position center, IncludeImpassable include_impassable);
 
 	void _refresh_legal_moves();
 	void _refresh_heuristically_good_moves();
