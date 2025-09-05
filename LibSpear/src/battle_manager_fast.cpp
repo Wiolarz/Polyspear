@@ -14,7 +14,7 @@ void BattleManagerFast::finish_initialization() {
 	BM_ASSERT(_cyclone_counter_values[0] != -1, "Uninitialized cyclone counter");
 	BM_ASSERT(_mana_well_power != -1, "Uninitialized mana well power");
 
-	_state = BattleState::SUMMONING;
+	_state = BattleState::DEPLOYMENT;
 	for(unsigned i = 0; i < _armies.size(); i++) {
 		if(_armies[i].is_defeated()) {
 			continue;
@@ -81,8 +81,8 @@ void BattleManagerFast::play_move(Move move) {
 	UnitID uid = UnitID(_current_army, move.unit);
 	Unit& unit = _armies[_current_army].units[move.unit];
 
-	if(_state == BattleState::SUMMONING) {
-		BM_ASSERT(unit.status == UnitStatus::SUMMONING, "Unit id {} is not in summoning state", move.unit);
+	if(_state == BattleState::DEPLOYMENT) {
+		BM_ASSERT(unit.status == UnitStatus::DEPLOYING, "Unit id {} is not in deploying state", move.unit);
 		BM_ASSERT(_tiles.get_tile(move.pos).get_spawning_army() == _current_army,
 				"Target spawn {},{} does not belong to current army", move.pos.x, move.pos.y
 		);
@@ -93,20 +93,20 @@ void BattleManagerFast::play_move(Move move) {
 
 		int skip_count = 0;
 		_current_army = (_current_army + 1) % _armies.size();
-		bool end_summon = false;
-		// skip players with nothing to summon
-		while(_armies[_current_army].find_unit_id_to_summon() == -1) {
+		bool end_deployment = false;
+		// skip players with nothing to deploy
+		while(_armies[_current_army].find_unit_id_to_deploy() == -1) {
 			_current_army += 1;
 			_current_army %= _armies.size();
 			skip_count += 1;
-			// no player has anything to summon, go to next phase
+			// no player has anything to deploy, go to next phase
 			if(skip_count == int(_armies.size())) {
-				end_summon = true;
+				end_deployment = true;
 				break;
 			}
 		}
 
-		if(end_summon) {
+		if(end_deployment) {
 			_current_army = 0; // first army is always present
 			_state = BattleState::ONGOING;
 		}
@@ -503,7 +503,7 @@ void BattleManagerFast::_update_move_end() {
 
 int BattleManagerFast::get_winner_team() {
 
-	if(_state == BattleState::SUMMONING) {
+	if(_state == BattleState::DEPLOYMENT) {
 		return -1;
 	}
 
@@ -636,14 +636,14 @@ void BattleManagerFast::_refresh_legal_moves() {
 
 	Move move;
 
-	if(_state == BattleState::SUMMONING) {
+	if(_state == BattleState::DEPLOYMENT) {
 		for(Position spawn : spawns) {
 			if(is_occupied(spawn, army, TeamRelation::ALLY)) {
 				continue;
 			}
 
 			for(unsigned i = 0; i < army.units.size(); i++) {
-				if(army.units[i].status != UnitStatus::SUMMONING) {
+				if(army.units[i].status != UnitStatus::DEPLOYING) {
 					continue;
 				}
 
@@ -761,8 +761,8 @@ void BattleManagerFast::_refresh_heuristically_good_moves() {
 	_heuristic_moves.clear();
 	_heuristic_moves.reserve(64);
 
-	if(_state == BattleState::SUMMONING) {
-		_refresh_heuristically_good_summon_moves();
+	if(_state == BattleState::DEPLOYMENT) {
+		_refresh_heuristically_good_deploy_moves();
 		return;
 	}
 
@@ -801,18 +801,18 @@ void BattleManagerFast::_refresh_heuristically_good_moves() {
 	}
 }
 
-void BattleManagerFast::_refresh_heuristically_good_summon_moves() {
+void BattleManagerFast::_refresh_heuristically_good_deploy_moves() {
 	Army& army = _armies[_current_army];
 
-	bool enemy_has_unsummoned_bowman = false;
+	bool enemy_has_undeployed_bowman = false;
 	for(Army& enemy_army : _armies) {
 		if(enemy_army.team == army.team) {
 			continue;
 		}
 
 		for(Unit& enemy : enemy_army.units) {
-			if(enemy.status == UnitStatus::SUMMONING && enemy.front_symbol().get_bow_force() > 0) {
-				enemy_has_unsummoned_bowman = true;
+			if(enemy.status == UnitStatus::DEPLOYING && enemy.front_symbol().get_bow_force() > 0) {
+				enemy_has_undeployed_bowman = true;
 				break;
 			}
 		}
@@ -827,7 +827,7 @@ void BattleManagerFast::_refresh_heuristically_good_summon_moves() {
 		// At this moment assumes every spawn is not safe from bowman - good for now, but TODO?
 
 		// Default - empty tile
-		int move_score = (enemy_has_unsummoned_bowman || is_bowman) ? 0 : 1;
+		int move_score = (enemy_has_undeployed_bowman || is_bowman) ? 0 : 1;
 
 		for(unsigned enemy_army_id = 0; enemy_army_id < _armies.size(); enemy_army_id++) {
 			Army& enemy_army = _armies[enemy_army_id];
@@ -1114,12 +1114,12 @@ bool BattleManagerFast::is_occupied(Position pos, const Army& army, TeamRelation
 
 #pragma region Godot integration
 
-void BattleManagerFastCpp::insert_unit(int army, int idx, Vector2i pos, int rotation, bool is_summoning) {
+void BattleManagerFastCpp::insert_unit(int army, int idx, Vector2i pos, int rotation, bool is_deploying) {
 	CHECK_UNIT(idx,);
 	CHECK_ARMY(army,);
 	bm._armies[army].units[idx].pos = pos;
 	bm._armies[army].units[idx].rotation = rotation;
-	bm._armies[army].units[idx].status = is_summoning ? UnitStatus::SUMMONING : UnitStatus::ALIVE;
+	bm._armies[army].units[idx].status = is_deploying ? UnitStatus::DEPLOYING : UnitStatus::ALIVE;
 	if(bm._tiles.get_tile(pos).is_swamp()) {
 		bm._armies[army].units[idx].flags |= Unit::FLAG_ON_SWAMP;
 	}
@@ -1283,7 +1283,7 @@ void BattleManagerFastCpp::set_cyclone_constants(godot::PackedInt32Array cyclone
 }
 
 void BattleManagerFastCpp::_bind_methods() {
-	ClassDB::bind_method(D_METHOD("insert_unit", "army", "index", "position", "rotation", "is_summoning"), &BattleManagerFastCpp::insert_unit);
+	ClassDB::bind_method(D_METHOD("insert_unit", "army", "index", "position", "rotation", "is_deploying"), &BattleManagerFastCpp::insert_unit);
 	ClassDB::bind_method(D_METHOD(
 		"set_unit_symbol_cpp", "army", "unit", "side",
 		"attack_strength", "defense_strength", "ranged_reach",
@@ -1309,7 +1309,7 @@ void BattleManagerFastCpp::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_unit_position", "army", "unit"), &BattleManagerFastCpp::get_unit_position);
 	ClassDB::bind_method(D_METHOD("get_unit_rotation", "army", "unit"), &BattleManagerFastCpp::get_unit_rotation);
 	ClassDB::bind_method(D_METHOD("is_unit_alive", "army", "unit"), &BattleManagerFastCpp::is_unit_alive);
-	ClassDB::bind_method(D_METHOD("is_unit_being_summoned", "army", "unit"), &BattleManagerFastCpp::is_unit_being_summoned);
+	ClassDB::bind_method(D_METHOD("is_unit_being_deployed", "army", "unit"), &BattleManagerFastCpp::is_unit_being_deployed);
 	ClassDB::bind_method(D_METHOD("get_army_cyclone_timer", "army"), &BattleManagerFastCpp::get_army_cyclone_timer);
 	ClassDB::bind_method(D_METHOD("get_army_mana_points", "army"), &BattleManagerFastCpp::get_army_mana_points);
 	ClassDB::bind_method(D_METHOD("get_cyclone_target"), &BattleManagerFastCpp::get_cyclone_target);
@@ -1317,7 +1317,7 @@ void BattleManagerFastCpp::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_legal_moves"), &BattleManagerFastCpp::get_legal_moves_gd);
 	ClassDB::bind_method(D_METHOD("get_unit_id_on_position", "position"), &BattleManagerFastCpp::get_unit_id_on_position);
 	ClassDB::bind_method(D_METHOD("is_in_sacrifice_phase"), &BattleManagerFastCpp::is_in_sacrifice_phase);
-	ClassDB::bind_method(D_METHOD("is_in_summoning_phase"), &BattleManagerFastCpp::is_in_summoning_phase);
+	ClassDB::bind_method(D_METHOD("is_in_deployment_phase"), &BattleManagerFastCpp::is_in_deployment_phase);
 	ClassDB::bind_method(D_METHOD("get_unit_effect", "army", "unit", "effect"), &BattleManagerFastCpp::get_unit_effect);
 	ClassDB::bind_method(D_METHOD("get_unit_effect_duration_counter", "army", "unit", "effect"),
 			&BattleManagerFastCpp::get_unit_effect_duration_counter

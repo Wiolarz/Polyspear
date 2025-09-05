@@ -74,7 +74,7 @@ class BattleManagerFast {
 
 	void _refresh_legal_moves();
 	void _refresh_heuristically_good_moves();
-	void _refresh_heuristically_good_summon_moves();
+	void _refresh_heuristically_good_deploy_moves();
 
 	void _move_unit(UnitID id, Position pos);
 	void _kill_unit(UnitID id, UnitID killer_id);
@@ -182,7 +182,7 @@ public:
 	int play_move(godot::Array libspear_tuple);
 	int play_moves(godot::Array libspear_tuple_array);
 
-	void insert_unit(int army, int idx, Vector2i pos, int rotation, bool is_summoning);
+	void insert_unit(int army, int idx, Vector2i pos, int rotation, bool is_deploying);
 	void set_army_team(int army, int team);
 	void set_unit_symbol(
 		int army, int unit, int side,
@@ -252,16 +252,16 @@ public:
 		return bm._armies[army].units[unit].status == UnitStatus::ALIVE;
 	}
 
-	bool is_unit_being_summoned(int army, int unit) const {
-		return bm._armies[army].units[unit].status == UnitStatus::SUMMONING;
+	bool is_unit_being_deployed(int army, int unit) const {
+		return bm._armies[army].units[unit].status == UnitStatus::DEPLOYING;
 	}
 
 	bool is_in_sacrifice_phase() const {
 		return bm._state == BattleState::SACRIFICE;
 	}
 
-	bool is_in_summoning_phase() const {
-		return bm._state == BattleState::SUMMONING;
+	bool is_in_deployment_phase() const {
+		return bm._state == BattleState::DEPLOYMENT;
 	}
 
 	bool get_unit_effect(int army, int idx, godot::String str) const {

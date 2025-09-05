@@ -199,14 +199,14 @@ struct Army {
 	std::array<Unit, MAX_UNITS_IN_ARMY> units{};
 
 
-	int find_unit_id_to_summon(int from = 0) const;
+	int find_unit_id_to_deploy(int from = 0) const;
 	bool is_defeated() const;
 
 	/// Counts number of alive and undeployed units
 	int count_alive_units() const {
 		int result = 0;
 		for (const Unit& unit : units) {
-			if (unit.status == UnitStatus::SUMMONING || unit.status == UnitStatus::ALIVE) {
+			if (unit.status == UnitStatus::DEPLOYING || unit.status == UnitStatus::ALIVE) {
 				result++;
 			}
 		}

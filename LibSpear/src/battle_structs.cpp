@@ -1,9 +1,9 @@
 
 #include "battle_structs.hpp"
 
-int Army::find_unit_id_to_summon(int i) const {
+int Army::find_unit_id_to_deploy(int i) const {
 	for(; i < 5; i++) {
-		if(units[i].status == UnitStatus::SUMMONING) {
+		if(units[i].status == UnitStatus::DEPLOYING) {
 			return i;
 		}
 	}

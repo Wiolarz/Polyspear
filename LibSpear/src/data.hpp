@@ -10,14 +10,14 @@
 
 
 enum class UnitStatus : uint8_t {
-	SUMMONING,
+	DEPLOYING,
 	ALIVE,
 	DEAD
 };
 
 enum class BattleState : uint8_t {
 	INITIALIZING,
-	SUMMONING,
+	DEPLOYMENT,
 	ONGOING,
 	SACRIFICE,
 	FINISHED

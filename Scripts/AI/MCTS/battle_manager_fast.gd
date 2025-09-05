@@ -125,7 +125,7 @@ func libspear_tuple_to_move_info(tuple: Array) -> MoveInfo:
 
 	if is_in_sacrifice_phase():
 		return MoveInfo.make_sacrifice(unit_position)
-	elif is_in_summoning_phase():
+	elif is_in_deployment_phase():
 		return MoveInfo.make_deploy(summon_mapping_cpp2gd[uid], position)
 	elif tuple.size() == 3: # Magic
 		return MoveInfo.make_magic(unit_position, position, spell_mapping[tuple[2]])
@@ -205,11 +205,11 @@ func compare_grid_state(bgs: BattleGridState) -> bool:
 		push_error("BMFast mismatch - state mismatch - fast: sacrifice, slow: " + bgs.state)
 		is_ok = false
 
-	if is_in_summoning_phase() and bgs.state != bgs.STATE_DEPLOYMENT:
+	if is_in_deployment_phase() and bgs.state != bgs.STATE_DEPLOYMENT:
 		push_error("BMFast mismatch - state mismatch - fast: summoning, slow: " + bgs.state)
 		is_ok = false
 
-	if not is_in_sacrifice_phase() and not is_in_summoning_phase() and bgs.state != bgs.STATE_FIGHTING:
+	if not is_in_sacrifice_phase() and not is_in_deployment_phase() and bgs.state != bgs.STATE_FIGHTING:
 		push_error("BMFast mismatch - state mismatch - fast: fighting, slow: " + bgs.state)
 		is_ok = false
 
