@@ -182,7 +182,7 @@ func check_integrity_after_move(bgs: BattleGridState):
 		return
 	#assert(compare_move_list(bgs), "BMFast Integrity check failed after move")
 
-	if _integrity_check_move: # Only check ongoing battle movespush_warning("---------- END Integrity check (before) for turn %s ----------", bgs.turn_counter)
+	if _integrity_check_move: # Only check ongoing battle moves
 		assert_integrity_check(compare_grid_state(bgs), "Integrity check failed AFTER move")
 
 
@@ -191,7 +191,16 @@ func assert_integrity_check(condition: bool, message: String):
 		if CFG.debug_save_failed_bmfast_integrity:
 			BM._replay_data.save_as("BMFast Mismatch")
 		push_warning("---------- END %s ----------", message)
-		assert(false, "BMFast - %s - check error log for details" % [message])
+		match CFG.player_options.bmfast_integrity_check_mode:
+			CFG.BMFastIntegrityCheckMode.ASSERT:
+				assert(false, "BMFast - %s - check error log for details" % [message])
+			CFG.BMFastIntegrityCheckMode.NOTIFY_ON_CHAT:
+				# TODO dedicated CHAT singleton?
+				NET.append_to_local_chat_log("%s - failed replay saved - you can report this by sending it to us on Discord" % [message])
+			CFG.BMFastIntegrityCheckMode.PUSH_ERROR_ONLY, CFG.BMFastIntegrityCheckMode.DISABLE:
+				pass
+			_:
+				assert(false, "Integrity check mode %s not implemented" % CFG.player_options.bmfast_integrity_check_mode)
 
 
 func compare_grid_state(bgs: BattleGridState) -> bool:

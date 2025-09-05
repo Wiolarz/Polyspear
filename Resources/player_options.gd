@@ -72,9 +72,10 @@ extends Resource
 @export var autostart_map : bool = false
 
 
-## if true, compares BattleGridState and LibSpear's BattleManagerFast
+## Controls behavior when detecting mismatches in integrity check
+## Integrity check compares BattleGridState and LibSpear's BattleManagerFast
 ## for mismatches before and after each battle move, activating an assert on mismatch
-@export var bmfast_integrity_checks : bool = false
+@export var bmfast_integrity_check_mode := CFG.BMFastIntegrityCheckMode.NOTIFY_ON_CHAT
 
 
 # Automatically wins battles for the local player
