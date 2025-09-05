@@ -72,11 +72,13 @@ extends Resource
 @export var autostart_map : bool = false
 
 
-## Controls behavior when detecting mismatches in integrity check
+## Controls behavior when detecting mismatches in integrity check [br]
 ## Integrity check compares BattleGridState and LibSpear's BattleManagerFast
 ## for mismatches before and after each battle move, activating an assert on mismatch
 @export var bmfast_integrity_check_mode := CFG.BMFastIntegrityCheckMode.NOTIFY_ON_CHAT
 
+## Automatically start new battle as soon as the old one ends for LibSpear fuzzing purposes
+@export var enable_fuzzing_mode := false
 
 # Automatically wins battles for the local player
 @export var auto_win : bool = false

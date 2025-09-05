@@ -30,6 +30,10 @@ var _painter_node : BattlePainter
 
 var _scripted_battle : ScriptedBattle
 
+var _fuzzing_iterations := 0
+var _fuzzing_failed_iterations := 0
+var fuzzing_is_iteration_failed = false
+
 signal move_animation_done()
 
 
@@ -752,6 +756,19 @@ func _on_battle_ended() -> void:
 
 	_disable_ai_preview()
 	_battle_ui.update_mana()
+
+	if CFG.player_options.enable_fuzzing_mode:
+		_fuzzing_iterations += 1
+		if fuzzing_is_iteration_failed:
+			_fuzzing_failed_iterations += 1
+		fuzzing_is_iteration_failed = false
+
+		NET.append_to_local_chat_log("Next fuzzing iteration: %s/%s failed" \
+			% [_fuzzing_failed_iterations, _fuzzing_iterations]
+		)
+		# Do not wait 2 seconds and immediately start new game
+		IM.start_game()
+		return
 
 	await get_tree().create_timer(2).timeout # TEMP, don't exit immediately # TODO get signal from last animation ending
 

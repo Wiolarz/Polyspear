@@ -188,8 +188,10 @@ func check_integrity_after_move(bgs: BattleGridState):
 
 func assert_integrity_check(condition: bool, message: String):
 	if not condition:
+		BM.fuzzing_is_iteration_failed = true
 		if CFG.debug_save_failed_bmfast_integrity:
 			BM._replay_data.save_as("BMFast Mismatch")
+
 		push_warning("---------- END %s ----------", message)
 		match CFG.player_options.bmfast_integrity_check_mode:
 			CFG.BMFastIntegrityCheckMode.ASSERT:

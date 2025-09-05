@@ -69,6 +69,10 @@ layout_mode = 2
 text_overrun_behavior = 3
 fit_to_longest_item = false
 
+[node name="EnableFuzzingMode" type="CheckBox" parent="Margin/Scroll/VBox"]
+layout_mode = 2
+text = "Enable fuzzing mode (auto-restart battle when it ends)"
+
 [node name="ToggleBackgroundColorFollowsPlayers" type="CheckBox" parent="Margin/Scroll/VBox"]
 layout_mode = 2
 text = "Background color changes with player's turns"
