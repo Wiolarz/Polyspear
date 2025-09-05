@@ -251,4 +251,15 @@ inline int flip(int rot) {
 	return (rot + 3) % 6;
 }
 
+_FORCE_INLINE_ int clamp(int val, int min, int max) {
+	if(val < min) {
+		return min;
+	}
+	else if(val > max) {
+		return max;
+	}
+	return val;
+}
+
+
 #endif

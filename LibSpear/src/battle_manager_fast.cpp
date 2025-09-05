@@ -11,9 +11,7 @@
 
 void BattleManagerFast::finish_initialization() {
 	BM_ASSERT(_state == BattleState::INITIALIZING, "BMFast already initialized");
-	BM_ASSERT(_big_cyclone_counter_value != -1, "Uninitialized big cyclone counter");
-	BM_ASSERT(_small_cyclone_counter_value != -1, "Uninitialized small cyclone counter");
-	BM_ASSERT(_cyclone_mana_threshold != -1, "Uninitialized cyclone mana threshold");
+	BM_ASSERT(_cyclone_counter_values[0] != -1, "Uninitialized cyclone counter");
 	BM_ASSERT(_mana_well_power != -1, "Uninitialized mana well power");
 
 	_state = BattleState::SUMMONING;
@@ -564,8 +562,8 @@ void BattleManagerFast::_update_mana() {
 	}
 
 	int mana_difference = _armies[best_idx].mana_points - _armies[worst_idx].mana_points;
-	int16_t new_cyclone_counter = mana_difference > _cyclone_mana_threshold
-		? _small_cyclone_counter_value : _big_cyclone_counter_value;
+	int mana_difference_idx = clamp(mana_difference, 0, _cyclone_counter_values.size()-1);
+	int16_t new_cyclone_counter = _cyclone_counter_values[mana_difference_idx];
 
 	// Cyclone killed a unit or got lower - resetting
 	if(_armies[worst_idx].cyclone_timer == 0 || _armies[worst_idx].cyclone_timer > new_cyclone_counter) {
@@ -1271,10 +1269,16 @@ void BattleManagerFastCpp::insert_spell(int army, int unit, int spell_id, godot:
 	bm._spells[spell_id] = BattleSpell(str, UnitID(army, unit));
 }
 
-void BattleManagerFastCpp::set_cyclone_constants(int big, int small, int threshold, int mana_well_power) {
-	bm._big_cyclone_counter_value = big;
-	bm._small_cyclone_counter_value = small;
-	bm._cyclone_mana_threshold = threshold;
+void BattleManagerFastCpp::set_cyclone_constants(godot::PackedInt32Array cyclone_values, int mana_well_power) {
+	BM_ASSERT(size_t(cyclone_values.size()) < bm._cyclone_counter_values.size(), 
+			"Cyclone value array to big for LibSpear ({} vs max: {})", 
+			cyclone_values.size(), bm._cyclone_counter_values.size()
+	);
+
+	for(size_t i = 0; i < bm._cyclone_counter_values.size(); i++) {
+		int value = cyclone_values[clamp(i, 0, cyclone_values.size()-1)];
+		bm._cyclone_counter_values[i] = value;
+	}
 	bm._mana_well_power = mana_well_power;
 }
 
@@ -1294,7 +1298,7 @@ void BattleManagerFastCpp::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_army_cyclone_timer", "army", "timer"), &BattleManagerFastCpp::set_army_cyclone_timer);
 	ClassDB::bind_method(D_METHOD("set_tile_grid", "tilegrid"), &BattleManagerFastCpp::set_tile_grid);
 	ClassDB::bind_method(D_METHOD("set_current_participant", "army"), &BattleManagerFastCpp::set_current_participant);
-	ClassDB::bind_method(D_METHOD("set_cyclone_constants", "big", "small", "threshold", "mana_well_power"), &BattleManagerFastCpp::set_cyclone_constants);
+	ClassDB::bind_method(D_METHOD("set_cyclone_constants", "cyclone_values", "mana_well_power"), &BattleManagerFastCpp::set_cyclone_constants);
 	ClassDB::bind_method(D_METHOD("insert_spell", "army", "index", "spell"), &BattleManagerFastCpp::insert_spell);
 	ClassDB::bind_method(D_METHOD("force_battle_ongoing"), &BattleManagerFastCpp::force_battle_ongoing);
 	ClassDB::bind_method(D_METHOD("force_battle_sacrifice"), &BattleManagerFastCpp::force_battle_sacrifice);

@@ -226,10 +226,11 @@ const DEFAULT_PLAYER_NAME = "player"
 
 #region Battle Map properties
 
-#TEMP variables until better mana equation is implemented
-const BIG_CYCLONE_COUNTER_VALUE = 30
-const SMALL_CYCLONE_COUNTER_VALUE = 15
-const CYCLONE_MANA_THRESHOLD = 3
+const CYCLONE_COUNTER_VALUES : PackedInt32Array = [
+# Mana difference =
+#	0   1   2   3   4   5   6   7   8   9 10 11 12+
+	30, 30, 20, 15, 15, 10, 10, 10, 10, 5, 5, 5, 0
+]
 
 #endregion Battle Map properties
 

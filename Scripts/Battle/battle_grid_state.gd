@@ -995,22 +995,9 @@ func mana_values_changed() -> void:
 
 	var mana_difference = current_best.mana_points - current_worst.mana_points
 	## TODO consider moving it to a sepereta balance file instead of CFG
-	var new_cylone_counter = 0
-	if mana_difference >= 11:
-		new_cylone_counter = 5
-	elif mana_difference >= 8:
-		new_cylone_counter = 10
-	elif mana_difference >= 4:
-		new_cylone_counter = 15
-	elif mana_difference >= 2:
-		new_cylone_counter = 20
-	elif mana_difference == 1:
-		new_cylone_counter = CFG.BIG_CYCLONE_COUNTER_VALUE
 
-
-	if mana_difference > CFG.CYCLONE_MANA_THRESHOLD:
-		new_cylone_counter = CFG.SMALL_CYCLONE_COUNTER_VALUE
-
+	var mana_difference_idx = clamp(mana_difference, 0, CFG.CYCLONE_COUNTER_VALUES.size()-1)
+	var new_cylone_counter = CFG.CYCLONE_COUNTER_VALUES[mana_difference_idx]
 
 	if current_worst.cyclone_timer == 0:  # Cyclone just killed a unit, so now it resets
 		current_worst.cyclone_timer = new_cylone_counter

@@ -41,9 +41,8 @@ class BattleManagerFast {
 	ArmyList _armies{};
 	std::array<BattleSpell, MAX_SPELLS> _spells{};
 	TileGridFast _tiles{};
-	int8_t _big_cyclone_counter_value = -1;
-	int8_t _small_cyclone_counter_value = -1;
-	int8_t _cyclone_mana_threshold = -1;
+	
+	std::array<int8_t, 16> _cyclone_counter_values{-1};
 	int8_t _mana_well_power = -1;
 
 	BattleResult _result{};
@@ -54,6 +53,7 @@ class BattleManagerFast {
 	bool _moves_dirty = true;
 	bool _heuristic_moves_dirty = true;
 	bool _debug_internals = false;
+
 
 	void _process_unit(UnitID uid, MovePhase phase);
 	void _process_bow(UnitID uid, MovePhase phase);
@@ -201,7 +201,7 @@ public:
 	void set_army_cyclone_timer(int army, int timer);
 	void set_tile_grid(TileGridFastCpp* tilegrid);
 	void set_current_participant(int army);
-	void set_cyclone_constants(int big, int small, int threshold, int mana_well_power);
+	void set_cyclone_constants(godot::PackedInt32Array cyclone_values, int mana_well_power);
 
 	void finish_initialization() {
 		bm.finish_initialization();
