@@ -424,7 +424,7 @@ void BattleManagerFast::_process_spell(UnitID uid, int8_t spell_id, Position tar
 			{
 				auto unit = _get_unit(uid2);
 				BM_ASSERT(unit.has_value(), "Unknown unit id for blood curse spell");
-				unit.value().unit.try_apply_effect(Unit::FLAG_EFFECT_BLOOD_CURSE);
+				unit.value().unit.try_apply_effect(Unit::FLAG_EFFECT_BLOOD_CURSE, Unit::EFFECT_INFINITE);
 			}
 			break;
 		case BattleSpell::State::WIND_DASH:

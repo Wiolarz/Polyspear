@@ -75,7 +75,8 @@ static func from(bgstate: BattleGridState, tgrid: TileGridFast = null) -> Battle
 						martyrs.push_back(unit_idx)
 						martyr_duration = eff.duration_counter
 					_:
-						new.set_unit_effect(army_idx, unit_idx, eff.name, eff.duration_counter)
+						var duration_counter = -1 if eff.passive_effect else eff.duration_counter
+						new.set_unit_effect(army_idx, unit_idx, eff.name, duration_counter)
 
 		# TODO in future there might potentially be more martyrs simultaneously
 		assert(martyrs.size() in [0,1,2], "Unsupported martyr number")
@@ -208,6 +209,8 @@ func assert_integrity_check(condition: bool, message: String):
 func compare_grid_state(bgs: BattleGridState) -> bool:
 	var is_ok = true
 
+	#region Global battle state
+
 	if bgs.current_army_index != get_current_participant():
 		push_error("BMFast mismatch - current army: slow ", bgs.current_army_index, ", fast ", get_current_participant())
 		is_ok = false
@@ -229,10 +232,13 @@ func compare_grid_state(bgs: BattleGridState) -> bool:
 		push_error("BMFast mismatch - cyclone target - fast: %s, slow: %s" % [get_cyclone_target(), slow_cyclone_target])
 		is_ok = false
 
+	#endregion Global battle state
+
 	for army_id in range(bgs.armies_in_battle_state.size()):
 		var units_nr = get_max_units_in_army()
 		var army = bgs.armies_in_battle_state[army_id]
 
+		#region Per-army state
 		assert(
 			army.units.size() + army.units_to_deploy.size() <= get_max_units_in_army(),
 			"No support for more than %s units in fast BM" % [get_max_units_in_army()]
@@ -253,6 +259,9 @@ func compare_grid_state(bgs: BattleGridState) -> bool:
 			])
 			is_ok = false
 
+		#endregion Per-army state
+
+		#region Units
 		for unit in army.units:
 			var uid = get_unit_id_on_position(unit.coord)
 			if uid[1] == -1:
@@ -280,9 +289,14 @@ func compare_grid_state(bgs: BattleGridState) -> bool:
 						   ",  ", " vs fast's rotation ", get_unit_rotation(army_id, unit_id))
 				is_ok = false
 
+			# Dictionary[String, int] - numbers of spells
+			var spell_dict := {}
+
 			for spell in unit.spells:
-				# TODO check when there are several instances of the same spell?
-				if count_spell(army_id, unit_id, spell.name) != 1:
+				spell_dict[spell.name] = spell_dict.get(spell.name, 0) + 1
+
+			for spell in spell_dict:
+				if count_spell(army_id, unit_id, spell) != spell_dict.get(spell, 0):
 					push_error("BMFast mismatch - unit id ", unit_str, " fast does not have slow spell ", spell.name)
 					is_ok = false
 
@@ -307,7 +321,10 @@ func compare_grid_state(bgs: BattleGridState) -> bool:
 							push_error("BMFast mismatch - effect '%s' present in slow but not fast" % [eff.name])
 							is_ok = false
 				var duration_fast = get_unit_effect_duration_counter(army_id, unit_id, eff.name)
-				if eff.duration_counter != duration_fast:
+				if eff.passive_effect and duration_fast != -1:
+					push_error("BMFast mismatch - passive effect '%s' has duration %s in fast (should be -1 for indefinite effects)" % [eff.name, eff.duration_counter, duration_fast])
+					is_ok = false
+				elif not eff.passive_effect and eff.duration_counter != duration_fast:
 					push_error("BMFast mismatch - effect '%s' has duration %s in slow and %s in fast" % [eff.name, eff.duration_counter, duration_fast])
 					is_ok = false
 
@@ -321,6 +338,8 @@ func compare_grid_state(bgs: BattleGridState) -> bool:
 		if units_nr != units_alive_in_army:
 			push_error("BMFast mismatch - number of units in army ", army_id, ": slow ", units_alive_in_army, ", fast ", units_nr)
 			is_ok = false
+
+		#endregion Units
 
 	return is_ok
 

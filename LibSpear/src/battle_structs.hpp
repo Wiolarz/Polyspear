@@ -68,6 +68,7 @@ struct Unit {
 private:
 	UnitID _martyr_id = NO_UNIT;
 public:
+	static const int8_t EFFECT_INFINITE = -1;
 
 	static const EffectMask FLAG_ON_SWAMP = 0x01;
 	static const EffectMask FLAG_EFFECT_VENGEANCE = 0x02;
@@ -134,13 +135,9 @@ public:
 			if(eff.counter == 0 || eff.mask == 0) {
 				continue;
 			}
-			switch (eff.mask) {
-				case FLAG_EFFECT_BLOOD_CURSE:
-					continue;
 
-				default:
-					eff.counter--;
-					break;
+			if(eff.counter > 0) {
+				eff.counter--;
 			}
 
 			if(eff.counter == 0) {
