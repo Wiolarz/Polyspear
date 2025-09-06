@@ -208,6 +208,7 @@ func _buy_unit(unit : DataUnit) -> void:
 	current_roster.units.append(unit)
 	_refresh_roster_display()
 	_refresh_unit_purchases()
+	refresh__run_info()
 
 
 func _launch_battle():
