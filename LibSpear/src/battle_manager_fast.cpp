@@ -320,7 +320,7 @@ void BattleManagerFast::_process_bow(UnitID unit_id, MovePhase phase) {
 
 	for(int i = 0; i < 6; i++) {
 		Symbol symbol = unit.symbol_when_rotated(i);
-		if(symbol.get_bow_force() == 0) {
+		if(symbol.get_bow_force(phase) == 0) {
 			continue;
 		}
 
@@ -863,7 +863,7 @@ void BattleManagerFast::_refresh_heuristically_good_deploy_moves() {
 		}
 
 		for(Unit& enemy : enemy_army.units) {
-			if(enemy.status == UnitStatus::DEPLOYING && enemy.front_symbol().get_bow_force() > 0) {
+			if(enemy.status == UnitStatus::DEPLOYING && enemy.front_symbol().get_bow_force(MovePhase::DASH) > 0) {
 				enemy_has_undeployed_bowman = true;
 				break;
 			}
@@ -874,7 +874,7 @@ void BattleManagerFast::_refresh_heuristically_good_deploy_moves() {
 	for(Move m : get_legal_moves()) {
 		Unit& unit = army.units[m.unit];
 
-		bool is_bowman = unit.front_symbol().get_bow_force() > 0;
+		bool is_bowman = unit.front_symbol().get_bow_force(MovePhase::DASH) > 0;
 		// Behavior when the spawn position is empty
 		// At this moment assumes every spawn is not safe from bowman - good for now, but TODO?
 
@@ -1190,14 +1190,17 @@ void BattleManagerFastCpp::insert_unit(int army, int idx, Vector2i pos, int rota
 void BattleManagerFastCpp::set_unit_symbol(
 		int army, int unit, int side,
 		int attack_strength, int defense_strength, int ranged_reach,
-		bool is_counter, int push_force, bool parries, bool breaks_parry
+		bool is_counter, int push_force, bool parries, bool breaks_parry,
+		bool activate_on_leap, bool activate_on_turn
 ) {
 	CHECK_UNIT(unit,);
 	CHECK_ARMY(army,);
 
-	uint8_t flags = (parries	  ? Symbol::FLAG_PARRY : 0)
-				  | (breaks_parry ? Symbol::FLAG_PARRY_BREAK : 0)
-				  | (is_counter   ? Symbol::FLAG_COUNTER_ATTACK : 0);
+	uint8_t flags = (parries		  ? Symbol::FLAG_PARRY : 0)
+				  | (breaks_parry	  ? Symbol::FLAG_PARRY_BREAK : 0)
+				  | (is_counter		  ? Symbol::FLAG_COUNTER_ATTACK : 0)
+				  | (activate_on_leap ? Symbol::FLAG_ACTIVATE_ON_LEAP : 0)
+				  | (activate_on_turn ? Symbol::FLAG_ACTIVATE_ON_TURN : 0);
 
 	bm._armies[army].units[unit].sides[side] = Symbol(attack_strength, defense_strength, push_force, ranged_reach, flags);
 }
@@ -1349,7 +1352,8 @@ void BattleManagerFastCpp::_bind_methods() {
 	ClassDB::bind_method(D_METHOD(
 		"set_unit_symbol_cpp", "army", "unit", "side",
 		"attack_strength", "defense_strength", "ranged_reach",
-		"is_counter", "push_force", "parries", "breaks_parry"
+		"is_counter", "push_force", "parries", "breaks_parry",
+		"activate_on_leap", "activate_on_turn"
  ), &BattleManagerFastCpp::set_unit_symbol);
 	ClassDB::bind_method(D_METHOD("set_army_team", "army", "team"), &BattleManagerFastCpp::set_army_team);
 	ClassDB::bind_method(D_METHOD("set_unit_score", "army", "unit", "score"), &BattleManagerFastCpp::set_unit_score);

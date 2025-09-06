@@ -117,7 +117,8 @@ func set_unit_symbol(army_idx: int, unit_idx: int, symbol_idx: int, symbol: Data
 	set_unit_symbol_cpp(
 		army_idx, unit_idx, symbol_idx,
 		symbol.attack_power, symbol.defense_power, symbol.reach,
-		symbol.counter_attack, symbol.push_power, symbol.parry, symbol.parry_break
+		symbol.counter_attack, symbol.push_power, symbol.parry, symbol.parry_break,
+		symbol.activate_move, symbol.activate_turn
 	)
 
 #region Libspear tuple <-> MoveInfo conversion

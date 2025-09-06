@@ -150,7 +150,7 @@ public:
 		}
 	}
 
-	static uint8_t effect_string_to_flag(godot::String str) {
+	static EffectMask effect_string_to_flag(godot::String str) {
 		if(str == godot::String("Vengeance")) {
 			return FLAG_EFFECT_VENGEANCE;
 		}

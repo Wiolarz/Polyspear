@@ -82,6 +82,8 @@ public:
 	static const uint8_t FLAG_COUNTER_ATTACK = 0x01;
 	static const uint8_t FLAG_PARRY = 0x02;
 	static const uint8_t FLAG_PARRY_BREAK = 0x04;
+	static const uint8_t FLAG_ACTIVATE_ON_LEAP = 0x08; // |
+	static const uint8_t FLAG_ACTIVATE_ON_TURN = 0x10; // | only for ranged weapons
 
 	static const int MIN_SHIELD_DEFENSE = 2;
 
@@ -108,8 +110,14 @@ public:
 		return _defense_strength;
 	}
 
-	int get_bow_force() {
-		return (_ranged_reach > 1) ? _attack_strength : 0;
+	bool does_bow_activate_on(MovePhase phase) {
+		return phase == MovePhase::DASH // Should never occur naturally, special value for convenience
+			|| (phase == MovePhase::LEAP && (_flags & FLAG_ACTIVATE_ON_LEAP))
+			|| (phase == MovePhase::TURN && (_flags & FLAG_ACTIVATE_ON_TURN));
+	}
+
+	int get_bow_force(MovePhase phase) {
+		return (_ranged_reach > 1 && does_bow_activate_on(phase)) ? _attack_strength : 0;
 	}
 
 	int get_reach() {
@@ -122,7 +130,7 @@ public:
 
 	bool protects_against(Symbol other, MovePhase phase) {
 		// Parry disables melee attacks
-		if(other.get_bow_force() <= 0 && (parries() && !other.breaks_parry())) {
+		if(other.get_bow_force(phase) <= 0 && (parries() && !other.breaks_parry())) {
 			return true;
 		}
 
