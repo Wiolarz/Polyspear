@@ -11,7 +11,11 @@ var summon_mapping_cpp2gd: Dictionary = {}
 ## Maps BMFast's unit IDs (in format [army, unit]) and DataUnit
 var summon_mapping_gd2cpp: Dictionary = {}
 ## Maps BMFast's spell IDs to BattleSpells
-var spell_mapping: Array = []
+var spell_mapping: Array[BattleSpell] = []
+## Maps BMFast's spell IDs to the army ID of the unit that has this spell
+var spell_army_id_mapping: Array[int] = []
+## Maps BMFast's spell IDs to the unit ID that has this spell
+var spell_unit_id_mapping: Array[int] = []
 
 ## Maps team ids to BMFast's team ids (BMFast's team ids must be less than max army number)
 var team_mapping: Dictionary = {}
@@ -68,6 +72,8 @@ static func from(bgstate: BattleGridState, tgrid: TileGridFast = null) -> Battle
 			for spell in unit.spells:
 				new.insert_spell(army_idx, unit_idx, new.spell_mapping.size(), spell.name)
 				new.spell_mapping.push_back(spell)
+				new.spell_army_id_mapping.push_back(army_idx)
+				new.spell_unit_id_mapping.push_back(unit_idx)
 
 			for eff in unit.effects:
 				match eff.name:
@@ -133,6 +139,7 @@ func libspear_tuple_to_move_info(tuple: Array) -> MoveInfo:
 	else:
 		return MoveInfo.make_move(unit_position, position)
 
+
 func move_info_to_libspear_tuple(move: MoveInfo) -> Array:
 	var unit: int
 	var pos = move.target_tile_coord
@@ -147,11 +154,22 @@ func move_info_to_libspear_tuple(move: MoveInfo) -> Array:
 			pos = Vector2i.ZERO
 		MoveInfo.TYPE_MAGIC:
 			unit = get_unit_id_on_position(move.move_source)[1]
-			return [unit, pos, spell_mapping.find(move.spell)]
+			return [unit, pos, find_spell(get_current_participant(), unit, move.spell)]
 		_:
 			assert(false, "Unknown move type '%s'" % [move.move_type])
 
 	return [unit, pos]
+
+
+func find_spell(army_idx: int, unit_idx: int, spell: BattleSpell) -> int:
+	for i in spell_mapping.size():
+		if spell_mapping[i] == spell \
+				and spell_army_id_mapping[i] == army_idx \
+				and spell_unit_id_mapping[i] == unit_idx:
+			return i
+
+	push_warning("Spell %s not found for unit %s/%s")
+	return -1
 
 #endregion
 
