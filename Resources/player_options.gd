@@ -123,4 +123,10 @@ extends Resource
 ## if true, peer ip addresses are hidden
 @export var streamer_mode : bool = false
 
+@export var discord_rpc : bool = true:
+	set(new):
+		discord_rpc = new
+		if DISCORD:
+			DISCORD.refresh()
+
 #endregion Multiplayer
