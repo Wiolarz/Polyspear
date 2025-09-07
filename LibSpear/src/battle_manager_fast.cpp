@@ -238,14 +238,14 @@ void BattleManagerFast::_process_unit(UnitID unit_id, MovePhase phase) {
 		Symbol unit_symbol = unit.symbol_when_rotated(side);
 		Symbol neighbor_symbol = neighbor.symbol_when_rotated(flip(side));
 	
-		if(neighbor_symbol.dies_to(unit_symbol, phase)) {
+		if(neighbor_symbol.dies_to(unit_symbol, phase) && unit_symbol.get_bow_force(MovePhase::DASH) == 0) {
 			_kill_unit(neighbor_id, unit_id);
 			continue;
 		}
 
 		Position direction = neighbor.pos - unit.pos;
 		int push_force = unit_symbol.get_push_force();
-    
+ 
 		if(neighbor.status != UnitStatus::DEAD && push_force > 0 &&
 			(!neighbor_symbol.parries() || unit_symbol.breaks_parry())) {
 			_process_push(neighbor_id, unit_id, direction, push_force);
