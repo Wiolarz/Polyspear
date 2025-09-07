@@ -1136,7 +1136,12 @@ void BattleManagerFast::_kill_unit(UnitID id, UnitID killer_id) {
 		_update_mana();
 	}
 
-	if(unit.is_effect_active(Unit::FLAG_EFFECT_VENGEANCE) && killer_id != NO_UNIT && get_winner_team() == -1) {
+	bool vengeance_activated = unit.is_effect_active(Unit::FLAG_EFFECT_VENGEANCE) 
+		&& killer_id != NO_UNIT 
+		&& get_current_participant() != army.id // Do not avenge when caused by the vengeance bearer
+		&& get_winner_team() == -1; // Do not cause a draw
+
+	if(vengeance_activated) {
 		auto killer_opt = _get_unit(killer_id);
 		BM_ASSERT(killer_opt.has_value(), "Unknown killer {}.{}", killer_id.unit, killer_id.army);
 
