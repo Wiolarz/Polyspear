@@ -240,6 +240,7 @@ void BattleManagerFast::_process_unit(UnitID unit_id, MovePhase phase) {
 	
 		if(neighbor_symbol.dies_to(unit_symbol, phase)) {
 			_kill_unit(neighbor_id, unit_id);
+			continue;
 		}
 
 		Position direction = neighbor.pos - unit.pos;
