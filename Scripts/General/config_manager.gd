@@ -228,8 +228,8 @@ const DEFAULT_PLAYER_NAME = "player"
 
 const CYCLONE_COUNTER_VALUES : PackedInt32Array = [
 # Mana difference =
-#	0   1   2   3   4   5   6   7   8   9 10 11 12+
-	30, 30, 20, 15, 15, 10, 10, 10, 10, 5, 5, 5, 0
+#	0   1   2   3   4   5   6   7   8   9   10  11+
+	30, 30, 20, 20, 15, 15, 15, 15, 10, 10, 10, 5
 ]
 
 #endregion Battle Map properties

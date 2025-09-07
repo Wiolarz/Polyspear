@@ -138,8 +138,8 @@ public:
 		return other_force <= get_defense_force();
 	}
 
-	bool holds_ground_against(Symbol other, MovePhase phase) {
-		return protects_against(other, phase) && other.get_push_force() <= 0;
+	bool holds_ground_against(Symbol other) {
+		return protects_against(other, MovePhase::TURN) && other.get_push_force() <= 0;
 	}
 
 	bool dies_to(Symbol other, MovePhase phase) {

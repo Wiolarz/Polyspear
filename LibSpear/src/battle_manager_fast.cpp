@@ -329,8 +329,14 @@ void BattleManagerFast::_process_bow(UnitID unit_id, MovePhase phase) {
 
 		for(int range = 1; range <= symbol.get_reach(); range++) {
 			UnitID other_id = _unit_cache.get(pos);
-			auto other_unit_opt = _get_unit(other_id);
 
+			if(_tiles.get_tile(pos).is_wall() || _tiles.get_tile(pos).is_hill()) {
+				// Can't shoot past walls, but can shoot enemies on hills
+				// Break the loop while letting this iteration end
+				range = symbol.get_reach();
+			}
+
+			auto other_unit_opt = _get_unit(other_id);
 			if(!other_unit_opt.has_value()) {
 				pos = pos + iter;
 				continue;
@@ -344,10 +350,6 @@ void BattleManagerFast::_process_bow(UnitID unit_id, MovePhase phase) {
 			if(other.symbol_when_rotated(flip(i)).dies_to(symbol, phase)) {
 				_kill_unit(other_id, unit_id);
 				break;
-			}
-
-			if(_tiles.get_tile(pos).is_wall()) {
-				break; // Can't shoot past walls, but can shoot enemies on hills
 			}
 
 			pos = pos + iter;
@@ -722,20 +724,25 @@ void BattleManagerFast::_refresh_legal_moves() {
 				}
 
 				Tile tile = _tiles.get_tile(move.pos);
-				if(!(tile.is_passable()) && !(tile.is_hill() && side == unit.rotation && !going_across_pit)) {
+				bool is_about_to_climb_hill = tile.is_hill() && side == unit.rotation && !going_across_pit;
+				if(	!(tile.is_passable() || is_about_to_climb_hill) ) {
 					continue;
 				}
 
 				if(auto unit_opt = _get_unit(move.pos); unit_opt.has_value()) {
 					auto [other_unit, other_army] = unit_opt.value();
-					if(other_army.team == army.team || going_across_pit) {
-						continue;
-					}
-
 					Symbol neighbor_symbol = other_unit.symbol_when_rotated(flip(side));
 					Symbol unit_symbol = unit.front_symbol();
 
-					if(neighbor_symbol.holds_ground_against(unit_symbol, MovePhase::LEAP)) {
+					bool holds_ground = neighbor_symbol.holds_ground_against(unit_symbol);
+					bool blocking_pit = going_across_pit
+						&& !(unit_symbol.get_bow_force(MovePhase::TURN) > 0 && !holds_ground);
+
+					if(other_army.team == army.team || blocking_pit) {
+						continue;
+					}
+
+					if(holds_ground) {
 						continue;
 					}
 				}
@@ -889,8 +896,8 @@ void BattleManagerFast::_refresh_heuristically_good_deploy_moves() {
 			}
 
 			for(Unit& enemy : enemy_army.units) {
-				bool can_shoot_enemy	  = unit.front_symbol().protects_against(enemy.front_symbol(), MovePhase::LEAP);
-				bool enemy_can_shoot_unit = enemy.front_symbol().protects_against(unit.front_symbol(), MovePhase::LEAP);
+				bool can_shoot_enemy	  = unit.front_symbol().protects_against(enemy.front_symbol(), MovePhase::DASH);
+				bool enemy_can_shoot_unit = enemy.front_symbol().protects_against(unit.front_symbol(), MovePhase::DASH);
 
 				if(enemy.status != UnitStatus::ALIVE || !m.pos.is_in_line_with(enemy.pos)) {
 					continue;
