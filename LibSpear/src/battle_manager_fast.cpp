@@ -735,15 +735,13 @@ void BattleManagerFast::_refresh_legal_moves() {
 					Symbol neighbor_symbol = other_unit.symbol_when_rotated(flip(side));
 					Symbol unit_symbol = unit.front_symbol();
 
+					bool is_bow = unit_symbol.get_bow_force(MovePhase::TURN) > 0;
+					bool is_javelin = unit_symbol.get_bow_force(MovePhase::LEAP) > 0 && !is_bow;
+
 					bool holds_ground = neighbor_symbol.holds_ground_against(unit_symbol);
-					bool blocking_pit = going_across_pit
-						&& !(unit_symbol.get_bow_force(MovePhase::TURN) > 0 && !holds_ground);
+					bool blocking_pit = going_across_pit && (!is_bow || holds_ground);
 
-					if(other_army.team == army.team || blocking_pit) {
-						continue;
-					}
-
-					if(holds_ground) {
+					if(other_army.team == army.team || blocking_pit || holds_ground || is_javelin) {
 						continue;
 					}
 				}
