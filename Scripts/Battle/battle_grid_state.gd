@@ -1161,6 +1161,7 @@ func _end_of_turn_magic() -> void:
 					magic_effect.duration_counter -= 1
 					if magic_effect.duration_counter == 0:
 						unit.effects.pop_at(effect_idx)
+						unit.effect_state_changed()
 						if magic_effect.name == "Summoning Sickness":
 							unit.try_adding_magic_effect(magic_effect.spell_effects[0])
 						continue

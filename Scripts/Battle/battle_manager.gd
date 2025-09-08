@@ -259,7 +259,9 @@ func _on_turn_started(player : Player) -> void:
 		var move = await bot.choose_move(_battle_grid_state)
 		await _ai_thinking_delay(thinking_begin_s) # moving too fast feels weird
 
-		bot.cleanup_after_move()
+		if is_instance_valid(bot): # it may have been destroyed after thinking delay
+			bot.cleanup_after_move()
+
 		if _battle_grid_state == null: # Player quit to main menu before finishing
 			return
 
@@ -413,6 +415,9 @@ func ai_move() -> void:
 		return
 
 	if _replay_is_playing:
+		return
+
+	if _battle_grid_state.state == BattleGridState.STATE_BATTLE_FINISHED:
 		return
 
 	var move := AiBotStateRandom.choose_move_static(_battle_grid_state)
