@@ -31,8 +31,12 @@ static func from(bgstate: BattleGridState, tgrid: TileGridFast = null) -> Battle
 	new.set_tile_grid(tgrid)
 	new.set_current_participant(bgstate.current_army_index)
 
+	var cyclone_counter_values: PackedInt32Array = []
+	for mana_difference in range(CFG.CYCLONE_COUNTER_VALUES_MAX_MANA_DIFFERENCE+1):
+		cyclone_counter_values.push_back(CFG.get_cyclone_value(mana_difference, bgstate.number_of_mana_wells))
+
 	new.set_cyclone_constants(
-		CFG.CYCLONE_COUNTER_VALUES,
+		cyclone_counter_values,
 		BattleGridState.MANA_WELL_POWER
 	)
 

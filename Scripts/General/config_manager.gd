@@ -226,11 +226,20 @@ const DEFAULT_PLAYER_NAME = "player"
 
 #region Battle Map properties
 
-const CYCLONE_COUNTER_VALUES : PackedInt32Array = [
-# Mana difference =
-#	0   1   2   3   4   5   6   7   8   9   10  11+
-	30, 30, 20, 20, 15, 15, 15, 15, 10, 10, 10, 5
-]
+# Number above which cyclone value doesn't change
+const CYCLONE_COUNTER_VALUES_MAX_MANA_DIFFERENCE = 11
+
+func get_cyclone_value(mana_difference: int, _mana_wells: int):
+	if mana_difference < 2:
+		return 30
+	if mana_difference < 4:
+		return 20
+	if mana_difference < 8:
+		return 15
+	if mana_difference < 11:
+		return 10
+	return 5
+
 
 #endregion Battle Map properties
 
