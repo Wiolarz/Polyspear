@@ -284,7 +284,7 @@ var debug_check_bmfast_integrity : bool :
 	get: return player_options.bmfast_integrity_check_mode != BMFastIntegrityCheckMode.DISABLE
 ## Enables additional BattleManagerFast internal integrity checks, which may slightly reduce performance
 var debug_check_bmfast_internals : bool :
-	get: return player_options.bmfast_integrity_checks != BMFastIntegrityCheckMode.DISABLE
+	get: return player_options.bmfast_integrity_check_mode != BMFastIntegrityCheckMode.DISABLE
 ## When greater than zero, saves replays from playouts where errors were detected
 var debug_mcts_max_saved_fail_replays := 16
 ## When true, immediately save replays from BattleManagerFast mismatches with an appropriate name with a suffix "BMFast Mismatch"
