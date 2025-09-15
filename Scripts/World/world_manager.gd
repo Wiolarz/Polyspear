@@ -264,7 +264,7 @@ func grid_input(coord : Vector2i):
 		return
 
 
-	if selected_hero.travel_path.size() == 0 or selected_hero.travel_path[-1] != coord:  # Generate Path
+	if not selected_hero.travel_path or selected_hero.travel_path.size() == 0 or selected_hero.travel_path[-1] != coord:  # Generate Path
 		_generate_path(coord)
 		_painter_node.erase()
 		_draw_path()

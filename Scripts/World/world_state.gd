@@ -857,7 +857,7 @@ func assess_combat_difficulty(hero_army : Army, target_army : Army) -> int:
 	print(hero_army_level, target_army_level)
 	if target_army_level * 1.5 < hero_army_level:
 		return 3
-	elif target_army_level < hero_army_level:
+	elif target_army_level <= hero_army_level:
 		return 2
 	else:
 		return 1
