@@ -796,7 +796,7 @@ func get_all_building_purchases() -> Array[WorldMoveInfo]:
 	return build_moves
 
 
-func get_all_unit_purchaces(city : City, army : Army) -> Array[WorldMoveInfo]:
+func get_all_unit_purchases(city : City, army : Army) -> Array[WorldMoveInfo]:
 	var purchase_moves : Array[WorldMoveInfo] = []
 	for unit in city.get_units_to_buy():
 		if army.units_data.size() >= army.hero.max_army_size: # no place in army
@@ -824,8 +824,68 @@ func get_all_goods_spending_moves() -> Array[WorldMoveInfo]:
 		for city in faction.cities:
 			if not GenericHexGrid.is_adjacent(hero.coord, city.coord) and hero.coord != city.coord:
 				continue
-			spending_moves.append_array(get_all_unit_purchaces(city, hero))
+			spending_moves.append_array(get_all_unit_purchases(city, hero))
 	return spending_moves
+
+
+## Tries to optimise unit purchases to fill up max army size while spending as much goods as possible
+func smart_unit_purchases(city : City, army : Army, starting_available_goods : Goods) -> Array[WorldMoveInfo]:
+
+	#TODO with discounts PR, it will need to be changed
+	var possible_unit_purchases : Array[WorldMoveInfo] = get_all_unit_purchases(city, army)
+
+	#TODO with Trade system PR, max army size will need to be changed to not buy units n smart buy that will be left in the city
+	var unit_spots_left : int = army.hero.max_army_size - army.units_data.size()
+	assert(unit_spots_left >= 0, "army has more units than it can carry")
+	if unit_spots_left <= 0 or possible_unit_purchases.size() == 0:
+		printerr("launched function while its not possible to buy anything")
+		return []
+
+
+	var current_best_solution : Array[WorldMoveInfo] = []
+	var current_best_spend_goods := Goods.new(999, 999, 999)
+	var best_filling_solution : int = 99  # number of slots left
+	for i in range(1000):
+		var available_goods : Goods = starting_available_goods.duplicate()
+		var new_solution : Array[WorldMoveInfo] = []
+		var new_army_spots_left : int = unit_spots_left
+
+
+		for spot in range(unit_spots_left):
+
+			var purchase_targets_idx : Array[int] = []
+			purchase_targets_idx.assign(range(possible_unit_purchases.size())) ## GODOT MOMENT
+			var current_target : int = 0
+			var new_purchase : WorldMoveInfo
+
+			while purchase_targets_idx.size() > 0:
+				# knapsack problem solved with random approach
+				current_target = purchase_targets_idx.pick_random()
+				new_purchase = possible_unit_purchases[current_target]
+				if available_goods.has_enough(new_purchase.data.cost):
+					break  # we can purchase this unit
+				purchase_targets_idx.erase(current_target) # we cannot purchase it
+
+			if purchase_targets_idx.size() == 0:  # No more money left to buy units
+				break
+
+			#purchase
+			available_goods.subtract(new_purchase.data.cost)
+			new_solution.append(new_purchase)
+			new_army_spots_left -= 1
+
+		## TODO create additional function parameter, that will be used differently base on race
+		## that will determine if build order preference is on number of units, or their quality
+		var goods_size_diff := available_goods.other_goods_size_in_comparasion(current_best_spend_goods)
+
+		if goods_size_diff != Goods.SizeDifference.SMALLER and \
+		  best_filling_solution >= new_army_spots_left:  # found new best solution
+			current_best_solution = new_solution
+			current_best_spend_goods = available_goods.duplicate()
+			best_filling_solution = new_army_spots_left
+
+
+	return current_best_solution
 
 
 #TODO purchases_shopping_list

@@ -15,10 +15,10 @@ var target_tile : TileForm
 # gameplay
 var hero_name : String
 
-var max_army_size : int
+var max_army_size : int = 3
 
-var max_movement_points = 3
-var movement_points = 3
+var max_movement_points : int = 3
+var movement_points : int = 3
 
 ## world coord, where hero wants to travel
 var travel_path : Array[Vector2i]
@@ -26,8 +26,8 @@ var travel_path : Array[Vector2i]
 
 var wounded : bool = false
 
-var xp = 0
-var level = 1
+var xp : int = 0
+var level : int = 1
 
 # Battle Gameplay
 var data_unit : DataUnit
