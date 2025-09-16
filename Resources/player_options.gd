@@ -49,7 +49,7 @@ extends Resource
 ## specifc last opened page within a section are saved in variables: [br]
 ## last_open_practice_tab, last_open_battle_wiki_tab, last_open_world_wiki_tab
 @export var last_open_learn_tab := CFG.LearnTabs.PRACTICE
-@export var last_open_practice_tab := CFG.PracitceTabs.BASIC
+@export var last_open_practice_tab := CFG.PracticeTabs.BASIC
 @export var last_open_battle_wiki_tab := CFG.BattleWiki.SYMBOLS_WIKI
 @export var last_open_world_wiki_tab := CFG.WorldWiki.FACTIONS
 

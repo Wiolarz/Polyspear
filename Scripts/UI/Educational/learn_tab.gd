@@ -2,16 +2,16 @@ extends Panel
 
 
 @onready var general_learn_tabs_paired_with_scene = {
-	CFG.LearnTabs.PRACTICE: get_node("MainContainer/TopMenu/TabBarPractice"),
+	CFG.LearnTabs.PRACTICE: $MainContainer/TopMenu/TabBarPractice ,
 	CFG.LearnTabs.BATTLE_WIKI: get_node("MainContainer/TopMenu/TabBarBattleWiki"),
 	CFG.LearnTabs.WORLD_WIKI: get_node("MainContainer/TopMenu/TabBarWorldWiki"),
 }
 
 @onready var practice_tabs_paired_with_scene = {
-	CFG.PracitceTabs.BASIC: get_node("MainContainer/WikiIntroduction"),
-	CFG.PracitceTabs.TUTORIAL: get_node("MainContainer/Tutorials"),
-	CFG.PracitceTabs.PUZZLE: get_node("MainContainer/Puzzles"),
-	CFG.PracitceTabs.CAMPAIGN: get_node("MainContainer/CampaignBattles"),
+	CFG.PracticeTabs.BASIC: get_node("MainContainer/WikiIntroduction"),
+	CFG.PracticeTabs.TUTORIAL: get_node("MainContainer/Tutorials"),
+	CFG.PracticeTabs.PUZZLE: get_node("MainContainer/Puzzles"),
+	CFG.PracticeTabs.CAMPAIGN: get_node("MainContainer/CampaignBattles"),
 }
 
 @onready var battle_wiki_tabs_paired_with_scene = {
@@ -47,7 +47,7 @@ func _init_learn_tabs() -> void:
 
 	var edited_tab_bar : TabBar = general_learn_tabs_paired_with_scene[CFG.LearnTabs.PRACTICE]
 	edited_tab_bar.clear_tabs()
-	for tab in CFG.PracitceTabs.values():
+	for tab in CFG.PracticeTabs.values():
 		edited_tab_bar.add_tab(CFG.PRACTICE_TABS_NAMES[tab])
 
 	edited_tab_bar = general_learn_tabs_paired_with_scene[CFG.LearnTabs.BATTLE_WIKI]

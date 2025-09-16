@@ -317,7 +317,7 @@ const LEARN_TABS_NAMES = {
 	LearnTabs.WORLD_WIKI: "World WIKI",
 }
 
-enum PracitceTabs {
+enum PracticeTabs {
 	BASIC,
 	TUTORIAL,
 	PUZZLE,
@@ -325,10 +325,10 @@ enum PracitceTabs {
 }
 
 const PRACTICE_TABS_NAMES = {
-	PracitceTabs.BASIC: "Basic Information",
-	PracitceTabs.TUTORIAL: "Tutorial",
-	PracitceTabs.PUZZLE: "Puzzles",
-	PracitceTabs.CAMPAIGN: "Campaign",
+	PracticeTabs.BASIC: "Basic Information",
+	PracticeTabs.TUTORIAL: "Tutorial",
+	PracticeTabs.PUZZLE: "Puzzles",
+	PracticeTabs.CAMPAIGN: "Campaign",
 }
 
 
@@ -362,7 +362,7 @@ const WORLD_WIKI_TABS_NAMES = {
 var LAST_OPENED_LEARN_TAB : LearnTabs :
 	get: return player_options.last_open_learn_tab
 
-var LAST_OPENED_PRACTICE_TAB : PracitceTabs :
+var LAST_OPENED_PRACTICE_TAB : PracticeTabs :
 	get: return player_options.last_open_practice_tab
 
 var LAST_OPENED_BATTLE_WIKI_TAB : BattleWiki :

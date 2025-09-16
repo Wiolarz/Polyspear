@@ -12,6 +12,6 @@ func _on_pressed():
 func load_race(race_ : DataRace) -> void:
 		race = race_
 
-		get_node("Label").text = race.race_name.capitalize()
+		$Label.text = race.race_name.capitalize()
 
 		texture_normal = load(race.units_data[0].texture_path) # TODO add race icon

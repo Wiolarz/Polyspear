@@ -42,6 +42,7 @@ func load_tile(world_tile : DataTile) -> void:
 	tile_information_title.text = world_tile.type.capitalize()
 	tile_information_icon.texture = load(world_tile.texture_path)
 
+	# Complex Tile Types
 	if world_tile.type.begins_with("city"):
 		tile_information_description.text = \
 "Player main base, upon loosing it, player is only few turns away from defeat if he doesn't recapture it"
@@ -55,6 +56,8 @@ read more on Economy page"
 		tile_information_description.text = \
 "Defended but capturable goods producing tile, read more on Economy page"
 		return
+
+	# Basic Tile Types
 	match world_tile.type:
 		"WALL":
 			tile_information_description.text = "Unpassable Terrain"
