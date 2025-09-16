@@ -42,24 +42,21 @@ func load_tile(world_tile : DataTile) -> void:
 	tile_information_title.text = world_tile.type.capitalize()
 	tile_information_icon.texture = load(world_tile.texture_path)
 
-	# Complex Tile Types
-	if world_tile.type.begins_with("city"):
-		tile_information_description.text = \
-"Player main base, upon loosing it, player is only few turns away from defeat if he doesn't recapture it"
-		return
-	elif world_tile.type.begins_with("hunt"):
-		tile_information_description.text = \
-"Defended tile with constantly respawing enemy, which provide goods upon defeat
-read more on Economy page"
-		return
-	elif world_tile.type.begins_with("outpost"):
-		tile_information_description.text = \
-"Defended but capturable goods producing tile, read more on Economy page"
-		return
-
-	# Basic Tile Types
 	match world_tile.type:
+		# Basic Tile Types
 		"WALL":
 			tile_information_description.text = "Unpassable Terrain"
+
+		# Complex Tile Types
+		_ when world_tile.type.begins_with("city"):
+			tile_information_description.text = \
+"Player main base, upon loosing it, player is only few turns away from defeat if he doesn't recapture it"
+		_ when world_tile.type.begins_with("hunt"):
+			tile_information_description.text = \
+"Defended tile with constantly respawing enemy, which provide goods upon defeat
+read more on Economy page"
+		_ when world_tile.type.begins_with("outpost"):
+			tile_information_description.text = \
+"Defended but capturable goods producing tile, read more on Economy page"
 		_:
 			tile_information_description.text = ""

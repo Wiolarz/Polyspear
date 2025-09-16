@@ -2,29 +2,29 @@ extends Panel
 
 
 @onready var general_learn_tabs_paired_with_scene = {
-	CFG.LearnTabs.PRACTICE: $MainContainer/TopMenu/TabBarPractice ,
-	CFG.LearnTabs.BATTLE_WIKI: get_node("MainContainer/TopMenu/TabBarBattleWiki"),
-	CFG.LearnTabs.WORLD_WIKI: get_node("MainContainer/TopMenu/TabBarWorldWiki"),
+	CFG.LearnTabs.PRACTICE: $MainContainer/TopMenu/TabBarPractice,
+	CFG.LearnTabs.BATTLE_WIKI: $MainContainer/TopMenu/TabBarBattleWiki,
+	CFG.LearnTabs.WORLD_WIKI: $MainContainer/TopMenu/TabBarWorldWiki,
 }
 
 @onready var practice_tabs_paired_with_scene = {
-	CFG.PracticeTabs.BASIC: get_node("MainContainer/WikiIntroduction"),
-	CFG.PracticeTabs.TUTORIAL: get_node("MainContainer/Tutorials"),
-	CFG.PracticeTabs.PUZZLE: get_node("MainContainer/Puzzles"),
-	CFG.PracticeTabs.CAMPAIGN: get_node("MainContainer/CampaignBattles"),
+	CFG.PracticeTabs.BASIC: $MainContainer/WikiIntroduction,
+	CFG.PracticeTabs.TUTORIAL: $MainContainer/Tutorials,
+	CFG.PracticeTabs.PUZZLE: $MainContainer/Puzzles,
+	CFG.PracticeTabs.CAMPAIGN: $MainContainer/CampaignBattles,
 }
 
 @onready var battle_wiki_tabs_paired_with_scene = {
-	CFG.BattleWiki.SYMBOLS_WIKI: get_node("MainContainer/WikiSymbols"),
-	CFG.BattleWiki.MAGIC_WIKI: get_node("MainContainer/WikiMagic"),
-	CFG.BattleWiki.TERRAIN: get_node("MainContainer/WikiBattleTerrain"),
-	CFG.BattleWiki.MAGIC_CYCLONE: get_node("MainContainer/WikiMagicCyclone"),
+	CFG.BattleWiki.SYMBOLS_WIKI: $MainContainer/WikiSymbols,
+	CFG.BattleWiki.MAGIC_WIKI: $MainContainer/WikiMagic,
+	CFG.BattleWiki.TERRAIN: $MainContainer/WikiBattleTerrain,
+	CFG.BattleWiki.MAGIC_CYCLONE: $MainContainer/WikiMagicCyclone,
 }
 
 @onready var world_wiki_tabs_paired_with_scene = {
-	CFG.WorldWiki.FACTIONS: get_node("MainContainer/WikiRaces"),
-	CFG.WorldWiki.ECONOMY: get_node("MainContainer/WikiEconomy"),
-	CFG.WorldWiki.TERRAIN: get_node("MainContainer/WikiWorldTerrain"),
+	CFG.WorldWiki.FACTIONS: $MainContainer/WikiRaces,
+	CFG.WorldWiki.ECONOMY: $MainContainer/WikiEconomy,
+	CFG.WorldWiki.TERRAIN: $MainContainer/WikiWorldTerrain,
 }
 
 
