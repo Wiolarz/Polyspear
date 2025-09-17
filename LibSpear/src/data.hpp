@@ -139,7 +139,9 @@ public:
 	}
 
 	bool holds_ground_against(Symbol other) {
-		return protects_against(other, MovePhase::TURN) && other.get_push_force() <= 0;
+		bool parry_succesful = parries() && !other.breaks_parry();
+		bool push_succesful = other.get_push_force() > 0 && !parry_succesful;
+		return protects_against(other, MovePhase::TURN) && !push_succesful;
 	}
 
 	bool dies_to(Symbol other, MovePhase phase) {
