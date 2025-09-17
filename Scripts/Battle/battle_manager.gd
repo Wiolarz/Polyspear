@@ -30,6 +30,10 @@ var _painter_node : BattlePainter
 
 var _scripted_battle : ScriptedBattle
 
+var _fuzzing_iterations := 0
+var _fuzzing_failed_iterations := 0
+var fuzzing_is_iteration_failed = false
+
 signal move_animation_done()
 
 
@@ -255,7 +259,9 @@ func _on_turn_started(player : Player) -> void:
 		var move = await bot.choose_move(_battle_grid_state)
 		await _ai_thinking_delay(thinking_begin_s) # moving too fast feels weird
 
-		bot.cleanup_after_move()
+		if is_instance_valid(bot): # it may have been destroyed after thinking delay
+			bot.cleanup_after_move()
+
 		if _battle_grid_state == null: # Player quit to main menu before finishing
 			return
 
@@ -409,6 +415,9 @@ func ai_move() -> void:
 		return
 
 	if _replay_is_playing:
+		return
+
+	if _battle_grid_state.state == BattleGridState.STATE_BATTLE_FINISHED:
 		return
 
 	var move := AiBotStateRandom.choose_move_static(_battle_grid_state)
@@ -752,6 +761,19 @@ func _on_battle_ended() -> void:
 
 	_disable_ai_preview()
 	_battle_ui.update_mana()
+
+	if CFG.player_options.enable_fuzzing_mode:
+		_fuzzing_iterations += 1
+		if fuzzing_is_iteration_failed:
+			_fuzzing_failed_iterations += 1
+		fuzzing_is_iteration_failed = false
+
+		NET.append_to_local_chat_log("Next fuzzing iteration: %s/%s failed" \
+			% [_fuzzing_failed_iterations, _fuzzing_iterations]
+		)
+		# Do not wait 2 seconds and immediately start new game
+		IM.start_game()
+		return
 
 	await get_tree().create_timer(2).timeout # TEMP, don't exit immediately # TODO get signal from last animation ending
 
