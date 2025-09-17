@@ -299,16 +299,80 @@ var AUTO_START_GAME : bool :
 	get: return player_options.autostart_map
 
 
+#region Learn Tab
+
+## Lists below are ordered based on their appearance,
+## changing the order will mess up saved last page,
+## but it's a small issue as it only occurs between game updates
+## while the feature is made with a single game session in mind
+
 enum LearnTabs {
-	TUTORIAL = 1,
-	PUZZLE = 2,
-	CAMPAIGN = 3,
-	SYMBOLS_WIKI = 5,
-	MAGIC_WIKI = 6,
+	PRACTICE, # Works as a general tab for now too
+	BATTLE_WIKI,
+	WORLD_WIKI,
 }
+const LEARN_TABS_NAMES = {
+	LearnTabs.PRACTICE: "Practice",
+	LearnTabs.BATTLE_WIKI: "Battle WIKI",
+	LearnTabs.WORLD_WIKI: "World WIKI",
+}
+
+enum PracticeTabs {
+	BASIC,
+	TUTORIAL,
+	PUZZLE,
+	CAMPAIGN,
+}
+
+const PRACTICE_TABS_NAMES = {
+	PracticeTabs.BASIC: "Basic Information",
+	PracticeTabs.TUTORIAL: "Tutorial",
+	PracticeTabs.PUZZLE: "Puzzles",
+	PracticeTabs.CAMPAIGN: "Campaign",
+}
+
+
+enum BattleWiki {
+	SYMBOLS_WIKI,
+	MAGIC_WIKI,
+	TERRAIN,
+	MAGIC_CYCLONE,
+} # TODO add heroes battle passives
+
+const BATTLE_WIKI_TABS_NAMES = {
+	BattleWiki.SYMBOLS_WIKI: "Symbols",
+	BattleWiki.MAGIC_WIKI: "Magic",
+	BattleWiki.TERRAIN: "Terrain",
+	BattleWiki.MAGIC_CYCLONE: "Magic Cyclone",
+}
+
+enum WorldWiki {
+	FACTIONS,
+	ECONOMY,
+	TERRAIN,
+} # TODO add rituals + heroes world passives
+
+const WORLD_WIKI_TABS_NAMES = {
+	WorldWiki.FACTIONS: "Factions",
+	WorldWiki.ECONOMY: "Economy",
+	WorldWiki.TERRAIN: "Terrain",
+}
+
 
 var LAST_OPENED_LEARN_TAB : LearnTabs :
 	get: return player_options.last_open_learn_tab
+
+var LAST_OPENED_PRACTICE_TAB : PracticeTabs :
+	get: return player_options.last_open_practice_tab
+
+var LAST_OPENED_BATTLE_WIKI_TAB : BattleWiki :
+	get: return player_options.last_open_battle_wiki_tab
+
+var LAST_OPENED_WORLD_WIKI_TAB : WorldWiki :
+	get: return player_options.last_open_world_wiki_tab
+
+#endregion Learn Tab
+
 
 enum MainMenuTabs {
 	SERVER = 0,
