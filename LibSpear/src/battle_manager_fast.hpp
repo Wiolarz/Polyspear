@@ -79,6 +79,7 @@ class BattleManagerFast {
 
 	void _move_unit(UnitID id, Position pos);
 	void _kill_unit(UnitID id, UnitID killer_id);
+	void _summon_unit(Unit& unit, Army& army, Position target);
 
 	void _next_army();
 

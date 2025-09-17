@@ -467,21 +467,17 @@ void BattleManagerFast::_process_spell(UnitID uid, int8_t spell_id, Position tar
 				BM_ASSERT(!unit2.has_value(), "Unit already found @{},{} while spawning dryad", target.x, target.y);
 				auto [caster, army] = unit1.value();
 				
-				int new_uid = army.find_empty_unit_slot();
-				BM_ASSERT(new_uid >= 0, "No empty slot found for summoned dryad");
-				
 				Unit new_unit{};
 				new_unit.rotation = get_rotation(caster.pos, target);
 				new_unit.status = UnitStatus::ALIVE;
+				new_unit.score = 1;
 
 				//            ATK DEF PUSH RANGE FLAGS
 				Symbol attack{1,  1,  0,   0,    0};
 				new_unit.sides[0] = new_unit.sides[1] = new_unit.sides[5] = attack;
 				new_unit.try_apply_effect(Unit::FLAG_EFFECT_SUMMONING_SICKNESS);
-
-				army.units[new_uid] = new_unit;
-
-				_move_unit(UnitID(army.id, new_uid), target);
+				
+				_summon_unit(new_unit, army, target);
 			}
 			break;
 		/// Add new spell behaviors right before this line
@@ -495,6 +491,19 @@ void BattleManagerFast::_process_spell(UnitID uid, int8_t spell_id, Position tar
 	}
 	spell.state = BattleSpell::State::NONE;
 	spell.unit = NO_UNIT;
+}
+
+void BattleManagerFast::_summon_unit(Unit& unit, Army& army, Position target) {
+	int new_uid = army.find_empty_unit_slot();
+	BM_ASSERT(new_uid >= 0, "No empty slot found for summoned dryad");
+
+	_result.total_scores[army.id] += unit.score; // avoid negative scores when the battle ends
+	_result.max_scores[army.id] += unit.score;
+	_armies[army.id].mana_points += unit.mana;
+
+	army.units[new_uid] = unit;
+
+	_move_unit(UnitID(army.id, new_uid), target);
 }
 
 #pragma endregion Symbol processing
