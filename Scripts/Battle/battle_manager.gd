@@ -21,6 +21,7 @@ var _selected_unit : Unit
 
 var _replay_data : BattleReplay
 var _replay_is_playing : bool = false
+var _replay_battle_id : int = 0 # differentiates consecutive replays so that perform_replay shuts down correctly
 var _replay_move_counter : int = 0
 var _replay_number_of_moves : int = 0
 
@@ -82,6 +83,7 @@ func start_battle(new_armies : Array[Army], battle_map : DataBattleMap, \
 	_scripted_battle = scripted_battle
 
 	_replay_move_counter = 0
+	_replay_battle_id += 1
 
 	if not _replay_is_playing and not replay_template:
 		_replay_data.save()
@@ -901,12 +903,13 @@ func _create_summary() -> DataBattleSummary:
 ## Plays a replay and returns to the normal state afterwards
 func perform_replay(replay : BattleReplay) -> void:
 	_replay_is_playing = true # _replay_is_playing is reset in close_when_quitting_game
+	var current_replay_battle_id := _replay_battle_id
 	_battle_ui.show_replay_controls()
 	_battle_grid_state.set_clock_enabled(false)
 	_replay_number_of_moves = replay.moves.size()
 
 	for m in replay.moves:
-		if not _battle_is_ongoing:
+		if not _battle_is_ongoing or _replay_battle_id != current_replay_battle_id:
 			return # terminating battle while watching
 		_perform_replay_move(m)
 		await _replay_move_delay()
