@@ -1,7 +1,20 @@
 extends Panel
 
-#New run rules
+#region Variables: New run rules
 
+# consts:
+var player_factions = {
+	CFG.RACE_UNDEAD: "res://Resources/Presets/City_Defense/undead_start_force.tres",
+	CFG.RACE_CYCLOPS: "res://Resources/Presets/City_Defense/cyclops_start_force.tres",
+	CFG.RACE_ORCS: "res://Resources/Presets/City_Defense/orcs_start_force.tres",
+	CFG.RACE_ELVES: "res://Resources/Presets/City_Defense/elves_start_force.tres",
+}
+
+const attacker_waves_folder_path := "res://Resources/Presets/City_Defense/Attacker_Waves/"
+@onready var attacker_folders = FileSystemHelpers.list_folders_in_folder(attacker_waves_folder_path)
+
+
+# UI:
 @onready var ai_difficulty_selection : OptionButton = \
 $MarginContainer/VBoxContainer/VBoxNewRun/VBoxNewRunRules/HBoxAIDifficulty/AIDifficulty
 
@@ -11,57 +24,22 @@ $MarginContainer/VBoxContainer/VBoxNewRun/VBoxNewRunRules/HBoxArmiesSettings/Att
 @onready var defender_selection : OptionButton = \
 $MarginContainer/VBoxContainer/VBoxNewRun/VBoxNewRunRules/HBoxArmiesSettings/DefenderOptionButton
 
-
-@onready var player_factions = {
-	CFG.RACE_UNDEAD: "res://Resources/Presets/City_Defense/undead_start_force.tres",
-	CFG.RACE_CYCLOPS: "res://Resources/Presets/City_Defense/cyclops_start_force.tres",
-	CFG.RACE_ORCS: "res://Resources/Presets/City_Defense/orcs_start_force.tres",
-	CFG.RACE_ELVES: "res://Resources/Presets/City_Defense/elves_start_force.tres",
-}
-
-const attacker_folder_path := "res://Resources/Presets/City_Defense/Attacker_Waves/"
-@onready var attacker_folders = FileSystemHelpers.list_folders_in_folder(attacker_folder_path)
-
 @onready var new_run_container : VBoxContainer = $MarginContainer/VBoxContainer/VBoxNewRun
 
 
+# selected settings:
 var new_run_attacker_waves_folder_path : String
 var new_run_army_path : String
 var new_run_selected_race : DataRace
 
-## Current Run
+#endregion Variables: New run rules
 
-var attacker_waves : Array[PresetArmy] = []
-var current_roster : PresetArmy
-var player_race : DataRace
 
-@onready var current_run_container : VBoxContainer = $MarginContainer/VBoxContainer/VBoxCurrentRun
+#region Variables: Current Run
 
+# balance:
 
 @onready var map : DataBattleMap = load("res://Resources/Battle/Battle_Maps/large_city.tres")
-
-
-@onready var units_purchases : HBoxContainer = $MarginContainer/VBoxContainer/VBoxCurrentRun/HBoxPurchases
-
-
-@onready var continue_button : Button = $MarginContainer/VBoxContainer/VBoxCurrentRun/ContinueButton
-
-@onready var current_run_information : Label = $MarginContainer/VBoxContainer/VBoxCurrentRun/CurrentRunLabel
-
-@onready var army_display : UnitsButtonsList = $MarginContainer/VBoxContainer/VBoxCurrentRun/HBoxArmy
-
-
-
-var is_run_ongoing : bool = false
-
-var selected_bot_path : String
-
-var current_wave : int = -1
-
-
-var player_goods : Goods
-
-## Next Wave Information
 
 ## In case there are more waves than awards, last one is repeated
 var goods_awards : Array[Goods] = \
@@ -72,10 +50,36 @@ var goods_awards : Array[Goods] = \
 	Goods.new(7, 6, 3), # after 3rd
 ] # 4th wave is currently last
 
+# Settings
 
-@onready var next_wave_label = $MarginContainer/VBoxContainer/VBoxCurrentRun/VBoxNextWave/HBoxNextWaveInfo/Label
-@onready var next_wave_roster = $MarginContainer/VBoxContainer/VBoxCurrentRun/VBoxNextWave/HBoxNextWaveArmy
-@onready var next_wave_selection = $MarginContainer/VBoxContainer/VBoxCurrentRun/VBoxNextWave/HBoxNextWaveInfo/OptionWaveSelection
+var selected_bot_path : String
+var player_race : DataRace
+var attacker_waves : Array[PresetArmy] = []
+
+
+# UI:
+
+@onready var current_run_container : VBoxContainer = $MarginContainer/VBoxContainer/VBoxCurrentRun
+@onready var units_purchases : HBoxContainer = $MarginContainer/VBoxContainer/VBoxCurrentRun/HBoxPurchases
+@onready var current_run_information : Label = $MarginContainer/VBoxContainer/VBoxCurrentRun/CurrentRunLabel
+@onready var army_display : UnitsButtonsList = $MarginContainer/VBoxContainer/VBoxCurrentRun/HBoxArmy
+@onready var continue_button : Button = $MarginContainer/VBoxContainer/VBoxCurrentRun/ContinueButton
+
+## Next Wave Information
+@onready var next_wave_label : Label = $MarginContainer/VBoxContainer/VBoxCurrentRun/VBoxNextWave/HBoxNextWaveInfo/Label
+@onready var next_wave_roster : HBoxContainer = $MarginContainer/VBoxContainer/VBoxCurrentRun/VBoxNextWave/HBoxNextWaveArmy
+@onready var next_wave_selection : OptionButton = $MarginContainer/VBoxContainer/VBoxCurrentRun/VBoxNextWave/HBoxNextWaveInfo/OptionWaveSelection
+
+
+# Current run data:
+var current_roster : PresetArmy
+
+var is_run_ongoing : bool = false
+var current_wave : int = -1
+
+var player_goods : Goods
+
+#endregion Variables: Current Run
 
 
 #region New Run Setup
@@ -105,7 +109,7 @@ func _ready():
 
 
 func attacker_changed(attacker_index) -> void:
-	new_run_attacker_waves_folder_path = attacker_folder_path + attacker_folders[attacker_index]
+	new_run_attacker_waves_folder_path = attacker_waves_folder_path + attacker_folders[attacker_index]
 
 
 func defender_changed(defender_index) -> void:
