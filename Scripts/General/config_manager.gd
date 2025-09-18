@@ -381,6 +381,7 @@ enum MainMenuTabs {
 	CREDITS = 3,
 	REPLAYS = 4,
 	LEARN = 5,
+	DEFENSE = 6,
 }
 
 var LAST_OPENED_TAB : MainMenuTabs :

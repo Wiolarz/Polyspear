@@ -13,6 +13,9 @@ var players : Array[Player] = []
 ## flag for MAP EDITOR
 var in_map_editor : bool = false
 
+## flag for City Defense game mode
+var is_city_defense_active : bool = false
+
 
 func init_game_setup():
 	game_setup_info = GameSetupInfo.create_empty()
@@ -261,6 +264,7 @@ func start_scripted_battle(scripted_battle : ScriptedBattle, battle_bot_path : S
 		armies.append(create_army_from_preset(army_preset, player_idx))
 
 	BM.start_battle(armies, scripted_battle.battle_map, 0, null, null, scripted_battle)
+	UI.set_camera(E.CameraPosition.BATTLE)
 
 
 func _clear_players() -> void:
@@ -347,3 +351,11 @@ func is_slot_steal_allowed() -> bool:
 	return true # local game
 
 #endregion Information
+
+
+#region City Defense
+
+func end_city_defense_battle(armies : Array[BattleGridState.ArmyInBattleState]) -> void:
+	UI.main_menu.get_node("MainContainer/CityDefense").battle_ended(armies)  # TEMP
+
+#endregion City Defense
