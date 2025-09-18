@@ -356,6 +356,6 @@ func is_slot_steal_allowed() -> bool:
 #region City Defense
 
 func end_city_defense_battle(armies : Array[BattleGridState.ArmyInBattleState]) -> void:
-	UI.main_menu.get_node("MainContainer/CityDefense").battle_ended(armies)
+	UI.main_menu.get_node("MainContainer/CityDefense").battle_ended(armies)  # TEMP
 
 #endregion City Defense

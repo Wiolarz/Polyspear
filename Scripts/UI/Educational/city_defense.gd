@@ -61,11 +61,10 @@ var current_wave : int = -1
 
 var player_goods : Goods
 
-## Next Wave Informations
+## Next Wave Information
 
-## TODO check if it has to be on_ready [br]
 ## In case there are more waves than awards, last one is repeated
-@onready var goods_awards : Array[Goods] = \
+var goods_awards : Array[Goods] = \
 [
 	Goods.new(3, 3, 0), # Starting goods
 	Goods.new(3, 2, 1), # after 1st
@@ -79,12 +78,9 @@ var player_goods : Goods
 @onready var next_wave_selection = $MarginContainer/VBoxContainer/VBoxCurrentRun/VBoxNextWave/HBoxNextWaveInfo/OptionWaveSelection
 
 
-
-
 #region New Run Setup
 
 func _ready():
-	##TODO add support for more starting armies and attacker types
 	var bot_paths = FileSystemHelpers.list_files_in_folder(CFG.BATTLE_BOTS_PATH, true, true)
 	ai_difficulty_selection.clear()
 	for bot_name in bot_paths:
@@ -92,9 +88,7 @@ func _ready():
 
 
 	attacker_selection.clear()
-	#print("attacker folder size", attacker_folders.size())
 	for attacker_folder_path in attacker_folders:
-		#print(attacker_folder_path)
 		attacker_selection.add_item(attacker_folder_path)
 	attacker_selection.item_selected.connect(attacker_changed)
 
@@ -112,16 +106,11 @@ func _ready():
 
 func attacker_changed(attacker_index) -> void:
 	new_run_attacker_waves_folder_path = attacker_folder_path + attacker_folders[attacker_index]
-	#print("attacker:", new_run_attacker_waves_folder_path)
 
 
 func defender_changed(defender_index) -> void:
 	new_run_selected_race = player_factions.keys()[defender_index]
 	new_run_army_path = player_factions.values()[defender_index]
-	#print(new_run_selected_race.race_name)
-	#print(new_run_army_path)
-
-
 
 
 func _start_new_run() -> void:
@@ -136,11 +125,9 @@ func _start_new_run() -> void:
 		var full_wave_path : String = new_run_attacker_waves_folder_path + "/" + wave_path
 
 		var attacker_army : PresetArmy = load(full_wave_path)
-		#print(full_wave_path)
-		#print(attacker_army.units.size())
 		attacker_waves.append(attacker_army)
 
-	selected_bot_path =  CFG.BATTLE_BOTS_PATH + ai_difficulty_selection.get_item_text(ai_difficulty_selection.get_selected())
+	selected_bot_path = CFG.BATTLE_BOTS_PATH + ai_difficulty_selection.get_item_text(ai_difficulty_selection.get_selected())
 
 	player_race = new_run_selected_race
 	current_roster = load(new_run_army_path)
@@ -150,7 +137,7 @@ func _start_new_run() -> void:
 
 
 	player_goods = goods_awards[0].duplicate()
-	refresh__run_info()
+	refresh_run_info()
 
 	_refresh_unit_purchases()
 	_refresh_roster_display()
@@ -177,13 +164,12 @@ func _displayed_next_wave_changed(wave_idx : int) -> void:
 	next_wave_roster.simplified_display_load_army(attacker_waves[wave_idx])
 
 
-func refresh__run_info():
+func refresh_run_info():
 	var text := "Current Run - Wave: " + str(current_wave + 2) + \
-	" Goods: " + player_goods.to_string_short()
+		" Goods: " + player_goods.to_string_short()
 	current_run_information.text = text
 	if current_wave + 1 == attacker_waves.size():
 		current_run_information.text += "\nVICTORY"
-
 
 
 func _refresh_unit_purchases() -> void:
@@ -208,7 +194,7 @@ func _buy_unit(unit : DataUnit) -> void:
 	current_roster.units.append(unit)
 	_refresh_roster_display()
 	_refresh_unit_purchases()
-	refresh__run_info()
+	refresh_run_info()
 
 
 func _launch_battle():
@@ -244,7 +230,7 @@ func battle_ended(armies : Array[BattleGridState.ArmyInBattleState]) -> void:
 	_refresh_unit_purchases()
 	_refresh_roster_display()
 
-	refresh__run_info()
+	refresh_run_info()
 	if current_wave + 1 == attacker_waves.size():  # Victory
 		is_run_ongoing = false
 		continue_button.disabled = true
